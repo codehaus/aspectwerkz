@@ -1,81 +1,87 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.definition;
 
-import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+import java.util.Iterator;
+import java.io.Serializable;
+
+import org.codehaus.aspectwerkz.definition.regexp.Pattern;
 
 /**
- * Holds the meta-data for the pointcuts.
+ * Holds the pointcut definition.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: PointcutDefinition.java,v 1.1.1.1 2003-05-11 15:13:56 jboner Exp $
  */
-public class PointcutDefinition {
+public class PointcutDefinition implements Serializable {
 
-    /**
-     * The name of the pointcut.
-     */
-    private String m_name;
+    public static final String METHOD = "method";
+    public static final String GET_FIELD = "getfield";
+    public static final String SET_FIELD = "setfield";
+    public static final String THROWS = "throws";
+    public static final String CALLER_SIDE = "callerside";
 
     /**
      * The type for the pointcut.
      */
-    private PointcutType m_type;
+    private String m_type;
 
     /**
-     * The expression.
+     * The pattern the pointcut should match.
      */
-    private String m_expression;
+    private List m_patterns = new ArrayList();
 
     /**
-     * Marks the pointcut as reentrant.
+     * If we have a caller side pointcut; the caller side pattern.
      */
-    private String m_isNonReentrant = "false";
+    private String m_callerSidePattern;
 
     /**
-     * Returns the expression for the pointcut.
+     * The advices for this pointcut.
+     */
+    private final List m_advices = new ArrayList();
+
+    /**
+     * The advice stacks for this pointcut.
+     */
+    private final List m_adviceStacks = new ArrayList();
+
+    /**
+     * Marks the pointcut as thread-safe.
+     */
+    private String m_threadSafe;
+
+    /**
      *
-     * @return the expression for the pointcut
+     * A a list with pre-compiled regexp patterns for this pointcut.
      */
-    public String getExpression() {
-        return m_expression;
-    }
-
-    /**
-     * Sets the expression.
-     *
-     * @param expression the expression
-     */
-    public void setExpression(final String expression) {
-        m_expression = expression;
-    }
-
-    /**
-     * Returns the name of the pointcut.
-     *
-     * @return the name
-     */
-    public String getName() {
-        return m_name;
-    }
-
-    /**
-     * Sets the name of the pointcut.
-     */
-    public void setName(final String name) {
-        m_name = name;
-    }
+    private List m_regexps = null;
 
     /**
      * Returns the type of the pointcut.
      *
      * @return the type
      */
-    public PointcutType getType() {
+    public String getType() {
         return m_type;
     }
 
@@ -84,34 +90,164 @@ public class PointcutDefinition {
      *
      * @param type the type
      */
-    public void setType(final PointcutType type) {
-        m_type = type;
+    public void setType(final String type) {
+        m_type = type.trim();
     }
 
     /**
-     * Sets the non-reentrancy flag.
+     * Returns the pattern for the pointcut.
      *
-     * @param isNonReentrant
+     * @return the pattern
      */
-    public void setNonReentrant(final String isNonReentrant) {
-        m_isNonReentrant = isNonReentrant;
+    public List getPatterns() {
+        return m_patterns;
     }
 
     /**
-     * Returns the string representation of the non-reentrancy flag.
+     * Adds a pattern for the pointcut.
      *
-     * @return the non-reentrancy flag
+     * @param pattern the pattern
      */
-    public String getNonReentrant() {
-        return m_isNonReentrant;
+    public void addPattern(final String pattern) {
+        m_patterns.add(pattern.trim());
     }
 
     /**
-     * Checks if the pointcut is non-reentrant or not.
+     * Returns the caller side pattern for the pointcut.
      *
-     * @return the non-reentrancy flag
+     * @return the pattern
      */
-    public boolean isNonReentrant() {
-        return "true".equalsIgnoreCase(m_isNonReentrant);
+    public String getCallerSidePattern() {
+        return m_callerSidePattern;
+    }
+
+    /**
+     * Sets the caller side pattern for the pointcut.
+     *
+     * @param pattern the pattern
+     */
+    public void setCallerSidePattern(final String pattern) {
+        m_callerSidePattern = pattern.trim();
+    }
+
+    /**
+     * Returns the name of the advices as list.
+     *
+     * @return the name of the advices
+     */
+    public List getAdvices() {
+        return m_advices;
+    }
+
+    /**
+     * Adds the name of an advice.
+     *
+     * @param advice the names of the advice
+     */
+    public void addAdvice(final String advice) {
+        m_advices.add(advice.trim());
+    }
+
+    /**
+     * Returns the advice stacks.
+     *
+     * @return the advice stacks
+     */
+    public List getAdviceStacks() {
+        return m_adviceStacks;
+    }
+
+    /**
+     * Adds an advice stack.
+     *
+     * @param adviceStack the advice stack
+     */
+    public void addAdviceStack(final String adviceStack) {
+        m_adviceStacks.add(adviceStack.trim());
+    }
+
+    /**
+     * Returns the threadSafe attribute.
+     *
+     * @return the threadSafe parameter
+     */
+    public String getIsThreadSafe() {
+        return m_threadSafe;
+    }
+
+    /**
+     * Sets the threadSafe attribute.
+     *
+     * @param threadSafe marks the pointcut thread-safe or not
+     */
+    public void setThreadSafe(final String threadSafe) {
+        m_threadSafe = threadSafe.trim();
+    }
+
+    /**
+     * Checks if the pointcut is thread-safe.
+     *
+     * @return true if the pointcut is thread-safe
+     */
+    public boolean isThreadSafe() {
+        if (m_threadSafe != null &&
+                (m_threadSafe.equalsIgnoreCase("no") ||
+                m_threadSafe.equalsIgnoreCase("false"))) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    /**
+     * Returns list of pre-compiled Pattern instances.
+     *
+     * @return a list of pre-compiled Pattern instances
+     */
+    public List getRegexpPatterns() {
+        if (m_regexps == null) {
+            m_regexps = new ArrayList(m_patterns.size());
+
+            if (m_type.equalsIgnoreCase(METHOD)) {
+                for (Iterator it = m_patterns.iterator(); it.hasNext();) {
+                    m_regexps.add(Pattern.compileMethodPattern((String)it.next()));
+                }
+            }
+            else if (m_type.equalsIgnoreCase(GET_FIELD)) {
+                for (Iterator it = m_patterns.iterator(); it.hasNext();) {
+                    m_regexps.add(Pattern.compileFieldPattern((String)it.next()));
+                }
+            }
+            else if (m_type.equalsIgnoreCase(SET_FIELD)) {
+                for (Iterator it = m_patterns.iterator(); it.hasNext();) {
+                    m_regexps.add(Pattern.compileFieldPattern((String)it.next()));
+                }
+            }
+            else if (m_type.equalsIgnoreCase(THROWS)) {
+                for (Iterator it = m_patterns.iterator(); it.hasNext();) {
+                    final StringTokenizer tokenizer = new StringTokenizer(
+                            (String)it.next(),
+                            AspectWerkzDefinition.THROWS_DELIMITER);
+                    final String method = tokenizer.nextToken();
+                    final String exception = tokenizer.nextToken();
+                    m_regexps.add(Pattern.compileMethodPattern(method));
+                }
+            }
+            else if (m_type.equalsIgnoreCase(CALLER_SIDE)) {
+                for (Iterator it = m_patterns.iterator(); it.hasNext();) {
+                    final StringTokenizer tokenizer = new StringTokenizer(
+                            (String)it.next(),
+                            AspectWerkzDefinition.CALLER_SIDE_DELIMITER);
+                    String classNamePattern = tokenizer.nextToken();
+                    String methodNamePattern = tokenizer.nextToken();
+                    m_regexps.add(Pattern.compileMethodPattern(methodNamePattern));
+                }
+            }
+            else {
+                throw new IllegalStateException("pointcut has an undefined type: " + m_type);
+            }
+        }
+        return m_regexps;
     }
 }

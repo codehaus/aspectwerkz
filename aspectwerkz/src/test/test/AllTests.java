@@ -1,34 +1,35 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
 package test;
 
 import junit.framework.TestCase;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
- * This tests can be run without online / offline or other post compilation mode.
- * Used to test standalone component of AspectWerkz.
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * Runs all tests.
  */
 public class AllTests extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("All tests");
-
         suite.addTestSuite(test.ClassPatternTest.class);
+        suite.addTestSuite(test.FieldPatternTest.class);
         suite.addTestSuite(test.MethodPatternTest.class);
+        suite.addTestSuite(test.AspectWerkzDefinitionTest.class);
+        suite.addTestSuite(test.AspectWerkzTest.class);
+        suite.addTestSuite(test.AspectTest.class);
+        suite.addTestSuite(test.AbstractPointcutTest.class);
+        suite.addTestSuite(test.FieldPointcutTest.class);
+        suite.addTestSuite(test.IntroductionTest.class);
+        suite.addTestSuite(test.MemberMethodAdviceTest.class);
+        suite.addTestSuite(test.StaticMethodAdviceTest.class);
+        suite.addTestSuite(test.FieldAdviceTest.class);
+        suite.addTestSuite(test.CallerSideAdviceTest.class);
+        suite.addTestSuite(test.ThrowsAdviceTest.class);
+        suite.addTestSuite(test.DynamicDeploymentTest.class);
         suite.addTestSuite(test.ExceptionTest.class);
         suite.addTestSuite(test.MethodComparatorTest.class);
-        suite.addTestSuite(test.StringsTest.class);
-        suite.addTestSuite(test.ExpressionTest.class);
-
+        suite.addTestSuite(test.PerformanceTest.class);
         return suite;
     }
 
@@ -36,4 +37,8 @@ public class AllTests extends TestCase {
         junit.textui.TestRunner.run(suite());
     }
 
+    public AllTests(String aName) {
+        super(aName);
+        AspectWerkz.initialize();
+    }
 }

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas B+onér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the BSD-style license *
@@ -7,8 +7,9 @@
  **************************************************************************************/
 package aspectwerkz.aosd.test.unitofwork;
 
+import org.codehaus.aspectwerkz.attribdef.Pointcut;
+
 import aspectwerkz.aosd.unitofwork.AbstractUnitOfWorkProtocol;
-import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * Defines the pointcuts used by the abstract base class. Specifies the UnitOfWork behaviour in the system.
@@ -24,21 +25,21 @@ public class UnitOfWorkProtocol extends AbstractUnitOfWorkProtocol {
     /**
      * Defines the methods that should run in a transaction.
      *
-     * @Expression execution(* aspectwerkz.aosd.app.domain.DomainObjectFactory.*(..))
+     * @Execution * aspectwerkz.aosd.app.domain.DomainObjectFactory.*(..)
      */
     Pointcut transactionalObjectCreationPoints;
 
     /**
      * Defines all the fields (in all object) that should mark an object as dirty.
      *
-     * @Expression set(* aspectwerkz.aosd.app.domain.*.*)
+     * @Set * aspectwerkz.aosd.app.domain.*.*
      */
     Pointcut transactionalObjectModificationPoints;
 
     /**
      * Defines the methods that should run in a transaction.
      *
-     * @Expression execution(* aspectwerkz.aosd.app.service.*.*(..))
+     * @Execution * aspectwerkz.aosd.app.service.*.*(..)
      */
     Pointcut transactionalMethods;
 
@@ -47,7 +48,7 @@ public class UnitOfWorkProtocol extends AbstractUnitOfWorkProtocol {
     /**
      * Defines the objects that we want to participate in the transaction.
      *
-     * @Introduce class(aspectwerkz.aosd.app.domain.*) deploymentModel=perInstance
+     * @Introduce aspectwerkz.aosd.app.domain.* deploymentModel=perInstance
      */
     public class MyTransactionalImpl extends AbstractUnitOfWorkProtocol.TransactionalImpl {}
 }

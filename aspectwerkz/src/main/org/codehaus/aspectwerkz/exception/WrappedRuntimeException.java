@@ -1,10 +1,21 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.exception;
 
 import java.io.PrintStream;
@@ -13,7 +24,8 @@ import java.io.PrintWriter;
 /**
  * Wrappes the original throwable in a RuntimeException.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: WrappedRuntimeException.java,v 1.1.1.1 2003-05-11 15:14:17 jboner Exp $
  */
 public class WrappedRuntimeException extends RuntimeException {
 
@@ -70,14 +82,14 @@ public class WrappedRuntimeException extends RuntimeException {
 
 ///CLOVER:OFF
     /**
-     * Prints the wrapped exception A its backtrace to the standard error stream.
+     * Prints the wrapped exception and its backtrace to the standard error stream.
      */
     public void printStackTrace() {
         m_throwable.printStackTrace();
     }
 
     /**
-     * Prints the wrapped excpetion A its backtrace to the specified print stream.
+     * Prints the wrapped excpetion and its backtrace to the specified print stream.
      *
      * @param s the print stream
      */
@@ -86,7 +98,7 @@ public class WrappedRuntimeException extends RuntimeException {
     }
 
     /**
-     * Prints the wrapped exception A its backtrace to the specified print writer.
+     * Prints the wrapped exception and its backtrace to the specified print writer.
      *
      * @param s the print writer
      */

@@ -2,7 +2,7 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package examples.util.concurrent;
@@ -33,9 +33,7 @@ public class AsynchronousManager {
      * @param task the task to execute (Runnable)
      */
     public void execute(final Runnable task) {
-        if (notInitialized()) {
-            throw new IllegalStateException("asynchronous thread pool not initialized");
-        }
+        if (notInitialized()) throw new IllegalStateException("asynchronous thread pool not initialized");
         try {
             m_threadPool.execute(task);
         }
@@ -64,12 +62,8 @@ public class AsynchronousManager {
      * @param def the definition
      */
     public synchronized void initialize(final Definition definition) {
-        if (definition == null) {
-            return;
-        }
-        if (m_initialized) {
-            return;
-        }
+        if (definition == null) return;
+        if (m_initialized) return;
 
         examples.util.definition.ThreadPoolDefinition def = (examples.util.definition.ThreadPoolDefinition)definition;
         int threadPoolMaxSize = def.getMaxSize();
@@ -79,9 +73,8 @@ public class AsynchronousManager {
         boolean waitWhenBlocked = def.getWaitWhenBlocked();
         boolean bounded = def.getBounded();
 
-        if (threadPoolMaxSize < threadPoolInitSize || threadPoolMaxSize < threadPoolMinSize) {
+        if (threadPoolMaxSize < threadPoolInitSize || threadPoolMaxSize < threadPoolMinSize)
             throw new IllegalArgumentException("max size of thread pool can not exceed the init size");
-        }
 
         // if threadPoolMaxSize is -1 or less => no maximum limit
         // if keepAliveTime is -1 or less => threads are alive forever, i.e no timeout
@@ -91,15 +84,13 @@ public class AsynchronousManager {
                     threadPoolMinSize,
                     threadPoolInitSize,
                     keepAliveTime,
-                    waitWhenBlocked
-            );
+                    waitWhenBlocked);
         }
         else {
             createDynamicThreadPool(
                     threadPoolMinSize,
                     threadPoolInitSize,
-                    keepAliveTime
-            );
+                    keepAliveTime);
         }
         m_initialized = true;
     }
@@ -130,9 +121,7 @@ public class AsynchronousManager {
         m_threadPool.setKeepAliveTime(keepAliveTime);
         m_threadPool.createThreads(threadPoolInitSize);
         m_threadPool.setMinimumPoolSize(threadPoolMinSize);
-        if (waitWhenBlocked) {
-            m_threadPool.waitWhenBlocked();
-        }
+        if (waitWhenBlocked) m_threadPool.waitWhenBlocked();
     }
 
     /**

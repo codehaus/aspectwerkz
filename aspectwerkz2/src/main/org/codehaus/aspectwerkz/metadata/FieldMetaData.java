@@ -2,34 +2,84 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
-
 /**
- * Interface for the field metadata implementations.
+ * Holds meta-data for a field. Used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface FieldMetaData extends MemberMetaData
-{
+public class FieldMetaData implements MemberMetaData {
+
+    /**
+     * The name of the method.
+     */
+    private String m_name;
+
+    /**
+     * The type.
+     */
+    private String m_type;
+
+    /**
+     * The modifiers.
+     */
+    private int m_modifiers;
+
+    /**
+     * Returns the name.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return m_name;
+    }
+
+    /**
+     * Sets the name.
+     *
+     * @param name the name
+     */
+    public void setName(final String name) {
+        m_name = name;
+    }
+
     /**
      * Returns the type.
      *
      * @return the type
      */
-    String getType();
+    public String getType() {
+        return m_type;
+    }
 
-    static class NullFieldMetaData extends NullMemberMetaData
-        implements FieldMetaData
-    {
-        public final static NullFieldMetaData NULL_FIELD_METADATA = new NullFieldMetaData();
+    /**
+     * Sets the type.
+     *
+     * @param type the type
+     */
+    public void setType(final String type) {
+        m_type = type;
+    }
 
-        public String getType()
-        {
-            return "";
-        }
+    /**
+     * Returns the modifiers.
+     *
+     * @return the modifiers
+     */
+    public int getModifiers() {
+        return m_modifiers;
+    }
+
+    /**
+     * Sets the modifiers.
+     *
+     * @param modifiers the modifiers
+     */
+    public void setModifiers(final int modifiers) {
+        m_modifiers = modifiers;
     }
 }

@@ -1,2 +1,0 @@
-Class-Path: aspectwerkz-core-2.0.RC1.jar
-Premain-Class: org.codehaus.aspectwerkz.hook.Agent

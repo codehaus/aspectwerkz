@@ -2,21 +2,23 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import org.codehaus.aspectwerkz.MethodComparator;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 
 /**
  * Holds the meta-data for the aspect.
@@ -24,8 +26,8 @@ import java.util.Map;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class AspectDefinition
-{
+public class AspectDefinition {
+
     /**
      * The name of the aspect.
      */
@@ -39,7 +41,7 @@ public class AspectDefinition
     /**
      * The deployment model for the aspect.
      */
-    private String m_deploymentModel = "perJVM";
+    private String m_deploymentModel;
 
     /**
      * The around advices.
@@ -62,7 +64,8 @@ public class AspectDefinition
     private final List m_interfaceIntroductions = new ArrayList();
 
     /**
-     * The pointcuts definitions. The implementation introductions
+     * The pointcuts definitions.
+     * The implementation introductions
      */
     private final List m_introductions = new ArrayList();
 
@@ -77,35 +80,33 @@ public class AspectDefinition
     private Map m_parameters = new HashMap();
 
     /**
+     * The controller definitions.
+     */
+    private final Map m_controllerDefs = new HashMap();
+
+    /**
      * Creates a new aspect meta-data instance.
      *
-     * @param name            the name of the aspect
-     * @param className       the class name of the aspect
+     * @param name the name of the aspect
+     * @param className the class name of the aspect
+     * @param deploymentModel the deployment model
      */
-    public AspectDefinition(final String name, final String className)
-    {
-        if (name == null)
-        {
-            throw new IllegalArgumentException("aspect name can not be null");
-        }
-
-        if (className == null)
-        {
-            throw new IllegalArgumentException(
-                "aspect class name can not be null");
-        }
-
+    public AspectDefinition(final String name,
+                            final String className,
+                            final String deploymentModel) {
+        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
+        if (className == null) throw new IllegalArgumentException("aspect class name can not be null");
+        if (deploymentModel == null) throw new IllegalArgumentException("deployment model can not be null");
         m_name = name;
         m_className = className;
+        m_deploymentModel = deploymentModel;
     }
 
     /**
      * Returns the pattern for the aspect
-     *
      * @return the pattern
      */
-    public String getName()
-    {
+    public String getName() {
         return m_name;
     }
 
@@ -114,8 +115,7 @@ public class AspectDefinition
      *
      * @param name the name
      */
-    public void setName(final String name)
-    {
+    public void setName(final String name) {
         m_name = name.trim();
     }
 
@@ -124,8 +124,7 @@ public class AspectDefinition
      *
      * @return the class name
      */
-    public String getClassName()
-    {
+    public String getClassName() {
         return m_className;
     }
 
@@ -134,8 +133,7 @@ public class AspectDefinition
      *
      * @param deploymentModel the deployment model
      */
-    public void setDeploymentModel(final String deploymentModel)
-    {
+    public void setDeploymentModel(final String deploymentModel) {
         m_deploymentModel = deploymentModel;
     }
 
@@ -144,8 +142,7 @@ public class AspectDefinition
      *
      * @return the deployment model
      */
-    public String getDeploymentModel()
-    {
+    public String getDeploymentModel() {
         return m_deploymentModel;
     }
 
@@ -154,20 +151,8 @@ public class AspectDefinition
      *
      * @param adviceMetaData the around advice
      */
-    public void addAroundAdvice(final AdviceDefinition adviceMetaData)
-    {
+    public void addAroundAdvice(final AdviceDefinition adviceMetaData) {
         m_aroundAdvices.add(adviceMetaData);
-    }
-
-    /**
-     * Remove an around advice.
-     * Experimental
-     *
-     * @param adviceMetaData the around advice
-     */
-    public void removeAroundAdvice(final AdviceDefinition adviceMetaData)
-    {
-        m_aroundAdvices.remove(adviceMetaData);
     }
 
     /**
@@ -175,8 +160,7 @@ public class AspectDefinition
      *
      * @return the around advices
      */
-    public List getAroundAdvices()
-    {
+    public List getAroundAdvices() {
         return m_aroundAdvices;
     }
 
@@ -185,8 +169,7 @@ public class AspectDefinition
      *
      * @param adviceMetaData the before advice
      */
-    public void addBeforeAdvice(final AdviceDefinition adviceMetaData)
-    {
+    public void addBeforeAdvice(final AdviceDefinition adviceMetaData) {
         m_beforeAdvices.add(adviceMetaData);
     }
 
@@ -195,8 +178,7 @@ public class AspectDefinition
      *
      * @return the before advices
      */
-    public List getBeforeAdvices()
-    {
+    public List getBeforeAdvices() {
         return m_beforeAdvices;
     }
 
@@ -205,8 +187,7 @@ public class AspectDefinition
      *
      * @param adviceMetaData the after advice
      */
-    public void addAfterAdvice(final AdviceDefinition adviceMetaData)
-    {
+    public void addAfterAdvice(final AdviceDefinition adviceMetaData) {
         m_afterAdvices.add(adviceMetaData);
     }
 
@@ -215,8 +196,7 @@ public class AspectDefinition
      *
      * @return the after advices
      */
-    public List getAfterAdvices()
-    {
+    public List getAfterAdvices() {
         return m_afterAdvices;
     }
 
@@ -225,9 +205,7 @@ public class AspectDefinition
      *
      * @param interfaceIntroductionMetaData the introduction
      */
-    public void addInterfaceIntroduction(
-        final InterfaceIntroductionDefinition interfaceIntroductionMetaData)
-    {
+    public void addInterfaceIntroduction(final InterfaceIntroductionDefinition interfaceIntroductionMetaData) {
         m_interfaceIntroductions.add(interfaceIntroductionMetaData);
     }
 
@@ -236,9 +214,7 @@ public class AspectDefinition
      *
      * @param introductionMetaData the introduction
      */
-    public void addIntroduction(
-        final IntroductionDefinition introductionMetaData)
-    {
+    public void addIntroduction(final IntroductionDefinition introductionMetaData) {
         m_introductions.add(introductionMetaData);
     }
 
@@ -247,8 +223,7 @@ public class AspectDefinition
      *
      * @return the introductions
      */
-    public List getInterfaceIntroductions()
-    {
+    public List getInterfaceIntroductions() {
         return m_interfaceIntroductions;
     }
 
@@ -257,8 +232,7 @@ public class AspectDefinition
      *
      * @return the introductions
      */
-    public List getIntroductions()
-    {
+    public List getIntroductions() {
         return m_introductions;
     }
 
@@ -267,8 +241,7 @@ public class AspectDefinition
      *
      * @param pointcutDef the pointcut definition
      */
-    public void addPointcut(final PointcutDefinition pointcutDef)
-    {
+    public void addPointcut(final PointcutDefinition pointcutDef) {
         m_pointcutDefs.add(pointcutDef);
     }
 
@@ -277,8 +250,7 @@ public class AspectDefinition
      *
      * @return the pointcuts
      */
-    public Collection getPointcuts()
-    {
+    public Collection getPointcuts() {
         return m_pointcutDefs;
     }
 
@@ -288,29 +260,23 @@ public class AspectDefinition
      * @param pointcutName the pointcut name
      * @return the pointcut definition
      */
-    public PointcutDefinition getPointcutDef(final String pointcutName)
-    {
-        for (Iterator it = m_pointcutDefs.iterator(); it.hasNext();)
-        {
-            PointcutDefinition pointcutDef = (PointcutDefinition) it.next();
-
-            if (pointcutDef.getName().equals(pointcutName))
-            {
+    public PointcutDefinition getPointcutDef(final String pointcutName) {
+        for (Iterator it = m_pointcutDefs.iterator(); it.hasNext();) {
+            PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
+            if (pointcutDef.getName().equals(pointcutName)) {
                 return pointcutDef;
             }
         }
-
         return null;
     }
 
     /**
      * Adds a new parameter to the advice.
      *
-     * @param name  the name of the parameter
+     * @param name the name of the parameter
      * @param value the value for the parameter
      */
-    public void addParameter(final String name, final String value)
-    {
+    public void addParameter(final String name, final String value) {
         m_parameters.put(name, value);
     }
 
@@ -319,25 +285,40 @@ public class AspectDefinition
      *
      * @return the parameters
      */
-    public Map getParameters()
-    {
+    public Map getParameters() {
         return m_parameters;
+    }
+
+    /**
+     * Returns a list with the controllers.
+     *
+     * @return the controllers
+     */
+    public Collection getControllers() {
+        return m_controllerDefs.values();
+    }
+
+    /**
+     * Adds a new controller definition.
+     *
+     * @param controllerDef a controller definition
+     */
+    public void addController(final ControllerDefinition controllerDef) {
+        m_controllerDefs.put(controllerDef.getExpression(), controllerDef);
     }
 
     /**
      * Returns all the advices for this aspect.
      *
-     * @return all the advices
      * @TODO: gets sorted every time, have a flag?
+     *
+     * @return all the advices
      */
-    public List getAllAdvices()
-    {
+    public List getAllAdvices() {
         final List allAdvices = new ArrayList();
-
         allAdvices.addAll(m_aroundAdvices);
         allAdvices.addAll(m_beforeAdvices);
         allAdvices.addAll(m_afterAdvices);
-
         return sortAdvices(allAdvices);
     }
 
@@ -347,23 +328,16 @@ public class AspectDefinition
      * @param advices a list with the advices to sort
      * @return a sorted list with the advices
      */
-    public static List sortAdvices(final List advices)
-    {
-        Collections.sort(advices,
-            new Comparator()
-            {
-                private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
-
-                public int compare(final Object obj1, final Object obj2)
-                {
-                    AdviceDefinition advice1 = (AdviceDefinition) obj1;
-                    AdviceDefinition advice2 = (AdviceDefinition) obj2;
-
-                    return m_comparator.compare(advice1.getMethod(),
-                        advice2.getMethod());
-                }
-            });
-
+    public static List sortAdvices(final List advices) {
+        Collections.sort(advices, new Comparator() {
+            private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
+            public int compare(final Object obj1, final Object obj2) {
+                AdviceDefinition advice1 = (AdviceDefinition)obj1;
+                AdviceDefinition advice2 = (AdviceDefinition)obj2;
+                return m_comparator.compare(advice1.getMethod(), advice2.getMethod());
+            }
+        });
         return advices;
     }
 }
+

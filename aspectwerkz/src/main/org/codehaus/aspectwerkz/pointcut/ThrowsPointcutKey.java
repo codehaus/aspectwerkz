@@ -1,16 +1,28 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.pointcut;
 
 /**
- * Key class for the throws pointcut holds the method name A the exception name.
+ * Key class for the throws pointcut holds the method name and the exception name.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: ThrowsPointcutKey.java,v 1.1.1.1 2003-05-11 15:14:54 jboner Exp $
  */
 public class ThrowsPointcutKey {
 
@@ -25,12 +37,13 @@ public class ThrowsPointcutKey {
     private final String m_exceptionName;
 
     /**
-     * Sets the method name A the exception name.
+     * Sets the method name and the exception name.
      *
      * @param methodName
      * @param exceptionName
      */
-    public ThrowsPointcutKey(final String methodName, final String exceptionName) {
+    public ThrowsPointcutKey(final String methodName,
+                             final String exceptionName) {
         if (methodName == null) throw new IllegalArgumentException("method name can not be null");
         if (exceptionName == null) throw new IllegalArgumentException("exception name can not be null");
         m_methodName = methodName;

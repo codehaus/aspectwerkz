@@ -1,33 +1,39 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz;
 
 import java.util.Comparator;
+import java.util.StringTokenizer;
 import java.lang.reflect.Method;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.TypeConverter;
-import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
 
 /**
  * Compares Methods. To be used when sorting methods.
  * Based on code by Bob Lee (crazybob@crazybob.org)
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: MethodComparator.java,v 1.1.1.1 2003-05-11 15:13:33 jboner Exp $
  */
 public final class MethodComparator implements java.util.Comparator {
-
-    /**
-     * Post fix for arguments array type
-     */
-    private final static String ARRAY_POSTFIX = "[]";
 
     /**
      * Defines the type of comparator.
@@ -101,22 +107,17 @@ public final class MethodComparator implements java.util.Comparator {
             if (args1.length < args2.length) return -1;
             if (args1.length > args2.length) return 1;
             for (int i = 0; i < args1.length; i++) {
-                //handles array types - AW-104
-                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
+                int result = args1[i].getName().compareTo(args2[i].getName());
                 if (result != 0) return result;
             }
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
-        java.lang.System.err.println(m1.getName());
-        java.lang.System.err.println(m2.getName());
         throw new Error("should be unreachable");
     }
 
     /**
      * Compares two prefixed methods.
-     * Assumes the the prefixed methods looks like this: "somePrefix SEP methodName SEP"
      *
      * @param m1
      * @param m2
@@ -126,12 +127,17 @@ public final class MethodComparator implements java.util.Comparator {
         try {
             if (m1.equals(m2)) return 0;
 
-            // compare only the original method names, i.e. remove the prefix and suffix
-            final String[] m1Tokens = Strings.splitString(m1.getName(), TransformationUtil.DELIMITER);
-            final String[] m2Tokens = Strings.splitString(m2.getName(), TransformationUtil.DELIMITER);
+            // compare only the original method names, i.e. remove the
+            // prefix and suffix
+            final StringTokenizer m1Tokenizer = new StringTokenizer(
+                    m1.getName(), TransformationUtil.DELIMITER);
+            final StringTokenizer m2Tokenizer = new StringTokenizer(
+                    m2.getName(), TransformationUtil.DELIMITER);
+            m1Tokenizer.nextToken();
+            m2Tokenizer.nextToken();
 
-            final String m1Name = m1Tokens[1];
-            final String m2Name = m2Tokens[1];
+            final String m1Name = m1Tokenizer.nextToken();
+            final String m2Name = m2Tokenizer.nextToken();
 
             if (!m1Name.equals(m2Name)) {
                 return m1Name.compareTo(m2Name);
@@ -141,16 +147,12 @@ public final class MethodComparator implements java.util.Comparator {
             if (args1.length < args2.length) return -1;
             if (args1.length > args2.length) return 1;
             for (int i = 0; i < args1.length; i++) {
-                //handles array types - AW-104
-                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
+                int result = args1[i].getName().compareTo(args2[i].getName());
                 if (result != 0) return result;
             }
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
-        java.lang.System.err.println(m1.getName());
-        java.lang.System.err.println(m2.getName());
         throw new Error("should be unreachable");
     }
 
@@ -180,12 +182,9 @@ public final class MethodComparator implements java.util.Comparator {
                 int result = args1[i].compareTo(args2[i]);
                 if (result != 0) return result;
             }
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
-        java.lang.System.err.println(m1.getName());
-        java.lang.System.err.println(m2.getName());
         throw new Error("should be unreachable");
     }
 
@@ -197,5 +196,4 @@ public final class MethodComparator implements java.util.Comparator {
     private MethodComparator(final int type) {
         m_type = type;
     }
-
 }

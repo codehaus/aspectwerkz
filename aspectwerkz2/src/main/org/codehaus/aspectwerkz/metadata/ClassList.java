@@ -2,22 +2,21 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
-import java.io.Serializable;
-
 import java.util.Collection;
+import java.io.Serializable;
 
 /**
  * A list of all the possible target classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ClassList implements Serializable
-{
+public class ClassList implements Serializable {
+
     /**
      * List with all the possible target classes.
      */
@@ -28,8 +27,7 @@ public class ClassList implements Serializable
      *
      * @return the classes
      */
-    public Collection getClasses()
-    {
+    public Collection getClasses() {
         return m_classes;
     }
 
@@ -38,8 +36,7 @@ public class ClassList implements Serializable
      *
      * @param classes the classes to append
      */
-    public void setClasses(final Collection classes)
-    {
+    public void setClasses(final Collection classes) {
         m_classes = classes;
     }
 }

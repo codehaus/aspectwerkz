@@ -1,49 +1,50 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.pointcut;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-import java.io.ObjectInputStream;
 
-import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.NameIndexTuple;
-import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
 
 /**
  * Abstract implementation of the pointcut concept.
  * I.e. an abstraction of a well defined point of execution in the program.<br/>
- * Could matches one or many as long at it is well defined.<br/>
+ * Could match one or many as long at it is well defined.<br/>
  * Stores the advices for the specific pointcut.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: AbstractPointcut.java,v 1.1.1.1 2003-05-11 15:14:49 jboner Exp $
  */
-public abstract class AbstractPointcut {
+public abstract class AbstractPointcut implements Pointcut {
 
     /**
-     * The expression for the pointcut.
+     * The name of the pointcut.
      */
-    protected Expression m_expression;
+    protected final String m_name;
 
     /**
-     * The cflow pointcut expression.
+     * Defines if the the pointcut is thread-safe or not.
      */
-    protected String m_cflowExpression;
-
-    /**
-     * The pointcut definitions referenced in the m_expression.
-     * Mapped to the name of the pointcut definition.
-     */
-    protected Map m_pointcutPatterns = new HashMap();
+    protected final boolean m_isThreadSafe;
 
     /**
      * The names of the advices.
@@ -53,24 +54,28 @@ public abstract class AbstractPointcut {
     /**
      * The indexes of the advices.
      */
-    protected IndexTuple[] m_indexes = new IndexTuple[0];
-
-    /**
-     * The UUID for the AspectWerkz system.
-     */
-    protected String m_uuid;
+    protected int[] m_indexes = new int[0];
 
     /**
      * Creates a new pointcut.
      *
-     * @param uuid the UUID for the AspectWerkz system
-     * @param expression the pattern for the pointcut
+     * @param name the name of the pointcut
      */
-    public AbstractPointcut(final String uuid, final Expression expression) {
-        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        if (expression == null) throw new IllegalArgumentException("expression be null");
-        m_uuid = uuid;
-        m_expression = expression;
+    public AbstractPointcut(final String name) {
+        m_name = name;
+        m_isThreadSafe = false;
+    }
+
+    /**
+     * Creates a new pointcut.
+     *
+     * @param name the name of the pointcut
+     * @param isThreadSafe the thread safe type
+     */
+    public AbstractPointcut(final String name, final boolean isThreadSafe) {
+        if (name == null || name.trim().length() == 0) throw new IllegalArgumentException("name of pointcut can not be null or an empty string");
+        m_name = name;
+        m_isThreadSafe = isThreadSafe;
     }
 
     /**
@@ -91,9 +96,9 @@ public abstract class AbstractPointcut {
                 System.arraycopy(tmp, 0, m_names, 0, tmp.length);
 
                 // update the indexes
-                m_indexes = new IndexTuple[m_names.length];
+                m_indexes = new int[m_names.length];
                 for (int i = 0, j = m_names.length; i < j; i++) {
-                    m_indexes[i] = SystemLoader.getSystem(m_uuid).getAdviceIndexFor(m_names[i]);
+                    m_indexes[i] = AspectWerkz.getAdviceIndexFor(m_names[i]);
                 }
             }
         }
@@ -107,7 +112,7 @@ public abstract class AbstractPointcut {
      */
     public void addAdvices(final String[] advicesToAdd) {
         for (int i = 0; i < advicesToAdd.length; i++) {
-            if (advicesToAdd[i] == null || advicesToAdd[i].trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+            if (advicesToAdd[i] == null || advicesToAdd[i].trim().length() == 0) throw new IllegalArgumentException("advice name to add can not be null or an empty string");
         }
         synchronized (m_names) {
             synchronized (m_indexes) {
@@ -121,9 +126,9 @@ public abstract class AbstractPointcut {
                 m_names = new String[tmp.length];
                 System.arraycopy(tmp, 0, m_names, 0, tmp.length);
 
-                m_indexes = new IndexTuple[m_names.length];
+                m_indexes = new int[m_names.length];
                 for (int j = 0; j < m_names.length; j++) {
-                    m_indexes[j] = SystemLoader.getSystem(m_uuid).getAdviceIndexFor(m_names[j]);
+                    m_indexes[j] = AspectWerkz.getAdviceIndexFor(m_names[j]);
                 }
             }
         }
@@ -135,7 +140,7 @@ public abstract class AbstractPointcut {
      * @param advice the name of the advice to remove
      */
     public void removeAdvice(final String advice) {
-        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
+        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("advice name to remove can not be null or an empty string");
         synchronized (m_names) {
             synchronized (m_indexes) {
                 int index = -1;
@@ -145,7 +150,7 @@ public abstract class AbstractPointcut {
                         break;
                     }
                 }
-                if (index == -1) throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
+                if (index == -1) throw new RuntimeException("no such advice");
 
                 final String[] names = new String[m_names.length - 1];
                 int j, k;
@@ -159,7 +164,7 @@ public abstract class AbstractPointcut {
                 m_names = new String[names.length];
                 System.arraycopy(names, 0, m_names, 0, names.length);
 
-                final IndexTuple[] indexes = new IndexTuple[m_indexes.length - 1];
+                final int[] indexes = new int[m_indexes.length - 1];
                 for (j = 0, k = 0; j < index; j++, k++) {
                     indexes[j] = m_indexes[j];
                 }
@@ -167,43 +172,10 @@ public abstract class AbstractPointcut {
                 for (; j < m_indexes.length; j++, k++) {
                     indexes[k] = m_indexes[j];
                 }
-                m_indexes = new IndexTuple[indexes.length];
+                m_indexes = new int[indexes.length];
                 System.arraycopy(indexes, 0, m_indexes, 0, indexes.length);
             }
         }
-    }
-
-    /**
-     * Checks if the pointcuts has a certain advice.
-     *
-     * @param advice the advice to check for existence
-     * @return boolean
-     */
-    public boolean hasAdvice(final String advice) {
-        for (int i = 0; i < m_names.length; i++) {
-            if (m_names[i].equals(advice)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Returns the cflow expression.
-     *
-     * @return the cflow expression
-     */
-    public String getCFlowExpression() {
-        return m_cflowExpression;
-    }
-
-    /**
-     * Sets the cflow expression.
-     *
-     * @param cflowExpression the cflow expression
-     */
-    public void setCFlowExpression(final String cflowExpression) {
-        m_cflowExpression = cflowExpression;
     }
 
     /**
@@ -219,7 +191,7 @@ public abstract class AbstractPointcut {
             synchronized (m_names) {
                 final List advices = new ArrayList(m_names.length);
                 for (int i = 0; i < m_names.length; i++) {
-                    advices.add(new NameIndexTuple(m_names[i], m_indexes[i]));
+                    advices.add(new AdviceIndexTuple(m_names[i], m_indexes[i]));
                 }
                 return advices;
             }
@@ -237,11 +209,11 @@ public abstract class AbstractPointcut {
         synchronized (m_indexes) {
             synchronized (m_names) {
                 m_names = new String[advices.size()];
-                m_indexes = new IndexTuple[advices.size()];
+                m_indexes = new int[advices.size()];
                 int i = 0;
                 for (Iterator it = advices.iterator(); it.hasNext(); i++) {
                     try {
-                        NameIndexTuple tuple = (NameIndexTuple)it.next();
+                        AdviceIndexTuple tuple = (AdviceIndexTuple)it.next();
                         m_names[i] = tuple.getName();
                         m_indexes[i] = tuple.getIndex();
                     }
@@ -258,7 +230,7 @@ public abstract class AbstractPointcut {
      *
      * @return the advice index
      */
-    public IndexTuple getAdviceIndex(final int index) {
+    public int getAdviceIndex(final int index) {
         return m_indexes[index];
     }
 
@@ -267,7 +239,7 @@ public abstract class AbstractPointcut {
      *
      * @return the advices
      */
-    public IndexTuple[] getAdviceIndexes() {
+    public int[] getAdviceIndexes() {
         return m_indexes;
     }
 
@@ -281,28 +253,50 @@ public abstract class AbstractPointcut {
     }
 
     /**
-     * Returns the expression for the pointcut.
+     * Returns the name of the pointcut.
      *
-     * @return the expression
+     * @return the name
      */
-    public Expression getExpression() {
-        return m_expression;
+    public String getName() {
+        return m_name;
     }
 
     /**
-     * Provides custom deserialization.
+     * Checks if the pointcut is thread safe.
      *
-     * @param stream the object input stream containing the serialized object
-     * @throws java.lang.Exception in case of failure
+     * @return boolean
      */
-    private void readObject(final ObjectInputStream stream) throws Exception {
-        ObjectInputStream.GetField fields = stream.readFields();
-
-        m_expression = (Expression)fields.get("m_expression", null);
-        m_pointcutPatterns = (Map)fields.get("m_pointcutPatterns", null);
-        m_names = (String[])fields.get("m_names", null);
-        m_indexes = (IndexTuple[])fields.get("m_indexes", null);
-        m_uuid = (String)fields.get("m_uuid", null);
+    public boolean isThreadSafe() {
+        return m_isThreadSafe;
     }
-}
 
+    // --- over-ridden methods ---
+
+//    public String toString() {
+//        return "["
+//                + super.toString()
+//                + ": "
+//                + m_name
+//                + "," + m_names
+//                + "," + m_jispIndexes
+//                + "]";
+//    }
+//
+//    public int hashCode() {
+//        int result = 17;
+//        result = 37 * result + hashCodeOrZeroIfNull(m_name);
+//        result = 37 * result + hashCodeOrZeroIfNull(m_names);
+//        result = 37 * result + hashCodeOrZeroIfNull(m_jispIndexes);
+//        return result;
+//    }
+//
+//    protected static int hashCodeOrZeroIfNull(final Object o) {
+//        if (null == o) return 19;
+//        return o.hashCode();
+//    }
+//
+//    protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
+//        if (null == o1) return (null == o2);
+//        return o1.equals(o2);
+//    }
+}

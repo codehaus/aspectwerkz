@@ -1,76 +1,64 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.joinpoint;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.util.StringTokenizer;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Collection;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.io.ObjectInputStream;
+import java.util.ArrayList;
 
-import org.codehaus.aspectwerkz.AspectMetaData;
-import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.System;
-import org.codehaus.aspectwerkz.util.Strings;
-import org.codehaus.aspectwerkz.util.Util;
-import org.codehaus.aspectwerkz.joinpoint.control.JoinPointController;
-import org.codehaus.aspectwerkz.joinpoint.control.ControllerFactory;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.MetaData;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
+import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.Aspect;
+import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
  * Matches well defined point of execution in the program where a
  * method is executed.<br/>
  * Stores meta data from the join point.
- * I.e. a reference to original object an method, the parameters to A
+ * I.e. a reference to original object an method, the parameters to and
  * the result from the original method invocation etc.<br/>
  * Handles the invocation of the advices added to the join point.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: MethodJoinPoint.java,v 1.1.1.1 2003-05-11 15:14:30 jboner Exp $
  */
-public abstract class MethodJoinPoint extends AbstractJoinPoint {
-
-    /**
-     * The AspectWerkz system for this join point.
-     */
-    protected transient System m_system;
+public abstract class MethodJoinPoint implements JoinPoint {
 
     /**
      * The method pointcut.
      */
-    protected ExecutionPointcut[] m_pointcuts;
-
-    /**
-     * Meta-data for the class.
-     */
-    protected ClassMetaData m_classMetaData;
+    protected MethodPointcut[] m_pointcuts;
 
     /**
      * Meta-data for the method.
      */
-    protected MethodMetaData m_methodMetaData;
+    protected MethodMetaData m_metadata;
 
     /**
      * The id of the method for this join point.
      */
-    protected int m_methodId;
-
-    /**
-     * The target object's class.
-     */
-    protected Class m_targetClass;
+    protected final int m_methodId;
 
     /**
      * A reference to the original method.
@@ -78,14 +66,9 @@ public abstract class MethodJoinPoint extends AbstractJoinPoint {
     protected Method m_originalMethod;
 
     /**
-     * A reference to the proxy method.
-     */
-    protected Method m_proxyMethod;
-
-    /**
      * The result from the method invocation.
      */
-    protected Object m_result = null;
+    protected Object m_result;
 
     /**
      * The parameters to the method invocation.
@@ -93,151 +76,56 @@ public abstract class MethodJoinPoint extends AbstractJoinPoint {
     protected Object[] m_parameters = new Object[0];
 
     /**
-     * The UUID for the AspectWerkz system to use.
+     * The index of the current advice.
      */
-    protected String m_uuid;
+    protected int m_currentAdviceIndex = -1;
 
     /**
-     * Caches the throws pointcuts that are created at runtime.
+     * The index of the current pointcut.
      */
-    protected Map m_throwsJoinPointCache = new WeakHashMap();
-
-    /**
-     * The cflow pointcuts that this join point needs to be part of to execute its advices.
-     */
-    protected List m_cflowExpressions;
-
-    /**
-     * The controller object that controls the execution of advices for the join point.
-     */
-    protected JoinPointController m_controller = null;
-
-    /**
-     * Checks that the method invocation chain is not reentrant.
-     */
-    protected boolean m_reentrancyCheck = false; // must be set to false as initial value
-
-    /**
-     * Marks the join point as non-reentrant.
-     */
-    protected boolean m_isNonReentrant = false;
+    protected int m_currentPointcutIndex = 0;
 
     /**
      * Creates a new MethodJoinPoint object.
      *
-     * @param uuid the UUID for the AspectWerkz system to use
      * @param methodId the id of the method
-     * @param controllerClass the class name of the controller class to use
      */
-    public MethodJoinPoint(final String uuid, final int methodId, final String controllerClass) {
-        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
+    public MethodJoinPoint(final int methodId) {
         if (methodId < 0) throw new IllegalArgumentException("method id can not be less that zero");
-
-        m_system = SystemLoader.getSystem(uuid);
-        m_system.initialize();
-        m_uuid = uuid;
+        AspectWerkz.initialize();
         m_methodId = methodId;
-
-        m_controller = ControllerFactory.createController(controllerClass);
     }
 
     /**
-     * Returns the AspectWerkz system.
+     * To be called instead of proceed() when a new thread is spawned.
+     * Otherwise the result is unpredicable.
      *
-     * @TODO: should return a list with systems
-     *
-     * @return the system
+     * @return the result from the next invocation
+     * @throws Throwable
      */
-    public System getSystem() {
-        return m_system;
-    }
+    public abstract Object proceedInNewThread() throws Throwable;
 
     /**
-     * Sets the method pointcuts (overwrites the old ones).
+     * Invokes the next advice in the chain and when it reaches the end
+     * of the chain the original method.
      *
-     * @param pointcuts the method pointcuts
+     * @return the result from the invocation
      */
-    public void setPointcuts(final ExecutionPointcut[] pointcuts) {
-        m_pointcuts = pointcuts;
-    }
+    public abstract Object proceed() throws Throwable;
 
     /**
-     * Returns the method pointcuts.
+     * Returns the original object.
      *
-     * @return the method pointcuts
+     * @return the original object
      */
-    public ExecutionPointcut[] getPointcuts() {
-        return m_pointcuts;
-    }
+    public abstract Object getTargetObject();
 
     /**
-     * Returns the cflow expressions.
+     * Returns the original class.
      *
-     * @return the cflow expressions
+     * @return the original class
      */
-    public List getCFlowExpressions() {
-        return m_cflowExpressions;
-    }
-
-    /**
-     * Sets the cflow expressions (overwrites the old ones)
-     * @param expressions the cflow expressions
-     */
-    public void setCFlowExpressions(final List expressions) {
-        m_cflowExpressions = expressions;
-    }
-
-    /**
-     * Returns the method meta-data.
-     *
-     * @return the method meta-data
-     */
-    public MethodMetaData getMethodMetaData() {
-        return m_methodMetaData;
-    }
-
-    /**
-     * Returns the internal method id.
-     *
-     * @return the internal method id
-     */
-    public int getMethodId() {
-        return m_methodId;
-    }
-
-    /**
-     * Returns the original method.
-     *
-     * @return the original method
-     */
-    public Method getOriginalMethod() {
-        return m_originalMethod;
-    }
-
-    /**
-     * Returns the UUID for the AspectWerkz system.
-     *
-     * @return the UUID
-     */
-    public String getUuid() {
-        return m_uuid;
-    }
-
-    /**
-     * Returns the target instance.
-     *
-     * @return the target instance
-     */
-    public abstract Object getTargetInstance();
-
-    /**
-     * Returns the target class.
-     *
-     * @return the target class
-     */
-    public Class getTargetClass() {
-        return m_targetClass;
-    }
+    public abstract Class getTargetClass();
 
     /**
      * Returns the original method.
@@ -249,26 +137,16 @@ public abstract class MethodJoinPoint extends AbstractJoinPoint {
     }
 
     /**
-     * Returns the proxy method.
-     *
-     * @return the proxy method
-     */
-    public Method getProxyMethod() {
-        return m_proxyMethod;
-    }
-
-    /**
      * Returns the method name of the original invocation.
      *
      * @return the method name
      */
     public String getMethodName() {
-        // grab the original method name, ex: "__originalMethod SEP <nameToExtract>  SEP 3"
-        final String[] tokens = Strings.splitString(
-                m_originalMethod.getName(),
-                TransformationUtil.DELIMITER
-        );
-        return tokens[1];
+        // grab the original method name, ex: __originalMethod$<nameToExtract>$3
+        final StringTokenizer tokenizer = new StringTokenizer(
+                m_originalMethod.getName(), TransformationUtil.DELIMITER);
+        tokenizer.nextToken();
+        return tokenizer.nextToken();
     }
 
     /**
@@ -327,132 +205,63 @@ public abstract class MethodJoinPoint extends AbstractJoinPoint {
     }
 
     /**
-     * Walks through the pointcuts and invokes all its advices. When the last
-     * advice of the last pointcut has been invoked, the original method is
-     * invoked. Is called recursively.
-     *
-     * @return the result from the next invocation
-     * @throws Throwable
-     */
-    public Object proceed() throws Throwable {
-        return m_controller.proceed(this);
-    }
-
-    /**
-     * To be called instead of proceed() when a new thread is spawned.
-     * Otherwise the result is unpredicable.
-     *
-     * @return the result from the next invocation
-     * @throws Throwable
-     */
-    public Object proceedInNewThread() throws Throwable {
-        return deepCopy().proceed();
-    }
-
-    /**
-     * Makes a deep copy of the join point.
-     *
-     * @return the clone of the join point
-     */
-    protected abstract MethodJoinPoint deepCopy();
-
-    /**
-     * Invokes the origignal method.
-     *
-     * @return the result from the method invocation
-     * @throws Throwable the exception from the original method
-     */
-    public Object invokeOriginalMethod() throws Throwable {
-        if (m_isNonReentrant) {
-            if (m_reentrancyCheck) return m_result;
-            m_reentrancyCheck = true;
-        }
-        try {
-            m_result = m_originalMethod.invoke(getTargetInstance(), m_parameters);
-        }
-        catch (InvocationTargetException e) {
-            m_result = handleException(e);
-        }
-        return m_result;
-    }
-
-    /**
-     * Creates meta-data for the join point.
-     */
-    protected void createMetaData() {
-        m_classMetaData = ReflectionMetaDataMaker.createClassMetaData(getTargetClass());
-        m_methodMetaData = ReflectionMetaDataMaker.createMethodMetaData(
-                getMethodName(),
-                getParameterTypes(),
-                getReturnType()
-        );
-    }
-
-    /**
      * We are at this point with no poincuts defined => the method has
      * a ThrowsJoinPoint defined at this method, since the method is
      * already advised, create a new method pointcut for this method.
      */
     protected void handleThrowsPointcut() {
-        List pointcuts = m_system.getExecutionPointcuts(m_classMetaData, m_methodMetaData);
-        m_pointcuts = new ExecutionPointcut[pointcuts.size()];
+        List pointcuts = new ArrayList();
+        List aspects = AspectWerkz.getAspects(getTargetClass().getName());
+
+        for (Iterator it = aspects.iterator(); it.hasNext();) {
+            Aspect aspect = (Aspect)it.next();
+            if (aspect.hasThrowsPointcut(m_metadata)) {
+                pointcuts.add(aspect.createMethodPointcut(
+                        createMethodPattern()));
+                break;
+            }
+        }
+
+        m_pointcuts = new MethodPointcut[pointcuts.size()];
         int i = 0;
         for (Iterator it = pointcuts.iterator(); it.hasNext(); i++) {
-            m_pointcuts[i] = (ExecutionPointcut)it.next();
+            m_pointcuts[i] = (MethodPointcut)it.next();
         }
     }
 
     /**
-     * Handles the exceptions. If the method is registered in a ThrowsPointcut
-     * redirect to the ThrowsJoinPoint in question, otherwise just get the
-     * original exception, fake the stacktrace A rethrow it.
-     * Caches the throws join points that are created at runtime.
+     * Handles the exceptions.
+     * If the method is registered in a ThrowsPointcut redirect to the
+     * ThrowsJoinPoint in question, otherwise just get the original exception,
+     * fake the stacktrace and rethrow it.
      *
      * @param e the wrapped exception
      * @throws Throwable the original exception
      */
-    protected Object handleException(final InvocationTargetException e) throws Throwable {
+    protected void handleException(final InvocationTargetException e)
+            throws Throwable {
 
-        final Throwable cause = e.getTargetException();
-
-        // take a look in the cache first
-        Integer hash = calculateHash(
-                m_targetClass.getName(),
-                m_methodMetaData,
-                cause.getClass().getName()
-        );
-
-        ThrowsJoinPoint joinPoint = (ThrowsJoinPoint)m_throwsJoinPointCache.get(hash);
-        if (joinPoint != null) {
-            joinPoint.proceed();
-        }
-
+        final Throwable cause = e.getCause();
+        List aspects = AspectWerkz.getAspects(getTargetClass().getName());
         boolean hasThrowsPointcut = false;
-        Collection aspects = m_system.getAspectsMetaData();
+
         for (Iterator it = aspects.iterator(); it.hasNext();) {
-            AspectMetaData aspect = (AspectMetaData)it.next();
+            Aspect aspect = (Aspect)it.next();
             if (aspect.hasThrowsPointcut(
-                    m_classMetaData,
-                    m_methodMetaData,
+                    getMethodName(),
                     cause.getClass().getName())) {
                 hasThrowsPointcut = true;
                 break;
             }
         }
-        Object result = null;
         if (hasThrowsPointcut) {
-            // create a new join point A put it in the cache
-            synchronized (m_throwsJoinPointCache) {
-                joinPoint = new ThrowsJoinPoint(m_uuid, this, cause);
-                m_throwsJoinPointCache.put(hash, joinPoint);
-            }
-            result = joinPoint.proceed();
+            final ThrowsJoinPoint joinPoint = new ThrowsJoinPoint(this, cause);
+            joinPoint.proceed();
         }
         else {
-            Util.fakeStackTrace(cause, getTargetClass().getName());
+            AspectWerkz.fakeStackTrace(cause, getTargetClass().getName());
             throw cause;
         }
-        return result;
     }
 
     /**
@@ -483,7 +292,7 @@ public abstract class MethodJoinPoint extends AbstractJoinPoint {
      *
      * @return the message
      */
-    public String createAdviceNotCorrectlyMappedMessage() {
+    protected String createAdviceNotCorrectlyMappedMessage() {
         StringBuffer cause = new StringBuffer();
         cause.append("around advices for ");
         cause.append(getTargetClass().getName());
@@ -491,49 +300,6 @@ public abstract class MethodJoinPoint extends AbstractJoinPoint {
         cause.append(getMethodName());
         cause.append(" are not correctly mapped");
         return cause.toString();
-    }
-
-    /**
-     * Provides custom deserialization.
-     *
-     * @param stream the object input stream containing the serialized object
-     * @throws java.lang.Exception in case of failure
-     */
-    private void readObject(final ObjectInputStream stream) throws Exception {
-        ObjectInputStream.GetField fields = stream.readFields();
-        m_uuid = (String)fields.get("m_uuid", null);
-        m_methodId = fields.get("m_methodId", -1);
-        m_targetClass = (Class)fields.get("m_targetClass", null);
-        m_originalMethod = (Method)fields.get("m_originalMethod", null);
-        m_result = fields.get("m_result", null);
-        m_parameters = (Object[])fields.get("m_parameters", null);
-        m_pointcuts = (ExecutionPointcut[])fields.get("m_pointcuts", null);
-        m_controller = (JoinPointController)fields.get("m_controller", null);
-        m_classMetaData = (ClassMetaData)fields.get("m_classMetaData", null);
-        m_methodMetaData = (MethodMetaData)fields.get("m_fieldMetaData", null);
-        m_reentrancyCheck = fields.get("m_reentrancyCheck", false);
-        m_system = SystemLoader.getSystem(m_uuid);
-        m_system.initialize();
-    }
-
-    /**
-     * Calculates the hash for the class name, the meta-data A
-     * the exception class name.
-     *
-     * @param className the class name
-     * @param metaData the meta-data
-     * @param exceptionClassName the class name of the exception
-     * @return the hash
-     */
-    protected Integer calculateHash(final String className,
-                                    final MetaData metaData,
-                                    final String exceptionClassName) {
-        int hash = 17;
-        hash = 37 * hash + className.hashCode();
-        hash = 37 * hash + metaData.hashCode();
-        hash = 37 * hash + exceptionClassName.hashCode();
-        Integer hashKey = new Integer(hash);
-        return hashKey;
     }
 
     // --- over-ridden methods ---
@@ -548,28 +314,26 @@ public abstract class MethodJoinPoint extends AbstractJoinPoint {
                 + super.toString()
                 + ": "
                 + m_methodId
-                + "," + m_targetClass
                 + "," + m_originalMethod
                 + "," + m_parameters
                 + "," + m_result
-                + "," + m_classMetaData
-                + "," + m_methodMetaData
+                + "," + m_metadata
                 + "," + m_pointcuts
-                + "," + m_controller
+                + "," + m_currentAdviceIndex
+                + "," + m_currentPointcutIndex
                 + "]";
     }
 
     public int hashCode() {
         int result = 17;
-        result = 37 * result + hashCodeOrZeroIfNull(m_targetClass);
         result = 37 * result + hashCodeOrZeroIfNull(m_originalMethod);
         result = 37 * result + hashCodeOrZeroIfNull(m_parameters);
         result = 37 * result + hashCodeOrZeroIfNull(m_result);
-        result = 37 * result + hashCodeOrZeroIfNull(m_classMetaData);
-        result = 37 * result + hashCodeOrZeroIfNull(m_methodMetaData);
+        result = 37 * result + hashCodeOrZeroIfNull(m_metadata);
         result = 37 * result + hashCodeOrZeroIfNull(m_pointcuts);
-        result = 37 * result + hashCodeOrZeroIfNull(m_controller);
         result = 37 * result + m_methodId;
+        result = 37 * result + m_currentAdviceIndex;
+        result = 37 * result + m_currentPointcutIndex;
         return result;
     }
 
@@ -578,4 +342,3 @@ public abstract class MethodJoinPoint extends AbstractJoinPoint {
         return o.hashCode();
     }
 }
-

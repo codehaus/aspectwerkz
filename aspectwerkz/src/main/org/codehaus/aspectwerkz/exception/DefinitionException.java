@@ -1,84 +1,37 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.exception;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-
 /**
- * Thrown when error in definition.
+ * Thrown when no aspectwerkz definition file or class could be found.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:vmassol@apache.org">Vincent Massol</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: DefinitionException.java,v 1.1.1.1 2003-05-11 15:14:17 jboner Exp $
  */
 public class DefinitionException extends RuntimeException {
 
     /**
-     * Original exception which caused this exception.
-     */
-    private Throwable originalException;
-
-    /**
-     * Sets the message for the exception.
+     * Sets a message.
      *
      * @param message the message
      */
     public DefinitionException(final String message) {
         super(message);
     }
-
-    /**
-     * Sets the message for the exception and the original exception being
-     * wrapped.
-     *
-     * @param message the detail of the error message
-     * @param throwable the original exception
-     */
-    public DefinitionException(String message, Throwable throwable)
-    {
-        super(message);
-        this.originalException = throwable;
-    }
-
-    /**
-     * Print the full stack trace, including the original exception.
-     */
-    public void printStackTrace() {
-
-        printStackTrace(System.err);
-    }
-
-    /**
-     * Print the full stack trace, including the original exception.
-     *
-     * @param ps the byte stream in which to print the stack trace
-     */
-    public void printStackTrace(PrintStream ps) {
-
-        super.printStackTrace(ps);
-
-        if (this.originalException != null) {
-            this.originalException.printStackTrace(ps);
-        }
-    }
-
-    /**
-     * Print the full stack trace, including the original exception.
-     *
-     * @param pw the character stream in which to print the stack trace
-     */
-    public void printStackTrace(PrintWriter pw) {
-
-        super.printStackTrace(pw);
-
-        if (this.originalException != null) {
-            this.originalException.printStackTrace(pw);
-        }
-    }
-
 }

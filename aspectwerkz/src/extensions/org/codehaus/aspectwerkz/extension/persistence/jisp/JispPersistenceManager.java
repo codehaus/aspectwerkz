@@ -1,10 +1,21 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.extension.persistence.jisp;
 
 import java.lang.reflect.Method;
@@ -47,7 +58,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 /**
  * An implementation of the PersistenceManager interface using JISP.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: JispPersistenceManager.java,v 1.1.1.1 2003-05-11 15:13:19 jboner Exp $
  */
 public class JispPersistenceManager
         extends AbstractPersistenceManager implements Serializable {
@@ -76,17 +88,17 @@ public class JispPersistenceManager
     /**
      * Holds the indexes for each persistent object.
      */
-    protected Map m_indexes = new HashMap();
+    protected final Map m_indexes = new HashMap();
 
     /**
      * Maps each index name to a the JISP object index.
      */
-    protected Map m_jispIndexes = new HashMap();
+    protected final Map m_jispIndexes = new HashMap();
 
     /**
      * Maps each index name to a the JISP object index type.
      */
-    protected Map m_jispIndexTypes = new HashMap();
+    protected final Map m_jispIndexTypes = new HashMap();
 
     /**
      * A list with the definitions for all the indexes added to
@@ -120,7 +132,7 @@ public class JispPersistenceManager
     protected boolean m_createNewDbOnStartup = false;
 
     /**
-     * Returns the one A only instance of the JispPersistenceManager.
+     * Returns the one and only instance of the JispPersistenceManager.
      * Singleton.
      *
      * @return the instance
@@ -131,7 +143,7 @@ public class JispPersistenceManager
 
     /**
      * Initializes the persistence manager.
-     * Creates the database A the indexes (BTree A Hash indexes).
+     * Creates the database and the indexes (BTree and Hash indexes).
      *
      * @param loader the classloader to use
      * @param definition the persistence definition
@@ -143,6 +155,8 @@ public class JispPersistenceManager
 
         m_loader = loader;
         m_definition = (PersistenceDefinition)definition;
+
+        advisePersistentObjects(m_definition);
 
         PersistenceManagerDefinition persistenceManagerDef = null;
         for (Iterator it = m_definition.getPersistenceManagers().iterator(); it.hasNext();) {
@@ -183,9 +197,9 @@ public class JispPersistenceManager
 
         loadDomainObjectConfigurations(m_definition);
 
-        m_indexes = Collections.unmodifiableMap(m_indexes);
-        m_jispIndexes = Collections.unmodifiableMap(m_jispIndexes);
-        m_jispIndexTypes = Collections.unmodifiableMap(m_jispIndexTypes);
+        Collections.unmodifiableMap(m_indexes);
+        Collections.unmodifiableMap(m_jispIndexes);
+        Collections.unmodifiableMap(m_jispIndexTypes);
 
         m_initialized = true;
     }
@@ -315,9 +329,9 @@ public class JispPersistenceManager
                                    final Object to) {
         if (notInitialized()) throw new IllegalStateException("persistence manager is not initialized");
         if (!(from instanceof Comparable) || !(to instanceof Comparable))
-            throw new RuntimeException("from A to index must implement the Comparable interface");
+            throw new RuntimeException("from and to index must implement the Comparable interface");
         if (!from.getClass().equals(to.getClass()))
-            throw new RuntimeException("from A to index must be of the same type");
+            throw new RuntimeException("from and to index must be of the same type");
 
         final List col = new ArrayList();
         final List keys = (List)m_indexes.get(klass.getName());
@@ -347,10 +361,10 @@ public class JispPersistenceManager
         final Class indexTypeTo = (Class)m_jispIndexTypes.get(indexNameTo);
 
         if (!(indexFrom instanceof BTreeIndex) || !(indexTo instanceof BTreeIndex)) {
-            throw new RuntimeException("from A to index must both be of type BTreeIndex");
+            throw new RuntimeException("from and to index must both be of type BTreeIndex");
         }
         if (!indexTypeFrom.equals(indexTypeTo)) {
-            throw new RuntimeException("from A to index must be of the same index type");
+            throw new RuntimeException("from and to index must be of the same index type");
         }
 
         try {
@@ -675,12 +689,12 @@ public class JispPersistenceManager
     /**
      * Returns the mapped JISP index type.
      *
-     * @todo support more JISP index types than String A Long
+     * @todo support more JISP index types than String and Long
      *
      * @param type the index type
      * @return the JISP index type
      */
-    protected static String getJispIndexType(final String type) {
+    protected String getJispIndexType(final String type) {
         final String indexType;
         if (type.equals("java.lang.String")) {
             indexType = "com.coyotegulch.jisp.StringKey32";

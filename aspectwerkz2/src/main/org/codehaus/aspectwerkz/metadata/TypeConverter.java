@@ -2,7 +2,7 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
@@ -14,21 +14,19 @@ import com.thoughtworks.qdox.model.Type;
  *
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
  */
-public class TypeConverter
-{
+public class TypeConverter {
+
     /**
      * Converts an array of Classes to their Java language declaration equivalents.
      *
      * @param types is the array of <code>Class</code> objects.
-     * @return an array of Strings representing the given types. For <code>null</code> types, this method returns
-     *         "void"s.
+     * @return an array of Strings representing the given types. For <code>null</code> types,
+     * this method returns "void"s.
      */
-    public static String[] convertTypeToJava(final Class[] types)
-    {
+    public static String[] convertTypeToJava(final Class[] types) {
         String[] parameterTypeNames = new String[types.length];
 
-        for (int i = 0; i < types.length; i++)
-        {
+        for (int i = 0; i < types.length; i++) {
             parameterTypeNames[i] = convertTypeToJava(types[i]);
         }
 
@@ -39,50 +37,40 @@ public class TypeConverter
      * Converts a Class to its Java language declaration equivalent.
      *
      * @param type is the <code>Class</code> object.
-     * @return a Strings representing the given types. For <code>null</code> type, this method returns "void".
+     * @return a Strings representing the given types. For <code>null</code> type,
+     * this method returns "void".
      */
-    public static String convertTypeToJava(final Class type)
-    {
+    public static String convertTypeToJava(final Class type) {
         String rv = null;
 
         // constructor return type can be null
-        if (type != null)
-        {
+        if (type != null) {
             StringBuffer dim = new StringBuffer();
             Class componentType = type.getComponentType();
 
             for (Class nestedType = type; nestedType.isArray();
-                nestedType = nestedType.getComponentType())
-            {
+                 nestedType = nestedType.getComponentType()) {
                 dim.append("[]");
             }
-
             // Found a component type => we had an array
-            if (dim.length() > 0)
-            {
+            if (dim.length() > 0) {
                 rv = componentType.getName() + dim;
             }
-            else
-            {
+            else {
                 rv = type.getName();
             }
         }
-        else
-        {
+        else {
             rv = "void";
         }
-
         return rv;
     }
 
-    public static String convertTypeToJava(final Type type)
-    {
+    public static String convertTypeToJava(final Type type) {
         StringBuffer dim = new StringBuffer();
 
-        if (type.isArray())
-        {
-            for (int i = type.getDimensions(); i > 0; --i)
-            {
+        if (type.isArray()) {
+            for (int i = type.getDimensions(); i > 0; --i) {
                 dim.append("[]");
             }
         }

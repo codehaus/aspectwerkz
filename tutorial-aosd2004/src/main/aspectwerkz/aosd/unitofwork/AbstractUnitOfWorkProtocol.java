@@ -2,15 +2,15 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license *
+ * The software in this package is published under the terms of the BSD-style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package aspectwerkz.aosd.unitofwork;
 
+import org.codehaus.aspectwerkz.attribdef.aspect.Aspect;
+import org.codehaus.aspectwerkz.attribdef.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.Signature;
-import org.codehaus.aspectwerkz.aspect.Aspect;
-import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
 
 import aspectwerkz.aosd.unitofwork.UnitOfWork;
 import aspectwerkz.aosd.transaction.TransactionManager;
@@ -77,11 +77,11 @@ public abstract class AbstractUnitOfWorkProtocol extends Aspect {
      */
     public void registerDirty(final JoinPoint joinPoint) throws Throwable {
         if (UnitOfWork.isInUnitOfWork()) {
-            Signature signature = joinPoint.getSignature();
+            FieldJoinPoint jp = (FieldJoinPoint)joinPoint;
             UnitOfWork unitOfWork = UnitOfWork.getCurrent();
             unitOfWork.registerDirty(
-                    joinPoint.getTargetInstance(),
-                    signature.getName()
+                    jp.getTargetInstance(),
+                    jp.getFieldName()
             );
         }
     }
@@ -95,14 +95,12 @@ public abstract class AbstractUnitOfWorkProtocol extends Aspect {
      * @Around transactionalMethods
      */
     public Object proceedInTransaction(final JoinPoint joinPoint) throws Throwable {
-//        System.out.println("AbstractUnitOfWorkProtocol.proceedInTransaction");
         if (UnitOfWork.isInUnitOfWork()) {
             return joinPoint.proceed(); // proceed in the current UnitOfWork
         }
         final UnitOfWork unitOfWork = UnitOfWork.begin();
         final Object result;
         try {
-//            System.out.println("AbstractUnitOfWorkProtocol.proceedInTransaction proceed()");
             result = joinPoint.proceed();
             if (unitOfWork.isRollbackOnly()) {
                 unitOfWork.rollback();
@@ -152,12 +150,14 @@ public abstract class AbstractUnitOfWorkProtocol extends Aspect {
 
         /**
          * The transaction manager.
+         * @todo make configurable
          */
         private final TransactionManager m_txManager =
                 TransactionManagerFactory.getInstance(TransactionManagerType.JTA);
 
         /**
-         * The name of the mixin (needed to lookup the target instance for this mixin).
+         * The name of the mixin (needed to lookup the target instance
+         * for this mixin).
          */
         private final String m_name = this.getClass().getName();
 

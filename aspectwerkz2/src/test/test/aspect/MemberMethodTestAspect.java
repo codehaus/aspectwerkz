@@ -2,224 +2,126 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package test.aspect;
 
 import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
-
+import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import test.Loggable;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
+ *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MemberMethodTestAspect
-{
+public class MemberMethodTestAspect extends Aspect {
+
     // ============ Pointcuts ============
 
-    /**
-     * @Expression execution(* test.MemberMethodAdviceTest.get*(..))
-     */
+    /** @Execution * test.MemberMethodAdviceTest.get*(..) */
     Pointcut pc1;
-
-    /**
-     * @Expression execution(* test.MemberMethodAdviceTest.*Param**(..))
-     */
+    /** @Execution * test.MemberMethodAdviceTest.*Param**(..) */
     Pointcut pc2;
-
-    /**
-     * @Expression execution(* test.MemberMethodAdviceTest.testThrowException(..))
-     */
+    /** @Execution * test.MemberMethodAdviceTest.testThrowException(..) */
     Pointcut pc3;
-
-    /**
-     * @Expression execution(* test.MemberMethodAdviceTest.methodAdvicedMethod())
-     */
+    /** @Execution * test.MemberMethodAdviceTest.methodAdvicedMethod(..) */
     Pointcut pc4;
-
-    /**
-     * @Expression execution(* test.MemberMethodAdviceTest.meth*AdvicedMethod())
-     */
+    /** @Execution * test.MemberMethodAdviceTest.meth*AdvicedMethod(..) */
     Pointcut pc5;
-
-    /**
-     * @Expression execution(* test.MemberMethodAdviceTest.method*icedMethodNewThread(..))
-     */
+    /** @Execution * test.MemberMethodAdviceTest.method*icedMethodNewThread(..) */
     Pointcut pc6;
-
-    /**
-     * @Expression execution(* test.MemberMethodAdviceTest.method*dvicedMethodNewThread(..))
-     */
+    /** @Execution * test.MemberMethodAdviceTest.method*dvicedMethodNewThread(..) */
     Pointcut pc7;
-
-    /**
-     * @Expression execution(* test.MemberMethodAdviceTest.multipleMethodAdvicedMethod(..))
-     */
+    /** @Execution * test.MemberMethodAdviceTest.multipleMethodAdvicedMethod(..) */
     Pointcut pc8;
-
-    /**
-     * @Expression execution(* test.MemberMethodAdviceTest.multipleChainedMethodAdvicedMethod(..))
-     */
+    /** @Execution * test.MemberMethodAdviceTest.multipleChainedMethodAdvicedMethod(..) */
     Pointcut pc9;
-
-    /**
-     * @Expression execution(* test.MemberMethodAdviceTest.joinPointMetaData(..))
-     */
+    /** @Execution * test.MemberMethodAdviceTest.joinPointMetaData(..) */
     Pointcut pc10;
-
-    /**
-     * @Expression execution(void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..))
-     */
+    /** @Execution void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..) */
     Pointcut pc11;
-
-    /**
-     * @Expression execution(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..))
-     */
+    /** @Execution void test.MemberMethodAdviceTest.multiplePointcutsMethod(..) */
     Pointcut pc12;
-
-    /**
-     * @Expression execution(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..))
-     */
+    /** @Execution void test.MemberMethodAdviceTest.multiplePointcutsMethod(..) */
     Pointcut pc13;
-
-    /**
-     * @Expression execution(* test.MemberMethodAdviceTest.takesArrayAsArgument(String[]))
-     */
+    /** @Execution * test.MemberMethodAdviceTest.takesArrayAsArgument(String[]) */
     Pointcut pc14;
-
-    /**
-     * @Expression execution(long test.MemberMethodAdviceTest.getPrimitiveAndNullFromAdvice())
-     */
+    /** @Execution long test.MemberMethodAdviceTest.getPrimitiveAndNullFromAdvice() */
     Pointcut pc15;
-
-    /**
-     * @Expression execution(void test.MemberMethodAdviceTest.beforeAdvicedMethod())
-     */
-    Pointcut pc16;
-
-    /**
-     * @Expression execution(void test.MemberMethodAdviceTest.afterAdvicedMethod())
-     */
-    Pointcut pc17;
-
-    /**
-     * @Expression execution(void test.MemberMethodAdviceTest.beforeAfterAdvicedMethod())
-     */
-    Pointcut pc18;
-
-    /**
-     * @Expression execution(void test.MemberMethodAdviceTest.beforeAroundAfterAdvicedMethod())
-     */
-    Pointcut pc19;
 
     // ============ Advices ============
 
     /**
      * @Around pc1 || pc2 || pc3 || pc4 || pc14 || pc9
      */
-    public Object advice1(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice1(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
-     * @Around pc5 || pc8 || pc9 || pc12 || pc19
+     * @Around pc5 || pc8 || pc9 || pc12
      */
-    public Object advice2(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
-
+    public Object advice2(final JoinPoint joinPoint) throws Throwable {
+       ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
-
+        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 
     /**
-     * @Around pc8 || pc9 || pc13 || pc19
+     * @Around pc8 || pc9 || pc13
      */
-    public Object advice3(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("before2 ");
-
+    public Object advice3(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("before2 ");
         final Object result = joinPoint.proceed();
-
-        ((Loggable) joinPoint.getTargetInstance()).log("after2 ");
-
+        ((Loggable)joinPoint.getTargetInstance()).log("after2 ");
         return result;
     }
 
     /**
      * @Around pc10
      */
-    public Object advice4(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice4(final JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
-        MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
-        String metadata = joinPoint.getTargetClass().getName()
-            + rtti.getMethod().getName()
-            + joinPoint.getTargetInstance().hashCode()
-            + rtti.getParameterValues()[0]
-            + rtti.getParameterTypes()[0].getName()
-            + rtti.getReturnType().getName() + rtti.getReturnValue();
-
+        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        String metadata =
+                joinPoint.getTargetClass().getName() +
+                signature.getMethod().getName() +
+                joinPoint.getTargetInstance().hashCode() +
+                signature.getParameterValues()[0] +
+                signature.getParameterTypes()[0].getName() +
+                signature.getReturnType().getName() +
+                signature.getReturnValue();
         return metadata;
     }
 
     /**
      * @Around pc6 || pc7
      */
-    public Object advice5(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("before ");
-
+    public Object advice5(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("before ");
         final Object result = joinPoint.proceed();
-
-        ((Loggable) joinPoint.getTargetInstance()).log("after ");
-
+        ((Loggable)joinPoint.getTargetInstance()).log("after ");
         return result;
     }
 
     /**
      * @Around pc15
      */
-    public Object advice6(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice6(final JoinPoint joinPoint) throws Throwable {
         return null;
     }
 
     /**
-     * @Before pc16 || pc18 || pc19
+     * Around
      */
-    public void before(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("pre ");
-    }
-
-    /**
-     * @After pc17 || pc18 || pc19
-     */
-    public void after(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("post ");
-    }
-
-    public static void main(String[] a)
-    {
-        //do nothing
-        System.out.println("MemberMethodTestAspect.main");
-    }
+//    public Object advice7(final JoinPoint joinPoint) throws Throwable {
+//        MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
+//        ((Loggable)jp.getTargetInstance()).log("# ");
+//        return joinPoint.proceed();
+//    }
 }

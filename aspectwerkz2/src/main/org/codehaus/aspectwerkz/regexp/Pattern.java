@@ -2,27 +2,21 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.regexp;
 
 import java.io.Serializable;
-
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Implements an abstract regular expression pattern matcher for AspectWerkz.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class Pattern implements Serializable
-{
-    public static final int METHOD = 1;
-    public static final int FIELD = 2;
-    public static final int CLASS = 3;
-    public static final int CONSTRUCTOR = 4;
+public abstract class Pattern implements Serializable {
 
     /**
      * Defines a single wildcard.
@@ -40,13 +34,81 @@ public abstract class Pattern implements Serializable
     public static final String MULTIPLE_WILDCARD_KEY = "MULTIPLE_WILDCARD_KEY";
 
     /**
-     * Abbreviations for all the classes in the java.lang.* and the java.util.* namespaces.
+     * Abbreviations for all the classes in the java.lang.* A
+     * the java.util.* namespaces.
      */
     protected static final Map m_abbreviations = new HashMap();
 
-    static
-    {
-        // TODO: update for Java 1.5?
+    /**
+     * Compiles A returns a new class pattern.
+     *
+     * @param pattern the full pattern as a string
+     * @return the pattern
+     */
+    public static ClassPattern compileClassPattern(final String pattern) {
+        return new ClassPattern(pattern);
+    }
+
+    /**
+     * Compiles A returns a new method pattern.
+     *
+     * @param pattern the full pattern as a string
+     * @return the pattern
+     */
+    public static MethodPattern compileMethodPattern(final String pattern) {
+        return new MethodPattern(pattern);
+    }
+
+    /**
+     * Compiles A returns a new field pattern.
+     *
+     * @param pattern the full pattern as a string
+     * @return the pattern
+     */
+    public static FieldPattern compileFieldPattern(final String pattern) {
+        return new FieldPattern(pattern);
+    }
+
+    /**
+     * Compiles A returns a new caller side pattern.
+     *
+     * @param pattern the full pattern as a string
+     * @return the pattern
+     */
+    public static CallerSidePattern compileCallerSidePattern(final String pattern) {
+        return new CallerSidePattern(pattern);
+    }
+
+    /**
+     * Compiles A returns a new throws pattern.
+     *
+     * @param pattern the full pattern as a string
+     * @return the pattern
+     */
+    public static ThrowsPattern compileThrowsPattern(final String pattern) {
+        return new ThrowsPattern(pattern);
+    }
+
+    /**
+     * Parses the method pattern.
+     *
+     * @param pattern the method pattern
+     */
+    protected abstract void parse(final String pattern);
+
+    /**
+     * Removes the package from the class name.
+     *
+     * @param fullClassName the full class name
+     * @return the class name without package
+     */
+    protected static String removePackageFromClassName(final String fullClassName) {
+        int index = fullClassName.lastIndexOf('.');
+        String className = fullClassName.substring(index + 1, fullClassName.length());
+        return className;
+    }
+
+    static {
         // java.lang.*
         m_abbreviations.put("CharSequence", "java.lang.CharSequence");
         m_abbreviations.put("Cloneable", "java.lang.Cloneable");
@@ -60,8 +122,7 @@ public abstract class Pattern implements Serializable
         m_abbreviations.put("Compiler", "java.lang.Compiler");
         m_abbreviations.put("Double", "java.lang.Double");
         m_abbreviations.put("Float", "java.lang.Float");
-        m_abbreviations.put("InheritableThreadLocal",
-            "java.lang.InheritableThreadLocal");
+        m_abbreviations.put("InheritableThreadLocal", "java.lang.InheritableThreadLocal");
         m_abbreviations.put("Integer", "java.lang.Integer");
         m_abbreviations.put("Long", "java.lang.Long");
         m_abbreviations.put("Math", "java.lang.Math");
@@ -102,8 +163,7 @@ public abstract class Pattern implements Serializable
         m_abbreviations.put("AbstractCollection", "java.util.AbstractCollection");
         m_abbreviations.put("AbstractList", "java.util.AbstractList");
         m_abbreviations.put("AbstractMap", "java.util.AbstractMap");
-        m_abbreviations.put("AbstractSequentialList ",
-            "java.util.AbstractSequentialList");
+        m_abbreviations.put("AbstractSequentialList ", "java.util.AbstractSequentialList");
         m_abbreviations.put("AbstractSet", "java.util.AbstractSet");
         m_abbreviations.put("ArrayList", "java.util.ArrayList");
         m_abbreviations.put("Arrays", "java.util.Arrays");
@@ -128,8 +188,7 @@ public abstract class Pattern implements Serializable
         m_abbreviations.put("Observable", "java.util.Observable");
         m_abbreviations.put("Properties", "java.util.Properties");
         m_abbreviations.put("PropertyPermission", "java.util.PropertyPermission");
-        m_abbreviations.put("PropertyResourceBundle",
-            "java.util.PropertyResourceBundle");
+        m_abbreviations.put("PropertyResourceBundle", "java.util.PropertyResourceBundle");
         m_abbreviations.put("Random", "java.util.Random");
         m_abbreviations.put("ResourceBundle", "java.util.ResourceBundle");
         m_abbreviations.put("SimpleTimeZone", "java.util.SimpleTimeZone");
@@ -142,104 +201,5 @@ public abstract class Pattern implements Serializable
         m_abbreviations.put("TreeSet", "java.util.TreeSet");
         m_abbreviations.put("Vector", "java.util.Vector");
         m_abbreviations.put("WeakHashMap", "java.util.WeakHashMap");
-    }
-
-    /**
-     * Compiles and returns a new class pattern.
-     *
-     * @param pattern the full pattern as a string
-     * @return the pattern
-     */
-    public static ClassPattern compileClassPattern(final String pattern)
-    {
-        return new ClassPattern(pattern);
-    }
-
-    /**
-     * Compiles and returns a new method pattern.
-     *
-     * @param pattern the full pattern as a string
-     * @return the pattern
-     */
-    public static MethodPattern compileMethodPattern(final String pattern)
-    {
-        return new MethodPattern(pattern);
-    }
-
-    /**
-     * Compiles and returns a new constructor pattern.
-     *
-     * @param pattern the full pattern as a string
-     * @return the pattern
-     */
-    public static ConstructorPattern compileConstructorPattern(
-        final String pattern)
-    {
-        return new ConstructorPattern(pattern);
-    }
-
-    /**
-     * Compiles and returns a new field pattern.
-     *
-     * @param pattern the full pattern as a string
-     * @return the pattern
-     */
-    public static FieldPattern compileFieldPattern(final String pattern)
-    {
-        return new FieldPattern(pattern);
-    }
-
-    /**
-     * Compiles A returns a new caller side pattern.
-     *
-     * @param type    the pattern type
-     * @param pattern the full pattern as a string
-     * @return the pattern
-     */
-    public static CallerSidePattern compileCallerSidePattern(final int type,
-        final String pattern)
-    {
-        return new CallerSidePattern(type, pattern);
-    }
-
-    /**
-     * Parses the method pattern.
-     *
-     * @param pattern the method pattern
-     */
-    protected abstract void parse(final String pattern);
-
-    /**
-     * Removes the package from the class name.
-     *
-     * @param fullClassName the full class name
-     * @return the class name without package
-     */
-    protected static String removePackageFromClassName(
-        final String fullClassName)
-    {
-        int index = fullClassName.lastIndexOf('.');
-        String className = fullClassName.substring(index + 1,
-                fullClassName.length());
-
-        return className;
-    }
-
-    /**
-     * Checks if the patterns is a constructor.
-     *
-     * @return true if the pattern is a constructor pattern
-     */
-    public static boolean isConstructor(final String expression)
-    {
-        int index1 = expression.indexOf(' ');
-        int index2 = expression.indexOf('(');
-
-        if ((index1 < 0) || (index1 > index2))
-        {
-            return true;
-        }
-
-        return false;
     }
 }

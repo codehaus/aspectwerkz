@@ -7,8 +7,9 @@
  **************************************************************************************/
 package aspectwerkz.aosd.test.security;
 
+import org.codehaus.aspectwerkz.attribdef.Pointcut;
+
 import aspectwerkz.aosd.security.AbstractRoleBasedAccessProtocol;
-import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * @Aspect perThread
@@ -18,12 +19,12 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class RoleBasedAccessProtocol extends AbstractRoleBasedAccessProtocol {
 
     /**
-     * @Expression execution(* aspectwerkz.aosd.app.facade.*.*(..))
+     * @Execution * aspectwerkz.aosd.app.facade.*.*(..)
      */
     Pointcut authenticationPoints;
 
     /**
-     * @Expression execution(* aspectwerkz.aosd.app.service.*.*(..))
+     * @Execution * aspectwerkz.aosd.app.service.*.*(..)
      */
     Pointcut authorizationPoints;
 }

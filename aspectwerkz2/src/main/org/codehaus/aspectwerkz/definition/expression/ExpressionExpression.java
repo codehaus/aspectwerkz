@@ -2,41 +2,46 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression;
 
-import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParser;
-import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisitor;
-import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
-import org.codehaus.aspectwerkz.definition.expression.visitor.AnonymousInflateVisitor;
-import org.codehaus.aspectwerkz.definition.expression.visitor.CflowEvaluateVisitor;
-import org.codehaus.aspectwerkz.definition.expression.visitor.CflowExpressionContext;
-import org.codehaus.aspectwerkz.definition.expression.visitor.CflowExtractVisitor;
-import org.codehaus.aspectwerkz.definition.expression.visitor.CflowIdentifierLookupVisitor;
-import org.codehaus.aspectwerkz.definition.expression.visitor.CflowIdentifierLookupVisitorContext;
-import org.codehaus.aspectwerkz.definition.expression.visitor.EarlyEvaluateVisitor;
-import org.codehaus.aspectwerkz.definition.expression.visitor.EvaluateVisitor;
-import org.codehaus.aspectwerkz.definition.expression.visitor.IdentifierLookupVisitor;
-import org.codehaus.aspectwerkz.definition.expression.visitor.TypeVisitor;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParser;
+import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.ParseException;
+import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisitor;
+import org.codehaus.aspectwerkz.definition.expression.visitor.TypeVisitor;
+import org.codehaus.aspectwerkz.definition.expression.visitor.IdentifierLookupVisitor;
+import org.codehaus.aspectwerkz.definition.expression.visitor.EvaluateVisitor;
+import org.codehaus.aspectwerkz.definition.expression.visitor.CflowIdentifierLookupVisitor;
 
 import java.io.StringReader;
-
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Class for sub-expression
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class ExpressionExpression extends Expression
-{
+public class ExpressionExpression extends Expression {
+
+    /**
+     * Map with the references to the pointcuts referenced in the expression.
+     */
+    protected final Map m_expressionRefs = new HashMap();
+
+    /**
+     * Map with the references to the pointcuts referenced in the IN or NOT IN parts of expression
+     */
+    protected final Map m_cflowExpressionRefs = new HashMap();
+
     /**
      * Type guessing visitor
      */
@@ -53,22 +58,9 @@ public class ExpressionExpression extends Expression
     private static ExpressionParserVisitor CFLOWIDENTIFIER_VISITOR = new CflowIdentifierLookupVisitor();
 
     /**
-     * Expression evaluation, ignores Cflow
+     * Expression evaluation, ignores IN and NOT IN
      */
     private static ExpressionParserVisitor EVALUATE_VISITOR = new EvaluateVisitor();
-
-    /**
-     * Expression early evaluation, ignores Cflow
-     */
-    private static ExpressionParserVisitor EARLYEVALUATE_VISITOR = new EarlyEvaluateVisitor();
-    private static ExpressionParserVisitor CFLOWEXTRACT_VISITOR = new CflowExtractVisitor();
-    private static ExpressionParserVisitor CFLOWEVALUATE_VISITOR = new CflowEvaluateVisitor();
-    private static ExpressionParserVisitor ANONYMOUSINFLATE_VISITOR = new AnonymousInflateVisitor();
-
-    /**
-     * Map with the references to the pointcuts referenced in the IN or NOT IN parts of expression
-     */
-    protected final Map m_cflowExpressionRefs = new HashMap();
 
     /**
      * AST root
@@ -81,8 +73,7 @@ public class ExpressionExpression extends Expression
      * @param namespace
      * @param expression
      */
-    public ExpressionExpression(ExpressionNamespace namespace, String expression)
-    {
+    public ExpressionExpression(ExpressionNamespace namespace, String expression) {
         this(namespace, expression, "");
     }
 
@@ -93,375 +84,157 @@ public class ExpressionExpression extends Expression
      * @param expression
      * @param name
      */
-    public ExpressionExpression(ExpressionNamespace namespace,
-        String expression, String name)
-    {
+    public ExpressionExpression(ExpressionNamespace namespace, String expression, String name) {
         super(namespace, expression, "", name, null);
-
-        try
-        {
-            ExpressionParser parser = new ExpressionParser(new StringReader(
-                        expression));
-
+        try {
+            ExpressionParser parser = new ExpressionParser(new StringReader(expression));
             root = parser.ExpressionScript();
-
-            // inflate anonymous expressions and register anonymous leaf (3x faster)
-            StringBuffer inflated = (StringBuffer) root.jjtAccept(ANONYMOUSINFLATE_VISITOR,
-                    m_namespace);
-            ExpressionParser parserInflate = new ExpressionParser(new StringReader(
-                        inflated.toString()));
-            SimpleNode newRoot = parserInflate.ExpressionScript();
-
-            // swap
-            root = newRoot;
-        }
-        catch (Throwable t)
-        {
-            throw new RuntimeException("unparsable[" + expression + "]/" + name
-                + ": " + t.getMessage());
+        } catch (ParseException pe) {
+            throw new RuntimeException(pe);
         }
 
-        // support for polymorphic expression
-        Set types = determineTypeFromAST();
-
-        if (types.isEmpty())
-        {
-            m_types.add(PointcutType.ANY);
-
-            //AVCF throw new RuntimeException("unable to determine type from " + expression);
+        m_type = determineTypeFromAST();
+        if (m_type == null) {
+            throw new RuntimeException("unable to determine type from " + expression);
         }
 
-        m_types.addAll(types);
-
+        initializeLeafExpressionMapFromAST();
         initializeCflowExpressionMapFromAST();
     }
 
     /**
      * Type determination of AST
-     *
-     * @return Set of PointcutType of expression
+     * @return PointcutType of expression (or null)
      */
-    private Set determineTypeFromAST()
-    {
-        return (Set) root.jjtAccept(TYPE_VISITOR, m_namespace);
+    private PointcutType determineTypeFromAST() {
+        return (PointcutType)root.jjtAccept(TYPE_VISITOR, m_namespace);
     }
 
     /**
-     * Build a new expression with only cflow to be evaluated. All other elements are evaluated
-     * TODO: do we need to support cflow(a within b)
-     *
-     * @param classMetaData
-     * @param memberMetaData
-     * @param assumedType
-     * @return simplified expression
+     * Identifier lookup
      */
-    public Expression extractCflowExpression(ClassMetaData classMetaData,
-        MemberMetaData memberMetaData, PointcutType assumedType)
-    {
-        ExpressionContext ctx = new ExpressionContext(assumedType, m_namespace,
-                classMetaData, memberMetaData, null);
+    private void initializeLeafExpressionMapFromAST() {
+        //TODO do we really need name->expr mapping ?
+        // ..and not only name list
+        //TODO: NOTE: "false AND subNodeMap" NODES should be ignored
+        // ..but can be complex due to (NOT true) AND subNodeMap syntax style
 
-        StringBuffer extracted = (StringBuffer) root.jjtAccept(CFLOWEXTRACT_VISITOR,
-                ctx);
-        Expression expression = m_namespace.createExpression(extracted.toString());
-
-        return expression;
+        List leafNames = new ArrayList();
+        root.jjtAccept(IDENTIFIER_VISITOR, leafNames);
+        String leafName = null;
+        for (Iterator i = leafNames.iterator(); i.hasNext();) {
+            leafName = (String) i.next();
+            m_expressionRefs.put(leafName, m_namespace.getExpression(leafName));
+        }
     }
 
     /**
      * Cflow identifier lookup
      */
-    private void initializeCflowExpressionMapFromAST()
-    {
-        CflowIdentifierLookupVisitorContext context = new CflowIdentifierLookupVisitorContext(m_namespace);
+    private void initializeCflowExpressionMapFromAST() {
+        //TODO do we really need name->expr mapping ?
+        // ..and not only name list
+        //TODO: NOTE: "false AND subNodeMap" NODES should be ignored
+        // ..but can be complex due to (NOT true) AND subNodeMap syntax style
 
-        root.jjtAccept(CFLOWIDENTIFIER_VISITOR, context);
-
+        List cflowNames = new ArrayList();
+        root.jjtAccept(CFLOWIDENTIFIER_VISITOR, cflowNames);
         String cflowName = null;
-
-        for (Iterator i = context.getNames().iterator(); i.hasNext();)
-        {
+        for (Iterator i = cflowNames.iterator(); i.hasNext();) {
             cflowName = (String) i.next();
-            m_cflowExpressionRefs.put(cflowName,
-                m_namespace.getExpression(cflowName));
+            m_cflowExpressionRefs.put(cflowName, m_namespace.getExpression(cflowName));
         }
-
-        for (Iterator i = context.getAnonymous().iterator(); i.hasNext();)
-        {
-            CflowExpression anonymousCflow = (CflowExpression) i.next();
-
-            m_cflowExpressionRefs.put(anonymousCflow.getName(), anonymousCflow);
-
-            // referenced it for further inflated referencing
-            m_namespace.registerExpression(anonymousCflow);
-
-            // TODO name is used in StartupManager, see getCflowExpressions
-            // and will not accept anonymous expr or autonamed ones
-            //throw new RuntimeException("anonymous cflow cannot be registered");
-            //m_cflowExpressionRefs.put("", (CflowExpression)i.next());
-        }
-
-        //        if (m_cflowExpressionRefs.size() > 1) {
-        //            throw new RuntimeException("complex cflow expression not supported yet");
-        //        }
+        if (m_cflowExpressionRefs.size() > 1)
+            throw new RuntimeException("complex cflow expression not supported yet");
     }
 
-    /**
-     * Early partial match of classMetaData
-     *
-     * @param classMetaData
-     * @param assumedType
-     * @return
-     */
-    public boolean match(final ClassMetaData classMetaData,
-        PointcutType assumedType)
-    {
-        ExpressionContext ctx = new ExpressionContext(assumedType, m_namespace,
-                classMetaData, null, null);
-
-        return ((Boolean) root.jjtAccept(EARLYEVALUATE_VISITOR, ctx))
-        .booleanValue();
-    }
-
-    /**
-     * Early partial match of classMetaData
-     *
-     * @param classMetaData
-     * @return
-     */
-    public boolean match(final ClassMetaData classMetaData)
-    {
-        for (Iterator types = m_types.iterator(); types.hasNext();)
-        {
-            if (match(classMetaData, (PointcutType) types.next()))
-            {
+    public boolean match(final ClassMetaData classMetaData) {
+        for (Iterator it = m_expressionRefs.values().iterator(); it.hasNext();) {
+            Expression expression = (Expression)it.next();
+            if (expression.match(classMetaData)) {
                 return true;
             }
         }
-
         return false;
     }
 
     /**
-     * Checks if the expression matches a certain join point as regards the IN and NOT IN parts if any. Each IN / NOT IN
-     * part is evaluated independantly from the boolean algebra (TF time)
-     * <p/>
-     * <p/>Only checks for a class match to allow early filtering. <p/>Only does a qualified guess, does not evaluate
-     * the whole expression since doing it only on class level would give the false results.
+     * Checks if the expression matches a certain join point as regards the IN and NOT IN parts if any.
+     * Each IN / NOT IN part is evaluated independantly from the boolean algebra (TF time)
+     *
+     * <p/>Only checks for a class match to allow early filtering.
+     * <p/>Only does a qualified guess, does not evaluate the whole expression since doing it only on class
+     * level would give the false results.
      *
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean matchInOrNotIn(final ClassMetaData classMetaData)
-    {
-        for (Iterator it = m_cflowExpressionRefs.values().iterator();
-            it.hasNext();)
-        {
-            Expression expression = (Expression) it.next();
-
-            if (expression.match(classMetaData))
-            {
+    public boolean matchInOrNotIn(final ClassMetaData classMetaData) {
+        for (Iterator it = m_cflowExpressionRefs.values().iterator(); it.hasNext();) {
+            Expression expression = (Expression)it.next();
+            if (expression.match(classMetaData)) {
                 return true;
             }
         }
-
         return false;
     }
 
     /**
-     * Checks if the expression matches a certain join point as regards IN / NOT IN parts Each IN / NOT IN part is
-     * evaluated independantly from the boolean algebra (TF time)
+     * Checks if the expression matches a certain join point as regards IN / NOT IN parts
+     * Each IN / NOT IN part is evaluated independantly from the boolean algebra (TF time)
      *
-     * @param classMetaData  the class meta-data
+     * @param classMetaData the class meta-data
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    public boolean matchInOrNotIn(final ClassMetaData classMetaData,
-        final MemberMetaData memberMetaData)
-    {
-        // never match NullMetaData
-        if (isNullMetaData(memberMetaData))
-        {
-            return false;
-        }
-
-        for (Iterator it = m_cflowExpressionRefs.values().iterator();
-            it.hasNext();)
-        {
-            Expression expression = (Expression) it.next();
-
-            if (expression.match(classMetaData, memberMetaData))
-            {
+    public boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+        for (Iterator it = m_cflowExpressionRefs.values().iterator(); it.hasNext();) {
+            Expression expression = (Expression)it.next();
+            if (expression.match(classMetaData, memberMetaData)) {
                 return true;
             }
         }
-
         return false;
     }
 
     /**
-     * Checks if the expression matches a certain join point. <p/>Special case in the API which tries to match exception
-     * types as well.
+     * Checks if the expression matches a certain join point.
+     * <p/>Special case in the API which tries to match exception types as well.
      *
-     * @param classMetaData  the class meta-data
+     * @param classMetaData the class meta-data
      * @param memberMetaData the meta-data for the member
-     * @param exceptionType  the exception type (null => match all)
-     * @param assumedType
+     * @param exceptionType the exception type (null => match all)
      * @return boolean
      */
     public boolean match(final ClassMetaData classMetaData,
-        final MemberMetaData memberMetaData, final String exceptionType,
-        final PointcutType assumedType)
-    {
-        //        if (exceptionType != null) {
-        //            throw new RuntimeException("cannot evaluate exception");//AVO??? of type [" + m_type.toString() + ']');
-        //        }
-        // never match NullMetaData
-        if (isNullMetaData(memberMetaData))
-        {
-            return false;
+                         final MemberMetaData memberMetaData,
+                         final String exceptionType) {
+        if (exceptionType!=null && ! m_type.equals(PointcutType.THROWS)) {
+            throw new RuntimeException("expression of type "+m_type.toString()+"cannot evaluate exception type");
         }
-
-        //TODO AVO ???
-        ExpressionContext ctx = new ExpressionContext(assumedType, m_namespace,
-                classMetaData, memberMetaData, exceptionType);
-
-        //System.out.println("matching " + getExpression() + "  for " + assumedType.toString());
-        return ((Boolean) root.jjtAccept(EVALUATE_VISITOR, ctx)).booleanValue();
-    }
-
-    /**
-     * Checks if the expression matches a certain join point. <p/>Special case in the API which tries to match exception
-     * types as well.
-     *
-     * @param classMetaData
-     * @param memberMetaData
-     * @param exceptionType
-     * @return
-     */
-    public boolean match(final ClassMetaData classMetaData,
-        final MemberMetaData memberMetaData, final String exceptionType)
-    {
-        // never match NullMetaData
-        if (isNullMetaData(memberMetaData))
-        {
-            return false;
-        }
-
-        if (m_types.size() > 1)
-        {
-            return false;
-
-            //throw new RuntimeException("Composed expression must be matched with an assumed type");//AVO
-        }
-        else
-        {
-            return match(classMetaData, memberMetaData, exceptionType,
-                (PointcutType) m_types.toArray()[0]);
-        }
+        ExpressionContext ctx = new ExpressionContext(m_type,
+                m_namespace, classMetaData, memberMetaData, exceptionType);
+        return ((Boolean)root.jjtAccept(EVALUATE_VISITOR, ctx)).booleanValue();
     }
 
     /**
      * Checks if the expression matches a certain join point.
      *
-     * @param classMetaData  the class meta-data
-     * @param memberMetaData the meta-data for the member
-     * @param assumedType
-     * @return boolean
-     */
-    public boolean match(final ClassMetaData classMetaData,
-        final MemberMetaData memberMetaData, PointcutType assumedType)
-    {
-        // never match NullMetaData
-        if (isNullMetaData(memberMetaData))
-        {
-            return false;
-        }
-
-        return match(classMetaData, memberMetaData, null, assumedType);
-    }
-
-    /**
-     * Checks if the expression matches a certain join point.
-     *
-     * @param classMetaData  the class meta-data
+     * @param classMetaData the class meta-data
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    public boolean match(final ClassMetaData classMetaData,
-        final MemberMetaData memberMetaData)
-    {
-        // never match NullMetaData
-        if (isNullMetaData(memberMetaData))
-        {
-            return false;
-        }
-
-        if (m_types.size() > 1)
-        {
-            if ((m_types.size() == 2) && m_types.contains(PointcutType.CFLOW))
-            {
-                PointcutType type = null;
-
-                for (Iterator types = m_types.iterator(); types.hasNext();)
-                {
-                    type = (PointcutType) types.next();
-
-                    if (!type.equals(PointcutType.CFLOW))
-                    {
-                        break;
-                    }
-                }
-
-                return match(classMetaData, memberMetaData, type);
-            }
-            else
-            {
-                return false; // composite type
-            }
-
-            //throw new RuntimeException("Composed expression must be matched with an assumed type");//AVO
-        }
-        else
-        {
-            return match(classMetaData, memberMetaData,
-                (PointcutType) m_types.toArray()[0]);
-        }
+    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+        return match(classMetaData, memberMetaData, null);
     }
 
     /**
-     * Checks if the expression matches a cflow stack.
-     * This assumes the expression is a cflow extracted expression (like "true AND cflow")
-     *
-     * Note: we need to evaluate each cflow given the stack
-     * and not evaluate each stack element separately
-     * to support complex cflow composition
-     *
-     * @param classNameMethodMetaDataTuples the meta-data for the cflow stack
-     * @return boolean
-     */
-    public boolean matchCflow(Set classNameMethodMetaDataTuples)
-    {
-        CflowExpressionContext ctx = new CflowExpressionContext(m_namespace,
-                classNameMethodMetaDataTuples);
-
-        return ((Boolean) root.jjtAccept(CFLOWEVALUATE_VISITOR, ctx))
-        .booleanValue();
-    }
-
-    /**
-     * Return a Map(name->Expression) of expression involved in the IN and NOT IN sub-expression of this Expression (can
-     * be empty)
-     *
+     * Return a Map(name->Expression) of expression involved in the
+     * IN and NOT IN sub-expression of this Expression
+     * (can be empty)
      * @return Map(name->Expression)
      */
-    public Map getCflowExpressions()
-    {
+    public Map getCflowExpressions() {
         return m_cflowExpressionRefs;
-    }
-
-    public SimpleNode getRoot()
-    {
-        return root;
     }
 }

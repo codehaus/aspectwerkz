@@ -1,16 +1,31 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.transform;
 
-import java.util.Set;
-import java.util.List;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+
+import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
+import org.cs3.jmangler.bceltransformer.ExtensionSet;
+import org.cs3.jmangler.bceltransformer.AbstractInterfaceTransformer;
+
+import gnu.trove.THashSet;
 
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.InstructionFactory;
@@ -21,65 +36,51 @@ import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.Constants;
 
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
 
 /**
  * Adds a <code>private void readObject(final ObjectInputStream stream) throws Exception</code>
  * to all target objects.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: AddReadObjectTransformer.java,v 1.1.1.1 2003-05-11 15:15:03 jboner Exp $
  */
-public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformerComponent {
+public class AddReadObjectTransformer extends AbstractInterfaceTransformer{
+    ///CLOVER:ON
 
     /**
      * Holds references to the classes that have already been transformed by this
      * transformer.
      */
-    private final Set m_hasBeenTransformed = new HashSet();
+    private final Set m_hasBeenTransformed = new THashSet();
 
     /**
-     * The definitions.
+     * Holds the weave model.
      */
-    private final List m_definitions;
-
-    /**
-     * Retrieves the weave model.
-     */
-    public AddReadObjectTransformer() {
-        super();
-        m_definitions = DefinitionLoader.getDefinitionsForTransformation();
-    }
+    private WeaveModel m_weaveModel = WeaveModel.loadModel();
 
     /**
      * Adds a UUID to all the transformed classes.
      *
-     * @param context the transformation context
-     * @param klass the class
+     * @param es the extension set
+     * @param cs the unextendable class set
      */
-    public void transformInterface(final Context context, final Klass klass) {
-        // loop over all the definitions
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
+    public void transformInterface(final ExtensionSet es,
+                                   final UnextendableClassSet cs) {
+        final Iterator it = cs.getIteratorForTransformableClasses();
+        while (it.hasNext()) {
 
-            definition.loadAspects(context.getLoader());
-
-            final ClassGen cg = klass.getClassGen();
+            final ClassGen cg = (ClassGen)it.next();
             final ConstantPoolGen cpg = cg.getConstantPool();
             final InstructionFactory factory = new InstructionFactory(cg);
 
-            if (classFilter(cg, definition)) {
-                return;
-            }
-            if (m_hasBeenTransformed.contains(cg.getClassName())) {
-                return;
-            }
+            if (classFilter(cg)) continue;
+            if (m_hasBeenTransformed.contains(cg.getClassName())) continue;
 
             // mark the class as transformed
             m_hasBeenTransformed.add(cg.getClassName());
-            context.markAsAdvised();
 
-            addReadObjectMethod(cg, cpg, factory);
+            addReadObjectMethod(cg, cpg, factory, es);
         }
     }
 
@@ -101,10 +102,12 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
      * @param cg the class gen
      * @param cpg the constant pool gen
      * @param factory the instruction objectfactory
+     * @param es the extension set
      */
     private void addReadObjectMethod(final ClassGen cg,
                                      final ConstantPoolGen cpg,
-                                     final InstructionFactory factory) {
+                                     final InstructionFactory factory,
+                                     final ExtensionSet es) {
 
         InstructionList il = new InstructionList();
         MethodGen method = new MethodGen(
@@ -125,53 +128,46 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
         method.setMaxStack();
         method.setMaxLocals();
 
-        TransformationUtil.addMethod(cg, method.getMethod());
+        es.addMethod(cg.getClassName(), method.getMethod());
     }
 
     /**
      * Filters the classes to be transformed.
      *
      * @param cg the class to filter
-     * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg, final AspectWerkzDefinition definition) {
-        if (cg.isInterface() ||
-                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
-                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
-                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
-                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
+    private boolean classFilter(final ClassGen cg) {
+        if (cg.isInterface()) {
             return true;
         }
-        String className = cg.getClassName();
-        if (definition.inExcludePackage(className)) {
-            return true;
-        }
-        if (definition.inIncludePackage(className)) {
+        else if (m_weaveModel.hasAspect(cg.getClassName())) {
             return false;
         }
-        return true;
+        else {
+            return true;
+        }
     }
 
     /**
-     * Callback method. Is being called before each transformation.
+     * JMangler callback method. Is being called before each transformation.
      */
     public void sessionStart() {
     }
 
     /**
-     * Callback method. Is being called after each transformation.
+     * JMangler callback method. Is being called after each transformation.
      */
     public void sessionEnd() {
     }
 
     /**
-     * Callback method. Prints a log/status message at
-     * each transformation.
+     * Logs a message.
      *
-     * @return a log string
+     * @return the log message
      */
     public String verboseMessage() {
-        return this.getClass().getName();
+        return getClass().getName();
     }
+    ///CLOVER:ON
 }

@@ -17,7 +17,7 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import aspectwerkz.aosd.context.Context;
+import aspectwerkz.aosd.Context;
 
 /**
  *  A simple CallbackHandler implementation that checks authentication with username and password.

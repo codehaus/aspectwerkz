@@ -1,10 +1,21 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.transform;
 
 import java.util.Map;
@@ -23,76 +34,67 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.InstructionConstants;
+import org.apache.bcel.generic.CPInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.FieldGen;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Field;
 
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
+import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
+
+import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
+import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
 
 /**
  * Transforms static methods to become "aspect-aware".
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: AdviseStaticMethodTransformer.java,v 1.1.1.1 2003-05-11 15:15:28 jboner Exp $
  */
-public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformerComponent {
+public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
+    ///CLOVER:OFF
 
     /**
-     * The definitions.
+     * Holds the weave model.
      */
-    private final List m_definitions;
+    private WeaveModel m_weaveModel = WeaveModel.loadModel();
 
     /**
-     * Retrieves the weave model.
+     * Constructor.
      */
     public AdviseStaticMethodTransformer() {
         super();
-        m_definitions = DefinitionLoader.getDefinitionsForTransformation();
     }
 
     /**
      * Makes the static method transformations.
      *
-     * @todo refactor so that we don't have to loop over all the methods twice (and create a method meta-data object twice)
-     *
-     * @param context the transformation context
-     * @param klass the class set.
+     * @param cs the class set.
      */
-    public void transformCode(final Context context, final Klass klass) {
+    public void transformCode(final UnextendableClassSet cs) {
+        final Iterator iterator = cs.getIteratorForTransformableClasses();
+        while (iterator.hasNext()) {
+            final ClassGen cg = (ClassGen)iterator.next();
 
-        // loop over all the definitions
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
-
-            definition.loadAspects(context.getLoader());
-
-            final ClassGen cg = klass.getClassGen();
-            ClassMetaData classMetaData = BcelMetaDataMaker.
-                    createClassMetaData(context.getJavaClass(cg));
-
-            if (classFilter(definition, classMetaData, cg)) {
-                return;
-            }
+            if (classFilter(cg)) continue;
 
             final InstructionFactory factory = new InstructionFactory(cg);
             final ConstantPoolGen cpg = cg.getConstantPool();
             final Method[] methods = cg.getMethods();
 
             // get the index for the <clinit> method (if there is one)
-            boolean noClinitMethod = true;
-            int indexClinit = -1;
+            boolean noClInitMethod = true;
+            int idxClInit = -1;
             for (int i = 0; i < methods.length; i++) {
                 if (methods[i].getName().equals("<clinit>")) {
-                    indexClinit = i;
-                    noClinitMethod = false;
+                    idxClInit = i;
+                    noClInitMethod = false;
                     break;
                 }
             }
@@ -100,130 +102,129 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
             // build and sort the method lookup list
             final List methodLookupList = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
-                Method method = methods[i];
 
-                MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
-                if (methodFilter(definition, classMetaData, methodMetaData, method)) {
-                    continue;
-                }
+                MethodMetaData methodMetaData =
+                        TransformationUtil.createMethodMetaData(methods[i]);
+
+                if (methodFilter(cg, methodMetaData)) continue;
                 methodLookupList.add(methods[i]);
             }
-
             Collections.sort(methodLookupList, BCELMethodComparator.getInstance());
+
+            addStaticClassField(cpg, cg);
 
             final Map methodSequences = new HashMap();
             final List newMethods = new ArrayList();
             Method clInitMethod = null;
-            boolean isClassAdvised = false;
-
             for (int i = 0; i < methods.length; i++) {
-                Method method = methods[i];
-                MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(method);
 
-                if (methodFilter(definition, classMetaData, methodMetaData, method)
-                        || !method.isStatic()) {
-                    continue;
-                }
+                MethodMetaData methodMetaData =
+                        TransformationUtil.createMethodMetaData(methods[i]);
 
-                isClassAdvised = true;
+                if (methodFilter(cg, methodMetaData) || !methods[i].isStatic()) continue;
 
-                final MethodGen mg = new MethodGen(method, cg.getClassName(), cpg);
+                final MethodGen mg = new MethodGen(
+                        methods[i], cg.getClassName(), cpg);
 
                 // take care of identification of overloaded methods by
                 // inserting a sequence number
-                if (methodSequences.containsKey(method.getName())) {
-                    int sequence = ((Integer)methodSequences.get(methods[i].getName())).intValue();
-                    methodSequences.remove(method.getName());
+                if (methodSequences.containsKey(methods[i].getName())) {
+                    int sequence = ((Integer)methodSequences.get(
+                            methods[i].getName())).intValue();
+                    methodSequences.remove(methods[i].getName());
                     sequence++;
-                    methodSequences.put(method.getName(), new Integer(sequence));
+                    methodSequences.put(methods[i].getName(), new Integer(sequence));
                 }
                 else {
-                    methodSequences.put(method.getName(), new Integer(1));
+                    methodSequences.put(methods[i].getName(), new Integer(1));
                 }
 
-                final int methodLookupId = methodLookupList.indexOf(method);
-                final int methodSequence = ((Integer)methodSequences.get(method.getName())).intValue();
+                final int methodLookupId = methodLookupList.indexOf(methods[i]);
+                final int methodSequence = ((Integer)methodSequences.
+                        get(methods[i].getName())).intValue();
 
-                addStaticJoinPointField(cpg, cg, mg, methodSequence);
+                // check if the pointcut should be deployed as thread safe or not
+                final boolean isThreadSafe = true; //isThreadSafe(cg, methods[i]);
 
-                // get the join point controller
-                final String controllerClassName = definition.getJoinPointController(
-                        classMetaData, methodMetaData
-                );
+                addStaticJoinPointField(cpg, cg, mg, methodSequence, isThreadSafe);
 
-                if (noClinitMethod) {
+                if (noClInitMethod) {
                     // no <clinit> method exists
                     if (clInitMethod == null) {
-                        clInitMethod = createClInitMethodWithStaticJoinPointField(
-                                cpg, cg,
-                                method,
-                                factory,
-                                methodSequence
-                        );
+                        clInitMethod =
+                                createClInitMethodWithStaticJoinPointField(
+                                        cpg, cg,
+                                        methods[i],
+                                        factory,
+                                        methodLookupId,
+                                        methodSequence,
+                                        isThreadSafe);
                     }
                     else {
                         clInitMethod = createStaticJoinPointField(
-                                cpg, cg, clInitMethod,
-                                method,
+                                cpg, cg,
+                                clInitMethod,
+                                methods[i],
                                 factory,
-                                methodSequence
-                        );
+                                methodLookupId,
+                                methodSequence,
+                                isThreadSafe);
                     }
                 }
                 else {
                     // we have a <clinit> method
-                    methods[indexClinit] = createStaticJoinPointField(
-                            cpg, cg, methods[indexClinit],
-                            method,
+                    methods[idxClInit] = createStaticJoinPointField(
+                            cpg, cg,
+                            methods[idxClInit],
+                            methods[i],
                             factory,
-                            methodSequence
-                    );
+                            methodLookupId,
+                            methodSequence,
+                            isThreadSafe);
                 }
 
                 // create a proxy method for the original method
                 newMethods.add(createProxyMethod(
-                        cpg, cg,
-                        methodMetaData.getName(),
-                        mg, factory,
+                        cpg, cg, mg,
+                        factory,
                         methodLookupId,
                         methodSequence,
-                        method.getAccessFlags(),
-                        definition.getUuid(),
-                        controllerClassName
-                ));
+                        methods[i].getAccessFlags(),
+                        isThreadSafe));
 
                 // add a prefix to the original method
                 methods[i] = addPrefixToMethod(
-                        mg, method, methodSequence, definition.getUuid()
-                );
+                        cpg, cg, mg,
+                        methods[i],
+                        methodSequence);
 
                 mg.setMaxLocals();
                 mg.setMaxStack();
             }
 
-            if (isClassAdvised) {
-                context.markAsAdvised();
+            // if we have transformed methods, create the static class field
+            if (noClInitMethod && clInitMethod != null) {
+                clInitMethod = createStaticClassField(
+                        cpg, cg,
+                        clInitMethod,
+                        factory);
 
-                // if we have transformed methods, create the static class field
-                if (noClinitMethod && clInitMethod != null) {
-                    addStaticClassField(cpg, cg);
-                    clInitMethod = createStaticClassField(cpg, cg, clInitMethod, factory);
+                newMethods.add(clInitMethod);
+            }
+            else if (newMethods.size() != 0) {
+                methods[idxClInit] = createStaticClassField(
+                        cpg, cg,
+                        methods[idxClInit],
+                        factory);
+            }
 
-                    newMethods.add(clInitMethod);
-                }
-                else if (newMethods.size() != 0) {
-                    addStaticClassField(cpg, cg);
-                    methods[indexClinit] = createStaticClassField(cpg, cg, methods[indexClinit], factory);
-                }
+            // update the old methods
+            cg.setMethods(methods);
 
-                // update the old methods
-                cg.setMethods(methods);
-
-                // add the new methods
-                for (Iterator it2 = newMethods.iterator(); it2.hasNext();) {
-                    Method method = (Method)it2.next();
-                    cg.addMethod(method);
-                }
+            // add the new methods
+            for (Iterator it = newMethods.iterator(); it.hasNext();) {
+                Method method = (Method)it.next();
+                cg.addMethod(method);
             }
         }
     }
@@ -234,21 +235,19 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @param cp the ConstantPoolGen
      * @param cg the ClassGen
      */
-    private void addStaticClassField(final ConstantPoolGen cp, final ClassGen cg) {
+    private void addStaticClassField(final ConstantPoolGen cp,
+                                     final ClassGen cg) {
 
         final Field[] fields = cg.getFields();
         for (int i = 0; i < fields.length; i++) {
-            if (fields[i].getName().equals(TransformationUtil.STATIC_CLASS_FIELD)) {
-                return;
-            }
+            if (fields[i].getName().equals(TransformationUtil.STATIC_CLASS_FIELD)) return;
         }
 
         final FieldGen field = new FieldGen(
                 Constants.ACC_PRIVATE | Constants.ACC_FINAL | Constants.ACC_STATIC,
                 new ObjectType("java.lang.Class"),
                 TransformationUtil.STATIC_CLASS_FIELD,
-                cp
-        );
+                cp);
 
         cg.addField(field.getField());
     }
@@ -260,24 +259,33 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @param cg the ClassGen
      * @param mg the MethodGen
      * @param methodSequence the methods sequence number
+     * @param isThreadSafe
      */
     private void addStaticJoinPointField(final ConstantPoolGen cp,
                                          final ClassGen cg,
                                          final MethodGen mg,
-                                         final int methodSequence) {
-        final String joinPoint = getJoinPointName(mg.getMethod(), methodSequence);
+                                         final int methodSequence,
+                                         final boolean isThreadSafe) {
 
-        if (cg.containsField(joinPoint) != null) {
-            return;
+        final StringBuffer joinPoint =
+                getJoinPointName(mg.getMethod(), methodSequence);
+
+        final FieldGen field;
+        if (isThreadSafe) {
+            field = new FieldGen(
+                    Constants.ACC_PRIVATE | Constants.ACC_FINAL | Constants.ACC_STATIC,
+                    new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
+//                    new ObjectType("java.lang.ThreadLocal"),
+                    joinPoint.toString(),
+                    cp);
         }
-
-        final FieldGen field = new FieldGen(
-                Constants.ACC_PRIVATE | Constants.ACC_FINAL | Constants.ACC_STATIC,
-                new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
-                joinPoint,
-                cp
-        );
-
+        else {
+            field = new FieldGen(
+                    Constants.ACC_PRIVATE | Constants.ACC_FINAL | Constants.ACC_STATIC,
+                    TransformationUtil.STATIC_METHOD_JOIN_POINT_TYPE,
+                    joinPoint.toString(),
+                    cp);
+        }
         cg.addField(field.getField());
     }
 
@@ -288,7 +296,9 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @param cg the ClassGen
      * @param method the current method
      * @param factory the objectfactory
+     * @param methodLookupId the id of the current method in the lookup tabl
      * @param methodSequence the methods sequence number
+     * @param isThreadSafe
      * @return the new method
      */
     private Method createClInitMethodWithStaticJoinPointField(
@@ -296,11 +306,13 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
             final ClassGen cg,
             final Method method,
             final InstructionFactory factory,
-            final int methodSequence) {
+            final int methodLookupId,
+            final int methodSequence,
+            final boolean isThreadSafe) {
 
         final String className = cg.getClassName();
 
-        final String joinPoint = getJoinPointName(method, methodSequence);
+        final StringBuffer joinPoint = getJoinPointName(method, methodSequence);
 
         final InstructionList il = new InstructionList();
         final MethodGen clInit = new MethodGen(
@@ -310,32 +322,58 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                 new String[]{},
                 "<clinit>",
                 className,
-                il, cp
-        );
+                il, cp);
 
-        il.append(factory.createNew(TransformationUtil.THREAD_LOCAL_CLASS));
-        il.append(InstructionConstants.DUP);
+        if (isThreadSafe) {
+            il.append(factory.createNew("org.codehaus.aspectwerkz.util.SerializableThreadLocal"));
+//            il.append(factory.createNew("java.lang.ThreadLocal"));
+            il.append(InstructionConstants.DUP);
 
-        il.append(factory.createInvoke(
-                TransformationUtil.THREAD_LOCAL_CLASS,
-                "<init>",
-                Type.VOID,
-                new Type[]{},
-                Constants.INVOKESPECIAL
-        ));
+            il.append(factory.createInvoke(
+                    "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
+//                    "java.lang.ThreadLocal",
+                    "<init>",
+                    Type.VOID,
+                    new Type[]{},
+                    Constants.INVOKESPECIAL));
 
-        il.append(factory.createFieldAccess(
-                cg.getClassName(),
-                joinPoint,
-                new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
-                Constants.PUTSTATIC
-        ));
+            il.append(factory.createFieldAccess(
+                    cg.getClassName(),
+                    joinPoint.toString(),
+                    new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
+//                    new ObjectType("java.lang.ThreadLocal"),
+                    Constants.PUTSTATIC));
+        }
+        else {
+            il.append(factory.createNew(
+                    TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS));
+            il.append(InstructionConstants.DUP);
 
+            il.append(factory.createFieldAccess(
+                    cg.getClassName(),
+                    TransformationUtil.STATIC_CLASS_FIELD,
+                    new ObjectType("java.lang.Class"),
+                    Constants.GETSTATIC));
+
+            il.append(new PUSH(cp, methodLookupId));
+
+            il.append(factory.createInvoke(
+                    TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS,
+                    "<init>",
+                    Type.VOID,
+                    new Type[]{new ObjectType("java.lang.Class"), Type.INT},
+                    Constants.INVOKESPECIAL));
+
+            il.append(factory.createFieldAccess(
+                    cg.getClassName(),
+                    joinPoint.toString(),
+                    TransformationUtil.STATIC_METHOD_JOIN_POINT_TYPE,
+                    Constants.PUTSTATIC));
+        }
         il.append(factory.createReturn(Type.VOID));
 
         clInit.setMaxLocals();
         clInit.setMaxStack();
-
         return clInit.getMethod();
     }
 
@@ -348,10 +386,11 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @param factory the objectfactory
      * @return the modified clinit method
      */
-    private Method createStaticClassField(final ConstantPoolGen cp,
-                                          final ClassGen cg,
-                                          final Method clInit,
-                                          final InstructionFactory factory) {
+    private static Method createStaticClassField(final ConstantPoolGen cp,
+                                                 final ClassGen cg,
+                                                 final Method clInit,
+                                                 final InstructionFactory factory) {
+
         final String className = cg.getClassName();
 
         final MethodGen mg = new MethodGen(clInit, cg.getClassName(), cp);
@@ -366,16 +405,14 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                 "forName",
                 new ObjectType("java.lang.Class"),
                 new Type[]{Type.STRING},
-                Constants.INVOKESTATIC
-        ));
+                Constants.INVOKESTATIC));
 
         // set the result to the static class field
         il.insert(ih, factory.createFieldAccess(
                 className,
                 TransformationUtil.STATIC_CLASS_FIELD,
                 new ObjectType("java.lang.Class"),
-                Constants.PUTSTATIC
-        ));
+                Constants.PUTSTATIC));
 
         mg.setMaxStack();
         mg.setMaxLocals();
@@ -390,7 +427,9 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @param clInit the constructor for the class
      * @param method the current method
      * @param factory the objectfactory
+     * @param methodLookupId the id of the current method in the lookup tabl
      * @param methodSequence the methods sequence number
+     * @param isThreadSafe
      * @return the modified clinit method
      */
     private Method createStaticJoinPointField(final ConstantPoolGen cp,
@@ -398,37 +437,67 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                                               final Method clInit,
                                               final Method method,
                                               final InstructionFactory factory,
-                                              final int methodSequence) {
+                                              final int methodLookupId,
+                                              final int methodSequence,
+                                              final boolean isThreadSafe) {
 
-        final String joinPoint = getJoinPointName(method, methodSequence);
+        final StringBuffer joinPoint = getJoinPointName(method, methodSequence);
 
         final MethodGen mg = new MethodGen(clInit, cg.getClassName(), cp);
         final InstructionList il = mg.getInstructionList();
 
         final InstructionHandle ih = il.getStart();
 
-        il.insert(ih, factory.createNew(TransformationUtil.THREAD_LOCAL_CLASS));
+        if (isThreadSafe) {
+            il.insert(ih, factory.createNew("org.codehaus.aspectwerkz.util.SerializableThreadLocal"));
+//            il.insert(ih, factory.createNew("java.lang.ThreadLocal"));
 
-        il.insert(ih, InstructionConstants.DUP);
+            il.insert(ih, InstructionConstants.DUP);
 
-        il.insert(ih, factory.createInvoke(
-                TransformationUtil.THREAD_LOCAL_CLASS,
-                "<init>",
-                Type.VOID,
-                new Type[]{},
-                Constants.INVOKESPECIAL
-        ));
+            il.insert(ih, factory.createInvoke(
+                    "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
+//                    "java.lang.ThreadLocal",
+                    "<init>",
+                    Type.VOID,
+                    new Type[]{},
+                    Constants.INVOKESPECIAL));
 
-        il.insert(ih, factory.createFieldAccess(
-                cg.getClassName(),
-                joinPoint,
-                new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
-                Constants.PUTSTATIC
-        ));
+            il.insert(ih, factory.createFieldAccess(
+                    cg.getClassName(),
+                    joinPoint.toString(),
+                    new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
+//                    new ObjectType("java.lang.ThreadLocal"),
+                    Constants.PUTSTATIC));
+        }
+        else {
+            il.insert(ih, factory.createNew(
+                    TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS));
+            il.insert(ih, InstructionConstants.DUP);
+
+            il.insert(ih, factory.createFieldAccess(
+                    cg.getClassName(),
+                    TransformationUtil.STATIC_CLASS_FIELD,
+                    new ObjectType("java.lang.Class"),
+                    Constants.GETSTATIC));
+
+            il.insert(ih, new PUSH(cp, methodLookupId));
+
+            il.insert(ih, factory.createInvoke(
+                    TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS,
+                    "<init>",
+                    Type.VOID,
+                    new Type[]{new ObjectType("java.lang.Class"), Type.INT},
+                    Constants.INVOKESPECIAL));
+
+            il.insert(ih, factory.createFieldAccess(
+                    cg.getClassName(),
+                    joinPoint.toString(),
+                    TransformationUtil.STATIC_METHOD_JOIN_POINT_TYPE,
+                    Constants.PUTSTATIC));
+        }
 
         mg.setMaxStack();
         mg.setMaxLocals();
-
         return mg.getMethod();
     }
 
@@ -436,42 +505,67 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * Adds a prefix to the original method.
      * To make it callable only from within the framework itself.
      *
+     * @param cp the ConstantPoolGen
+     * @param cg the ClassGen
      * @param mg the MethodGen
      * @param method the current method
      * @param methodSequence the methods sequence number
-     * @param uuid the definition UUID
      * @return the modified method
      */
-    private Method addPrefixToMethod(final MethodGen mg,
+    private Method addPrefixToMethod(final ConstantPoolGen cp,
+                                     final ClassGen cg,
+                                     final MethodGen mg,
                                      final Method method,
-                                     final int methodSequence,
-                                     final String uuid) {
+                                     final int methodSequence) {
 
-        // change the method access flags (should always be set to protected)
+        final StringBuffer methodName =
+                getPrefixedMethodName(method, methodSequence);
+
+        // change the method access flags
         int accessFlags = mg.getAccessFlags();
-        if ((accessFlags & Constants.ACC_PROTECTED) == 0) {
-            // set the protected flag
-            accessFlags |= Constants.ACC_PROTECTED;
-        }
         if ((accessFlags & Constants.ACC_PRIVATE) != 0) {
             // clear the private flag
             accessFlags &= ~Constants.ACC_PRIVATE;
         }
-        if ((accessFlags & Constants.ACC_PUBLIC) != 0) {
-            // clear the public flag
-            accessFlags &= ~Constants.ACC_PUBLIC;
+        if ((accessFlags & Constants.ACC_PROTECTED) != 0) {
+            // clear the protected flag
+            accessFlags &= ~Constants.ACC_PROTECTED;
+        }
+        if ((accessFlags & Constants.ACC_PUBLIC) == 0) {
+            // set the public flag
+            accessFlags |= Constants.ACC_PUBLIC;
         }
 
-        String prefixedMethodName = getPrefixedMethodName(
-                method, methodSequence, mg.getClassName());
+        // update the method
+        final MethodGen prefixedMethod = new MethodGen(
+                accessFlags,
+                mg.getReturnType(),
+                mg.getArgumentTypes(),
+                mg.getArgumentNames(),
+                methodName.toString(),
+                cg.getClassName(),
+                mg.getInstructionList(),
+                cp);
 
-        mg.setName(prefixedMethodName);
-        mg.setAccessFlags(accessFlags);
+        // add the exceptions
+        final String[] exceptions = mg.getExceptions();
+        for (int i = 0; i < exceptions.length; i++) {
+            prefixedMethod.addException(exceptions[i]);
+        }
 
-        mg.setMaxStack();
-        mg.setMaxLocals();
+        // add the exception handlers
+        final CodeExceptionGen[] exceptionHandlers = mg.getExceptionHandlers();
+        for (int i = 0; i < exceptionHandlers.length; i++) {
+            prefixedMethod.addExceptionHandler(
+                    exceptionHandlers[i].getStartPC(),
+                    exceptionHandlers[i].getEndPC(),
+                    exceptionHandlers[i].getHandlerPC(),
+                    exceptionHandlers[i].getCatchType());
+        }
 
-        return mg.getMethod();
+        prefixedMethod.setMaxStack();
+        prefixedMethod.setMaxLocals();
+        return prefixedMethod.getMethod();
     }
 
     /**
@@ -487,41 +581,38 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @param methodId the id of the current method in the lookup tabl
      * @param methodSequence the methods sequence number
      * @param accessFlags the access flags for the original method
-     * @param uuid the UUID for the weave model
-     * @param controllerClassName the class name of the controller class to use
+     * @param isThreadSafe
      * @return the proxy method
      */
     private Method createProxyMethod(final ConstantPoolGen cp,
                                      final ClassGen cg,
-                                     final String originalMethodName,
                                      final MethodGen originalMethod,
                                      final InstructionFactory factory,
                                      final int methodId,
                                      final int methodSequence,
                                      final int accessFlags,
-                                     final String uuid,
-                                     final String controllerClassName) {
+                                     final boolean isThreadSafe) {
+
         final InstructionList il = new InstructionList();
 
-        final Type[] parameterTypes = Type.getArgumentTypes(originalMethod.getSignature());
+        final Type[] parameterTypes =
+                Type.getArgumentTypes(originalMethod.getSignature());
         final String[] parameterNames = originalMethod.getArgumentNames();
         final Type returnType = Type.getReturnType(originalMethod.getSignature());
-        final String joinPoint = getJoinPointName(originalMethod.getMethod(), methodSequence);
+
+        final StringBuffer joinPoint =
+                getJoinPointName(originalMethod.getMethod(), methodSequence);
 
         final MethodGen method = new MethodGen(
                 accessFlags,
                 returnType,
                 parameterTypes,
                 parameterNames,
-                originalMethodName,
+                originalMethod.getName(),
                 cg.getClassName(),
-                il, cp
-        );
+                il, cp);
 
-        String[] exceptions = originalMethod.getExceptions();
-        for (int i = 0; i < exceptions.length; i++) {
-            method.addException(exceptions[i]);
-        }
+        method.addException("java.lang.Throwable");
 
         int idxParam = 0;
         int idxStack = 0;
@@ -530,81 +621,79 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
 
         BranchInstruction biIfNotNull = null;
         InstructionHandle ihIfNotNull = null;
+        if (isThreadSafe) {
+            // Object joinPoint = ___jp.get();
+            il.append(factory.createFieldAccess(
+                    cg.getClassName(),
+                    joinPoint.toString(),
+                    new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
+//                    new ObjectType("java.lang.ThreadLocal"),
+                    Constants.GETSTATIC));
+            il.append(factory.createInvoke(
+                    "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
+//                    "java.lang.ThreadLocal",
+                    "get",
+                    Type.OBJECT,
+                    Type.NO_ARGS,
+                    Constants.INVOKEVIRTUAL));
+            il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
-        // Object joinPoint = ___jp.get();
-        il.append(factory.createFieldAccess(
-                cg.getClassName(),
-                joinPoint,
-                new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
-                Constants.GETSTATIC
-        ));
-        il.append(factory.createInvoke(
-                TransformationUtil.THREAD_LOCAL_CLASS,
-                "get",
-                Type.OBJECT,
-                Type.NO_ARGS,
-                Constants.INVOKEVIRTUAL
-        ));
-        il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
+            // if (joinPoint == null) {
+            il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
+            biIfNotNull = factory.createBranchInstruction(Constants.IFNONNULL, null);
+            il.append(biIfNotNull);
 
-        // if (joinPoint == null) {
-        il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
-        biIfNotNull = factory.createBranchInstruction(Constants.IFNONNULL, null);
-        il.append(biIfNotNull);
+            // joinPoint = new StaticMethodJoinPoint(this, 10);
+            il.append(factory.createNew(
+                    TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS));
+            il.append(InstructionConstants.DUP);
 
-        il.append(factory.createNew(TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS));
-        il.append(InstructionConstants.DUP);
+            il.append(factory.createFieldAccess(
+                    cg.getClassName(),
+                    TransformationUtil.STATIC_CLASS_FIELD,
+                    new ObjectType("java.lang.Class"),
+                    Constants.GETSTATIC));
+            il.append(new PUSH(cp, methodId));
+            il.append(factory.createInvoke(
+                    TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS,
+                    "<init>",
+                    Type.VOID,
+                    new Type[]{new ObjectType("java.lang.Class"), Type.INT},
+                    Constants.INVOKESPECIAL));
+            il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
-        // loads the parameters (uuid, the class, the method id)
-        il.append(new PUSH(cp, uuid));
-        il.append(factory.createFieldAccess(
-                cg.getClassName(),
-                TransformationUtil.STATIC_CLASS_FIELD,
-                new ObjectType("java.lang.Class"),
-                Constants.GETSTATIC
-        ));
-        il.append(new PUSH(cp, methodId));
-        il.append(new PUSH(cp, controllerClassName));
+            // ___jp.set(joinPoint);
+            il.append(factory.createFieldAccess(
+                    cg.getClassName(),
+                    joinPoint.toString(),
+                    new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
+//                    new ObjectType("java.lang.ThreadLocal"),
+                    Constants.GETSTATIC));
+            il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
+            il.append(factory.createInvoke(
+                    "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
+//                    "java.lang.ThreadLocal",
+                    "set",
+                    Type.VOID,
+                    new Type[]{Type.OBJECT},
+                    Constants.INVOKEVIRTUAL));
 
-        il.append(factory.createInvoke(
-                TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS,
-                "<init>",
-                Type.VOID,
-                new Type[]{Type.STRING, new ObjectType("java.lang.Class"), Type.INT, Type.STRING},
-                Constants.INVOKESPECIAL
-        ));
-        il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
+            ihIfNotNull = il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
+            il.append(factory.createCheckCast(
+                    TransformationUtil.STATIC_METHOD_JOIN_POINT_TYPE));
+            indexJoinPoint += 2;
+            il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
-        // ___jp.set(joinPoint);
-        il.append(factory.createFieldAccess(
-                cg.getClassName(),
-                joinPoint.toString(),
-                new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
-                Constants.GETSTATIC
-        ));
-        il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
-        il.append(factory.createInvoke(
-                TransformationUtil.THREAD_LOCAL_CLASS,
-                "set",
-                Type.VOID,
-                new Type[]{Type.OBJECT},
-                Constants.INVOKEVIRTUAL
-        ));
-
-        ihIfNotNull = il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
-        indexJoinPoint += 2;
-
-        il.append(factory.createCheckCast(TransformationUtil.STATIC_METHOD_JOIN_POINT_TYPE));
-        il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
-
-        biIfNotNull.setTarget(ihIfNotNull);
+            biIfNotNull.setTarget(ihIfNotNull);
+        }
 
         // if we have parameters, wrap them up
         if (parameterTypes.length != 0) {
 
             // create and allocate the parameters array
             il.append(new PUSH(cp, parameterTypes.length));
-            il.append(factory.createNewArray(Type.OBJECT, (short)1));
+            il.append((CPInstruction)factory.createNewArray(
+                    Type.OBJECT, (short)1));
 
             // put it on the stack
             il.append(InstructionConstants.DUP);
@@ -674,8 +763,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                             "<init>",
                             Type.VOID,
                             new Type[]{type},
-                            Constants.INVOKESPECIAL
-                    ));
+                            Constants.INVOKESPECIAL));
                     il.append(InstructionConstants.AASTORE);
                     idxParam++;
                 } // end handle basic or object type
@@ -688,17 +776,25 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                     idxStack++;
 
                     // long's and double's needs two registers to fit
-                    if (hasLongOrDouble) {
-                        idxParam++;
-                    }
+                    if (hasLongOrDouble) idxParam++;
                 }
             }
 
             // create the object array
             il.append(factory.createStore(Type.OBJECT, idxParam));
 
-            // if threadsafe grab the newly retrieved local join point field from the stack
-            il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
+            if (isThreadSafe) {
+                // if threadsafe grab the newly retrieved local join point field from the stack
+                il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
+            }
+            else {
+                // grab the join point member field
+                il.append(factory.createFieldAccess(
+                        cg.getClassName(),
+                        joinPoint.toString(),
+                        TransformationUtil.STATIC_METHOD_JOIN_POINT_TYPE,
+                        Constants.GETSTATIC));
+            }
 
             // invoke joinPoint.setParameter(..)
             il.append(factory.createLoad(Type.OBJECT, idxParam));
@@ -707,21 +803,33 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                     "setParameters",
                     Type.VOID,
                     new Type[]{new ArrayType(Type.OBJECT, 1)},
-                    Constants.INVOKEVIRTUAL
-            ));
+                    Constants.INVOKEVIRTUAL));
             idxParam++;
         } // end - if parameters.length != 0
 
-        // if threadsafe grab the newly retrieved local join point field from the stack
-        il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
-        il.append(factory.createInvoke(
-                TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS,
-                "proceed",
-                Type.OBJECT,
-                Type.NO_ARGS,
-                Constants.INVOKEVIRTUAL
-        ));
+        if (isThreadSafe) {
+            // if threadsafe grab the newly retrieved local join point field from the stack
+            il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
+            il.append(factory.createInvoke(
+                    TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS,
+                    "proceed", Type.OBJECT, Type.NO_ARGS, Constants.INVOKEVIRTUAL));
+        }
+        else {
+            // grab the join point member field
+            il.append(factory.createFieldAccess(
+                    cg.getClassName(),
+                    joinPoint.toString(),
+                    TransformationUtil.STATIC_METHOD_JOIN_POINT_TYPE,
+                    Constants.GETSTATIC));
 
+            // invoke joinPoint.proceed()
+            il.append(factory.createInvoke(
+                    TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS,
+                    "proceed",
+                    Type.OBJECT,
+                    Type.NO_ARGS,
+                    Constants.INVOKEVIRTUAL));
+        }
         if (!returnType.equals(Type.VOID)) {
 
             // create the result from the invocation
@@ -730,139 +838,92 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
 
             // cast the result and return it, if the return type is a
             // primitive type, retrieve it from the wrapped object first
-            // unless the return object is null (AW-100)
             if (returnType instanceof BasicType) {
-                if (returnType.equals(Type.VOID)) {
-                    ;//skip
-                } else {
-                    BranchInstruction ifNullBranch = factory.createBranchInstruction(Constants.IFNONNULL, null);
-                    InstructionHandle elseBranch = null;
-                    il.append(ifNullBranch);
-                    if (returnType.equals(Type.LONG)) {
-                        il.append(new PUSH(cp, 0L));
-                        il.append(factory.createReturn(returnType));
-                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
-                        il.append(factory.createCheckCast(
-                                new ObjectType("java.lang.Long")
-                        ));
-                        il.append(factory.createInvoke(
-                                "java.lang.Long",
-                                "longValue",
-                                Type.LONG,
-                                Type.NO_ARGS,
-                                Constants.INVOKEVIRTUAL
-                        ));
-                    }
-                    else if (returnType.equals(Type.INT)) {
-                        il.append(new PUSH(cp, 0));
-                        il.append(factory.createReturn(returnType));
-                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
-                        il.append(factory.createCheckCast(
-                                new ObjectType("java.lang.Integer")
-                        ));
-                        il.append(factory.createInvoke(
-                                "java.lang.Integer",
-                                "intValue",
-                                Type.INT,
-                                Type.NO_ARGS,
-                                Constants.INVOKEVIRTUAL
-                        ));
-                    }
-                    else if (returnType.equals(Type.SHORT)) {
-                        il.append(new PUSH(cp, (short)0));
-                        il.append(factory.createReturn(returnType));
-                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
-                        il.append(factory.createCheckCast(
-                                new ObjectType("java.lang.Short")
-                        ));
-                        il.append(factory.createInvoke(
-                                "java.lang.Short",
-                                "shortValue",
-                                Type.SHORT,
-                                Type.NO_ARGS,
-                                Constants.INVOKEVIRTUAL
-                        ));
-                    }
-                    else if (returnType.equals(Type.DOUBLE)) {
-                        il.append(new PUSH(cp, 0.0d));
-                        il.append(factory.createReturn(returnType));
-                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
-                        il.append(factory.createCheckCast(
-                                new ObjectType("java.lang.Double")
-                        ));
-                        il.append(factory.createInvoke(
-                                "java.lang.Double",
-                                "doubleValue",
-                                Type.DOUBLE,
-                                Type.NO_ARGS,
-                                Constants.INVOKEVIRTUAL
-                        ));
-                    }
-                    else if (returnType.equals(Type.FLOAT)) {
-                        il.append(new PUSH(cp, 0.0f));
-                        il.append(factory.createReturn(returnType));
-                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
-                        il.append(factory.createCheckCast(
-                                new ObjectType("java.lang.Float")
-                        ));
-                        il.append(factory.createInvoke(
-                                "java.lang.Float",
-                                "floatValue",
-                                Type.FLOAT,
-                                Type.NO_ARGS,
-                                Constants.INVOKEVIRTUAL
-                        ));
-                    }
-                    else if (returnType.equals(Type.CHAR)) {
-                        il.append(new PUSH(cp, '\u0000'));
-                        il.append(factory.createReturn(returnType));
-                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
-                        il.append(factory.createCheckCast(
-                                new ObjectType("java.lang.Character")
-                        ));
-                        il.append(factory.createInvoke(
-                                "java.lang.Character",
-                                "charValue",
-                                Type.CHAR,
-                                Type.NO_ARGS,
-                                Constants.INVOKEVIRTUAL
-                        ));
-                    }
-                    else if (returnType.equals(Type.BYTE)) {
-                        il.append(new PUSH(cp, (byte)0));
-                        il.append(factory.createReturn(returnType));
-                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
-                        il.append(factory.createCheckCast(
-                                new ObjectType("java.lang.Byte")
-                        ));
-                        il.append(factory.createInvoke(
-                                "java.lang.Byte",
-                                "byteValue",
-                                Type.BYTE,
-                                Type.NO_ARGS,
-                                Constants.INVOKEVIRTUAL
-                        ));
-                    }
-                    else if (returnType.equals(Type.BOOLEAN)) {
-                        il.append(new PUSH(cp, false));
-                        il.append(factory.createReturn(returnType));
-                        elseBranch = il.append(factory.createLoad(Type.OBJECT, idxParam));
-                        il.append(factory.createCheckCast(
-                                new ObjectType("java.lang.Boolean")
-                        ));
-                        il.append(factory.createInvoke(
-                                "java.lang.Boolean",
-                                "booleanValue",
-                                Type.BOOLEAN,
-                                Type.NO_ARGS,
-                                Constants.INVOKEVIRTUAL
-                        ));
-                    }
-                    else {
-                        throw new RuntimeException("unknown return type: " + returnType);
-                    }
-                    // return block in the else branch
-                    ifNullBranch.setTarget(elseBranch);
+                if (returnType.equals(Type.LONG)) {
+                    il.append(factory.createCheckCast(
+                            new ObjectType("java.lang.Long")));
+                    il.append(factory.createInvoke(
+                            "java.lang.Long",
+                            "longValue",
+                            Type.LONG,
+                            Type.NO_ARGS,
+                            Constants.INVOKEVIRTUAL));
+                }
+                else if (returnType.equals(Type.INT)) {
+                    il.append(factory.createCheckCast(
+                            new ObjectType("java.lang.Integer")));
+                    il.append(factory.createInvoke(
+                            "java.lang.Integer",
+                            "intValue",
+                            Type.INT,
+                            Type.NO_ARGS,
+                            Constants.INVOKEVIRTUAL));
+                }
+                else if (returnType.equals(Type.SHORT)) {
+                    il.append(factory.createCheckCast(
+                            new ObjectType("java.lang.Short")));
+                    il.append(factory.createInvoke(
+                            "java.lang.Short",
+                            "shortValue",
+                            Type.SHORT,
+                            Type.NO_ARGS,
+                            Constants.INVOKEVIRTUAL));
+                }
+                else if (returnType.equals(Type.DOUBLE)) {
+                    il.append(factory.createCheckCast(
+                            new ObjectType("java.lang.Double")));
+                    il.append(factory.createInvoke(
+                            "java.lang.Double",
+                            "doubleValue",
+                            Type.DOUBLE,
+                            Type.NO_ARGS,
+                            Constants.INVOKEVIRTUAL));
+                }
+                else if (returnType.equals(Type.FLOAT)) {
+                    il.append(factory.createCheckCast(
+                            new ObjectType("java.lang.Float")));
+                    il.append(factory.createInvoke(
+                            "java.lang.Float",
+                            "floatValue",
+                            Type.FLOAT,
+                            Type.NO_ARGS,
+                            Constants.INVOKEVIRTUAL));
+                }
+                else if (returnType.equals(Type.CHAR)) {
+                    il.append(factory.createCheckCast(
+                            new ObjectType("java.lang.Character")));
+                    il.append(factory.createInvoke(
+                            "java.lang.Character",
+                            "charValue",
+                            Type.CHAR,
+                            Type.NO_ARGS,
+                            Constants.INVOKEVIRTUAL));
+                }
+                else if (returnType.equals(Type.BYTE)) {
+                    il.append(factory.createCheckCast(
+                            new ObjectType("java.lang.Byte")));
+                    il.append(factory.createInvoke(
+                            "java.lang.Byte",
+                            "byteValue",
+                            Type.BYTE,
+                            Type.NO_ARGS,
+                            Constants.INVOKEVIRTUAL));
+                }
+                else if (returnType.equals(Type.BOOLEAN)) {
+                    il.append(factory.createCheckCast(
+                            new ObjectType("java.lang.Boolean")));
+                    il.append(factory.createInvoke(
+                            "java.lang.Boolean",
+                            "booleanValue",
+                            Type.BOOLEAN,
+                            Type.NO_ARGS,
+                            Constants.INVOKEVIRTUAL));
+                }
+                else if (returnType.equals(Type.VOID)) {
+                    // skip
+                }
+                else {
+                    throw new RuntimeException("unknown return type: " + returnType);
                 }
             }
             else {
@@ -878,19 +939,19 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
     }
 
     /**
-     * Callback method. Is being called before each transformation.
+     * JMangler callback method. Is being called before each transformation.
      */
     public void sessionStart() {
     }
 
     /**
-     * Callback method. Is being called after each transformation.
+     * JMangler callback method. Is being called after each transformation.
      */
     public void sessionEnd() {
     }
 
     /**
-     * Callback method. Prints a log/status message at each transformation.
+     * JMangler callback method. Prints a log/status message at each transformation.
      *
      * @return a log string
      */
@@ -899,73 +960,68 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
     }
 
     /**
+     * Checks if a specific method needs to be thread safe.
+     *
+     * @param cg the class gen
+     * @param method the method
+     * @return boolean
+     */
+//    private boolean isThreadSafe(final ClassGen cg, final Method method) {
+//        boolean threadSafe = false;
+//        if (m_weaveModel.hasMethodPointcut(cg.getClassName(), method.getName())) {
+//            threadSafe = m_weaveModel.isMethodPointcutThreadSafe(
+//                    cg.getClassName(), method.getName());
+//        }
+//        else if (m_weaveModel.hasThrowsPointcut(cg.getClassName(), method.getName())) {
+//            threadSafe = m_weaveModel.isThrowsPointcutThreadSafe(
+//                    cg.getClassName(), method.getName());
+//        }
+//        return threadSafe;
+//    }
+
+    /**
      * Filters the classes to be transformed.
      *
-     * @param definition the definition
-     * @param classMetaData the meta-data for the class
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final AspectWerkzDefinition definition,
-                                final ClassMetaData classMetaData,
-                                final ClassGen cg) {
-        if (cg.isInterface() ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
+    private boolean classFilter(final ClassGen cg) {
+        if (cg.isInterface()) {
             return true;
         }
-        String className = cg.getClassName();
-        if (definition.inExcludePackage(className)) {
-            return true;
+        else {
+            return !m_weaveModel.hasAspect(cg.getClassName());
         }
-        if (!definition.inIncludePackage(className)) {
-            return true;
-        }
-        if (definition.hasExecutionPointcut(classMetaData) ||
-                definition.hasThrowsPointcut(classMetaData)) {
-            return false;
-        }
-        return true;
     }
 
     /**
      * Filters the methods to be transformed.
      *
-     * @param definition the definition
-     * @param classMetaData the class meta-data
-     * @param methodMetaData the method meta-data
-     * @param method the method to filter
-     * @return boolean
+     * @param cg the ClassGen
+     * @param methodMetaData the method to filter
+     * @return boolean true if the method should be filtered away
      */
-    private boolean methodFilter(final AspectWerkzDefinition definition,
-                                 final ClassMetaData classMetaData,
-                                 final MethodMetaData methodMetaData,
-                                 final Method method) {
-        if (method.isAbstract() || method.isNative() ||
-                method.getName().equals("<init>") ||
-                method.getName().equals("<clinit>") ||
-                method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
-                method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
-                method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+    private boolean methodFilter(final ClassGen cg,
+                                 final MethodMetaData methodMetaData) {
+        if (methodMetaData.getName().equals("<init>") ||
+                methodMetaData.getName().equals("<clinit>") ||
+                methodMetaData.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
+                methodMetaData.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
+                methodMetaData.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
+                methodMetaData.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
         }
-        else if (definition.hasExecutionPointcut(classMetaData, methodMetaData)) {
-            return false;
-        }
-        else if (definition.hasThrowsPointcut(classMetaData, methodMetaData)) {
-            return false;
-        }
-//        //TODO: not sufficient, need to match the method signature as well (without the prefixes)
-//        else if (method.getName().startsWith("___AW_wrapped_original_method")) {
-//            return false;
-//        }
         else {
-            return true;
+            if (m_weaveModel.hasMethodPointcut(
+                    cg.getClassName(), methodMetaData)) {
+                return false;
+            }
+            if (m_weaveModel.hasThrowsPointcut(
+                    cg.getClassName(), methodMetaData)) {
+                return false;
+            }
         }
+        return true;
     }
 
     /**
@@ -975,14 +1031,14 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @param methodSequence the method sequence
      * @return the name of the join point
      */
-    private String getJoinPointName(final Method method,
-                                    final int methodSequence) {
+    private StringBuffer getJoinPointName(final Method method,
+                                          final int methodSequence) {
         final StringBuffer joinPoint = new StringBuffer();
         joinPoint.append(TransformationUtil.STATIC_METHOD_JOIN_POINT_PREFIX);
         joinPoint.append(method.getName());
         joinPoint.append(TransformationUtil.DELIMITER);
         joinPoint.append(methodSequence);
-        return joinPoint.toString();
+        return joinPoint;
     }
 
     /**
@@ -990,20 +1046,17 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      *
      * @param method the method
      * @param methodSequence the method sequence
-     * @param className FQN of the declaring class
      * @return the name of the join point
      */
-    private static String getPrefixedMethodName(final Method method,
-                                                final int methodSequence,
-                                                final String className) {
+    private static StringBuffer getPrefixedMethodName(final Method method,
+                                                      final int methodSequence) {
         final StringBuffer methodName = new StringBuffer();
         methodName.append(TransformationUtil.ORIGINAL_METHOD_PREFIX);
         methodName.append(method.getName());
         methodName.append(TransformationUtil.DELIMITER);
         methodName.append(methodSequence);
-        methodName.append(TransformationUtil.DELIMITER);
-        methodName.append(className.replace('.', '_'));
-        return methodName.toString();
+        return methodName;
     }
+    ///CLOVER:ON
 }
 

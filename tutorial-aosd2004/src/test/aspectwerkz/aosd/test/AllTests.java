@@ -10,14 +10,13 @@ package aspectwerkz.aosd.test;
 import junit.framework.TestCase;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * Runs all tests in the system.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AllTests extends WeavedTestCase {
+public class AllTests extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("All tests");

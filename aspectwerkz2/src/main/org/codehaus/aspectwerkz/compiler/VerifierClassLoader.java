@@ -2,13 +2,13 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.compiler;
 
-import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URL;
 
 /**
  * VerifierClassLoader does not follow parent delegation model.
@@ -17,38 +17,29 @@ import java.net.URLClassLoader;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class VerifierClassLoader extends URLClassLoader
-{
-    public VerifierClassLoader(URL[] urls, ClassLoader parent)
-    {
+public class VerifierClassLoader extends URLClassLoader {
+
+    public VerifierClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
     }
 
     protected synchronized Class loadClass(String name, boolean resolve)
-        throws ClassNotFoundException
-    {
+            throws ClassNotFoundException {
         // First, check if the class has already been loaded
         Class c = findLoadedClass(name);
-
-        if (c == null)
-        {
-            try
-            {
+        if (c == null) {
+            try {
                 // try to load the class localy
                 c = findClass(name);
             }
-            catch (ClassNotFoundException e)
-            {
+            catch (ClassNotFoundException e) {
                 // delegate to parent
                 c = getParent().loadClass(name);
             }
         }
-
-        if (resolve)
-        {
+        if (resolve) {
             resolveClass(c);
         }
-
         return c;
     }
 }

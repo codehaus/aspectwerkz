@@ -12,8 +12,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import aspectwerkz.aosd.context.Context;
-import aspectwerkz.aosd.context.UserContext;
+import aspectwerkz.aosd.Context;
+import aspectwerkz.aosd.UserContext;
 import aspectwerkz.aosd.definition.SecurityDefinition;
 import aspectwerkz.aosd.security.principal.SimplePrincipal;
 import aspectwerkz.aosd.security.principal.PrincipalStore;
@@ -26,14 +26,13 @@ import aspectwerkz.aosd.app.service.CustomerManagerImpl;
 import aspectwerkz.aosd.app.domain.Customer;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * Tests for the security handling.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class SecurityHandlingTest extends WeavedTestCase {
+public class SecurityHandlingTest extends TestCase {
 
     private static final String PRINCIPAL = "jboner";
     private static final String CREDENTIAL = "jboner";

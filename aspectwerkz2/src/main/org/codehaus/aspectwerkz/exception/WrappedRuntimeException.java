@@ -2,7 +2,7 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.exception;
@@ -15,8 +15,8 @@ import java.io.PrintWriter;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class WrappedRuntimeException extends RuntimeException
-{
+public class WrappedRuntimeException extends RuntimeException {
+
     /**
      * The original throwable instance.
      */
@@ -27,8 +27,7 @@ public class WrappedRuntimeException extends RuntimeException
      *
      * @param throwable the non-RuntimeException to be wrapped.
      */
-    public WrappedRuntimeException(final Throwable throwable)
-    {
+    public WrappedRuntimeException(final Throwable throwable) {
         m_throwable = throwable;
     }
 
@@ -37,18 +36,17 @@ public class WrappedRuntimeException extends RuntimeException
      *
      * @return the error message string of the wrapped exception
      */
-    public String getMessage()
-    {
+    public String getMessage() {
         return m_throwable.getMessage();
     }
 
     /**
-     * Returns the localized description of the wrapped exception in order to produce a locale-specific message.
+     * Returns the localized description of the wrapped exception in order to produce a
+     * locale-specific message.
      *
      * @return the localized description of the wrapped exception.
      */
-    public String getLocalizedMessage()
-    {
+    public String getLocalizedMessage() {
         return m_throwable.getLocalizedMessage();
     }
 
@@ -57,8 +55,7 @@ public class WrappedRuntimeException extends RuntimeException
      *
      * @return the cause
      */
-    public Throwable getCause()
-    {
+    public Throwable getCause() {
         return m_throwable;
     }
 
@@ -67,18 +64,15 @@ public class WrappedRuntimeException extends RuntimeException
      *
      * @return a string representation of the wrapped exception.
      */
-    public String toString()
-    {
+    public String toString() {
         return m_throwable.toString();
     }
 
-    ///CLOVER:OFF
-
+///CLOVER:OFF
     /**
      * Prints the wrapped exception A its backtrace to the standard error stream.
      */
-    public void printStackTrace()
-    {
+    public void printStackTrace() {
         m_throwable.printStackTrace();
     }
 
@@ -87,8 +81,7 @@ public class WrappedRuntimeException extends RuntimeException
      *
      * @param s the print stream
      */
-    public void printStackTrace(final PrintStream s)
-    {
+    public void printStackTrace(final PrintStream s) {
         m_throwable.printStackTrace(s);
     }
 
@@ -97,10 +90,8 @@ public class WrappedRuntimeException extends RuntimeException
      *
      * @param s the print writer
      */
-    public void printStackTrace(final PrintWriter s)
-    {
+    public void printStackTrace(final PrintWriter s) {
         m_throwable.printStackTrace(s);
     }
-
-    ///CLOVER:ON
+///CLOVER:ON
 }

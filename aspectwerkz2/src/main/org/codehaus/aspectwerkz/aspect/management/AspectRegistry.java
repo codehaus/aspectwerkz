@@ -2,80 +2,60 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect.management;
 
-import gnu.trove.TIntObjectHashMap;
-import gnu.trove.TObjectIntHashMap;
-
-import org.codehaus.aspectwerkz.ConstructorTuple;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
-import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.MethodTuple;
-import org.codehaus.aspectwerkz.Mixin;
-import org.codehaus.aspectwerkz.aspect.AspectContainer;
+import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.aspect.Introduction;
-import org.codehaus.aspectwerkz.aspect.IntroductionContainer;
+import org.codehaus.aspectwerkz.aspect.DefaultIntroductionContainerStrategy;
+import org.codehaus.aspectwerkz.pointcut.PointcutManager;
+import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.Mixin;
+import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.expression.PointcutType;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.codehaus.aspectwerkz.util.Strings;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Iterator;
+import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
+import java.util.HashMap;
+import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
+
+import gnu.trove.TObjectIntHashMap;
+import gnu.trove.TLongObjectHashMap;
 
 /**
  * Stores the aspects, advices, pointcuts etc. Manages the method, advice and aspect indexing.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- *
- * @TODO Use hashes, aspect=>hashcode for class advice=>hashcode for method signature
- * @TODO Store references to all join points that uses advices from a certain aspect [aspectKey=>joinPoints]
- * @TODO Map all aspects to a key, meaning have a key that maps to a data structure that contains full info about the
+ * TODO: FIRST REFACTOR
+ * 1. Use hashes, aspect=>hashcode for class advice=>hashcode for method signature
+ * 3. Store references to all join points that uses advices from a certain aspect [aspectKey=>joinPoints]
+ * 4. Map all aspects to a key, meaning have a key that maps to a data structure that contains full info about the
  * aspect and all its advice methods. [aspectKey=>aspectDataStructure].
+ *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AspectRegistry
-{
-    /**
-     * Holds references to the methods to the advised classes in the system.
-     */
-    private final static Map s_methods = new HashMap(); //WEAK
+public class AspectRegistry {
 
     /**
-     * Holds references to the fields to the advised classes in the system.
+     * The UUID for the system.
      */
-    private final static Map s_fields = new HashMap();
-
-    /**
-     * Holds references to all the the advised constructors in the system, maps the target Class to a sorted list of all
-     * the advised constructors in the class.
-     */
-    private final static Map s_constructors = new HashMap();
-
-    /**
-     * The AspectManager for the system.
-     */
-    private final AspectManager m_aspectManager;
+    private final String m_uuid;
 
     /**
      * The definition.
@@ -88,10 +68,10 @@ public class AspectRegistry
     private boolean m_initialized = false;
 
     /**
-     * Sorted map with PointcutManager instance containing the pointcut instance the aspect, mapped to its name (the
-     * name of the class implementing the aspect).
+     * Sorted map with PointcutManager instance containing the pointcut instance the aspect,
+     * mapped to its name (the name of the class implementing the aspect).
      */
-    private final Map m_pointcutManagerMap = new SequencedHashMap();
+    private final Map m_aspectMetaDataMap = new SequencedHashMap();
 
     /**
      * Holds the indexes for the aspects, maps the aspect name to the index for the aspect.
@@ -99,15 +79,15 @@ public class AspectRegistry
     private final TObjectIntHashMap m_aspectIndexes = new TObjectIntHashMap();
 
     /**
-     * Holds the index (a tuple of the aspect index and the advice index) for the advices, mapped to its name
-     * ([fullyQualifiedClassName].[methodName]).
+     * Holds the index (a tuple of the aspect index and the advice index) for the advices,
+     * mapped to its name ([fullyQualifiedClassName].[methodName]).
      */
     private final Map m_adviceIndexes = new HashMap();
 
     /**
-     * An array with all the the aspect containers in the system.
+     * An array with all the the Aspect prototypes in the system.
      */
-    private AspectContainer[] m_aspectContainers = new AspectContainer[0];
+    private Aspect[] m_aspects = new Aspect[0];
 
     /**
      * An array of all the mixins in the system, each nested class in aspect has its own index.
@@ -115,175 +95,97 @@ public class AspectRegistry
     private Mixin[] m_mixins = new Mixin[0];
 
     /**
+     * Holds references to all the the advised methods in the system, maps the target Class to a sorted list of
+     * all the advised methods in the class.
+     */
+    private final Map m_methods = new HashMap();
+
+    /**
+     * Holds references to all the the advised constructors in the system, maps the target Class to a sorted list of
+     * all the advised constructors in the class.
+     */
+    private final Map m_constructors = new HashMap();
+
+    /**
      * Creates a new aspect registry.
      *
-     * @param aspectManager the system aspectManager
+     * @param uuid the system UUID
      * @param definition the system definition
      */
-    public AspectRegistry(final AspectManager aspectManager,
-        final SystemDefinition definition)
-    {
-        m_aspectManager = aspectManager;
+    public AspectRegistry(final String uuid, final SystemDefinition definition) {
+        m_uuid = uuid;
         m_definition = definition;
     }
 
     /**
-     * Initializes the aspect registry. The initialization needs to be separated fromt he construction of the registry,
-     * and is triggered by the runtime system.
+     * Initializes the aspect registry. The initialization needs to be separated fromt he construction
+     * of the registry, and is triggered by the runtime system.
      */
-    public void initialize()
-    {
-        synchronized (this)
-        {
-            if (m_initialized)
-            {
-                return;
-            }
-
+    public void initialize() {
+        synchronized (this) {
+            if (m_initialized) return;
             m_initialized = true;
-            StartupManager.initializeSystem(m_aspectManager, m_definition);
+            StartupManager.initializeSystem(m_uuid, m_definition);
         }
     }
 
     /**
      * Registers a new aspect.
      *
-     * @param container       the container for the aspect to register
-     * @param pointcutManager the pointcut manager
+     * @param aspect the aspect to register
+     * @param aspectMetaData the aspect meta-data
      */
-    public void register(final AspectContainer container,
-        final PointcutManager pointcutManager)
-    {
-        if (container == null)
-        {
-            throw new IllegalArgumentException(
-                "aspect container can not be null");
-        }
+    public void register(final Aspect aspect, final PointcutManager aspectMetaData) {
+        if (aspect == null) throw new IllegalArgumentException("aspect can not be null");
+        if (aspectMetaData == null) throw new IllegalArgumentException("aspect meta-data can not be null");
 
-        if (pointcutManager == null)
-        {
-            throw new IllegalArgumentException(
-                "pointcut manager can not be null");
-        }
+        synchronized (m_aspects) {
+            synchronized (m_aspectIndexes) {
+                synchronized (m_adviceIndexes) {
+                    synchronized (m_mixins) {
+                        synchronized (m_aspectMetaDataMap) {
+                            try {
+                                m_aspectMetaDataMap.put(aspect.___AW_getName(), aspectMetaData);
 
-        synchronized (m_aspectContainers)
-        {
-            synchronized (m_aspectIndexes)
-            {
-                synchronized (m_adviceIndexes)
-                {
-                    synchronized (m_mixins)
-                    {
-                        synchronized (m_pointcutManagerMap)
-                        {
-                            try
-                            {
-                                //                                System.out.println("AspectRegistry.register "
-                                //                                    + aspect.getCrossCuttingInfo().getName() + " "
-                                //                                    + this.m_aspectManager.getUuid() + " "
-                                //                                    + this
-                                //                                );
-                                CrossCuttingInfo crossCuttingInfo = container
-                                    .getCrossCuttingInfo();
+                                final int indexAspect = m_aspects.length + 1;
+                                m_aspectIndexes.put(aspect.___AW_getName(), indexAspect);
 
-                                m_pointcutManagerMap.put(crossCuttingInfo
-                                    .getName(), pointcutManager); //AVAOPC what is this name as a key here
+                                final Aspect[] tmpAspects = new Aspect[m_aspects.length + 1];
+                                java.lang.System.arraycopy(m_aspects, 0, tmpAspects, 0, m_aspects.length);
 
-                                // aspects
-                                final int indexAspect = m_aspectContainers.length
-                                    + 1;
+                                tmpAspects[m_aspects.length] = aspect;
 
-                                m_aspectIndexes.put(crossCuttingInfo.getName(),
-                                    indexAspect);
-
-                                final Object[] tmpAspects = new Object[m_aspectContainers.length
-                                    + 1];
-
-                                java.lang.System.arraycopy(m_aspectContainers,
-                                    0, tmpAspects, 0, m_aspectContainers.length);
-
-                                tmpAspects[m_aspectContainers.length] = container;
-
-                                m_aspectContainers = new AspectContainer[m_aspectContainers.length
-                                    + 1];
-                                java.lang.System.arraycopy(tmpAspects, 0,
-                                    m_aspectContainers, 0, tmpAspects.length);
+                                m_aspects = new Aspect[m_aspects.length + 1];
+                                java.lang.System.arraycopy(tmpAspects, 0, m_aspects, 0, tmpAspects.length);
 
                                 // retrieve a sorted advices list => matches the sorted method list in the container
-                                List advices = crossCuttingInfo.getAspectDefinition()
-                                                               .getAllAdvices();
-
-                                for (Iterator it = advices.iterator();
-                                    it.hasNext();)
-                                {
-                                    final AdviceDefinition adviceDef = (AdviceDefinition) it
-                                        .next();
-                                    IndexTuple tuple = new IndexTuple(indexAspect,
-                                            adviceDef.getMethodIndex(),
-                                            m_aspectManager.getUuid(),
-                                            m_aspectManager);
-
-                                    //prefix AdviceName with AspectName to allow AspectReuse
-                                    m_adviceIndexes.put(crossCuttingInfo
-                                        .getName() + "/" + adviceDef.getName(),
-                                        tuple);
-
-                                    //                                    System.out.println("IndexTuple = "+ m_aspectManager.getUuid() +
-                                    //                                            ", " + aspect.getCrossCuttingInfo().getName() +
-                                    //                                            ", " + adviceDef.getName() +
-                                    //                                            ", "+indexAspect +
-                                    //                                            ", "+adviceDef.getMethodIndex()+
-                                    //                                            ", "+tuple.toString()
-                                    //                                    );
+                                List advices = aspect.___AW_getAspectDef().getAllAdvices();
+                                for (Iterator it = advices.iterator(); it.hasNext();) {
+                                    final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
+                                    m_adviceIndexes.put(
+                                            adviceDef.getName(),
+                                            new IndexTuple(indexAspect, adviceDef.getMethodIndex())
+                                    );
                                 }
 
-                                // mixins
-                                List introductions = crossCuttingInfo.getAspectDefinition()
-                                                                     .getIntroductions();
-
-                                for (Iterator it = introductions.iterator();
-                                    it.hasNext();)
-                                {
-                                    IntroductionDefinition introDef = (IntroductionDefinition) it
-                                        .next();
-
+                                List introductions = aspect.___AW_getAspectDef().getIntroductions();
+                                for (Iterator it = introductions.iterator(); it.hasNext();) {
+                                    IntroductionDefinition introDef = (IntroductionDefinition)it.next();
                                     // load default mixin impl from the aspect which defines it
-                                    Class defaultImplClass = crossCuttingInfo.getAspectClass()
-                                                                             .getClassLoader()
-                                                                             .loadClass(introDef
-                                            .getName());
-                                    Introduction mixin = new Introduction(introDef
-                                            .getName(), defaultImplClass,
-                                            crossCuttingInfo, introDef);
-
+                                    Class defaultImplClass = aspect.getClass().getClassLoader().loadClass(introDef.getName());
+                                    Introduction mixin = new Introduction(introDef.getName(), defaultImplClass, aspect, introDef);
                                     // prepare the container
-                                    mixin.setContainer(new IntroductionContainer(
-                                            mixin, container));
-
-                                    final Mixin[] tmpMixins = new Mixin[m_mixins.length
-                                        + 1];
-
-                                    java.lang.System.arraycopy(m_mixins, 0,
-                                        tmpMixins, 0, m_mixins.length);
+                                    DefaultIntroductionContainerStrategy introContainer = new DefaultIntroductionContainerStrategy(mixin, aspect.___AW_getContainer());
+                                    mixin.setContainer(introContainer);
+                                    final Mixin[] tmpMixins = new Mixin[m_mixins.length + 1];
+                                    java.lang.System.arraycopy(m_mixins, 0, tmpMixins, 0, m_mixins.length);
                                     tmpMixins[m_mixins.length] = mixin;
                                     m_mixins = new Mixin[m_mixins.length + 1];
-                                    java.lang.System.arraycopy(tmpMixins, 0,
-                                        m_mixins, 0, tmpMixins.length);
+                                    java.lang.System.arraycopy(tmpMixins, 0, m_mixins, 0, tmpMixins.length);
                                 }
                             }
-                            catch (Exception e)
-                            {
-                                throw new DefinitionException(
-                                    "could not register aspect ["
-                                    + container.getCrossCuttingInfo().getName()
-                                    + "] due to: " + e.toString());
-                            }
-
-                            if (m_aspectContainers.length != m_aspectIndexes
-                                .size())
-                            {
-                                throw new IllegalStateException(
-                                    "aspect indexing out of synch");
+                            catch (Exception e) {
+                                throw new DefinitionException("could not register aspect [" + aspect.___AW_getName() + "] due to: " + e.toString());
                             }
                         }
                     }
@@ -293,78 +195,49 @@ public class AspectRegistry
     }
 
     /**
-     * Retrieves a specific aspect container based on index.
+     * Retrieves a specific aspect based on index.
      *
      * @param index the index of the aspect
-     * @return the aspect container
+     * @return the aspect
      */
-    public AspectContainer getAspectContainer(final int index)
-    {
-        AspectContainer aspect;
-
-        try
-        {
-            aspect = m_aspectContainers[index - 1];
+    public Aspect getAspect(final int index) {
+        Aspect aspect;
+        try {
+            aspect = m_aspects[index - 1];
         }
-        catch (Throwable e)
-        {
+        catch (Throwable e) {
             initialize();
-
-            try
-            {
-                aspect = m_aspectContainers[index - 1];
+            try {
+                aspect = m_aspects[index - 1];
             }
-            catch (ArrayIndexOutOfBoundsException e1)
-            {
+            catch (ArrayIndexOutOfBoundsException e1) {
                 throw new DefinitionException("no aspect with index " + index);
             }
         }
-
         return aspect;
     }
 
     /**
-     * Returns the aspect container for a specific name.
-     *
-     * @param name the name of the aspect
-     * @return the the aspect container
-     */
-    public AspectContainer getAspectContainer(final String name)
-    {
-        AspectContainer container = null;
-
-        try
-        {
-            container = m_aspectContainers[m_aspectIndexes.get(name) - 1];
-        }
-        catch (Throwable e1)
-        {
-            initialize();
-
-            try
-            {
-                container = m_aspectContainers[m_aspectIndexes.get(name) - 1];
-            }
-            catch (ArrayIndexOutOfBoundsException e2)
-            {
-                throw new DefinitionException(
-                    "container for cross-cutting class [" + name
-                    + "] is not properly defined");
-            }
-        }
-
-        return container;
-    }
-
-    /**
-     * Returns the aspect for a specific name, deployed as perJVM.
+     * Returns the aspect for a specific name.
      *
      * @param name the name of the aspect
      * @return the the aspect
      */
-    public CrossCuttingInfo getCrossCuttingInfo(final String name)
-    {
-        return getAspectContainer(name).getCrossCuttingInfo();
+    public Aspect getAspect(final String name) {
+        Aspect aspect;
+        try {
+            aspect = m_aspects[m_aspectIndexes.get(name) - 1];
+        }
+        catch (Throwable e1) {
+            initialize();
+            try {
+                aspect = m_aspects[m_aspectIndexes.get(name) - 1];
+            }
+            catch (ArrayIndexOutOfBoundsException e2) {
+                throw new DefinitionException("aspect [" + name + "] is not properly defined");
+            }
+        }
+        return aspect;
     }
 
     /**
@@ -373,28 +246,20 @@ public class AspectRegistry
      * @param index the index of the introduction (aspect in this case)
      * @return the the mixin (aspect in this case)
      */
-    public Mixin getMixin(final int index)
-    {
+    public Mixin getMixin(final int index) {
         Mixin mixin;
-
-        try
-        {
+        try {
             mixin = m_mixins[index - 1];
         }
-        catch (Throwable e1)
-        {
+        catch (Throwable e1) {
             initialize();
-
-            try
-            {
+            try {
                 mixin = m_mixins[index - 1];
             }
-            catch (ArrayIndexOutOfBoundsException e2)
-            {
+            catch (ArrayIndexOutOfBoundsException e2) {
                 throw new DefinitionException("no mixin with index " + index);
             }
         }
-
         return mixin;
     }
 
@@ -404,36 +269,22 @@ public class AspectRegistry
      * @param name the name of the introduction (aspect in this case)
      * @return the the mixin (aspect in this case)
      */
-    public Mixin getMixin(final String name)
-    {
-        if (name == null)
-        {
-            throw new IllegalArgumentException(
-                "introduction name can not be null");
-        }
+    public Mixin getMixin(final String name) {
+        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
 
         Mixin introduction;
-
-        try
-        {
+        try {
             introduction = m_mixins[m_definition.getMixinIndexByName(name) - 1];
         }
-        catch (Throwable e1)
-        {
+        catch (Throwable e1) {
             initialize();
-
-            try
-            {
-                introduction = m_mixins[m_definition.getMixinIndexByName(name)
-                    - 1];
+            try {
+                introduction = m_mixins[m_definition.getMixinIndexByName(name) - 1];
             }
-            catch (ArrayIndexOutOfBoundsException e2)
-            {
-                throw new DefinitionException("no introduction with name "
-                    + name);
+            catch (ArrayIndexOutOfBoundsException e2) {
+                throw new DefinitionException("no introduction with name " + name);
             }
         }
-
         return introduction;
     }
 
@@ -443,21 +294,10 @@ public class AspectRegistry
      * @param name the name of the aspect
      * @return the index of the aspect
      */
-    public int getAspectIndexFor(final String name)
-    {
-        if (name == null)
-        {
-            throw new IllegalArgumentException("aspect name can not be null");
-        }
-
+    public int getAspectIndexFor(final String name) {
+        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
         final int index = m_aspectIndexes.get(name);
-
-        if (index == 0)
-        {
-            throw new DefinitionException("aspect " + name
-                + " is not properly defined");
-        }
-
+        if (index == 0) throw new DefinitionException("aspect " + name + " is not properly defined");
         return index;
     }
 
@@ -467,103 +307,69 @@ public class AspectRegistry
      * @param name the name of the advice
      * @return the index of the advice
      */
-    public IndexTuple getAdviceIndexFor(final String name)
-    {
-        if (name == null)
-        {
-            throw new IllegalArgumentException("advice name can not be null");
-        }
-
-        final IndexTuple index = (IndexTuple) m_adviceIndexes.get(name);
-
-        if (index == null)
-        {
-            throw new DefinitionException("advice " + name
-                + " is not properly defined");
-        }
-
+    public IndexTuple getAdviceIndexFor(final String name) {
+        if (name == null) throw new IllegalArgumentException("advice name can not be null");
+        final IndexTuple index = (IndexTuple)m_adviceIndexes.get(name);
+        if (index == null) throw new DefinitionException("advice " + name + " is not properly defined");
         return index;
     }
 
     /**
-     * Returns the pointcut managers for the name specified.
+     * Returns the aspect meta-data for the name specified.
      *
      * @param name the name of the aspect
-     * @return the pointcut manager
+     * @return the aspect
      */
-    public PointcutManager getPointcutManager(final String name)
-    {
-        if (name == null)
-        {
-            throw new IllegalArgumentException("aspect name can not be null");
+    public PointcutManager getAspectMetaData(final String name) {
+        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
+        if (m_aspectMetaDataMap.containsKey(name)) {
+            return (PointcutManager)m_aspectMetaDataMap.get(name);
         }
-
-        if (m_pointcutManagerMap.containsKey(name))
-        {
-            return (PointcutManager) m_pointcutManagerMap.get(name);
-        }
-        else
-        {
+        else {
             initialize();
-
-            if (m_pointcutManagerMap.containsKey(name))
-            {
-                return (PointcutManager) m_pointcutManagerMap.get(name);
+            if (m_aspectMetaDataMap.containsKey(name)) {
+                return (PointcutManager)m_aspectMetaDataMap.get(name);
             }
-            else
-            {
-                throw new DefinitionException("aspect " + name
-                    + " is not properly defined");
+            else {
+                throw new DefinitionException("aspect " + name + " is not properly defined");
             }
         }
     }
 
     /**
-     * Returns a list with all the pointcut managers.
+     * Returns a list with all the aspects meta-data.
      *
-     * @return the pointcut managers
+     * @return the aspects
      */
-    public Collection getPointcutManagers()
-    {
+    public Collection getAspectsMetaData() {
         initialize();
-
-        return m_pointcutManagerMap.values();
+        return m_aspectMetaDataMap.values();
     }
 
     /**
-     * Returns an array with all the aspect containers.
+     * Returns an array with all the aspects.
      *
-     * @return the aspect containers
+     * @return the aspects
      */
-    public AspectContainer[] getAspectContainers()
-    {
+    public Aspect[] getAspects() {
         initialize();
-
-        return m_aspectContainers;
+        return m_aspects;
     }
 
     /**
-     * Returns the execution pointcut list for the class and member specified.
+     * Returns the execution pointcut list for the class and method specified.
      *
-     * @param classMetaData  the meta-data for the class
-     * @param memberMetaData meta-data for the member
+     * @param classMetaData the meta-data for the class
+     * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getExecutionPointcuts(final ClassMetaData classMetaData,
-        final MemberMetaData memberMetaData)
-    {
+    public List getExecutionPointcuts(final ClassMetaData classMetaData, final MethodMetaData methodMetaData) {
         List pointcuts = new ArrayList();
-
-        for (Iterator it = m_pointcutManagerMap.values().iterator();
-            it.hasNext();)
-        {
-            PointcutManager pointcutManager = (PointcutManager) it.next();
-            List executionPointcuts = pointcutManager.getExecutionPointcuts(classMetaData,
-                    memberMetaData);
-
-            pointcuts.addAll(executionPointcuts);
+        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
+            PointcutManager aspect = (PointcutManager)it.next();
+            List methodPointcuts = aspect.getExecutionPointcuts(classMetaData, methodMetaData);
+            pointcuts.addAll(methodPointcuts);
         }
-
         return pointcuts;
     }
 
@@ -574,20 +380,12 @@ public class AspectRegistry
      * @param fieldMetaData meta-data for the field
      * @return the pointcuts for this join point
      */
-    public List getGetPointcuts(final ClassMetaData classMetaData,
-        final FieldMetaData fieldMetaData)
-    {
+    public List getGetPointcuts(final ClassMetaData classMetaData, final FieldMetaData fieldMetaData) {
         List pointcuts = new ArrayList();
-
-        for (Iterator it = m_pointcutManagerMap.values().iterator();
-            it.hasNext();)
-        {
-            PointcutManager pointcutManager = (PointcutManager) it.next();
-
-            pointcuts.addAll(pointcutManager.getGetPointcuts(classMetaData,
-                    fieldMetaData));
+        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
+            PointcutManager aspect = (PointcutManager)it.next();
+            pointcuts.addAll(aspect.getGetPointcuts(classMetaData, fieldMetaData));
         }
-
         return pointcuts;
     }
 
@@ -598,95 +396,61 @@ public class AspectRegistry
      * @param fieldMetaData meta-data for the field
      * @return the pointcuts for this join point
      */
-    public List getSetPointcuts(final ClassMetaData classMetaData,
-        final FieldMetaData fieldMetaData)
-    {
+    public List getSetPointcuts(final ClassMetaData classMetaData, final FieldMetaData fieldMetaData) {
         List pointcuts = new ArrayList();
-
-        for (Iterator it = m_pointcutManagerMap.values().iterator();
-            it.hasNext();)
-        {
-            PointcutManager pointcutManager = (PointcutManager) it.next();
-
-            pointcuts.addAll(pointcutManager.getSetPointcuts(classMetaData,
-                    fieldMetaData));
+        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
+            PointcutManager aspect = (PointcutManager)it.next();
+            pointcuts.addAll(aspect.getSetPointcuts(classMetaData, fieldMetaData));
         }
-
         return pointcuts;
     }
 
     /**
-     * Returns the handler pointcut list for the class and field specified.
+     * Returns the throws pointcut list for the class and method specified.
      *
      * @param classMetaData the meta-data for the class
+     * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getHandlerPointcuts(final ClassMetaData classMetaData)
-    {
+    public List getThrowsPointcuts(final ClassMetaData classMetaData, final MethodMetaData methodMetaData) {
         List pointcuts = new ArrayList();
-
-        for (Iterator it = m_pointcutManagerMap.values().iterator();
-            it.hasNext();)
-        {
-            PointcutManager pointcutManager = (PointcutManager) it.next();
-            List handlerPointcuts = pointcutManager.getHandlerPointcuts(classMetaData);
-
-            pointcuts.addAll(handlerPointcuts);
+        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
+            PointcutManager aspect = (PointcutManager)it.next();
+            pointcuts.addAll(aspect.getThrowsPointcuts(classMetaData, methodMetaData));
         }
-
         return pointcuts;
     }
 
     /**
-     * Returns the call pointcut list for the class and member specified.
+     * Returns the call pointcut list for the class and method specified.
      *
-     * @param classMetaData  the meta-data for the class
-     * @param memberMetaData meta-data for the member
+     * @param classMetaData the meta-data for the class
+     * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getCallPointcuts(final ClassMetaData classMetaData,
-        final MemberMetaData memberMetaData)
-    {
+    public List getCallPointcuts(final ClassMetaData classMetaData, final MethodMetaData methodMetaData) {
         List pointcuts = new ArrayList();
-
-        for (Iterator it = m_pointcutManagerMap.values().iterator();
-            it.hasNext();)
-        {
-            PointcutManager pointcutManager = (PointcutManager) it.next();
-
-            pointcuts.addAll(pointcutManager.getCallPointcuts(classMetaData,
-                    memberMetaData));
+        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
+            PointcutManager aspect = (PointcutManager)it.next();
+            pointcuts.addAll(aspect.getCallPointcuts(classMetaData, methodMetaData));
         }
-
         return pointcuts;
     }
 
     /**
-     * Returns the cflow expressions list for the class and method specified.
+     * Returns the cflow pointcut list for the class and method specified.
      *
-     * @param classMetaData       the meta-data for the class
-     * @param memberMetaData      meta-data for the method | field
-     * @param callerClassMetaData
-     * @param pointcutType
-     * @return the expression with 1+ cflow for this join point (optimized thru inflated evaluation)
+     * @param classMetaData the meta-data for the class
+     * @param methodMetaData meta-data for the method
+     * @return the pointcuts for this join point
      */
-    public List getCflowExpressions(final ClassMetaData classMetaData,
-        final MemberMetaData memberMetaData,
-        final ClassMetaData callerClassMetaData, final PointcutType pointcutType)
-    {
-        List expressions = new ArrayList();
-
-        for (Iterator it = m_pointcutManagerMap.values().iterator();
-            it.hasNext();)
-        {
-            PointcutManager pointcutManager = (PointcutManager) it.next();
-
-            expressions.addAll(pointcutManager.getCFlowExpressions(
-                    classMetaData, memberMetaData, callerClassMetaData,
-                    pointcutType));
+    public List getCflowPointcuts(final ClassMetaData classMetaData, final MethodMetaData methodMetaData) {
+        List pointcuts = new ArrayList();
+        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
+            PointcutManager aspect = (PointcutManager)it.next();
+            pointcuts.addAll(aspect.getCFlowExpressions(classMetaData, methodMetaData));
         }
-
-        return expressions;
+        return pointcuts;
     }
 
     /**
@@ -695,21 +459,14 @@ public class AspectRegistry
      * @param name the name of the aspect
      * @return boolean true if the class has an aspect defined
      */
-    public boolean hasAspect(final String name)
-    {
-        if (name == null)
-        {
-            throw new IllegalArgumentException("aspect name can not be null");
-        }
+    public boolean hasAspect(final String name) {
+        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
 
         initialize();
-
-        if (m_pointcutManagerMap.containsKey(name))
-        {
+        if (m_aspectMetaDataMap.containsKey(name)) {
             return true;
         }
-        else
-        {
+        else {
             return false;
         }
     }
@@ -717,128 +474,75 @@ public class AspectRegistry
     /**
      * Returns a specific method by the class and the method hash.
      *
-     * @param klass      the class housing the method
+     * @param klass the class housing the method
      * @param methodHash the method hash
-     * @return the method tuple
+     * @return the method
      */
-    public static MethodTuple getMethodTuple(final Class klass,
-        final int methodHash)
-    {
-        if (klass == null)
-        {
-            throw new IllegalArgumentException("class can not be null");
-        }
+    public Method getMethod(final Class klass, final int methodHash) {
+        if (klass == null) throw new IllegalArgumentException("class can not be null");
+        if (methodHash < 0) throw new IllegalArgumentException("method hash is not a valid hash");
 
-        try
-        {
+        try {
             // create the method repository lazily
-            if (!s_methods.containsKey(klass))
-            {
+            if (!m_methods.containsKey(klass)) {
                 createMethodRepository(klass);
             }
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
 
-        MethodTuple methodTuple;
-
-        try
-        {
-            methodTuple = (MethodTuple) ((TIntObjectHashMap) s_methods.get(klass))
-                .get(methodHash);
+        Method method;
+        try {
+            method = (Method)((TLongObjectHashMap)m_methods.get(klass)).get(methodHash);
         }
-        catch (Throwable e1)
-        {
-            throw new WrappedRuntimeException(e1);
+        catch (Throwable e1) {
+            initialize();
+            try {
+                method = (Method)((TLongObjectHashMap)m_methods.get(klass)).get(methodHash);
+            }
+            catch (Exception e) {
+                throw new WrappedRuntimeException(e);
+            }
         }
-
-        return methodTuple;
+        return method;
     }
 
     /**
      * Returns a specific constructor by the class and the method hash.
      *
-     * @param klass           the class housing the method
-     * @param constructorHash the constructor hash
-     * @return the constructor
+     * @param klass the class housing the method
+     * @param methodHash the method hash
+     * @return the method
      */
-    public static ConstructorTuple getConstructorTuple(final Class klass,
-        final int constructorHash)
-    {
-        if (klass == null)
-        {
-            throw new IllegalArgumentException("class can not be null");
-        }
+    public Method getConstructor(final Class klass, final int methodHash) {
+        if (klass == null) throw new IllegalArgumentException("class can not be null");
+        if (methodHash < 0) throw new IllegalArgumentException("method hash is not a valid hash");
 
-        try
-        {
-            // create the constructor repository lazily
-            if (!s_constructors.containsKey(klass))
-            {
-                createConstructorRepository(klass);
+        try {
+            // create the method repository lazily
+            if (!m_constructors.containsKey(klass)) {
+                createMethodRepository(klass);
             }
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
 
-        ConstructorTuple constructorTuple;
-
-        try
-        {
-            constructorTuple = (ConstructorTuple) ((TIntObjectHashMap) s_constructors
-                .get(klass)).get(constructorHash);
+        Method method;
+        try {
+            method = (Method)((TLongObjectHashMap)m_constructors.get(klass)).get(methodHash);
         }
-        catch (Throwable e1)
-        {
-            throw new WrappedRuntimeException(e1);
-        }
-
-        return constructorTuple;
-    }
-
-    /**
-     * Returns a specific field by the class and the field hash.
-     *
-     * @param klass     the class housing the method
-     * @param fieldHash the method hash
-     * @return the method tuple
-     */
-    public static Field getField(final Class klass, final int fieldHash)
-    {
-        if (klass == null)
-        {
-            throw new IllegalArgumentException("class can not be null");
-        }
-
-        try
-        {
-            // create the fields repository lazily
-            if (!s_fields.containsKey(klass))
-            {
-                createFieldRepository(klass);
+        catch (Throwable e1) {
+            initialize();
+            try {
+                method = (Method)((TLongObjectHashMap)m_constructors.get(klass)).get(methodHash);
+            }
+            catch (Exception e) {
+                throw new WrappedRuntimeException(e);
             }
         }
-        catch (Exception e)
-        {
-            throw new WrappedRuntimeException(e);
-        }
-
-        Field field;
-
-        try
-        {
-            field = (Field) ((TIntObjectHashMap) s_fields.get(klass)).get(fieldHash);
-        }
-        catch (Throwable e1)
-        {
-            throw new WrappedRuntimeException(e1);
-        }
-
-        return field;
+        return method;
     }
 
     /**
@@ -846,84 +550,20 @@ public class AspectRegistry
      *
      * @param klass the class
      */
-    protected static void createMethodRepository(final Class klass)
-    {
-        if (klass == null)
-        {
-            throw new IllegalArgumentException("class can not be null");
-        }
+    protected void createMethodRepository(final Class klass) {
+        if (klass == null) throw new IllegalArgumentException("class can not be null");
 
         Method[] methods = klass.getDeclaredMethods();
-        TIntObjectHashMap methodMap = new TIntObjectHashMap(methods.length);
+        TLongObjectHashMap methodMap = new TLongObjectHashMap(methods.length);
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
 
-        for (int i = 0; i < methods.length; i++)
-        {
-            Method wrapperMethod = methods[i];
-
-            if (!wrapperMethod.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX))
-            {
-                Method prefixedMethod = null;
-
-                for (int j = 0; j < methods.length; j++)
-                {
-                    Method method2 = methods[j];
-
-                    if (method2.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX))
-                    {
-                        String[] tokens = Strings.splitString(method2.getName(),
-                                TransformationUtil.DELIMITER);
-                        String methodName = tokens[1];
-                        Class[] parameterTypes1 = wrapperMethod
-                            .getParameterTypes();
-                        Class[] parameterTypes2 = method2.getParameterTypes();
-
-                        if (!methodName.equals(wrapperMethod.getName()))
-                        {
-                            continue;
-                        }
-
-                        if (parameterTypes2.length != parameterTypes1.length)
-                        {
-                            continue;
-                        }
-
-                        boolean match = true;
-
-                        for (int k = 0; k < parameterTypes1.length; k++)
-                        {
-                            if (parameterTypes1[k] != parameterTypes2[k])
-                            {
-                                match = false;
-
-                                break;
-                            }
-                        }
-
-                        if (!match)
-                        {
-                            continue;
-                        }
-
-                        prefixedMethod = method2;
-
-                        break;
-                    }
-                }
-
-                // create a method tuple with 'wrapped method' and 'prefixed method'
-                MethodTuple methodTuple = new MethodTuple(wrapperMethod,
-                        prefixedMethod);
-
-                // map the tuple to the hash for the 'wrapper method'
-                int methodHash = TransformationUtil.calculateHash(wrapperMethod);
-
-                methodMap.put(methodHash, methodTuple);
-            }
+            int methodHash = TransformationUtil.calculateHash(method);
+            methodMap.put(methodHash, method);
         }
 
-        synchronized (s_methods)
-        {
-            s_methods.put(klass, methodMap);
+        synchronized (m_methods) {
+            m_methods.put(klass, methodMap);
         }
     }
 
@@ -932,146 +572,20 @@ public class AspectRegistry
      *
      * @param klass the class
      */
-    protected static void createConstructorRepository(final Class klass)
-    {
-        if (klass == null)
-        {
-            throw new IllegalArgumentException("class can not be null");
-        }
+    protected void createConstructorRepository(final Class klass) {
+        if (klass == null) throw new IllegalArgumentException("class can not be null");
 
         Constructor[] constructors = klass.getDeclaredConstructors();
-        TIntObjectHashMap constructorMap = new TIntObjectHashMap(constructors.length);
+        TLongObjectHashMap constructorMap = new TLongObjectHashMap(constructors.length);
+        for (int i = 0; i < constructors.length; i++) {
+            Constructor constructor = constructors[i];
 
-        for (int i = 0; i < constructors.length; i++)
-        {
-            Constructor constructor1 = constructors[i];
-            Constructor prefixedConstructor = constructor1;
-            Constructor wrapperConstructor = constructor1;
-
-            for (int j = 0; j < constructors.length; j++)
-            {
-                Constructor constructor2 = constructors[j];
-                Class[] parameterTypes1 = constructor1.getParameterTypes();
-                Class[] parameterTypes2 = constructor2.getParameterTypes();
-
-                if (!constructor2.getName().equals(constructor1.getName()))
-                {
-                    continue;
-                }
-
-                if (parameterTypes1.length == parameterTypes2.length)
-                {
-                    continue;
-                }
-                else if ((parameterTypes1.length < parameterTypes2.length)
-                    && (parameterTypes1.length == (parameterTypes2.length - 1)))
-                {
-                    boolean match = true;
-
-                    for (int k = 0; k < parameterTypes1.length; k++)
-                    {
-                        if (parameterTypes1[k] != parameterTypes2[k])
-                        {
-                            match = false;
-
-                            break;
-                        }
-                    }
-
-                    if (parameterTypes2[parameterTypes1.length].getName()
-                                                               .equals(TransformationUtil.JOIN_POINT_MANAGER_CLASS))
-                    {
-                        match = true;
-                    }
-
-                    if (!match)
-                    {
-                        continue;
-                    }
-
-                    wrapperConstructor = constructor1;
-                    prefixedConstructor = constructor2;
-
-                    break;
-                }
-                else if ((parameterTypes2.length < parameterTypes1.length)
-                    && (parameterTypes2.length == (parameterTypes1.length - 1)))
-                {
-                    boolean match = true;
-
-                    for (int k = 0; k < parameterTypes2.length; k++)
-                    {
-                        if (parameterTypes2[k] != parameterTypes1[k])
-                        {
-                            match = false;
-
-                            break;
-                        }
-                    }
-
-                    if (parameterTypes1[parameterTypes2.length].getName()
-                                                               .equals(TransformationUtil.JOIN_POINT_MANAGER_CLASS))
-                    {
-                        match = true;
-                    }
-
-                    if (!match)
-                    {
-                        continue;
-                    }
-
-                    wrapperConstructor = constructor2;
-                    prefixedConstructor = constructor1;
-
-                    break;
-                }
-            }
-
-            // create a constructor tuple with 'wrapper constructor' and 'prefixed constructor'
-            ConstructorTuple constructorTuple = new ConstructorTuple(wrapperConstructor,
-                    prefixedConstructor);
-
-            // map the tuple to the hash for the 'wrapper constructor'
-            int constructorHash = TransformationUtil.calculateHash(wrapperConstructor);
-
-            constructorMap.put(constructorHash, constructorTuple);
+            int constructorHash = TransformationUtil.calculateHash(constructor);
+            constructorMap.put(constructorHash, constructor);
         }
 
-        synchronized (s_constructors)
-        {
-            s_constructors.put(klass, constructorMap);
-        }
-    }
-
-    /**
-     * Creates a new field repository for the class specified.
-     *
-     * @param klass the class
-     */
-    protected static void createFieldRepository(final Class klass)
-    {
-        if (klass == null)
-        {
-            throw new IllegalArgumentException("class can not be null");
-        }
-
-        Field[] fields = klass.getDeclaredFields();
-        TIntObjectHashMap fieldMap = new TIntObjectHashMap(fields.length);
-
-        for (int i = 0; i < fields.length; i++)
-        {
-            Field field = fields[i];
-
-            field.setAccessible(true);
-
-            int fieldHash = TransformationUtil.calculateHash(field);
-
-            fieldMap.put(fieldHash, field);
-        }
-
-        synchronized (s_fields)
-        {
-            s_fields.put(klass, fieldMap);
+        synchronized (m_constructors) {
+            m_constructors.put(klass, constructorMap);
         }
     }
 }

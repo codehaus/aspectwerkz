@@ -1,22 +1,17 @@
 <!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+    "-//AspectWerkz//DTD 0.9//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_9.dtd">
 
 <aspectwerkz>
     <system id="samples">
-        <prepare package="examples.logging." />
         <package name="examples">
-<!--            <aspect class="connectivity.TestAspect"/>-->
-            <aspect class="caching.Fibonacci$FibonacciCacheAspect" deployment-model="perInstance"/>
-            <aspect class="caching.CachingAspect">
+            <aspect class="caching.CachingAspect" deployment-model="perInstance">
                 <param name="timeout" value="10"/>
             </aspect>
-            <aspect class="logging.LoggingAspect">
-                <pointcut name="methodsToLog1" expression="execution(* examples.logging.Target.toLog1(..))"/>
-            </aspect>
+            <aspect class="logging.LoggingAspect"/>
             <aspect class="introduction.IntroductionAspect" deployment-model="perClass"/>
-            <aspect class="cflow.CFlowAspect"/>
-            <aspect class="exception.ExceptionHandlingAspect"/>
+            <aspect class="cflow.CFlowAspect" deployment-model="perInstance"/>
+            <aspect class="exception.ExceptionHandlingAspect" deployment-model="perInstance"/>
         </package>
     </system>
 </aspectwerkz>

@@ -1,291 +1,559 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.definition;
 
-import java.util.Set;
-import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Iterator;
+import java.io.FileInputStream;
+import java.io.File;
 import java.io.Serializable;
+import java.io.ObjectInputStream;
+import java.net.URL;
 
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import gnu.trove.TObjectIntHashMap;
+import gnu.trove.THashMap;
+
+import org.codehaus.aspectwerkz.definition.AdviceDefinition;
+import org.codehaus.aspectwerkz.definition.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.definition.metadata.MetaDataCompiler;
+import org.codehaus.aspectwerkz.persistence.DirtyFieldCheckAdvice;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
- * Interface for the aspectwerkz definition implementations.
+ * Implements the <code>AspectWerkz</code> definition.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: AspectWerkzDefinition.java,v 1.1.1.1 2003-05-11 15:13:47 jboner Exp $
  */
-public interface AspectWerkzDefinition extends Serializable {
+public class AspectWerkzDefinition implements Serializable {
 
     public static final String PER_JVM = "perJVM";
     public static final String PER_CLASS = "perClass";
     public static final String PER_INSTANCE = "perInstance";
     public static final String PER_THREAD = "perThread";
     public static final String THROWS_DELIMITER = "#";
-    public static final String CALLER_SIDE_DELIMITER = "->";
+    public static final String CALLER_SIDE_DELIMITER = "#";
 
     /**
-     * XML definition flag.
+     * The introduction definitions.
      */
-    public static final int DEF_TYPE_XML_DEF = 0;
+    private final List m_introductionDefinitions = new ArrayList();
 
     /**
-     * Attrib definition flag.
+     * The advice definitions.
      */
-    public static final int DEF_TYPE_ATTRIB_DEF = 1;
+    private final List m_adviceDefinitions = new ArrayList();
 
     /**
-     * The name of the system aspect.
+     * The aspect definitions.
      */
-    public static final String SYSTEM_ASPECT = "org/codehaus/aspectwerkz/system";
+    private final List m_aspectDefinitions = new ArrayList();
 
     /**
-     * Checks if the definition is of type attribute definition.
+     * Holds the indexes for the introductions.
+     */
+    private final TObjectIntHashMap m_introductionIndexes = new TObjectIntHashMap();
+
+    /**
+     * Maps the introductions to it's name.
+     */
+    private final Map m_introductionMap = new THashMap();
+
+    /**
+     * Maps the advices to it's name.
+     */
+    private final Map m_adviceMap = new THashMap();
+
+    /**
+     * Maps the aspects to it's name.
+     */
+    private final Map m_aspectMap = new THashMap();
+
+    /**
+     * Maps the advice stacks to it's name.
+     */
+    private final Map m_adviceStacks = new THashMap();
+
+    /**
+     * The path to the definition file.
+     */
+    public static final String DEFINITION_FILE =
+            System.getProperty("aspectwerkz.definition.file", null);
+
+    /**
+     * The path to the meta-data dir.
+     */
+    private static String META_DATA_DIR =
+            System.getProperty("aspectwerkz.metadata.dir", null);
+
+    /**
+     * The path to the aspectwerkz home directory.
+     */
+    private static final String ASPECTWERKZ_HOME =
+            System.getProperty("aspectwerkz.home", ".");
+
+    /**
+     * Default dir for the meta-data.
+     */
+    public static final String DEFAULT_META_DATA_DIR = "_metaData";
+
+    /**
+     * Default name for the definition file.
+     */
+    public static final String DEFAULT_DEFINITION_FILE_NAME = "aspectwerkz.xml";
+
+    /**
+     * Returns the definition.
      *
-     * @return boolean
+     * @return the definition
      */
-    boolean isAttribDef();
+    public static AspectWerkzDefinition getDefinition() {
+        return getDefinition(false);
+    }
 
     /**
-     * Checks if the definition is of type XML definition.
+     * Returns the definition.
+     * <p/>
+     * If the file name is not specified as a parameter to the JVM it tries
+     * to locate a file named 'aspectwerkz.xml' on the classpath.
      *
-     * @return boolean
+     * @param isDirty flag to mark the the defintion as updated or not
+     * @return the definition
      */
-    boolean isXmlDef();
+    public static AspectWerkzDefinition getDefinition(boolean isDirty) {
+        String definitionFileName;
+        if (DEFINITION_FILE == null) {
+            URL definition = Thread.currentThread().getContextClassLoader().
+                    getResource(DEFAULT_DEFINITION_FILE_NAME);
+            if (definition == null) throw new DefinitionException("no definition file specified or found on classpath (either specify the file by using the -Daspectwerkz.definition.file=.. option or by having a definition file called aspectwerkz.xml somewhere on the classpath)");
+            definitionFileName = definition.getFile();
+        }
+        else {
+            definitionFileName = DEFINITION_FILE;
+        }
+        return getDefinition(definitionFileName, isDirty);
+    }
 
     /**
-     * Sets the UUID for the definition.
+     * Returns the definition.
      *
-     * @param uuid the UUID
+     * @param definitionFile the definition file
+     * @return the definition
      */
-    void setUuid(String uuid);
+    public static AspectWerkzDefinition getDefinition(
+            final String definitionFile) {
+        return getDefinition(definitionFile, false);
+    }
 
     /**
-     * Returns the UUID for the definition.
+     * Returns the definition.
      *
-     * @return the UUID
+     * @param definitionFile the definition file
+     * @param isDirty flag to mark the the defintion as updated or not
+     * @return the definition
      */
-    String getUuid();
+    public static AspectWerkzDefinition getDefinition(final String definitionFile,
+                                                      boolean isDirty) {
+        AspectWerkzDefinition definition =
+                Dom4jXmlDefinitionParser.parse(
+                        new File(definitionFile), isDirty);
+        return definition;
+    }
 
     /**
-     * Returns the transformation scopes.
-     *
-     * @return the transformation scopes
+     * Creates a new qdox parser.
      */
-    Set getIncludePackages();
+    public AspectWerkzDefinition() {
+        if (META_DATA_DIR == null) {
+            locateMetaDataDir();
+        }
+    }
 
     /**
-     * Returns a collection with the aspect definitions registered.
-     *
-     * @return the aspect definitions
-     */
-    Collection getAspectDefinitions();
-
-    /**
-     * Returns a collection with the introduction definitions registered.
+     * Returns a list with the introduction definitions registered.
      *
      * @return the introduction definitions
      */
-    Collection getIntroductionDefinitions();
+    public List getIntroductionDefinitions() {
+        return m_introductionDefinitions;
+    }
 
     /**
-     * Returns a collection with the advice definitions registered.
+     * Adds a new introductions definition.
+     *
+     * @param introduction the introduction definition
+     */
+    public void addIntroduction(final IntroductionDefinition introduction) {
+        // handle the indexes
+        final int index = m_introductionDefinitions.size() + 1;
+        m_introductionIndexes.put(introduction.getName(), index);
+
+        m_introductionDefinitions.add(introduction);
+        m_introductionMap.put(introduction.getName(), introduction);
+        final AspectDefinition aspectDefinition = new AspectDefinition();
+
+        // if persistent; advise it with the DirtyFieldCheckAdvice
+        if (introduction.isPersistent()) {
+            registerDirtyFieldCheckAdvice();
+            aspectDefinition.addPointcut(createDirtyFieldCheckPointcut());
+        }
+
+        // create an aspect for the introduction
+        if (introduction.getImplementation() != null) {
+            m_aspectMap.put(introduction.getImplementation(), aspectDefinition);
+        }
+    }
+
+    /**
+     * Returns a list with the advice definitions registered.
      *
      * @return the advice definitions
      */
-    Collection getAdviceDefinitions();
+    public List getAdviceDefinitions() {
+        return m_adviceDefinitions;
+    }
 
     /**
-     * Returns the name of the implementation for an introduction.
+     * Adds an advice definition.
+     *
+     * @param advice the advice definition
+     */
+    public void addAdvice(final AdviceDefinition advice) {
+        m_adviceDefinitions.add(advice);
+        m_adviceMap.put(advice.getName(), advice);
+
+        final AspectDefinition aspectDefinition = new AspectDefinition();
+
+        // if persistent; advise it with the DirtyFieldCheckAdvice
+        if (advice.isPersistent()) {
+            registerDirtyFieldCheckAdvice();
+            aspectDefinition.addPointcut(createDirtyFieldCheckPointcut());
+        }
+
+        // create an aspect for the advice
+        m_aspectMap.put(advice.getClassName(), aspectDefinition);
+    }
+
+    /**
+     * Finds an advice stack definition by its name.
+     *
+     * @param adviceStackName the advice stack name
+     * @return the definition
+     */
+    public AdviceStackDefinition getAdviceStackDefinition(
+            final String adviceStackName) {
+        return (AdviceStackDefinition)m_adviceStacks.get(adviceStackName);
+    }
+
+    /**
+     * Adds an advice stack definition.
+     *
+     * @param adviceStackDef the advice stack definition
+     */
+    public void addAdviceStack(final AdviceStackDefinition adviceStackDef) {
+        m_adviceStacks.put(adviceStackDef.getName(), adviceStackDef);
+    }
+
+    /**
+     * Returns a list with the aspect definitions registered.
+     *
+     * @return the aspect definitions
+     */
+    public List getAspectDefinitions() {
+        return m_aspectDefinitions;
+    }
+
+    /**
+     * Adds an aspect definition.
+     *
+     * @param aspect a new aspect definition
+     */
+    public void addAspect(final AspectDefinition aspect) {
+        m_aspectDefinitions.add(aspect);
+        m_aspectMap.put(aspect.getPattern(), aspect);
+    }
+
+    /**
+     * Returns the names of the target classes.
+     *
+     * @return the names of the target classes
+     */
+    public String[] getAspectTargetClassNames() {
+        String[] classNames = new String[m_aspectMap.keySet().size()];
+        int i = 0;
+        for (Iterator it = m_aspectMap.keySet().iterator(); it.hasNext();) {
+            String key = (String)it.next();
+            classNames[i++] = key;
+        }
+        return classNames;
+    }
+
+    /**
+     * Finds the name of an advice by its attribute.
+     *
+     * @param attribute the attribute
+     * @return the name of the advice
+     */
+    public String getAdviceNameByAttribute(final String attribute) {
+        if (attribute == null) return null;
+        for (Iterator it = m_adviceDefinitions.iterator(); it.hasNext();) {
+            AdviceDefinition adviceDefinition = (AdviceDefinition)it.next();
+            if (adviceDefinition.getAttribute().equals(attribute)) {
+                return adviceDefinition.getName();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Finds the name of an introduction by its attribute.
+     *
+     * @param attribute the attribute
+     * @return the name of the introduction
+     */
+    public String getIntroductionNameByAttribute(final String attribute) {
+        if (attribute == null) return null;
+        for (Iterator it = m_introductionDefinitions.iterator(); it.hasNext();) {
+            IntroductionDefinition introductionDefinition = (IntroductionDefinition)it.next();
+            if (introductionDefinition.getAttribute().equals(attribute)) {
+                return introductionDefinition.getName();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the name of the interface for an introduction.
      *
      * @param introductionName the name of the introduction
      * @return the name of the interface
      */
-    String getIntroductionImplName(String introductionName);
+    public String getIntroductionInterfaceName(final String introductionName) {
+        if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
+        if (!m_introductionMap.containsKey(introductionName)) {
+            return null;
+        }
+        return ((IntroductionDefinition)m_introductionMap.
+                get(introductionName)).getInterface();
+    }
 
     /**
-     * Returns the class name for the join point controller, if there is a match.
-     * @param classMetaData the class meta-data
-     * @param methodMetaData the method meta-data
-     * @return the controller class name
-     */
-    String getJoinPointController(ClassMetaData classMetaData, MethodMetaData methodMetaData);
-
-    /**
-     * Returns a set with the aspects to use.
+     * Returns the index for a specific introduction.
      *
-     * @return the aspects to use
+     * @param introductionName the name of the introduction
+     * @return the index
      */
-    Set getAspectsToUse();
+    public int getIntroductionIndexFor(final String introductionName) {
+        if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
+        return m_introductionIndexes.get(introductionName);
+    }
 
     /**
-     * Adds a new aspect to use.
+     * Returns the methods meta-data for a specific introduction.
      *
-     * @param className the class name of the aspect
+     * @param introductionName the name of the introduction
+     * @return a list with the methods meta-data
      */
-    void addAspectToUse(String className);
+    public List getIntroductionMethodsMetaData(final String introductionName) {
+        if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
+
+        List methodMetaDataList = new ArrayList();
+        final String implClassName = ((IntroductionDefinition)m_introductionMap.
+                get(introductionName)).getImplementation();
+
+        if (implClassName == null) { // interface introduction
+            return methodMetaDataList;
+        }
+
+        final StringBuffer filename = new StringBuffer();
+        filename.append(META_DATA_DIR);
+        filename.append(File.separator);
+        filename.append(implClassName);
+        filename.append(MetaDataCompiler.META_DATA_FILE_SUFFIX);
+
+        try {
+            File file = new File(filename.toString());
+            ObjectInputStream in = new ObjectInputStream(
+                    new FileInputStream(file));
+
+            final ClassMetaData classMetaData = (ClassMetaData)in.readObject();
+            in.close();
+
+            methodMetaDataList = classMetaData.getMethods();
+        }
+        catch (Exception e) {
+            StringBuffer cause = new StringBuffer();
+            cause.append("meta-data file ");
+            cause.append(implClassName);
+            cause.append(MetaDataCompiler.META_DATA_FILE_SUFFIX);
+            cause.append(" could not be found in specified directory ");
+            cause.append(META_DATA_DIR);
+            cause.append(" (have you forgot to compile meta-data or specified the correct class name in the definition?)");
+            cause.append(':');
+            cause.append(e);
+            throw new DefinitionException(cause.toString());
+        }
+
+        return methodMetaDataList;
+    }
 
     /**
-     * Adds a new include package.
-     *
-     * @param includePackage the package to include
+     * Tries to locate the meta-data dir.
      */
-    void addIncludePackage(String includePackage);
+    private void locateMetaDataDir() {
+        final StringBuffer metaDataDir = new StringBuffer();
+        metaDataDir.append(ASPECTWERKZ_HOME);
+        metaDataDir.append(File.separator);
+        metaDataDir.append(DEFAULT_META_DATA_DIR);
+        File dir = new File(metaDataDir.toString());
+        if (!dir.exists()) {
+            throw new DefinitionException("could not locate meta-data dir");
+        }
+        else {
+            META_DATA_DIR = metaDataDir.toString();
+        }
+    }
 
     /**
-     * Adds a new exclude package.
-     *
-     * @param excludePackage the package to exclude
+     * Creates and registers the <tt>DirtyFieldCheckAdvice</tt> if it is not
+     * already registered.
      */
-    void addExcludePackage(String excludePackage);
+    private void registerDirtyFieldCheckAdvice() {
+        if (!m_adviceMap.containsKey(DirtyFieldCheckAdvice.NAME)) {
+            final AdviceDefinition def = new AdviceDefinition();
+            def.setName(DirtyFieldCheckAdvice.NAME);
+            def.setAdvice(DirtyFieldCheckAdvice.CLASS);
+
+            m_adviceMap.put(DirtyFieldCheckAdvice.NAME, def);
+            m_adviceDefinitions.add(def);
+        }
+    }
 
     /**
-     * Checks if there exists an advice with the name specified.
+     * Creates a new pointcut and adds the <tt>DirtyFieldCheckAdvice</tt> to it.
      *
-     * @param name the name of the advice
-     * @return boolean
+     * @return the pointcut
      */
-    boolean hasAdvice(String name);
-
-    /**
-     * Checks if there exists an introduction with the name specified.
-     *
-     * @param name the name of the introduction
-     * @return boolean
-     */
-    boolean hasIntroduction(String name);
-
-    /**
-     * Checks if a class has an <tt>AspectMetaData</tt>.
-     *
-     * @param className the name or the class
-     * @return boolean
-     */
-    boolean inIncludePackage(String className);
-
-    /**
-     * Checks if a class has an <tt>AspectMetaData</tt>.
-     *
-     * @param className the name or the class
-     * @return boolean
-     */
-    boolean inExcludePackage(String className);
-
-    /**
-     * Checks if a class has an <tt>Mixin</tt>.
-     *
-     * @param classMetaData the class meta-data
-     * @return boolean
-     */
-    boolean hasIntroductions(ClassMetaData classMetaData);
-
-    /**
-     * Checks if a method has a <tt>MethodPointcut</tt>.
-     * Only checks for a class match to allow early filtering.
-     *
-     * @param classMetaData the class meta-data
-     * @return boolean
-     */
-    boolean hasExecutionPointcut(ClassMetaData classMetaData);
-
-    /**
-     * Checks if a method has a <tt>MethodPointcut</tt>.
-     *
-     * @param classMetaData the class meta-data
-     * @param methodMetaData the method meta-data
-     * @return boolean
-     */
-    boolean hasExecutionPointcut(ClassMetaData classMetaData, MethodMetaData methodMetaData);
-
-    /**
-     * Checks if a class has a <tt>GetFieldPointcut</tt>.
-     * Only checks for a class match to allow early filtering.
-     *
-     * @param classMetaData the class meta-data
-     * @return boolean
-     */
-    boolean hasGetPointcut(ClassMetaData classMetaData);
-
-    /**
-     * Checks if a class and field has a <tt>GetFieldPointcut</tt>.
-     *
-     * @param classMetaData the class meta-data
-     * @param fieldMetaData the name or the field
-     * @return boolean
-     */
-    boolean hasGetPointcut(ClassMetaData classMetaData, FieldMetaData fieldMetaData);
-
-    /**
-     * Checks if a class has a <tt>SetFieldPointcut</tt>.
-     * Only checks for a class match to allow early filtering.
-     *
-     * @param classMetaData the class meta-data
-     * @return boolean
-     */
-    boolean hasSetPointcut(ClassMetaData classMetaData);
-
-    /**
-     * Checks if a class and field has a <tt>SetFieldPointcut</tt>.
-     *
-     * @param classMetaData the class meta-data
-     * @param fieldMetaData the name or the field
-     * @return boolean
-     */
-    boolean hasSetPointcut(ClassMetaData classMetaData, FieldMetaData fieldMetaData);
-
-    /**
-     * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
-     * Only checks for a class match to allow early filtering.
-     *
-     * @param classMetaData the class meta-data
-     * @return boolean
-     */
-    boolean hasThrowsPointcut(ClassMetaData classMetaData);
-
-    /**
-     * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
-     *
-     * @param classMetaData the class meta-data
-     * @param methodMetaData the name or the method
-     * @return boolean
-     */
-    boolean hasThrowsPointcut(ClassMetaData classMetaData, MethodMetaData methodMetaData);
-
-    /**
-     * Checks if a class should care about advising caller side method invocations.
-     *
-     * @param classMetaData the class meta-data
-     * @return boolean
-     */
-    boolean hasCallPointcut(ClassMetaData classMetaData);
-
-    /**
-     * Checks if a method is a defined as a caller side method.
-     *
-     * @param classMetaData the class meta-data
-     * @param methodMetaData the name or the method
-     * @return boolean
-     */
-    boolean isPickedOutByCallPointcut(ClassMetaData classMetaData, MethodMetaData methodMetaData);
-
-    /**
-     * Builds up a meta-data repository for the mixins.
-     *
-     * @param repository the repository
-     * @param loader the class loader to use
-     */
-    void buildMixinMetaDataRepository(Set repository, ClassLoader loader);
-
-    /**
-     * Loads the aspects.
-     *
-     * @param loader the class loader to use to load the aspects
-     */
-    void loadAspects(ClassLoader loader);
+    private PointcutDefinition createDirtyFieldCheckPointcut() {
+        final PointcutDefinition dirtyDef = new PointcutDefinition();
+        dirtyDef.addAdvice(DirtyFieldCheckAdvice.NAME);
+        dirtyDef.addPattern(DirtyFieldCheckAdvice.PATTERN);
+        dirtyDef.setType(PointcutDefinition.SET_FIELD);
+        return dirtyDef;
+    }
 }
+
+/**
+ * Checks if a method pointcut is thread-safe.
+ *
+ * @param className the name of the class
+ * @param methodName the name of the method
+ * @return boolean
+ */
+//    public boolean isMethodPointcutThreadSafe(final String className,
+//                                              final String methodName) {
+//        if (className == null) throw new IllegalArgumentException("class name can not be null");
+//        if (methodName == null) throw new IllegalArgumentException("method name can not be null");
+//        if (!m_aspectMap.containsKey(className)) {
+//            return false;
+//        }
+//        List pointcuts = ((AspectDefinition)m_aspectMap.
+//                get(className)).getPointcuts();
+//        for (Iterator it = pointcuts.iterator(); it.hasNext();) {
+//            PointcutDefinition pointcut = (PointcutDefinition)it.next();
+//            if (pointcut.getType().equals(PointcutDefinition.METHOD) &&
+//                    pointcut.isThreadSafe()) {
+//                MethodPattern pattern =
+//                        (MethodPattern)pointcut.getRegexpPatterns();
+//                if (pattern.matchMethodName(methodName)) {
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
+
+/**
+ * Checks if a throws pointcut is thread-safe.
+ *
+ * @param className the name of the class
+ * @param methodName the name of the method
+ * @return boolean
+ */
+//    public boolean isThrowsPointcutThreadSafe(final String className,
+//                                              final String methodName) {
+//        if (className == null) throw new IllegalArgumentException("class name can not be null");
+//        if (methodName == null) throw new IllegalArgumentException("method name can not be null");
+//        if (!m_aspectMap.containsKey(className)) {
+//            return false;
+//        }
+//        List pointcuts = ((AspectDefinition)m_aspectMap.
+//                get(className)).getPointcuts();
+//        for (Iterator it = pointcuts.iterator(); it.hasNext();) {
+//            PointcutDefinition pointcut = (PointcutDefinition)it.next();
+//            if (pointcut.getType().equals(PointcutDefinition.THROWS) &&
+//                    pointcut.isThreadSafe()) {
+//                MethodPattern pattern =
+//                        (MethodPattern)pointcut.getRegexpPatterns();
+//                if (pattern.matchMethodName(methodName)) {
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
+
+/**
+ * Checks if a throws pointcut is thread-safe.
+ *
+ * @param className the name of the class
+ * @param methodName the name of the method
+ * @return boolean
+ */
+//    public boolean isThrowsPointcutThreadSafe(final String className,
+//                                              final String methodName,
+//                                              final String exceptionName) {
+//        if (className == null) throw new IllegalArgumentException("class name can not be null");
+//        if (methodName == null) throw new IllegalArgumentException("method name can not be null");
+//        if (exceptionName == null) throw new IllegalArgumentException("exception name can not be null");
+//        if (!m_aspectMap.containsKey(className)) {
+//            return false;
+//        }
+//        List pointcuts = ((AspectDefinition)m_aspectMap.
+//                get(className)).getPointcuts();
+//        for (Iterator it = pointcuts.iterator(); it.hasNext();) {
+//            PointcutDefinition pointcut = (PointcutDefinition)it.next();
+//            if (pointcut.getType().equals(PointcutDefinition.THROWS) &&
+//                    pointcut.isThreadSafe()) {
+//                StringTokenizer tokenizer = new StringTokenizer(
+//                        pointcut.getPattern(),
+//                        THROWS_DELIMITER);
+//                Pattern methodPattern = new Pattern(tokenizer.nextToken());
+//                Pattern exceptionPattern = new Pattern(tokenizer.nextToken());
+//                if (methodPattern.contains(methodName) &&
+//                        exceptionPattern.contains(exceptionName)) {
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
 

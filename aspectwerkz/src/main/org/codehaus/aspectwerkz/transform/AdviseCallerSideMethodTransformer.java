@@ -1,10 +1,21 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.transform;
 
 import java.util.Set;
@@ -34,271 +45,225 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
 
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
+import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
+
+import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
+import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
 
 /**
  * Advises caller side method invocations.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.1.1.1 2003-05-11 15:15:09 jboner Exp $
  */
-public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransformerComponent {
+public class AdviseCallerSideMethodTransformer implements CodeTransformerComponent {
+    ///CLOVER:OFF
 
     /**
-     * The definition.
+     * Holds the weave model.
      */
-    private final AspectWerkzDefinition m_definition;
+    private WeaveModel m_weaveModel = WeaveModel.loadModel();
 
     /**
      * Constructor.
      */
     public AdviseCallerSideMethodTransformer() {
         super();
-        // TODO: fix loop over definitions
-        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
     }
 
     /**
      * Transforms the call side pointcuts.
      *
-     * @param context the transformation context
-     * @param klass the class set.
+     * @param cs the class set.
      */
-    public void transformCode(final Context context, final Klass klass) {
-        m_definition.loadAspects(context.getLoader());
+    public void transformCode(final UnextendableClassSet cs) {
 
-        final ClassGen cg = klass.getClassGen();
-        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+        final Iterator iterator = cs.getIteratorForTransformableClasses();
+        while (iterator.hasNext()) {
 
-        // filter caller classes
-        if (classFilter(classMetaData, cg)) {
-            return;
-        }
-        final Method[] methods = cg.getMethods();
+            final ClassGen cg = (ClassGen)iterator.next();
 
-        // get the index for the <clinit> method (if there is one)
-        boolean hasClInitMethod = false;
-        int clinitIndex = -1;
-        for (int i = 0; i < methods.length; i++) {
-            if (methods[i].getName().equals("<clinit>")) {
-                clinitIndex = i;
-                hasClInitMethod = true;
-                break;
+            if (classFilter(cg)) continue;
+
+            final Method[] methods = cg.getMethods();
+
+            // get the index for the <clinit> method (if there is one)
+            boolean hasClInitMethod = false;
+            int clinitIndex = -1;
+            for (int i = 0; i < methods.length; i++) {
+                if (methods[i].getName().equals("<clinit>")) {
+                    clinitIndex = i;
+                    hasClInitMethod = true;
+                    break;
+                }
             }
-        }
-        final ConstantPoolGen cpg = cg.getConstantPool();
-        final String className = cg.getClassName();
-        final InstructionFactory factory = new InstructionFactory(cg);
+            final ConstantPoolGen cpg = cg.getConstantPool();
+            final String className = cg.getClassName();
+            final InstructionFactory factory = new InstructionFactory(cg);
 
-        final Set callerSideJoinPoints = new HashSet();
+            addStaticClassField(cpg, cg);
 
-        Method clInitMethod = null;
-        final Map methodSequences = new HashMap();
-        final List newMethods = new ArrayList();
-        boolean isClassAdvised = false;
-        boolean isMethodChanged = false;
+            final Set callerSideJoinPoints = new HashSet();
 
-        for (int i = 0; i < methods.length; i++) {
+            Method clInitMethod = null;
+            final Map methodSequences = new HashMap();
+            final List newMethods = new ArrayList();
+            boolean isClassAdvised = false;
 
-            // filter caller methods
-            if (methodFilterCaller(methods[i])) {
-                continue;
-            }
+            for (int i = 0; i < methods.length; i++) {
+                if (methodFilter(methods[i])) continue;
 
-            final MethodGen mg = new MethodGen(methods[i], className, cpg);
+                final MethodGen mg = new MethodGen(methods[i], className, cpg);
+                if (methodFilter(mg.getMethod())) continue;
 
-            final InstructionList il = mg.getInstructionList();
-            if (il == null) {
-                continue;
-            }
-            InstructionHandle ih = il.getStart();
-            isMethodChanged = false;
-            // search for all InvokeInstruction instructions and
-            // inserts the call side pointcuts
-            while (ih != null) {
-                final Instruction ins = ih.getInstruction();
+                final InstructionList il = mg.getInstructionList();
+                if (il == null) continue;
+                InstructionHandle ih = il.getStart();
 
-                if (ins instanceof INVOKESPECIAL ||
-                        ins instanceof INVOKESTATIC ||
-                        ins instanceof INVOKEVIRTUAL) {
+                // search for all InvokeInstruction instructions and
+                // inserts the call side pointcuts
+                while (ih != null) {
+                    final Instruction ins = ih.getInstruction();
 
-                    final InvokeInstruction invokeInstruction = (InvokeInstruction)ins;
+                    if (ins instanceof INVOKESPECIAL ||
+                            ins instanceof INVOKESTATIC ||
+                            ins instanceof INVOKEVIRTUAL) {
 
-                    // get the callee method name, signature and class name
-                    final String calleeMethodName = invokeInstruction.getName(cpg);
-                    final String calleeClassName = invokeInstruction.getClassName(cpg);
-                    final String calleeMethodSignature = invokeInstruction.getSignature(cpg);
+                        final InvokeInstruction invokeInstruction =
+                                (InvokeInstruction)ins;
+                        final String callerSideMethodName =
+                                invokeInstruction.getName(cpg);
+                        final String callerSideMethodClassName =
+                                invokeInstruction.getClassName(cpg);
+                        final String signature =
+                                invokeInstruction.getSignature(cpg);
 
-                    // filter callee classes
-                    if (!m_definition.inIncludePackage(calleeClassName)) {
-                        ih = ih.getNext();
-                        continue;
-                    }
-                    // filter callee methods
-                    if (methodFilterCallee(calleeMethodName)) {
-                        ih = ih.getNext();
-                        continue;
-                    }
+                        // create the meta-data for the method
+                        MethodMetaData callerSideMethodMetaData =
+                                TransformationUtil.
+                                createMethodMetaData(invokeInstruction, cpg);
 
-                    // create the class meta-data
-                    ClassMetaData calleeSideClassMetaData;
-                    try {
-                        JavaClass javaClass = context.getRepository().loadClass(calleeClassName);
-                        calleeSideClassMetaData = BcelMetaDataMaker.createClassMetaData(javaClass);
-                    }
-                    catch (ClassNotFoundException e) {
-                        throw new WrappedRuntimeException(e);
-                    }
+                        // is this a caller side method pointcut?
+                        if (m_weaveModel.isCallerSideMethod(
+                                callerSideMethodClassName,
+                                callerSideMethodMetaData)) {
 
-                    // create the method meta-data
-                    MethodMetaData calleeSideMethodMetaData = BcelMetaDataMaker.createMethodMetaData(
-                            invokeInstruction, cpg
-                    );
+                            final Type joinPointType =
+                                    TransformationUtil.CALLER_SIDE_JOIN_POINT_TYPE;
 
-                    // is this a caller side method pointcut?
-                    if (m_definition.isPickedOutByCallPointcut(calleeSideClassMetaData, calleeSideMethodMetaData)) {
-
-                        // get the caller method name and signature
-                        Method method = mg.getMethod();
-                        String callerMethodName = method.getName();
-                        String callerMethodSignature = method.getSignature();
-
-                        final Type joinPointType = TransformationUtil.CALLER_SIDE_JOIN_POINT_TYPE;
-
-                        // take care of identification of overloaded methods
-                        // by inserting a sequence number
-                        if (methodSequences.containsKey(calleeMethodName)) {
-                            int sequence = ((Integer)methodSequences.get(calleeMethodName)).intValue();
-
-                            methodSequences.remove(calleeMethodName);
-                            sequence++;
-                            methodSequences.put(calleeMethodName, new Integer(sequence));
-                        }
-                        else {
-                            methodSequences.put(calleeMethodName, new Integer(1));
-                        }
-                        int methodSequence = ((Integer)methodSequences.get(calleeMethodName)).intValue();
-
-                        isClassAdvised = true;
-                        isMethodChanged = true;
-
-                        insertPreAdvice(
-                                il, ih, cg,
-                                calleeMethodName,
-                                methodSequence,
-                                factory,
-                                joinPointType
-                        );
-
-                        insertPostAdvice(
-                                il, ih.getNext(), cg,
-                                calleeMethodName,
-                                methodSequence,
-                                factory,
-                                joinPointType
-                        );
-
-                        StringBuffer key = new StringBuffer();
-                        key.append(className);
-                        key.append(TransformationUtil.DELIMITER);
-                        key.append(calleeMethodName);
-                        key.append(TransformationUtil.DELIMITER);
-                        key.append(methodSequence);
-
-                        // skip the creation of the join point if we already have one
-                        if (!callerSideJoinPoints.contains(key.toString())) {
-                            callerSideJoinPoints.add(key.toString());
-
-                            addStaticJoinPointField(
-                                    cpg, cg, calleeMethodName,
-                                    methodSequence, joinPointType
-                            );
-
-                            if (hasClInitMethod) {
-                                methods[clinitIndex] = createStaticJoinPointField(
-                                        cpg, cg,
-                                        methods[clinitIndex],
-                                        callerMethodName,
-                                        calleeClassName,
-                                        calleeMethodName,
-                                        methodSequence,
-                                        callerMethodSignature,
-                                        calleeMethodSignature,
-                                        factory,
-                                        joinPointType,
-                                        m_definition.getUuid()
-                                );
-                            }
-                            else if (clInitMethod == null) {
-                                clInitMethod = createClInitMethodWithStaticJoinPointField(
-                                        cpg, cg,
-                                        callerMethodName,
-                                        calleeClassName,
-                                        calleeMethodName,
-                                        methodSequence,
-                                        callerMethodSignature,
-                                        calleeMethodSignature,
-                                        factory,
-                                        joinPointType,
-                                        m_definition.getUuid()
-                                );
+                            // take care of identification of overloaded methods
+                            // by inserting a sequence number
+                            if (methodSequences.containsKey(callerSideMethodName)) {
+                                int sequence = ((Integer)methodSequences.
+                                        get(callerSideMethodName)).intValue();
+                                methodSequences.remove(callerSideMethodName);
+                                sequence++;
+                                methodSequences.put(
+                                        callerSideMethodName,
+                                        new Integer(sequence));
                             }
                             else {
-                                clInitMethod = createStaticJoinPointField(
+                                methodSequences.put(
+                                        callerSideMethodName,
+                                        new Integer(1));
+                            }
+                            final int methodSequence = ((Integer)methodSequences.
+                                    get(callerSideMethodName)).intValue();
+
+                            isClassAdvised = true;
+
+                            insertPreAdvice(
+                                    il, ih, cg,
+                                    callerSideMethodName, methodSequence,
+                                    factory, joinPointType);
+
+                            insertPostAdvice(
+                                    il, ih.getNext(), cg,
+                                    callerSideMethodName, methodSequence,
+                                    factory, joinPointType);
+
+                            // skip the creation of the join point if we
+                            // already have one
+                            StringBuffer key = new StringBuffer();
+                            key.append(className);
+                            key.append(TransformationUtil.DELIMITER);
+                            key.append(callerSideMethodName);
+                            key.append(TransformationUtil.DELIMITER);
+                            key.append(methodSequence);
+
+                            if (!callerSideJoinPoints.contains(key.toString())) {
+                                callerSideJoinPoints.add(key.toString());
+
+                                addStaticJoinPointField(
                                         cpg, cg,
-                                        clInitMethod,
-                                        callerMethodName,
-                                        calleeClassName,
-                                        calleeMethodName,
+                                        callerSideMethodName,
                                         methodSequence,
-                                        callerMethodSignature,
-                                        calleeMethodSignature,
-                                        factory,
-                                        joinPointType,
-                                        m_definition.getUuid()
-                                );
+                                        joinPointType);
+
+                                if (hasClInitMethod) {
+                                    methods[clinitIndex] =
+                                            createStaticJoinPointField(
+                                                    cpg, cg,
+                                                    methods[clinitIndex],
+                                                    callerSideMethodClassName,
+                                                    callerSideMethodName,
+                                                    methodSequence,
+                                                    signature,
+                                                    factory,
+                                                    joinPointType);
+                                }
+                                else if (clInitMethod == null) {
+                                    clInitMethod =
+                                            createClInitMethodWithStaticJoinPointField(
+                                                    cpg, cg,
+                                                    callerSideMethodClassName,
+                                                    callerSideMethodName,
+                                                    methodSequence,
+                                                    signature,
+                                                    factory,
+                                                    joinPointType);
+                                }
+                                else {
+                                    clInitMethod =
+                                            createStaticJoinPointField(
+                                                    cpg, cg,
+                                                    clInitMethod,
+                                                    callerSideMethodClassName,
+                                                    callerSideMethodName,
+                                                    methodSequence,
+                                                    signature,
+                                                    factory,
+                                                    joinPointType);
+                                }
                             }
                         }
                     }
+                    ih = ih.getNext();
                 }
-                ih = ih.getNext();
-            }
 
-            if (isMethodChanged) {
                 mg.setMaxStack();
                 methods[i] = mg.getMethod();
             }
-        }
 
-        if (isClassAdvised) {
-            context.markAsAdvised();
-            // if we have transformed methods, create the static class field
-            if (!hasClInitMethod && clInitMethod != null) {
-                addStaticClassField(cpg, cg);
-                clInitMethod = createStaticClassField(
-                        cpg, cg,
-                        clInitMethod,
-                        factory
-                );
+            if (isClassAdvised) {
+                // if we have transformed methods, create the static class field
+                if (!hasClInitMethod && clInitMethod != null) {
+                    clInitMethod = createStaticClassField(
+                            cpg, cg,
+                            clInitMethod,
+                            factory);
 
-                newMethods.add(clInitMethod);
+                    newMethods.add(clInitMethod);
+                }
+                else {
+                    methods[clinitIndex] = createStaticClassField(
+                            cpg, cg,
+                            methods[clinitIndex],
+                            factory);
+                }
             }
-            else {
-                addStaticClassField(cpg, cg);
-                methods[clinitIndex] = createStaticClassField(
-                        cpg, cg,
-                        methods[clinitIndex],
-                        factory
-                );
-            }
-            //}//TODO CHECK THIS
             // update the old methods
             cg.setMethods(methods);
 
@@ -307,7 +272,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 Method method = (Method)it.next();
                 cg.addMethod(method);
             }
-        }//TODO CHECK THIS
+        }
     }
 
     /**
@@ -316,13 +281,15 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
      * @param cp the ConstantPoolGen
      * @param cg the ClassGen
      */
-    private void addStaticClassField(final ConstantPoolGen cp, final ClassGen cg) {
+    private void addStaticClassField(final ConstantPoolGen cp,
+                                     final ClassGen cg) {
 
         final Field[] fields = cg.getFields();
 
         // check if we already have added this field
         for (int i = 0; i < fields.length; i++) {
-            if (fields[i].getName().equals(TransformationUtil.STATIC_CLASS_FIELD))
+            if (fields[i].getName().equals(
+                    TransformationUtil.STATIC_CLASS_FIELD))
                 return;
         }
 
@@ -330,8 +297,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 Constants.ACC_PRIVATE | Constants.ACC_FINAL | Constants.ACC_STATIC,
                 new ObjectType("java.lang.Class"),
                 TransformationUtil.STATIC_CLASS_FIELD,
-                cp
-        );
+                cp);
 
         cg.addField(field.getField());
     }
@@ -352,18 +318,14 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                                          final Type joinPointType) {
 
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
-        final StringBuffer joinPoint = getJoinPointName(joinPointPrefix, methodName, methodSequence);
-
-        if (cg.containsField(joinPoint.toString()) != null) {
-            return;
-        }
+        final StringBuffer joinPoint =
+                getJoinPointName(joinPointPrefix, methodName, methodSequence);
 
         final FieldGen field = new FieldGen(
                 Constants.ACC_PRIVATE | Constants.ACC_FINAL | Constants.ACC_STATIC,
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_TYPE,
                 joinPoint.toString(),
-                cp
-        );
+                cp);
 
         cg.addField(field.getField());
     }
@@ -396,16 +358,14 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 "forName",
                 new ObjectType("java.lang.Class"),
                 new Type[]{Type.STRING},
-                Constants.INVOKESTATIC
-        ));
+                Constants.INVOKESTATIC));
 
         // set the result to the static class field
         il.insert(ih, factory.createFieldAccess(
                 className,
                 TransformationUtil.STATIC_CLASS_FIELD,
                 new ObjectType("java.lang.Class"),
-                Constants.PUTSTATIC
-        ));
+                Constants.PUTSTATIC));
 
         mg.setMaxStack();
         mg.setMaxLocals();
@@ -417,42 +377,35 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
      *
      * @param cp the ConstantPoolGen
      * @param cg the ClassGen
-     * @param callerMethodName the caller method name
-     * @param calleeClassName the calle class name
-     * @param calleeMethodName the callee method name
+     * @param methodsClassName the class name for the class holding the method
+     * @param methodName the current method name
      * @param methodSequence the sequence number for the method
-     * @param callerMethodSignature the signature for the caller method
-     * @param calleeMethodSignature the signature for the callee method
+     * @param signature the signature of the method
      * @param factory the objectfactory
      * @param joinPointType the type of the joinpoint
-     * @param uuid the UUID for the weave model
      * @return the new method
      */
     private Method createClInitMethodWithStaticJoinPointField(
             final ConstantPoolGen cp,
             final ClassGen cg,
-            final String callerMethodName,
-            final String calleeClassName,
-            final String calleeMethodName,
+            final String methodsClassName,
+            final String methodName,
             final int methodSequence,
-            final String callerMethodSignature,
-            final String calleeMethodSignature,
+            final String signature,
             final InstructionFactory factory,
-            final Type joinPointType,
-            final String uuid) {
+            final Type joinPointType) {
 
         final String className = cg.getClassName();
 
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
-        final StringBuffer joinPoint = getJoinPointName(
-                joinPointPrefix, calleeMethodName, methodSequence
-        );
+        final StringBuffer joinPoint =
+                getJoinPointName(joinPointPrefix, methodName, methodSequence);
 
-        StringBuffer fullCalleeMethodName = new StringBuffer();
-        fullCalleeMethodName.append(calleeClassName);
-        fullCalleeMethodName.append(TransformationUtil.
+        StringBuffer fullMethodName = new StringBuffer();
+        fullMethodName.append(methodsClassName);
+        fullMethodName.append(TransformationUtil.
                 CALL_SIDE_DELIMITER);
-        fullCalleeMethodName.append(calleeMethodName);
+        fullMethodName.append(methodName);
 
         final InstructionList il = new InstructionList();
         final MethodGen clInit = new MethodGen(
@@ -462,41 +415,33 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 new String[]{},
                 "<clinit>",
                 className,
-                il, cp
-        );
+                il, cp);
 
-        il.append(factory.createNew(TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS));
+        il.append(factory.createNew(
+                TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS));
         il.append(InstructionConstants.DUP);
 
-        il.append(new PUSH(cp, uuid));
         il.append(factory.createFieldAccess(
                 cg.getClassName(),
                 TransformationUtil.STATIC_CLASS_FIELD,
                 new ObjectType("java.lang.Class"),
-                Constants.GETSTATIC
-        ));
-        il.append(new PUSH(cp, callerMethodName));
-        il.append(new PUSH(cp, callerMethodSignature));
-        il.append(new PUSH(cp, fullCalleeMethodName.toString()));
-        il.append(new PUSH(cp, calleeMethodSignature));
+                Constants.GETSTATIC));
+
+        il.append(new PUSH(cp, fullMethodName.toString()));
+        il.append(new PUSH(cp, signature));
 
         il.append(factory.createInvoke(
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS,
                 "<init>",
                 Type.VOID,
-                new Type[]{
-                    Type.STRING, new ObjectType("java.lang.Class"), Type.STRING,
-                    Type.STRING, Type.STRING, Type.STRING
-                },
-                Constants.INVOKESPECIAL
-        ));
+                new Type[]{new ObjectType("java.lang.Class"), Type.STRING, Type.STRING},
+                Constants.INVOKESPECIAL));
 
         il.append(factory.createFieldAccess(
                 cg.getClassName(),
                 joinPoint.toString(),
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_TYPE,
-                Constants.PUTSTATIC
-        ));
+                Constants.PUTSTATIC));
 
         il.append(factory.createReturn(Type.VOID));
 
@@ -512,76 +457,64 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
      * @param cp the ConstantPoolGen
      * @param cg the ClassGen
      * @param clInit the constructor for the class
-     * @param callerMethodName the caller method name
-     * @param calleeClassName the calle class name
-     * @param calleeMethodName the callee method name
+     * @param methodsClassName the class name for the class holding the method
+     * @param methodName the current method name
      * @param methodSequence the sequence number for the method
-     * @param callerMethodSignature the signature for the caller method
-     * @param calleeMethodSignature the signature for the callee method
+     * @param signature the signature of the method
      * @param factory the objectfactory
      * @param joinPointType the type of the joinpoint
-     * @param uuid the UUID for the weave model
      * @return the modified clinit method
      */
-    private Method createStaticJoinPointField(
-            final ConstantPoolGen cp,
-            final ClassGen cg,
-            final Method clInit,
-            final String callerMethodName,
-            final String calleeClassName,
-            final String calleeMethodName,
-            final int methodSequence,
-            final String callerMethodSignature,
-            final String calleeMethodSignature,
-            final InstructionFactory factory,
-            final Type joinPointType,
-            final String uuid) {
+    private Method createStaticJoinPointField(final ConstantPoolGen cp,
+                                              final ClassGen cg,
+                                              final Method clInit,
+                                              final String methodsClassName,
+                                              final String methodName,
+                                              final int methodSequence,
+                                              final String signature,
+                                              final InstructionFactory factory,
+                                              final Type joinPointType) {
 
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
-        final StringBuffer joinPoint = getJoinPointName(
-                joinPointPrefix, calleeMethodName, methodSequence);
+        final StringBuffer joinPoint =
+                getJoinPointName(joinPointPrefix, methodName, methodSequence);
 
-        StringBuffer fullCalleeMethodName = new StringBuffer();
-        fullCalleeMethodName.append(calleeClassName);
-        fullCalleeMethodName.append(TransformationUtil.CALL_SIDE_DELIMITER);
-        fullCalleeMethodName.append(calleeMethodName);
+        StringBuffer fullMethodName = new StringBuffer();
+        fullMethodName.append(methodsClassName);
+        fullMethodName.append(TransformationUtil.
+                CALL_SIDE_DELIMITER);
+        fullMethodName.append(methodName);
 
         final MethodGen mg = new MethodGen(clInit, cg.getClassName(), cp);
         final InstructionList il = mg.getInstructionList();
 
         final InstructionHandle ih = il.getStart();
 
-        il.insert(ih, factory.createNew(TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS));
+        il.insert(ih, factory.createNew(
+                TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS));
         il.insert(ih, InstructionConstants.DUP);
 
-        il.insert(ih, new PUSH(cp, uuid));
         il.insert(ih, factory.createFieldAccess(
                 cg.getClassName(),
                 TransformationUtil.STATIC_CLASS_FIELD,
                 new ObjectType("java.lang.Class"),
-                Constants.GETSTATIC
-        ));
-        il.insert(ih, new PUSH(cp, callerMethodName));
-        il.insert(ih, new PUSH(cp, callerMethodSignature));
-        il.insert(ih, new PUSH(cp, fullCalleeMethodName.toString()));
-        il.insert(ih, new PUSH(cp, calleeMethodSignature));
+                Constants.GETSTATIC));
+
+        il.insert(ih, new PUSH(cp, fullMethodName.toString()));
+        il.insert(ih, new PUSH(cp, signature));
 
         il.insert(ih, factory.createInvoke(
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS,
                 "<init>",
                 Type.VOID,
-                new Type[]{
-                    Type.STRING, new ObjectType("java.lang.Class"), Type.STRING,
-                    Type.STRING, Type.STRING, Type.STRING
-                },
+                new Type[]{new ObjectType("java.lang.Class"), Type.STRING, Type.STRING},
                 Constants.INVOKESPECIAL));
 
         il.insert(ih, factory.createFieldAccess(
                 cg.getClassName(),
                 joinPoint.toString(),
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_TYPE,
-                Constants.PUTSTATIC
-        ));
+                Constants.PUTSTATIC));
 
         mg.setMaxStack();
         mg.setMaxLocals();
@@ -610,22 +543,20 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
         final String joinPointClass = getJoinPointClass(joinPointType);
 
-        final StringBuffer joinPoint = getJoinPointName(
-                joinPointPrefix, fieldName, methodSequence);
+        final StringBuffer joinPoint =
+                getJoinPointName(joinPointPrefix, fieldName, methodSequence);
 
         il.insert(before, factory.createFieldAccess(
                 cg.getClassName(),
                 joinPoint.toString(),
                 joinPointType,
-                Constants.GETSTATIC
-        ));
+                Constants.GETSTATIC));
 
         il.insert(before, factory.createInvoke(joinPointClass,
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_PRE_EXECUTION_METHOD,
                 Type.VOID,
                 Type.NO_ARGS,
-                Constants.INVOKEVIRTUAL
-        ));
+                Constants.INVOKEVIRTUAL));
     }
 
     /**
@@ -650,39 +581,38 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
         final String joinPointClass = getJoinPointClass(joinPointType);
 
-        final StringBuffer joinPoint = getJoinPointName(
-                joinPointPrefix, fieldName, methodSequence);
+        final StringBuffer joinPoint =
+                getJoinPointName(joinPointPrefix, fieldName, methodSequence);
 
         il.insert(before, factory.createFieldAccess(
                 cg.getClassName(),
                 joinPoint.toString(),
                 joinPointType,
-                Constants.GETSTATIC
-        ));
+                Constants.GETSTATIC));
 
         il.insert(before, factory.createInvoke(
                 joinPointClass,
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_POST_EXECUTION_METHOD,
                 Type.VOID,
                 Type.NO_ARGS,
-                Constants.INVOKEVIRTUAL
-        ));
+                Constants.INVOKEVIRTUAL));
     }
 
     /**
-     * Callback method. Is being called before each transformation.
+     * JMangler callback method. Is being called before each transformation.
      */
     public void sessionStart() {
     }
 
     /**
-     * Callback method. Is being called after each transformation.
+     * JMangler callback method. Is being called after each transformation.
      */
     public void sessionEnd() {
     }
 
     /**
-     * Callback method. Prints a log/status message at each transformation.
+     * JMangler callback method. Prints a log/status message at
+     * each transformation.
      *
      * @return a log string
      */
@@ -693,65 +623,29 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
     /**
      * Filters the classes to be transformed.
      *
-     * @param classMetaData the meta-data for the class
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassMetaData classMetaData, final ClassGen cg) {
-        if (cg.isInterface() ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
+    private boolean classFilter(final ClassGen cg) {
+        if (cg.isInterface()) {
             return true;
         }
-        String className = cg.getClassName();
-        if (m_definition.inExcludePackage(className)) {
-            return true;
-        }
-        if (!m_definition.inIncludePackage(className)) {
-            return true;
-        }
-        if (m_definition.hasCallPointcut(classMetaData)) {
+        else if (m_weaveModel.hasCallerSidePointcut(cg.getClassName())) {
             return false;
         }
-        return true;
+        else {
+            return true;
+        }
     }
 
     /**
-     * Filters the caller methods.
+     * Filters the methods.
      *
      * @param method the method to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean methodFilterCaller(final Method method) {
-        if (method.isNative() ||
-                method.isInterface() ||
-                method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
-                method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    /**
-     * Filters the callee methods.
-     *
-     * @param methodName the name of method to filter
-     * @return boolean true if the method should be filtered away
-     */
-    private boolean methodFilterCallee(final String methodName) {
-        if (methodName.equals("<init>") ||
-                methodName.equals("<clinit>") ||
-                methodName.startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
-                methodName.equals(TransformationUtil.GET_META_DATA_METHOD) ||
-                methodName.equals(TransformationUtil.SET_META_DATA_METHOD) ||
-                methodName.equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
-                methodName.equals(TransformationUtil.GET_UUID_METHOD)) {
+    private boolean methodFilter(final Method method) {
+        if (method.isNative() || method.isInterface()) {
             return true;
         }
         else {
@@ -811,4 +705,5 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         joinPoint.append(methodSequence);
         return joinPoint;
     }
+    ///CLOVER:ON
 }

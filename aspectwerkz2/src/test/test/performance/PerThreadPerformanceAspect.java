@@ -2,46 +2,43 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package test.performance;
 
-import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.Pointcut;
 
 /**
+ * @Aspect
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @Aspect perThread
  */
-public class PerThreadPerformanceAspect
-{
+public class PerThreadPerformanceAspect extends Aspect {
     /**
-     * @Expression class(test.performance.PerformanceTest)
+     * @Class test.performance.PerformanceTest
      */
     Pointcut mixin;
 
     /**
-     * @Expression call(void test.performance.PerformanceTest.methodAdvisedMethodPerThread())
+     * @Execution void test.performance.PerformanceTest.methodAdvisedMethodPerThread()
      */
     Pointcut pc;
 
     /**
      * @Around pc
      */
-    public Object advice(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
      * @Introduce mixin
      */
-    public static class PerThreadImpl implements PerThread
-    {
-        public void runPerThread()
-        {
+    public class PerThreadImpl implements PerThread {
+        public void runPerThread() {
         }
     }
 }

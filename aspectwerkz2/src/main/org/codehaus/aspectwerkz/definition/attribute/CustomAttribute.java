@@ -2,19 +2,18 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
-
 
 /**
  * Attribute for the generic attributes defined by the user.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CustomAttribute implements Attribute
-{
+public class CustomAttribute implements Attribute {
+
     private static final long serialVersionUID = -8248076796205275115L;
 
     /**
@@ -30,23 +29,21 @@ public class CustomAttribute implements Attribute
     /**
      * The the parameters passed to the attribute.
      */
-    private final String[] m_parameters;
+//    private final String[] m_parameters;
 
     /**
      * Create a new CustomAttribute instance.
      *
-     * @param name       the name
-     * @param value      the value
+     * @param name the name
+     * @param value the value
      * @param parameters the parameters
      */
-    public CustomAttribute(final String name, final String value,
-        final String[] parameters)
-    {
+    public CustomAttribute(final String name, final String value, final String[] parameters) {
         m_name = name;
         m_value = value;
 
         // TODO: put the parameters pairs in a hashmap to allow easy retrieval
-        m_parameters = parameters;
+//        m_parameters = parameters;
     }
 
     /**
@@ -54,8 +51,7 @@ public class CustomAttribute implements Attribute
      *
      * @return the name
      */
-    public String getName()
-    {
+    public String getName() {
         return m_name;
     }
 
@@ -64,8 +60,7 @@ public class CustomAttribute implements Attribute
      *
      * @return the value
      */
-    public String getValue()
-    {
+    public String getValue() {
         return m_value;
     }
 
@@ -74,8 +69,7 @@ public class CustomAttribute implements Attribute
      *
      * @return the parameters
      */
-    public String[] getParameters()
-    {
-        return m_parameters;
-    }
+//    public String[] getParameters() {
+//        return m_parameters;
+//    }
 }

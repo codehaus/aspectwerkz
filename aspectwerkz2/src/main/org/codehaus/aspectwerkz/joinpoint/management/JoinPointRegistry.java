@@ -2,46 +2,62 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import gnu.trove.TLongObjectHashMap;
+import gnu.trove.TLongIntHashMap;
 
-import org.codehaus.aspectwerkz.AspectSystem;
+import java.util.List;
+import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+
+import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
-import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
+import org.codehaus.aspectwerkz.pointcut.CallPointcut;
+import org.codehaus.aspectwerkz.pointcut.GetPointcut;
+import org.codehaus.aspectwerkz.pointcut.SetPointcut;
 
 /**
- * Manages the registration of join points and advices for these join points.
+ * Handles the states of all join points.
+ * <p/>
+ * A join point can be in one of the following states:
+ * <ol>
+ *      <li>
+ *          JoinPointState.NOT_ADVISED - the join point is not advised
+ *      </li>
+ *      <li>
+ *          JoinPointState.ADVISED -     the join point is advised (this does not mean that it has advices attached to it)
+ *      </li>
+ *      <li>
+ *          JoinPointState.HAS_ADVICES - the join point has advices attached to it
+ *      </li>
+ *      <li>
+ *          JoinPointState.REDEFINED  -  the definition of the join point had been changed, needs to be updated
+ *      </li>
+ * </ol>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-class JoinPointRegistry
-{
+public class JoinPointRegistry {
+
     /**
      * Pre allocated empty array list.
      */
     private static final List EMTPY_ARRAY_LIST = new ArrayList();
 
     /**
-     * Pre allocated empty index tuple array.
+     * The registry with all the classes and the status of their join points.
      */
-    private static final IndexTuple[] EMPTY_INDEX_TUPLE_ARRAY = new IndexTuple[]
-        {
-            
-        };
+    private static final TLongObjectHashMap m_joinPointStateMap = new TLongObjectHashMap();
 
     /**
      * The registry with all the classes and the index for the advices attatched to the join points in this class.
@@ -51,92 +67,206 @@ class JoinPointRegistry
     private static final TLongObjectHashMap m_joinPointAdvicesMap = new TLongObjectHashMap();
 
     /**
-     * Package private constructor.
-     */
-    JoinPointRegistry()
-    {
-    }
-
-    /**
-     * Registers the advices for the method join point.
+     * Registers the method join point.
      *
      * @param joinPointType
      * @param joinPointHash
      * @param signature
      * @param classHash
-     * @param definedClass
-     * @param definedClassMetaData
+     * @param classMetaData
+     * @param targetClass
      * @param system
-     * TODO: cache the metadata created in the method - map it to the method hash (see pointcut for caching)
      */
     public void registerJoinPoint(final int joinPointType,
-        final int joinPointHash, final String signature, final int classHash,
-        final Class definedClass, final ClassMetaData definedClassMetaData,
-        final AspectSystem system)
-    {
-        if (!m_joinPointAdvicesMap.containsKey(classHash))
-        {
+                                  final int joinPointHash,
+                                  final String signature,
+                                  final long classHash,
+                                  final ClassMetaData classMetaData,
+                                  final Class targetClass,
+                                  final System system) {
+        registerStateForJoinPoint(joinPointHash, classHash);
+        registerAdvicesForJoinPoint(
+                joinPointType, joinPointHash, signature, classHash, classMetaData, targetClass, system
+        );
+    }
+
+    /**
+     * Registes the state for the join point.
+     *
+     * @param joinPointHash
+     * @param classHash
+     */
+    public void registerStateForJoinPoint(final long joinPointHash, final long classHash) {
+        if (!m_joinPointStateMap.containsKey(classHash)) {
+            m_joinPointStateMap.put(classHash, new TLongIntHashMap());
+        }
+        TLongIntHashMap joinPointStatus = (TLongIntHashMap)m_joinPointStateMap.get(classHash);
+        joinPointStatus.put(joinPointHash, JoinPointState.NOT_ADVISED);
+    }
+
+    /**
+     * Registers the advices for the method join point.
+     *
+     * @TODO: URGENT!!!! This method is a MESS - refactor this method WHEN we have the pointcut/advices problem solved (f.e. ExectionPointcut should contain around AND before/after advices) . Retrieve f.e. a Member instead of a Method/Constructor (and store Field in the same way as with the Methods). This would allow us to handle things more generic and clean and would let us merge most of the code in the different switch cases.
+     *
+     * @param joinPointType
+     * @param joinPointHash
+     * @param signature
+     * @param classHash
+     * @param classMetaData
+     * @param targetClass
+     * @param system
+     */
+    public void registerAdvicesForJoinPoint(final int joinPointType,
+                                            final int joinPointHash,
+                                            final String signature,
+                                            final long classHash,
+                                            final ClassMetaData classMetaData,
+                                            final Class targetClass,
+                                            final System system) {
+        if (!m_joinPointAdvicesMap.containsKey(classHash)) {
             m_joinPointAdvicesMap.put(classHash, new TLongObjectHashMap());
         }
 
+        // TODO: cache the metadata and the method - map it to the method hash (see pointcut for caching)
         Map pointcutTypeToAdvicesMap = setUpPointcutTypeMap();
 
-        TLongObjectHashMap joinPointHashToPointcutTypesMap = (TLongObjectHashMap) m_joinPointAdvicesMap
-            .get(classHash);
+        TLongObjectHashMap joinPointHashToPointcutTypesMap = (TLongObjectHashMap)m_joinPointAdvicesMap.get(classHash);
+        joinPointHashToPointcutTypesMap.put(joinPointHash, pointcutTypeToAdvicesMap);
 
-        joinPointHashToPointcutTypesMap.put(joinPointHash,
-            pointcutTypeToAdvicesMap);
+        switch (joinPointType) {
 
-        switch (joinPointType)
-        {
-        case JoinPointType.METHOD_EXECUTION:
-            registerMethodExecutionJoinPoint(system, definedClass,
-                definedClassMetaData, joinPointHash, pointcutTypeToAdvicesMap);
+            case JoinPointType.METHOD_EXECUTION:
+                // TODO: methods should be hashed based, not indexed basesd
 
-            break;
+                // execution pointcuts
+                List executionAdvices = new ArrayList();
+                List executionPointcuts = system.getAspectManager().getExecutionPointcuts(classMetaData,
+                        ReflectionMetaDataMaker.createMethodMetaData(
+                                system.getAspectManager().getMethod(targetClass, joinPointHash)
+                        ));
+                for (Iterator it = executionPointcuts.iterator(); it.hasNext();) {
+                    ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
+                    AdviceContainer advices = new AdviceContainer(
+                            pointcut.getAroundAdviceIndexes(),
+                            // TODO: needs to rewrite Pointcut impl. to allow before/after advices at execution callPointcuts and around advice at call callPointcuts
+                            new IndexTuple[]{},
+                            new IndexTuple[]{});
+//                    pointcut.getBeforeAdviceIndexes(),
+//                    pointcut.getAfterAdviceIndexes()
+                    executionAdvices.add(pointcut.getAdviceIndexTuples());
+                }
+                AdviceContainer[] adviceContainers = new AdviceContainer[executionAdvices.size()];
+                int i = 0;
+                for (Iterator iterator = executionPointcuts.iterator(); iterator.hasNext(); i++) {
+                    AdviceContainer adviceContainer = (AdviceContainer)iterator.next();
+                    adviceContainers[i] = adviceContainer;
+                }
+                pointcutTypeToAdvicesMap.put(PointcutType.EXECUTION, adviceContainers);
+                break;
 
-        case JoinPointType.METHOD_CALL:
-            registerMethodCallJoinPoint(system, definedClass,
-                definedClassMetaData, joinPointHash, pointcutTypeToAdvicesMap);
+            case JoinPointType.METHOD_CALL:
+                // call pointcuts
+                List callAdvices = new ArrayList();
+                List callPointcuts = system.getAspectManager().getCallPointcuts(classMetaData,
+                        ReflectionMetaDataMaker.createMethodMetaData(
+                                system.getAspectManager().getMethod(targetClass, joinPointHash)
+                        ));
+                for (Iterator it = callPointcuts.iterator(); it.hasNext();) {
+                    CallPointcut pointcut = (CallPointcut)it.next();
+                    AdviceContainer tuple = new AdviceContainer(
+                            // TODO: needs to rewrite Pointcut impl. to allow before/after advices at execution callPointcuts and around advice at call callPointcuts
+                            new IndexTuple[]{},
+                            pointcut.getBeforeAdviceIndexes(),
+                            pointcut.getAfterAdviceIndexes()
+                    );
+                    callAdvices.add(tuple);
+                }
+                adviceContainers = new AdviceContainer[callAdvices.size()];
+                i = 0;
+                for (Iterator iterator = callPointcuts.iterator(); iterator.hasNext(); i++) {
+                    AdviceContainer adviceContainer = (AdviceContainer)iterator.next();
+                    adviceContainers[i] = adviceContainer;
+                }
+                pointcutTypeToAdvicesMap.put(PointcutType.CALL, adviceContainers);
+                break;
 
-            break;
+            case JoinPointType.CONSTRUCTOR_EXECUTION:
+                throw new UnsupportedOperationException("not implemented");
 
-        case JoinPointType.CONSTRUCTOR_EXECUTION:
-            registerConstructorExecutionJoinPoint(system, definedClass,
-                definedClassMetaData, joinPointHash, pointcutTypeToAdvicesMap);
+            case JoinPointType.CONSTRUCTOR_CALL:
+                throw new UnsupportedOperationException("not implemented");
 
-            break;
+            case JoinPointType.FIELD_SET:
+                // TODO: cache the metadata - map it to the field hash (see pointcut for caching)
 
-        case JoinPointType.CONSTRUCTOR_CALL:
-            registerConstructorCallJoinPoint(system, definedClass,
-                definedClassMetaData, joinPointHash, pointcutTypeToAdvicesMap);
+                joinPointHashToPointcutTypesMap.put(joinPointHash, pointcutTypeToAdvicesMap);
 
-            break;
+                List setAdvices = new ArrayList();
+                List setPointcuts = system.getAspectManager().getSetPointcuts(
+                        classMetaData,
+                        ReflectionMetaDataMaker.createFieldMetaData(signature)
+                );
+                for (Iterator it = setPointcuts.iterator(); it.hasNext();) {
+                    SetPointcut pointcut = (SetPointcut)it.next();
+                    AdviceContainer tuple = new AdviceContainer(
+                            // TODO: needs to rewrite Pointcut impl. to allow before/after advices at execution callPointcuts and around advice at call callPointcuts
+                            new IndexTuple[]{},
+                            pointcut.getBeforeAdviceIndexes(),
+                            pointcut.getAfterAdviceIndexes()
+                    );
+                    setAdvices.add(tuple);
+                }
+                pointcutTypeToAdvicesMap.put(PointcutType.SET, setAdvices);
+                break;
 
-        case JoinPointType.FIELD_SET:
-            registerFieldSetJoinPoint(system, definedClassMetaData, signature,
-                pointcutTypeToAdvicesMap);
+            case JoinPointType.FIELD_GET:
+                // TODO: cache the metadata - map it to the field hash (see pointcut for caching)
 
-            break;
+                joinPointHashToPointcutTypesMap.put(joinPointHash, pointcutTypeToAdvicesMap);
 
-        case JoinPointType.FIELD_GET:
-            registerFieldGetJoinPoint(system, definedClassMetaData, signature,
-                pointcutTypeToAdvicesMap);
+                List getAdvices = new ArrayList();
+                List getPointcuts = system.getAspectManager().getGetPointcuts(
+                        classMetaData,
+                        ReflectionMetaDataMaker.createFieldMetaData(signature)
+                );
+                for (Iterator it = getPointcuts.iterator(); it.hasNext();) {
+                    GetPointcut pointcut = (GetPointcut)it.next();
+                    AdviceContainer tuple = new AdviceContainer(
+                            // TODO: needs to rewrite Pointcut impl. to allow before/after advices at execution callPointcuts and around advice at call callPointcuts
+                            new IndexTuple[]{},
+                            pointcut.getBeforeAdviceIndexes(),
+                            pointcut.getAfterAdviceIndexes()
+                    );
+                    getAdvices.add(tuple);
+                }
+                pointcutTypeToAdvicesMap.put(PointcutType.GET, getAdvices);
+                break;
 
-            break;
+            case JoinPointType.CATCH_CLAUSE:
+                throw new UnsupportedOperationException("not implemented");
 
-        case JoinPointType.HANDLER:
-            registerHandlerJoinPoint(system, definedClassMetaData,
-                pointcutTypeToAdvicesMap);
+            case JoinPointType.STATIC_INITALIZATION:
+                throw new UnsupportedOperationException("not implemented");
 
-            break;
-
-        case JoinPointType.STATIC_INITALIZATION:
-            throw new UnsupportedOperationException("not implemented");
-
-        default:
-            throw new RuntimeException("join point type not valid");
+            default:
+                throw new RuntimeException("join point type not valid");
         }
+    }
+
+    /**
+     * Returns the state of the join point.
+     *
+     * @param classHash
+     * @param joinPointHash
+     * @return the state
+     */
+    public int getStateForJoinPoint(final long classHash, final long joinPointHash) {
+        if (!m_joinPointStateMap.containsKey(classHash)) {
+            return JoinPointState.NOT_ADVISED;
+        }
+        TLongIntHashMap joinPoints = (TLongIntHashMap)m_joinPointStateMap.get(classHash);
+        return joinPoints.get(joinPointHash);
     }
 
     /**
@@ -146,360 +276,114 @@ class JoinPointRegistry
      * @param joinPointHash
      * @return the advices attached to the join point
      */
-    public Map getAdvicesForJoinPoint(final long classHash,
-        final long joinPointHash)
-    {
-        TLongObjectHashMap joinPoints = (TLongObjectHashMap) m_joinPointAdvicesMap
-            .get(classHash);
-
-        return (Map) joinPoints.get(joinPointHash);
+    public Map getAdvicesForJoinPoint(final long classHash, final long joinPointHash) {
+        TLongObjectHashMap joinPoints = (TLongObjectHashMap)m_joinPointAdvicesMap.get(classHash);
+        return (Map)joinPoints.get(joinPointHash);
     }
 
     /**
-     * Register method execution join points.
+     * Checks if the join point is registered or not.
      *
-     * @param system
-     * @param definedClass
-     * @param definedClassMetaData
+     * @param classHash
      * @param joinPointHash
-     * @param pointcutTypeToAdvicesMap
+     * @return
      */
-    private void registerMethodExecutionJoinPoint(final AspectSystem system,
-        final Class definedClass, final ClassMetaData definedClassMetaData,
-        final int joinPointHash, final Map pointcutTypeToAdvicesMap)
-    {
-        List executionAdvices = new ArrayList();
-        List executionPointcuts = new ArrayList(); // cache ?
-
-        for (int i = 0; i < system.getAspectManagers().length; i++)
-        {
-            executionPointcuts.addAll(system.getAspectManagers()[i]
-                .getExecutionPointcuts(definedClassMetaData,
-                    ReflectionMetaDataMaker.createMethodMetaData(
-                        AspectRegistry.getMethodTuple(definedClass,
-                            joinPointHash).getWrapperMethod())));
-        }
-
-        for (Iterator it = executionPointcuts.iterator(); it.hasNext();)
-        {
-            Pointcut pointcut = (Pointcut) it.next();
-            AdviceContainer advices = new AdviceContainer(pointcut
-                    .getAroundAdviceIndexes(),
-                    pointcut.getBeforeAdviceIndexes(),
-                    pointcut.getAfterAdviceIndexes());
-
-            executionAdvices.add(advices);
-        }
-
-        AdviceContainer[] adviceContainers = new AdviceContainer[executionAdvices
-            .size()];
-        int i = 0;
-
-        for (Iterator iterator = executionAdvices.iterator();
-            iterator.hasNext(); i++)
-        {
-            AdviceContainer adviceContainer = (AdviceContainer) iterator.next();
-
-            adviceContainers[i] = adviceContainer;
-        }
-
-        pointcutTypeToAdvicesMap.put(PointcutType.EXECUTION, adviceContainers);
-
-        return;
+    public boolean isRegistered(final long classHash, final long joinPointHash) {
+        return getStateForJoinPoint(classHash, joinPointHash) == JoinPointState.NOT_ADVISED;
     }
 
     /**
-     * Register method call join points.
+     * Checks if the join point is not advised.
      *
-     * @param system
-     * @param definedClass
-     * @param definedClassMetaData
+     * @param classHash
      * @param joinPointHash
-     * @param pointcutTypeToAdvicesMap
+     * @return
      */
-    private void registerMethodCallJoinPoint(final AspectSystem system,
-        final Class definedClass, final ClassMetaData definedClassMetaData,
-        final int joinPointHash, final Map pointcutTypeToAdvicesMap)
-    {
-        List methodCallAdvices = new ArrayList();
-        List methodCallPointcuts = new ArrayList();
-
-        for (int i = 0; i < system.getAspectManagers().length; i++)
-        {
-            methodCallPointcuts.addAll(system.getAspectManagers()[i]
-                .getCallPointcuts(definedClassMetaData,
-                    ReflectionMetaDataMaker.createMethodMetaData(
-                        AspectRegistry.getMethodTuple(definedClass,
-                            joinPointHash).getWrapperMethod())));
-        }
-
-        for (Iterator it = methodCallPointcuts.iterator(); it.hasNext();)
-        {
-            Pointcut pointcut = (Pointcut) it.next();
-            AdviceContainer advices = new AdviceContainer(pointcut
-                    .getAroundAdviceIndexes(),
-                    pointcut.getBeforeAdviceIndexes(),
-                    pointcut.getAfterAdviceIndexes());
-
-            methodCallAdvices.add(advices);
-        }
-
-        AdviceContainer[] adviceContainers = new AdviceContainer[methodCallAdvices
-            .size()];
-        int i = 0;
-
-        for (Iterator iterator = methodCallAdvices.iterator();
-            iterator.hasNext(); i++)
-        {
-            AdviceContainer adviceContainer = (AdviceContainer) iterator.next();
-
-            adviceContainers[i] = adviceContainer;
-        }
-
-        pointcutTypeToAdvicesMap.put(PointcutType.CALL, adviceContainers);
+    public boolean isNotAdvised(final long classHash, final long joinPointHash) {
+        return getStateForJoinPoint(classHash, joinPointHash) == JoinPointState.NOT_ADVISED;
     }
 
     /**
-     * Register constructor execution join points.
+     * Checks if the join point has advices.
      *
-     * @param system
-     * @param definedClass
-     * @param definedClassMetaData
+     * @param classHash
      * @param joinPointHash
-     * @param pointcutTypeToAdvicesMap
+     * @return
      */
-    private void registerConstructorExecutionJoinPoint(
-        final AspectSystem system, final Class definedClass,
-        final ClassMetaData definedClassMetaData, final int joinPointHash,
-        final Map pointcutTypeToAdvicesMap)
-    {
-        List executionAdvices = new ArrayList();
-        List executionPointcuts = new ArrayList();
-
-        for (int i = 0; i < system.getAspectManagers().length; i++)
-        {
-            executionPointcuts.addAll(system.getAspectManagers()[i]
-                .getExecutionPointcuts(definedClassMetaData,
-                    ReflectionMetaDataMaker.createConstructorMetaData(
-                        AspectRegistry.getConstructorTuple(definedClass,
-                            joinPointHash).getWrapperConstructor())));
-        }
-
-        for (Iterator it = executionPointcuts.iterator(); it.hasNext();)
-        {
-            Pointcut pointcut = (Pointcut) it.next();
-            AdviceContainer advices = new AdviceContainer(pointcut
-                    .getAroundAdviceIndexes(),
-                    pointcut.getBeforeAdviceIndexes(),
-                    pointcut.getAfterAdviceIndexes());
-
-            executionAdvices.add(advices);
-        }
-
-        AdviceContainer[] adviceContainers = new AdviceContainer[executionAdvices
-            .size()];
-        int i = 0;
-
-        for (Iterator iterator = executionAdvices.iterator();
-            iterator.hasNext(); i++)
-        {
-            AdviceContainer adviceContainer = (AdviceContainer) iterator.next();
-
-            adviceContainers[i] = adviceContainer;
-        }
-
-        pointcutTypeToAdvicesMap.put(PointcutType.EXECUTION, adviceContainers);
+    public boolean isAdvised(final long classHash, final long joinPointHash) {
+        return getStateForJoinPoint(classHash, joinPointHash) == JoinPointState.ADVISED;
     }
 
     /**
-     * Register constructor call join points.
+     * Checks if the join point has advices.
      *
-     * @param system
-     * @param definedClass
-     * @param definedClassMetaData
+     * @param classHash
      * @param joinPointHash
-     * @param pointcutTypeToAdvicesMap
+     * @return
      */
-    private void registerConstructorCallJoinPoint(final AspectSystem system,
-        final Class definedClass, final ClassMetaData definedClassMetaData,
-        final int joinPointHash, final Map pointcutTypeToAdvicesMap)
-    {
-        List constructorCallAdvices = new ArrayList();
-        List constructorCallPointcuts = new ArrayList();
-
-        for (int i = 0; i < system.getAspectManagers().length; i++)
-        {
-            constructorCallPointcuts.addAll(system.getAspectManagers()[i]
-                .getCallPointcuts(definedClassMetaData,
-                    ReflectionMetaDataMaker.createConstructorMetaData(
-                        AspectRegistry.getConstructorTuple(definedClass,
-                            joinPointHash).getWrapperConstructor())));
-        }
-
-        for (Iterator it = constructorCallPointcuts.iterator(); it.hasNext();)
-        {
-            Pointcut pointcut = (Pointcut) it.next();
-            AdviceContainer advices = new AdviceContainer(pointcut
-                    .getAroundAdviceIndexes(),
-                    pointcut.getBeforeAdviceIndexes(),
-                    pointcut.getAfterAdviceIndexes());
-
-            constructorCallAdvices.add(advices);
-        }
-
-        AdviceContainer[] adviceContainers = new AdviceContainer[constructorCallAdvices
-            .size()];
-        int i = 0;
-
-        for (Iterator iterator = constructorCallAdvices.iterator();
-            iterator.hasNext(); i++)
-        {
-            AdviceContainer adviceContainer = (AdviceContainer) iterator.next();
-
-            adviceContainers[i] = adviceContainer;
-        }
-
-        pointcutTypeToAdvicesMap.put(PointcutType.CALL, adviceContainers);
+    public boolean hasAdvices(final long classHash, final long joinPointHash) {
+        return getStateForJoinPoint(classHash, joinPointHash) == JoinPointState.HAS_ADVICES;
     }
 
     /**
-     * Register field set join points.
+     * Checks if the join point has beed redefined.
      *
-     * @param system
-     * @param definedClassMetaData
-     * @param signature
-     * @param pointcutTypeToAdvicesMap
+     * @param classHash
+     * @param joinPointHash
+     * @return
      */
-    private void registerFieldSetJoinPoint(final AspectSystem system,
-        final ClassMetaData definedClassMetaData, final String signature,
-        final Map pointcutTypeToAdvicesMap)
-    {
-        List setAdvices = new ArrayList();
-        List setPointcuts = new ArrayList();
-
-        for (int i = 0; i < system.getAspectManagers().length; i++)
-        {
-            setPointcuts.addAll(system.getAspectManagers()[i].getSetPointcuts(
-                    definedClassMetaData,
-                    ReflectionMetaDataMaker.createFieldMetaData(signature)));
-        }
-
-        for (Iterator it = setPointcuts.iterator(); it.hasNext();)
-        {
-            Pointcut pointcut = (Pointcut) it.next();
-            AdviceContainer advices = new AdviceContainer(pointcut
-                    .getAroundAdviceIndexes(),
-                    pointcut.getBeforeAdviceIndexes(),
-                    pointcut.getAfterAdviceIndexes());
-
-            setAdvices.add(advices);
-        }
-
-        AdviceContainer[] adviceContainers = new AdviceContainer[setAdvices
-            .size()];
-        int i = 0;
-
-        for (Iterator iterator = setAdvices.iterator(); iterator.hasNext();
-            i++)
-        {
-            AdviceContainer adviceContainer = (AdviceContainer) iterator.next();
-
-            adviceContainers[i] = adviceContainer;
-        }
-
-        pointcutTypeToAdvicesMap.put(PointcutType.SET, adviceContainers);
+    public boolean isRedefined(final long classHash, final long joinPointHash) {
+        return getStateForJoinPoint(classHash, joinPointHash) == JoinPointState.REDEFINED;
     }
 
     /**
-     * Register field get join points.
+     * Sets the join point as not advised.
      *
-     * @param system
-     * @param definedClassMetaData
-     * @param signature
-     * @param pointcutTypeToAdvicesMap
+     * @param classHash
+     * @param joinPointHash
      */
-    private void registerFieldGetJoinPoint(final AspectSystem system,
-        final ClassMetaData definedClassMetaData, final String signature,
-        final Map pointcutTypeToAdvicesMap)
-    {
-        List getAdvices = new ArrayList();
-        List getPointcuts = new ArrayList();
-
-        for (int i = 0; i < system.getAspectManagers().length; i++)
-        {
-            getPointcuts.addAll(system.getAspectManagers()[i].getGetPointcuts(
-                    definedClassMetaData,
-                    ReflectionMetaDataMaker.createFieldMetaData(signature)));
-        }
-
-        for (Iterator it = getPointcuts.iterator(); it.hasNext();)
-        {
-            Pointcut pointcut = (Pointcut) it.next();
-            AdviceContainer advices = new AdviceContainer(pointcut
-                    .getAroundAdviceIndexes(),
-                    pointcut.getBeforeAdviceIndexes(),
-                    pointcut.getAfterAdviceIndexes());
-
-            getAdvices.add(advices);
-        }
-
-        AdviceContainer[] adviceContainers = new AdviceContainer[getAdvices
-            .size()];
-        int i = 0;
-
-        for (Iterator iterator = getAdvices.iterator(); iterator.hasNext();
-            i++)
-        {
-            AdviceContainer adviceContainer = (AdviceContainer) iterator.next();
-
-            adviceContainers[i] = adviceContainer;
-        }
-
-        pointcutTypeToAdvicesMap.put(PointcutType.GET, adviceContainers);
+    public void setNotAdvised(final long classHash, final long joinPointHash) {
+        getJoinPointStates(classHash).put(joinPointHash, JoinPointState.NOT_ADVISED);
     }
 
     /**
-     * Register handler join points.
+     * Sets the join point as advised.
      *
-     * @param system
-     * @param exceptionClassMetaData
-     * @param pointcutTypeToAdvicesMap
+     * @param classHash
+     * @param joinPointHash
      */
-    private void registerHandlerJoinPoint(final AspectSystem system,
-        final ClassMetaData exceptionClassMetaData,
-        final Map pointcutTypeToAdvicesMap)
-    {
-        List handlerAdvices = new ArrayList();
-        List handlerPointcuts = new ArrayList();
+    public void setAdvised(final long classHash, final long joinPointHash) {
+        getJoinPointStates(classHash).put(joinPointHash, JoinPointState.ADVISED);
+    }
 
-        for (int i = 0; i < system.getAspectManagers().length; i++)
-        {
-            handlerPointcuts.addAll(system.getAspectManagers()[i]
-                .getHandlerPointcuts(exceptionClassMetaData));
-        }
+    /**
+     * Marks the join point as one that has advices attached to it.
+     *
+     * @param classHash
+     * @param joinPointHash
+     */
+    public void setHasAdvices(final long classHash, final long joinPointHash) {
+        getJoinPointStates(classHash).put(joinPointHash, JoinPointState.HAS_ADVICES);
+    }
 
-        for (Iterator it = handlerPointcuts.iterator(); it.hasNext();)
-        {
-            Pointcut pointcut = (Pointcut) it.next();
-            AdviceContainer advices = new AdviceContainer(EMPTY_INDEX_TUPLE_ARRAY,
-                    pointcut.getBeforeAdviceIndexes(), EMPTY_INDEX_TUPLE_ARRAY);
+    /**
+     * Sets the join point as redefined.
+     *
+     * @param classHash
+     * @param joinPointHash
+     */
+    public void setRedefined(final long classHash, final long joinPointHash) {
+        getJoinPointStates(classHash).put(joinPointHash, JoinPointState.REDEFINED);
+    }
 
-            handlerAdvices.add(advices);
-        }
-
-        AdviceContainer[] adviceContainers = new AdviceContainer[handlerAdvices
-            .size()];
-        int i = 0;
-
-        for (Iterator iterator = handlerAdvices.iterator(); iterator.hasNext();
-            i++)
-        {
-            AdviceContainer adviceContainer = (AdviceContainer) iterator.next();
-
-            adviceContainers[i] = adviceContainer;
-        }
-
-        pointcutTypeToAdvicesMap.put(PointcutType.HANDLER, adviceContainers);
+    /**
+     * Returns information about the join points for as specific class
+     *
+     * @param classHash
+     * @return information about the join points for the class
+     */
+    private TLongIntHashMap getJoinPointStates(final long classHash) {
+        return (TLongIntHashMap)m_joinPointStateMap.get(classHash);
     }
 
     /**
@@ -507,29 +391,23 @@ class JoinPointRegistry
      *
      * @return the map
      */
-    private Map setUpPointcutTypeMap()
-    {
+    private Map setUpPointcutTypeMap() {
         Map pointcutTypeToAdvicesMap = new HashMap();
-
         pointcutTypeToAdvicesMap.put(PointcutType.EXECUTION, EMTPY_ARRAY_LIST);
         pointcutTypeToAdvicesMap.put(PointcutType.CALL, EMTPY_ARRAY_LIST);
         pointcutTypeToAdvicesMap.put(PointcutType.SET, EMTPY_ARRAY_LIST);
         pointcutTypeToAdvicesMap.put(PointcutType.GET, EMTPY_ARRAY_LIST);
-        pointcutTypeToAdvicesMap.put(PointcutType.HANDLER, EMTPY_ARRAY_LIST);
+        pointcutTypeToAdvicesMap.put(PointcutType.THROWS, EMTPY_ARRAY_LIST);
+        pointcutTypeToAdvicesMap.put(PointcutType.CATCH_CLAUSE, EMTPY_ARRAY_LIST);
         pointcutTypeToAdvicesMap.put(PointcutType.ATTRIBUTE, EMTPY_ARRAY_LIST);
         pointcutTypeToAdvicesMap.put(PointcutType.CLASS, EMTPY_ARRAY_LIST);
         pointcutTypeToAdvicesMap.put(PointcutType.CFLOW, EMTPY_ARRAY_LIST);
-
         return pointcutTypeToAdvicesMap;
     }
 
     /**
-     * TODO do better RW/RuW/JPredef
-     * eWorld brute force reset
-     * Needed since JoinPointRegistry is somehow a singleton (static in JoinPointManager)
+     * Package private constructor.
      */
-    public void reset(int classHash)
-    {
-        m_joinPointAdvicesMap.remove(classHash);
+    JoinPointRegistry() {
     }
 }

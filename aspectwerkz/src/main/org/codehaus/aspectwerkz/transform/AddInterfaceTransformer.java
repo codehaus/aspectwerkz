@@ -1,125 +1,156 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.transform;
 
-import java.util.List;
+import java.util.Set;
 import java.util.Iterator;
+import java.util.List;
+
+import gnu.trove.THashSet;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ClassGen;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantUtf8;
 
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
+import org.cs3.jmangler.bceltransformer.AbstractInterfaceTransformer;
+import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
+import org.cs3.jmangler.bceltransformer.ExtensionSet;
+
+import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
 
 /**
  * Adds an interfaces to classes.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: AddInterfaceTransformer.java,v 1.1.1.1 2003-05-11 15:15:01 jboner Exp $
  */
-public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransformerComponent {
+public final class AddInterfaceTransformer extends AbstractInterfaceTransformer {
+    ///CLOVER:OFF
+    /**
+     * Holds references to the classes that have already been transformed.
+     */
+    private final Set m_transformed = new THashSet();
 
     /**
-     * The definitions.
+     * Holds the weave model.
      */
-    private final List m_definitions;
-
-    /**
-     * Retrieves the weave model.
-     */
-    public AddInterfaceTransformer() {
-        super();
-        m_definitions = DefinitionLoader.getDefinitionsForTransformation();
-    }
+    private WeaveModel m_weaveModel = WeaveModel.loadModel();
 
     /**
      * Adds an interfaces to the classes specified.
      *
-     * @param context the transformation context
-     * @param klass the class
+     * @param es the extension set
+     * @param cs the unextendable class set
      */
-    public void transformInterface(final Context context, final Klass klass) {
-        // loop over all the definitions
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
+    public void transformInterface(final ExtensionSet es,
+                                   final UnextendableClassSet cs) {
+        final Iterator it = cs.getIteratorForTransformableClasses();
+        while (it.hasNext()) {
 
-            definition.loadAspects(context.getLoader());
+            final ClassGen cg = (ClassGen)it.next();
+            if (classFilter(cg)) continue;
 
-            final ClassGen cg = klass.getClassGen();
+            if (m_transformed.contains(cg.getClassName())) continue;
+            m_transformed.add(cg.getClassName());
+
             final ConstantPoolGen cpg = cg.getConstantPool();
+            final int[] interfaces = cg.getInterfaces();
 
-            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+            final List introductionNames =
+                    m_weaveModel.getIntroductionNames(cg.getClassName());
 
-            if (classFilter(cg, classMetaData, definition)) {
-                return;
-            }
-            if (definition.isAttribDef()) {
-                org.codehaus.aspectwerkz.attribdef.transform.IntroductionTransformer.addInterfaceIntroductions(
-                        definition, cg, cpg, context, classMetaData
-                );
-            }
-            else if (definition.isXmlDef()) {
-                org.codehaus.aspectwerkz.xmldef.transform.IntroductionTransformer.addInterfaceIntroductions(
-                        definition, cg, cpg, context
-                );
+            for (Iterator it2 = introductionNames.iterator(); it2.hasNext();) {
+                String introductionName = (String)it2.next();
+
+                final String interfaceName = m_weaveModel.
+                        getIntroductionInterfaceName(introductionName);
+
+                boolean addInterface = true;
+
+                for (int l = 0; l < interfaces.length; l++) {
+                    final ConstantClass cc = (ConstantClass)cpg.
+                            getConstant(interfaces[l]);
+                    final ConstantUtf8 cu = (ConstantUtf8)cpg.
+                            getConstant(cc.getNameIndex());
+
+                    if (implementsInterface(cu, interfaceName)) {
+                        addInterface = false;
+                        break;
+                    }
+                }
+                if (addInterface) {
+                    es.addInterfaceToClass(cg.getClassName(), interfaceName);
+                }
             }
         }
+    }
+
+    /**
+     * Checks if a class implements an interface.
+     *
+     * @param cu ConstantUtf8 constant
+     * @return true if the class implements the interface
+     */
+    private boolean implementsInterface(final ConstantUtf8 cu,
+                                        final String interfaceName) {
+        return cu.getBytes().equals(interfaceName.replace('.', '/'));
     }
 
     /**
      * Filters the classes to be transformed.
      *
      * @param cg the class to filter
-     * @param classMetaData the class meta-data
-     * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg,
-                                final ClassMetaData classMetaData,
-                                final AspectWerkzDefinition definition) {
-        if (cg.isInterface() ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
+    private boolean classFilter(final ClassGen cg) {
+        if (cg.isInterface()) {
             return true;
         }
-        String className = cg.getClassName();
-        if (definition.inExcludePackage(className)) {
-            return true;
-        }
-        if (definition.inIncludePackage(className) &&
-                definition.hasIntroductions(classMetaData)) {
+        else if (m_weaveModel.hasAspect(cg.getClassName()) &&
+                m_weaveModel.hasIntroductions(cg.getClassName())) {
             return false;
         }
-        return true;
+        else {
+            return true;
+        }
     }
 
     /**
-     * Callback method. Is being called before each transformation.
+     * JMangler callback method. Is being called before each transformation.
      */
     public void sessionStart() {
     }
 
     /**
-     * Callback method. Is being called after each transformation.
+     * JMangler callback method. Is being called after each transformation.
      */
     public void sessionEnd() {
     }
 
     /**
-     * Callback method. Prints a log/status message at
-     * each transformation.
+     * Logs a message.
      *
-     * @return a log string
+     * @return the log message
      */
     public String verboseMessage() {
-        return this.getClass().getName();
+        return getClass().getName();
     }
+    ///CLOVER:ON
 }

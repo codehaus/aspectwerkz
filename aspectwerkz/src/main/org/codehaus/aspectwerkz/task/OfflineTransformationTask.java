@@ -1,15 +1,25 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.task;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.File;
+import java.io.InputStream;
 
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
@@ -19,7 +29,8 @@ import org.apache.tools.ant.BuildException;
  * the a class directory structure recursivly using the AspectWerkz -offline
  * mode.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: OfflineTransformationTask.java,v 1.1.1.1 2003-05-11 15:14:56 jboner Exp $
  */
 public class OfflineTransformationTask extends Task {
 
@@ -31,7 +42,7 @@ public class OfflineTransformationTask extends Task {
     /**
      * The path to the classes to transform.
      */
-    private String m_classesToTransform;
+    private String m_classesDir;
 
     /**
      * The path to the XML definition file.
@@ -39,9 +50,9 @@ public class OfflineTransformationTask extends Task {
     private String m_definitionFile;
 
     /**
-     * The class path.
+     * The path to the meta-data dir.
      */
-    private String m_classPath;
+    private String m_metaDataDir;
 
     /**
      * Sets the aspectwerkz home dir.
@@ -55,10 +66,10 @@ public class OfflineTransformationTask extends Task {
     /**
      * Sets the path to the classes to transform.
      *
-     * @param classesToTransform the path to the classes
+     * @param classesDir the path to the classes
      */
-    public void setClassesToTransform(final String classesToTransform) {
-        m_classesToTransform = classesToTransform;
+    public void setClassesDir(final String classesDir) {
+        m_classesDir = classesDir;
     }
 
     /**
@@ -73,10 +84,10 @@ public class OfflineTransformationTask extends Task {
     /**
      * The path to the meta-data dir.
      *
-     * @param classPath the path to the meta-data dir
+     * @param metaDataDir the path to the meta-data dir
      */
-    public void setClassPath(final String classPath) {
-        m_classPath = classPath;
+    public void setMetaDataDir(final String metaDataDir) {
+        m_metaDataDir = metaDataDir;
     }
 
     /**
@@ -85,11 +96,10 @@ public class OfflineTransformationTask extends Task {
      * @throws org.apache.tools.ant.BuildException
      */
     public void execute() throws BuildException {
-        if (m_aspectWerkzHome == null) throw new BuildException("AspectWerkz home dir must be specified");
-        if (m_classesToTransform == null) throw new BuildException("classes to transform must be specified");
-        if (m_definitionFile == null) throw new BuildException("definition file must be specified");
+        if (m_aspectWerkzHome == null) throw new IllegalArgumentException("aspectWerkzHome must be specified");
+        if (m_classesDir == null) throw new IllegalArgumentException("classesDir must be specified");
+        if (m_definitionFile == null) throw new IllegalArgumentException("definitionFile must be specified");
 
-        System.out.println("CAUTION: This Ant task might be a bit shaky, does not show errors in compilation process properly (use at own risk or patch it :-))");
         System.out.println("NOTE: Make shure that you don't transform your classes more than once (without recompiling first)");
 
         StringBuffer command = new StringBuffer();
@@ -103,35 +113,39 @@ public class OfflineTransformationTask extends Task {
             command.append(".bat");
         }
         command.append(" -offline ");
+        command.append(m_classesDir);
+        command.append(' ');
         command.append(m_definitionFile);
         command.append(' ');
-        if (m_classPath != null) {
-            command.append(m_classPath);
+        if (m_metaDataDir != null) {
+            command.append(m_metaDataDir);
         }
-        command.append(' ');
-        command.append(m_classesToTransform);
 
         try {
-            Process p = Runtime.getRuntime().exec(command.toString(), new String[]{"ASPECTWERKZ_HOME=" + m_aspectWerkzHome, "JAVA_HOME=" + System.getProperty("java.home"), "CLASSPATH=" + System.getProperty("java.class.path")});
+            Process p = Runtime.getRuntime().exec(command.toString());
             System.out.flush();
-            BufferedReader stdOut = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            BufferedReader stdErr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            String out, err = null;
-
-            while ((out = stdOut.readLine()) != null || (err = stdErr.readLine()) != null) {
-                if (out != null) {
-                    System.out.println(out);
-                    System.out.flush();
-                }
-                if (err != null) {
-                    System.err.println("Error: " + err);
+            InputStream stdInput = p.getInputStream();
+            Character newLine = new Character('\n');
+            StringBuffer line = new StringBuffer();
+            while (stdInput != null) {
+                if (stdInput.available() > 0) {
+                    char inChar = (char)stdInput.read();
+                    if (new Character(inChar).equals(newLine)) {
+                        System.out.print(line.toString());
+                        System.out.flush();
+                        if (line.toString().startsWith("Offline transformation")) {
+                            return;
+                        }
+                        line = new StringBuffer();
+                    }
+                    else {
+                        line.append(inChar);
+                    }
                 }
             }
-            p.waitFor();
-            if (p.exitValue() != 0) throw new BuildException("Failed to transform classes, exit code: " + p.exitValue());
         }
-        catch (Throwable e) {
-            throw new BuildException("could not transform the classes due to: " + e);
+        catch (Exception e) {
+            throw new RuntimeException("could not transform the classes due to: " + e);
         }
     }
 }

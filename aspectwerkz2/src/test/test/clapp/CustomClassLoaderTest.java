@@ -2,56 +2,42 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package test.clapp;
 
 import junit.framework.TestCase;
 
-import org.codehaus.aspectwerkz.compiler.VerifierClassLoader;
-
+import java.net.URL;
 import java.lang.reflect.Method;
 
-import java.net.URL;
+import org.codehaus.aspectwerkz.compiler.VerifierClassLoader;
 
-public class CustomClassLoaderTest extends TestCase
-{
-    private static String targetPath = CustomClassLoaderTest.class.getClassLoader()
-                                                                  .getResource("test/clapp/Target.class")
-                                                                  .toString();
+public class CustomClassLoaderTest extends TestCase {
 
-    static
-    {
-        targetPath = targetPath.substring(0,
-                targetPath.indexOf("test/clapp/Target.class"));
+    private static String targetPath = CustomClassLoaderTest.class.getClassLoader().getResource("test/clapp/Target.class").toString();
+    static {
+        targetPath = targetPath.substring(0, targetPath.indexOf("test/clapp/Target.class"));
     }
 
     /**
-     * Note: this test cannot be runned thru the WeavingClassLoader for debugging since it uses custom class loader
-     * hierarchy. See testWeavingClassLoader() commented method
+     * Note: this test cannot be runned thru the WeavingClassLoader for debugging
+     * since it uses custom class loader hierarchy.
+     * See testWeavingClassLoader() commented method
      */
-    public void testCustomClassLoaderWeaving()
-    {
-        try
-        {
-            VerifierClassLoader cl = new VerifierClassLoader(new URL[]
-                    {
-                        new URL(targetPath)
-                    }, ClassLoader.getSystemClassLoader());
+    public void testCustomClassLoaderWeaving() {
+        try {
+            VerifierClassLoader cl = new VerifierClassLoader(
+                    new URL[]{new URL(targetPath)},
+                    ClassLoader.getSystemClassLoader());
 
             Class target = cl.loadClass("test.clapp.Target");
-
             assertEquals(target.getClassLoader().hashCode(), cl.hashCode());
-
-            Method m = target.getMethod("callme", new Class[] {  });
-            String res = (String) m.invoke(target.newInstance(),
-                    new Object[] {  });
-
+            Method m = target.getMethod("callme", new Class[]{});
+            String res = (String) m.invoke(target.newInstance(), new Object[]{});
             assertEquals("before call after", res);
-        }
-        catch (Throwable t)
-        {
+        } catch (Throwable t) {
             t.printStackTrace();
             fail(t.getMessage());
         }
@@ -69,7 +55,7 @@ public class CustomClassLoaderTest extends TestCase
                     ClassLoader.getSystemClassLoader());
             Class target = wcl.loadClass("test.xmldef.clapp.Target");
             assertEquals(target.getClassLoader().hashCode(), wcl.hashCode());
-            Method m = target.getAdvice("callme", new Class[]{});
+            Method m = target.getMethod("callme", new Class[]{});
             String res = (String) m.invoke(target.newInstance(), new Object[]{});
             assertEquals("before call after", res);
         } catch (Throwable t) {
@@ -77,10 +63,9 @@ public class CustomClassLoaderTest extends TestCase
             fail(t.getMessage());
         }
     }*/
-    public static void main(String[] a)
-    {
-        CustomClassLoaderTest me = new CustomClassLoaderTest();
 
+    public static void main(String a[]) {
+        CustomClassLoaderTest me = new CustomClassLoaderTest();
         me.testCustomClassLoaderWeaving();
 
         // uncomment this to run test outside of online mode
@@ -104,4 +89,5 @@ public class CustomClassLoaderTest extends TestCase
         t2.start();
         */
     }
+
 }

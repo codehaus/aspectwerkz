@@ -2,7 +2,7 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
@@ -14,8 +14,8 @@ import org.codehaus.aspectwerkz.DeploymentModel;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AspectAttribute implements Attribute
-{
+public class AspectAttribute implements Attribute {
+
     private static final long serialVersionUID = 5565371328658309916L;
 
     /**
@@ -31,33 +31,27 @@ public class AspectAttribute implements Attribute
     /**
      * Create an PointcutManager attribute.
      *
-     * @param name            the name of the aspect
+     * @param name the name of the aspect
      * @param deploymentModel the deployment model for the aspect
      */
-    public AspectAttribute(final String name, final String deploymentModel)
-    {
+    public AspectAttribute(final String name, final String deploymentModel) {
         m_name = name;
-
-        if ((deploymentModel == null) || deploymentModel.equals(""))
-        {
+        if (deploymentModel == null || deploymentModel.equals("")) {
             m_deploymentModel = "perJVM";
         }
-        else
-        {
+        else {
             m_deploymentModel = deploymentModel;
         }
-
         verify();
     }
 
     /**
      * Create an PointcutManager attribute.
      *
-     * @param name            the name of the aspect
+     * @param name the name of the aspect
      * @param deploymentModel the deployment model for the aspect
      */
-    public AspectAttribute(final String name, final int deploymentModel)
-    {
+    public AspectAttribute(final String name, final int deploymentModel) {
         m_name = name;
         m_deploymentModel = DeploymentModel.getDeploymentModelAsString(deploymentModel);
         verify();
@@ -68,8 +62,7 @@ public class AspectAttribute implements Attribute
      *
      * @return the name
      */
-    public String getName()
-    {
+    public String getName() {
         return m_name;
     }
 
@@ -78,23 +71,19 @@ public class AspectAttribute implements Attribute
      *
      * @return the deployment model
      */
-    public String getDeploymentModel()
-    {
+    public String getDeploymentModel() {
         return m_deploymentModel;
     }
 
     /**
      * Verifies that the deployment model is valid.
      */
-    private void verify()
-    {
-        if (!m_deploymentModel.equalsIgnoreCase("perJVM")
-            && !m_deploymentModel.equalsIgnoreCase("perClass")
-            && !m_deploymentModel.equalsIgnoreCase("perInstance")
-            && !m_deploymentModel.equalsIgnoreCase("perThread"))
-        {
-            throw new IllegalArgumentException(
-                "deployment model is not valid for aspect");
+    private void verify() {
+        if (!m_deploymentModel.equalsIgnoreCase("perJVM") &&
+                !m_deploymentModel.equalsIgnoreCase("perClass") &&
+                !m_deploymentModel.equalsIgnoreCase("perInstance") &&
+                !m_deploymentModel.equalsIgnoreCase("perThread")) {
+            throw new IllegalArgumentException("deployment model is not valid for aspect");
         }
     }
 }

@@ -2,120 +2,107 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package test;
 
-import junit.framework.TestCase;
+import java.util.List;
 
-import org.codehaus.aspectwerkz.DeploymentModel;
+import junit.framework.TestCase;
+import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.NameIndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.aspect.management.Pointcut;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.MethodMetaDataImpl;
-
-import java.util.List;
+import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.System;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @TODO: this test is deprecated - need a better way of handling dynamic stuff
  */
-public class DynamicDeploymentTest extends TestCase implements Loggable
-{
+public class DynamicDeploymentTest extends TestCase implements Loggable {
+
     private static final String ASPECT_NAME = "test.aspect.DynamicDeploymentTestAspect";
     private static final String NEW_ASPECT_NAME = "test.aspect.DynamicallyCreatedAspect";
+
     private String m_logString = "";
-    private ClassMetaData m_classMetaData = MetaDataMaker.getReflectionMetaDataMaker(DynamicDeploymentTest.class
-            .getClassLoader()).createClassMetaData(DynamicDeploymentTest.class);
 
-    public DynamicDeploymentTest(String name)
-    {
-        super(name);
-    }
+    private ClassMetaData m_classMetaData = ReflectionMetaDataMaker.createClassMetaData(
+            DynamicDeploymentTest.class
+    );
 
-    public void testReorderAdvicesAtRuntime1()
-    {
+    public void testReorderAdvicesAtRuntime1() {
         m_logString = "";
         reorderAdvicesTestMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
 
         // get the pointcut by name (can also be retrieved by method meta-data)
-        Pointcut pointcut = SystemLoader.getSystem(this.getClass())
-                                        .getAspectManager("tests")
-                                        .getPointcutManager(ASPECT_NAME)
-                                        .getPointcut("pc1 || pc2 || pc3");
+        ExecutionPointcut pointcut = SystemLoader.getSystem("tests").
+                getAspectManager().
+                getAspectMetaData(ASPECT_NAME).
+                getExecutionPointcut("pc1");
 
         // get the advices
-        List advices = pointcut.getAroundAdviceIndexTuples();
-        NameIndexTuple tuple1 = (NameIndexTuple) advices.get(0);
-        NameIndexTuple tuple2 = (NameIndexTuple) advices.get(1);
+        List advices = pointcut.getAdviceIndexTuples();
+        NameIndexTuple tuple1 = (NameIndexTuple)advices.get(0);
+        NameIndexTuple tuple2 = (NameIndexTuple)advices.get(1);
 
         // reorder the advices
         advices.set(0, tuple2);
         advices.set(1, tuple1);
 
         // set the reordered advices
-        pointcut.setAroundAdviceIndexTuples(advices);
+        pointcut.setAdviceIndexTuples(advices);
     }
 
-    public void testAddAdviceAtRuntime()
-    {
+    public void testAddAdviceAtRuntime() {
         m_logString = "";
         addAdviceTestMethod();
         assertEquals("before1 invocation after1 ", m_logString);
 
-        MethodMetaDataImpl methodMetaData = new MethodMetaDataImpl();
-
+        MethodMetaData methodMetaData = new MethodMetaData();
         methodMetaData.setName("addAdviceTestMethod");
-        methodMetaData.setParameterTypes(new String[] {  });
+        methodMetaData.setParameterTypes(new String[]{});
         methodMetaData.setReturnType("void");
-        methodMetaData.setExceptionTypes(new String[] {  });
+        methodMetaData.setExceptionTypes(new String[]{});
 
-        Pointcut methodPointcut = (Pointcut) SystemLoader.getSystem(this
-                .getClass()).getAspectManager("tests")
-                                                         .getPointcutManager(ASPECT_NAME)
-                                                         .getExecutionPointcuts(m_classMetaData,
-                methodMetaData).get(0);
+        ExecutionPointcut methodPointcut = (ExecutionPointcut)SystemLoader.getSystem("tests").
+                getAspectManager().
+                getAspectMetaData(ASPECT_NAME).
+                getExecutionPointcuts(m_classMetaData, methodMetaData).get(0);
 
-        methodPointcut.addAroundAdvice(
-            "test.aspect.DynamicDeploymentTestAspect.advice2");
+        methodPointcut.addAdvice("advice2");
 
         m_logString = "";
         addAdviceTestMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
 
         // remove it for other tests
-        methodPointcut.removeAroundAdvice(
-            "test.aspect.DynamicDeploymentTestAspect.advice2");
+        methodPointcut.removeAdvice("advice2");
     }
 
-    public void testRemoveAdviceAtRuntime()
-    {
+    public void testRemoveAdviceAtRuntime() {
         m_logString = "";
         removeAdviceTestMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
 
-        MethodMetaDataImpl methodMetaData = new MethodMetaDataImpl();
-
+        MethodMetaData methodMetaData = new MethodMetaData();
         methodMetaData.setName("removeAdviceTestMethod");
-        methodMetaData.setParameterTypes(new String[] {  });
+        methodMetaData.setParameterTypes(new String[]{});
         methodMetaData.setReturnType("void");
-        methodMetaData.setExceptionTypes(new String[] {  });
+        methodMetaData.setExceptionTypes(new String[]{});
 
-        Pointcut methodPointcut = (Pointcut) SystemLoader.getSystem(this)
-                                                         .getAspectManager("tests")
-                                                         .getPointcutManager(ASPECT_NAME)
-                                                         .getExecutionPointcuts(m_classMetaData,
-                methodMetaData).get(0);
+        ExecutionPointcut methodPointcut = (ExecutionPointcut)SystemLoader.getSystem("tests").
+                getAspectManager().
+                getAspectMetaData(ASPECT_NAME).
+                getExecutionPointcuts(m_classMetaData, methodMetaData).get(0);
 
-        List advices = methodPointcut.getAroundAdviceIndexTuples();
+        List advices = methodPointcut.getAdviceIndexTuples();
 
-        NameIndexTuple adviceTuple = (NameIndexTuple) advices.remove(0);
-
-        methodPointcut.setAroundAdviceIndexTuples(advices);
+        NameIndexTuple adviceTuple = (NameIndexTuple)advices.remove(0);
+        methodPointcut.setAdviceIndexTuples(advices);
 
         m_logString = "";
         removeAdviceTestMethod();
@@ -123,103 +110,101 @@ public class DynamicDeploymentTest extends TestCase implements Loggable
 
         // restore it for other tests
         advices.add(0, adviceTuple);
-        methodPointcut.setAroundAdviceIndexTuples(advices);
+        methodPointcut.setAdviceIndexTuples(advices);
     }
 
-    public void testCreateAspectAtRuntime()
-    {
-        try
-        {
+    public void testCreateAspectAtRuntime() {
+        try {
             // check that we have a pointcut at the createAspectTestMethod method
             m_logString = "";
             createAspectTestMethod();
             assertEquals("before2 invocation after2 ", m_logString);
 
             // create a new advice
-            SystemLoader.getSystem(this).getAspectManager("tests").createAspect(NEW_ASPECT_NAME,
-                NEW_ASPECT_NAME, DeploymentModel.PER_INSTANCE, null);
+            SystemLoader.getSystem("tests").getAspectManager().createAspect(
+                    NEW_ASPECT_NAME,
+                    NEW_ASPECT_NAME,
+                    DeploymentModel.PER_INSTANCE,
+                    null
+            );
 
             // test the some stuff for the aspect
-            assertNotNull(SystemLoader.getSystem(this).getAspectManager("tests")
-                                      .getPointcutManager(NEW_ASPECT_NAME));
+            assertNotNull(SystemLoader.getSystem("tests").
+                    getAspectManager().getAspectMetaData(NEW_ASPECT_NAME));
 
             assertEquals(DeploymentModel.PER_INSTANCE,
-                SystemLoader.getSystem(this).getAspectManager("tests")
-                            .getPointcutManager(NEW_ASPECT_NAME)
-                            .getDeploymentModel());
+                    SystemLoader.getSystem("tests").
+                    getAspectManager().
+                    getAspectMetaData(NEW_ASPECT_NAME).
+                    getDeploymentModel());
 
             assertEquals(NEW_ASPECT_NAME,
-                SystemLoader.getSystem(this).getAspectManager("tests")
-                            .getPointcutManager(NEW_ASPECT_NAME).getName());
+                    SystemLoader.getSystem("tests").
+                    getAspectManager().
+                    getAspectMetaData(NEW_ASPECT_NAME).
+                    getName());
 
             // test an advice from the aspect in action
-            MethodMetaDataImpl methodMetaData = new MethodMetaDataImpl();
-
+            MethodMetaData methodMetaData = new MethodMetaData();
             methodMetaData.setName("createAspectTestMethod");
-            methodMetaData.setParameterTypes(new String[] {  });
+            methodMetaData.setParameterTypes(new String[]{});
             methodMetaData.setReturnType("void");
-            methodMetaData.setExceptionTypes(new String[] {  });
+            methodMetaData.setExceptionTypes(new String[]{});
 
             // get an existing pointcut
-            Pointcut methodPointcut = (Pointcut) SystemLoader.getSystem(this)
-                                                             .getAspectManager("tests")
-                                                             .getPointcutManager(ASPECT_NAME)
-                                                             .getExecutionPointcuts(m_classMetaData,
-                    methodMetaData).get(0);
+            ExecutionPointcut methodPointcut = (ExecutionPointcut)SystemLoader.getSystem("tests").
+                    getAspectManager().
+                    getAspectMetaData(ASPECT_NAME).
+                    getExecutionPointcuts(m_classMetaData, methodMetaData).
+                    get(0);
 
             // add the new advice to the pointcut
-            methodPointcut.addAroundAdvice(
-                "test.aspects.DynamicallyCreatedAspect.advice1");
+            methodPointcut.addAdvice("newAdvice");
 
             // check that it is executed
             m_logString = "";
             createAspectTestMethod();
-            assertEquals("before2 beforeNew invocation afterNew after2 ",
-                m_logString);
+            assertEquals("before2 beforeNew invocation afterNew after2 ", m_logString);
 
             //remove it for other tests
-            methodPointcut.removeAroundAdvice(
-                "test.aspects.DynamicallyCreatedAspect.advice1");
+            methodPointcut.removeAdvice("newAdvice");
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
         }
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
 
-    public static junit.framework.Test suite()
-    {
+    public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(DynamicDeploymentTest.class);
     }
 
-    public void log(final String wasHere)
-    {
+    public DynamicDeploymentTest(String name) {
+        super(name);
+        SystemLoader.getSystem("tests").initialize();
+    }
+
+    public void log(final String wasHere) {
         m_logString += wasHere;
     }
 
-    public void reorderAdvicesTestMethod()
-    {
+    public void reorderAdvicesTestMethod() {
         log("invocation ");
     }
 
-    public void removeAdviceTestMethod()
-    {
+    public void removeAdviceTestMethod() {
         log("invocation ");
     }
 
-    public void addAdviceTestMethod()
-    {
+    public void addAdviceTestMethod() {
         log("invocation ");
     }
 
-    public void createAspectTestMethod()
-    {
+    public void createAspectTestMethod() {
         log("invocation ");
     }
 }

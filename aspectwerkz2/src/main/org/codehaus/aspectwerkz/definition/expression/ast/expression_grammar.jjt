@@ -2,7 +2,7 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 
@@ -70,7 +70,6 @@ SimpleNode ExpressionScript() :
    	{ return jjtThis;}
 }
 
-
 /**
  * Expression
  * NOT > AND > OR priority
@@ -78,14 +77,29 @@ SimpleNode ExpressionScript() :
 void Expression() #void :
 {}
 {
-	AndExpression() ( <OR> AndExpression() #OrNode(2) )*
+	AndExpression()
+	( <OR> AndExpression() #OrNode(2) )*
 }
+
+/**
+ * And
+ */
 void AndExpression() #void :
 {}
 {
 	UnaryExpression()
-	( LOOKAHEAD(2) <AND> AndExpression() #AndNode(2) )*
+	(
+		<IN> AndExpression() #InNode(2)
+		|
+		<NOT> <IN> AndExpression() #NotInNode(2)
+		|
+		(  LOOKAHEAD(2) <AND> AndExpression() #AndNode(2) )*
+	)
 }
+
+/**
+ * NOT expression
+ */
 void UnaryExpression() #void :
 {}
 {
@@ -93,18 +107,20 @@ void UnaryExpression() #void :
 	|
 	PrimaryExpression()
 }
+
+/**
+ * Expression leafs are literal and identifier
+ * Nested expression within parenthesis can be seen as anonymous identifier
+ */
 void PrimaryExpression() #void :
 {}
 {
-	BooleanLiteral()
-	|
-	Identifier()
-	|
-	Anonymous()
-	|
-	"(" Expression() ")"
+  BooleanLiteral()
+|
+  Identifier()
+|
+  "(" Expression() ")"
 }
-
 
 //---------------------------------------------------------------------
 /**
@@ -120,36 +136,6 @@ void Identifier() :
        jjtThis.name = t.image;
     }
 }
-
-/**
- * 
- */
-void Anonymous() :
-{
-   Token t;
-}
-{
-    t=<ANONYMOUS>
-    {
-       jjtThis.name = t.image;
-    }
-}
-
-/**
- * CflowPattern
- *
-void CflowPattern() :
-{
-   Token t;
-}
-{
-    t=<ENTITY> "(" <ENTITY_LIST> ")"
-    {
-       jjtThis.pattern = t.image;
-    }
-}
-**/
-
 
 /**
  * Boolean literal - only lower case is supported for now
@@ -184,27 +170,20 @@ TOKEN : {
 TOKEN : {
 	< NOT : "!"  | "not" | "NOT" >
 }
+TOKEN : {
+	< IN : "in" | "IN" >
+}
+
 
 //---------------------------------------------------------------------
 TOKEN : /* IDENTIFIERS */
 {
-	< ANONYMOUS: <ANONYMOUS_TYPE> "(" <ANONYMOUS_PATTERN> ")" >
-	|
 	< IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
 	|
 	< #LETTER: [ "a"-"z", "A"-"Z", "_", "$" ] >
 	|
   	< #DIGIT: [ "0"-"9"] >
-  	|
-	< #ANONYMOUS_TYPE: "call" | "execution" | "get" | "set" | "class" | "cflow" | "handler" | "attribute" >
-	|
-	< #ANONYMOUS_PATTERN: <WORDS> ("(" (<WORDS>)? ")")? >
-	|
-	< #WORDS: <CHAR> (<CHAR>)* >
-	|
-  	< #CHAR: [ "a"-"z", "A"-"Z", "0"-"9", "_", "$", ".", "-", ">", ",",  " ", "*", "[", "]", "+" ] >
 }
-
 
 
 

@@ -2,27 +2,25 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import org.codehaus.aspectwerkz.AspectSystem;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
-import org.codehaus.aspectwerkz.metadata.CflowMetaData;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
-import java.lang.reflect.Method;
-
-import java.util.Iterator;
 import java.util.List;
+import java.util.Iterator;
+import java.lang.reflect.Method;
 
 /**
  * Manages the cflow pointcuts.
@@ -30,12 +28,12 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CFlowSystemAspect
-{
+public class CFlowSystemAspect extends Aspect {
+
     /**
      * A unique name for the aspect.
      */
-    public static final String NAME = "org$codehaus$aspectwerkz$aspect$CFlowSystemAspect";
+    public static final String NAME = "org$codehaus$aspectwerkz$attribdef$aspect$CFlowSystemAspect";
 
     /**
      * The class name for the aspect.
@@ -67,8 +65,7 @@ public class CFlowSystemAspect
      */
     public static final int POST_ADVICE_INDEX;
 
-    static
-    {
+    static {
         // set the method flow indexes
         // this is used when the aspect is registered in the system
         // we assume enterControlFlow and exitControlFlow are defined once in this class
@@ -76,44 +73,15 @@ public class CFlowSystemAspect
         int index = 0;
         int preIndex = 0;
         int postIndex = 0;
-
-        for (Iterator i = methods.iterator(); i.hasNext(); index++)
-        {
-            Method m = (Method) i.next();
-
+        for (Iterator i = methods.iterator(); i.hasNext(); index++) {
+            Method m = (Method)i.next();
             if (PRE_ADVICE.equals(m.getName()))
-            {
                 preIndex = index;
-            }
             else if (POST_ADVICE.equals(m.getName()))
-            {
                 postIndex = index;
-            }
         }
-
         PRE_ADVICE_INDEX = preIndex;
         POST_ADVICE_INDEX = postIndex;
-    }
-
-    /**
-     * Reference to the system.
-     */
-    private AspectSystem m_system = null;
-
-    /**
-     * The cross-cutting info.
-     */
-    private final CrossCuttingInfo m_crossCuttingInfo;
-
-    /**
-     * Creates a new cflow system aspect instance.
-     *
-     * @param info the cross-cutting info
-     */
-    public CFlowSystemAspect(final CrossCuttingInfo info)
-    {
-        m_crossCuttingInfo = info;
-        m_system = info.getSystem();
     }
 
     /**
@@ -122,10 +90,8 @@ public class CFlowSystemAspect
      * @param joinPoint the join point
      * @throws Throwable the exception from the invocation
      */
-    public void enterControlFlow(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        m_system.enteringControlFlow(getMetaData(joinPoint));
+    public void enterControlFlow(final JoinPoint joinPoint) throws Throwable {
+        ___AW_getSystem().enteringControlFlow(getMetaData(joinPoint));
     }
 
     /**
@@ -134,41 +100,8 @@ public class CFlowSystemAspect
      * @param joinPoint the join point
      * @throws Throwable the exception from the invocation
      */
-    public void exitControlFlow(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        m_system.exitingControlFlow(getMetaData(joinPoint));
-    }
-
-    /**
-     * Creates and returns the meta-data for the join point. Uses a cache.
-     *
-     * @param joinPoint the join point
-     * @return the meta-data
-     * @todo should use a cache (used to cache on the Method instance but at caller side pointcuts no Method instance is
-     * available)
-     */
-    private static CflowMetaData getMetaData(final JoinPoint joinPoint)
-    {
-        return new CflowMetaData(createClassMetaData(joinPoint),
-            createMethodMetaData(joinPoint));
-    }
-
-    /**
-     * Creates meta-data for the class. Note: we use a contextual class loader to access the Class object
-     *
-     * @return the created class meta-data
-     */
-    private static ClassMetaData createClassMetaData(final JoinPoint joinPoint)
-    {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-
-        // TODO AV - The following leads to a synchronize at runtime to grab the MetaDataMaker
-        //         we cannot do that at the Aspect init level since an Aspect CL can be upper in the CL hierarchy
-        // the ReflectionMetaDataMaker might be separated from the TF one may be (and focus 1.5 API)
-        return MetaDataMaker.getReflectionMetaDataMaker(signature.getDeclaringType()
-                                                                 .getClassLoader())
-                            .createClassMetaData(signature.getDeclaringType());
+    public void exitControlFlow(final JoinPoint joinPoint) throws Throwable {
+        ___AW_getSystem().exitingControlFlow(getMetaData(joinPoint));
     }
 
     /**
@@ -176,17 +109,44 @@ public class CFlowSystemAspect
      *
      * @return the created method meta-data
      */
-    private static MethodMetaData createMethodMetaData(
-        final JoinPoint joinPoint)
-    {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-
-        return ReflectionMetaDataMaker.createMethodMetaData(signature.getName(),
-            signature.getParameterTypes(), signature.getReturnType());
+    private static MethodMetaData createMethodMetaData(final JoinPoint joinPoint) {
+        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        return ReflectionMetaDataMaker.createMethodMetaData(
+                signature.getName(),
+                signature.getParameterTypes(),
+                signature.getReturnType());
     }
 
-    public void postCreate()
-    {
-        ;
+    /**
+     * Creates meta-data for the class.
+     * Note: we use a contextual class loader to access the Class object
+     *
+     * @return the created class meta-data
+     */
+    private static ClassMetaData createClassMetaData(final JoinPoint joinPoint) {
+        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        try {
+            return ReflectionMetaDataMaker.createClassMetaData(
+                    // TODO: declaring type is correct right?
+                Class.forName(signature.getDeclaringType().getName())
+            );
+        } catch (ClassNotFoundException nfe) {
+            throw new WrappedRuntimeException(nfe);
+        }
+    }
+
+    /**
+     * Creates and returns the meta-data for the join point. Uses a cache.
+     *
+     * @todo should use a cache (used to cache on the Method instance but at caller side pointcuts no Method instance is available)
+     *
+     * @param joinPoint the join point
+     * @return the meta-data
+     */
+    private ClassNameMethodMetaDataTuple getMetaData(final JoinPoint joinPoint) {
+        return new ClassNameMethodMetaDataTuple(
+                createClassMetaData(joinPoint),
+                createMethodMetaData(joinPoint)
+        );
     }
 }

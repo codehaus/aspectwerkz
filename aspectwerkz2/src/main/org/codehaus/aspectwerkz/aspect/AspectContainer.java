@@ -2,92 +2,112 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-
 import java.lang.reflect.Method;
 
+import org.codehaus.aspectwerkz.ContainerType;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+
 /**
- * Interface for that all aspect container implementations must implement.
+ * Interface for the aspect container implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface AspectContainer
-{
+public interface AspectContainer {
+
     /**
      * Invokes the advice method on a per JVM basis.
      *
      * @param methodIndex the method index
-     * @param joinPoint   the join point
+     * @param joinPoint the join point
      * @return the result from the method invocation
      */
-    Object invokeAdvice(int methodIndex, JoinPoint joinPoint);
+    Object invokeAdvicePerJvm(int methodIndex, JoinPoint joinPoint);
 
     /**
-     * Returns a specific advice by index.
+     * Invokes the advice method on a per class basis.
      *
-     * @param index the index
-     * @return the advice
+     * @param methodIndex the method index
+     * @param joinPoint the join point
+     * @return the result from the method invocation
      */
-    Method getAdvice(int index);
+    Object invokeAdvicePerClass(int methodIndex, JoinPoint joinPoint);
 
     /**
-     * Creates a new perJVM cross-cutting instance, if it already exists then return it.
+     * Invokes the advice method on a per instance basis.
      *
-     * @return the cross-cutting instance
+     * @param methodIndex the method index
+     * @param joinPoint the join point
+     * @return the result from the method invocation
      */
-    Object createPerJvmAspect();
+    Object invokeAdvicePerInstance(int methodIndex, JoinPoint joinPoint);
 
     /**
-     * Creates a new perClass cross-cutting instance, if it already exists then return it.
+     * Invokes the advice method on a per thread basis.
      *
+     * @param methodIndex the method index
+     * @param joinPoint the join point
+     * @return the result from the method invocation
+     */
+    Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint);
+
+    /**
+     * Returns a specific method by the method index.
+     *
+     * @param index the method index
+     * @return the method
+     */
+    Method getMethod(int index);
+
+    /**
+     * Returns the container type.
+     *
+     * @return the container type
+     */
+    ContainerType getContainerType();
+
+    /**
+     * @return the sole instance of a PER_JVM aspect
+     */
+    public Aspect getPerJvmAspect();
+
+    /**
      * @param callingClass
-     * @return the cross-cutting instance
+     * @return the class attached instance of a PER_CLASS aspect
      */
-    Object createPerClassAspect(Class callingClass);
+    public Aspect getPerClassAspect(final Class callingClass);
 
     /**
-     * Creates a new perInstance cross-cutting instance, if it already exists then return it.
-     *
      * @param callingInstance
-     * @return the cross-cutting instance
+     * @return the instance attached instance of a PER_INSTANCE aspect
      */
-    Object createPerInstanceAspect(Object callingInstance);
+    public Aspect getPerInstanceAspect(final Object callingInstance);
 
     /**
-     * Creates a new perThread cross-cutting instance, if it already exists then return it.
-     *
-     * @param thread the thread for the aspect
-     * @return the cross-cutting instance
+     * @return the thread attached instance of a PER_CLASS aspect
      */
-    Object createPerThreadAspect(Thread thread);
+    public Aspect getPerThreadAspect();
 
     /**
-     * Returns the cross-cutting info.
-     *
-     * @return the cross-cutting info
-     */
-    CrossCuttingInfo getCrossCuttingInfo();
-
-    /**
-     * Attach the introduction container to this aspect container to mirror the "aspect contains 0-n introduction"
-     *
-     * @param name           of the introduction
+     * Attach the introduction container to this aspect container
+     * to mirror the "aspect contains 0-n introduction"
+     * @param name of the introduction
      * @param introContainer introduction container
      */
-    void addIntroductionContainer(String name,
-        IntroductionContainer introContainer);
+    public void addIntroductionContainer(String name, IntroductionContainer introContainer);
 
     /**
-     * Returns the introduction container of given name (introduction name) or null if not linked.
-     *
+     * Returns the introduction container of given name (introduction name)
+     * or null if not linked.
      * @param name of the introduction
      * @return introduction container
      */
-    IntroductionContainer getIntroductionContainer(String name);
+    public IntroductionContainer getIntroductionContainer(String name);
+
 }
+
+

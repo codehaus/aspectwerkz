@@ -1,6 +1,0 @@
-<!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
-<aspectwerkz>
-    <system id="awbench">
-        <aspect class="awbench.extension.aspectj.MethodExecutionAspect"/>
-    </system>
-</aspectwerkz>

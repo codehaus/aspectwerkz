@@ -1,10 +1,21 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.joinpoint;
 
 import java.lang.reflect.Method;
@@ -12,20 +23,14 @@ import java.util.StringTokenizer;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.io.ObjectInputStream;
 
 import org.apache.bcel.generic.Type;
 
-import org.codehaus.aspectwerkz.pointcut.CallPointcut;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.Aspect;
+import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
+import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.System;
-import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
-import org.codehaus.aspectwerkz.attribdef.AttribDefSystem;
 
 /**
  * Matches well defined point of execution in the program where a method is
@@ -33,106 +38,72 @@ import org.codehaus.aspectwerkz.attribdef.AttribDefSystem;
  * original object and method, name and type of the field etc. Handles the
  * invocation of the advices added to the join point.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @todo if a parameter type or return type is an array => always returned as Object[] (fix bug in TransformationUtil.convertBcelTypeToClass(Type)
+ *
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: CallerSideJoinPoint.java,v 1.1.1.1 2003-05-11 15:14:25 jboner Exp $
  */
-public class CallerSideJoinPoint extends AbstractJoinPoint {
-
-    /**
-     * The AspectWerkz system for this join point.
-     */
-    private transient System m_system;
+public class CallerSideJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
-     *
-     * @todo recalculate
      */
-    private static final long serialVersionUID = -8831127199517513612L;;
+    private static final long serialVersionUID = 5361657399009859300L;
 
     /**
-     * and reference to the caller class.
+     * A reference to the target class.
      */
-    protected Class m_targetClass;
+    protected final Class m_targetClass;
 
     /**
-     * The caller method.
+     * The target method.
      */
-    protected Method m_callerMethod;
+    protected Method m_targetMethod;
 
     /**
-     * The name of the callee method.
+     * The name of the method.
      */
-    protected String m_calleeMethodName;
+    protected final String m_methodName;
 
     /**
-     * The name of the callee class.
+     * The name of the class holding the method.
      */
-    protected String m_calleeClassName;
+    protected final String m_methodClassName;
 
     /**
-     * The signature for the callee method.
+     * The signature for the method.
      */
-    protected String m_calleeMethodSignature;
+    protected final String m_signature;
 
     /**
-     * The callee method parameter types.
+     * The parameter types.
      */
-    protected Class[] m_calleeMethodParameterTypes = null;
+    protected Class[] m_parameterTypes = null;
 
     /**
-     * The callee method parameter types names.
+     * The parameter types names.
      */
-    protected String[] m_calleeMethodParameterTypeNames = null;
+    protected String[] m_parameterTypeNames = null;
 
     /**
-     * The callee method return type.
+     * The return type.
      */
-    protected Class m_calleeMethodReturnType = null;
+    protected Class m_returnType = null;
 
     /**
-     * The callee method return type name.
+     * The return type name.
      */
-    protected String m_calleeMethodReturnTypeName = null;
-
-    /**
-     * The name of the caller method.
-     */
-    protected String m_callerMethodName;
-
-    /**
-     * The signature for the caller method.
-     */
-    protected String m_callerMethodSignature;
-
-    /**
-     * The caller method parameter types.
-     */
-    protected Class[] m_callerMethodParameterTypes = null;
-
-    /**
-     * The caller method parameter types names.
-     */
-    protected String[] m_callerMethodParameterTypeNames = null;
-
-    /**
-     * The caller method return type.
-     */
-    protected Class m_callerMethodReturnType = null;
-
-    /**
-     * The caller method return type name.
-     */
-    protected String m_callerMethodReturnTypeName = null;
+    protected String m_returnTypeName = null;
 
     /**
      * The pre advices applied to the join point.
      */
-    protected IndexTuple[] m_preAdvices = new IndexTuple[0];
+    protected int[] m_preAdvices = new int[0];
 
     /**
      * The post advices applied to the join point.
      */
-    protected IndexTuple[] m_postAdvices = new IndexTuple[0];
+    protected int[] m_postAdvices = new int[0];
 
     /**
      * Marks the join point as initialized.
@@ -140,58 +111,36 @@ public class CallerSideJoinPoint extends AbstractJoinPoint {
     protected boolean m_initialized = false;
 
     /**
-     * Meta-data for the class.
-     */
-    protected ClassMetaData m_classMetaData;
-
-    /**
      * Meta-data for the method.
      */
-    protected MethodMetaData m_methodMetaData;
-
-    /**
-     * The UUID for the AspectWerkz system to use.
-     */
-    protected String m_uuid;
+    protected MethodMetaData m_metadata;
 
     /**
      * Creates a new CallerSideJoinPoint object.
      *
-     * @param uuid the UUID for the AspectWerkz system to use
-     * @param callerClass the caller class
-     * @param callerMethodName the full caller method name (including the class name)
-     * @param callerMethodSignature the caller method signature
-     * @param calleeMethodName the full callee method name (including the class name)
-     * @param calleeMethodSignature the callee method signature
+     * @param targetClass the original class
+     * @param fullMethodName the full method name (including the class name)
+     * @param signature the method signature
      */
-    public CallerSideJoinPoint(final String uuid,
-                               final Class callerClass,
-                               final String callerMethodName,
-                               final String callerMethodSignature,
-                               final String calleeMethodName,
-                               final String calleeMethodSignature) {
-        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        if (callerClass == null) throw new IllegalArgumentException("original class can not be null");
-        if (callerMethodName == null) throw new IllegalArgumentException("caller method name can not be null");
-        if (callerMethodSignature == null) throw new IllegalArgumentException("caller signature can not be null");
-        if (calleeMethodName == null) throw new IllegalArgumentException("callee method name can not be null");
-        if (calleeMethodSignature == null) throw new IllegalArgumentException("callee signature can not be null");
+    public CallerSideJoinPoint(final Class targetClass,
+                             final String fullMethodName,
+                             final String signature) {
+        if (targetClass == null) throw new IllegalArgumentException("original class can not be null");
+        if (fullMethodName == null) throw new IllegalArgumentException("method name can not be null");
+        if (signature == null) throw new IllegalArgumentException("signature can not be null");
 
-        m_system = SystemLoader.getSystem(uuid);
-        m_system.initialize();
+        AspectWerkz.initialize();
 
-        m_uuid = uuid;
-        m_targetClass = callerClass;
-        m_callerMethodName = callerMethodName;
-        m_callerMethodSignature = callerMethodSignature;
+        m_targetClass = targetClass;
 
         StringTokenizer tokenizer = new StringTokenizer(
-                calleeMethodName,
-                TransformationUtil.CALL_SIDE_DELIMITER
-        );
-        m_calleeClassName = tokenizer.nextToken();
-        m_calleeMethodName = tokenizer.nextToken();
-        m_calleeMethodSignature = calleeMethodSignature;
+                fullMethodName,
+                TransformationUtil.CALL_SIDE_DELIMITER);
+
+        m_methodClassName = tokenizer.nextToken();
+        m_methodName = tokenizer.nextToken();
+
+        m_signature = signature;
 
         createMetaData();
     }
@@ -225,30 +174,13 @@ public class CallerSideJoinPoint extends AbstractJoinPoint {
         if (!m_initialized) {
             loadAdvices();
         }
-        // TODO: handle a list of systems that nees to be matched to the advice lists (loadAdvices etc.)
-        if (m_system.isAttribDef()) {
-            AttribDefSystem system = (AttribDefSystem)m_system;
-            for (int i = 0, j = m_preAdvices.length; i < j; i++) {
-                try {
-                    IndexTuple index = m_preAdvices[i];
-                    int aspectIndex = index.getAspectIndex();
-                    int methodIndex = index.getMethodIndex();
-                    system.getAspect(aspectIndex).___AW_invokeAdvice(methodIndex, this);
-                }
-                catch (ArrayIndexOutOfBoundsException ex) {
-                    throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
-                }
+        for (int i = 0, j = m_preAdvices.length; i < j; i++) {
+            try {
+                AspectWerkz.getAdvice(m_preAdvices[i]).doExecute(this);
             }
-        }
-        else {
-            XmlDefSystem system = (XmlDefSystem)m_system;
-            for (int i = 0, j = m_preAdvices.length; i < j; i++) {
-                try {
-                    system.getAdvice(m_preAdvices[i]).doExecute(this);
-                }
-                catch (ArrayIndexOutOfBoundsException ex) {
-                    throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
-                }
+            catch (ArrayIndexOutOfBoundsException ex) {
+                throw new RuntimeException(
+                        createAdvicesNotCorrectlyMappedMessage());
             }
         }
     }
@@ -260,46 +192,28 @@ public class CallerSideJoinPoint extends AbstractJoinPoint {
         if (!m_initialized) {
             loadAdvices();
         }
-        // TODO: handle a list of systems that nees to be matched to the advice lists (loadAdvices etc.)
-        if (m_system.isAttribDef()) {
-            AttribDefSystem system = (AttribDefSystem)m_system;
-            for (int i = m_postAdvices.length - 1; i >= 0; i--) {
-                try {
-                    IndexTuple index = m_postAdvices[i];
-                    int aspectIndex = index.getAspectIndex();
-                    int methodIndex = index.getMethodIndex();
-                    system.getAspect(aspectIndex).___AW_invokeAdvice(methodIndex, this);
-                }
-                catch (ArrayIndexOutOfBoundsException ex) {
-                    throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
-                }
+        for (int i = m_postAdvices.length - 1; i >= 0; i--) {
+            try {
+                AspectWerkz.getAdvice(m_postAdvices[i]).doExecute(this);
             }
-        }
-        else {
-            XmlDefSystem system = (XmlDefSystem)m_system;
-            for (int i = m_postAdvices.length - 1; i >= 0; i--) {
-                try {
-                    system.getAdvice(m_postAdvices[i]).doExecute(this);
-                }
-                catch (ArrayIndexOutOfBoundsException ex) {
-                    throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
-                }
+            catch (ArrayIndexOutOfBoundsException ex) {
+                throw new RuntimeException(
+                        createAdvicesNotCorrectlyMappedMessage());
             }
         }
     }
 
     /**
-     * Returns the target instance.
+     * Returns the target object.
      *
-     * @return the target instance
+     * @return the target object
      */
-    public Object getTargetInstance() {
+    public Object getTargetObject() {
         return null;
     }
 
     /**
      * Returns the target class.
-     * Same as getCallerClass().
      *
      * @return the target class
      */
@@ -308,183 +222,90 @@ public class CallerSideJoinPoint extends AbstractJoinPoint {
     }
 
     /**
-     * Returns the callee method name.
+     * Returns the method name.
      *
-     * @return the callee method name
+     * @return the method name
      */
-    public String getCalleeMethodName() {
-        return m_calleeMethodName;
+    public String getMethodName() {
+        return m_methodName;
     }
 
     /**
-     * Returns the name of callee class.
+     * Returns the name of the class holding the method.
      *
-     * @return the callee class name
+     * @return the class name
      */
-    public String getCalleeClassName() {
-        return m_calleeClassName;
-    }
-
-    /**
-     * Returns the parameter types for the callee method.
-     *
-     * @return the parameter types
-     */
-    public Class[] getCalleeMethodParameterTypes() {
-        if (m_calleeMethodParameterTypes == null) {
-            Type[] parameterTypes = Type.getArgumentTypes(m_calleeMethodSignature);
-            m_calleeMethodParameterTypes = new Class[parameterTypes.length];
-            for (int i = 0; i < parameterTypes.length; i++) {
-                m_calleeMethodParameterTypes[i] =
-                        TransformationUtil.convertBcelTypeToClass(parameterTypes[i]);
-            }
-        }
-        return m_calleeMethodParameterTypes;
-    }
-
-    /**
-     * Returns the parameter type names for the callee method.
-     *
-     * @return the parameter type names
-     */
-    public String[] getCalleeMethodParameterTypeNames() {
-        if (m_calleeMethodParameterTypeNames == null) {
-            Type[] parameterTypes = Type.getArgumentTypes(m_calleeMethodSignature);
-            m_calleeMethodParameterTypeNames = new String[parameterTypes.length];
-            for (int i = 0; i < parameterTypes.length; i++) {
-                m_calleeMethodParameterTypeNames[i] = parameterTypes[i].toString();
-            }
-        }
-        return m_calleeMethodParameterTypeNames;
-    }
-
-    /**
-     * Returns the return type for the callee method.
-     *
-     * @return the return type
-     */
-    public Class getCalleeMethodReturnType() {
-        if (m_calleeMethodReturnType == null) {
-            Type returnType = Type.getReturnType(m_calleeMethodSignature);
-            m_calleeMethodReturnType = TransformationUtil.convertBcelTypeToClass(returnType);
-        }
-        return m_calleeMethodReturnType;
-    }
-
-    /**
-     * Returns the return type name for the callee method.
-     *
-     * @return the return type name
-     */
-    public String getCalleeMethodReturnTypeName() {
-        if (m_calleeMethodReturnTypeName == null) {
-            m_calleeMethodReturnTypeName = Type.getReturnType(m_calleeMethodSignature).toString();
-        }
-        return m_calleeMethodReturnTypeName;
-    }
-
-    /**
-     * Returns the callee method signature.
-     *
-     * @return the callee method signature
-     */
-    public String getCalleeMethodSignature() {
-        return m_calleeMethodSignature;
-    }
-
-    /**
-     * Returns the caller method name.
-     *
-     * @return the caller method name
-     */
-    public String getCallerMethodName() {
-        return m_callerMethodName;
-    }
-
-    /**
-     * Returns the name of caller class.
-     *
-     * @return the caller class name
-     */
-    public String getCallerClassName() {
-        return m_targetClass.getName();
-    }
-
-    /**
-     * Returns the caller class.
-     * Same as getTargetClass().
-     *
-     * @return the caller class
-     */
-    public Class getCallerClass() {
-        return m_targetClass;
+    public String getMethodClassName() {
+        return m_methodClassName;
     }
 
     /**
      * Returns the parameter types for the method.
+     * @todo does not represent array structures properly.
      *
      * @return the parameter types
      */
-    public Class[] getCallerMethodParameterTypes() {
-        if (m_callerMethodParameterTypes == null) {
-            Type[] parameterTypes = Type.getArgumentTypes(m_callerMethodSignature);
-            m_callerMethodParameterTypes = new Class[parameterTypes.length];
+    public Class[] getParameterTypes() {
+        if (m_parameterTypes == null) {
+            Type[] parameterTypes = Type.getArgumentTypes(m_signature);
+            m_parameterTypes = new Class[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
-                m_callerMethodParameterTypes[i] =
-                        TransformationUtil.convertBcelTypeToClass(parameterTypes[i]);
+                m_parameterTypes[i] = TransformationUtil.
+                        convertBcelTypeToClass(parameterTypes[i]);
             }
         }
-        return m_callerMethodParameterTypes;
+        return m_parameterTypes;
     }
 
     /**
-     * Returns the parameter type names for the caller method.
+     * Returns the parameter type names for the method.
      *
      * @return the parameter type names
      */
-    public String[] getCallerMethodParameterTypeNames() {
-        if (m_callerMethodParameterTypeNames == null) {
-            Type[] parameterTypes = Type.getArgumentTypes(m_callerMethodSignature);
-            m_callerMethodParameterTypeNames = new String[parameterTypes.length];
+    public String[] getParameterTypeNames() {
+        if (m_parameterTypeNames == null) {
+            Type[] parameterTypes = Type.getArgumentTypes(m_signature);
+            m_parameterTypeNames = new String[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
-                m_callerMethodParameterTypeNames[i] = parameterTypes[i].toString();
+                m_parameterTypeNames[i] = parameterTypes[i].toString();
             }
         }
-        return m_callerMethodParameterTypeNames;
+        return m_parameterTypeNames;
     }
 
     /**
-     * Returns the return type for the caller method.
+     * Returns the return type for the method.
+     * @todo does not represent array structures properly.
      *
      * @return the return type
      */
-    public Class getCallerMethodReturnType() {
-        if (m_callerMethodReturnType == null) {
-            Type returnType = Type.getReturnType(m_callerMethodSignature);
-            m_callerMethodReturnType = TransformationUtil.convertBcelTypeToClass(returnType);
+    public Class getReturnType() {
+        if (m_returnType == null) {
+            Type returnType = Type.getReturnType(m_signature);
+            m_returnType = TransformationUtil.convertBcelTypeToClass(returnType);
         }
-        return m_callerMethodReturnType;
+        return m_returnType;
     }
 
     /**
-     * Returns the return type name for the caller method.
+     * Returns the return type name for the method.
      *
      * @return the return type name
      */
-    public String getCallerMethodReturnTypeName() {
-        if (m_callerMethodReturnTypeName == null) {
-            m_callerMethodReturnTypeName = Type.getReturnType(m_callerMethodSignature).toString();
+    public String getReturnTypeName() {
+        if (m_returnTypeName == null) {
+            m_returnTypeName = Type.getReturnType(m_signature).toString();
         }
-        return m_callerMethodReturnTypeName;
+        return m_returnTypeName;
     }
 
     /**
-     * Returns the caller method signature.
+     * Returns the method signature.
      *
-     * @return the caller method signature
+     * @return the method signature
      */
-    public String getCallerMethodSignature() {
-        return m_callerMethodSignature;
+    public String getSignature() {
+        return m_signature;
     }
 
     /**
@@ -493,39 +314,41 @@ public class CallerSideJoinPoint extends AbstractJoinPoint {
     private void loadAdvices() {
         synchronized (m_preAdvices) {
             synchronized (m_postAdvices) {
+
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
+                List aspects = AspectWerkz.getAspects(m_targetClass.getName());
 
-                ClassMetaData classMetaData = new ClassMetaData();
-                classMetaData.setName(getCalleeClassName());
-                List pointcuts = m_system.getCallPointcuts(
-                        classMetaData,
-                        m_methodMetaData
-                );
+                for (Iterator it = aspects.iterator(); it.hasNext();) {
+                    Aspect aspect = (Aspect)it.next();
 
-                for (Iterator it = pointcuts.iterator(); it.hasNext();) {
-                    CallPointcut callerSidePointcut = (CallPointcut)it.next();
+                    CallerSidePointcut[] pointcuts =
+                            aspect.getCallerSidePointcuts(m_metadata);
 
-                    IndexTuple[] preAdviceIndexes = callerSidePointcut.getPreAdviceIndexes();
-                    for (int j = 0; j < preAdviceIndexes.length; j++) {
-                        preAdvices.add(preAdviceIndexes[j]);
+                    for (int i = 0; i < pointcuts.length; i++) {
+                        int[] advices = pointcuts[i].getPreAdviceIndexes();
+                        for (int j = 0; j < advices.length; j++) {
+                            preAdvices.add(new Integer(advices[j]));
+                        }
                     }
 
-                    IndexTuple[] postAdviceIndexes = callerSidePointcut.getPostAdviceIndexes();
-                    for (int j = 0; j < postAdviceIndexes.length; j++) {
-                        postAdvices.add(postAdviceIndexes[j]);
+                    for (int i = 0; i < pointcuts.length; i++) {
+                        int[] advices = pointcuts[i].getPostAdviceIndexes();
+                        for (int j = 0; j < advices.length; j++) {
+                            postAdvices.add(new Integer(advices[j]));
+                        }
                     }
                 }
 
-                m_preAdvices = new IndexTuple[preAdvices.size()];
+                m_preAdvices = new int[preAdvices.size()];
                 int i = 0;
                 for (Iterator it = preAdvices.iterator(); it.hasNext(); i++) {
-                    m_preAdvices[i] = (IndexTuple)it.next();
+                    m_preAdvices[i] = ((Integer)it.next()).intValue();
                 }
-                m_postAdvices = new IndexTuple[postAdvices.size()];
+                m_postAdvices = new int[postAdvices.size()];
                 i = 0;
                 for (Iterator it = postAdvices.iterator(); it.hasNext(); i++) {
-                    m_postAdvices[i] = (IndexTuple)it.next();
+                    m_postAdvices[i] = ((Integer)it.next()).intValue();
                 }
 
                 m_initialized = true;
@@ -537,12 +360,21 @@ public class CallerSideJoinPoint extends AbstractJoinPoint {
      * Creates meta-data for the join point.
      */
     protected void createMetaData() {
-        m_classMetaData = ReflectionMetaDataMaker.createClassMetaData(getTargetClass());
-        m_methodMetaData = ReflectionMetaDataMaker.createMethodMetaData(
-                getCalleeMethodName(),
-                getCalleeMethodParameterTypes(),
-                getCalleeMethodReturnType()
-        );
+        m_metadata = new MethodMetaData();
+        m_metadata.setName(getMethodName());
+        Class[] parameterTypes = getParameterTypes();
+        String[] parameterTypeNames = new String[parameterTypes.length];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            parameterTypeNames[i] = parameterTypes[i].getName();
+        }
+        m_metadata.setParameterTypes(parameterTypeNames);
+        Class returnType = getReturnType();
+        if (returnType == null) {
+            m_metadata.setReturnType("void");
+        }
+        else {
+            m_metadata.setReturnType(returnType.getName());
+        }
     }
 
     /**
@@ -553,43 +385,10 @@ public class CallerSideJoinPoint extends AbstractJoinPoint {
     protected String createAdvicesNotCorrectlyMappedMessage() {
         StringBuffer cause = new StringBuffer();
         cause.append("advices for ");
-        cause.append(getCalleeClassName());
+        cause.append(getMethodClassName());
         cause.append("#");
-        cause.append(getCalleeMethodName());
+        cause.append(getMethodName());
         cause.append(" are not correctly mapped");
         return cause.toString();
-    }
-
-    /**
-     * Provides custom deserialization.
-     *
-     * @param stream the object input stream containing the serialized object
-     * @throws java.lang.Exception in case of failure
-     */
-    private void readObject(final ObjectInputStream stream) throws Exception {
-        ObjectInputStream.GetField fields = stream.readFields();
-        m_uuid = (String)fields.get("m_uuid", null);
-        m_targetClass = (Class)fields.get("m_targetClass", null);
-        m_callerMethod = (Method)fields.get("m_callerMethod", null);
-        m_callerMethodName = (String)fields.get("m_callerMethodName", null);
-        m_callerMethodSignature = (String)fields.get("m_callerMethodSignature", null);
-        m_callerMethodParameterTypes = (Class[])fields.get("m_callerMethodParameterTypes", null);
-        m_callerMethodParameterTypeNames = (String[])fields.get("m_callerMethodParameterTypeNames", null);
-        m_callerMethodReturnType = (Class)fields.get("m_callerMethodReturnType", null);
-        m_callerMethodReturnTypeName = (String)fields.get("m_callerMethodReturnTypeName", null);
-        m_calleeMethodName = (String)fields.get("m_calleeMethodName", null);
-        m_calleeMethodSignature = (String)fields.get("m_calleeMethodSignature", null);
-        m_calleeClassName = (String)fields.get("m_calleeClassName", null);
-        m_calleeMethodParameterTypes = (Class[])fields.get("m_calleeMethodParameterTypes", null);
-        m_calleeMethodParameterTypeNames = (String[])fields.get("m_calleeMethodParameterTypeNames", null);
-        m_calleeMethodReturnType = (Class)fields.get("m_calleeMethodReturnType", null);
-        m_calleeMethodReturnTypeName = (String)fields.get("m_calleeMethodReturnTypeName", null);
-        m_preAdvices = (IndexTuple[])fields.get("m_preAdvices", null);
-        m_postAdvices = (IndexTuple[])fields.get("m_postAdvices", null);
-        m_classMetaData = (ClassMetaData)fields.get("m_classMetaData", null);
-        m_methodMetaData = (MethodMetaData)fields.get("m_fieldMetaData", null);
-        m_initialized = fields.get("m_initialized", false);
-        m_system = SystemLoader.getSystem(m_uuid);
-        m_system.initialize();
     }
 }

@@ -15,7 +15,7 @@ package aspectwerkz.aosd.unitofwork;
 public class UnitOfWorkType {
 
     public static final UnitOfWorkType DEFAULT = new UnitOfWorkType("DEFAULT");
-    public static final UnitOfWorkType JISP_AWARE = new UnitOfWorkType("JISP_AWARE");
+    public static final UnitOfWorkType PERSISTABLE = new UnitOfWorkType("PERSISTABLE");
     public static final UnitOfWorkType JTA_AWARE = new UnitOfWorkType("JTA_AWARE");
 
     private final String m_name;

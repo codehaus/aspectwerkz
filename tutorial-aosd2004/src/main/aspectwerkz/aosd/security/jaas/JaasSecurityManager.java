@@ -13,7 +13,7 @@ import javax.security.auth.login.FailedLoginException;
  **************************************************************************************/
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
-import aspectwerkz.aosd.context.Context;
+import aspectwerkz.aosd.Context;
 import aspectwerkz.aosd.security.SecurityManager;
 import aspectwerkz.aosd.security.AbstractSecurityManager;
 import aspectwerkz.aosd.security.SecurityException;

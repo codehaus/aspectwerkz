@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+
+<!-- ================================================================================= -->
+<!-- NOTE: Everything that is commented out is now specified using runtime attributes, -->
+<!--       take look at the code to see it in action :-)                               -->
+<!-- ================================================================================= -->
+
+<aspectwerkz>
+
+<!--    <introduction name="counter1"-->
+<!--        interface="examples.persistence.Counter1"-->
+<!--        implementation="examples.persistence.CounterImpl1"-->
+<!--        deployment-model="perClass"-->
+<!--        persistent="true"-->
+<!--        attribute="counter1"/>-->
+<!---->
+<!--    <introduction name="counter2"-->
+<!--        interface="examples.persistence.Counter2"-->
+<!--        implementation="examples.persistence.CounterImpl2"-->
+<!--        deployment-model="perClass"-->
+<!--        persistent="true"-->
+<!--        attribute="counter2"/>-->
+
+    <advice name="counter3"
+        advice="examples.persistence.InvocationCounterAdvice"
+        deployment-model="perJVM"
+        persistent="true">
+        <param name="pm" value="prevayler"/>
+    </advice>
+
+<!--    <advice name="logging"-->
+<!--        class="examples.logging.LoggingAdvice"-->
+<!--        deployment-model="perJVM"-->
+<!--        attribute="log"/>-->
+
+    <advice name="cacheCounter"
+        advice="examples.caching.InvocationCounterAdvice"
+        deployment-model="perInstance"
+        attribute="cacheCounter"/>
+
+    <advice name="caching"
+        class="examples.caching.CachingAdvice"
+        deployment-model="perInstance">
+        <param name="timeout" value="10"/>
+    </advice>
+
+    <advice name="asynchronous"
+        class="examples.asynchronous.AsynchronousAdvice"
+        deployment-model="perJVM"/>
+
+    <advice name="synchronization"
+        class="examples.synchronization.SynchronizationAdvice"
+        deployment-model="perJVM"/>
+
+    <advices name="stacktest">
+        <advice-ref name="caching"/>
+    </advices>
+
+    <aspect class="examples.caching.Pi">
+        <pointcut type="method" pattern="int getPiDecimal(int)">
+            <advices-ref name="stacktest"/>
+        </pointcut>
+    </aspect>
+
+<!--    <aspect class="examples.caching.CacheTest">-->
+<!--        <pointcut type="callerSide" pattern="examples.caching.Pi#int getPiDecimal(int)">-->
+<!--            <advice-ref name="cacheCounter"/>-->
+<!--        </pointcut>-->
+<!--    </aspect>      `-->
+
+    <aspect class="examples.persistence.Target">
+<!--        <introduction-ref name="counter1"/>-->
+<!--        <introduction-ref name="counter2"/>-->
+        <pointcut type="method" pattern="* invoke()">
+            <advice-ref name="counter3"/>
+        </pointcut>
+    </aspect>
+
+    <aspect class="examples.asynchronous.Target">
+        <pointcut type="method" pattern="* toRunAsynchronously()">
+            <advice-ref name="asynchronous"/>
+        </pointcut>
+    </aspect>
+
+    <aspect class="examples.synchronization.Target">
+        <pointcut type="method" pattern="* toSynchronize()">
+            <advice-ref name="synchronization"/>
+        </pointcut>
+    </aspect>
+
+<!--    <aspect class="examples.logging.Target">-->
+<!--        <pointcut type="method">-->
+<!--            <pattern>* toLog*(..)</pattern>-->
+<!--            <pattern>* toLo*(..)</pattern>-->
+<!--            <pattern>* toL*(..)</pattern>-->
+<!--            <advice-ref name="logging"/>-->
+<!--        </pointcut>-->
+<!--    </aspect>-->
+
+</aspectwerkz>

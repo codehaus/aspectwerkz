@@ -2,45 +2,48 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import org.codehaus.aspectwerkz.definition.expression.Expression;
-import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
-
 import java.lang.reflect.Method;
 
-import java.util.Iterator;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
+import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 
 /**
  * Helper class for the attribute and the XML definition parsers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class DefinitionParserHelper
-{
+public class DefinitionParserHelper {
+
     /**
      * Creates and add pointcut definition to aspect definition.
      *
      * @param name
+     * @param type
      * @param expression
      * @param aspectDef
      */
     public static void createAndAddPointcutDefToAspectDef(final String name,
-        final String expression, final AspectDefinition aspectDef)
-    {
+                                                          final PointcutType type,
+                                                          final String expression,
+                                                          final AspectDefinition aspectDef) {
         PointcutDefinition pointcutDef = new PointcutDefinition();
-
         pointcutDef.setName(name);
+        pointcutDef.setType(type);
         pointcutDef.setExpression(expression);
         aspectDef.addPointcut(pointcutDef);
 
         // create and add a new expression template
-        ExpressionNamespace.getExpressionNamespace(aspectDef)
-                           .registerExpression(expression, "", name);
+        ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).registerExpression(
+                expression, "", name, type);
     }
 
     /**
@@ -54,31 +57,18 @@ public class DefinitionParserHelper
      * @param methodIndex
      * @param aspectDef
      */
-    public static void createAndAddAroundAdviceDefToAspectDef(
-        final String expression, final String adviceName,
-        final String aspectName, final String aspectClassName,
-        final Method method, final int methodIndex,
-        final AspectDefinition aspectDef)
-    {
-        try
-        {
-            AdviceDefinition adviceDef = createAdviceDefinition(adviceName,
-                    AdviceDefinition.AROUND_ADVICE, aspectName,
-                    aspectClassName, expression, method, methodIndex, aspectDef);
-
-            aspectDef.addAroundAdvice(adviceDef);
-        }
-        catch (DefinitionException e)
-        {
-            // see AW-152.
-            System.err.println(
-                "AspectWerkz - <WARN> unable to register advice " + aspectName
-                + "." + adviceName + " at \"" + expression + "\": "
-                + e.getMessage());
-
-            // go on silently
-            // TODO AV - better handling of reg issue (f.e. skip the whole aspect, in DocumentParser, based on DefinitionE
-        }
+    public static void createAndAddAroundAdviceDefToAspectDef(final String expression,
+                                                              final String adviceName,
+                                                              final String aspectName,
+                                                              final String aspectClassName,
+                                                              final Method method,
+                                                              final int methodIndex,
+                                                              final AspectDefinition aspectDef) {
+        AdviceDefinition adviceDef = createAdviceDefinition(
+                adviceName, aspectName, aspectClassName,
+                expression, method, methodIndex, aspectDef
+        );
+        aspectDef.addAroundAdvice(adviceDef);
     }
 
     /**
@@ -92,31 +82,18 @@ public class DefinitionParserHelper
      * @param methodIndex
      * @param aspectDef
      */
-    public static void createAndAddBeforeAdviceDefToAspectDef(
-        final String expression, final String adviceName,
-        final String aspectName, final String aspectClassName,
-        final Method method, final int methodIndex,
-        final AspectDefinition aspectDef)
-    {
-        try
-        {
-            AdviceDefinition adviceDef = createAdviceDefinition(adviceName,
-                    AdviceDefinition.BEFORE_ADVICE, aspectName,
-                    aspectClassName, expression, method, methodIndex, aspectDef);
-
-            aspectDef.addBeforeAdvice(adviceDef);
-        }
-        catch (DefinitionException e)
-        {
-            // see AW-152.
-            System.err.println(
-                "AspectWerkz - <WARN> unable to register advice " + aspectName
-                + "." + adviceName + " at \"" + expression + "\": "
-                + e.getMessage());
-
-            // go on silently
-            // TODO AV - better handling of reg issue (f.e. skip the whole aspect, in DocumentParser, based on DefinitionE
-        }
+    public static void createAndAddBeforeAdviceDefToAspectDef(final String expression,
+                                                              final String adviceName,
+                                                              final String aspectName,
+                                                              final String aspectClassName,
+                                                              final Method method,
+                                                              final int methodIndex,
+                                                              final AspectDefinition aspectDef) {
+        AdviceDefinition adviceDef = createAdviceDefinition(
+                adviceName, aspectName, aspectClassName,
+                expression, method, methodIndex, aspectDef
+        );
+        aspectDef.addBeforeAdvice(adviceDef);
     }
 
     /**
@@ -130,31 +107,18 @@ public class DefinitionParserHelper
      * @param methodIndex
      * @param aspectDef
      */
-    public static void createAndAddAfterAdviceDefToAspectDef(
-        final String expression, final String adviceName,
-        final String aspectName, final String aspectClassName,
-        final Method method, final int methodIndex,
-        final AspectDefinition aspectDef)
-    {
-        try
-        {
-            AdviceDefinition adviceDef = createAdviceDefinition(adviceName,
-                    AdviceDefinition.AFTER_ADVICE, aspectName, aspectClassName,
-                    expression, method, methodIndex, aspectDef);
-
-            aspectDef.addAfterAdvice(adviceDef);
-        }
-        catch (DefinitionException e)
-        {
-            // see AW-152.
-            System.err.println(
-                "AspectWerkz - <WARN> unable to register advice " + aspectName
-                + "." + adviceName + " at \"" + expression + "\": "
-                + e.getMessage());
-
-            // go on silently
-            // TODO AV - better handling of reg issue (f.e. skip the whole aspect, in DocumentParser, based on DefinitionE
-        }
+    public static void createAndAddAfterAdviceDefToAspectDef(final String expression,
+                                                             final String adviceName,
+                                                             final String aspectName,
+                                                             final String aspectClassName,
+                                                             final Method method,
+                                                             final int methodIndex,
+                                                             final AspectDefinition aspectDef) {
+        AdviceDefinition adviceDef = createAdviceDefinition(
+                adviceName, aspectName, aspectClassName,
+                expression, method, methodIndex, aspectDef
+        );
+        aspectDef.addAfterAdvice(adviceDef);
     }
 
     /**
@@ -167,37 +131,17 @@ public class DefinitionParserHelper
      * @param deploymentModel
      * @param aspectDef
      */
-    public static void createAndAddIntroductionDefToAspectDef(
-        final String expression, final String introductionName,
-        final String[] introducedInterfaceNames,
-        final Method[] introducedMethods, final String deploymentModel,
-        final AspectDefinition aspectDef)
-    {
-        IntroductionDefinition introDef = createIntroductionDefinition(introductionName,
-                expression, introducedInterfaceNames, introducedMethods,
-                deploymentModel, aspectDef);
-
-        // check doublons - TODO change ArrayList to HashMap since NAME is a key
-        IntroductionDefinition doublon = null;
-
-        for (Iterator intros = aspectDef.getIntroductions().iterator();
-            intros.hasNext();)
-        {
-            IntroductionDefinition intro = (IntroductionDefinition) intros.next();
-
-            if (intro.getName().equals(introDef.getName()))
-            {
-                doublon = intro;
-                intro.addExpressions(introDef.getExpressions());
-
-                break;
-            }
-        }
-
-        if (doublon == null)
-        {
-            aspectDef.addIntroduction(introDef);
-        }
+    public static void createAndAddIntroductionDefToAspectDef(final String expression,
+                                                              final String introductionName,
+                                                              final String[] introducedInterfaceNames,
+                                                              final Method[] introducedMethods,
+                                                              final String deploymentModel,
+                                                              final AspectDefinition aspectDef) {
+        IntroductionDefinition introDef = createIntroductionDefinition(
+                introductionName, expression, introducedInterfaceNames,
+                introducedMethods, deploymentModel, aspectDef
+        );
+        aspectDef.addIntroduction(introDef);
     }
 
     /**
@@ -208,42 +152,42 @@ public class DefinitionParserHelper
      * @param interfaceClassName
      * @param aspectDef
      */
-    public static void createAndAddInterfaceIntroductionDefToAspectDef(
-        final String expression, final String introductionName,
-        final String interfaceClassName, final AspectDefinition aspectDef)
-    {
-        InterfaceIntroductionDefinition introDef = createInterfaceIntroductionDefinition(introductionName,
-                expression, interfaceClassName, aspectDef);
-
+    public static void createAndAddInterfaceIntroductionDefToAspectDef(final String expression,
+                                                                       final String introductionName,
+                                                                       final String interfaceClassName,
+                                                                       final AspectDefinition aspectDef) {
+        InterfaceIntroductionDefinition introDef = createInterfaceIntroductionDefinition(
+                introductionName, expression, interfaceClassName, aspectDef
+        );
         aspectDef.addInterfaceIntroduction(introDef);
     }
 
     /**
      * Creates a new advice definition.
      *
-     * @param adviceName      the advice name
-     * @param adviceType      the advice type
-     * @param aspectName      the aspect name
+     * @param adviceName the advice name
+     * @param aspectName the aspect name
      * @param aspectClassName the aspect class name
-     * @param expression      the pointcut expression
-     * @param method          the advice method
-     * @param methodIndex     the advice method index
-     * @param aspectDef       the aspect definition
+     * @param expression the pointcut expression
+     * @param method the advice method
+     * @param methodIndex the advice method index
+     * @param aspectDef the aspect definition
      * @return the new advice definition
      */
-    public static AdviceDefinition createAdviceDefinition(
-        final String adviceName, final String adviceType,
-        final String aspectName, final String aspectClassName,
-        final String expression, final Method method, final int methodIndex,
-        final AspectDefinition aspectDef)
-    {
-        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef)
-                                             .createExpression(expression);
+    public static AdviceDefinition createAdviceDefinition(final String adviceName,
+                                                          final String aspectName,
+                                                          final String aspectClassName,
+                                                          final String expression,
+                                                          final Method method,
+                                                          final int methodIndex,
+                                                          final AspectDefinition aspectDef) {
+        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectName).
+                createExpression(expression);
 
-        final AdviceDefinition adviceDef = new AdviceDefinition(adviceName,
-                adviceType, aspectName, aspectClassName, expr, method,
-                methodIndex, aspectDef);
-
+        final AdviceDefinition adviceDef = new AdviceDefinition(
+                adviceName, aspectName, aspectClassName,
+                expr, method, methodIndex, aspectDef
+        );
         return adviceDef;
     }
 
@@ -258,41 +202,41 @@ public class DefinitionParserHelper
      * @param aspectDef
      * @return
      */
-    public static IntroductionDefinition createIntroductionDefinition(
-        final String introductionName, final String expression,
-        final String[] introducedInterfaceNames,
-        final Method[] introducedMethods, final String deploymentModel,
-        final AspectDefinition aspectDef)
-    {
-        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef)
-                                             .createExpression(expression);
+    public static IntroductionDefinition createIntroductionDefinition(final String introductionName,
+                                                                      final String expression,
+                                                                      final String[] introducedInterfaceNames,
+                                                                      final Method[] introducedMethods,
+                                                                      final String deploymentModel,
+                                                                      final AspectDefinition aspectDef) {
+        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).
+                createExpression(expression, PointcutType.CLASS);
 
-        final IntroductionDefinition introDef = new IntroductionDefinition(introductionName,
-                expr, introducedInterfaceNames, introducedMethods,
-                deploymentModel);
-
+        final IntroductionDefinition introDef = new IntroductionDefinition(
+                introductionName, expr, introducedInterfaceNames, introducedMethods, deploymentModel
+        );
         return introDef;
     }
 
     /**
      * Creates a new interface introduction definition.
      *
-     * @param introductionName   the introduction name
-     * @param expression         the pointcut expression
+     * @param introductionName the introduction name
+     * @param expression the pointcut expression
      * @param interfaceClassName the class name of the interface
-     * @param aspectDef          the aspect definition
+     * @param aspectDef the aspect definition
      * @return the new introduction definition
      */
     public static InterfaceIntroductionDefinition createInterfaceIntroductionDefinition(
-        final String introductionName, final String expression,
-        final String interfaceClassName, final AspectDefinition aspectDef)
-    {
-        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef)
-                                             .createExpression(expression);
+            final String introductionName,
+            final String expression,
+            final String interfaceClassName,
+            final AspectDefinition aspectDef) {
+        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).
+                createExpression(expression, PointcutType.CLASS);
 
-        final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(introductionName,
-                expr, interfaceClassName);
-
+        final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(
+                introductionName, expr, interfaceClassName
+        );
         return introDef;
     }
 }

@@ -19,7 +19,7 @@ import java.lang.reflect.Modifier;
  * This is a default <tt>UnitOfWork</tt> implementation that can work as a basis for customized implementations.
  * It is functional by itself but does only perform transaction handling in RAM.
  * <p/>
- * Can be extended to hook in for example JTA or JDBC transactions like in {@link aspectwerkz.aosd.unitofwork.jta.JtaAwareUnitOfWork}
+ * Can be extended to hook in for example JTA or JDBC transactions like in {@link aspectwerkz.aosd.unitofwork.JtaAwareUnitOfWork}
  * (which can also be extended if JTA transaction awareness is wanted) and transparent persistence upon commit.
  * <p/>
  * Provides a set of callback methods that the subclass can choose to override to add additional behaviour at certain
@@ -55,7 +55,7 @@ public class UnitOfWork {
     /**
      * Defines the type of UnitOfWork.
      */
-    protected static UnitOfWorkType m_unitOfWorkType = UnitOfWorkType.JISP_AWARE; // TODO make configurable
+    protected static UnitOfWorkType m_unitOfWorkType = UnitOfWorkType.DEFAULT; // TODO make configurable
 
     /**
      * Backup of all the instances that have participated in the UnitOfWork that has fields that are dirty.
@@ -192,14 +192,6 @@ public class UnitOfWork {
      * @param obj the object to remove from the ID map
      */
     public void removeFromIdMap(final Object obj) {
-    }
-
-    /**
-     * Rolls back the current UnitOfWork.
-     */
-    public void rollback() {
-        restoreModifiedObjects();
-        doRollback();
     }
 
     /**
@@ -367,6 +359,14 @@ public class UnitOfWork {
         doPreCommit();
         doCommit();
         doPostCommit();
+    }
+
+    /**
+     * Rolls back the current UnitOfWork.
+     */
+    void rollback() {
+        restoreModifiedObjects();
+        doRollback();
     }
 
     /**

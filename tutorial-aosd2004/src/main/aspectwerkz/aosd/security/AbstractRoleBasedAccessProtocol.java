@@ -13,13 +13,12 @@ import java.security.PrivilegedExceptionAction;
 import javax.security.auth.Subject;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.Signature;
-import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
+import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
+import org.codehaus.aspectwerkz.attribdef.Pointcut;
+import org.codehaus.aspectwerkz.attribdef.aspect.Aspect;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.aspect.Aspect;
-import org.codehaus.aspectwerkz.Pointcut;
 
-import aspectwerkz.aosd.context.Context;
+import aspectwerkz.aosd.Context;
 import aspectwerkz.aosd.security.principal.PrincipalStore;
 
 /**
@@ -60,12 +59,12 @@ public abstract class AbstractRoleBasedAccessProtocol extends Aspect {
             }
         }
         catch (Exception e) {
-            Signature signature = joinPoint.getSignature();
+            MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
             StringBuffer msg = new StringBuffer();
             msg.append("authentication denied at ");
-            msg.append(joinPoint.getTargetClass().getName());
+            msg.append(jp.getTargetClass().getName());
             msg.append('.');
-            msg.append(signature.getName());
+            msg.append(jp.getMethodName());
             msg.append(" for user [");
             msg.append(PrincipalStore.getContext());
             msg.append("] due to: ");
@@ -105,12 +104,12 @@ public abstract class AbstractRoleBasedAccessProtocol extends Aspect {
         }
         else {
             // not authorized, bail out
-            Signature signature = joinPoint.getSignature();
+            MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
             StringBuffer msg = new StringBuffer();
             msg.append("authorization denied at ");
-            msg.append(joinPoint.getTargetClass().getName());
+            msg.append(jp.getTargetClass().getName());
             msg.append('.');
-            msg.append(signature.getName());
+            msg.append(jp.getMethodName());
             msg.append(" for user [");
             msg.append(PrincipalStore.getContext());
             msg.append(']');
@@ -138,16 +137,15 @@ public abstract class AbstractRoleBasedAccessProtocol extends Aspect {
     protected boolean checkPermission(final JoinPoint joinPoint) {
         Subject subject = PrincipalStore.getSubject();
         if (subject == null) {
-            System.out.println("no subject");
             return false;
         }
-        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
         for (Iterator it = subject.getPrincipals().iterator(); it.hasNext();) {
             Principal principal = (Principal)it.next();
             if (m_securityManager.checkPermission(
                     principal,
-                    joinPoint.getTargetClass(),
-                    signature.getMethod())) {
+                    jp.getTargetClass(),
+                    jp.getMethod())) {
                 return true;
             }
         }

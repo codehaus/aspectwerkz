@@ -2,25 +2,26 @@
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
+ * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaField;
+
+import java.util.List;
 
 /**
  * Enhances a classes with attributes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface AttributeEnhancer
-{
-    final String ATTRIBUTE_TYPE = "Custom";
+public interface AttributeEnhancer {
 
     /**
-     * Initializes the attribute enhancer. <p/>Must always be called before use.
+     * Initializes the attribute enhancer.
+     * <p/>Must always be called before use.
      *
      * @param className the class name
      * @param classPath the class path
@@ -38,7 +39,7 @@ public interface AttributeEnhancer
     /**
      * Inserts an attribute on field level.
      *
-     * @param field     the QDox java field
+     * @param field the QDox java field
      * @param attribute the attribute
      */
     void insertFieldAttribute(JavaField field, Object attribute);
@@ -46,7 +47,7 @@ public interface AttributeEnhancer
     /**
      * Inserts an attribute on method level.
      *
-     * @param method    the QDox java method
+     * @param method the QDox java method
      * @param attribute the attribute
      */
     void insertMethodAttribute(JavaMethod method, Object attribute);
@@ -60,7 +61,6 @@ public interface AttributeEnhancer
 
     /**
      * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
-     *
      * @return nearest superclass (including itself) ' implemented interfaces
      */
     String[] getNearestInterfacesInHierarchy(String innerClassName);

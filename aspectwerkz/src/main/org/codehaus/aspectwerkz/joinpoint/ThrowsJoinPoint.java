@@ -1,28 +1,31 @@
-/**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the LGPL license      *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/*
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.codehaus.aspectwerkz.joinpoint;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.io.ObjectInputStream;
 
-import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.Aspect;
 import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.System;
-import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
-import org.codehaus.aspectwerkz.attribdef.AttribDefSystem;
-import org.codehaus.aspectwerkz.util.Util;
+import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
 
 /**
  * Matches well defined point of execution in the program where an exception is
@@ -30,35 +33,30 @@ import org.codehaus.aspectwerkz.util.Util;
  * I.e a reference to original object an method, the original exception etc.<br/>
  * Handles the invocation of the advices added to the join point.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @version $Id: ThrowsJoinPoint.java,v 1.1.1.1 2003-05-11 15:14:37 jboner Exp $
  */
-public class ThrowsJoinPoint extends AbstractJoinPoint {
-
-    /**
-     * The AspectWerkz system for this join point.
-     */
-    protected transient System m_system;
+public class ThrowsJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
-    private static final long serialVersionUID = 6363637170952486892L;
+    private static final long serialVersionUID = -4857649400733289567L;
 
     /**
      * The method join point for this join point.
      */
-    protected MethodJoinPoint m_methodJoinPoint;
+    protected final MethodJoinPoint m_methodJoinPoint;
 
     /**
      * The exception for this join point.
      */
-    protected Throwable m_exception;
+    protected final Throwable m_exception;
 
     /**
      * The advice indexes.
      */
-    protected IndexTuple[] m_adviceIndexes = new IndexTuple[0];
+    protected int[] m_adviceIndexes = new int[0];
 
     /**
      * The index of the current advice.
@@ -66,42 +64,28 @@ public class ThrowsJoinPoint extends AbstractJoinPoint {
     protected int m_currentAdviceIndex = -1;
 
     /**
-     * Meta-data for the class.
-     */
-    protected ClassMetaData m_classMetaData;
-
-    /**
      * Meta-data for the method.
      */
-    protected MethodMetaData m_methodMetaData;
-
-    /**
-     * The UUID for the AspectWerkz system to use.
-     */
-    protected String m_uuid;
+    protected MethodMetaData m_metadata;
 
     /**
      * Creates a new throws join point.
      *
-     * @param uuid the UUID for the AspectWerkz system to use
      * @param methodJoinPoint the method join point
      * @param exception the exception
      */
-    public ThrowsJoinPoint(final String uuid,
-                           final MethodJoinPoint methodJoinPoint,
+    public ThrowsJoinPoint(final MethodJoinPoint methodJoinPoint,
                            final Throwable exception) {
         if (methodJoinPoint == null) throw new IllegalArgumentException("method join point can not be null");
         if (exception == null) throw new IllegalArgumentException("exception exception can not be null");
+        AspectWerkz.initialize();
 
-        m_system = SystemLoader.getSystem(uuid);
-        m_system.initialize();
-
-        m_uuid = uuid;
         m_methodJoinPoint = methodJoinPoint;
         m_exception = exception;
 
         createMetaData();
-        Util.fakeStackTrace(m_exception, getTargetClass().getName());
+
+        AspectWerkz.fakeStackTrace(m_exception, getTargetObjectsClassName());
 
         loadAdvices();
     }
@@ -120,29 +104,14 @@ public class ThrowsJoinPoint extends AbstractJoinPoint {
     /**
      * Invokes the next advice in the chain until it reaches the end.
      *
-     * @return the result from a throws pointcut
+     * @return null the result from a throws pointcut always returns null
      * @throws Throwable
      */
     public Object proceed() throws Throwable {
-        Object result = null;
         m_currentAdviceIndex++;
-
         if (m_currentAdviceIndex != m_adviceIndexes.length) {
             try {
-                // TODO: handle a list of systems that nees to be matched to the advice lists (loadAdvices etc.)
-                if (m_system.isAttribDef()) {
-                    AttribDefSystem system = (AttribDefSystem)m_system;
-
-                    IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
-                    int aspectIndex = index.getAspectIndex();
-                    int methodIndex = index.getMethodIndex();
-                    result = system.getAspect(aspectIndex).___AW_invokeAdvice(methodIndex, this);
-                }
-                else {
-                    XmlDefSystem system = (XmlDefSystem)m_system;
-
-                    result = system.getAdvice(m_adviceIndexes[m_currentAdviceIndex]).doExecute(this);
-                }
+                AspectWerkz.getAdvice(m_adviceIndexes[m_currentAdviceIndex]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 StringBuffer cause = new StringBuffer();
@@ -153,10 +122,10 @@ public class ThrowsJoinPoint extends AbstractJoinPoint {
                 cause.append("#");
                 cause.append(getExceptionName());
                 cause.append(" are not correctly mapped");
-                throw new DefinitionException(cause.toString());
+                throw new RuntimeException(cause.toString());
             }
         }
-        return result;
+        return null;
     }
 
     /**
@@ -209,48 +178,44 @@ public class ThrowsJoinPoint extends AbstractJoinPoint {
      *
      * @return the line number
      */
-    // Works for JDK 1.4.x only
-//    public int getLineNumberForThrow() {
-//        return m_exception.getStackTrace()[0].getLineNumber();
-//    }
+    public int getLineNumberForThrow() {
+        return m_exception.getStackTrace()[0].getLineNumber();
+    }
 
     /**
      * Returns the method name where the exception was thrown.
      *
      * @return the method name
      */
-    // Works for JDK 1.4.x only
-//    public String getMethodNameForThrow() {
-//        return m_exception.getStackTrace()[0].getMethodName();
-//    }
+    public String getMethodNameForThrow() {
+        return m_exception.getStackTrace()[0].getMethodName();
+    }
 
     /**
      * Returns the file name where the exception was thrown.
      *
      * @return the file name
      */
-    // Works for JDK 1.4.x only
-//    public String getFileNameForThrow() {
-//        return m_exception.getStackTrace()[0].getFileName();
-//    }
+    public String getFileNameForThrow() {
+        return m_exception.getStackTrace()[0].getFileName();
+    }
 
     /**
      * Returns the class name where the exception was thrown.
      *
      * @return the class name
      */
-    // Works for JDK 1.4.x only
-//    public String getClassNameForThrow() {
-//        return m_exception.getStackTrace()[0].getClassName();
-//    }
+    public String getClassNameForThrow() {
+        return m_exception.getStackTrace()[0].getClassName();
+    }
 
     /**
-     * Returns the target instance.
+     * Returns the target object.
      *
-     * @return the target instance
+     * @return the target object
      */
-    public Object getTargetInstance() {
-        return m_methodJoinPoint.getTargetInstance();
+    public Object getTargetObject() {
+        return m_methodJoinPoint.getTargetObject();
     }
 
     /**
@@ -260,6 +225,15 @@ public class ThrowsJoinPoint extends AbstractJoinPoint {
      */
     public Class getTargetClass() {
         return m_methodJoinPoint.getTargetClass();
+    }
+
+    /**
+     * Returns the target object's class name.
+     *
+     * @return the target object's class name
+     */
+    public String getTargetObjectsClassName() {
+        return m_methodJoinPoint.getTargetClass().getName();
     }
 
     /**
@@ -312,23 +286,28 @@ public class ThrowsJoinPoint extends AbstractJoinPoint {
      */
     protected void loadAdvices() {
         synchronized (m_adviceIndexes) {
+
             List adviceIndexes = new ArrayList();
+            List aspects = AspectWerkz.getAspects(getTargetObjectsClassName());
 
-            // get all the throws pointcuts for this class
-            List pointcuts = m_system.getThrowsPointcuts(m_classMetaData, m_methodMetaData);
+            for (Iterator it = aspects.iterator(); it.hasNext();) {
+                Aspect aspect = (Aspect)it.next();
 
-            for (Iterator it = pointcuts.iterator(); it.hasNext();) {
-                ThrowsPointcut throwsPointcut = (ThrowsPointcut)it.next();
-                IndexTuple[] indexes = throwsPointcut.getAdviceIndexes();
-                for (int j = 0; j < indexes.length; j++) {
-                    adviceIndexes.add(indexes[j]);
+                ThrowsPointcut[] pointcuts = aspect.
+                        getThrowsPointcuts(m_metadata, getExceptionName());
+
+                for (int i = 0; i < pointcuts.length; i++) {
+                    int[] advices = pointcuts[i].getAdviceIndexes();
+                    for (int j = 0; j < advices.length; j++) {
+                        adviceIndexes.add(new Integer(advices[j]));
+                    }
                 }
             }
 
-            m_adviceIndexes = new IndexTuple[adviceIndexes.size()];
+            m_adviceIndexes = new int[adviceIndexes.size()];
             int i = 0;
             for (Iterator it = adviceIndexes.iterator(); it.hasNext(); i++) {
-                m_adviceIndexes[i] = (IndexTuple)it.next();
+                m_adviceIndexes[i] = ((Integer)it.next()).intValue();
             }
         }
     }
@@ -337,11 +316,21 @@ public class ThrowsJoinPoint extends AbstractJoinPoint {
      * Creates meta-data for the join point.
      */
     protected void createMetaData() {
-        m_classMetaData = ReflectionMetaDataMaker.createClassMetaData(getTargetClass());
-        m_methodMetaData = ReflectionMetaDataMaker.createMethodMetaData(
-                getMethodName(),
-                getMethodParameterTypes(),
-                getMethodReturnType());
+        m_metadata = new MethodMetaData();
+        m_metadata.setName(getMethodName());
+        Class[] parameterTypes = getMethodParameterTypes();
+        String[] parameterTypeNames = new String[parameterTypes.length];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            parameterTypeNames[i] = parameterTypes[i].getName();
+        }
+        m_metadata.setParameterTypes(parameterTypeNames);
+        Class returnType = getMethodReturnType();
+        if (returnType == null) {
+            m_metadata.setReturnType("void");
+        }
+        else {
+            m_metadata.setReturnType(returnType.getName());
+        }
     }
 
     /**
@@ -350,29 +339,54 @@ public class ThrowsJoinPoint extends AbstractJoinPoint {
      * @return the clone of the join point
      */
     protected ThrowsJoinPoint deepCopy() {
-        final ThrowsJoinPoint clone = new ThrowsJoinPoint(m_uuid, m_methodJoinPoint, m_exception);
+        final ThrowsJoinPoint clone =
+                new ThrowsJoinPoint(m_methodJoinPoint, m_exception);
         clone.m_currentAdviceIndex = m_currentAdviceIndex;
-        clone.m_adviceIndexes = new IndexTuple[m_adviceIndexes.length];
-        java.lang.System.arraycopy(m_adviceIndexes, 0, clone.m_adviceIndexes, 0, m_adviceIndexes.length);
+        clone.m_adviceIndexes = new int[m_adviceIndexes.length];
+        System.arraycopy(m_adviceIndexes, 0, clone.m_adviceIndexes, 0, m_adviceIndexes.length);
         return clone;
     }
 
-    /**
-     * Provides custom deserialization.
-     *
-     * @param stream the object input stream containing the serialized object
-     * @throws java.lang.Exception in case of failure
-     */
-    private void readObject(final ObjectInputStream stream) throws Exception {
-        ObjectInputStream.GetField fields = stream.readFields();
-        m_uuid = (String)fields.get("m_uuid", null);
-        m_currentAdviceIndex = fields.get("m_currentAdviceIndex", -1);
-        m_classMetaData = (ClassMetaData)fields.get("m_classMetaData", null);
-        m_methodMetaData = (MethodMetaData)fields.get("m_fieldMetaData", null);
-        m_methodJoinPoint = (MethodJoinPoint)fields.get("m_methodJoinPoint", null);
-        m_exception = (Throwable)fields.get("m_exception", null);
-        m_adviceIndexes = (IndexTuple[])fields.get("m_adviceIndexes", null);
-        m_system = SystemLoader.getSystem(m_uuid);
-        m_system.initialize();
+    // --- over-ridden methods ---
+/*
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ThrowsJoinPoint)) return false;
+        final ThrowsJoinPoint obj = (ThrowsJoinPoint)o;
+        return areEqualsOrBothNull(obj.m_methodJoinPoint, this.m_methodJoinPoint) &&
+                areEqualsOrBothNull(obj.m_exception, this.m_exception) &&
+                areEqualsOrBothNull(obj.m_adviceIndexes, this.m_adviceIndexes) &&
+                (obj.m_currentAdviceIndex == this.m_currentAdviceIndex);
     }
+
+    protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
+        if (null == o1) return (null == o2);
+        return o1.equals(o2);
+    }
+
+    public String toString() {
+        return "["
+                + super.toString()
+                + ": "
+                + m_methodJoinPoint
+                + "," + m_exception
+                + "," + m_adviceIndexes
+                + "," + m_currentAdviceIndex
+                + "]";
+    }
+
+    public int hashCode() {
+        int result = 17;
+        result = 37 * result + hashCodeOrZeroIfNull(m_methodJoinPoint);
+        result = 37 * result + hashCodeOrZeroIfNull(m_exception);
+        result = 37 * result + hashCodeOrZeroIfNull(m_adviceIndexes);
+        result = 37 * result + m_currentAdviceIndex;
+        return result;
+    }
+
+    protected static int hashCodeOrZeroIfNull(final Object o) {
+        if (null == o) return 19;
+        return o.hashCode();
+    }
+*/
 }
