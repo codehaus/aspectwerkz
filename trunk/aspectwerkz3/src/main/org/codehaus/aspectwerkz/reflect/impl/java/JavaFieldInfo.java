@@ -87,40 +87,27 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof JavaFieldInfo)) {
+        if (!(o instanceof FieldInfo)) {
             return false;
         }
-        final JavaFieldInfo javaFieldInfo = (JavaFieldInfo)o;
-        if ((m_attributes != null) ? (!m_attributes.equals(javaFieldInfo.m_attributes))
-                                   : (javaFieldInfo.m_attributes != null)) {
+        FieldInfo fieldInfo = (FieldInfo)o;
+        if (!m_member.getName().equals(fieldInfo.getName())) {
             return false;
         }
-        if ((m_classInfoRepository != null) ? (!m_classInfoRepository.equals(javaFieldInfo.m_classInfoRepository))
-                                            : (javaFieldInfo.m_classInfoRepository != null)) {
-            return false;
-        }
-        if ((m_declaringType != null) ? (!m_declaringType.equals(javaFieldInfo.m_declaringType))
-                                      : (javaFieldInfo.m_declaringType != null)) {
-            return false;
-        }
-        if ((m_member != null) ? (!m_member.equals(javaFieldInfo.m_member)) : (javaFieldInfo.m_member != null)) {
-            return false;
-        }
-        if ((m_type != null) ? (!m_type.equals(javaFieldInfo.m_type)) : (javaFieldInfo.m_type != null)) {
+        ClassInfo fieldType = fieldInfo.getType();
+        if (!m_type.getName().toString().equals(fieldType.getName().toString())) {
             return false;
         }
         return true;
     }
 
     public int hashCode() {
-        int result;
-
-        result = ((m_member != null) ? m_member.hashCode() : 0);
-        result = (29 * result) + ((m_type != null) ? m_type.hashCode() : 0);
-        result = (29 * result) + ((m_declaringType != null) ? m_declaringType.hashCode() : 0);
-        result = (29 * result) + ((m_attributes != null) ? m_attributes.hashCode() : 0);
-        result = (29 * result) + ((m_classInfoRepository != null) ? m_classInfoRepository.hashCode() : 0);
-
+        int result = 29;
+        if (m_type == null) {
+            getType();
+        }
+        result = (29 * result) + m_member.getName().toString().hashCode();
+        result = (29 * result) + m_type.getName().toString().hashCode();
         return result;
     }
 }

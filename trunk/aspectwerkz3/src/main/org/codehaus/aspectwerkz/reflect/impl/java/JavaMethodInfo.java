@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -160,47 +159,34 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof JavaMethodInfo)) {
+        if (!(o instanceof MethodInfo)) {
             return false;
         }
-        final JavaMethodInfo javaMethodInfo = (JavaMethodInfo)o;
-        if ((m_attributes != null) ? (!m_attributes.equals(javaMethodInfo.m_attributes))
-                                   : (javaMethodInfo.m_attributes != null)) {
+        MethodInfo methodInfo = (MethodInfo)o;
+        if (!m_member.getName().toString().equals(methodInfo.getName().toString())) {
             return false;
         }
-        if ((m_classInfoRepository != null) ? (!m_classInfoRepository.equals(javaMethodInfo.m_classInfoRepository))
-                                            : (javaMethodInfo.m_classInfoRepository != null)) {
+        ClassInfo[] parameterTypes = methodInfo.getParameterTypes();
+        if (m_parameterTypes.length != parameterTypes.length) {
             return false;
         }
-        if ((m_declaringType != null) ? (!m_declaringType.equals(javaMethodInfo.m_declaringType))
-                                      : (javaMethodInfo.m_declaringType != null)) {
-            return false;
-        }
-        if (!Arrays.equals(m_exceptionTypes, javaMethodInfo.m_exceptionTypes)) {
-            return false;
-        }
-        if ((m_member != null) ? (!m_member.equals(javaMethodInfo.m_member)) : (javaMethodInfo.m_member != null)) {
-            return false;
-        }
-        if (!Arrays.equals(m_parameterTypes, javaMethodInfo.m_parameterTypes)) {
-            return false;
-        }
-        if ((m_returnType != null) ? (!m_returnType.equals(javaMethodInfo.m_returnType))
-                                   : (javaMethodInfo.m_returnType != null)) {
-            return false;
+        for (int i = 0; i < m_parameterTypes.length; i++) {
+            if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
+                return false;
+            }
         }
         return true;
     }
 
     public int hashCode() {
-        int result;
-
-        result = ((m_member != null) ? m_member.hashCode() : 0);
-        result = (29 * result) + ((m_returnType != null) ? m_returnType.hashCode() : 0);
-        result = (29 * result) + ((m_declaringType != null) ? m_declaringType.hashCode() : 0);
-        result = (29 * result) + ((m_attributes != null) ? m_attributes.hashCode() : 0);
-        result = (29 * result) + ((m_classInfoRepository != null) ? m_classInfoRepository.hashCode() : 0);
-
+        int result = 29;
+        result = (29 * result) + m_member.getName().toString().hashCode();
+        if (m_parameterTypes == null) {
+            getParameterTypes();
+        }
+        for (int i = 0; i < m_parameterTypes.length; i++) {
+            result = (29 * result) + m_parameterTypes[i].getName().toString().hashCode();
+        }
         return result;
     }
 }

@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -135,51 +134,34 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
         if (this == o) {
             return true;
         }
-
-        if (!(o instanceof JavaConstructorInfo)) {
+        if (!(o instanceof ConstructorInfo)) {
             return false;
         }
-
-        final JavaConstructorInfo javaConstructorInfo = (JavaConstructorInfo)o;
-
-        if ((m_attributes != null) ? (!m_attributes.equals(javaConstructorInfo.m_attributes))
-                                   : (javaConstructorInfo.m_attributes != null)) {
+        ConstructorInfo constructorInfo = (ConstructorInfo)o;
+        if (!m_member.getName().toString().equals(constructorInfo.getName().toString())) {
             return false;
         }
-
-        if ((m_classInfoRepository != null) ? (!m_classInfoRepository.equals(javaConstructorInfo.m_classInfoRepository))
-                                            : (javaConstructorInfo.m_classInfoRepository != null)) {
+        ClassInfo[] parameterTypes = constructorInfo.getParameterTypes();
+        if (m_parameterTypes.length != parameterTypes.length) {
             return false;
         }
-
-        if ((m_member != null) ? (!m_member.equals(javaConstructorInfo.m_member)) : (javaConstructorInfo.m_member != null)) {
-            return false;
+        for (int i = 0; i < m_parameterTypes.length; i++) {
+            if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
+                return false;
+            }
         }
-
-        if ((m_declaringType != null) ? (!m_declaringType.equals(javaConstructorInfo.m_declaringType))
-                                      : (javaConstructorInfo.m_declaringType != null)) {
-            return false;
-        }
-
-        if (!Arrays.equals(m_exceptionTypes, javaConstructorInfo.m_exceptionTypes)) {
-            return false;
-        }
-
-        if (!Arrays.equals(m_parameterTypes, javaConstructorInfo.m_parameterTypes)) {
-            return false;
-        }
-
         return true;
     }
 
     public int hashCode() {
-        int result;
-
-        result = ((m_member != null) ? m_member.hashCode() : 0);
-        result = (29 * result) + ((m_declaringType != null) ? m_declaringType.hashCode() : 0);
-        result = (29 * result) + ((m_attributes != null) ? m_attributes.hashCode() : 0);
-        result = (29 * result) + ((m_classInfoRepository != null) ? m_classInfoRepository.hashCode() : 0);
-
+        int result = 29;
+        result = (29 * result) + m_member.getName().toString().hashCode();
+        if (m_parameterTypes == null) {
+            getParameterTypes();
+        }
+        for (int i = 0; i < m_parameterTypes.length; i++) {
+            result = (29 * result) + m_parameterTypes[i].getName().toString().hashCode();
+        }
         return result;
     }
 }

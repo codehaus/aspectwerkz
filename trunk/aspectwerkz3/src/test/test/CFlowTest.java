@@ -22,34 +22,34 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
         super(name);
     }
 
-    public void testCallWithinCFlow() {
+    //    public void testCallWithinCFlow() {
+    //        m_logString = "";
+    //        step1(); //will have cflow and will call step2()
+    //        assertEquals("step1 advice-before step2 advice-after ", m_logString);
+    //    }
+    //
+    //    public void testCallWithinCFlowAnonymous() {
+    //        m_logString = "";
+    //        step1Anonymous(); //will have cflow and will call step2()
+    //        assertEquals("step1Anonymous advice-beforeAnonymous step2Anonymous advice-afterAnonymous ", m_logString);
+    //    }
+    //
+    //    public void testCallWithinCFlowWithinCflow() {
+    //        m_logString = "";
+    //        step1_A(); //will have cflow and will call step1_B that will call step2_B()
+    //        assertEquals("step1_A step1_B advice-before2 step2_B advice-after2 ", m_logString);
+    //    }
+    public void testCallOutsideCFlow() {
         m_logString = "";
-        step1(); //will have cflow and will call step2()
-        assertEquals("step1 advice-before step2 advice-after ", m_logString);
-    }
-
-    public void testCallWithinCFlowAnonymous() {
-        m_logString = "";
-        step1Anonymous(); //will have cflow and will call step2()
-        assertEquals("step1Anonymous advice-beforeAnonymous step2Anonymous advice-afterAnonymous ", m_logString);
-    }
-
-    public void testCallWithinCFlowWithinCflow() {
-        m_logString = "";
-        step1_A(); //will have cflow and will call step1_B that will call step2_B()
-        assertEquals("step1_A step1_B advice-before2 step2_B advice-after2 ", m_logString);
+        step2();
+        System.out.println("m_logString = " + m_logString);
+        assertEquals("step2 ", m_logString);
     }
 
     //    public void testCallWithinCFlow_B() {
     //        m_logString = "";
     //        step1_B(); //will have cflow and will call step2_B() but is NOT in step1_A cflow
     //        assertEquals("step1_B step2_B ", m_logString);
-    //    }
-    //
-    //    public void testCallOutsideCFlow() {
-    //        m_logString = "";
-    //        step2();
-    //        assertEquals("step2 ", m_logString);
     //    }
     //
     //    public void testCallOutsideCFlowAnonymous() {

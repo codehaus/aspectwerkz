@@ -181,15 +181,6 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     public static Object invokeTargetConstructorCall(final JoinPoint joinPoint) throws Throwable {
         ConstructorSignatureImpl signature = (ConstructorSignatureImpl)joinPoint.getSignature();
         ConstructorRttiImpl rtti = (ConstructorRttiImpl)joinPoint.getRtti();
-
-        //        Constructor targetConstructor = signature.getConstructorTuple().getWrapperConstructor();
-        //        Object[] parameterValues = signature.getParameterValues();
-        //        try {
-        //            return targetConstructor.newInstance(parameterValues);
-        //        }
-        //        catch (InvocationTargetException e) {
-        //            throw e.getTargetException();
-        //        }
         Object[] parameterValues = rtti.getParameterValues();
         Constructor wrapperConstructor = signature.getConstructorTuple().getWrapperConstructor();
         Constructor originalConstructor = signature.getConstructorTuple().getOriginalConstructor();
@@ -368,6 +359,8 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     /**
      * Provides custom deserialization.
      *
+     * @TODO: for this to work it requires that the instance is read from the same CL that it was written in
+     *
      * @param stream the object input stream containing the serialized object
      * @throws Exception in case of failure
      */
@@ -383,6 +376,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         m_beforeAdviceExecutor = (BeforeAdviceExecutor)fields.get("m_beforeAdviceExecutor", null);
         m_afterAdviceExecutor = (AfterAdviceExecutor)fields.get("m_afterAdviceExecutor", null);
         m_metaData = (Map)fields.get("m_metaData", new HashMap());
+
         m_system = SystemLoader.getSystem(m_targetClass.getClassLoader());
         m_system.initialize();
     }
