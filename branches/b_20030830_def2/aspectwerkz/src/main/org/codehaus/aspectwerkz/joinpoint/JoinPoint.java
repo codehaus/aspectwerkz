@@ -43,7 +43,7 @@ public interface JoinPoint extends Serializable {
      *
      * @return the target object
      */
-    Object getTargetObject();
+    Object getTargetInstance();
 
     /**
      * Returns the target class.

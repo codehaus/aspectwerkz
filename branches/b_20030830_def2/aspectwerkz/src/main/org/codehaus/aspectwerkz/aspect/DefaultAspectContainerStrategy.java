@@ -102,16 +102,18 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * @return the result from the method invocation
      */
     public Object invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) {
-        final Class callingClass = joinPoint.getTargetClass();
+        final Class targetClass = joinPoint.getTargetClass();
         Object result = null;
         try {
-            if (!m_perClass.containsKey(callingClass)) {
+            if (!m_perClass.containsKey(targetClass)) {
                 synchronized (m_perClass) {
-                    m_perClass.put(callingClass, AbstractAspect.newInstance(m_prototype));
+                    AbstractAspect aspect = AbstractAspect.newInstance(m_prototype);
+                    aspect.___AW_setTargetClass(targetClass);
+                    m_perClass.put(targetClass, aspect);
                 }
             }
             result = m_methodRepository[methodIndex].invoke(
-                    m_perClass.get(callingClass),
+                    m_perClass.get(targetClass),
                     new Object[]{joinPoint}
             );
         }
@@ -133,15 +135,17 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      */
     public Object invokeAdvicePerInstance(final int methodIndex, final JoinPoint joinPoint) {
         Object result = null;
-        Object callingObject = joinPoint.getTargetObject();
+        Object targetInstance = joinPoint.getTargetInstance();
         try {
-            if (!m_perInstance.containsKey(callingObject)) {
+            if (!m_perInstance.containsKey(targetInstance)) {
                 synchronized (m_perInstance) {
-                    m_perInstance.put(callingObject, AbstractAspect.newInstance(m_prototype));
+                    AbstractAspect aspect = AbstractAspect.newInstance(m_prototype);
+                    aspect.___AW_setTargetInstance(targetInstance);
+                    m_perInstance.put(targetInstance, aspect);
                 }
             }
             result = m_methodRepository[methodIndex].invoke(
-                    m_perInstance.get(callingObject),
+                    m_perInstance.get(targetInstance),
                     new Object[]{joinPoint}
             );
         }
@@ -212,24 +216,26 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
     /**
      * Invokes the method on a per class basis.
      *
-     * @param callingObject a reference to the calling object
+     * @param targetInstance a reference to the calling object
      * @param methodIndex the method index
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    public Object invokeIntroductionPerClass(final Object callingObject,
+    public Object invokeIntroductionPerClass(final Object targetInstance,
                                              final int methodIndex,
                                              final Object[] parameters) {
-        final Class callingClass = callingObject.getClass();
+        final Class targetClass = targetInstance.getClass();
         Object result = null;
         try {
-            if (!m_perClass.containsKey(callingClass)) {
+            if (!m_perClass.containsKey(targetClass)) {
                 synchronized (m_perClass) {
-                    m_perClass.put(callingClass, AbstractAspect.newInstance(m_prototype));
+                    AbstractAspect aspect = AbstractAspect.newInstance(m_prototype);
+                    aspect.___AW_setTargetClass(targetClass);
+                    m_perClass.put(targetClass, aspect);
                 }
             }
             result = m_methodRepository[methodIndex].invoke(
-                    m_perClass.get(callingClass),
+                    m_perClass.get(targetClass),
                     parameters
             );
         }
@@ -245,23 +251,25 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
     /**
      * Invokes the method on a per instance basis.
      *
-     * @param callingObject a reference to the calling object
+     * @param targetInstance a reference to the target instance
      * @param methodIndex the method index
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    public Object invokeIntroductionPerInstance(final Object callingObject,
+    public Object invokeIntroductionPerInstance(final Object targetInstance,
                                                 final int methodIndex,
                                                 final Object[] parameters) {
         Object result = null;
         try {
-            if (!m_perInstance.containsKey(callingObject)) {
+            if (!m_perInstance.containsKey(targetInstance)) {
                 synchronized (m_perInstance) {
-                    m_perInstance.put(callingObject, AbstractAspect.newInstance(m_prototype));
+                    AbstractAspect aspect = AbstractAspect.newInstance(m_prototype);
+                    aspect.___AW_setTargetInstance(targetInstance);
+                    m_perInstance.put(targetInstance, aspect);
                 }
             }
             result = m_methodRepository[methodIndex].invoke(
-                    m_perInstance.get(callingObject),
+                    m_perInstance.get(targetInstance),
                     parameters
             );
         }
@@ -406,7 +414,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * @return the aspect
      */
     public Object getPerInstanceAspect(final JoinPoint joinPoint) {
-        final Object callingInstance = joinPoint.getTargetObject();
+        final Object callingInstance = joinPoint.getTargetInstance();
         if (callingInstance == null) {
             return getPerClassAspect(joinPoint);
         }

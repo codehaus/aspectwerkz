@@ -25,6 +25,7 @@ public abstract class AbstractIntroductionAspect extends AbstractAspect {
      * @Introduction classes
      */
     public String sayHello1() {
+        System.out.println("___AW_getTargetInstance() = " + ___AW_getTargetInstance());
         return "Hello World!";
     }
 }

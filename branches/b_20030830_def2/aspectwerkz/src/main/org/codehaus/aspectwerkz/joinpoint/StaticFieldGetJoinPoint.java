@@ -56,7 +56,7 @@ public class StaticFieldGetJoinPoint extends FieldJoinPoint {
      *
      * @return the target object
      */
-    public Object getTargetObject() {
+    public Object getTargetInstance() {
         return null;
     }
 

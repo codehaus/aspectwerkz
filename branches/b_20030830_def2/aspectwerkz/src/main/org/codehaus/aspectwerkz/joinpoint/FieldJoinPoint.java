@@ -181,7 +181,7 @@ public abstract class FieldJoinPoint implements JoinPoint {
      *
      * @return the target object
      */
-    public abstract Object getTargetObject();
+    public abstract Object getTargetInstance();
 
     /**
      * Returns the target class.

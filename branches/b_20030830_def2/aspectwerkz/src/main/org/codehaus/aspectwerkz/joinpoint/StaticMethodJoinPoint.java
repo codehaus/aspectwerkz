@@ -85,7 +85,7 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
      *
      * @return null always returns null
      */
-    public Object getTargetObject() {
+    public Object getTargetInstance() {
         return null;
     }
 

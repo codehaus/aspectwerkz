@@ -220,7 +220,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
      *
      * @return the original object
      */
-    public abstract Object getTargetObject();
+    public abstract Object getTargetInstance();
 
     /**
      * Returns the original class.
@@ -348,7 +348,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
             m_reentrancyCheck = true;
         }
         try {
-            m_result = m_originalMethod.invoke(getTargetObject(), m_parameters);
+            m_result = m_originalMethod.invoke(getTargetInstance(), m_parameters);
         }
         catch (InvocationTargetException e) {
             handleException(e);
