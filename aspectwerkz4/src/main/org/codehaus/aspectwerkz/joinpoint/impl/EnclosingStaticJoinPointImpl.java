@@ -1,6 +1,6 @@
 /*
- * $Id: EnclosingStaticJoinPointImpl.java,v 1.1 2004-12-21 15:47:02 avasseur Exp $
- * $Date: 2004-12-21 15:47:02 $
+ * $Id: EnclosingStaticJoinPointImpl.java,v 1.2 2005-01-31 14:34:24 avasseur Exp $
+ * $Date: 2005-01-31 14:34:24 $
  */
 package org.codehaus.aspectwerkz.joinpoint.impl;
 
@@ -15,7 +15,7 @@ import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
  * of the joinpoint.
  * 
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class EnclosingStaticJoinPointImpl implements EnclosingStaticJoinPoint {
 	private Signature m_signature;
@@ -39,9 +39,7 @@ public class EnclosingStaticJoinPointImpl implements EnclosingStaticJoinPoint {
 	 * Return a join point type corresponding to the enclosing join point.
 	 * 
 	 * @return one of {@link JoinPointType#CONSTRUCTOR_EXECUTION} or
-	 * {@link JoinPointType#METHOD_EXECUTION}.
-	 * 
-	 * FIXME should support also the staticinitializer_execution
+	 * {@link JoinPointType#METHOD_EXECUTION} or {@link JoinPointType#STATIC_INITIALIZATION}.
 	 */
 	public JoinPointType getType() {
 		return m_joinPointType;

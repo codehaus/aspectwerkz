@@ -31,7 +31,7 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
  * Unit test for annotation matching.
  * 
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AnnotationExpressionTest extends TestCase {
 	protected static final String NAMESPACE = "TESTING";
@@ -198,7 +198,6 @@ public class AnnotationExpressionTest extends TestCase {
 				new ExpressionContext(PointcutType.EXECUTION, s_constructor, null))
 				);
 
-        // FIXME: should be supported in parser
         assertTrue(
         		new ExpressionInfo(
         				"hasmethod(@DefaultConstructor new())",

@@ -152,66 +152,14 @@ public final class SignatureFactory {
         }
     }
 
+    /**
+     * Static initialization factory
+     * 
+     * @param declaringClass
+     * @return
+     */
     public static StaticInitializerSignatureImpl newStaticInitializationSignature(final Class declaringClass) {
         return new StaticInitializerSignatureImpl(declaringClass);
     }
     
-//    /**
-//     * Creates a new method repository for the class specified.
-//     *
-//     * @param klass the class
-//     */
-//    protected static void createMethodRepository(final Class klass) {
-//        if (klass == null) {
-//            throw new IllegalArgumentException("class can not be null");
-//        }
-//        if (s_methods.containsKey(klass)) {
-//            return;
-//        }
-//        Method[] methods = klass.getDeclaredMethods();
-//        TIntObjectHashMap methodMap = new TIntObjectHashMap(methods.length);
-//        for (int i = 0; i < methods.length; i++) {
-//            Method wrapperMethod = methods[i];
-//            if (!wrapperMethod.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
-//                Method prefixedMethod = null;
-//                for (int j = 0; j < methods.length; j++) {
-//                    Method method2 = methods[j];
-//                    if (method2.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
-//                        String[] tokens = Strings.splitString(method2.getName(), TransformationConstants.DELIMITER);
-//                        String methodName = (tokens.length <= 1) ? "" : tokens[1];//ctor exe wrapper - FIXME do better
-//                        if (!methodName.equals(wrapperMethod.getName())) {
-//                            continue;
-//                        }
-//                        Class[] parameterTypes1 = wrapperMethod.getParameterTypes();
-//                        Class[] parameterTypes2 = method2.getParameterTypes();
-//                        if (parameterTypes2.length != parameterTypes1.length) {
-//                            continue;
-//                        }
-//                        boolean match = true;
-//                        for (int k = 0; k < parameterTypes1.length; k++) {
-//                            if (parameterTypes1[k] != parameterTypes2[k]) {
-//                                match = false;
-//                                break;
-//                            }
-//                        }
-//                        if (!match) {
-//                            continue;
-//                        }
-//                        prefixedMethod = method2;
-//                        break;
-//                    }
-//                }
-//
-//                // create a method tuple with 'wrapped method' and 'prefixed method'
-//                MethodTuple methodTuple = new MethodTuple(wrapperMethod, prefixedMethod);
-//
-//                // map the tuple to the hash for the 'wrapper method'
-//                int methodHash = ReflectHelper.calculateHash(wrapperMethod);
-//                methodMap.put(methodHash, methodTuple);
-//            }
-//        }
-//        synchronized (s_methods) {
-//            s_methods.put(klass, methodMap);
-//        }
-//    }
 }
