@@ -9,7 +9,8 @@ package org.codehaus.aspectwerkz.reflect.impl.asm;
 
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
-import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.AsmHelper;
+import org.codehaus.aspectwerkz.transform.AsmHelper;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
 
 import org.objectweb.asm.Type;
