@@ -9,9 +9,9 @@
 
     <body>
         <links>
-            <item name="News" href="http://blogs.codehaus.org/projects/aspectwerkz/"/>
+            <item name="News" href="http://blogs.codehaus.org/projects/aspectwerkz/index.html"/>
             <item name="IRC" href="irc://irc.codehaus.org/aspectwerkz"/>
-            <item name="grubbel" href="http://blogs.codehaus.org/people/jboner/"/>
+            <item name="grubbel" href="http://blogs.codehaus.org/people/jboner/index.html"/>
             <item name="Codehaus" href="http://codehaus.org"/>
             <item name="Create an Issue" href="http://jira.codehaus.org/secure/CreateIssue.jspa"/>
         </links>

@@ -929,6 +929,35 @@ public class MyThrowsAdvice extends ThrowsAdvice {
 
             </subsection>
 
+            <subsection name="Subtype patterns">
+                <p>
+                    It is possible to pick out all subtypes of a type with the "+" wildcard.
+                    The "+" wildcard follows immediately a type name pattern. So, while
+                </p>
+                <p>
+                    <code>* foo.Bar.*(..)</code>
+                </p>
+                <p>
+                    picks out all method call join points where an instance of exactly type Foo is
+                    constructed,
+                </p>
+                <p>
+                    <code>* foo.Bar+.*(..)</code>
+                </p>
+                <p>
+                    picks out all method call join points where an instance of any subtype of
+                    Foo (including Foo itself) is constructed.
+                </p>
+            </subsection>
+
+            <subsection name="Array type patterns">
+                <p>
+                    A type name pattern or subtype pattern can be followed by one or more sets of
+                    square brackets to make array type patterns. So Object[] is an array type
+                    pattern, and so is foo.bar.*[][].
+                </p>
+            </subsection>
+
             <subsection name="Abbreviations">
                 <p>
                     When picking out the return and parameter types it is
@@ -1312,54 +1341,76 @@ String timeOut = getParameter("timeout");
                 You have two options depending on your needs and settings:
                 <ul>
                     <li>
-                        If you are using either <code>Introductions</code>
-                        or runtime attributes then you have to compile
-                        a weave model for your application.
-                        <p/>
-                        This weave model is then read in when the system starts up.
-                        You can compile the weave model with one of the meta-data
-                        compilers. (See the
-                        <a href="#Weave model compilation">Weave model compilation</a>
-                        section for a detailed description.)
-                        <p/>
-                        The compiler will produce a file with the weave model
-                        called <code>weaveModel.ser</code> and you have two
-                        options of feeding this file to the system:
-                        <ul>
-                            <li>
-                               Specify the path to the directory containing
-                               the weave model using the: <br/>
-                               <code>-Daspectwerkz.metadata.dir=&lt;path_to_meta_data_dir&gt;</code>
-                               command line option.
-                            </li><br/>
-                            <li>
-                                Put the path to the directory containing
-                                the weave model on the class path.
-                            </li><br/>
-                        </ul>
-                        (When you are using the weave model you don't have to
-                        care about the XML definition.)
+                        <p>
+                            If you are using either <code>Introductions</code>
+                            or runtime attributes then you have to compile
+                            a weave model for your application.
+                        </p>
+                        <p>
+                            This weave model is then read in when the system starts up.
+                            You can compile the weave model with one of the meta-data
+                            compilers. (See the
+                            <a href="#Weave model compilation">Weave model compilation</a>
+                            section for a detailed description.)
+                        </p>
+                        <p>
+                            The compiler will produce a file with the weave model
+                            called <code>weaveModel.ser</code> and you have two
+                            options of feeding this file to the system:
+                            <ul>
+                                <li>
+                                   Specify the path to the directory containing
+                                   the weave model using the: <br/>
+                                   <code>-Daspectwerkz.metadata.dir=&lt;path_to_meta_data_dir&gt;</code>
+                                   command line option.
+                                </li><br/>
+                                <li>
+                                    Put the path to the directory containing
+                                    the weave model on the class path.
+                                </li><br/>
+                            </ul>
+                            (When you are using the weave model you don't have to
+                            care about the XML definition.)
+                        </p>
                     </li><br/>
                     <li>
-                        If you are only using <code>Advices</code> (no
-                        <code>Introductions</code> and no runtime attributes)
-                        then you don't have to compile a weave model for your
-                        application.
-                        <p/>
-                        You can just feed the system with the XML definition
-                        using the:<br/>
-                        <code>-Daspectwerkz.definition.file=&lt;path_to_definition_file&gt;</code>
-                        command line option.
-                        <p/>
-                        If the this option is not specified then it the
-                        system will try to locate the definition as a resource
-                        called <code>aspectwerkz.xml</code> on the class path.
-                        <p/>
-                        You can of course compile the weave model anyway
-                        and feed it to the system as outlined above.
+                        <p>
+                            If you are only using <code>Advices</code> (no
+                            <code>Introductions</code> and no runtime attributes)
+                            then you don't have to compile a weave model for your
+                            application.
+                        </p>
+                        <p>
+                            You can just feed the system with the XML definition
+                            using the:<br/>
+                            <code>-Daspectwerkz.definition.file=&lt;path_to_definition_file&gt;</code>
+                            command line option.
+                        </p>
+                        <p>
+                            If the this option is not specified then it the
+                            system will try to locate the definition as a resource
+                            called <code>aspectwerkz.xml</code> on the class path.
+                        </p>
+                        <p>
+                            You can of course compile the weave model anyway
+                            and feed it to the system as outlined above.
+                        </p>
+                        <p>
+                            When you are using the XML definition you don't have to
+                            care about the weave model.
+                        </p>
+                        <p>
+                            You can still validate the definition by defining the:
+                            <br/>
+                            <code>-Daspectwerkz.definition.validate=true</code> option.
+                        </p>
+                        <p>
+                            See the section called <code>Validate the definition</code>
+                            in the <a href="#Weave model compilation">Weave model compilation</a>
+                            section for details.
+                        </p>
                     </li><br/>
-                    (When you are using the XML definition you don't have to
-                    care about the weave model.)
+
                 </ul>
             </p>
         </section>
@@ -1387,6 +1438,29 @@ String timeOut = getParameter("timeout");
                     </li><br/>
                 </ul>
             </p>
+            <subsection name="Validate the definition">
+                <p>
+                    <code>AspectWerkz</code> has a build in definition validator that can help you
+                    catch errors in the XML definition as well as in the attributes at compile time.
+                </p>
+                <p>
+                    This feature is turned off by default and you can switch it on by defining the:
+                    <br/>
+                    <code>-Daspectwerkz.definition.validate=true</code> option.
+                </p>
+                <p>
+                    To be able to validate when compiling with the <code>SourceFileMetaDataCompiler</code>
+                    or the <code>ClassFileMetaDataCompiler</code> you have to put all the advices
+                    and introductions on the classpath. This is needed since the definition validator
+                    checks if the classes defined actually exists.
+                </p>
+                <p>
+                    Even if you don't compile a weave model before starting up the system you can
+                    use the definition validator which will then validate the XML definition at
+                    runtime before proceeding (but it will not abort on errors).
+                </p>
+            </subsection>
+
             <subsection name="Compile from command line">
                 <p>
                     You can run both of these compilers from the command line.
@@ -1833,7 +1907,8 @@ public Object someMethod(..) {..}
                             <p>
                                 For replacing an <code>Introduction</code> implementation use:
 <source><![CDATA[
-AspectWerkz.getSystem(uuid).getIntroduction("mixins/Mixin").swapImplementation("mixins.NewMixinImpl");
+AspectWerkz.getSystem(uuid).getIntroduction("mixins/Mixin").
+        swapImplementation("mixins.NewMixinImpl");
 ]]></source>
                                 (the new implementation has to implement the same interface as
                                 the previous one)
@@ -2145,6 +2220,13 @@ String uuid = ((Identifiable)targetObject).___AW_getUuid();
                 and rules.
             </p>
 
+            <p>
+                A little example of how a <code>JoinPointController</code> can be used have been
+                added to the
+                <a href="/examples.html#Logging + runtime attributes + parameterized advices + join point controller">logging example</a>
+                in the examples section.
+            </p>
+
             <subsection name="Implementation">
                 <p>
                     To implement your own <code>JoinPointController</code> you have to implement the
@@ -2221,6 +2303,7 @@ public void someMethod() {
 </aspect>
 ]]></source>
                 </p>
+
             </subsection>
         </section>
     </body>
