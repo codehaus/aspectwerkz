@@ -75,6 +75,7 @@
             <advice-ref name="postAdvice7"/>
             <advice-ref name="postAdvice6"/>
         </advices-def>
+        <advice-def name="reflection_advice" class="reflection.ReverseAdvice"/>
     </package>
 
     <!-- ============================================= -->
@@ -454,6 +455,13 @@
         </bind-advice>
         <bind-advice pointcut="test2">
             <advice-ref name="methodAdvice2"/>
+        </bind-advice>
+    </aspect>
+
+    <aspect name="ReflectionTest">
+        <pointcut-def name="test1" type="method" pattern="* test.reflection.*.incr(..)"/>
+        <bind-advice pointcut="test1">
+            <advice-ref name="reflection_advice"/>
         </bind-advice>
     </aspect>
 
