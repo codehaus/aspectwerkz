@@ -107,23 +107,21 @@ public class ExpressionValidateVisitor implements ExpressionParserVisitor {
     public Object visit(ASTOr node, Object data) {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             List args = (List) node.jjtGetChild(i).jjtAccept(this, data);
-            ((List) data).addAll(args);
+            //((List) data).addAll(args);
         }
         return data;
     }
 
     public Object visit(ASTAnd node, Object data) {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            List args = (List) node.jjtGetChild(i).jjtAccept(this, data);
-            ((List) data).addAll(args);
+            node.jjtGetChild(i).jjtAccept(this, data);
         }
         return data;
     }
 
     public Object visit(ASTNot node, Object data) {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            List args = (List) node.jjtGetChild(i).jjtAccept(this, data);
-            ((List) data).addAll(args);
+            node.jjtGetChild(i).jjtAccept(this, data);
         }
         return data;
     }
@@ -132,8 +130,7 @@ public class ExpressionValidateVisitor implements ExpressionParserVisitor {
     public Object visit(ASTPointcutReference node, Object data) {
         // visit the args - if any
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            List args = (List) node.jjtGetChild(i).jjtAccept(this, data);
-            ((List) data).addAll(args);
+            node.jjtGetChild(i).jjtAccept(this, data);
         }
         return data;
     }

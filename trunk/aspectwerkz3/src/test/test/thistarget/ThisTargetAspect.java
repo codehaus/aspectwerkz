@@ -310,6 +310,94 @@ public class ThisTargetAspect {
 
 
 
+    //------------------------- Ctor exe
+
+    /** @Expression this(self) && execution(test.thistarget.*.new()) */
+    Pointcut ector_this(Object self) {return null;}
+
+
+    // interface
+
+    /** @Before ector_this(caller) && target(t) */
+    public void ector_beforeITarget(ITarget t, Object caller) {
+        validate(t, ITarget.class);
+        validate(caller, ITarget.class);
+        TargetTest.logCtorExe("before_ITarget");
+    }
+    /** @Around ector_this(caller) && target(t) */
+    public Object ector_aroundITarget(JoinPoint jp, ITarget t, Object caller) throws Throwable {
+        validate(t, ITarget.class);
+        validate(caller, ITarget.class);
+        TargetTest.logCtorExe("pre_ITarget");
+        Object o = jp.proceed();
+        //validate(o, ITarget.class);
+        validate(t, ITarget.class);
+        // instance is not.
+        TargetTest.logCtorExe("post_ITarget");
+        return o;
+    }
+    /** @After ector_this(caller) && target(t) */
+    public void ector_afterITarget(ITarget t, Object caller) {
+        validate(t, ITarget.class);
+        validate(caller, ITarget.class);
+        TargetTest.logCtorExe("after_ITarget");
+    }
+
+    // interface implementation
+
+    /** @Before ector_this(caller) && target(t) */
+    public void ector_beforeTargetI(TargetI t, Object caller) {
+        validate(t, TargetI.class);
+        validate(caller, TargetI.class);
+        TargetTest.logCtorExe("before_TargetI");
+    }
+    /** @Around ector_this(caller) && target(t) */
+    public Object ector_aroundTargetI(JoinPoint jp, TargetI t, Object caller) throws Throwable {
+        validate(t, TargetI.class);
+        validate(caller, TargetI.class);
+        TargetTest.logCtorExe("pre_TargetI");
+        Object o = jp.proceed();
+        //validate(o, TargetI.class);
+        validate(t, TargetI.class);
+        TargetTest.logCtorExe("post_TargetI");
+        return o;
+    }
+    /** @After ector_this(caller) && target(t) */
+    public void ector_afterTargetI(TargetI t, Object caller) {
+        validate(t, TargetI.class);
+        validate(caller, TargetI.class);
+        TargetTest.logCtorExe("after_TargetI");
+    }
+
+    // super class
+
+    /** @Before ector_this(caller) && target(t) */
+    public void ector_beforeSuperTarget(SuperTarget t, Object caller) {
+        validate(t, SuperTarget.class);
+        validate(caller, SuperTarget.class);
+        TargetTest.logCtorExe("before_SuperTarget");
+    }
+    /** @Around ector_this(caller) && target(t) */
+    public Object ector_aroundSuperTarget(JoinPoint jp, SuperTarget t, Object caller) throws Throwable {
+        validate(t, SuperTarget.class);
+        validate(caller, SuperTarget.class);
+        TargetTest.logCtorExe("pre_SuperTarget");
+        Object o = jp.proceed();
+        //validate(o, SuperTarget.class);
+        validate(t, SuperTarget.class);
+        TargetTest.logCtorExe("post_SuperTarget");
+        return o;
+    }
+    /** @After ector_this(caller) && target(t) */
+    public void ector_afterSuperTarget(SuperTarget t, Object caller) {
+        validate(t, SuperTarget.class);
+        validate(caller, SuperTarget.class);
+        TargetTest.logCtorExe("after_SuperTarget");
+    }
+
+
+
+
 
 
     /**
@@ -328,4 +416,5 @@ public class ThisTargetAspect {
             }
         }
     }
+
 }

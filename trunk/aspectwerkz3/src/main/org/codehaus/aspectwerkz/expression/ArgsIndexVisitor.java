@@ -15,6 +15,10 @@ import org.codehaus.aspectwerkz.expression.ast.ASTThis;
 import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
+import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 
 import java.util.Iterator;
 
@@ -43,13 +47,25 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         // do the sub expression visit
         ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
-        ArgsIndexVisitor expression = namespace.getExpressionInfo(node.getName()).getArgsIndexMapper();
-        Boolean match = expression.matchUndeterministic(context);
+        ExpressionInfo expressionInfo = namespace.getExpressionInfo(node.getName());
+
+        // do the visit of the referenced expression
+        Boolean match = expressionInfo.getArgsIndexMapper().matchUndeterministic(context);
 
         // update the this and target bounded name from this last visit
-        //FIXME
-        //namespace.getExpressionInfo(node.getName())//=> context (need to save it before may be)
-        //m_expressionInfo.getArgumentNames()
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            String referenceCallArg = ((ASTArgParameter) node.jjtGetChild(i)).getTypePattern().getPattern();
+            String referentArg = expressionInfo.getArgumentNameAtIndex(i);
+            if (referentArg.equals(context.m_targetBoundedName)) {
+                context.m_targetBoundedName = referenceCallArg;
+                assertIsInstanceOf(expressionInfo.getArgumentType(referentArg),
+                                   m_expressionInfo.getArgumentType(referenceCallArg));
+            } else if (referentArg.equals(context.m_thisBoundedName)) {
+                context.m_thisBoundedName = referenceCallArg;
+                assertIsInstanceOf(expressionInfo.getArgumentType(referentArg),
+                                   m_expressionInfo.getArgumentType(referenceCallArg));
+            }
+        }
 
         // update the context mapping from this last visit
         // did we visit some args(<name>) nodes ?
@@ -163,5 +179,24 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
             }
         }
         return -1;
+    }
+
+    private void assertIsInstanceOf(String className, String superClassName) {
+        if (className.equals(superClassName)) {
+            ;//fine
+        } else {
+            // advice(Foo f) for pc(f) with pc(Object o) for example
+            // we need to ensure that Foo is an instance of Object
+
+            //FIXME
+            // we are using the ThreadCL - we should use good CL, needs to unplug ArgIndexVisitor from def model
+            ClassInfo classInfo = AsmClassInfo.getClassInfo(className, ContextClassLoader.getLoader());
+            boolean instanceOf = ClassInfoHelper.instanceOf(classInfo, superClassName);
+            if ( ! instanceOf ) {
+                throw new DefinitionException("Attempt to reference a pointcut with incompatible object type: for \""
+                    + m_expression + "\" , " + className + " is not an instance of " + superClassName + "."
+                    + " Error occured in " + m_namespace);
+            }
+        }
     }
 }

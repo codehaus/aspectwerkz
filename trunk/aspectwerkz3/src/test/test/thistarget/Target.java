@@ -14,6 +14,7 @@ public class Target {
 
     public Target() {
         TargetTest.log("Target");
+        TargetTest.logCtorExe("Target");
     }
 
     public void target() {

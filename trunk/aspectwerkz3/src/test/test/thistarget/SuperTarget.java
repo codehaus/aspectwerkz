@@ -14,6 +14,7 @@ public abstract class SuperTarget {
 
     public SuperTarget() {
         TargetTest.log("SuperTarget");
+        TargetTest.logCtorExe("SuperTarget");
     }
 
     public void target() {
