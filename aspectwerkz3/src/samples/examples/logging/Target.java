@@ -7,13 +7,8 @@
  **************************************************************************************/
 package examples.logging;
 
-import java.net.URLClassLoader;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.io.File;
-
-import org.codehaus.aspectwerkz.transform.inlining.Deployer;
-import org.codehaus.aspectwerkz.transform.inlining.DeploymentHandle;
+import org.codehaus.aspectwerkz.transform.inlining.deployer.Deployer;
+import org.codehaus.aspectwerkz.transform.inlining.deployer.DeploymentHandle;
 import org.codehaus.aspectwerkz.definition.PreparedPointcut;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;

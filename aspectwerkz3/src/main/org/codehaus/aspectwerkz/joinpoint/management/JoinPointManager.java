@@ -8,9 +8,9 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
-import org.codehaus.aspectwerkz.transform.inlining.JoinPointFactory;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.JoinPointFactory;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
-import org.codehaus.aspectwerkz.transform.inlining.CompilationInfo;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;

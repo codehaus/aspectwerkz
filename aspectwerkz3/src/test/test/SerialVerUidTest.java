@@ -11,7 +11,8 @@ import junit.framework.TestCase;
 
 import java.io.Serializable;
 
-import org.codehaus.aspectwerkz.transform.inlining.FinalizingVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.FinalizingVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.FinalizingVisitor;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.ContextClassLoader;
