@@ -538,58 +538,40 @@ public class DocumentParser {
                 );
                 aspectDef.addBeforeAdvice(adviceDef);
 
-            } else if (type.equalsIgnoreCase("after")) {
-//                String specialArgumentType = null;
-//                AdviceType adviceType = AdviceType.AFTER;
-//                String pointcut;
-//                if (bindTo.startsWith(AfterAnnotationProxy.RETURNING_PREFIX)) {
-//                    adviceType = AdviceType.AFTER_RETURNING;
-//                    int start = bindTo.indexOf('(');
-//                    int end = bindTo.indexOf(')');
-//                    specialArgumentType = bindTo.substring(start + 1, end).trim();
-//                    pointcut = bindTo.substring(end + 1, bindTo.length()).trim();
-//                } else if (bindTo.startsWith(AfterAnnotationProxy.THROWING_PREFIX)) {
-//                    adviceType = AdviceType.AFTER_THROWING;
-//                    int start = bindTo.indexOf('(');
-//                    int end = bindTo.indexOf(')');
-//                    specialArgumentType = bindTo.substring(start + 1, end).trim();
-//                    pointcut = bindTo.substring(end + 1, bindTo.length()).trim();
-//                } else if (bindTo.startsWith(AfterAnnotationProxy.FINALLY_PREFIX)) {
-//                    adviceType = AdviceType.AFTER_FINALLY;
-//                    pointcut = bindTo.substring(bindTo.indexOf(' ') + 1, bindTo.length()).trim();
-//                } else {
-//                    pointcut = bindTo;
-//                }
-//                if (specialArgumentType != null && specialArgumentType.indexOf(' ') > 0) {
-//                    throw new DefinitionException(
-//                            "argument to after (returning/throwing) can only be a type (parameter name binding should be done using args(..))"
-//                    );
-//                }
-//                final String aspectName = aspectDef.getName();
-//                AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
-//                        name,
-//                        adviceType,
-//                        pointcut,
-//                        specialArgumentType,
-//                        aspectName,
-//                        aspectDef.getClassName(),
-//                        method,
-//                        methodIndex,
-//                        aspectDef
-//                );
-
+            } else if (type.startsWith("after")) {
+                String specialArgumentType = null;
+                AdviceType adviceType = AdviceType.AFTER;
+                if (type.startsWith("after returning(")) {
+                    adviceType = AdviceType.AFTER_RETURNING;
+                    int start = type.indexOf('(');
+                    int end = type.indexOf(')');
+                    specialArgumentType = type.substring(start + 1, end).trim();
+                } else if (type.startsWith("after throwing(")) {
+                    adviceType = AdviceType.AFTER_THROWING;
+                    int start = type.indexOf('(');
+                    int end = type.indexOf(')');
+                    specialArgumentType = type.substring(start + 1, end).trim();
+                } else if (type.startsWith("after finally")) {
+                    adviceType = AdviceType.AFTER_FINALLY;
+                }
+                if (specialArgumentType != null && specialArgumentType.indexOf(' ') > 0) {
+                    throw new DefinitionException(
+                            "argument to after (returning/throwing) can only be a type (parameter name binding should be done using args(..))"
+                    );
+                }
                 final String aspectName = aspectDef.getName();
                 AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
                         name,
-                        AdviceType.AFTER,
+                        adviceType,
                         bindTo,
-                        null,
+                        specialArgumentType,
                         aspectName,
                         aspectDef.getClassName(),
                         method,
                         methodIndex,
                         aspectDef
                 );
+
                 aspectDef.addAfterAdvice(adviceDef);
             }
         } catch (DefinitionException e) {
