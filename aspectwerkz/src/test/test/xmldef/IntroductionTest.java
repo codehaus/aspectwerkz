@@ -22,7 +22,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
     public void testInterfaceIntroduction() {
         assertTrue(m_toBeIntroduced instanceof java.io.Serializable);
-        assertTrue(m_toBeIntroduced instanceof test.Introductions);
+        assertTrue(m_toBeIntroduced instanceof test.xmldef.Introductions);
     }
 
     public void testReturnVoid() {

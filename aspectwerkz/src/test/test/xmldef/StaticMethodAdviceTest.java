@@ -77,7 +77,7 @@ public class StaticMethodAdviceTest extends TestCase {
             exceptionThrower();
         }
         catch (Throwable e) {
-            assertTrue(e instanceof test.TestException);
+            assertTrue(e instanceof test.xmldef.TestException);
             return;
         }
         fail("this point should never be reached");
