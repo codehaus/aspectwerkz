@@ -24,7 +24,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class DefaultAspectContainerStrategy implements AspectContainer {
+public class DefaultAspectContainerStrategy extends AspectContainer {
 
     /**
      * Introduction container containing introduction declared by this aspect, keys by introduction names

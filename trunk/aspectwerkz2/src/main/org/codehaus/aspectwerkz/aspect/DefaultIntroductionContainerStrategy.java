@@ -26,7 +26,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class DefaultIntroductionContainerStrategy implements IntroductionContainer {
+public class DefaultIntroductionContainerStrategy extends IntroductionContainer {
 
     /**
      * Holds a reference to the sole per JVM introduction.
