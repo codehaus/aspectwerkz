@@ -215,7 +215,8 @@ public class RemoteProxyServer implements Runnable {
         try {
             properties.load(new FileInputStream(System.getProperty("aspectwerkz.resource.bundle")));
         }
-        catch (IOException e) {
+        catch (Exception e) {
+            System.out.println("no aspectwerkz resource bundle found on classpath, using defaults");
             // ignore, use defaults
         }
         String property = properties.getProperty("remote.server.hostname");

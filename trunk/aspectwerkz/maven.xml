@@ -302,9 +302,8 @@
     <goal name="aspectwerkz:samples:remote:client">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:attributes:samples"/>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Client"/>
+        <exec executable="java">
+            <arg line="-cp ${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${dist.dir}/samples.jar examples.connectivity.Client"/>
         </exec>
     </goal>
 
@@ -316,7 +315,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Server"/>
+            <arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.remote.server.run=true -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Server"/>
         </exec>
     </goal>
 

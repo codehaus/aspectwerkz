@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.exception;
 
 /**
- * Thrown when no aspectwerkz definition file or class could be found.
+ * Thrown when error in definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

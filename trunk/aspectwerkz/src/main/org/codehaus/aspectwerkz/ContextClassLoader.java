@@ -78,4 +78,13 @@ public class ContextClassLoader {
         }
         return stream;
     }
+
+    /**
+     * Returns the context class loader.
+     *
+     * @return the context class loader
+     */
+    public static ClassLoader getLoader() {
+        return Thread.currentThread().getContextClassLoader();
+    }
 }
