@@ -96,7 +96,6 @@ public class ClassCreator {
     }
 
     public static void main(String[] a) throws Throwable {
-        System.out.println("ClassCreator.main");
         ClassLoader myCL = new URLClassLoader(new URL[] { getPathFor(Callable.class.getResource("META-INF/aop.xml")) },
                                               ClassLoader.getSystemClassLoader());
         ClassLoader mySubCLA = new URLClassLoader(new URL[] { getPathFor(Callable.class.getResource("a/META-INF/aop.xml")) },
