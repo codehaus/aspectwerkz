@@ -379,7 +379,7 @@ public class AnnotationC {
                 if (((Mixin)introduceAnnotation).deploymentModel() != null) {
                     deploymentModel = ((Mixin)introduceAnnotation).deploymentModel();
                 }
-                String expression = ((Mixin)introduceAnnotation).expression();
+                String expression = ((Mixin)introduceAnnotation).pointcut();
                 if (expression == null) {
                     expression = ((Mixin)introduceAnnotation).value();
                 }
@@ -483,7 +483,7 @@ public class AnnotationC {
                 logInfo(
                         "    after returning advice [" + AnnotationC.getShortCallSignature(method) + " :: "
                         + AspectAnnotationParser.getExpressionElseValue(((AfterReturning) afterAnnotation).value(),
-                                                                      ((AfterReturning) afterAnnotation).expression())
+                                                                      ((AfterReturning) afterAnnotation).pointcut())
                         + " :: " + ((AfterReturning) afterAnnotation).type()+ ']'
                 );
             }
@@ -496,7 +496,7 @@ public class AnnotationC {
                 logInfo(
                         "    after throwing advice [" + AnnotationC.getShortCallSignature(method) + " :: "
                         + AspectAnnotationParser.getExpressionElseValue(((AfterThrowing) afterAnnotation).value(),
-                                                                      ((AfterThrowing) afterAnnotation).expression())
+                                                                      ((AfterThrowing) afterAnnotation).pointcut())
                         + " :: " + ((AfterThrowing) afterAnnotation).type()+ ']'
                 );
             }

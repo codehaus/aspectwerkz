@@ -21,7 +21,7 @@ public interface AfterThrowing {
     /**
      * The pointcut expression to bind, when a type is specified for the throwned value
      */
-    String expression();
+    String pointcut();
 
     /**
      * The type pattern for the returned value

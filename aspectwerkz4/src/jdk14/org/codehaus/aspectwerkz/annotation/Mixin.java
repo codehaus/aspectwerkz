@@ -24,7 +24,7 @@ public interface Mixin {
      * Pointcut the mixin applies to (within / hasMethod / hasField)
      * Used when deploymentModel / isTransient is specified
      */
-    public String expression();
+    public String pointcut();
 
     /**
      * Mixin deployment model.
