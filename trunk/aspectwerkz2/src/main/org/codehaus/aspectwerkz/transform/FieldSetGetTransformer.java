@@ -92,7 +92,7 @@ public class FieldSetGetTransformer implements Transformer {
 
                                 // get field accessed information
                                 final String fieldName = fieldAccess.getFieldName();
-                                final String fieldSignature = fieldAccess.getField().getType().getName() + ' ' +
+                                final String fieldSignature = fieldAccess.getField().getType().getName().replace('/', '.') + ' ' +
                                                               fieldName;
                                 FieldMetaData fieldMetaData = JavassistMetaDataMaker.createFieldMetaData(
                                         fieldAccess.getField()
@@ -105,7 +105,7 @@ public class FieldSetGetTransformer implements Transformer {
                                     // if that is the case then we have have class loaded and set in the ___AW_clazz already
                                     String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
                                     CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
-                                    if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
+                                    if (!declaringClass.getName().replace('/', '.').equals(where.getDeclaringClass().getName().replace('/', '.'))) {
                                         declaringClassFieldName =
                                         addFieldAccessDeclaringClassField(declaringClass, fieldAccess.getField());
                                     }
@@ -164,7 +164,7 @@ public class FieldSetGetTransformer implements Transformer {
                                     // if that is the case then we have have class loaded and set in the ___AW_clazz already
                                     String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
                                     CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
-                                    if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
+                                    if (!declaringClass.getName().replace('/', '.').equals(where.getDeclaringClass().getName().replace('/', '.'))) {
                                         declaringClassFieldName =
                                         addFieldAccessDeclaringClassField(declaringClass, fieldAccess.getField());
                                     }
@@ -238,7 +238,7 @@ public class FieldSetGetTransformer implements Transformer {
                     ctClass
             );
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
-            ctClass.addField(field, "java.lang.Class.forName(\"" + ctField.getDeclaringClass().getName() + "\")");
+            ctClass.addField(field, "java.lang.Class.forName(\"" + ctField.getDeclaringClass().getName().replace('/', '.') + "\")");
         }
         return fieldName;
     }
@@ -256,10 +256,10 @@ public class FieldSetGetTransformer implements Transformer {
             final ClassMetaData classMetaData,
             final CtClass ctClass) {
         if (ctClass.isInterface() ||
-            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
             return true;
         }
-        String className = ctClass.getName();
+        String className = ctClass.getName().replace('/', '.');
         if (definition.inExcludePackage(className)) {
             return true;
         }

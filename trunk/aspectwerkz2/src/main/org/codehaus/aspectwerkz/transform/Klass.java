@@ -52,7 +52,7 @@ public class Klass {
      * @param bytecode the byte code
      */
     public Klass(final String name, final byte[] bytecode, final ClassLoader loader) {
-        m_name = name;
+        m_name = name.replace('/', '.');
         m_ctClass = fromByte(name, bytecode, loader);
         m_initialBytecode = bytecode;
     }

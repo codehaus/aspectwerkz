@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.transform;
 
 import java.util.Iterator;
+import java.util.List;
 
 import javassist.CannotCompileException;
 import javassist.CtClass;
@@ -31,6 +32,18 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  */
 public class AddImplementationTransformer implements Transformer {
 
+      /**
+     * List with the definitions.
+     */
+    private List m_definitions;
+
+    /**
+     *
+     */
+    public AddImplementationTransformer() {
+        m_definitions = DefinitionLoader.getDefinitions();
+    }
+
     /**
      * Adds introductions to a class.
      *
@@ -40,7 +53,7 @@ public class AddImplementationTransformer implements Transformer {
     public void transform(final Context context, final Klass klass) throws NotFoundException {
 
         // loop over all the definitions
-        for (Iterator it = DefinitionLoader.getDefinitions().iterator(); it.hasNext();) {
+        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
@@ -202,10 +215,10 @@ public class AddImplementationTransformer implements Transformer {
             final ClassMetaData classMetaData,
             final SystemDefinition definition) {
         if (cg.isInterface() ||
-            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
             return true;
         }
-        String className = cg.getName();
+        String className = cg.getName().replace('/', '.');
         if (definition.inExcludePackage(className)) {
             return true;
         }

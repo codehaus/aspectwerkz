@@ -83,4 +83,14 @@ public class ContextClassLoader {
     public static ClassLoader getLoader() {
         return Thread.currentThread().getContextClassLoader();
     }
+
+    /**
+     * Returns a resource (if found)
+     *
+     * @param name the name of the resource
+     * @return the resource of null if not found
+     */
+    public static URL getResource(String name) {
+        return Thread.currentThread().getContextClassLoader().getResource(name);
+    }
 }

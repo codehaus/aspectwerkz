@@ -118,7 +118,7 @@ public class IntroductionTransformer {
         try {
             CtClass[] interfaces = ctClass.getInterfaces();
             for (int i = 0; i < interfaces.length; i++) {
-                if (interfaces[i].getName().equals(interfaceName)) {
+                if (interfaces[i].getName().replace('/', '.').equals(interfaceName)) {
                     return true;
                 }
             }

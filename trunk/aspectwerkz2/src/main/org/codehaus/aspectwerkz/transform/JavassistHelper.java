@@ -244,7 +244,7 @@ public class JavassistHelper {
             throws NotFoundException, CannotCompileException {
 
         String wrapperMethodName = TransformationUtil.getPrefixedMethodName(
-                originalMethod.getName(), methodSequence, ctClass.getName()
+                originalMethod.getName(), methodSequence, ctClass.getName().replace('/', '.')
         );
 
         // determine the method access flags (should always be set to protected)

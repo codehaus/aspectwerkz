@@ -37,7 +37,7 @@ public class HandlerTransformer implements Transformer {
      */
     private List m_definitions;
 
-     /**
+    /**
      * The join point index.
      */
     private int m_joinPointIndex;
@@ -122,7 +122,7 @@ public class HandlerTransformer implements Transformer {
                                 }
 
                                 // TODO: use a better signature (or remove)
-                                body.append(exceptionClass.getName());
+                                body.append(exceptionClass.getName().replace('/', '.'));
                                 body.append("\");");
 
                                 handlerExpr.insertBefore(body.toString());
@@ -153,10 +153,10 @@ public class HandlerTransformer implements Transformer {
             final ClassMetaData classMetaData,
             final CtClass cg) {
         if (cg.isInterface() ||
-            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
             return true;
         }
-        String className = cg.getName();
+        String className = cg.getName().replace('/', '.');
         if (definition.inExcludePackage(className)) {
             return true;
         }

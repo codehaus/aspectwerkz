@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
+import java.lang.*;
 
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
@@ -242,6 +243,14 @@ public class CrossCuttingInfo implements Serializable {
      * @return the cross-cuttable class' constructor
      */
     public Constructor getAspectConstructor() {
+//        if (m_aspectConstructor == null) {
+//            try {
+//                m_aspectConstructor = m_aspectClass.getConstructor(new Class[]{CrossCuttingInfo.class});
+//            }
+//            catch (NoSuchMethodException e) {
+//                throw new WrappedRuntimeException(e);
+//            }
+//        }
         return m_aspectConstructor;
     }
 
@@ -261,13 +270,13 @@ public class CrossCuttingInfo implements Serializable {
      */
     public void setAspectClass(final Class klass) {
         m_aspectClass = klass;
-        try {
-            m_aspectConstructor = m_aspectClass.getConstructor(new Class[]{CrossCuttingInfo.class});
-        }
-        catch (NoSuchMethodException e) {
-            throw new WrappedRuntimeException(e);
-        }
-    }
+              try {
+                m_aspectConstructor = m_aspectClass.getConstructor(new Class[]{CrossCuttingInfo.class});
+            }
+            catch (NoSuchMethodException e) {
+                throw new WrappedRuntimeException(e);
+            }
+                    }
 
     /**
      * Sets the container.

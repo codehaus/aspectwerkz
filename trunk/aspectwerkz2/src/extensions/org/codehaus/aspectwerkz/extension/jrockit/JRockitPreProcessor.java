@@ -9,10 +9,16 @@ package org.codehaus.aspectwerkz.extension.jrockit;
 
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.compiler.VerifierClassLoader;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+
 import com.bea.jvm.JVMFactory;
+import com.jrockit.management.rmp.RmpSocketListener;
 
 import java.net.URL;
 import java.io.File;
+import java.util.Iterator;
 
 /**
  * JRockit (tested with 7SP4 and 8.1) preprocessor Adapter based on JMAPI
@@ -30,25 +36,30 @@ import java.io.File;
  * NoClassDefFoundError due to classpath limitation - as described in http://edocs.bea.com/wls/docs81/adminguide/winservice.html
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
 
     /**
-     * Concrete preprocessor
+     * Concrete preprocessor.
      */
-    private static ClassPreProcessor preProcessor;
+    private static ClassPreProcessor s_preProcessor;
+
+    private static String START_RMP_SERVER = null;
 
     static {
         String clpp = System.getProperty(
                 "aspectwerkz.classloader.preprocessor", "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor"
         );
+        START_RMP_SERVER = System.getProperty("aspectwerkz.jrockit.rmpserver.start", "false");
+
         try {
             // note: CLPP loaded by current thread classloader which is bootstrap classloader
             // caution: forcing loading thru Thread.setContextClassLoader() or ClassLoader.getSystemClassLoader()
             // does not work. We then do a filtering on the caller classloader - see preProcess(..)
             //preProcessor = (ClassPreProcessor) Class.forName(clpp).newInstance();
-            preProcessor = (ClassPreProcessor)ClassLoader.getSystemClassLoader().loadClass(clpp).newInstance();
-            preProcessor.initialize(null);
+            s_preProcessor = (ClassPreProcessor)ClassLoader.getSystemClassLoader().loadClass(clpp).newInstance();
+            s_preProcessor.initialize(null);
         }
         catch (Exception e) {
             throw new ExceptionInInitializerError(e);
@@ -59,9 +70,17 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
      * The JMAPI ClassPreProcessor must be self registrating
      */
     public JRockitPreProcessor() {
-        // TODO add a better option to start it up or not
-//        com.jrockit.management.rmp.RmpSocketListener management = new com.jrockit.management.rmp.RmpSocketListener();
-//        management.run();
+        if (START_RMP_SERVER.equalsIgnoreCase("true") || START_RMP_SERVER.equalsIgnoreCase("yes")) {
+            Thread rmpThread = new Thread(
+                    new Runnable() {
+                        public void run() {
+                            RmpSocketListener management = new RmpSocketListener();
+                            management.run();
+                        }
+                    }
+            );
+            rmpThread.start();
+        }
 
         JVMFactory.getJVM().getClassLibrary().setClassPreProcessor(this);
     }
@@ -75,12 +94,12 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
      * @return bytecode weaved
      */
     public byte[] preProcess(ClassLoader caller, String name, byte[] bytecode) {
-        //System.out.println(name + " [" + caller + "]");
+//        System.out.println(name + " [" + caller + "]");
         if (caller == null || caller.getParent() == null) {
             return bytecode;
         }
         else {
-            return preProcessor.preProcess(name, bytecode, caller);
+            return s_preProcessor.preProcess(name, bytecode, caller);
         }
     }
 

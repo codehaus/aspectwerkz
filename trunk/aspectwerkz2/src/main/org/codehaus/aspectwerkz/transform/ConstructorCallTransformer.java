@@ -122,7 +122,7 @@ public class ConstructorCallTransformer implements Transformer {
                                     String declaringClassMethodName = TransformationUtil.STATIC_CLASS_FIELD;
 
                                     CtClass declaringClass = ctConstructor.getDeclaringClass();
-                                    if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
+                                    if (!declaringClass.getName().replace('/', '.').equals(where.getDeclaringClass().getName().replace('/', '.'))) {
                                         declaringClassMethodName =
                                         addCalleeMethodDeclaringClassField(ctClass, ctConstructor);
                                     }
@@ -212,7 +212,7 @@ public class ConstructorCallTransformer implements Transformer {
             );
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(
-                    field, "java.lang.Class.forName(\"" + ctConstructor.getDeclaringClass().getName() + "\")"
+                    field, "java.lang.Class.forName(\"" + ctConstructor.getDeclaringClass().getName().replace('/', '.') + "\")"
             );
         }
         return fieldName;
@@ -231,10 +231,10 @@ public class ConstructorCallTransformer implements Transformer {
             final ClassMetaData classMetaData,
             final CtClass cg) {
         if (cg.isInterface() ||
-            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
             return true;
         }
-        String className = cg.getName();
+        String className = cg.getName().replace('/', '.');
         if (definition.inExcludePackage(className)) {
             return true;
         }

@@ -122,7 +122,7 @@ public class MethodExecutionTransformer implements Transformer {
 
                 // there was no empty method already
                 final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
-                        method.getName(), methodSequence, ctClass.getName()
+                        method.getName(), methodSequence, ctClass.getName().replace('/', '.')
                 );
                 if (JavassistHelper.hasMethod(ctClass, prefixedMethodName)) {
                     CtMethod wrapperMethod = ctClass.getDeclaredMethod(prefixedMethodName);
@@ -169,7 +169,7 @@ public class MethodExecutionTransformer implements Transformer {
                 CtMethod method = tuple.getMethod();
                 //System.out.println("FOUND NO PC = " + method.getName());
                 final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
-                        method.getName(), tuple.getSequence(), ctClass.getName()
+                        method.getName(), tuple.getSequence(), ctClass.getName().replace('/', '.')
                 );
                 // do we have a wrapper method, which is NOT marked empty
                 if (JavassistHelper.hasMethod(ctClass, prefixedMethodName)) {
@@ -320,10 +320,10 @@ public class MethodExecutionTransformer implements Transformer {
             final CtClass cg,
             final boolean isActivatePhase) {
         if (cg.isInterface() ||
-            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.extendsSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
-        String className = cg.getName();
+        String className = cg.getName().replace('/', '.');
         if (definition.inExcludePackage(className)) {
             return true;
         }

@@ -31,11 +31,16 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class PrepareTransformer /*extends MethodExecutionTransformer*/ implements Transformer {
+    /**
+     * List with the definitions.
+     */
+    private List m_definitions;
 
     /**
      * Creates a new instance of the transformer.
      */
     public PrepareTransformer() {
+        m_definitions = DefinitionLoader.getDefinitions();
     }
 
     /**
@@ -47,7 +52,7 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
 
         // loop over all the definitions
-        for (Iterator it = DefinitionLoader.getDefinitions().iterator(); it.hasNext();) {
+        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
@@ -123,7 +128,7 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
             throws NotFoundException, CannotCompileException {
 
         String wrapperMethodName = TransformationUtil.getPrefixedMethodName(
-                originalMethod.getName(), methodSequence, ctClass.getName()
+                originalMethod.getName(), methodSequence, ctClass.getName().replace('/', '.')
         );
 
         // check if methods does not already exists
@@ -203,10 +208,10 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
             final ClassMetaData classMetaData,
             final CtClass cg) throws NotFoundException {
         if (cg.isInterface() ||
-            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.extendsSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
-        String className = cg.getName();
+        String className = cg.getName().replace('/', '.');
         if (definition.inExcludePackage(className)) {
             return true;
         }

@@ -151,7 +151,7 @@ public class MethodCallUnTransformer implements Transformer {
 //                                    String declaringClassMethodName = TransformationUtil.STATIC_CLASS_FIELD;
 //                                    CtMethod method = methodCall.getMethod();
 //                                    CtClass declaringClass = method.getDeclaringClass();
-//                                    if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
+//                                    if (!declaringClass.getName().replace('/', '.').equals(where.getDeclaringClass().getName().replace('/', '.'))) {
 //                                        declaringClassMethodName = addCalleeMethodDeclaringClassField(ctClass, method);
 //                                    }
 //
@@ -254,7 +254,7 @@ public class MethodCallUnTransformer implements Transformer {
                     ctClass
             );
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
-            ctClass.addField(field, "java.lang.Class.forName(\"" + ctMethod.getDeclaringClass().getName() + "\")");
+            ctClass.addField(field, "java.lang.Class.forName(\"" + ctMethod.getDeclaringClass().getName().replace('/', '.') + "\")");
         }
         return fieldName;
     }
@@ -272,10 +272,10 @@ public class MethodCallUnTransformer implements Transformer {
             final ClassMetaData classMetaData,
             final CtClass cg) {
         if (cg.isInterface() ||
-            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.extendsSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
-        String className = cg.getName();
+        String className = cg.getName().replace('/', '.');
         if (definition.inExcludePackage(className)) {
             return true;
         }

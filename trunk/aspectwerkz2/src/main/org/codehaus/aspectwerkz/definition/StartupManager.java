@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.lang.reflect.Field;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.SystemLoader;
@@ -173,8 +174,8 @@ public class StartupManager {
 
             CrossCuttingInfo crossCuttingInfo = new CrossCuttingInfo();
             crossCuttingInfo.setUuid(uuid);
-            crossCuttingInfo.setName(aspectDef.getName());
             crossCuttingInfo.setAspectClass(aspectClass);
+            crossCuttingInfo.setName(aspectDef.getName());
             crossCuttingInfo.setDeploymentModel(deploymentModel);
             crossCuttingInfo.setAspectDef(aspectDef);
             crossCuttingInfo.setContainer(new AspectContainer(crossCuttingInfo));
@@ -187,6 +188,13 @@ public class StartupManager {
             try {
                 Constructor constructor = aspectClass.getConstructor(new Class[]{CrossCuttingInfo.class});
                 aspect = (CrossCutting)constructor.newInstance(new Object[]{crossCuttingInfo});
+            }
+            catch (InvocationTargetException e) {
+                throw new RuntimeException(
+                        "could not create a new instance of aspect [" + aspectClassName + "]: " +
+                        e.getTargetException().toString()
+                );
+
             }
             catch (Exception e) {
                 throw new RuntimeException(
