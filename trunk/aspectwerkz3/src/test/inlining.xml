@@ -1,0 +1,13 @@
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+<aspectwerkz>
+    <system id="inlining">
+        <package name="test.inlining">
+            <aspect class="proxymethod.Aspect">
+                <pointcut expression="execution(* test.inlining.proxymethod.ProxyMethodAdapterTest$Test.toString())" name="toString"/>
+                <advice name="advice" bind-to="toString" type="around"/>
+            </aspect>
+        </package>
+    </system>
+</aspectwerkz>
