@@ -10,9 +10,7 @@ package org.codehaus.aspectwerkz;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 
-import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 
 /**
  * Contains advice info, like indexes describing the aspect and a method (advice or introduced),
@@ -26,10 +24,19 @@ public class AdviceInfo implements Serializable {
     public final static AdviceInfo[] ADVICE_INFO_ARRAY = new AdviceInfo[0];
 
     /**
-     * The advice method.
-     * FIXME REMOVE
+     * The method name.
      */
-    private Method m_method;
+    private String m_methodName;
+
+    /**
+     * The method sig.
+     */
+    private String m_methodSignature;
+
+    /**
+     * The method's parameter types.
+     */
+    private String[] m_methodParameterTypes;
 
     /**
      * The advice name
@@ -73,25 +80,58 @@ public class AdviceInfo implements Serializable {
      * @param aspectQualifiedName
      * @param aspectClassName
      * @param aspectDeploymentModel
-     * @param method         the advice method
-     * @param type                the advice type
-     * @param specialArgumentType the special arg type
-     * @param adviceName full qualified advice method name (aspectFQN/advice(call sig))
+     * @param methodName
+     * @param methodSignature
+     * @param methodParameterTypes
+     * @param type                  the advice type
+     * @param specialArgumentType   the special arg type
+     * @param adviceName            full qualified advice method name (aspectFQN/advice(call sig))
      */
     public AdviceInfo(final String aspectQualifiedName,
                       final String aspectClassName,
                       final int aspectDeploymentModel,
-                      final Method method,
+                      final String methodName,
+                      final String methodSignature,
+                      final String[] methodParameterTypes,
                       final AdviceType type,
                       final String specialArgumentType,
                       final String adviceName) {
         m_aspectQualifiedName = aspectQualifiedName;
         m_aspectClassName = aspectClassName;
         m_aspectDeploymentModel = aspectDeploymentModel;
-        m_method = method;
+        m_methodName = methodName;
+        m_methodSignature = methodSignature;
+        m_methodParameterTypes = methodParameterTypes;
         m_type = type;
         m_specialArgumentType = AsmHelper.convertReflectDescToTypeDesc(specialArgumentType);
         m_name = adviceName;
+    }
+
+    /**
+     * Return the method name.
+     *
+     * @return the method name
+     */
+    public String getMethodName() {
+        return m_methodName;
+    }
+
+    /**
+     * Return the method signature.
+     *
+     * @return the method signature
+     */
+    public String getMethodSignature() {
+        return m_methodSignature;
+    }
+
+    /**
+     * Return the method name.
+     *
+     * @return the method name
+     */
+    public String[] getMethodParameterTypes() {
+        return m_methodParameterTypes;
     }
 
     /**
@@ -114,11 +154,13 @@ public class AdviceInfo implements Serializable {
 
     /**
      * Returns the aspect deployment model
+     *
      * @return
      */
     public int getAspectDeploymentModel() {
         return m_aspectDeploymentModel;
     }
+
     /**
      * Returns the name of the advice.
      *
@@ -126,15 +168,6 @@ public class AdviceInfo implements Serializable {
      */
     public String getName() {
         return m_name;
-    }
-
-    /**
-     * Return the method.
-     *
-     * @return the method
-     */
-    public Method getMethod() {
-        return m_method;
     }
 
     /**
@@ -178,7 +211,9 @@ public class AdviceInfo implements Serializable {
         sb.append(m_type).append(',');
         sb.append(m_aspectQualifiedName).append(',');
         sb.append(m_name).append(',');
-        sb.append(m_method.getName()).append(',');
+        sb.append(m_methodName).append(',');
+        sb.append(m_methodSignature).append(',');
+        sb.append(m_methodParameterTypes).append(',');
         sb.append(m_specialArgumentType).append(']');
         sb.append(hashCode());
         return sb.toString();
