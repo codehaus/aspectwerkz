@@ -53,6 +53,12 @@ public class HotSwapTarget {
 
     private String toLog3() {
         System.out.println("    toLog3()");
+        toLog3(1);
+        return "result";
+    }
+
+    private String toLog3(int a) {
+        System.out.println("    toLog3(int)");
         return "result";
     }
 
@@ -65,7 +71,7 @@ public class HotSwapTarget {
         target.getCounter();
 
         // add new pointcuts
-        addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog3(..)", "runtimePCToLog3");
+        addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog3()", "runtimePCToLog3");
         // call HotSwap for runtime weaving
         HotSwapClient.hotswap(HotSwapTarget.class);
 
@@ -76,7 +82,7 @@ public class HotSwapTarget {
         target.getCounter();
 
         // add new pointcuts
-        addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog1(..)", "runtimePCToLog2");
+        addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog3(int)", "runtimePCToLog2");
         // call HotSwap for runtime weaving
         HotSwapClient.hotswap(HotSwapTarget.class);
 
