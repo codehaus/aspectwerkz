@@ -108,21 +108,6 @@ public class ProxyCompiler implements TransformationConstants {
         ClassVisitor createProxy = new ProxyCompilerClassVisitor(proxyWriter, proxyClassName.replace('.', '/'));
         classReader.accept(createProxy, Attributes.getDefaultAttributes(), true);// no need for debug info
         return proxyWriter.toByteArray();
-//
-//
-//        writer.visit(
-//                AsmHelper.JAVA_VERSION,
-//                ACC_PUBLIC + ACC_SUPER + ACC_SYNTHETIC,
-//                proxyClassName,
-//                targetClassName,
-//                EMPTY_STRING_ARRAY,
-//                null
-//        );
-//
-//        createConstructorDelegators(writer, clazz, targetClassName);
-//        createMethodDelegators(writer, clazz, targetClassName);
-//
-//        return writer.toByteArray();
     }
 
     /**
@@ -220,15 +205,14 @@ public class ProxyCompiler implements TransformationConstants {
                 if (Modifier.isStatic(access)) {
                     AsmHelper.loadArgumentTypes(proxyCode, Type.getArgumentTypes(desc), true);
                     proxyCode.visitMethodInsn(INVOKESTATIC, m_className, name, desc);
-                    proxyCode.visitInsn(RETURN);
+                    AsmHelper.addReturnStatement(proxyCode, Type.getReturnType(desc));
                     proxyCode.visitMaxs(0, 0);
                 } else {
                     proxyCode.visitVarInsn(ALOAD, 0);
                     AsmHelper.loadArgumentTypes(proxyCode, Type.getArgumentTypes(desc), false);
                     proxyCode.visitMethodInsn(INVOKESPECIAL, m_className, name, desc);
-                    proxyCode.visitInsn(RETURN);
+                    AsmHelper.addReturnStatement(proxyCode, Type.getReturnType(desc));
                     proxyCode.visitMaxs(0, 0);
-
                 }
             }
 

@@ -31,7 +31,7 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
  * Unit test for annotation matching.
  * 
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AnnotationExpressionTest extends TestCase {
 	protected static final String NAMESPACE = "TESTING";
@@ -53,7 +53,7 @@ public class AnnotationExpressionTest extends TestCase {
         try {
             setMeUp();
         } catch (Throwable t) {
-            throw new Error(t);
+            throw new Error(t.toString());
         }
     }
 
