@@ -21,6 +21,9 @@
                     <li>
                         <a href="#Pointcut composition">Pointcut composition</a>
                     </li>
+                    <li>
+                        <a href="#Pointcut references">Pointcut references</a>
+                    </li>
                    <li>
                        <a href="#Pluggable container implementation">Pluggable container implementation</a>
                    </li>
@@ -646,6 +649,32 @@ execution(* foo.bar.Baz.*(..)) || call(* foo.bar.Baz.*(..))
 (set(* foo.bar.*) || get(* foo.bar.*)) && withincode(* foo.bar.Buzz.*(..))
 
 handler(java.lang.Exception+) && !cflow(call(* foo.bar.Buzz.(..)))
+                ]]></source>
+            </p>
+        </section>
+
+        <section name="Pointcut references">
+            <p>
+                You can define pointcuts in one aspect definition (in XML or in annotations) and the refer to this
+                pointcut in another aspect definition.
+            </p>
+            <p>
+                This can be very useful when building up pointcut libraries that you want to use throughout
+                the projects or multiple projects.
+            </p>
+            <p>
+                You are referring to the external pointcut by using the aspect name (the full
+                name of the aspect class if not a custom name has been defined) followed by a dot and then the
+                pointcut name. For example: <code>mylib.J2EEPointcuts.sessionBeans</code>
+            </p>
+           <p>
+                Example:
+                <source><![CDATA[
+<aspect class="foo.bar.MyAspect>
+    <pointcut name="transactedSessionBeanMethods"
+              expression="call(@Transaction * *..*.*(..)) && within(mylib.J2EEPointcuts.sessionBeans)"/>
+    ...
+</aspect>
                 ]]></source>
             </p>
         </section>
