@@ -76,19 +76,10 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
             URL[] urls = new URL[] { new File(classPath).toURL() };
             m_loader = new URLClassLoader(urls);
             String classFileName = className.replace('.', '/') + ".class";
-            if (isInner) {
-                classFileName = AnnotationC.convertToJavaStyleInnerClassFileName(classFileName);
-            }
             InputStream classAsStream = m_loader.getResourceAsStream(classFileName);
             if (classAsStream == null) {
-                // TODO: this is an ugly bug fix due to JAM bug with inner class parsing
-                int lastSlash = classFileName.lastIndexOf('/');
-                classFileName = classFileName.substring(0, lastSlash) + '$'
-                                + classFileName.substring(lastSlash + 1, classFileName.length());
-                classAsStream = m_loader.getResourceAsStream(classFileName);
-
-                //                System.err.println("WARNING: " + className + " can not be found on classpath");
-                //                return false;
+                System.err.println("WARNING: " + className + " can not be found on classpath");
+                return false;
             }
             ClassParser classParser = new ClassParser(classAsStream, className);
             m_javaClass = classParser.parse();

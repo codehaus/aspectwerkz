@@ -187,9 +187,11 @@ public class AnnotationC {
             JClass clazz = classes[i];
             try {
                 AttributeEnhancer enhancer = new BcelAttributeEnhancer();
-                if (enhancer.initialize(clazz.getQualifiedName(), classPath, clazz.isStatic())) {
+                if (enhancer.initialize(clazz.getQualifiedName(), classPath, false)) {
                     handleClassAnnotations(enhancer, clazz);
                     handleInnerClassAnnotations(enhancer, clazz);
+
+                    //                    handleInnerClassAnnotations(classPath, destDir, clazz);
                     JMethod[] methods = clazz.getDeclaredMethods();
                     for (int j = 0; j < methods.length; j++) {
                         handleMethodAnnotations(enhancer, methods[j]);
@@ -322,6 +324,7 @@ public class AnnotationC {
         JClass[] innerClasses = clazz.getClasses();
         for (int i = 0; i < innerClasses.length; i++) {
             JClass innerClass = innerClasses[i];
+            String innerClassName = innerClass.getQualifiedName();
             JAnnotation introduceAnnotation = innerClass.getAnnotation(ANNOTATION_INTRODUCE);
             if (introduceAnnotation != null) {
                 IntroduceAnnotationProxy introduceProxy = (IntroduceAnnotationProxy)introduceAnnotation.getProxy();
@@ -334,8 +337,6 @@ public class AnnotationC {
                         logInfo("    interface introduction [" + introducedInterfaceNames[j] + ']');
                     }
                     if (introducedInterfaceNames.length == 0) {
-                        String innerClassName = AnnotationC.convertToJavaStyleInnerClassName(innerClass
-                                                                                             .getQualifiedName());
                         introducedInterfaceNames = enhancer.getNearestInterfacesInHierarchy(innerClassName);
                         if (introducedInterfaceNames.length == 0) {
                             throw new RuntimeException("no implicit interfaces found for " + innerClassName);
@@ -345,9 +346,10 @@ public class AnnotationC {
                         }
                     }
                     introduceProxy.setIntroducedInterfaces(introducedInterfaceNames);
+                    introduceProxy.setInnerClassName(innerClassName);
                     logInfo("    mixin introduction [" + innerClass.getQualifiedName() + " :: "
-                            + introduceProxy.expression() + "] ");
-                    logInfo("    deployment model [" + introduceProxy.deploymentModel() + ']');
+                            + introduceProxy.expression() + "] deployment model [" + introduceProxy.deploymentModel()
+                            + ']');
                     enhancer.insertClassAttribute(new AnnotationInfo(ANNOTATION_INTRODUCE, introduceProxy));
                 }
             }

@@ -15,9 +15,25 @@ import org.codehaus.aspectwerkz.util.Strings;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class IntroduceAnnotationProxy extends AnnotationProxyBase {
+    /**
+     * The expression for the introduction.
+     */
     private String m_expression;
-    private String m_deploymentModel = "perJVM";
+
+    /**
+     * The FQN of the inner class for default introduction impl.
+     */
+    private String m_innerClassName;
+
+    /**
+     * The FQN of interface implemented by the inner class.
+     */
     private String[] m_introducedInterfaces;
+
+    /**
+     * Deployment model for the mixin
+     */
+    private String m_deploymentModel;
 
     public String expression() {
         return m_expression;
@@ -41,5 +57,13 @@ public class IntroduceAnnotationProxy extends AnnotationProxyBase {
 
     public void setIntroducedInterfaces(String[] introducedInterfaceNames) {
         m_introducedInterfaces = introducedInterfaceNames;
+    }
+
+    public String innerClassName() {
+        return m_innerClassName;
+    }
+
+    public void setInnerClassName(String innerClassName) {
+        m_innerClassName = innerClassName;
     }
 }

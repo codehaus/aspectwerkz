@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.annotation;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -66,22 +67,25 @@ public class AspectAnnotationParser {
         }
         Field[] fieldList = klass.getDeclaredFields();
 
-        // parse the pointcuts
         for (int i = 0; i < fieldList.length; i++) {
             Field field = fieldList[i];
-            ExpressionAnnotationProxy expressionAnnotation = (ExpressionAnnotationProxy)Annotations.getAnnotation(AnnotationC.ANNOTATION_EXPRESSION,
-                                                                                                                  field);
-            if (expressionAnnotation != null) {
-                DefinitionParserHelper.createAndAddPointcutDefToAspectDef(field.getName(),
-                                                                          expressionAnnotation.expression(), aspectDef);
+            List expressionAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_EXPRESSION, field);
+            for (Iterator iterator = expressionAnnotations.iterator(); iterator.hasNext();) {
+                ExpressionAnnotationProxy annotation = (ExpressionAnnotationProxy)iterator.next();
+                if (annotation != null) {
+                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(field.getName(), annotation.expression(),
+                                                                              aspectDef);
+                }
             }
-            IntroduceAnnotationProxy introduceAnnotation = (IntroduceAnnotationProxy)Annotations.getAnnotation(AnnotationC.ANNOTATION_INTRODUCE,
-                                                                                                               field);
-            if (introduceAnnotation != null) {
-                DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(introduceAnnotation.expression(),
-                                                                                       field.getName(),
-                                                                                       field.getType().getName(),
-                                                                                       aspectDef);
+            List implementsAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_IMPLEMENTS, field);
+            for (Iterator iterator = implementsAnnotations.iterator(); iterator.hasNext();) {
+                ImplementsAnnotationProxy annotation = (ImplementsAnnotationProxy)iterator.next();
+                if (annotation != null) {
+                    DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(annotation.expression(),
+                                                                                           field.getName(),
+                                                                                           field.getType().getName(),
+                                                                                           aspectDef);
+                }
             }
         }
 
@@ -113,42 +117,48 @@ public class AspectAnnotationParser {
         }
         List methodList = TransformationUtil.createSortedMethodList(klass);
 
-        // parse the advices and introductions
         int methodIndex = 0;
         for (Iterator it = methodList.iterator(); it.hasNext(); methodIndex++) {
             Method method = (Method)it.next();
 
             // create the advice name out of the class and method name, <classname>.<methodname>
             String adviceName = aspectClassName + '.' + method.getName();
-            AroundAnnotationProxy aroundAnnotation = (AroundAnnotationProxy)Annotations.getAnnotation(AnnotationC.ANNOTATION_AROUND,
-                                                                                                      method);
-            if (aroundAnnotation != null) {
-                DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(aroundAnnotation.pointcut(), adviceName,
-                                                                              aspectName, aspectClassName, method,
-                                                                              methodIndex, aspectDef);
-            }
-            BeforeAnnotationProxy beforeAnnotation = (BeforeAnnotationProxy)Annotations.getAnnotation(AnnotationC.ANNOTATION_BEFORE,
-                                                                                                      method);
-            if (beforeAnnotation != null) {
-                DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(beforeAnnotation.pointcut(), adviceName,
-                                                                              aspectName, aspectClassName, method,
-                                                                              methodIndex, aspectDef);
-            }
-            AfterAnnotationProxy afterAnnotation = (AfterAnnotationProxy)Annotations.getAnnotation(AnnotationC.ANNOTATION_AFTER,
-                                                                                                   method);
 
-            if (afterAnnotation != null) {
-                DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(afterAnnotation.pointcut(), adviceName,
-                                                                             aspectName, aspectClassName, method,
-                                                                             methodIndex, aspectDef);
+            List aroundAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_AROUND, method);
+            for (Iterator iterator = aroundAnnotations.iterator(); iterator.hasNext();) {
+                AroundAnnotationProxy aroundAnnotation = (AroundAnnotationProxy)iterator.next();
+                if (aroundAnnotation != null) {
+                    DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(aroundAnnotation.pointcut(),
+                                                                                  adviceName, aspectName,
+                                                                                  aspectClassName, method, methodIndex,
+                                                                                  aspectDef);
+                }
+            }
+            List beforeAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_BEFORE, method);
+            for (Iterator iterator = beforeAnnotations.iterator(); iterator.hasNext();) {
+                BeforeAnnotationProxy beforeAnnotation = (BeforeAnnotationProxy)iterator.next();
+                if (beforeAnnotation != null) {
+                    DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(beforeAnnotation.pointcut(),
+                                                                                  adviceName, aspectName,
+                                                                                  aspectClassName, method, methodIndex,
+                                                                                  aspectDef);
+                }
+            }
+            List afterAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_AFTER, method);
+            for (Iterator iterator = afterAnnotations.iterator(); iterator.hasNext();) {
+                AfterAnnotationProxy afterAnnotation = (AfterAnnotationProxy)iterator.next();
+                if (afterAnnotation != null) {
+                    DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(afterAnnotation.pointcut(),
+                                                                                 adviceName, aspectName,
+                                                                                 aspectClassName, method, methodIndex,
+                                                                                 aspectDef);
+                }
             }
         }
     }
 
     /**
      * Looks for @Introduce IntroduceAttribute defined at aspect inner class level
-     *
-     * @TODO: IMPLEMENT DAMMIT
      *
      * @param klass     of aspect
      * @param aspectDef
@@ -157,19 +167,19 @@ public class AspectAnnotationParser {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
-        IntroduceAnnotationProxy introduceAnnotation = (IntroduceAnnotationProxy)Annotations.getAnnotation(AnnotationC.ANNOTATION_INTRODUCE,
-                                                                                                           klass);
-
-        //        Class mixin;
-        //        try {
-        //            mixin = klass.getClassLoader().loadClass(introduceAnnotation.());
-        //        } catch (ClassNotFoundException e) {
-        //            throw new WrappedRuntimeException(e);
-        //        }
-        //        DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
-        //                mixin, introduceAttr.getExpression(),
-        //                introduceAttr.getDeploymentModel(),
-        //                aspectDef
-        //        );
+        List annotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_INTRODUCE, klass);
+        for (Iterator iterator = annotations.iterator(); iterator.hasNext();) {
+            IntroduceAnnotationProxy annotation = (IntroduceAnnotationProxy)iterator.next();
+            if (annotation != null) {
+                Class mixin;
+                try {
+                    mixin = klass.getClassLoader().loadClass(annotation.innerClassName());
+                } catch (ClassNotFoundException e) {
+                    throw new WrappedRuntimeException(e);
+                }
+                DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(mixin, annotation.expression(),
+                                                                              annotation.deploymentModel(), aspectDef);
+            }
+        }
     }
 }
