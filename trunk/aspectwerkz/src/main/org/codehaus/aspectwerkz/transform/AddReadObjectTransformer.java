@@ -43,7 +43,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * to all target objects.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddReadObjectTransformer.java,v 1.9 2003-07-09 05:21:28 jboner Exp $
+ * @version $Id: AddReadObjectTransformer.java,v 1.10 2003-07-15 08:26:17 jboner Exp $
  */
 public class AddReadObjectTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:ON
@@ -158,7 +158,7 @@ public class AddReadObjectTransformer extends AbstractInterfaceTransformer {
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.isAdvised(cg.getClassName())) {
+        if (m_weaveModel.inTransformationScope(cg.getClassName())) {
             return false;
         }
         return true;

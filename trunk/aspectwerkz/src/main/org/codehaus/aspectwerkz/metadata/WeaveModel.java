@@ -46,7 +46,7 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.11 2003-07-14 15:02:48 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.12 2003-07-15 08:26:17 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -438,14 +438,14 @@ public class WeaveModel implements Serializable {
     }
 
     /**
-     * Checks if a class is advised
+     * Checks if a class should be transformed or not.
      *
      * @param className the name or the class
      * @return boolean
      */
-    public boolean isAdvised(final String className) {
+    public boolean inTransformationScope(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
-        return m_definition.isAdvised(className);
+        return m_definition.inTransformationScope(className);
     }
 
     /**

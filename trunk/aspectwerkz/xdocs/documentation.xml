@@ -41,6 +41,9 @@
                         <a href="#Package namespaces">Package namespaces</a>
                     </li>
                     <li>
+                        <a href="#Transformation scopes">Transformation scopes</a>
+                    </li>
+                    <li>
                         <a href="#Example of an XML definition">Example of an XML definition</a>
                     </li>
                     <li>
@@ -1075,6 +1078,35 @@ String timeOut = getParameter("timeout");
     <package name="baz.buzz">
         <!-- All classes within these 'package' tags are prefixed by 'foo.baz.buzz' -->
     </package>
+
+</aspectwerkz>
+]]></source>
+            </p>
+        </section>
+
+        <section name="Transformation scopes">
+            <p>
+                Using transformation scopes you can choose to perform the transformation within
+                certain packages only. E.g. filter out all classes from all other packages in
+                the transformation process. This can speed up the transformation process a lot as
+                well as assure you that only classes within the packages you have defined is
+                getting transformed no matter how freely you define your pointcut patterns.
+            </p>
+            <p>
+                A transformation scope is defined using the <code>transformation-scope</code>
+                element which has one attribute; <code>package</code> where you define the package
+                name. You can define as many transformation scopes as you want.
+            </p>
+            <p>
+                <b>Example</b>
+            </p>
+            <p>
+<source><![CDATA[
+<aspectwerkz>
+
+    <!-- Transformations will only take place within the 'org.codehaus.package' and subpackages -->
+    <transformation-scope package="org.codehaus"/>
+    ...
 
 </aspectwerkz>
 ]]></source>

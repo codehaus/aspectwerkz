@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
@@ -39,7 +41,7 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.15 2003-07-14 15:02:48 jboner Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.16 2003-07-15 08:26:16 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -104,6 +106,11 @@ public class AspectWerkzDefinition implements Serializable {
     private final String m_uuid = "default";
 
     /**
+     * The transformation scopes.
+     */
+    private final Set m_transformationScopeSet = new HashSet();
+
+    /**
      * Returns the definition.
      * <p/>
      * If the file name is not specified as a parameter to the JVM it tries
@@ -165,6 +172,15 @@ public class AspectWerkzDefinition implements Serializable {
      */
     public String getUuid() {
         return m_uuid;
+    }
+
+    /**
+     * Returns the transformation scopes.
+     *
+     * @return the transformation scopes
+     */
+    public Set getTransformationScopes() {
+        return m_transformationScopeSet;
     }
 
     /**
@@ -387,6 +403,17 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
+     * Adds a new transformation scope.
+     *
+     * @param transformationScope the new scope
+     */
+    public void addTransformationScope(final String transformationScope) {
+        synchronized (m_transformationScopeSet) {
+            m_transformationScopeSet.add(transformationScope);
+        }
+    }
+
+    /**
      * Adds an abstract aspect definition.
      *
      * @param aspect a new abstract aspect definition
@@ -471,9 +498,18 @@ public class AspectWerkzDefinition implements Serializable {
      * @param className the name or the class
      * @return boolean
      */
-    public boolean isAdvised(final String className) {
+    public boolean inTransformationScope(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
-        return true;
+        if (m_transformationScopeSet.isEmpty()) {
+            return true;
+        }
+        for (Iterator it = m_transformationScopeSet.iterator(); it.hasNext();) {
+            String packageName = (String)it.next();
+            if (className.startsWith(packageName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -681,34 +717,5 @@ public class AspectWerkzDefinition implements Serializable {
         }
         return introductionNames;
     }
-
-    /**
-     * Adds the HasMetaData mixin to all the introductions.
-     * @todo consider removal
-     */
-//    public void addHasMetaDataMixinForAllIntroductions() {
-//
-//        if (!hasIntroduction(HasMetaData.NAME)) {
-//            IntroductionDefinition introDef = new IntroductionDefinition();
-//            introDef.setName(HasMetaData.NAME);
-//            introDef.setInterface(HasMetaData.INTERFACE_CLASS);
-//            introDef.setImplementation(HasMetaData.IMPLEMENTATION_CLASS);
-//            introDef.setDeploymentModel(HasMetaData.DEPLOYMENT_MODEL);
-//            introDef.setAttribute(HasMetaData.NAME);
-//            addIntroduction(introDef);
-//        }
-//
-//        AspectDefinition aspectDef = new AspectDefinition();
-//        aspectDef.setName(HasMetaData.NAME);
-//        for (Iterator it = getIntroductionDefinitions().iterator(); it.hasNext();) {
-//            IntroductionWeavingRule weavingRule = new IntroductionWeavingRule();
-//            String classPattern = ((IntroductionDefinition)it.next()).getImplementation();
-//            if (classPattern == null) continue; // interface introduction => skip
-//            weavingRule.setClassPattern(classPattern);
-//            weavingRule.addIntroductionRef(HasMetaData.NAME);
-//            aspectDef.addIntroductionWeavingRule(weavingRule);
-//        }
-//        addAspect(aspectDef);
-//    }
 }
 

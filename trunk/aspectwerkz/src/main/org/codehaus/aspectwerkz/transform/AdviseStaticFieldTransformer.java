@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticFieldTransformer.java,v 1.11 2003-07-09 11:55:27 jboner Exp $
+ * @version $Id: AdviseStaticFieldTransformer.java,v 1.12 2003-07-15 08:26:17 jboner Exp $
  */
 public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -652,7 +652,7 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.isAdvised(cg.getClassName())) {
+        if (m_weaveModel.inTransformationScope(cg.getClassName())) {
             return false;
         }
         return true;
