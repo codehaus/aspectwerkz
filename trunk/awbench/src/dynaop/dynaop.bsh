@@ -1,12 +1,12 @@
 interceptor(
    awbench.method.IExecution.class,
    signature("void.*aroundSJP\\(\\)"),
-   new awbench.dynaop.MethodExecutionAroundAdvice()
+   new awbench.dynaop.MethodExecutionAroundSJPAdvice()
 );
 interceptor(
    awbench.method.IExecution.class,
    signature("void.*aroundJP\\(\\)"),
-   new awbench.dynaop.MethodExecutionAroundAdvice()
+   new awbench.dynaop.MethodExecutionAroundJPAdvice()
 );
 interceptor(
    awbench.method.IExecution.class,
