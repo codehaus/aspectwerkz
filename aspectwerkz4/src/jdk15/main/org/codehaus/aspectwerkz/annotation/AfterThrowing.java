@@ -13,17 +13,25 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Annotation for pointcut
- *
- * TODO: rename to Pointcut and remove pointcut as field ??
+ * Annotation for after throwing advice
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Expression {
+public @interface AfterThrowing {
     /**
-     * The pointcut expression
+     * The pointcut expression to bind, when no type is specified for the throwned value
      */
     String value();
+
+    /**
+     * The pointcut expression to bind, when a type is specified for the throwned value
+     */
+    String expression() default "";
+
+    /**
+     * The type pattern for the returned value
+     */
+    String type() default "";
 }
