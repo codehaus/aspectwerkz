@@ -13,7 +13,7 @@ import org.codehaus.aspectwerkz.definition.regexp.ClassPattern;
 /**
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: ClassPatternTest.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @version $Id: ClassPatternTest.java,v 1.3 2003-05-14 17:17:39 jboner Exp $
  */
 public class ClassPatternTest extends TestCase {
 
@@ -55,6 +55,22 @@ public class ClassPatternTest extends TestCase {
         assertTrue(classPattern.matches("foo.SomeClass"));
         assertTrue(classPattern.matches("foo.bar.SomeClass"));
         assertFalse(classPattern.matches("foo"));
+    }
+
+    public void testMatchMethodName6() {
+        ClassPattern classPattern = Pattern.compileClassPattern("*");
+        assertTrue(classPattern.matches("foo.hey.bar.SomeClass"));
+        assertTrue(classPattern.matches("foo.SomeClass"));
+        assertTrue(classPattern.matches("foo.bar.SomeClass"));
+        assertTrue(classPattern.matches("foo"));
+    }
+
+    public void testMatchMethodName7() {
+        ClassPattern classPattern = Pattern.compileClassPattern("..");
+        assertTrue(classPattern.matches("foo.hey.bar.SomeClass"));
+        assertTrue(classPattern.matches("foo.SomeClass"));
+        assertTrue(classPattern.matches("foo.bar.SomeClass"));
+        assertTrue(classPattern.matches("foo"));
     }
 
     public static void main(String[] args) {

@@ -28,9 +28,9 @@ public class AspectWerkzDefinitionTest extends TestCase {
 
     public void testGetAspects() {
         Object[] aspects = m_def.getAspectDefinitions().toArray();
-        assertEquals("examples.persistence.Target", ((AspectDefinition)aspects[0]).getPattern());
+        assertEquals("examples.persistence.FooBar1", ((AspectDefinition)aspects[0]).getPattern());
         assertEquals("examples.caching.Pi", ((AspectDefinition)aspects[1]).getPattern());
-        assertEquals("examples.logging.Target", ((AspectDefinition)aspects[2]).getPattern());
+        assertEquals("examples.logging.FooBar1", ((AspectDefinition)aspects[2]).getPattern());
         assertEquals("counter1", (String)((AspectDefinition)aspects[0]).getIntroductions().get(0));
         assertEquals("counter2", (String)((AspectDefinition)aspects[0]).getIntroductions().get(1));
         assertEquals("counter1", (String)((AspectDefinition)aspects[0]).getIntroductions().toArray()[0]);
@@ -51,8 +51,8 @@ public class AspectWerkzDefinitionTest extends TestCase {
         assertEquals("examples.persistence.InvocationCounterAdvice", targetClassNames[4]);
         assertEquals("examples.persistence.CounterImpl2", targetClassNames[5]);
         assertEquals("examples.persistence.CounterImpl1", targetClassNames[6]);
-        assertEquals("examples.logging.Target", targetClassNames[7]);
-        assertEquals("examples.persistence.Target", targetClassNames[8]);
+        assertEquals("examples.logging.FooBar1", targetClassNames[7]);
+        assertEquals("examples.persistence.FooBar1", targetClassNames[8]);
         assertEquals("examples.logging.LoggingAdvice", targetClassNames[9]);
    }
 

@@ -793,18 +793,18 @@ AspectWerkz.getAspect("test.MyClass").addIntroduction("mixins/Mixin");
                     <ul>
                         <li>
                             <code>foo.bar.*</code> - will match<br/>
-                            <code>foo.bar.FooBar</code> as well as<br/>
+                            <code>foo.bar.FooBar2</code> as well as<br/>
                             <code>foo.bar.FooBear</code>.
                         </li><br/>
                         <li>
                             <code>foo.*.FooBar</code> - will match<br/>
-                            <code>foo.bar.FooBar</code> as well as<br/>
+                            <code>foo.bar.FooBar2</code> as well as<br/>
                             <code>foo.bear.FooBar</code> but not<br/>
                             <code>foo.bear.FooBear</code>.
                         </li><br/>
                         <li>
                             <code>foo.*.FooB*</code> - will match<br/>
-                            <code>foo.bar.FooBar</code> as well as<br/>
+                            <code>foo.bar.FooBar2</code> as well as<br/>
                             <code>foo.bear.FooBear</code>.
                         </li>
                         <li>
