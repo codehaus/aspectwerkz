@@ -1,6 +1,6 @@
 <!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD 0.8.1//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd">
+    "-//AspectWerkz//DTD 0.9//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_9.dtd">
 
 <aspectwerkz>
 
@@ -9,7 +9,7 @@
         <!--  Advices                                      -->
         <!-- ============================================= -->
         <advice-def name="invocationCounter"
-            advice="examples.xmldef.caching.InvocationCounterAdvice"
+            class="examples.xmldef.caching.InvocationCounterAdvice"
             deployment-model="perInstance"
             attribute="invocationCounter"/>
 

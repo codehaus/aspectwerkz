@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD 0.8.1//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd">
+<!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
 
 <aspectwerkz>
   <system id="samples-xmldef">

@@ -1,3 +1,6 @@
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
 <aspectwerkz>
 
     <system id="xmltest">
@@ -19,8 +22,8 @@
                 <introduction-ref name="loggable"/>
             </bind-introduction>
 
-            <pointcut name="start" type="method" pattern="* services.*.start(..)"/>
-            <pointcut name="stop" type="method" pattern="* services.*.stop(..)"/>
+            <pointcut-def name="start" type="method" pattern="* services.*.start(..)"/>
+            <pointcut-def name="stop" type="method" pattern="* services.*.stop(..)"/>
 
             <bind-advice expression="start AND stop">
                 <advice-ref name="logging"/>

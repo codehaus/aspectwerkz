@@ -176,7 +176,7 @@ public class DocumentParser {
                 if (name.equals("name")) {
                     adviceDef.setName(value);
                 }
-                else if (name.equals("advice") || (name.equals("class"))) {
+                else if (name.equals("class")) {
                     adviceDef.setAdviceClassName(packageName + value);
                 }
                 else if (name.equals("deployment-model")) {
@@ -306,8 +306,7 @@ public class DocumentParser {
                                               final String packageName) {
         for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
             final Element nestedAdviceElement = (Element)it2.next();
-            if (nestedAdviceElement.getName().trim().equals("pointcut-def") ||
-                    nestedAdviceElement.getName().trim().equals("pointcut")) {
+            if (nestedAdviceElement.getName().trim().equals("pointcut-def")) {
                 try {
                     final PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
 
@@ -416,8 +415,7 @@ public class DocumentParser {
                                                       final String packageName) {
         for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
             final Element nestedAdviceElement = (Element)it2.next();
-            if (nestedAdviceElement.getName().trim().equals("bind-introduction") ||
-                    nestedAdviceElement.getName().trim().equals("introduction")) {
+            if (nestedAdviceElement.getName().trim().equals("bind-introduction")) {
                 try {
                     final IntroductionWeavingRule introWeavingRule = new IntroductionWeavingRule();
 
@@ -453,8 +451,7 @@ public class DocumentParser {
                                                 final AspectDefinition aspectDef) {
         for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
             final Element nestedAdviceElement = (Element)it2.next();
-            if (nestedAdviceElement.getName().trim().equals("bind-advice") ||
-                    nestedAdviceElement.getName().trim().equals("advice")) {
+            if (nestedAdviceElement.getName().trim().equals("bind-advice")) {
                 try {
                     final AdviceWeavingRule adviceWeavingRule = new AdviceWeavingRule();
 

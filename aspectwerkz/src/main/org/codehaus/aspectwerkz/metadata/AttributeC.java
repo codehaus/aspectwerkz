@@ -164,8 +164,8 @@ public class AttributeC {
         Document document = DocumentHelper.createDocument();
         document.addDocType(
                 "aspectwerkz",
-                "-//AspectWerkz//DTD 0.8.1//EN",
-                "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd"
+                "-//AspectWerkz//DTD//EN",
+                "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd"
         );
 
         Element root = document.addElement("aspectwerkz");
@@ -217,10 +217,9 @@ public class AttributeC {
      * If append is set to true then it loads the definition file from disk otherwise
      * it just creates a new blank one.
      *
-     * @TODO: handle multiple xmldef definition within the same XML file
+     * TODO: handle multiple xmldef definition within the same XML file
      *
      * @param fileName the name of the definition file
-     * @param append the append flag
      * @return the aspectwerkz definition
      */
     private static AspectWerkzDefinitionImpl getDefinition(final String fileName) {

@@ -1,6 +1,6 @@
 <!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD 0.8//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+    "-//AspectWerkz//DTD 0.9//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_9.dtd">
 
 <aspectwerkz>
     <system id="samples-attribdef">

@@ -225,7 +225,7 @@
     <!-- =================================================== -->
     <!--  multithreaded custom classloader tests -->
     <!--  thread number and loops can be passed as argument -->
-    <!--  refer to test.clapp javadoc -->
+    <!--  refer to test.xmldef.clapp javadoc -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:xmldef:test:clapp">
         <attainGoal name="aspectwerkz:init"/>
