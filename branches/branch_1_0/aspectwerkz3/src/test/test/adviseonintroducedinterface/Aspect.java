@@ -16,9 +16,10 @@ public class Aspect {
     
     /**
      * @Before 
-     *      execution(void test.adviseonintroducedinterface.Intf1+.m1()) 
+     *      (execution(void test.adviseonintroducedinterface.Intf1+.m1())
      *      ||
      *      execution(void test.adviseonintroducedinterface.Intf2+.m2())
+     *      ) && !within(test.adviseonintroducedinterface.Aspect$Mixin)
      */
     public void before(JoinPoint jp) {
         Test.log("before ");
