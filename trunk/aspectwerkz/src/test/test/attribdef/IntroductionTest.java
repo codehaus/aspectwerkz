@@ -138,7 +138,6 @@ public class IntroductionTest extends TestCase implements Identifiable {
     }
 
     public void testReplaceImplementation() {
-        //TODO swap with non inner class
         assertEquals(
                 "test.attribdef.aspect.IntroductionTestAspect$MyImpl",
                 SystemLoader.getSystem("tests").
@@ -147,7 +146,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
         assertEquals(1, ((Introductions)m_toBeIntroduced).intArg(1));
 
-        // swap with an outer class is possible as well
+        // swap with an inner class
         SystemLoader.getSystem("tests").
                 getMixin("test.attribdef.aspect.IntroductionTestAspect$MyImpl").
                 ___AW_swapImplementation("test.attribdef.aspect.IntroductionTestAspect$MyOtherImpl");
@@ -156,6 +155,29 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
         assertEquals(
                 "test.attribdef.aspect.IntroductionTestAspect$MyOtherImpl",
+                SystemLoader.getSystem("tests").
+                getMixin("test.attribdef.aspect.IntroductionTestAspect$MyImpl").
+                ___AW_getImplementationClassName());
+    }
+
+    public void testReplaceImplementationToAutonomousOne() {
+        assertEquals(
+                "test.attribdef.aspect.IntroductionTestAspect$MyOtherImpl",
+                SystemLoader.getSystem("tests").
+                getMixin("test.attribdef.aspect.IntroductionTestAspect$MyImpl").
+                ___AW_getImplementationClassName());
+
+        assertEquals(-1, ((Introductions)m_toBeIntroduced).intArg(1));
+
+        // swap with an outer class
+        SystemLoader.getSystem("tests").
+                getMixin("test.attribdef.aspect.IntroductionTestAspect$MyImpl").
+                ___AW_swapImplementation("test.attribdef.aspect.IntroductionTestAspectMyImplReplacement");
+
+        assertEquals(-2, ((Introductions)m_toBeIntroduced).intArg(1));
+
+        assertEquals(
+                "test.attribdef.aspect.IntroductionTestAspectMyImplReplacement",
                 SystemLoader.getSystem("tests").
                 getMixin("test.attribdef.aspect.IntroductionTestAspect$MyImpl").
                 ___AW_getImplementationClassName());

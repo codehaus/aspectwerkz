@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.attribdef.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 
 /**
  * Interface+Implementation Introduction
@@ -79,12 +80,14 @@ public class Introduction implements Mixin {
         m_mixinImplClass = implClass;
 
         try {
-            // assume mixin is an inner class
-            //TODO check thru
-            //aspect.getClass().getClasses()
-            Constructor constructor = m_mixinImplClass.getConstructors()[0];
-            constructor.setAccessible(true);
-            m_mixinImpl = constructor.newInstance(new Object[]{aspect});
+            if (isInnerClassOf(implClass, aspect.___AW_getAspectClass())) {
+                // mixin is an inner class
+                Constructor constructor = m_mixinImplClass.getConstructors()[0];
+                constructor.setAccessible(true);
+                m_mixinImpl = constructor.newInstance(new Object[]{aspect});
+            } else {
+                m_mixinImpl = m_mixinImplClass.newInstance();
+            }
         } catch (Exception e) {
             throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
         }
@@ -240,16 +243,26 @@ public class Introduction implements Mixin {
     public void swapImplementation(Class newImplClass) {
         try {
             m_mixinImplClass = newImplClass;
-            //rebuild instance
-            // assume mixin is an inner class
-            //TODO check thru
-            //aspect.getClass().getClasses()
-            Constructor constructor = newImplClass.getConstructors()[0];
-            constructor.setAccessible(true);
-            m_mixinImpl = constructor.newInstance(new Object[]{m_aspect});
+            if (isInnerClassOf(m_mixinImplClass, m_aspect.___AW_getAspectClass())) {
+                // mixin is an inner class
+                Constructor constructor = newImplClass.getConstructors()[0];
+                constructor.setAccessible(true);
+                m_mixinImpl = constructor.newInstance(new Object[]{m_aspect});
+            } else {
+                m_mixinImpl = m_mixinImplClass.newInstance();
+            }
          } catch (Exception e) {
             throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
         }
     }
 
+    /**
+     * Check if klazz is an inner class of containingClass
+     * @param klazz
+     * @param containingClass
+     * @return true if is an inner class
+     */
+    private static boolean isInnerClassOf(Class klazz, Class containingClass) {
+        return Arrays.asList(containingClass.getClasses()).contains(klazz);
+    }
 }
