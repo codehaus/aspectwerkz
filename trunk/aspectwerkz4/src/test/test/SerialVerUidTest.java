@@ -11,8 +11,8 @@ import junit.framework.TestCase;
 
 import java.io.Serializable;
 
-import org.codehaus.aspectwerkz.transform.inlining.weaver.FinalizingVisitor;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.FinalizingVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.AddSerialVersionUidVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.AddSerialVersionUidVisitor;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.ContextClassLoader;
@@ -35,7 +35,7 @@ public class SerialVerUidTest extends TestCase implements Serializable {
 
     public void testSerialVerUid() throws Throwable {
         ClassInfo classInfo = AsmClassInfo.getClassInfo("test.SerialVerUidTest", ContextClassLoader.getLoader());
-        long UID = FinalizingVisitor.calculateSerialVersionUID(classInfo);
+        long UID = AddSerialVersionUidVisitor.calculateSerialVersionUID(classInfo);
         assertEquals(-6289975506796941698L, UID);
     }
 

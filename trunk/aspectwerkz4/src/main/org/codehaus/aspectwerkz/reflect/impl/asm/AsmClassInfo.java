@@ -18,6 +18,7 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.CodeVisitor;
@@ -215,10 +216,11 @@ public class AsmClassInfo implements ClassInfo {
      * @param loader
      * @param componentInfo
      * @param dimension
-     * @TODO: not sure it has to be abstract final but it looks like all reflect based are.
-     * @TODO: dimension param is not used
      */
-    AsmClassInfo(final String className, final ClassLoader loader, final ClassInfo componentInfo, final int dimension) {
+    AsmClassInfo(final String className,
+                 final ClassLoader loader,
+                 final ClassInfo componentInfo,
+                 final int dimension) { // TODO dimension param is not used
         m_loaderRef = new WeakReference(loader);
         m_name = className.replace('/', '.');
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
@@ -233,6 +235,20 @@ public class AsmClassInfo implements ClassInfo {
         m_interfaces = new ClassInfo[0];
         m_signature = AsmHelper.getClassDescriptor(this);
         m_classInfoRepository.addClassInfo(this);
+    }
+
+    /**
+     * Returns a completely new class info for a specific class. Does not cache.
+     *
+     * @param bytecode
+     * @param loader
+     * @return the class info
+     */
+    public static ClassInfo newClassInfo(final byte[] bytecode, final ClassLoader loader) {
+        final String className = AsmClassInfo.retrieveClassNameFromBytecode(bytecode);
+        AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
+        repository.removeClassInfo(className);
+        return new AsmClassInfo(bytecode, loader, true);
     }
 
     /**
@@ -412,7 +428,9 @@ public class AsmClassInfo implements ClassInfo {
                     m_annotations = annotations;
                 } catch (IOException e) {
                     // unlikely to occur since ClassInfo relies on getResourceAsStream
-                    System.err.println("WARN - could not load " + m_name + " as a resource to retrieve annotations");
+                    System.err.println(
+                            "AW::WARNING  could not load " + m_name + " as a resource to retrieve annotations"
+                    );
                     m_annotations = EMPTY_LIST;
                 }
             }
@@ -768,29 +786,11 @@ public class AsmClassInfo implements ClassInfo {
      */
     public static AnnotationInfo getAnnotationInfo(final Annotation annotation, final ClassLoader loader) {
         String annotationName = annotation.type.substring(1, annotation.type.length() - 1).replace('/', '.');
-
-        org.codehaus.aspectwerkz.annotation.Annotation proxy = AsmAnnotationHelper.getAnnotationProxy(
+        final org.codehaus.aspectwerkz.annotation.Annotation proxy = AsmAnnotationHelper.getAnnotationProxy(
                 annotation,
                 loader
         );
         return new AnnotationInfo(annotationName, proxy);
-
-
-//        String annotationValues = createAnnotationKeyValueString(annotation);
-//
-//        Class proxyClass = Annotations.getProxyClass(annotationName, loader);
-//        org.codehaus.aspectwerkz.annotation.Annotation proxy;
-//        if (proxyClass == null) {
-//            proxy = new UntypedAnnotationProxy(); // no proxy specified, wrap in an untyped proxy
-//        } else {
-//            try {
-//                proxy = (TypedAnnotationProxy) proxyClass.newInstance(); // proxy specified
-//            } catch (Exception e) {
-//                throw new WrappedRuntimeException(e);
-//            }
-//        }
-//        proxy.initialize(annotationName, annotationValues);
-//        return new AnnotationInfo(annotationName, proxy);
     }
 
     /**
@@ -846,8 +846,6 @@ public class AsmClassInfo implements ClassInfo {
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
     private class ClassInfoClassAdapter extends AsmAnnotationHelper.NullClassAdapter {
-        private static final String CLINIT_METHOD_NAME = "<clinit>";
-        private static final String INIT_METHOD_NAME = "<init>";
 
         public boolean m_lazyAttributes = true;
 
@@ -936,11 +934,11 @@ public class AsmClassInfo implements ClassInfo {
             int hash = AsmHelper.calculateMethodHash(name, desc);
             // the methodInfo that should be updated when we will visit the method parameter names info if needed.
             AsmMethodInfo methodInfo = null;
-            if (name.equals(CLINIT_METHOD_NAME)) {
+            if (name.equals(TransformationConstants.CLINIT_METHOD_NAME)) {
                 m_hasStaticInitializer = true;
             } else {
                 AsmMemberInfo memberInfo = null;
-                if (name.equals(INIT_METHOD_NAME)) {
+                if (name.equals(TransformationConstants.INIT_METHOD_NAME)) {
                     memberInfo = new AsmConstructorInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
                     m_constructors.put(hash, memberInfo);
                     m_sortedConstructorHashes.add(hash);
