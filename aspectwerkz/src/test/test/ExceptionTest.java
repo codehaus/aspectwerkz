@@ -44,8 +44,4 @@ public class ExceptionTest extends TestCase {
         return new junit.framework.TestSuite(ExceptionTest.class);
     }
 
-    public ExceptionTest(String name) {
-        super(name);
-        SystemLoader.getSystem("tests").initialize();
-    }
 }

@@ -164,6 +164,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             methodPointcut.removeAdvice(NEW_ASPECT_NAME + ".advice1");
         }
         catch (Exception e) {
+            e.printStackTrace();
             fail(e.getMessage());
         }
     }

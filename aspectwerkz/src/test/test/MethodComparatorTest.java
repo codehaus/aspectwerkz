@@ -59,11 +59,6 @@ public class MethodComparatorTest extends TestCase {
         return new junit.framework.TestSuite(MethodComparatorTest.class);
     }
 
-    public MethodComparatorTest(String name) {
-        super(name);
-        SystemLoader.getSystem("tests").initialize();
-    }
-
     public void __generated$_AW_$method1() {
     }
 
