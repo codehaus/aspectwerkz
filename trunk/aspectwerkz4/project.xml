@@ -115,10 +115,6 @@
             <id>jrexx</id>
             <version>1.1.1</version>
         </dependency>
-        <dependency>
-            <id>piccolo</id>
-            <version>1.03</version>
-        </dependency>
 
         <!-- ============================================================== -->
         <!-- for building, testing and samples (not needed at runtime) -->
