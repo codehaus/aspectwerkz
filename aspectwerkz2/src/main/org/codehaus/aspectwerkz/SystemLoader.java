@@ -15,7 +15,6 @@ import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.transform.ClassCacheTuple;
-import org.codehaus.aspectwerkz.extension.hotswap.HotSwapClient;
 
 /**
  * Stores the AspectSystem on a per ClassLoader basis.<p/>
