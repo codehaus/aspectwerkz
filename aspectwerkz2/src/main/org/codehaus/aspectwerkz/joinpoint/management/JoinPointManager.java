@@ -160,7 +160,6 @@ public class JoinPointManager {
             );
 
             threadLocal = new ThreadLocal();
-            threadLocal.set(new JoinPointInfo());
 
             synchronized (m_joinPoints) {
                 if (m_joinPoints.length <= joinPointIndex) {
@@ -177,6 +176,10 @@ public class JoinPointManager {
         }
 
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
+        if (joinPointInfo == null) {
+            joinPointInfo = new JoinPointInfo();
+            threadLocal.set(joinPointInfo);
+        }
 
         //TODO: ALEX AVCF - JIT breaks cflow - dig that
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
@@ -258,7 +261,6 @@ public class JoinPointManager {
             );
 
             threadLocal = new ThreadLocal();
-            threadLocal.set(new JoinPointInfo());
 
             synchronized (m_joinPoints) {
                 if (m_joinPoints.length <= joinPointIndex) {
@@ -275,6 +277,10 @@ public class JoinPointManager {
         }
 
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
+        if (joinPointInfo == null) {
+            joinPointInfo = new JoinPointInfo();
+            threadLocal.set(joinPointInfo);
+        }
 
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(
@@ -352,7 +358,6 @@ public class JoinPointManager {
             );
 
             threadLocal = new ThreadLocal();
-            threadLocal.set(new JoinPointInfo());
 
             synchronized (m_joinPoints) {
                 if (m_joinPoints.length <= joinPointIndex) {
@@ -369,6 +374,10 @@ public class JoinPointManager {
         }
 
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
+        if (joinPointInfo == null) {
+            joinPointInfo = new JoinPointInfo();
+            threadLocal.set(joinPointInfo);
+        }
 
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(
@@ -434,7 +443,6 @@ public class JoinPointManager {
             );
 
             threadLocal = new ThreadLocal();
-            threadLocal.set(new JoinPointInfo());
 
             synchronized (m_joinPoints) {
                 if (m_joinPoints.length <= joinPointIndex) {
@@ -451,6 +459,10 @@ public class JoinPointManager {
         }
 
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
+        if (joinPointInfo == null) {
+            joinPointInfo = new JoinPointInfo();
+            threadLocal.set(joinPointInfo);
+        }
 
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(
@@ -517,7 +529,6 @@ public class JoinPointManager {
             );
 
             threadLocal = new ThreadLocal();
-            threadLocal.set(new JoinPointInfo());
 
             synchronized (m_joinPoints) {
                 if (m_joinPoints.length <= joinPointIndex) {
@@ -534,6 +545,10 @@ public class JoinPointManager {
         }
 
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
+        if (joinPointInfo == null) {
+            joinPointInfo = new JoinPointInfo();
+            threadLocal.set(joinPointInfo);
+        }
 
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(
@@ -629,10 +644,10 @@ public class JoinPointManager {
                 null, PointcutType.EXECUTION//TODO CAN BE @CALL - see proceedWithCallJoinPoint
         );
 
-//        // ALEX - cflow is a pain to debug
-//        for (Iterator it = cflowExpressions.iterator(); it.hasNext();) {
-//            java.lang.System.out.println("(Expression)(it.next() = " + ((Expression)(it.next())).getExpression());
-//        }
+        // ALEX - cflow is a pain to debug
+        for (Iterator it = cflowExpressions.iterator(); it.hasNext();) {
+            java.lang.System.out.println("(Expression)(it.next() = " + ((Expression)(it.next())).getExpression());
+        }
 
         // TODO: cflow for before and after advices needed
         return new MethodJoinPoint(
