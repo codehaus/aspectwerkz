@@ -226,6 +226,8 @@ public class PointcutManager {
         for (Iterator it = m_pointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut) it.next();
             if (pointcut.getExpressionInfo().getExpression().match(ctx)) {
+//                System.out.println("PointcutManager.getPointcuts match " + pointcut.getExpressionInfo().toString()
+//                        + " at "  + pointcut.getExpressionInfo().getNamespace() + " for  " + ctx.getReflectionInfo().toString());
                 pointcutList.add(pointcut);
             }
         }

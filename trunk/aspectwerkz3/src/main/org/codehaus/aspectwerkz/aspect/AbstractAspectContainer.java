@@ -231,19 +231,16 @@ public abstract class AbstractAspectContainer implements AspectContainer {
                     Method method = (Method) it.next();
 
                     // TODO XXX using startsWith -> does not match on args, ok I guess, name of advice should be unique
-                    if (adviceDef.getName().startsWith(method.getName())) {
+                    if (adviceDef.getName().startsWith(m_contextPrototype.getName()+"/"+method.getName())) {
                         AdviceInfo adviceInfo = new AdviceInfo(
                                 m_contextPrototype,
                                 method,
                                 adviceDef.getType(),
-                                adviceDef.getSpecialArgumentType()
-                        );
-                        // prefix advice name with aspect name to allow aspect reuse
-                        String adviceName = AdviceInfo.createAdviceName(
-                                m_contextPrototype.getName(),
+                                adviceDef.getSpecialArgumentType(),
                                 adviceDef.getName()
                         );
-                        m_adviceInfos.put(adviceName, adviceInfo);
+                        // adviceInfo
+                        m_adviceInfos.put(adviceDef.getName(), adviceInfo);
                     }
                 }
             }

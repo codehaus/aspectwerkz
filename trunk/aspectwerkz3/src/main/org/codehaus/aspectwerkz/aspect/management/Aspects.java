@@ -319,7 +319,7 @@ public class Aspects {
                     pointcut = new Pointcut(container.getContext(), adviceDef.getExpressionInfo());
                     pointcutManager.addPointcut(pointcut);
                 }
-                pointcut.addAroundAdvice(AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName()));
+                pointcut.addAroundAdvice(adviceDef.getName());//AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName()));
             }
             for (Iterator it2 = aspectDef.getBeforeAdviceDefinitions().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
@@ -328,7 +328,7 @@ public class Aspects {
                     pointcut = new Pointcut(container.getContext(), adviceDef.getExpressionInfo());
                     pointcutManager.addPointcut(pointcut);
                 }
-                pointcut.addBeforeAdvice(AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName()));
+                pointcut.addBeforeAdvice(adviceDef.getName());//AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName()));
             }
             for (Iterator it2 = aspectDef.getAfterAdviceDefinitions().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
@@ -340,17 +340,17 @@ public class Aspects {
                 if (adviceDef.getType().equals(AdviceType.AFTER) ||
                     adviceDef.getType().equals(AdviceType.AFTER_FINALLY)) {
                     pointcut.addAfterFinallyAdvices(
-                            AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName())
+                            adviceDef.getName()//AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName())
                     );
                 }
                 if (adviceDef.getType().equals(AdviceType.AFTER_RETURNING)) {
                     pointcut.addAfterReturningAdvices(
-                            AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName())
+                            adviceDef.getName()//AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName())
                     );
                 }
                 if (adviceDef.getType().equals(AdviceType.AFTER_THROWING)) {
                     pointcut.addAfterThrowingAdvices(
-                            AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName())
+                            adviceDef.getName()//AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName())
                     );
                 }
             }

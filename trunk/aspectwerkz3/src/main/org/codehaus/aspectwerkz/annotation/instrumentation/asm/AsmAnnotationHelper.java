@@ -168,7 +168,7 @@ public class AsmAnnotationHelper {
      * Can be used to speed up ASM and avoid unecessary bytecode writing thru a regular ClassWriter when this is not
      * needed (read only purpose).
      */
-    private static class NullClassVisitor implements ClassVisitor {
+    public static class NullClassVisitor implements ClassVisitor {
 
         public void visit(int i, int i1, String s, String s1, String[] strings, String s2) {
         }
@@ -195,7 +195,7 @@ public class AsmAnnotationHelper {
      * Can be used to speed up ASM and avoid unecessary bytecode writing thru a regular CodeWriter when this is not
      * needed (read only purpose)
      */
-    private static class NullCodeVisitor implements CodeVisitor {
+    public static class NullCodeVisitor implements CodeVisitor {
 
         private final static CodeVisitor NULL_CODE_VISITOR = new NullCodeVisitor();
 

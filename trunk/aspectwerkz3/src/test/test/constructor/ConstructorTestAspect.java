@@ -99,7 +99,7 @@ public class ConstructorTestAspect {
     }
 
     /**
-     * @Around call5
+     * @Around call5 AND ! withincode(* test.constructor.*.testExecutionReturnFalseType(..))
      */
     public Object aroundCall2(final JoinPoint joinPoint) throws Throwable {
         return new Integer(0);

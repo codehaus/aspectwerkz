@@ -43,12 +43,12 @@ public class AllTestsInlined extends TestCase {
         suite.addTestSuite(test.expression.ExpressionTest.class);
         suite.addTestSuite(test.rtti.RttiTest.class);
         suite.addTestSuite(test.proceedinnewthread.ProceedTest.class);
+        suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
         suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
 
         // NOT YET COMPLETED
         //suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal
 //        suite.addTestSuite(test.advisetostringbug.Test.class);//mixin
-//        suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
 //        suite.addTestSuite(test.handler.HandlerTest.class);
 //        suite.addTestSuite(test.orthogonal.OrthogonalTest.class);//field
 //        suite.addTestSuite(test.annotation.AnnotationTest.class);//field

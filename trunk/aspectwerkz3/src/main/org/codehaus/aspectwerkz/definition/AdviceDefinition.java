@@ -114,7 +114,7 @@ public class AdviceDefinition {
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
-        m_name = name;
+        m_name = aspectName + "/" + name;
         m_type = type;
         m_specialArgumentType = specialArgumentType;
         m_aspectName = aspectName;
