@@ -11,16 +11,16 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 0.6.3.
+                    The latest official release is 0.6.5.
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.6.3.zip?download">0.6.3 in zip format.</a>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.6.5.zip?download">0.6.5 in zip format.</a>
                         </li>
                         <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.6.3.tar.gz?download">0.6.3 in tar.gz format.</a>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.6.5.tar.gz?download">0.6.5 in tar.gz format.</a>
                         </li>
                         <br/>
                         <li>
@@ -35,6 +35,29 @@
 
             <section name="Release notes">
 
+                <subsection name="New features and changes in release 0.6.5">
+                    <ul>
+                        <li>
+                            cflow (control flow) pointcuts.
+                        </li>
+                        <li>
+                            Many bugfixes introduced by the new pointcut model implementation.
+                        </li>
+                        <li>
+                            The runtime attributes tags have changed. (They now have
+                            an aspectwerkz namespace and are using the same syntax as XDoclet.)
+                        </li>
+                        <li>
+                            The prefix <code>___AW_</code> is now used at all introduced methods and fields.
+                            Including the <code>Identifiable.getUuid</code> method which is renamed to
+                            <code>___AW_getUuid</code>
+                        </li>
+                        <li>
+                            Documentation and examples have been updated.
+                        </li>
+                    </ul>
+                </subsection>
+
                 <subsection name="New features and changes in release 0.6.3">
                     <ul>
                         <li>
@@ -43,41 +66,33 @@
                             and the model now has the essence of the AspectJ model.
                             See the documentation for details.
                         </li>
-                        <br/>
                         <li>
                             Abstract aspects definitions as well as pointcut expressions
                             (e.g.
                             <code>((pc1 OR pc2) AND !pc3)</code> and similar).
                         </li>
-                        <br/>
                         <li>
                             Multiple weave models.
                         </li>
-                        <br/>
                         <li>
                             Multiple AspectWerkz system can run in the same JVM concurrently.
                         </li>
-                        <br/>
                         <li>
                             setField and getField now works for get and set java.util.*
                             collection fields (e.g. add/get/remove/size and so on).
                         </li>
-                        <br/>
                         <li>
                             Advice and introduction container is now pluggable. I.e. the
                             user can provide its own custom implementation (f.e. to enable
                             persistence).
                         </li>
-                        <br/>
                         <li>
                             The transparent persistence of advices and introductions have
                             been moved to the sandbox.
                         </li>
-                        <br/>
                         <li>
                             Many bug fixes.
                         </li>
-                        <br/>
                     </ul>
                 </subsection>
 
@@ -88,7 +103,6 @@
                             method invocation (caller side) apart from method
                             execution (callee side).
                         </li>
-                        <br/>
                         <li>
                             Fine-grained pattern language for picking out pointcuts.
                             It is now possible to pick out method pointcuts by method name,
@@ -96,64 +110,51 @@
                             by field name and field type. All these support regular
                             expressions.
                         </li>
-                        <br/>
                         <li>
                             Runtime attributes for advices (method/field/throws).
                             I.e. add meta-data to your methods/field/classes as
                             JavaDoc tags which are picked up by the weaver and
                             used as rule set when doing the transformations.
                         </li>
-                        <br/>
                         <li>
                             Class selectors for aspects. I.e. pick out classes using
                             regular expressions.
                         </li>
-                        <br/>
                         <li>
                             Advising of static fields.
                         </li>
-                        <br/>
                         <li>
                             Parameters to advices. The possibility to pass
                             parameters to advices through the XML definition.
                         </li>
-                        <br/>
                         <li>
                             Advice stacks. The possibility to define stacks/chains
                             of advices that can be reused throughout the XML definition.
                         </li>
-                        <br/>
                         <li>
                             MethodAdvice has been renamed to AroundAdvice and the
                             FieldAdvices has been renamed to PreAdvice and PostAdvice.
                         </li>
-                        <br/>
                         <li>
                             Creation and registration of new advices at runtime
                             (in previous releases you could only add/remove/reorder
                             existing advices).
                         </li>
-                        <br/>
                         <li>
                             Ant task for offline post-processing.
                         </li>
-                        <br/>
                         <li>
                             More flexible startup and definition handling process.
                         </li>
-                        <br/>
                         <li>
                             Multiple pattern declarations for pointcuts.
                         </li>
-                        <br/>
                         <li>
                             More documentation and examples.
                         </li>
-                        <br/>
                         <li>
                             Many many bugfixes.
                         </li>
-                        <br/>
                     </ul>
                 </subsection>
 
