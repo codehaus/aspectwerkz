@@ -4,7 +4,14 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <body>
-There is TODO contacts in the address book.<br/>
+<%
+    String error = (String) request.getAttribute("error");
+    if (error != null) {
+        %><b>Error:</b><%= error %><br/><br/><%
+    }
+%>
+
+There is <b><%= request.getAttribute("adb_count") %></b> contacts in the address book.<br/>
 <a href="demo.do?action=LIST"/>Show contacts</a><br/>
 <a href="add.jsp"/>Add contact</a><br/>
 <br/>

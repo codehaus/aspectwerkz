@@ -15,7 +15,7 @@ import org.codehaus.aspectwerkz.Pointcut;
  *
  * @Aspect perJVM
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class UnitOfWorkProtocol extends AbstractUnitOfWorkProtocol {
 
@@ -24,14 +24,14 @@ public class UnitOfWorkProtocol extends AbstractUnitOfWorkProtocol {
     /**
      * Defines the methods that should run in a transaction.
      *
-     * @Execution aspectwerkz.aosd.addressbook.Contact(..)
+     * @Execution aspectwerkz.aosd.addressbook.AddressBookManager+.new*(..)
      */
     Pointcut transactionalObjectCreationPoints;
 
     /**
      * Defines all the fields (in all object) that should mark an object as dirty.
      *
-     * @Set * aspectwerkz.aosd.addressbook.*.*
+     * @Set * aspectwerkz.aosd.addressbook.AddressBook.m_foo
      */
     Pointcut transactionalObjectModificationPoints;
 

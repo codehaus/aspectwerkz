@@ -26,21 +26,4 @@ public class InitServlet extends HttpServlet {
         ServiceManager.startServices();
     }
 
-    private static Class me;
-    private static JoinPointManager jpm;
-    static {
-        try {
-        me = Class.forName("aspectwerkz.aosd.web.InitServlet");
-
-        System.out.println("got " + me);
-
-        jpm = JoinPointManager.getJoinPointManager(me, "aosd");
-
-            System.out.println("got " + jpm);
-
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-    }
-
 }
