@@ -10,11 +10,11 @@ package org.codehaus.aspectwerkz.definition.attribute;
 import java.io.Serializable;
 
 /**
- * Attribute for the Post Advice construct.
+ * Attribute for the after advice construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class PostAttribute implements Serializable {
+public class AfterAttribute implements Serializable {
 
     /**
      * @TODO: calculate serialVersionUID
@@ -27,12 +27,12 @@ public class PostAttribute implements Serializable {
     private final String m_expression;
 
     /**
-     * Create an PostAdvice attribute.
+     * Create an After attribute.
      *
      * @param expression the expression for the advice
      */
-    public PostAttribute(final String expression) {
-        if (expression == null) throw new IllegalArgumentException("expression is not valid for post advice");
+    public AfterAttribute(final String expression) {
+        if (expression == null) throw new IllegalArgumentException("expression is not valid for after advice");
         m_expression = expression;
     }
 

@@ -87,7 +87,7 @@ public abstract class AspectAttributeParser {
      * @param methodIndex
      * @param aspectDef
      */
-    protected void createAndAddPreAdviceDefToAspectDef(final String expression,
+    protected void createAndAddBeforeAdviceDefToAspectDef(final String expression,
                                                        final String adviceName,
                                                        final String aspectName,
                                                        final String aspectClassName,
@@ -98,7 +98,7 @@ public abstract class AspectAttributeParser {
                 adviceName, aspectName, aspectClassName, expression,
                 method, methodIndex, aspectDef
         );
-        aspectDef.addPreAdvice(adviceDef);
+        aspectDef.addBeforeAdvice(adviceDef);
     }
 
     /**
@@ -112,7 +112,7 @@ public abstract class AspectAttributeParser {
      * @param methodIndex
      * @param aspectDef
      */
-    protected void createAndAddPostAdviceDefToAspectDef(final String expression,
+    protected void createAndAddAfterAdviceDefToAspectDef(final String expression,
                                                         final String adviceName,
                                                         final String aspectName,
                                                         final String aspectClassName,
@@ -123,7 +123,7 @@ public abstract class AspectAttributeParser {
                 adviceName, aspectName, aspectClassName, expression,
                 method, methodIndex, aspectDef
         );
-        aspectDef.addPostAdvice(adviceDef);
+        aspectDef.addAfterAdvice(adviceDef);
     }
 
     /**
