@@ -30,7 +30,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * Holds the pointcut definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: PointcutDefinition.java,v 1.7.2.1 2003-07-20 10:38:36 avasseur Exp $
+ * @version $Id: PointcutDefinition.java,v 1.7.2.2 2003-07-22 16:20:08 avasseur Exp $
  */
 public class PointcutDefinition implements Serializable {
 
@@ -180,7 +180,7 @@ public class PointcutDefinition implements Serializable {
                     m_regexpPattern = Pattern.compileCallerSidePattern(m_pattern);
                 }
                 else if (m_type.equalsIgnoreCase(CFLOW)) {
-                    m_regexpPattern = Pattern.compileMethodPattern(m_pattern);
+                    m_regexpPattern = Pattern.compileCallerSidePattern(m_pattern);
                 }
                 else {
                     throw new IllegalStateException("pointcut has an undefined type: " + m_type);

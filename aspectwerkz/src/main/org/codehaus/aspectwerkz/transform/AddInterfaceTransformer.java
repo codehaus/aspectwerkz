@@ -35,7 +35,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an interfaces to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddInterfaceTransformer.java,v 1.13.2.3 2003-07-20 10:38:37 avasseur Exp $
+ * @version $Id: AddInterfaceTransformer.java,v 1.13.2.4 2003-07-22 16:20:10 avasseur Exp $
  */
 public final class AddInterfaceTransformer extends AspectWerkzAbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -122,7 +122,7 @@ public final class AddInterfaceTransformer extends AspectWerkzAbstractInterfaceT
      * @param cu ConstantUtf8 constant
      * @return true if the class implements the interface
      */
-    private boolean implementsInterface(final ConstantUtf8 cu,
+    private static boolean implementsInterface(final ConstantUtf8 cu,
                                         final String interfaceName) {
         return cu.getBytes().equals(interfaceName.replace('.', '/'));
     }

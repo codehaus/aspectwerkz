@@ -55,7 +55,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.15.2.3 2003-07-20 10:38:37 avasseur Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.15.2.4 2003-07-22 16:20:10 avasseur Exp $
  */
 public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
@@ -84,6 +84,8 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
     /**
      * Makes the member method transformations.
+     *
+     * @todo remove all thread-safe stuff
      *
      * @param cs the class set.
      */
@@ -124,6 +126,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             final List proxyMethods = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
 
+                // filter the methods
                 String uuid = methodFilter(classMetaData, methods[i]);
                 if (methods[i].isStatic() || uuid == null) {
                     continue;
@@ -133,8 +136,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
                 // take care of identification of overloaded methods by inserting a sequence number
                 if (methodSequences.containsKey(methods[i].getName())) {
-                    int sequence = ((Integer)methodSequences.
-                            get(methods[i].getName())).intValue();
+                    int sequence = ((Integer)methodSequences.get(methods[i].getName())).intValue();
                     methodSequences.remove(methods[i].getName());
                     sequence++;
                     methodSequences.put(methods[i].getName(), new Integer(sequence));
@@ -827,10 +829,12 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      */
     private String methodFilter(final ClassMetaData classMetaData, final Method method) {
         String uuid = null;
-        if (method.getName().equals("<init>") || method.getName().equals("<clinit>") ||
+        if (method.getName().equals("<init>") ||
+                method.getName().equals("<clinit>") ||
                 method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
                 method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
                 method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
+                method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
                 method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             uuid = null;
         }

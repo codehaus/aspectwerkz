@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * Manages all the services in the system.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ServiceManager.java,v 1.4 2003-07-08 19:35:02 jboner Exp $
+ * @version $Id: ServiceManager.java,v 1.4.2.1 2003-07-22 16:20:08 avasseur Exp $
  */
 public class ServiceManager {
 
@@ -136,9 +136,9 @@ public class ServiceManager {
      * @param className the class name for the service
      * @param definition the service definition
      */
-    protected Service startService(final ClassLoader loader,
-                                   final String className,
-                                   final Definition definition) {
+    protected static Service startService(final ClassLoader loader,
+                                          final String className,
+                                          final Definition definition) {
         try {
             Class klass = loader.loadClass(className);
             Method getInstance = klass.getMethod("getInstance", new Class[]{});

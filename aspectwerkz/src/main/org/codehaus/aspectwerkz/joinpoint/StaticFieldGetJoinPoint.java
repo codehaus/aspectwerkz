@@ -33,7 +33,7 @@ import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
  * join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticFieldGetJoinPoint.java,v 1.8.2.1 2003-07-20 10:38:36 avasseur Exp $
+ * @version $Id: StaticFieldGetJoinPoint.java,v 1.8.2.2 2003-07-22 16:20:09 avasseur Exp $
  */
 public class StaticFieldGetJoinPoint extends FieldJoinPoint {
 

@@ -43,7 +43,7 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
  * Holds the constants and utility method used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: TransformationUtil.java,v 1.13.2.1 2003-07-20 10:38:37 avasseur Exp $
+ * @version $Id: TransformationUtil.java,v 1.13.2.2 2003-07-22 16:20:10 avasseur Exp $
  */
 public final class TransformationUtil {
 

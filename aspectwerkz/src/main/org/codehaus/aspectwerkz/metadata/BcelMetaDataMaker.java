@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -34,7 +35,7 @@ import org.apache.bcel.generic.Type;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
- * @version $Id: BcelMetaDataMaker.java,v 1.2.2.1 2003-07-20 10:38:36 avasseur Exp $
+ * @version $Id: BcelMetaDataMaker.java,v 1.2.2.2 2003-07-22 16:20:09 avasseur Exp $
  */
 public class BcelMetaDataMaker extends MetaDataMaker {
 
@@ -134,18 +135,29 @@ public class BcelMetaDataMaker extends MetaDataMaker {
         if (method == null) throw new IllegalArgumentException("method can not be null");
 
         MethodMetaData methodMetaData = new MethodMetaData();
-
         methodMetaData.setName(method.getName());
+
+        // return type
         methodMetaData.setReturnType(method.getReturnType().toString());
 
+        // parameters
         Type[] javaParameters = method.getArgumentTypes();
-
         String[] parameterTypes = new String[javaParameters.length];
-
         for (int j = 0; j < javaParameters.length; j++) {
             parameterTypes[j] = javaParameters[j].toString();
         }
         methodMetaData.setParameterTypes(parameterTypes);
+
+        // exceptions
+        String[] exceptions;
+        ExceptionTable exceptionTable = method.getExceptionTable();
+        if (exceptionTable != null) {
+            exceptions = exceptionTable.getExceptionNames();
+        }
+        else {
+            exceptions = new String[0];
+        }
+        methodMetaData.setExceptionTypes(exceptions);
 
         return methodMetaData;
     }

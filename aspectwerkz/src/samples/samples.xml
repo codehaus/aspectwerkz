@@ -53,6 +53,7 @@
 
     <aspect name="Asynchronous">
         <pointcut-def name="asynchronous_calls" type="method" pattern="* examples.asynchronous.Target.toRunAsynchronously()"/>
+
         <advice pointcut="asynchronous_calls">
             <advice-ref name="asynchronous"/>
         </advice>

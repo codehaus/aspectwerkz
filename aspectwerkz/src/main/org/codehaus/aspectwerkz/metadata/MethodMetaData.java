@@ -24,7 +24,7 @@ import java.io.Serializable;
  * Holds meta-data for a method.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodMetaData.java,v 1.4 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: MethodMetaData.java,v 1.4.2.1 2003-07-22 16:20:09 avasseur Exp $
  */
 public class MethodMetaData implements MetaData, Serializable {
 
@@ -154,8 +154,8 @@ public class MethodMetaData implements MetaData, Serializable {
         final MethodMetaData obj = (MethodMetaData)o;
         return areEqualsOrBothNull(obj.m_name, this.m_name) &&
                 areEqualsOrBothNull(obj.m_returnType, this.m_returnType) &&
-                areEqualsOrBothNull(obj.m_parameterTypes, this.m_parameterTypes) &&
-                areEqualsOrBothNull(obj.m_exceptionTypes, this.m_exceptionTypes) &&
+                areStringArraysEqual(obj.m_parameterTypes, this.m_parameterTypes) &&
+                areStringArraysEqual(obj.m_exceptionTypes, this.m_exceptionTypes) &&
                 obj.m_modifiers == this.m_modifiers;
     }
 
@@ -168,8 +168,16 @@ public class MethodMetaData implements MetaData, Serializable {
         int result = 17;
         result = 37 * result + hashCodeOrZeroIfNull(m_name);
         result = 37 * result + hashCodeOrZeroIfNull(m_returnType);
-        result = 37 * result + hashCodeOrZeroIfNull(m_parameterTypes);
-        result = 37 * result + hashCodeOrZeroIfNull(m_exceptionTypes);
+        if (m_parameterTypes != null) {
+            for (int i = 0; i < m_parameterTypes.length; i++) {
+                result = 37 * result + hashCodeOrZeroIfNull(m_parameterTypes[i]);
+            }
+        }
+        if (m_exceptionTypes != null) {
+            for (int i = 0; i < m_exceptionTypes.length; i++) {
+                result = 37 * result + hashCodeOrZeroIfNull(m_exceptionTypes[i]);
+            }
+        }
         result = 37 * result + m_modifiers;
         return result;
     }
@@ -177,6 +185,16 @@ public class MethodMetaData implements MetaData, Serializable {
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
         if (null == o1) return (null == o2);
         return o1.equals(o2);
+    }
+
+    protected static boolean areStringArraysEqual(final String[] o1, final String[] o2) {
+        if (null == o1) return (null == o2);
+        for (int i = 0; i < o1.length; i++) {
+            if (!o1[i].equals(o2[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     protected static int hashCodeOrZeroIfNull(final Object o) {

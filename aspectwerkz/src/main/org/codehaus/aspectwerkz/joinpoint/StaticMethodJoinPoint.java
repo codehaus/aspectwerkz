@@ -31,7 +31,7 @@ import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
  * added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticMethodJoinPoint.java,v 1.10.2.2 2003-07-20 10:38:36 avasseur Exp $
+ * @version $Id: StaticMethodJoinPoint.java,v 1.10.2.3 2003-07-22 16:20:09 avasseur Exp $
  */
 public class StaticMethodJoinPoint extends MethodJoinPoint {
 

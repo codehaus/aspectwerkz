@@ -47,7 +47,7 @@ import java.text.SimpleDateFormat;
  * </ul>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: AspectWerkzC.java,v 1.1.2.1 2003-07-16 08:12:25 avasseur Exp $
+ * @version $Id: AspectWerkzC.java,v 1.1.2.2 2003-07-22 16:20:08 avasseur Exp $
  */
 public class AspectWerkzC {
 
@@ -243,6 +243,10 @@ public class AspectWerkzC {
 
             // transform
             byte[] transformed = preprocessor.preProcess(className, bos.toByteArray(), null);
+
+            // @todo alex clean this
+            // verify class is ok after transfo with Class.forName
+            // on all classes ?
 
             // override file
             fos = new FileOutputStream(file);

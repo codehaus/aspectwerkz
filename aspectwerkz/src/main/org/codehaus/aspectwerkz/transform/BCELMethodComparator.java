@@ -69,8 +69,9 @@ public final class BCELMethodComparator implements java.util.Comparator {
      */
     private int compare(final Method m1, final Method m2) {
         try {
-            if (!m1.getName().equals(m2.getName()))
+            if (!m1.getName().equals(m2.getName())) {
                 return m1.getName().compareTo(m2.getName());
+            }
             final Type[] args1 = Type.getArgumentTypes(m1.getSignature());
             final Type[] args2 = Type.getArgumentTypes(m2.getSignature());
             if (args1.length < args2.length) return -1;

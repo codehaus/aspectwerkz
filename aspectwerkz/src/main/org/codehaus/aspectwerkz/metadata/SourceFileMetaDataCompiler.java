@@ -41,7 +41,8 @@ import org.codehaus.aspectwerkz.definition.IntroductionWeavingRule;
 import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
 import org.codehaus.aspectwerkz.definition.ControllerDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.advice.CFlowAdvice;
+import org.codehaus.aspectwerkz.advice.CFlowPreAdvice;
+import org.codehaus.aspectwerkz.advice.CFlowPostAdvice;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**
@@ -55,7 +56,7 @@ import org.codehaus.aspectwerkz.util.Strings;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: SourceFileMetaDataCompiler.java,v 1.9.2.2 2003-07-20 10:38:36 avasseur Exp $
+ * @version $Id: SourceFileMetaDataCompiler.java,v 1.9.2.3 2003-07-22 16:20:09 avasseur Exp $
  */
 public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
@@ -128,7 +129,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final QDoxParser qdoxParser) {
 
         // add the cflow advice to the system
-        definition.addAdvice(CFlowAdvice.getDefinition());
+        definition.addAdvice(CFlowPreAdvice.getDefinition());
 
         // handle the definition attributes
         for (int i = 0; i < allClasses.length; i++) {
@@ -774,8 +775,9 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                 // create and add a new pointcut def
                 PointcutDefinition pointcutDef = new PointcutDefinition();
                 pointcutDef.setName(name);
-                pointcutDef.setClassPattern(className);
-                pointcutDef.setPattern(createMethodPattern(javaMethods[i]));
+                pointcutDef.setClassPattern("*");
+                String callerSidePattern = createCallerSidePattern(className, javaMethods[i]);
+                pointcutDef.setPattern(callerSidePattern);
                 pointcutDef.setType(PointcutDefinition.CFLOW);
 
                 definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
@@ -784,13 +786,14 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                 // create and add a new weaving rule def
                 AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                 weavingRule.setExpression(name);
-                weavingRule.addAdviceRef(CFlowAdvice.NAME);
+                weavingRule.addAdviceRef(CFlowPreAdvice.NAME);
+                weavingRule.addAdviceRef(CFlowPostAdvice.NAME);
                 definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                         addAdviceWeavingRule(weavingRule);
 
                 // add the pointcut pattern (a method patterns since the cflow pointcut
                 // is dependent on having a method pointcut)
-                weavingRule.addMethodPointcutPattern(pointcutDef);
+                weavingRule.addCallerSidePointcutPattern(pointcutDef);
 
                 break;
             }
@@ -855,7 +858,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
         for (int l = 0; l < parameters.length; l++) {
             JavaParameter parameter = parameters[l];
             String value = parameter.getType().getValue();
-            if (parameter.getType().getDimensions() >= 1) {
+            for (int i = 1; i <= parameter.getType().getDimensions(); i++) {
                 value += "[]";
             }
             pattern.append(value);
@@ -876,7 +879,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
     private static String createFieldPattern(final JavaField javaField) {
         final StringBuffer pattern = new StringBuffer();
         String value = javaField.getType().getValue();
-        if (javaField.getType().getDimensions() >= 1) {
+        for (int i = 1; i <= javaField.getType().getDimensions(); i++) {
             value += "[]";
         }
         pattern.append(value);

@@ -29,7 +29,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  *  in AspectWerkz.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSidePattern.java,v 1.4.2.1 2003-07-20 10:38:37 avasseur Exp $
+ * @version $Id: CallerSidePattern.java,v 1.4.2.2 2003-07-22 16:20:10 avasseur Exp $
  */
 public class CallerSidePattern extends Pattern {
 
@@ -55,8 +55,7 @@ public class CallerSidePattern extends Pattern {
      * @param methodMetaData the method meta-data
      * @return true if we have a matches
      */
-    public boolean matches(final String className,
-                           final MethodMetaData methodMetaData) {
+    public boolean matches(final String className, final MethodMetaData methodMetaData) {
         if (m_classPattern.matches(className) && m_methodPattern.matches(methodMetaData)) {
             return true;
         }
