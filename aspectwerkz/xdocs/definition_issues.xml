@@ -517,7 +517,6 @@
 
         <section name="Package namespaces">
             <p>
-                TODO fix for system level
                 Package namespaces provide a way to simplify the edition of the XML definition file so that it is not necessary
                 to prefix all <code>class</code> with the complete package information.<br/>
                 You have two ways of defining a package namespace:
