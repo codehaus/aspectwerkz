@@ -62,11 +62,6 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
                                    final String[] exceptions,
                                    final Attribute attrs) {
 
-        //TODO: I found it unefficient - would be better to skip the whole ClassAdapter if no JP
-        if (!m_ctx.isAdvised()) {
-            return super.visitMethod(access, name, desc, exceptions, attrs);
-        }
-
         if (CLINIT_METHOD_NAME.equals(name)) {
             m_hasClinitMethod = true;
             // at the beginning of the existing <clinit> method
@@ -114,7 +109,6 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
             super.visitEnd();
             return;
         }
-
         if (!m_hasClassField) {
             // create field
             //      private final static Class class$clazz = Class.forName("TargetClassName");
@@ -157,7 +151,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
     }
 
     /**
-     * Handles the method body of the <clinit>method.    ,
+     * Handles the method body of the <clinit>method.
      *
      * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
      */
