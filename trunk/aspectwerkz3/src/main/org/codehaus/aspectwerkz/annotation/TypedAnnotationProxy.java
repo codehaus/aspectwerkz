@@ -15,8 +15,8 @@ import java.io.Serializable;
 
 /**
  * The base class for the typed annotation proxies.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public abstract class TypedAnnotationProxy implements Annotation, Serializable {
     /**
@@ -31,7 +31,7 @@ public abstract class TypedAnnotationProxy implements Annotation, Serializable {
 
     /**
      * Returns the name.
-     *
+     * 
      * @return the name
      */
     public String getName() {
@@ -40,7 +40,7 @@ public abstract class TypedAnnotationProxy implements Annotation, Serializable {
 
     /**
      * Sets the name of the annotation, the '@[name]'.
-     *
+     * 
      * @param name
      */
     public void setName(final String name) {
@@ -49,7 +49,7 @@ public abstract class TypedAnnotationProxy implements Annotation, Serializable {
 
     /**
      * Sets the full value of the annotation (including possible named parameters etc.).
-     *
+     * 
      * @param value
      */
     public void setValue(final String value) {
@@ -66,7 +66,7 @@ public abstract class TypedAnnotationProxy implements Annotation, Serializable {
 
     /**
      * Checks if the annotation is typed or not.
-     *
+     * 
      * @return boolean
      */
     public boolean isTyped() {

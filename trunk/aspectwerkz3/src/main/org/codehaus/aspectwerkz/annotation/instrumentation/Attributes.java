@@ -28,8 +28,8 @@ import javassist.CtClass;
  */
 public class Attributes {
     /**
-     * Hold a cache of AttributeExtractors so we don't have to load the class loaded repeatedly when accessing custom
-     * attributes.
+     * Hold a cache of AttributeExtractors so we don't have to load the class loaded repeatedly when
+     * accessing custom attributes.
      */
     private static final Map s_extractorCache = new WeakHashMap();
 
@@ -47,8 +47,8 @@ public class Attributes {
      * Return all the attributes associated with the given method.
      * 
      * @param method The java.lang.reflect.Method describing the method.
-     * @return Attribute[] all attributes associated with the method. Returns a 0 length array in case no attributes
-     *         were found.
+     * @return Attribute[] all attributes associated with the method. Returns a 0 length array in
+     *         case no attributes were found.
      */
     public static Object[] getAttributes(final Method method) {
         Class klass = method.getDeclaringClass();
@@ -96,8 +96,8 @@ public class Attributes {
      * Return all the attributes associated with the given method.
      * 
      * @param method The java.lang.reflect.Method describing the method.
-     * @return Attribute[] all attributes associated with the method. Returns a 0 length array in case no attributes
-     *         were found.
+     * @return Attribute[] all attributes associated with the method. Returns a 0 length array in
+     *         case no attributes were found.
      */
     public static Object[] getAttributes(final Constructor constructor) {
         Class klass = constructor.getDeclaringClass();
@@ -124,7 +124,9 @@ public class Attributes {
         while (true) {
             Class[] interfaceClasses = klass.getInterfaces();
             for (int i = 0; i < interfaceClasses.length; i++) {
-                Object[] intAttribs = searchForConstructorAttributes(interfaceClasses[i], constructor);
+                Object[] intAttribs = searchForConstructorAttributes(
+                    interfaceClasses[i],
+                    constructor);
                 if (intAttribs.length > 0) {
                     attribList.addAll(Arrays.asList(intAttribs));
                 }
@@ -185,7 +187,9 @@ public class Attributes {
      * @param constructor
      * @return Attribute[]
      */
-    private static Object[] searchForConstructorAttributes(final Class klass, final Constructor constructor) {
+    private static Object[] searchForConstructorAttributes(
+        final Class klass,
+        final Constructor constructor) {
         AttributeExtractor extractor = getAttributeExtractor(klass);
         if (extractor != null) {
             String[] paramTypes = new String[constructor.getParameterTypes().length];
@@ -265,7 +269,9 @@ public class Attributes {
      * @param loader the class loader
      * @return the possibly 0-length array of attributes
      */
-    public static synchronized AttributeExtractor getAttributeExtractor(final CtClass ctClass, final ClassLoader loader) {
+    public static synchronized AttributeExtractor getAttributeExtractor(
+        final CtClass ctClass,
+        final ClassLoader loader) {
         if (ctClass.isPrimitive() || ctClass.isArray() || ctClass.getName().startsWith("java.")) {
             return null;
         }

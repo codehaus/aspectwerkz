@@ -22,8 +22,8 @@ import java.util.List;
 
 /**
  * Implementation of the ClassInfo interface for java.lang.reflect.*.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavaClassInfo implements ClassInfo {
     /**
@@ -93,7 +93,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Creates a new class meta data instance.
-     *
+     * 
      * @param klass
      */
     JavaClassInfo(final Class klass) {
@@ -115,15 +115,16 @@ public class JavaClassInfo implements ClassInfo {
             Method[] methods = m_class.getDeclaredMethods();
             for (int i = 0; i < methods.length; i++) {
                 Method method = methods[i];
-                m_methods.put(JavaMethodInfo.calculateHash(method), new JavaMethodInfo(method, this));
+                m_methods.put(
+                    JavaMethodInfo.calculateHash(method),
+                    new JavaMethodInfo(method, this));
             }
             Constructor[] constructors = m_class.getDeclaredConstructors();
             for (int i = 0; i < constructors.length; i++) {
                 Constructor constructor = constructors[i];
                 m_constructors.put(
-                        JavaConstructorInfo.calculateHash(constructor),
-                        new JavaConstructorInfo(constructor, this)
-                );
+                    JavaConstructorInfo.calculateHash(constructor),
+                    new JavaConstructorInfo(constructor, this));
             }
             Field[] fields = m_class.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
@@ -139,11 +140,12 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns the class info for a specific class.
-     *
+     * 
      * @return the class info
      */
     public static ClassInfo getClassInfo(final Class clazz) {
-        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(clazz.getClassLoader());
+        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(clazz
+                .getClassLoader());
         ClassInfo classInfo = repository.getClassInfo(clazz.getName());
         if (classInfo == null) {
             classInfo = new JavaClassInfo(clazz);
@@ -153,7 +155,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns the annotations infos.
-     *
+     * 
      * @return the annotations infos
      */
     public List getAnnotations() {
@@ -165,7 +167,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns the name of the class.
-     *
+     * 
      * @return the name of the class
      */
     public String getName() {
@@ -174,7 +176,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns the class modifiers.
-     *
+     * 
      * @return the class modifiers
      */
     public int getModifiers() {
@@ -183,79 +185,79 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns a constructor info by its hash.
-     *
+     * 
      * @param hash
      * @return
      */
     public ConstructorInfo getConstructor(final int hash) {
-        return (ConstructorInfo)m_constructors.get(hash);
+        return (ConstructorInfo) m_constructors.get(hash);
     }
 
     /**
      * Returns a list with all the constructors info.
-     *
+     * 
      * @return the constructors info
      */
     public ConstructorInfo[] getConstructors() {
         Object[] values = m_constructors.getValues();
         ConstructorInfo[] methodInfos = new ConstructorInfo[values.length];
         for (int i = 0; i < values.length; i++) {
-            methodInfos[i] = (ConstructorInfo)values[i];
+            methodInfos[i] = (ConstructorInfo) values[i];
         }
         return methodInfos;
     }
 
     /**
      * Returns a method info by its hash.
-     *
+     * 
      * @param hash
      * @return
      */
     public MethodInfo getMethod(final int hash) {
-        return (MethodInfo)m_methods.get(hash);
+        return (MethodInfo) m_methods.get(hash);
     }
 
     /**
      * Returns a list with all the methods info.
-     *
+     * 
      * @return the methods info
      */
     public MethodInfo[] getMethods() {
         Object[] values = m_methods.getValues();
         MethodInfo[] methodInfos = new MethodInfo[values.length];
         for (int i = 0; i < values.length; i++) {
-            methodInfos[i] = (MethodInfo)values[i];
+            methodInfos[i] = (MethodInfo) values[i];
         }
         return methodInfos;
     }
 
     /**
      * Returns a field info by its hash.
-     *
+     * 
      * @param hash
      * @return
      */
     public FieldInfo getField(final int hash) {
-        return (FieldInfo)m_fields.get(hash);
+        return (FieldInfo) m_fields.get(hash);
     }
 
     /**
      * Returns a list with all the field info.
-     *
+     * 
      * @return the field info
      */
     public FieldInfo[] getFields() {
         Object[] values = m_fields.getValues();
         FieldInfo[] fieldInfos = new FieldInfo[values.length];
         for (int i = 0; i < values.length; i++) {
-            fieldInfos[i] = (FieldInfo)values[i];
+            fieldInfos[i] = (FieldInfo) values[i];
         }
         return fieldInfos;
     }
 
     /**
      * Returns the interfaces.
-     *
+     * 
      * @return the interfaces
      */
     public ClassInfo[] getInterfaces() {
@@ -276,7 +278,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns the super class.
-     *
+     * 
      * @return the super class
      */
     public ClassInfo getSuperClass() {
@@ -296,7 +298,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns the component type if array type else null.
-     *
+     * 
      * @return the component type
      */
     public ClassInfo getComponentType() {
@@ -314,7 +316,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Is the class an interface.
-     *
+     * 
      * @return
      */
     public boolean isInterface() {
@@ -323,7 +325,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Is the class a primitive type.
-     *
+     * 
      * @return
      */
     public boolean isPrimitive() {
@@ -332,7 +334,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Is the class an array type.
-     *
+     * 
      * @return
      */
     public boolean isArray() {
@@ -340,9 +342,9 @@ public class JavaClassInfo implements ClassInfo {
     }
 
     /**
-     * Converts an internal Java array type name ([Lblabla) to the a the format used by the expression matcher
-     * (blabla[])
-     *
+     * Converts an internal Java array type name ([Lblabla) to the a the format used by the
+     * expression matcher (blabla[])
+     * 
      * @param typeName is type name
      * @return
      */
@@ -385,7 +387,7 @@ public class JavaClassInfo implements ClassInfo {
         if (!(o instanceof ClassInfo)) {
             return false;
         }
-        ClassInfo classInfo = (ClassInfo)o;
+        ClassInfo classInfo = (ClassInfo) o;
         return m_class.getName().toString().equals(classInfo.getName().toString());
     }
 

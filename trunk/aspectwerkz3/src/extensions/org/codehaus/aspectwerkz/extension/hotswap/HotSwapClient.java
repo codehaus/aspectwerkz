@@ -13,12 +13,11 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager;
 
 /**
- * In process HotSwap - Java level API
- * <p/>
- * When used, the hook* classes (AspectWerkz - core) MUST be in bootclasspath to ensure correct behavior and lookup of
- * the ClassPreProcessor singleton and the cache
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * In process HotSwap - Java level API <p/>When used, the hook* classes (AspectWerkz - core) MUST be
+ * in bootclasspath to ensure correct behavior and lookup of the ClassPreProcessor singleton and the
+ * cache
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class HotSwapClient {
 
@@ -28,7 +27,7 @@ public class HotSwapClient {
 
     /**
      * Native method to calls the JVM C level API
-     *
+     * 
      * @param className
      * @param klazz
      * @param newBytes
@@ -39,7 +38,7 @@ public class HotSwapClient {
 
     /**
      * In process hotswap
-     *
+     * 
      * @param klazz
      * @param newBytes
      */
@@ -52,32 +51,29 @@ public class HotSwapClient {
     }
 
     /**
-     * AspectWerkz HotSwap, uses the ClassPreProcessor if capable of Runtime weaving The given Class is hotswap after
-     * transformation based on the current definitions
-     *
+     * AspectWerkz HotSwap, uses the ClassPreProcessor if capable of Runtime weaving The given Class
+     * is hotswap after transformation based on the current definitions
+     * 
      * @param klazz
      */
     public static void hotswap(Class klazz) {
-        if ((
-                ClassPreProcessorHelper.class.getClassLoader() !=
-                ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader()
-            )
+        if ((ClassPreProcessorHelper.class.getClassLoader() != ClassPreProcessorHelper
+                .getClassPreProcessor().getClass().getClassLoader())
             && (ClassPreProcessorHelper.class.getClassLoader() != null)) {
-            throw new RuntimeException(
-                    "AspectWerkz is misconfigured for HotSwap cache to work: "
-                    + ClassPreProcessorHelper.class.getClassLoader() +
-                    " incompatible with "
-                    +
-                    ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader()
-            );
+            throw new RuntimeException("AspectWerkz is misconfigured for HotSwap cache to work: "
+                + ClassPreProcessorHelper.class.getClassLoader()
+                + " incompatible with "
+                + ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader());
         }
         // Note: the following will not reset the JoinPointManager - see 1.0 instead.
         try {
-            RuntimeClassProcessor runtimeProcessor = (RuntimeClassProcessor)ClassPreProcessorHelper.getClassPreProcessor();
+            RuntimeClassProcessor runtimeProcessor = (RuntimeClassProcessor) ClassPreProcessorHelper
+                    .getClassPreProcessor();
             hotswap(klazz, runtimeProcessor.preProcessActivate(klazz));
 
             // trash the join points
-            //JoinPointManager joinPointManager = JoinPointManager.getJoinPointManager(klazz, "N/A/notneeded");
+            //JoinPointManager joinPointManager = JoinPointManager.getJoinPointManager(klazz,
+            // "N/A/notneeded");
             //joinPointManager.reset();
             JoinPointManager.reset(klazz);
         } catch (Throwable t) {

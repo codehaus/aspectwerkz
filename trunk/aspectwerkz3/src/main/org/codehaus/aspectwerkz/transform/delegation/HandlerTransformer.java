@@ -46,13 +46,11 @@ public class HandlerTransformer implements Transformer {
     /**
      * Transforms the call side pointcuts.
      * 
-     * @param context
-     *            the transformation context
-     * @param klass
-     *            the class set.
+     * @param context the transformation context
+     * @param klass the class set.
      */
-    public void transform(final Context context, final Klass klass)
-            throws NotFoundException, CannotCompileException {
+    public void transform(final Context context, final Klass klass) throws NotFoundException,
+            CannotCompileException {
         List definitions = context.getDefinitions();
 
         //AXm_joinPointIndex =
@@ -61,15 +59,15 @@ public class HandlerTransformer implements Transformer {
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
-            ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass,
-                    context.getLoader());
+            ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
             if (classFilter(definition, new ExpressionContext(
-                    PointcutType.HANDLER, classInfo, classInfo), ctClass)) {
+                PointcutType.HANDLER,
+                classInfo,
+                classInfo), ctClass)) {
                 continue;
             }
             ctClass.instrument(new ExprEditor() {
-                public void edit(Handler handlerExpr)
-                        throws CannotCompileException {
+                public void edit(Handler handlerExpr) throws CannotCompileException {
                     try {
                         CtClass exceptionClass = null;
                         try {
@@ -86,36 +84,34 @@ public class HandlerTransformer implements Transformer {
                         }
                         MemberInfo withinMethodInfo = null;
                         if (where instanceof CtMethod) {
-                            withinMethodInfo = JavassistMethodInfo
-                                    .getMethodInfo((CtMethod) where, context
-                                            .getLoader());
+                            withinMethodInfo = JavassistMethodInfo.getMethodInfo(
+                                (CtMethod) where,
+                                context.getLoader());
                         } else if (where instanceof CtConstructor) {
-                            withinMethodInfo = JavassistConstructorInfo
-                                    .getConstructorInfo((CtConstructor) where,
-                                            context.getLoader());
+                            withinMethodInfo = JavassistConstructorInfo.getConstructorInfo(
+                                (CtConstructor) where,
+                                context.getLoader());
                         }
-                        ClassInfo exceptionClassInfo = JavassistClassInfo
-                                .getClassInfo(exceptionClass, context
-                                        .getLoader());
+                        ClassInfo exceptionClassInfo = JavassistClassInfo.getClassInfo(
+                            exceptionClass,
+                            context.getLoader());
                         ExpressionContext ctx = new ExpressionContext(
-                                PointcutType.HANDLER, exceptionClassInfo,
-                                withinMethodInfo);
+                            PointcutType.HANDLER,
+                            exceptionClassInfo,
+                            withinMethodInfo);
                         if (definition.hasPointcut(ctx)) {
                             // call the wrapper method instead of the callee
                             // method
                             StringBuffer body = new StringBuffer();
-                            body
-                                    .append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                            body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
                             body.append('.');
-                            body
-                                    .append(TransformationUtil.PROCEED_WITH_HANDLER_JOIN_POINT_METHOD);
+                            body.append(TransformationUtil.PROCEED_WITH_HANDLER_JOIN_POINT_METHOD);
                             body.append('(');
 
                             // TODO: unique hash is needed, based on: executing
                             // class, executing method, catch clause (and
                             // sequence number?)
-                            body.append(JavassistHelper
-                                    .calculateHash(exceptionClass));
+                            body.append(JavassistHelper.calculateHash(exceptionClass));
                             body.append(',');
                             body.append(klass.getJoinPointIndex());
                             if (Modifier.isStatic(where.getModifiers())) {
@@ -125,8 +121,7 @@ public class HandlerTransformer implements Transformer {
                             }
 
                             // TODO: use a better signature (or remove)
-                            body.append(exceptionClass.getName().replace('/',
-                                    '.'));
+                            body.append(exceptionClass.getName().replace('/', '.'));
                             body.append("\");");
                             handlerExpr.insertBefore(body.toString());
                             context.markAsAdvised();
@@ -147,16 +142,15 @@ public class HandlerTransformer implements Transformer {
     /**
      * Filters the classes to be transformed.
      * 
-     * @param definition
-     *            the definition
-     * @param ctx
-     *            the context
-     * @param cg
-     *            the class to filter
+     * @param definition the definition
+     * @param ctx the context
+     * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(final SystemDefinition definition,
-            final ExpressionContext ctx, final CtClass cg) {
+    public static boolean classFilter(
+        final SystemDefinition definition,
+        final ExpressionContext ctx,
+        final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }

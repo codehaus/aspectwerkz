@@ -15,8 +15,8 @@ import java.io.ObjectInputStream;
 
 /**
  * Implements the regular expression pattern matcher for types.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class TypePattern extends Pattern {
     /**
@@ -36,8 +36,8 @@ public class TypePattern extends Pattern {
 
     /**
      * Private constructor.
-     *
-     * @param pattern            the pattern
+     * 
+     * @param pattern the pattern
      * @param subtypePatternType the subtype pattern type
      */
     TypePattern(final String pattern, final SubtypePatternType subtypePatternType) {
@@ -48,7 +48,7 @@ public class TypePattern extends Pattern {
 
     /**
      * Matches a type name.
-     *
+     * 
      * @param typeName the name of the type
      * @return true if we have a matche
      */
@@ -64,7 +64,7 @@ public class TypePattern extends Pattern {
 
     /**
      * Returns the subtype pattern type
-     *
+     * 
      * @return boolean
      */
     public SubtypePatternType getSubtypePatternType() {
@@ -73,7 +73,7 @@ public class TypePattern extends Pattern {
 
     /**
      * Checks if the pattern matches all types.
-     *
+     * 
      * @return boolean
      */
     public boolean isEagerWildCard() {
@@ -82,7 +82,7 @@ public class TypePattern extends Pattern {
 
     /**
      * Returns the pattern as a string.
-     *
+     * 
      * @return the pattern
      */
     public String getPattern() {
@@ -91,13 +91,13 @@ public class TypePattern extends Pattern {
 
     /**
      * Escapes the type pattern.
-     *
+     * 
      * @param pattern the method pattern
      */
     protected void escape(final String pattern) {
         String typeName = pattern;
         if (ABBREVIATIONS.containsKey(pattern)) {
-            typeName = (String)ABBREVIATIONS.get(pattern);
+            typeName = (String) ABBREVIATIONS.get(pattern);
         }
         try {
             if (typeName.equals(REGULAR_WILDCARD) || typeName.equals(EAGER_WILDCARD)) {
@@ -118,13 +118,13 @@ public class TypePattern extends Pattern {
 
     /**
      * Provides custom deserialization.
-     *
+     * 
      * @param stream the object input stream containing the serialized object
      * @throws Exception in case of failure
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_pattern = (String)fields.get("m_pattern", null);
+        m_pattern = (String) fields.get("m_pattern", null);
         escape(m_pattern);
     }
 
@@ -149,9 +149,9 @@ public class TypePattern extends Pattern {
         if (!(o instanceof TypePattern)) {
             return false;
         }
-        final TypePattern obj = (TypePattern)o;
+        final TypePattern obj = (TypePattern) o;
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
-               && areEqualsOrBothNull(obj.m_typeNamePattern, this.m_typeNamePattern);
+            && areEqualsOrBothNull(obj.m_typeNamePattern, this.m_typeNamePattern);
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {

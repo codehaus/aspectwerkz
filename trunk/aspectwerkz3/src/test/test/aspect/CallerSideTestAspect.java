@@ -12,52 +12,57 @@ import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @Aspect perJVM
  */
 public class CallerSideTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression call(String test.CallerSideTestHelper.invokeMemberMethodPre()) && within(test.CallerSideAdviceTest)
+     * @Expression call(String test.CallerSideTestHelper.invokeMemberMethodPre()) &&
+     *             within(test.CallerSideAdviceTest)
      */
     Pointcut pc1;
 
     /**
-     * @Expression call(String test.CallerSideTestHelper.invokeMemberMethodPost()) && within(test.CallerSideAdviceTest)
+     * @Expression call(String test.CallerSideTestHelper.invokeMemberMethodPost()) &&
+     *             within(test.CallerSideAdviceTest)
      */
     Pointcut pc2;
 
     /**
-     * @Expression call(String test.CallerSideTestHelper.invokeMemberMethodPrePost()) && withincode(*
-     * test.CallerSideAdviceTest.test*(..))
+     * @Expression call(String test.CallerSideTestHelper.invokeMemberMethodPrePost()) &&
+     *             withincode(* test.CallerSideAdviceTest.test*(..))
      */
     Pointcut pc3;
 
     /**
-     * @Expression call(String test.CallerSideTestHelper.invokeStaticMethodPre()) && within(test.CallerSideAdviceTest)
+     * @Expression call(String test.CallerSideTestHelper.invokeStaticMethodPre()) &&
+     *             within(test.CallerSideAdviceTest)
      */
     Pointcut pc4;
 
     /**
-     * @Expression call(String test.CallerSideTestHelper.invokeStaticMethodPost()) && within(test.CallerSideAdviceTest)
+     * @Expression call(String test.CallerSideTestHelper.invokeStaticMethodPost()) &&
+     *             within(test.CallerSideAdviceTest)
      */
     Pointcut pc5;
 
     /**
-     * @Expression call(String test.CallerSideTestHelper.invokeStaticMethodPrePost()) && withincode(*
-     * test.CallerSideAdviceTest.test*(..))
+     * @Expression call(String test.CallerSideTestHelper.invokeStaticMethodPrePost()) &&
+     *             withincode(* test.CallerSideAdviceTest.test*(..))
      */
     Pointcut pc6;
 
     /**
-     * @Expression call(* test.CallerSideTestHelper.invokeMemberMethodAround*(..)) && within(test.CallerSideAdviceTest)
+     * @Expression call(* test.CallerSideTestHelper.invokeMemberMethodAround*(..)) &&
+     *             within(test.CallerSideAdviceTest)
      */
     Pointcut pc7;
 
     /**
      * @Expression call(* test.CallerSideTestHelper.invokeStaticMethodAround*()) && withincode(*
-     * test.CallerSideAdviceTest.test*(..))
+     *             test.CallerSideAdviceTest.test*(..))
      */
     Pointcut pc8;
 

@@ -9,8 +9,8 @@ package org.codehaus.aspectwerkz;
 
 /**
  * Holds an name/index tuple.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class NameIndexTuple {
     /**
@@ -25,8 +25,8 @@ public final class NameIndexTuple {
 
     /**
      * Sets the name and the advice index.
-     *
-     * @param name  the name
+     * 
+     * @param name the name
      * @param index the index
      */
     public NameIndexTuple(final String name, final IndexTuple index) {
@@ -36,7 +36,7 @@ public final class NameIndexTuple {
 
     /**
      * Returns the name.
-     *
+     * 
      * @return the name
      */
     public String getName() {
@@ -45,7 +45,7 @@ public final class NameIndexTuple {
 
     /**
      * Returns the index.
-     *
+     * 
      * @return the index
      */
     public IndexTuple getIndex() {

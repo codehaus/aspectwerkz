@@ -8,7 +8,7 @@
 package test.inheritedmixinbug;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Baspect extends Aaspect {
     public static class Bimpl extends Aimpl {

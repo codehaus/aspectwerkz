@@ -16,8 +16,8 @@ import java.util.List;
 
 /**
  * Implementation of the ConstructorInfo interface for java.lang.reflect.*.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorInfo {
     /**
@@ -32,7 +32,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     /**
      * Creates a new method meta data instance.
-     *
+     * 
      * @param constructor
      * @param declaringType
      */
@@ -42,13 +42,14 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     /**
      * Returns the constructor info for the constructor specified.
-     *
+     * 
      * @param constructor the constructor
      * @return the constructor info
      */
     public static ConstructorInfo getConstructorInfo(final Constructor constructor) {
         Class declaringClass = constructor.getDeclaringClass();
-        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass.getClassLoader());
+        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass
+                .getClassLoader());
         ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
@@ -58,7 +59,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     /**
      * Calculates the constructor hash.
-     *
+     * 
      * @param constructor
      * @return the hash
      */
@@ -72,24 +73,25 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     /**
      * Returns the attributes.
-     *
+     * 
      * @return the attributes
      * @TODO: fix constructor annotations
      */
     public List getAnnotations() {
         if (m_annotations == null) {
-            m_annotations = Annotations.getAnnotationInfos((Constructor)m_member);
+            m_annotations = Annotations.getAnnotationInfos((Constructor) m_member);
         }
-        return m_annotations;    }
+        return m_annotations;
+    }
 
     /**
      * Returns the parameter types.
-     *
+     * 
      * @return the parameter types
      */
     public ClassInfo[] getParameterTypes() {
         if (m_parameterTypes == null) {
-            Class[] parameterTypes = ((Constructor)m_member).getParameterTypes();
+            Class[] parameterTypes = ((Constructor) m_member).getParameterTypes();
             m_parameterTypes = new ClassInfo[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
                 Class parameterType = parameterTypes[i];
@@ -108,12 +110,12 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     /**
      * Returns the exception types.
-     *
+     * 
      * @return the exception types
      */
     public ClassInfo[] getExceptionTypes() {
         if (m_exceptionTypes == null) {
-            Class[] exceptionTypes = ((Constructor)m_member).getExceptionTypes();
+            Class[] exceptionTypes = ((Constructor) m_member).getExceptionTypes();
             m_exceptionTypes = new ClassInfo[exceptionTypes.length];
             for (int i = 0; i < exceptionTypes.length; i++) {
                 Class exceptionType = exceptionTypes[i];
@@ -137,8 +139,9 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
         if (!(o instanceof ConstructorInfo)) {
             return false;
         }
-        ConstructorInfo constructorInfo = (ConstructorInfo)o;
-        if (!m_declaringType.getName().toString().equals(constructorInfo.getDeclaringType().getName().toString())) {
+        ConstructorInfo constructorInfo = (ConstructorInfo) o;
+        if (!m_declaringType.getName().toString().equals(
+            constructorInfo.getDeclaringType().getName().toString())) {
             return false;
         }
         if (!m_member.getName().toString().equals(constructorInfo.getName().toString())) {
@@ -149,7 +152,8 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
             return false;
         }
         for (int i = 0; i < m_parameterTypes.length; i++) {
-            if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
+            if (!m_parameterTypes[i].getName().toString().equals(
+                parameterTypes[i].getName().toString())) {
                 return false;
             }
         }

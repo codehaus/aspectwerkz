@@ -20,26 +20,36 @@ import java.lang.reflect.Field;
 
 /**
  * Factory class for the signature hierarchy.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class SignatureFactory {
-    public static final Signature newMethodSignature(final Class declaringClass, final int joinPointHash) {
+    public static final Signature newMethodSignature(
+        final Class declaringClass,
+        final int joinPointHash) {
         MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
         return new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
     }
 
-    public static final Signature newFieldSignature(final Class declaringClass, final int joinPointHash) {
+    public static final Signature newFieldSignature(
+        final Class declaringClass,
+        final int joinPointHash) {
         Field field = AspectRegistry.getField(declaringClass, joinPointHash);
         return new FieldSignatureImpl(field.getDeclaringClass(), field);
     }
 
-    public static final Signature newConstructorSignature(final Class declaringClass, final int joinPointHash) {
-        ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash);
+    public static final Signature newConstructorSignature(
+        final Class declaringClass,
+        final int joinPointHash) {
+        ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(
+            declaringClass,
+            joinPointHash);
         return new ConstructorSignatureImpl(constructorTuple.getDeclaringClass(), constructorTuple);
     }
 
-    public static final Signature newCatchClauseSignature(final Class declaringClass, final int joinPointHash) {
+    public static final Signature newCatchClauseSignature(
+        final Class declaringClass,
+        final int joinPointHash) {
         return new CatchClauseSignatureImpl(declaringClass, declaringClass, "");
     }
 }

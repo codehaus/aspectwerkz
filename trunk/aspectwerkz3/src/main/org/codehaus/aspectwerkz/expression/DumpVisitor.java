@@ -34,10 +34,11 @@ import org.codehaus.aspectwerkz.expression.ast.ExpressionParserVisitor;
 import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class DumpVisitor implements ExpressionParserVisitor {
     private ASTRoot m_root;
+
     private int indent = 0;
 
     private DumpVisitor(final ASTRoot root) {
@@ -77,7 +78,7 @@ public class DumpVisitor implements ExpressionParserVisitor {
         System.out.println(indentString() + node);
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
-        data = (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
+        data = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
         --indent;
         return data;
     }
@@ -86,7 +87,7 @@ public class DumpVisitor implements ExpressionParserVisitor {
         System.out.println(indentString() + node);
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
-        data = (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
+        data = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
         --indent;
         return data;
     }

@@ -9,20 +9,31 @@ package org.codehaus.aspectwerkz.expression;
 
 /**
  * Type-safe enum for the pointcut types.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class PointcutType {
     public static final PointcutType EXECUTION = new PointcutType("execution");
+
     public static final PointcutType CALL = new PointcutType("call");
+
     public static final PointcutType SET = new PointcutType("set");
+
     public static final PointcutType GET = new PointcutType("get");
+
     public static final PointcutType HANDLER = new PointcutType("handler");
+
     public static final PointcutType WITHIN = new PointcutType("within");
+
     public static final PointcutType WITHIN_CODE = new PointcutType("withincode");
-    public static final PointcutType STATIC_INITIALIZATION = new PointcutType("staticinitialization");
+
+    public static final PointcutType STATIC_INITIALIZATION = new PointcutType(
+        "staticinitialization");
+
     public static final PointcutType ATTRIBUTE = new PointcutType("attribute");
+
     public static final PointcutType ANY = new PointcutType("any");
+
     private final String m_name;
 
     private PointcutType(String name) {
@@ -40,8 +51,10 @@ public class PointcutType {
         if (!(o instanceof PointcutType)) {
             return false;
         }
-        final PointcutType pointcutType = (PointcutType)o;
-        if ((m_name != null) ? (!m_name.equals(pointcutType.m_name)) : (pointcutType.m_name != null)) {
+        final PointcutType pointcutType = (PointcutType) o;
+        if ((m_name != null)
+            ? (!m_name.equals(pointcutType.m_name))
+            : (pointcutType.m_name != null)) {
             return false;
         }
         return true;

@@ -14,16 +14,17 @@ import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
 
 /**
  * Abstraction of a method join point.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 class MethodJoinPoint extends JoinPointBase {
     private MethodSignature m_signature;
+
     private MethodRttiImpl m_rtti;
 
     /**
      * Creates a new join point.
-     *
+     * 
      * @param type
      * @param targetClass
      * @param signature
@@ -33,20 +34,29 @@ class MethodJoinPoint extends JoinPointBase {
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public MethodJoinPoint(
-            final int type, final Class targetClass, final Signature signature, final Rtti rtti,
-            final JoinPointMetaData joinPointMetaData, final AroundAdviceExecutor aroundAdviceExecutor,
-            final BeforeAdviceExecutor beforeAdviceExecutor,
-            final AfterAdviceExecutor afterAdviceExecutor) {
-        super(type, targetClass, joinPointMetaData, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
-        m_signature = (MethodSignature)signature;
-        m_rtti = (MethodRttiImpl)rtti;
+    public MethodJoinPoint(final int type,
+                           final Class targetClass,
+                           final Signature signature,
+                           final Rtti rtti,
+                           final JoinPointMetaData joinPointMetaData,
+                           final AroundAdviceExecutor aroundAdviceExecutor,
+                           final BeforeAdviceExecutor beforeAdviceExecutor,
+                           final AfterAdviceExecutor afterAdviceExecutor) {
+        super(
+            type,
+            targetClass,
+            joinPointMetaData,
+            aroundAdviceExecutor,
+            beforeAdviceExecutor,
+            afterAdviceExecutor);
+        m_signature = (MethodSignature) signature;
+        m_rtti = (MethodRttiImpl) rtti;
     }
 
     /**
-     * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
-     * invoked, the original method is invoked. Is called recursively.
-     *
+     * Walks through the pointcuts and invokes all its advices. When the last advice of the last
+     * pointcut has been invoked, the original method is invoked. Is called recursively.
+     * 
      * @return the result from the next invocation
      * @throws Throwable
      */
@@ -58,7 +68,7 @@ class MethodJoinPoint extends JoinPointBase {
 
     /**
      * Returns the signature for the join point.
-     *
+     * 
      * @return the signature
      */
     public Signature getSignature() {
@@ -67,7 +77,7 @@ class MethodJoinPoint extends JoinPointBase {
 
     /**
      * Returns the RTTI for the join point.
-     *
+     * 
      * @return the RTTI
      */
     public Rtti getRtti() {
@@ -76,7 +86,7 @@ class MethodJoinPoint extends JoinPointBase {
 
     /**
      * Returns a string representation of the join puoint.
-     *
+     * 
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */

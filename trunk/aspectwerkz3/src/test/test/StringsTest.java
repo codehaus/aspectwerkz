@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class StringsTest extends TestCase {
     public StringsTest(String name) {

@@ -14,16 +14,17 @@ import org.codehaus.aspectwerkz.joinpoint.Signature;
 
 /**
  * Abstraction of a catch clause join point.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 class CatchClauseJoinPoint extends JoinPointBase {
     private final CatchClauseSignature m_signature;
+
     private final CatchClauseRtti m_rtti;
 
     /**
      * Creates a new join point.
-     *
+     * 
      * @param targetClass
      * @param signature
      * @param rtti
@@ -32,28 +33,33 @@ class CatchClauseJoinPoint extends JoinPointBase {
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public CatchClauseJoinPoint(
-            final Class targetClass, final Signature signature, final Rtti rtti,
-            final JoinPointMetaData joinPointMetaData,
-            final AroundAdviceExecutor aroundAdviceExecutor,
-            final BeforeAdviceExecutor beforeAdviceExecutor,
-            final AfterAdviceExecutor afterAdviceExecutor) {
+    public CatchClauseJoinPoint(final Class targetClass,
+                                final Signature signature,
+                                final Rtti rtti,
+                                final JoinPointMetaData joinPointMetaData,
+                                final AroundAdviceExecutor aroundAdviceExecutor,
+                                final BeforeAdviceExecutor beforeAdviceExecutor,
+                                final AfterAdviceExecutor afterAdviceExecutor) {
         super(
-                JoinPointType.HANDLER, targetClass, joinPointMetaData, aroundAdviceExecutor, beforeAdviceExecutor,
-                afterAdviceExecutor
-        );
-        m_signature = (CatchClauseSignature)signature;
-        m_rtti = (CatchClauseRtti)rtti;
+            JoinPointType.HANDLER,
+            targetClass,
+            joinPointMetaData,
+            aroundAdviceExecutor,
+            beforeAdviceExecutor,
+            afterAdviceExecutor);
+        m_signature = (CatchClauseSignature) signature;
+        m_rtti = (CatchClauseRtti) rtti;
     }
 
     /**
-     * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
-     * invoked, the original method is invoked. Is called recursively.
-     *
+     * Walks through the pointcuts and invokes all its advices. When the last advice of the last
+     * pointcut has been invoked, the original method is invoked. Is called recursively.
+     * 
      * @return the result from the next invocation
      * @throws Throwable
-     * @TODO: which advices should we support for catch handlers? AspectJ only supports before, due to bytecode problems
-     * (not possible to detect the end of a catch clause with 100% accuracy).
+     * @TODO: which advices should we support for catch handlers? AspectJ only supports before, due
+     *        to bytecode problems (not possible to detect the end of a catch clause with 100%
+     *        accuracy).
      */
     public Object proceed() throws Throwable {
         if (m_beforeAdviceExecutor.hasAdvices()) {
@@ -64,7 +70,7 @@ class CatchClauseJoinPoint extends JoinPointBase {
 
     /**
      * Returns the signature for the join point.
-     *
+     * 
      * @return the signature
      */
     public Signature getSignature() {
@@ -73,7 +79,7 @@ class CatchClauseJoinPoint extends JoinPointBase {
 
     /**
      * Returns the RTTI for the join point.
-     *
+     * 
      * @return the RTTI
      */
     public Rtti getRtti() {
@@ -82,7 +88,7 @@ class CatchClauseJoinPoint extends JoinPointBase {
 
     /**
      * Returns a string representation of the join point.
-     *
+     * 
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */

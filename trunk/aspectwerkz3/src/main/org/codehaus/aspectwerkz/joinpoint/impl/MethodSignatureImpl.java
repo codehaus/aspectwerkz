@@ -14,11 +14,12 @@ import java.lang.reflect.Method;
 
 /**
  * Implementation for the method signature.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class MethodSignatureImpl implements MethodSignature {
     private final Class m_declaringType;
+
     private final MethodTuple m_methodTuple;
 
     /**
@@ -32,7 +33,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the method tuple.
-     *
+     * 
      * @return the method tuple
      */
     public MethodTuple getMethodTuple() {
@@ -41,7 +42,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the method.
-     *
+     * 
      * @return the method
      */
     public Method getMethod() {
@@ -50,7 +51,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the declaring class.
-     *
+     * 
      * @return the declaring class
      */
     public Class getDeclaringType() {
@@ -58,13 +59,12 @@ public class MethodSignatureImpl implements MethodSignature {
     }
 
     /**
-     * Returns the modifiers for the signature.
-     * <p/>
-     * Could be used like this:
+     * Returns the modifiers for the signature. <p/>Could be used like this:
+     * 
      * <pre>
-     *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
+     * boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
      * </pre>
-     *
+     * 
      * @return the mofifiers
      */
     public int getModifiers() {
@@ -73,7 +73,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the name (f.e. name of method of field).
-     *
+     * 
      * @return
      */
     public String getName() {
@@ -82,7 +82,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the exception types declared by the code block.
-     *
+     * 
      * @return the exception types
      */
     public Class[] getExceptionTypes() {
@@ -91,7 +91,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the parameter types.
-     *
+     * 
      * @return the parameter types
      */
     public Class[] getParameterTypes() {
@@ -100,7 +100,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the return type.
-     *
+     * 
      * @return the return type
      */
     public Class getReturnType() {
@@ -109,7 +109,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns a string representation of the signature.
-     *
+     * 
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */

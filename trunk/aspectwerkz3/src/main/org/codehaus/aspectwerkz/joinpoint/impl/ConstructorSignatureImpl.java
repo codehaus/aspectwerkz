@@ -14,25 +14,27 @@ import java.lang.reflect.Constructor;
 
 /**
  * Implementation for the constructor signature.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ConstructorSignatureImpl implements ConstructorSignature {
     private final Class m_declaringType;
+
     private final ConstructorTuple m_constructorTuple;
 
     /**
      * @param declaringType
      * @param constructorTuple
      */
-    public ConstructorSignatureImpl(final Class declaringType, final ConstructorTuple constructorTuple) {
+    public ConstructorSignatureImpl(final Class declaringType,
+                                    final ConstructorTuple constructorTuple) {
         m_declaringType = declaringType;
         m_constructorTuple = constructorTuple;
     }
 
     /**
      * Returns the constructor tuple.
-     *
+     * 
      * @return the constructor tuple
      */
     public ConstructorTuple getConstructorTuple() {
@@ -41,7 +43,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
 
     /**
      * Returns the constructor.
-     *
+     * 
      * @return the constructor
      */
     public Constructor getConstructor() {
@@ -50,7 +52,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
 
     /**
      * Returns the declaring class.
-     *
+     * 
      * @return the declaring class
      */
     public Class getDeclaringType() {
@@ -58,13 +60,12 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
     }
 
     /**
-     * Returns the modifiers for the signature.
-     * <p/>
-     * Could be used like this:
+     * Returns the modifiers for the signature. <p/>Could be used like this:
+     * 
      * <pre>
-     *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
+     * boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
      * </pre>
-     *
+     * 
      * @return the mofifiers
      */
     public int getModifiers() {
@@ -73,7 +74,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
 
     /**
      * Returns the name (f.e. name of method of field).
-     *
+     * 
      * @return
      */
     public String getName() {
@@ -82,7 +83,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
 
     /**
      * Returns the exception types declared by the code block.
-     *
+     * 
      * @return the exception types
      */
     public Class[] getExceptionTypes() {
@@ -91,7 +92,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
 
     /**
      * Returns the parameter types.
-     *
+     * 
      * @return the parameter types
      */
     public Class[] getParameterTypes() {
@@ -100,7 +101,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
 
     /**
      * Returns a string representation of the signature.
-     *
+     * 
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */

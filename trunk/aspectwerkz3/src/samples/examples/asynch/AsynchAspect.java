@@ -12,25 +12,23 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AsynchAspect {
 
     private PooledExecutor m_threadPool = new PooledExecutor();
 
     public Object execute(final JoinPoint joinPoint) throws Throwable {
-        m_threadPool.execute(
-                new Runnable() {
-                    public void run() {
-                        try {
-                            // proceed in a new thread
-                            joinPoint.proceed();
-                        } catch (Throwable e) {
-                            throw new WrappedRuntimeException(e);
-                        }
-                    }
+        m_threadPool.execute(new Runnable() {
+            public void run() {
+                try {
+                    // proceed in a new thread
+                    joinPoint.proceed();
+                } catch (Throwable e) {
+                    throw new WrappedRuntimeException(e);
                 }
-        );
+            }
+        });
         return null;
     }
 }

@@ -10,9 +10,7 @@ package org.codehaus.aspectwerkz.reflect.impl.asm;
 import org.objectweb.asm.Attribute;
 
 /**
- * 
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class MemberStruct {
     public int modifiers;

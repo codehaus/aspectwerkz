@@ -19,15 +19,15 @@ import org.codehaus.aspectwerkz.transform.delegation.JavassistHelper;
 
 /**
  * Utility method for manipulating and managing ClassInfo hierarchies.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ClassInfoHelper {
     /**
      * Matches a type.
-     *
+     * 
      * @param typePattern the pattern to try to parse against
-     * @param classInfo   the info of the class
+     * @param classInfo the info of the class
      * @return
      */
     public static boolean matchType(final TypePattern typePattern, final ClassInfo classInfo) {
@@ -44,11 +44,11 @@ public class ClassInfoHelper {
     }
 
     /**
-     * Tries to finds a parse at some superclass in the hierarchy. <p/>Only checks for a class parse to allow early
-     * filtering. <p/>Recursive.
-     *
+     * Tries to finds a parse at some superclass in the hierarchy. <p/>Only checks for a class parse
+     * to allow early filtering. <p/>Recursive.
+     * 
      * @param classInfo the class info
-     * @param pattern   the type pattern
+     * @param pattern the type pattern
      * @return boolean
      */
     public static boolean matchSuperClasses(final ClassInfo classInfo, final TypePattern pattern) {
@@ -71,17 +71,18 @@ public class ClassInfoHelper {
     }
 
     /**
-     * Tries to finds a parse at some interface in the hierarchy. <p/>Only checks for a class parse to allow early
-     * filtering. <p/>Recursive.
-     *
+     * Tries to finds a parse at some interface in the hierarchy. <p/>Only checks for a class parse
+     * to allow early filtering. <p/>Recursive.
+     * 
      * @param interfaces the interfaces
-     * @param classInfo  the class info
-     * @param pattern    the type pattern
+     * @param classInfo the class info
+     * @param pattern the type pattern
      * @return boolean
      */
     public static boolean matchInterfaces(
-            final ClassInfo[] interfaces, final ClassInfo classInfo,
-            final TypePattern pattern) {
+        final ClassInfo[] interfaces,
+        final ClassInfo classInfo,
+        final TypePattern pattern) {
         if ((interfaces.length == 0) || (classInfo == null) || (pattern == null)) {
             return false;
         }
@@ -102,7 +103,7 @@ public class ClassInfoHelper {
 
     /**
      * Creates a member info instance based on the signature etc.
-     *
+     * 
      * @param targetClass
      * @param withinMethodName
      * @param withinMethodSignature
@@ -110,9 +111,9 @@ public class ClassInfoHelper {
      * @TODO: check if we have a constructor and not a method
      */
     public static MemberInfo createMemberInfo(
-            final Class targetClass, 
-            final String withinMethodName,
-            final String withinMethodSignature) {
+        final Class targetClass,
+        final String withinMethodName,
+        final String withinMethodSignature) {
         MemberInfo withinMemberInfo = null;
         String[] withinMethodParameterNames = DescriptorUtil.getParameters(withinMethodSignature);
         Method[] targetMethods = targetClass.getDeclaredMethods();
@@ -141,7 +142,7 @@ public class ClassInfoHelper {
 
     /**
      * Checks if a method is static or not.
-     *
+     * 
      * @param methodInfo the info for the method
      * @return boolean
      */
@@ -156,7 +157,7 @@ public class ClassInfoHelper {
 
     /**
      * Checks if a class implements a certain inteface, somewhere up in the class hierarchy.
-     *
+     * 
      * @param classInfo
      * @param interfaceName
      * @return true if we have a parse else false
@@ -180,7 +181,7 @@ public class ClassInfoHelper {
 
     /**
      * Checks if a class has a certain class as super class, somewhere up in the class hierarchy.
-     *
+     * 
      * @param classInfo the meta-data for the class to parse
      * @param className the name of the super class
      * @return true if we have a parse else false

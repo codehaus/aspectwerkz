@@ -9,9 +9,9 @@ package org.codehaus.aspectwerkz.reflect;
 
 /**
  * Holds a tuple that consists of the class info and the info for a specific method.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class CflowMetaData {
     /**
@@ -31,8 +31,8 @@ public class CflowMetaData {
 
     /**
      * Creates a new ClassNameMethodInfoTuple.
-     *
-     * @param classMetaData  the class metaData
+     * 
+     * @param classMetaData the class metaData
      * @param methodMetaData the method info
      */
     public CflowMetaData(final ClassInfo classMetaData, final MethodInfo methodMetaData) {
@@ -43,7 +43,7 @@ public class CflowMetaData {
 
     /**
      * Returns the class info.
-     *
+     * 
      * @return the class info
      */
     public ClassInfo getClassInfo() {
@@ -52,7 +52,7 @@ public class CflowMetaData {
 
     /**
      * Returns the class name.
-     *
+     * 
      * @return the class name
      */
     public String getClassName() {
@@ -61,7 +61,7 @@ public class CflowMetaData {
 
     /**
      * Returns the method info.
-     *
+     * 
      * @return the method info
      */
     public MethodInfo getMethodInfo() {
@@ -70,8 +70,16 @@ public class CflowMetaData {
 
     // --- over-ridden methods ---
     public String toString() {
-        return '[' + super.toString() + ": " + ',' + m_className + ',' + m_classMetaData + ',' + m_methodMetaData +
-               ']';
+        return '['
+            + super.toString()
+            + ": "
+            + ','
+            + m_className
+            + ','
+            + m_classMetaData
+            + ','
+            + m_methodMetaData
+            + ']';
     }
 
     public int hashCode() {
@@ -96,10 +104,10 @@ public class CflowMetaData {
         if (!(o instanceof CflowMetaData)) {
             return false;
         }
-        final CflowMetaData obj = (CflowMetaData)o;
+        final CflowMetaData obj = (CflowMetaData) o;
         return areEqualsOrBothNull(obj.m_className, this.m_className)
-               && areEqualsOrBothNull(obj.m_classMetaData, this.m_classMetaData)
-               && areEqualsOrBothNull(obj.m_methodMetaData, this.m_methodMetaData);
+            && areEqualsOrBothNull(obj.m_classMetaData, this.m_classMetaData)
+            && areEqualsOrBothNull(obj.m_methodMetaData, this.m_methodMetaData);
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {

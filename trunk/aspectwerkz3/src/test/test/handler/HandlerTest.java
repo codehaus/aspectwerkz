@@ -10,7 +10,7 @@ package test.handler;
 import junit.framework.TestCase;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class HandlerTest extends TestCase {
     private static String s_log = "";

@@ -10,33 +10,33 @@ package org.codehaus.aspectwerkz.joinpoint;
 import java.lang.reflect.Field;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface FieldRtti extends MemberRtti {
     /**
      * Returns the field.
-     *
+     * 
      * @return the field
      */
     Field getField();
 
     /**
      * Returns the field type.
-     *
+     * 
      * @return the field type
      */
     Class getFieldType();
 
     /**
      * Returns the value of the field.
-     *
+     * 
      * @return the value of the field
      */
     Object getFieldValue();
 
     /**
      * Sets the value of the field.
-     *
+     * 
      * @param fieldValue the value of the field
      */
     void setFieldValue(final Object fieldValue);

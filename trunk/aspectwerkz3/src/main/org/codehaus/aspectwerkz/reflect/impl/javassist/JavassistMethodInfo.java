@@ -23,8 +23,8 @@ import javassist.NotFoundException;
 
 /**
  * Implementation of the MethodInfo interface for Javassist.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo {
     /**
@@ -34,29 +34,31 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
 
     /**
      * Creates a new method meta data instance.
-     *
+     * 
      * @param method
      * @param declaringType
      * @param loader
      * @param attributeExtractor
      */
-    JavassistMethodInfo(
-            final CtMethod method, final JavassistClassInfo declaringType, final ClassLoader loader,
-            final AttributeExtractor attributeExtractor) {
+    JavassistMethodInfo(final CtMethod method,
+                        final JavassistClassInfo declaringType,
+                        final ClassLoader loader,
+                        final AttributeExtractor attributeExtractor) {
         super(method, declaringType, loader, attributeExtractor);
         addAnnotations();
     }
 
     /**
      * Returns the method info for the method specified.
-     *
+     * 
      * @param method the method
      * @param loader the class loader
      * @return the method info
      */
     public static MethodInfo getMethodInfo(final CtMethod method, final ClassLoader loader) {
         CtClass declaringClass = method.getDeclaringClass();
-        JavassistClassInfoRepository repository = JavassistClassInfoRepository.getRepository(loader);
+        JavassistClassInfoRepository repository = JavassistClassInfoRepository
+                .getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
         if (classInfo == null) {
             classInfo = JavassistClassInfo.getClassInfo(declaringClass, loader);
@@ -66,7 +68,7 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
 
     /**
      * Calculates the method hash.
-     *
+     * 
      * @param method
      * @return the hash
      */
@@ -86,7 +88,7 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
 
     /**
      * Returns the annotations.
-     *
+     * 
      * @return the annotations
      */
     public List getAnnotations() {
@@ -95,17 +97,19 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
 
     /**
      * Returns the return type.
-     *
+     * 
      * @return the return type
      */
     public ClassInfo getReturnType() {
         if (m_returnType == null) {
             try {
-                CtClass returnTypeClass = ((CtMethod)m_member).getReturnType();
+                CtClass returnTypeClass = ((CtMethod) m_member).getReturnType();
                 if (m_classInfoRepository.hasClassInfo(returnTypeClass.getName())) {
                     m_returnType = m_classInfoRepository.getClassInfo(returnTypeClass.getName());
                 } else {
-                    m_returnType = JavassistClassInfo.getClassInfo(returnTypeClass, (ClassLoader)m_loaderRef.get());
+                    m_returnType = JavassistClassInfo.getClassInfo(
+                        returnTypeClass,
+                        (ClassLoader) m_loaderRef.get());
                     m_classInfoRepository.addClassInfo(m_returnType);
                 }
             } catch (NotFoundException e) {
@@ -122,8 +126,9 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
         if (!(o instanceof MethodInfo)) {
             return false;
         }
-        MethodInfo methodInfo = (MethodInfo)o;
-        if (!m_declaringType.getName().toString().equals(methodInfo.getDeclaringType().getName().toString())) {
+        MethodInfo methodInfo = (MethodInfo) o;
+        if (!m_declaringType.getName().toString().equals(
+            methodInfo.getDeclaringType().getName().toString())) {
             return false;
         }
         if (!m_member.getName().toString().equals(methodInfo.getName().toString())) {
@@ -134,7 +139,8 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
             return false;
         }
         for (int i = 0; i < m_parameterTypes.length; i++) {
-            if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
+            if (!m_parameterTypes[i].getName().toString().equals(
+                parameterTypes[i].getName().toString())) {
                 return false;
             }
         }
@@ -162,12 +168,14 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
             return;
         }
         try {
-            CtClass[] parameterTypes = ((CtBehavior)m_member).getParameterTypes();
+            CtClass[] parameterTypes = ((CtBehavior) m_member).getParameterTypes();
             String[] parameterNames = new String[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
                 parameterNames[i] = parameterTypes[i].getName();
             }
-            Object[] attributes = m_attributeExtractor.getMethodAttributes(getName(), parameterNames);
+            Object[] attributes = m_attributeExtractor.getMethodAttributes(
+                getName(),
+                parameterNames);
             for (int i = 0; i < attributes.length; i++) {
                 Object attribute = attributes[i];
                 if (attribute instanceof AnnotationInfo) {

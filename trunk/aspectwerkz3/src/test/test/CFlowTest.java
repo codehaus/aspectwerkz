@@ -11,9 +11,9 @@ import junit.framework.TestCase;
 
 /**
  * test "pc AND (cf OR cf2)"
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class CFlowTest extends TestCase implements Loggable {
     private String m_logString = "";
@@ -31,7 +31,9 @@ public class CFlowTest extends TestCase implements Loggable {
     public void testCallWithinCFlowAnonymous() {
         m_logString = "";
         step1Anonymous(); //will have cflow and will call step2()
-        assertEquals("step1Anonymous advice-beforeAnonymous step2Anonymous advice-afterAnonymous ", m_logString);
+        assertEquals(
+            "step1Anonymous advice-beforeAnonymous step2Anonymous advice-afterAnonymous ",
+            m_logString);
     }
 
     public void testCallWithinCFlowWithinCflow() {

@@ -9,8 +9,8 @@ package org.codehaus.aspectwerkz.annotation;
 
 /**
  * The advice annotation proxy base.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AdviceAnnotationProxyBase extends UntypedAnnotationProxy {
     String m_pointcut;

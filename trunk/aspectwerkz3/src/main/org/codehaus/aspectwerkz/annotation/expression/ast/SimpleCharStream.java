@@ -10,33 +10,46 @@
 package org.codehaus.aspectwerkz.annotation.expression.ast;
 
 /**
- * An implementation of interface CharStream, where the stream is assumed to contain only ASCII characters (without
- * unicode processing).
+ * An implementation of interface CharStream, where the stream is assumed to contain only ASCII
+ * characters (without unicode processing).
  */
 public class SimpleCharStream {
     public static final boolean staticFlag = true;
+
     static int bufsize;
+
     static int available;
+
     static int tokenBegin;
+
     static public int bufpos = -1;
+
     static protected int[] bufline;
+
     static protected int[] bufcolumn;
+
     static protected int column = 0;
+
     static protected int line = 1;
+
     static protected boolean prevCharIsCR = false;
+
     static protected boolean prevCharIsLF = false;
+
     static protected java.io.Reader inputStream;
+
     static protected char[] buffer;
+
     static protected int maxNextCharInd = 0;
+
     static protected int inBuf = 0;
 
     public SimpleCharStream(java.io.Reader dstream, int startline, int startcolumn, int buffersize) {
         if (inputStream != null) {
             throw new Error(
-                    "\n   ERROR: Second call to the constructor of a static SimpleCharStream.  You must\n"
+                "\n   ERROR: Second call to the constructor of a static SimpleCharStream.  You must\n"
                     + "       either use ReInit() or set the JavaCC option STATIC to false\n"
-                    + "       during the generation of this class."
-            );
+                    + "       during the generation of this class.");
         }
         inputStream = dstream;
         line = startline;
@@ -55,7 +68,10 @@ public class SimpleCharStream {
         this(dstream, 1, 1, 4096);
     }
 
-    public SimpleCharStream(java.io.InputStream dstream, int startline, int startcolumn, int buffersize) {
+    public SimpleCharStream(java.io.InputStream dstream,
+                            int startline,
+                            int startcolumn,
+                            int buffersize) {
         this(new java.io.InputStreamReader(dstream), startline, startcolumn, 4096);
     }
 
@@ -270,7 +286,8 @@ public class SimpleCharStream {
         if (bufpos >= tokenBegin) {
             return new String(buffer, tokenBegin, bufpos - tokenBegin + 1);
         } else {
-            return new String(buffer, tokenBegin, bufsize - tokenBegin) + new String(buffer, 0, bufpos + 1);
+            return new String(buffer, tokenBegin, bufsize - tokenBegin)
+                + new String(buffer, 0, bufpos + 1);
         }
     }
 

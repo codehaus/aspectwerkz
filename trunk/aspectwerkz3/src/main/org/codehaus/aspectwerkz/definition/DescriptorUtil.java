@@ -5,9 +5,10 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
- * The signature of a method that is available from the BCEL library uses descriptors as defined in Section 4.3 of the
- * Java Virtual Machine specificaiton.  Javadoc and Java do not use signatures in this same format. This class converts
- * the Javadoc/Java signature format to that used by the JVM spec. To summarize the descriptors <code> A method
+ * The signature of a method that is available from the BCEL library uses descriptors as defined in
+ * Section 4.3 of the Java Virtual Machine specificaiton. Javadoc and Java do not use signatures in
+ * this same format. This class converts the Javadoc/Java signature format to that used by the JVM
+ * spec. To summarize the descriptors <code> A method
  * descriptor represents the parameters that the method takes and the value that it returns:
  * <p/>
  * MethodDescriptor: ( ParameterDescriptor* ) ReturnDescriptor
@@ -52,6 +53,7 @@ import java.util.StringTokenizer;
  */
 public class DescriptorUtil {
     private static Map _paramTypeMap = new HashMap();
+
     private static Map _returnTypeMap = new HashMap();
 
     static {
@@ -62,7 +64,9 @@ public class DescriptorUtil {
         _paramTypeMap.put("int", "I");
         _paramTypeMap.put("long", "J");
 
-        //todo: make generic...look for 'dots' of package.  that algorithm doesn't handle packageless (default package) classes though..
+        //todo: make generic...look for 'dots' of package. that algorithm doesn't handle
+        // packageless (default package)
+        // classes though..
         _paramTypeMap.put("java.lang.Object", "Ljava/lang/Object;");
         _paramTypeMap.put("short", "S");
         _paramTypeMap.put("boolean", "Z");
@@ -74,8 +78,8 @@ public class DescriptorUtil {
 
     /**
      * Converts from the Java/Javadoc method signature the JVM spec format.
-     *
-     * @param javadocSig        method signature as returned via Javadoc API.
+     * 
+     * @param javadocSig method signature as returned via Javadoc API.
      * @param javadocReturnType return type as returned via Javadoc API.
      * @return mtehod signature as defined in the JVM spec.
      */
@@ -100,7 +104,7 @@ public class DescriptorUtil {
 
     /**
      * Convert a JVM signature as defined in the JVM spec to that used in the Java.
-     *
+     * 
      * @param jvmSignature The JVM format signature.
      * @return a <code>String[]</code> containing the method parameter as elements of the array.
      */
@@ -138,11 +142,11 @@ public class DescriptorUtil {
     }
 
     /**
-     * The utility method that does the real work of parsing through the JVM formatted string and adding an converted
-     * method parameter description to the StringBuffer.
-     *
-     * @param jvmFormat    The JVM formatted string that is being parsed.
-     * @param i            The offset into the string being parsed.
+     * The utility method that does the real work of parsing through the JVM formatted string and
+     * adding an converted method parameter description to the StringBuffer.
+     * 
+     * @param jvmFormat The JVM formatted string that is being parsed.
+     * @param i The offset into the string being parsed.
      * @param stringbuffer The storage for building the converted method signature.
      * @return new offset location for parsing.
      */
@@ -153,56 +157,55 @@ public class DescriptorUtil {
         for (; jvmFormat.charAt(i) == '['; i++) {
             s1 = s1 + "[]";
         }
-        startover:
-                switch (jvmFormat.charAt(i)) {
-                    case 66: // 'B'
-                        stringbuffer.append("byte");
-                        break;
-                    case 67: // 'C'
-                        stringbuffer.append("char");
-                        break;
-                    case 68: // 'D'
-                        stringbuffer.append("double");
-                        break;
-                    case 70: // 'F'
-                        stringbuffer.append("float");
-                        break;
-                    case 73: // 'I'
-                        stringbuffer.append("int");
-                        break;
-                    case 74: // 'J'
-                        stringbuffer.append("long");
-                        break;
-                    case 83: // 'S'
-                        stringbuffer.append("short");
-                        break;
-                    case 90: // 'Z'
-                        stringbuffer.append("boolean");
-                        break;
-                    case 86: // 'V'
-                        stringbuffer.append("void");
-                        break;
-                    case 76: // 'L'
+        startover: switch (jvmFormat.charAt(i)) {
+            case 66: // 'B'
+                stringbuffer.append("byte");
+                break;
+            case 67: // 'C'
+                stringbuffer.append("char");
+                break;
+            case 68: // 'D'
+                stringbuffer.append("double");
+                break;
+            case 70: // 'F'
+                stringbuffer.append("float");
+                break;
+            case 73: // 'I'
+                stringbuffer.append("int");
+                break;
+            case 74: // 'J'
+                stringbuffer.append("long");
+                break;
+            case 83: // 'S'
+                stringbuffer.append("short");
+                break;
+            case 90: // 'Z'
+                stringbuffer.append("boolean");
+                break;
+            case 86: // 'V'
+                stringbuffer.append("void");
+                break;
+            case 76: // 'L'
 
-                        //special case for objects.
-                        for (i++; i < jvmFormat.length(); i++) {
-                            if (jvmFormat.charAt(i) == '/') {
-                                //convert to period
-                                stringbuffer.append('.');
-                            } else {
-                                if (jvmFormat.charAt(i) == ';') {
-                                    //we reached the end
-                                    break startover;
-                                }
-
-                                //copy contents.
-                                stringbuffer.append(jvmFormat.charAt(i));
-                            }
+                //special case for objects.
+                for (i++; i < jvmFormat.length(); i++) {
+                    if (jvmFormat.charAt(i) == '/') {
+                        //convert to period
+                        stringbuffer.append('.');
+                    } else {
+                        if (jvmFormat.charAt(i) == ';') {
+                            //we reached the end
+                            break startover;
                         }
-                        break;
-                    default:
-                        return jvmFormat.length();
+
+                        //copy contents.
+                        stringbuffer.append(jvmFormat.charAt(i));
+                    }
                 }
+                break;
+            default:
+                return jvmFormat.length();
+        }
         stringbuffer = stringbuffer.append(s1);
         return ++i;
     }

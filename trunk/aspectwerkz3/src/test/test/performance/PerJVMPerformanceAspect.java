@@ -10,40 +10,45 @@ package test.performance;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @Aspect perJVM
  */
 public class PerJVMPerformanceAspect {
     /**
-     * @Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) && within(test.performance.*)
+     * @Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) &&
+     *         within(test.performance.*)
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
-     * Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) && within(test.performance.*)
+     * Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) &&
+     * within(test.performance.*)
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
-     * Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) && within(test.performance.*)
+     * Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) &&
+     * within(test.performance.*)
      */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
-     * Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) && within(test.performance.*)
+     * Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) &&
+     * within(test.performance.*)
      */
     public Object advice4(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
-     * Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) && within(test.performance.*)
+     * Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) &&
+     * within(test.performance.*)
      */
     public Object advice5(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();

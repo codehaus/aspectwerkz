@@ -8,7 +8,7 @@
 package test.handler;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class HandlerTestBeforeException extends Exception {
 }

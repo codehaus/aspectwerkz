@@ -9,8 +9,8 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 /**
  * Enumeration for all join point states.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class JoinPointState {
     /**

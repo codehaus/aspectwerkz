@@ -11,8 +11,8 @@ import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * The aspect annotation proxy.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AspectAnnotationProxy extends UntypedAnnotationProxy {
     private String m_deploymentModel = "perJVM";

@@ -14,12 +14,14 @@ import java.util.Collection;
 
 /**
  * Test case for AW-92 for collection field altered
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class CollectionFieldTest extends TestCase {
     public static String s_log = "";
+
     private static Collection s_field = new ArrayList();
+
     private Collection m_field = new ArrayList();
 
     //-- member field --//

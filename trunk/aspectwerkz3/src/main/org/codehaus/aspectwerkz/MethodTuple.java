@@ -11,12 +11,14 @@ import java.lang.reflect.Method;
 
 /**
  * Contains a pair of the original method and the wrapper method if such a method exists.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class MethodTuple {
     private final Method m_wrapperMethod;
+
     private final Method m_originalMethod;
+
     private final Class m_declaringClass;
 
     /**
@@ -28,10 +30,10 @@ public class MethodTuple {
             originalMethod = wrapperMethod;
         }
         if (wrapperMethod.getDeclaringClass() != originalMethod.getDeclaringClass()) {
-            throw new RuntimeException(
-                    wrapperMethod.getName() + " and " + originalMethod.getName()
-                    + " does not have the same declaring class"
-            );
+            throw new RuntimeException(wrapperMethod.getName()
+                + " and "
+                + originalMethod.getName()
+                + " does not have the same declaring class");
         }
         m_declaringClass = wrapperMethod.getDeclaringClass();
         m_wrapperMethod = wrapperMethod;

@@ -13,7 +13,7 @@ import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @Aspect perJVM
  */
 public class FieldTestAspect {
@@ -199,7 +199,7 @@ public class FieldTestAspect {
      */
     public Object aroundAdviceAltering(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
-        FieldRtti rtti = (FieldRtti)joinPoint.getRtti();
+        FieldRtti rtti = (FieldRtti) joinPoint.getRtti();
         rtti.setFieldValue(new String("byAdvice"));
         joinPoint.proceed();
         FieldAdviceTest.log("after ");
@@ -211,7 +211,7 @@ public class FieldTestAspect {
      */
     public Object aroundAdviceAlteringPrimitive(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
-        FieldRtti rtti = (FieldRtti)joinPoint.getRtti();
+        FieldRtti rtti = (FieldRtti) joinPoint.getRtti();
         rtti.setFieldValue(new Integer(3));
         joinPoint.proceed();
         FieldAdviceTest.log("after ");

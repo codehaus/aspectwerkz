@@ -12,7 +12,7 @@ import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @Aspect
  */
 public class TestAspect {
@@ -27,13 +27,15 @@ public class TestAspect {
     Pointcut pc2;
 
     /**
-     * @Expression execution(test.hierarchicalpattern.DummyInterface2+ test.hierarchicalpattern.HierachicalPatternTest.returnType*(..))
+     * @Expression execution(test.hierarchicalpattern.DummyInterface2+
+     *             test.hierarchicalpattern.HierachicalPatternTest.returnType*(..))
      */
     Pointcut pc3;
 
     /**
-     * @Expression execution(* test.hierarchicalpattern.HierachicalPatternTest.parameterTypes(test.hierarchicalpattern.DummyInterface1+,
-            * test.hierarchicalpattern.DummyInterface2+))
+     * @Expression execution(*
+     *             test.hierarchicalpattern.HierachicalPatternTest.parameterTypes(test.hierarchicalpattern.DummyInterface1+,
+     *             test.hierarchicalpattern.DummyInterface2+))
      */
     Pointcut pc4;
 
@@ -41,9 +43,9 @@ public class TestAspect {
      * @Around pc1 || pc2 || pc3 || pc4
      */
     public Object advice(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 }

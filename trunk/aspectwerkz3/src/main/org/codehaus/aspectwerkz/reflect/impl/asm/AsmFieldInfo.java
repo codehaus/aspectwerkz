@@ -15,8 +15,8 @@ import org.objectweb.asm.Type;
 
 /**
  * Implementation of the FieldInfo interface for ASM bytecode library.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
 
@@ -32,7 +32,7 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
 
     /**
      * Creates a new field java instance.
-     *
+     * 
      * @param field
      * @param declaringType
      * @param loader
@@ -51,8 +51,11 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
      * @param loader
      * @return the field info
      */
-    public static FieldInfo getFieldInfo(final String fieldName, final String fieldDesc, final byte[] bytecode,
-            final ClassLoader loader) {
+    public static FieldInfo getFieldInfo(
+        final String fieldName,
+        final String fieldDesc,
+        final byte[] bytecode,
+        final ClassLoader loader) {
         String className = AsmClassInfo.retrieveClassNameFromBytecode(bytecode);
         AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(className);
@@ -64,13 +67,13 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
 
     /**
      * Returns the type.
-     *
+     * 
      * @return the type
      */
     public ClassInfo getType() {
         if (m_type == null) {
-            m_type =  AsmClassInfo.createClassInfoFromStream(m_typeName, m_loader); 
-                       
+            m_type = AsmClassInfo.createClassInfoFromStream(m_typeName, m_loader);
+
         }
         return m_type;
     }
@@ -82,7 +85,7 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
         if (!(o instanceof FieldInfo)) {
             return false;
         }
-        FieldInfo fieldInfo = (FieldInfo)o;
+        FieldInfo fieldInfo = (FieldInfo) o;
         if (!m_declaringTypeName.equals(fieldInfo.getDeclaringType().getName().toString())) {
             return false;
         }

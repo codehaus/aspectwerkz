@@ -13,32 +13,29 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- * Note: does not work behing WeavingCL. Use a real online mode
- * <p/>
- * java -Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib\aspectwerkz-core-1.0-beta1.jar;lib\javassist-3.0beta.jar ...
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * Note: does not work behing WeavingCL. Use a real online mode <p/>java -Xrunaspectwerkz -Xdebug
+ * -Xbootclasspath/a:lib\aspectwerkz-core-1.0-beta1.jar;lib\javassist-3.0beta.jar ...
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AspectSystemTest extends TestCase {
     public void testDoubleHierarchyMethodExecution() {
-        ClassLoader myCL = new URLClassLoader(
-                new URL[]{
-                    ClassCreator.getPathFor(Callable.class.getResource("META-INF/aop.xml"))
-                }, ClassLoader.getSystemClassLoader()
-        );
+        ClassLoader myCL = new URLClassLoader(new URL[] {
+            ClassCreator.getPathFor(Callable.class.getResource("META-INF/aop.xml"))
+        }, ClassLoader.getSystemClassLoader());
 
-        //TODO if CLA is runned, CLB fails. Might be related to metadata/TF/jpindex (see TF verbose)
-        ClassLoader mySubCLA = new URLClassLoader(
-                new URL[]{
-                    ClassCreator.getPathFor(Callable.class.getResource("a/META-INF/aop.xml"))
-                }, myCL
-        );
-        Callable ca = (Callable)ClassCreator.createInstance("test.aopc.a.Callee", mySubCLA);
+        //TODO if CLA is runned, CLB fails. Might be related to metadata/TF/jpindex (see TF
+        // verbose)
+        ClassLoader mySubCLA = new URLClassLoader(new URL[] {
+            ClassCreator.getPathFor(Callable.class.getResource("a/META-INF/aop.xml"))
+        }, myCL);
+        Callable ca = (Callable) ClassCreator.createInstance("test.aopc.a.Callee", mySubCLA);
         ca.methodAround();
         ca.debug();
-        assertEquals("beforeAround beforeAround methodAround afterAround afterAround ", ca.getLogString());
-        ClassLoader mySubCLB = new URLClassLoader(new URL[]{}, myCL);
-        Callable cb = (Callable)ClassCreator.createInstance("test.aopc.b.Callee", mySubCLB);
+        assertEquals("beforeAround beforeAround methodAround afterAround afterAround ", ca
+                .getLogString());
+        ClassLoader mySubCLB = new URLClassLoader(new URL[] {}, myCL);
+        Callable cb = (Callable) ClassCreator.createInstance("test.aopc.b.Callee", mySubCLB);
         cb.methodAround();
         cb.debug();
         assertEquals("beforeAround methodAround afterAround ", cb.getLogString());

@@ -10,13 +10,13 @@ package test.aopc;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class BaseAspect {
     public Object logAround(JoinPoint jp) throws Throwable {
-        ((Callable)jp.getTargetInstance()).log("beforeAround ");
+        ((Callable) jp.getTargetInstance()).log("beforeAround ");
         Object result = jp.proceed();
-        ((Callable)jp.getTargetInstance()).log("afterAround ");
+        ((Callable) jp.getTargetInstance()).log("afterAround ");
         return result;
     }
 }

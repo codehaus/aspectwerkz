@@ -15,32 +15,42 @@ import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 
 /**
  * The expression context for AST evaluation.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ExpressionContext {
     public static final int METHOD_INFO = 0;
+
     public static final int CONSTRUCTOR_INFO = 1;
+
     public static final int FIELD_INFO = 2;
+
     public static final int CLASS_INFO = 3;
+
     private final int m_reflectionInfoType;
+
     private final PointcutType m_pointcutType;
+
     private final ReflectionInfo m_matchingReflectionInfo;
+
     private final ReflectionInfo m_withinReflectionInfo;
+
     private boolean m_inCflowSubAST = false;
+
     private boolean m_cflowEvaluation = false;
+
     private boolean m_hasBeenVisitingCflow = false;
 
     /**
      * Creates a new expression context.
-     *
+     * 
      * @param pointcutType
      * @param reflectionInfo
      * @param withinReflectionInfo
      */
-    public ExpressionContext(
-            final PointcutType pointcutType, final ReflectionInfo reflectionInfo,
-            final ReflectionInfo withinReflectionInfo) {
+    public ExpressionContext(final PointcutType pointcutType,
+                             final ReflectionInfo reflectionInfo,
+                             final ReflectionInfo withinReflectionInfo) {
         if (pointcutType == null) {
             throw new IllegalArgumentException("pointcut type can not be null");
         }
@@ -154,7 +164,7 @@ public class ExpressionContext {
         if (!(o instanceof ExpressionContext)) {
             return false;
         }
-        final ExpressionContext expressionContext = (ExpressionContext)o;
+        final ExpressionContext expressionContext = (ExpressionContext) o;
         if (m_reflectionInfoType != expressionContext.m_reflectionInfoType) {
             return false;
         }
@@ -164,11 +174,8 @@ public class ExpressionContext {
         if (!m_pointcutType.equals(expressionContext.m_pointcutType)) {
             return false;
         }
-        if ((m_withinReflectionInfo != null) ? (
-                                                   !m_withinReflectionInfo.equals(
-                                                           expressionContext.m_withinReflectionInfo
-                                                   )
-                                               )
+        if ((m_withinReflectionInfo != null)
+            ? (!m_withinReflectionInfo.equals(expressionContext.m_withinReflectionInfo))
             : (expressionContext.m_withinReflectionInfo != null)) {
             return false;
         }
@@ -179,7 +186,8 @@ public class ExpressionContext {
         int result;
         result = m_pointcutType.hashCode();
         result = (29 * result) + m_matchingReflectionInfo.hashCode();
-        result = (29 * result) + ((m_withinReflectionInfo != null) ? m_withinReflectionInfo.hashCode() : 0);
+        result = (29 * result)
+            + ((m_withinReflectionInfo != null) ? m_withinReflectionInfo.hashCode() : 0);
         result = (29 * result) + m_reflectionInfoType;
         return result;
     }

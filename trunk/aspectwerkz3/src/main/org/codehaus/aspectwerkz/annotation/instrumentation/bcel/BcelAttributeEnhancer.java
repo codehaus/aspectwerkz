@@ -36,11 +36,9 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 
 /**
- * Enhances classes with attributes.
- * <p/>
- * Implementation based on BCEL.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * Enhances classes with attributes. <p/>Implementation based on BCEL.
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class BcelAttributeEnhancer implements AttributeEnhancer {
     /**
@@ -65,14 +63,16 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Initializes the attribute enhancer. Must always be called before use.
-     *
+     * 
      * @param className the class name
      * @param classPath the class path
      * @return true if the class was succefully loaded, false otherwise
      */
     public boolean initialize(final String className, final String classPath) {
         try {
-            URL[] urls = new URL[]{new File(classPath).toURL()};
+            URL[] urls = new URL[] {
+                new File(classPath).toURL()
+            };
             m_loader = new URLClassLoader(urls);
             String classFileName = className.replace('.', '/') + ".class";
             InputStream classAsStream = m_loader.getResourceAsStream(classFileName);
@@ -91,7 +91,7 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Inserts an attribute on class level.
-     *
+     * 
      * @param attribute the attribute
      */
     public void insertClassAttribute(final Object attribute) {
@@ -100,17 +100,17 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         }
         byte[] serializedAttribute = serialize(attribute);
         Attribute attr = new Unknown(
-                m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
-                serializedAttribute.length, serializedAttribute,
-                m_constantPoolGen.getConstantPool()
-        );
+            m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
+            serializedAttribute.length,
+            serializedAttribute,
+            m_constantPoolGen.getConstantPool());
         m_classGen.addAttribute(attr);
     }
 
     /**
      * Inserts an attribute on field level.
-     *
-     * @param field     the QDox java field
+     * 
+     * @param field the QDox java field
      * @param attribute the attribute
      */
     public void insertFieldAttribute(final JavaField field, final Object attribute) {
@@ -123,10 +123,10 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
             if (classfileField[i].getName().equals(field.getName())) {
                 FieldGen fieldGen = new FieldGen(classfileField[i], m_constantPoolGen);
                 Attribute attr = new Unknown(
-                        m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
-                        serializedAttribute.length, serializedAttribute,
-                        m_constantPoolGen.getConstantPool()
-                );
+                    m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
+                    serializedAttribute.length,
+                    serializedAttribute,
+                    m_constantPoolGen.getConstantPool());
                 fieldGen.addAttribute(attr);
                 Field newField = fieldGen.getField();
                 m_classGen.replaceField(classfileField[i], newField);
@@ -136,8 +136,8 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Inserts an attribute on method level.
-     *
-     * @param method    the QDox java method
+     * 
+     * @param method the QDox java method
      * @param attribute the attribute
      */
     public void insertMethodAttribute(final JavaMethod method, final Object attribute) {
@@ -147,21 +147,21 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         byte[] serializedAttribute = serialize(attribute);
         String[] methodParamTypes = new String[method.getParameters().length];
         for (int i = 0; i < methodParamTypes.length; i++) {
-            methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i].getType());
+            methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i]
+                    .getType());
         }
         Method[] classfileMethod = m_classGen.getMethods();
         for (int i = 0; i < classfileMethod.length; i++) {
             if (classfileMethod[i].getName().equals(method.getName())) {
-                if (Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(classfileMethod[i].getSignature()))) {
-                    MethodGen methodGen = new MethodGen(
-                            classfileMethod[i], m_javaClass.getClassName(),
-                            m_constantPoolGen
-                    );
+                if (Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(classfileMethod[i]
+                        .getSignature()))) {
+                    MethodGen methodGen = new MethodGen(classfileMethod[i], m_javaClass
+                            .getClassName(), m_constantPoolGen);
                     Attribute attr = new Unknown(
-                            m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
-                            serializedAttribute.length, serializedAttribute,
-                            m_constantPoolGen.getConstantPool()
-                    );
+                        m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
+                        serializedAttribute.length,
+                        serializedAttribute,
+                        m_constantPoolGen.getConstantPool());
                     methodGen.addAttribute(attr);
                     Method newMethod = methodGen.getMethod();
                     m_classGen.replaceMethod(classfileMethod[i], newMethod);
@@ -169,12 +169,11 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
             }
         }
     }
-    
 
     /**
      * Inserts an attribute on constructor level.
-     *
-     * @param method    the QDox java method
+     * 
+     * @param method the QDox java method
      * @param attribute the attribute
      */
     public void insertConstructorAttribute(final JavaMethod method, final Object attribute) {
@@ -184,22 +183,24 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         byte[] serializedAttribute = serialize(attribute);
         String[] methodParamTypes = new String[method.getParameters().length];
         for (int i = 0; i < methodParamTypes.length; i++) {
-            methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i].getType());
+            methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i]
+                    .getType());
         }
         Method[] classfileMethod = m_classGen.getMethods();
         for (int i = 0; i < classfileMethod.length; i++) {
             Method classFileMethod = classfileMethod[i];
             if (classFileMethod.getName().equals("<init>")) {
-                if (Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(classFileMethod.getSignature()))) {
+                if (Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(classFileMethod
+                        .getSignature()))) {
                     MethodGen methodGen = new MethodGen(
-                            classFileMethod, m_javaClass.getClassName(),
-                            m_constantPoolGen
-                    );
+                        classFileMethod,
+                        m_javaClass.getClassName(),
+                        m_constantPoolGen);
                     Attribute attr = new Unknown(
-                            m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
-                            serializedAttribute.length, serializedAttribute,
-                            m_constantPoolGen.getConstantPool()
-                    );
+                        m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
+                        serializedAttribute.length,
+                        serializedAttribute,
+                        m_constantPoolGen.getConstantPool());
                     methodGen.addAttribute(attr);
                     Method newMethod = methodGen.getMethod();
                     m_classGen.replaceMethod(classFileMethod, newMethod);
@@ -210,7 +211,7 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Writes the enhanced class to file.
-     *
+     * 
      * @param destDir the destination directory
      */
     public void write(final String destDir) {
@@ -226,9 +227,7 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
                 boolean success = parentFile.mkdirs();
                 if (!success) {
                     throw new RuntimeException(
-                            "could not create dir structure needed to write file " + path
-                            + " to disk"
-                    );
+                        "could not create dir structure needed to write file " + path + " to disk");
                 }
             }
             FileOutputStream fout = new FileOutputStream(path);
@@ -242,7 +241,7 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Serializes the attribute to byte array.
-     *
+     * 
      * @param attribute the attribute
      * @return the attribute as a byte array
      */
@@ -259,7 +258,7 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
-     *
+     * 
      * @return nearest superclass (including itself) ' implemented interfaces
      */
     public String[] getNearestInterfacesInHierarchy(String innerClassName) {
@@ -272,26 +271,25 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         } catch (ClassNotFoundException e) {
             // should not be raised
             throw new RuntimeException(
-                    "could not load mixin for mixin implicit interface: ClassNotFoundException : "
-                    + e.getMessage()
-            );
+                "could not load mixin for mixin implicit interface: ClassNotFoundException : "
+                    + e.getMessage());
         } catch (NoClassDefFoundError er) {
             // raised if extends / implements dependancies not found
-            throw new RuntimeException(
-                    "could not find dependency for mixin implicit interface: " + innerClassName
-                    + " ClassNotFoundException for " + er.getMessage()
-            );
+            throw new RuntimeException("could not find dependency for mixin implicit interface: "
+                + innerClassName
+                + " ClassNotFoundException for "
+                + er.getMessage());
         }
     }
 
     /**
      * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
-     *
+     * 
      * @return nearest superclass (including itself) ' implemented interfaces starting from root
      */
     private String[] getNearestInterfacesInHierarchy(Class root) {
         if (root == null) {
-            return new String[]{};
+            return new String[] {};
         }
         Class[] implementedClasses = root.getInterfaces();
         String[] interfaces = null;

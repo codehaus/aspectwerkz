@@ -12,14 +12,15 @@ import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @Aspect perJVM
  */
 public class ConstructorTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression call(test.constructor.TestAroundAdvice.new(..)) && withincode(* test.constructor.*.*(..))
+     * @Expression call(test.constructor.TestAroundAdvice.new(..)) && withincode(*
+     *             test.constructor.*.*(..))
      */
     Pointcut call1;
 
@@ -34,12 +35,14 @@ public class ConstructorTestAspect {
     Pointcut call3;
 
     /**
-     * @Expression call(test.constructor.TestBeforeAfterAdvice.new(String[])) && withincode(* test.constructor.*.*(..))
+     * @Expression call(test.constructor.TestBeforeAfterAdvice.new(String[])) && withincode(*
+     *             test.constructor.*.*(..))
      */
     Pointcut call4;
 
     /**
-     * @Expression call(test.constructor.TestReturnFalseType.new()) && withincode(* test.constructor.*.*(..))
+     * @Expression call(test.constructor.TestReturnFalseType.new()) && withincode(*
+     *             test.constructor.*.*(..))
      */
     Pointcut call5;
 
@@ -92,7 +95,7 @@ public class ConstructorTestAspect {
      */
     public void afterCall(final JoinPoint joinPoint) throws Throwable {
         ConstructorAdviceTest.logCall("postCall ");
-        ConstructorSignature sig = (ConstructorSignature)joinPoint.getSignature();
+        ConstructorSignature sig = (ConstructorSignature) joinPoint.getSignature();
     }
 
     /**

@@ -23,10 +23,11 @@ import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParserVisito
 import org.codehaus.aspectwerkz.annotation.expression.ast.SimpleNode;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class DumpVisitor implements AnnotationParserVisitor {
     private ASTRoot m_root;
+
     private int indent = 0;
 
     private DumpVisitor(final ASTRoot root) {

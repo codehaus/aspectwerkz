@@ -26,8 +26,8 @@ import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ClassFile;
 
 /**
- * Javassist implementation of the AttributeExtractor interface. Extracts attributes from the class file on class,
- * method and field level.
+ * Javassist implementation of the AttributeExtractor interface. Extracts attributes from the class
+ * file on class, method and field level.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -83,8 +83,10 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
         for (int i = 0; i < methods.length; i++) {
             CtMethod method = methods[i];
             if (method.getName().equals(methodName)) {
-                if (Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(methods[i].getSignature()))) {
-                    for (Iterator it = method.getMethodInfo().getAttributes().iterator(); it.hasNext();) {
+                if (Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(methods[i]
+                        .getSignature()))) {
+                    for (Iterator it = method.getMethodInfo().getAttributes().iterator(); it
+                            .hasNext();) {
                         retrieveCustomAttributes((AttributeInfo) it.next(), attributes);
                     }
                 }
@@ -94,7 +96,8 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
     }
 
     /**
-     * Return all the attributes associated with a constructor that have a particular method signature.
+     * Return all the attributes associated with a constructor that have a particular method
+     * signature.
      * 
      * @param constructorParamTypes An array of parameter types as given by the reflection api.
      * @return the constructor attributes.
@@ -107,8 +110,10 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
         CtConstructor[] constructors = m_ctClass.getDeclaredConstructors();
         for (int i = 0; i < constructors.length; i++) {
             CtConstructor constructor = constructors[i];
-            if (Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(constructors[i].getSignature()))) {
-                for (Iterator it = constructor.getMethodInfo().getAttributes().iterator(); it.hasNext();) {
+            if (Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(constructors[i]
+                    .getSignature()))) {
+                for (Iterator it = constructor.getMethodInfo().getAttributes().iterator(); it
+                        .hasNext();) {
                     retrieveCustomAttributes((AttributeInfo) it.next(), attributes);
                 }
             }
@@ -145,15 +150,18 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
      * @param attributeInfo
      * @param listToPutAttributesIn
      */
-    private void retrieveCustomAttributes(final AttributeInfo attributeInfo, final List listToPutAttributesIn) {
+    private void retrieveCustomAttributes(
+        final AttributeInfo attributeInfo,
+        final List listToPutAttributesIn) {
         if (attributeInfo.getName().startsWith(AttributeEnhancer.CUSTOM_ATTRIBUTE)) {
             byte[] serializedAttribute = attributeInfo.get();
             try {
-                Object attribute = new ContextClassLoader.NotBrokenObjectInputStream(new ByteArrayInputStream(
-                        serializedAttribute)).readObject();
+                Object attribute = new ContextClassLoader.NotBrokenObjectInputStream(
+                    new ByteArrayInputStream(serializedAttribute)).readObject();
                 listToPutAttributesIn.add(attribute);
             } catch (Exception e) {
-                System.out.println("WARNING: could not retrieve annotation due to: " + e.toString());
+                System.out
+                        .println("WARNING: could not retrieve annotation due to: " + e.toString());
 
                 // ignore
             }

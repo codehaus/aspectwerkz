@@ -15,19 +15,20 @@ import examples.util.definition.Definition;
 
 /**
  * Manages the thread pool for all the asynchronous invocations.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AsynchronousManager {
 
     protected static final AsynchronousManager INSTANCE = new AsynchronousManager();
 
     protected PooledExecutor m_threadPool = null;
+
     protected boolean m_initialized = false;
 
     /**
      * Executes a task in a thread from the thread pool.
-     *
+     * 
      * @param task the task to execute (Runnable)
      */
     public void execute(final Runnable task) {
@@ -47,7 +48,7 @@ public class AsynchronousManager {
 
     /**
      * Returns the one A only AsynchronousManager instance.
-     *
+     * 
      * @return the asynchronous manager
      */
     public static AsynchronousManager getInstance() {
@@ -56,7 +57,7 @@ public class AsynchronousManager {
 
     /**
      * Initializes the thread pool.
-     *
+     * 
      * @param def the definition
      */
     public synchronized void initialize(final Definition definition) {
@@ -66,7 +67,7 @@ public class AsynchronousManager {
         if (m_initialized) {
             return;
         }
-        examples.util.definition.ThreadPoolDefinition def = (examples.util.definition.ThreadPoolDefinition)definition;
+        examples.util.definition.ThreadPoolDefinition def = (examples.util.definition.ThreadPoolDefinition) definition;
         int threadPoolMaxSize = def.getMaxSize();
         int threadPoolInitSize = def.getInitSize();
         int threadPoolMinSize = def.getMinSize();
@@ -74,25 +75,21 @@ public class AsynchronousManager {
         boolean waitWhenBlocked = def.getWaitWhenBlocked();
         boolean bounded = def.getBounded();
         if (threadPoolMaxSize < threadPoolInitSize || threadPoolMaxSize < threadPoolMinSize) {
-            throw new IllegalArgumentException("max size of thread pool can not exceed the init size");
+            throw new IllegalArgumentException(
+                "max size of thread pool can not exceed the init size");
         }
 
         // if threadPoolMaxSize is -1 or less => no maximum limit
         // if keepAliveTime is -1 or less => threads are alive forever, i.e no timeout
         if (bounded) {
             createBoundedThreadPool(
-                    threadPoolMaxSize,
-                    threadPoolMinSize,
-                    threadPoolInitSize,
-                    keepAliveTime,
-                    waitWhenBlocked
-            );
+                threadPoolMaxSize,
+                threadPoolMinSize,
+                threadPoolInitSize,
+                keepAliveTime,
+                waitWhenBlocked);
         } else {
-            createDynamicThreadPool(
-                    threadPoolMinSize,
-                    threadPoolInitSize,
-                    keepAliveTime
-            );
+            createDynamicThreadPool(threadPoolMinSize, threadPoolInitSize, keepAliveTime);
         }
         m_initialized = true;
     }
@@ -106,7 +103,7 @@ public class AsynchronousManager {
 
     /**
      * Creates a bounded thread pool.
-     *
+     * 
      * @param threadPoolMaxSize
      * @param threadPoolMinSize
      * @param threadPoolInitSize
@@ -114,11 +111,11 @@ public class AsynchronousManager {
      * @param waitWhenBlocked
      */
     protected void createBoundedThreadPool(
-            final int threadPoolMaxSize,
-            final int threadPoolMinSize,
-            final int threadPoolInitSize,
-            final int keepAliveTime,
-            final boolean waitWhenBlocked) {
+        final int threadPoolMaxSize,
+        final int threadPoolMinSize,
+        final int threadPoolInitSize,
+        final int keepAliveTime,
+        final boolean waitWhenBlocked) {
         m_threadPool = new PooledExecutor(new BoundedBuffer(threadPoolInitSize), threadPoolMaxSize);
         m_threadPool.setKeepAliveTime(keepAliveTime);
         m_threadPool.createThreads(threadPoolInitSize);
@@ -130,15 +127,15 @@ public class AsynchronousManager {
 
     /**
      * Creates a dynamic thread pool.
-     *
+     * 
      * @param threadPoolMinSize
      * @param threadPoolInitSize
      * @param keepAliveTime
      */
     protected void createDynamicThreadPool(
-            final int threadPoolMinSize,
-            final int threadPoolInitSize,
-            final int keepAliveTime) {
+        final int threadPoolMinSize,
+        final int threadPoolInitSize,
+        final int keepAliveTime) {
         m_threadPool = new PooledExecutor(new LinkedQueue());
         m_threadPool.setKeepAliveTime(keepAliveTime);
         m_threadPool.createThreads(threadPoolInitSize);
@@ -147,7 +144,7 @@ public class AsynchronousManager {
 
     /**
      * Checks if the service has been initialized.
-     *
+     * 
      * @return boolean
      */
     protected boolean notInitialized() {

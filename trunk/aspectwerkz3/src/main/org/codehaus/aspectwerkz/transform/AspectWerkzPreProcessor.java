@@ -22,22 +22,23 @@ import java.util.Hashtable;
 import java.util.Map;
 
 /**
- * AspectWerkzPreProcessor is the entry point of the AspectWerkz layer 2. <p/>It implements the ClassPreProcessor
- * interface defined in layer 1. <p/>Available options are:
+ * AspectWerkzPreProcessor is the entry point of the AspectWerkz layer 2. <p/>It implements the
+ * ClassPreProcessor interface defined in layer 1. <p/>Available options are:
  * <ul>
- * <li><code>-Daspectwerkz.transform.verbose=yes</code> turns on verbose mode: print on stdout all non filtered class
- * names and which transformation are applied</li>
- * <li><code>-Daspectwerkz.transform.dump=org.myapp.*</code> dumps transformed class matching pattern <i>org.myapp.*
- * </i>(even unmodified ones) in <i>./_dump </i> directory (relative to where applications starts). The syntax
- * <code>-Daspectwerkz.transform.dump=*</code> matchs all classes. The pattern language is the same as pointcut
- * pattern language.</li>
- * <li>else <code>-Daspectwerkz.transform.dump=org.myapp.*,before</code> dumps class before and after the
- * transformation whose name starts with <i>org.myapp. </i>(even unmodified ones) in <i>./_dump/before </i> and
- * <i>./_dump/after </i> directories (relative to where application starts)</li>
+ * <li><code>-Daspectwerkz.transform.verbose=yes</code> turns on verbose mode: print on stdout
+ * all non filtered class names and which transformation are applied</li>
+ * <li><code>-Daspectwerkz.transform.dump=org.myapp.*</code> dumps transformed class matching
+ * pattern <i>org.myapp.* </i>(even unmodified ones) in <i>./_dump </i> directory (relative to where
+ * applications starts). The syntax <code>-Daspectwerkz.transform.dump=*</code> matchs all
+ * classes. The pattern language is the same as pointcut pattern language.</li>
+ * <li>else <code>-Daspectwerkz.transform.dump=org.myapp.*,before</code> dumps class before and
+ * after the transformation whose name starts with <i>org.myapp. </i>(even unmodified ones) in
+ * <i>./_dump/before </i> and <i>./_dump/after </i> directories (relative to where application
+ * starts)</li>
  * <li><code>-Daspectwerkz.transform.filter=no</code> (or false) disables filtering of
- * <code>org.codehaus.aspectwerkz</code> and related classes (trove, dom4j etc.). This should only be used in offline
- * mode where weaving of those classes is needed. Setting this option in online mode will lead to
- * <code>ClassCircularityError</code>.</li>
+ * <code>org.codehaus.aspectwerkz</code> and related classes (trove, dom4j etc.). This should only
+ * be used in offline mode where weaving of those classes is needed. Setting this option in online
+ * mode will lead to <code>ClassCircularityError</code>.</li>
  * </ul>
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
@@ -75,10 +76,12 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             DUMP_AFTER = true;
             DUMP_BEFORE = dumpPattern.indexOf(",before") > 0;
             if (DUMP_BEFORE) {
-                DUMP_PATTERN = Pattern.compileTypePattern(dumpPattern.substring(0, dumpPattern.indexOf(',')),
-                        SubtypePatternType.NOT_HIERARCHICAL);
+                DUMP_PATTERN = Pattern.compileTypePattern(dumpPattern.substring(0, dumpPattern
+                        .indexOf(',')), SubtypePatternType.NOT_HIERARCHICAL);
             } else {
-                DUMP_PATTERN = Pattern.compileTypePattern(dumpPattern, SubtypePatternType.NOT_HIERARCHICAL);
+                DUMP_PATTERN = Pattern.compileTypePattern(
+                    dumpPattern,
+                    SubtypePatternType.NOT_HIERARCHICAL);
             }
         }
     }
@@ -86,7 +89,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     /**
      * Bytecode cache for prepared class and runtime weaving.
      * 
-     * @TODO: allow for other cache implementations (file, jms, clustered, jcache, JNDI, javagroups etc.)
+     * @TODO: allow for other cache implementations (file, jms, clustered, jcache, JNDI, javagroups
+     *        etc.)
      */
     private static Map s_classByteCache = new HashMap();
 
@@ -119,25 +123,32 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * @return modified (or not) bytecode
      */
     public byte[] preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
-       
+
         // filter out ExtClassLoader and BootClassLoader
         if (!NOFILTER) {
             if ((loader == null) || (loader.getParent() == null)) {
                 return bytecode;
             }
         }
-        final String className = name.replace('/', '.'); // needed for JRockit (as well as all in all TFs)
+        final String className = name.replace('/', '.'); // needed for JRockit (as well as all in
+                                                         // all TFs)
         if (filter(className) || !m_initialized) {
             return bytecode;
         }
         if (VERBOSE) {
-            log(Util.classLoaderToString(loader) + ':' + className + '[' + Thread.currentThread().getName() + ']');
+            log(Util.classLoaderToString(loader)
+                + ':'
+                + className
+                + '['
+                + Thread.currentThread().getName()
+                + ']');
         }
         return _preProcess(name, bytecode, loader);
     }
 
     public byte[] _preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
-        final String className = name.replace('/', '.'); // needed for JRockit (as well as all in all TFs)
+        final String className = name.replace('/', '.'); // needed for JRockit (as well as all in
+                                                         // all TFs)
         final Context context;
         try {
             // create a new transformation context
@@ -148,7 +159,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             return bytecode;
         }
 
-        // dump before (not compliant with multiple CL weaving same class differently, since based on class FQN name)
+        // dump before (not compliant with multiple CL weaving same class differently, since based
+        // on class FQN name)
         dumpBefore(className, context);
 
         // do the transformation
@@ -181,16 +193,19 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         ClassCacheTuple key = new ClassCacheTuple(klazz);
         ByteArray currentBytesArray = (ByteArray) s_classByteCache.get(key);
         if (currentBytesArray == null) {
-            throw new RuntimeException("can not find cached class in cache for prepared classes: " + className);
+            throw new RuntimeException("can not find cached class in cache for prepared classes: "
+                + className);
         }
 
         // FIXME this method does now work with inlining - uses javassist stuff
 
-        // flush class info repository cache so that new weaving is aware of wrapper method existence
+        // flush class info repository cache so that new weaving is aware of wrapper method
+        // existence
         JavassistClassInfoRepository.removeClassInfoFromAllClassLoaders(klazz.getName());
 
         // transform as if multi weaving
-        byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz.getClassLoader());
+        byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz
+                .getClassLoader());
 
         // update cache
         s_classByteCache.put(key, new ByteArray(newBytes));
@@ -214,11 +229,18 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * @param klass the AspectWerkz class
      */
     private static boolean filter(final String klass) {
-        return (klass == null) || klass.startsWith("org.codehaus.aspectwerkz.") || klass.startsWith("javassist.")
-                || klass.startsWith("org.objectweb.asm.") || klass.startsWith("com.karneim.")
-                || klass.startsWith("com.bluecast.") || klass.startsWith("org.apache.bcel.")
-                || klass.startsWith("gnu.trove.") || klass.startsWith("org.dom4j.") || klass.startsWith("org.xml.sax.")
-                || klass.startsWith("javax.xml.parsers.") || klass.startsWith("junit.");
+        return (klass == null)
+            || klass.startsWith("org.codehaus.aspectwerkz.")
+            || klass.startsWith("javassist.")
+            || klass.startsWith("org.objectweb.asm.")
+            || klass.startsWith("com.karneim.")
+            || klass.startsWith("com.bluecast.")
+            || klass.startsWith("org.apache.bcel.")
+            || klass.startsWith("gnu.trove.")
+            || klass.startsWith("org.dom4j.")
+            || klass.startsWith("org.xml.sax.")
+            || klass.startsWith("javax.xml.parsers.")
+            || klass.startsWith("junit.");
     }
 
     /**

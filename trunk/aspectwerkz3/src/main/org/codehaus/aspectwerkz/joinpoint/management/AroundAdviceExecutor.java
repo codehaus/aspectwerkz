@@ -14,9 +14,9 @@ import java.io.Serializable;
 
 /**
  * Handles the execution of the around advices.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AroundAdviceExecutor implements Serializable {
     /**
@@ -41,7 +41,7 @@ public class AroundAdviceExecutor implements Serializable {
 
     /**
      * Creates a new around advice executor.
-     *
+     * 
      * @param adviceIndexes
      * @param joinPointType
      */
@@ -51,8 +51,9 @@ public class AroundAdviceExecutor implements Serializable {
     }
 
     /**
-     * Executes its advices one by one. After the last advice has been executed, the original method is invoked.
-     *
+     * Executes its advices one by one. After the last advice has been executed, the original method
+     * is invoked.
+     * 
      * @param joinPoint the current join point
      * @return the result from the next advice in the chain or the invocation of the target method
      */
@@ -80,7 +81,8 @@ public class AroundAdviceExecutor implements Serializable {
                 m_currentAdviceIndex++;
                 try {
                     IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
-                    AspectContainer container = index.getAspectManager().getAspectContainer(index.getAspectIndex());
+                    AspectContainer container = index.getAspectManager().getAspectContainer(
+                        index.getAspectIndex());
                     result = container.invokeAdvice(index.getMethodIndex(), joinPoint);
                 } finally {
                     m_currentAdviceIndex--;
@@ -99,7 +101,7 @@ public class AroundAdviceExecutor implements Serializable {
 
     /**
      * Checks if the executor has any advices.
-     *
+     * 
      * @return true if it has advices
      */
     public boolean hasAdvices() {
@@ -107,9 +109,7 @@ public class AroundAdviceExecutor implements Serializable {
     }
 
     /**
-     * Resets the invocation flow.
-     * <p/>
-     * Will restart the execution chain of advice.
+     * Resets the invocation flow. <p/>Will restart the execution chain of advice.
      */
     public void reset() {
         m_currentAdviceIndex = -1;

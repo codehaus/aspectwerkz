@@ -40,26 +40,24 @@ public class MethodCallUnTransformer implements Transformer {
     /**
      * Transforms the call side pointcuts.
      * 
-     * @param context
-     *            the transformation context
-     * @param klass
-     *            the class set.
+     * @param context the transformation context
+     * @param klass the class set.
      */
-    public void transform(final Context context, final Klass klass)
-            throws NotFoundException, CannotCompileException {
+    public void transform(final Context context, final Klass klass) throws NotFoundException,
+            CannotCompileException {
         List definitions = context.getDefinitions();
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
-            ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass,
-                    context.getLoader());
+            ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
             if (classFilter(definition, new ExpressionContext(
-                    PointcutType.CALL, classInfo, classInfo), ctClass)) {
+                PointcutType.CALL,
+                classInfo,
+                classInfo), ctClass)) {
                 return;
             }
             ctClass.instrument(new ExprEditor() {
-                public void edit(MethodCall methodCall)
-                        throws CannotCompileException {
+                public void edit(MethodCall methodCall) throws CannotCompileException {
                     try {
                         CtBehavior where = null;
                         try {
@@ -77,23 +75,17 @@ public class MethodCallUnTransformer implements Transformer {
                         // get the callee method name, signature and class name
                         CtMethod calleeMethod = methodCall.getMethod();
                         String calleeClassName = methodCall.getClassName();
-                        if (!(calleeMethod.getName().equals(
-                                "proceedWithCallJoinPoint") && calleeClassName
+                        if (!(calleeMethod.getName().equals("proceedWithCallJoinPoint") && calleeClassName
                                 .equals("org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager"))) {
                             return;
                         }
                         System.out.println("found smtg to REMOVE");
-                        System.out.println("calleeMethod = "
-                                + calleeMethod.getName());
-                        System.out.println("calleeClassName = "
-                                + calleeClassName);
-                        System.out.println("methodCall = "
-                                + methodCall.indexOfBytecode());
-                        methodCall
-                                .replace("{java.lang.System.out.println($args[0]); $_=null;}");
+                        System.out.println("calleeMethod = " + calleeMethod.getName());
+                        System.out.println("calleeClassName = " + calleeClassName);
+                        System.out.println("methodCall = " + methodCall.indexOfBytecode());
+                        methodCall.replace("{java.lang.System.out.println($args[0]); $_=null;}");
                         try {
-                            CodeIterator it = where.getMethodInfo()
-                                    .getCodeAttribute().iterator();
+                            CodeIterator it = where.getMethodInfo().getCodeAttribute().iterator();
                             it.move(methodCall.indexOfBytecode() - 5);
                             System.out.println("it.get() = " + it.get());
                             it.next();
@@ -240,22 +232,19 @@ public class MethodCallUnTransformer implements Transformer {
     }
 
     /**
-     * Creates a new static class field, for the declaring class of the callee
-     * method.
+     * Creates a new static class field, for the declaring class of the callee method.
      * 
-     * @param ctClass
-     *            the class
-     * @param ctMethod
-     *            the method
+     * @param ctClass the class
+     * @param ctMethod the method
      * @return the name of the field
      */
-    private String addCalleeMethodDeclaringClassField(final CtClass ctClass,
-            final CtMethod ctMethod) throws NotFoundException,
+    private String addCalleeMethodDeclaringClassField(final CtClass ctClass, final CtMethod ctMethod) throws NotFoundException,
             CannotCompileException {
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD
-                + TransformationUtil.DELIMITER + "method"
-                + TransformationUtil.DELIMITER
-                + ctMethod.getDeclaringClass().getName().replace('.', '_');
+            + TransformationUtil.DELIMITER
+            + "method"
+            + TransformationUtil.DELIMITER
+            + ctMethod.getDeclaringClass().getName().replace('.', '_');
         boolean hasField = false;
         CtField[] fields = ctClass.getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
@@ -266,13 +255,14 @@ public class MethodCallUnTransformer implements Transformer {
             }
         }
         if (!hasField) {
-            CtField field = new CtField(ctClass.getClassPool().get(
-                    "java.lang.Class"), fieldName, ctClass);
-            field.setModifiers(Modifier.STATIC | Modifier.PRIVATE
-                    | Modifier.FINAL);
+            CtField field = new CtField(
+                ctClass.getClassPool().get("java.lang.Class"),
+                fieldName,
+                ctClass);
+            field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class#forName(\""
-                    + ctMethod.getDeclaringClass().getName().replace('/', '.')
-                    + "\")");
+                + ctMethod.getDeclaringClass().getName().replace('/', '.')
+                + "\")");
         }
         return fieldName;
     }
@@ -280,16 +270,15 @@ public class MethodCallUnTransformer implements Transformer {
     /**
      * Filters the classes to be transformed.
      * 
-     * @param definition
-     *            the definition
-     * @param ctx
-     *            the context
-     * @param cg
-     *            the class to filter
+     * @param definition the definition
+     * @param ctx the context
+     * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(final SystemDefinition definition,
-            final ExpressionContext ctx, final CtClass cg) {
+    public static boolean classFilter(
+        final SystemDefinition definition,
+        final ExpressionContext ctx,
+        final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }
@@ -309,20 +298,16 @@ public class MethodCallUnTransformer implements Transformer {
     /**
      * Filters the caller methods.
      * 
-     * @param method
-     *            the method to filter
+     * @param method the method to filter
      * @return boolean true if the method should be filtered away
      */
     public static boolean methodFilterCaller(final CtBehavior method) {
         if (Modifier.isNative(method.getModifiers())
-                || Modifier.isInterface(method.getModifiers())
-                || method.getName().equals(
-                        TransformationUtil.GET_META_DATA_METHOD)
-                || method.getName().equals(
-                        TransformationUtil.SET_META_DATA_METHOD)
-                || method.getName().equals(
-                        TransformationUtil.CLASS_LOOKUP_METHOD)
-                || method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            || Modifier.isInterface(method.getModifiers())
+            || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)
+            || method.getName().equals(TransformationUtil.SET_META_DATA_METHOD)
+            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)
+            || method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
         } else {
             return false;
@@ -332,23 +317,18 @@ public class MethodCallUnTransformer implements Transformer {
     /**
      * Filters the callee methods.
      * 
-     * @param method
-     *            the name of method to filter
+     * @param method the name of method to filter
      * @return boolean true if the method should be filtered away
      * @TODO: create metadata instance and check with the system
      */
     public static boolean methodFilterCallee(final CtMethod method) {
         if (method.getName().equals("<init>")
-                || method.getName().equals("<clinit>")
-                || method.getName().startsWith(
-                        TransformationUtil.ORIGINAL_METHOD_PREFIX)
-                || method.getName().equals(
-                        TransformationUtil.GET_META_DATA_METHOD)
-                || method.getName().equals(
-                        TransformationUtil.SET_META_DATA_METHOD)
-                || method.getName().equals(
-                        TransformationUtil.CLASS_LOOKUP_METHOD)
-                || method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            || method.getName().equals("<clinit>")
+            || method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
+            || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)
+            || method.getName().equals(TransformationUtil.SET_META_DATA_METHOD)
+            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)
+            || method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
         } else {
             return false;

@@ -8,7 +8,7 @@
 package test.interfacesubtypebug;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Target implements Intf {
     public void interfaceMethod() {

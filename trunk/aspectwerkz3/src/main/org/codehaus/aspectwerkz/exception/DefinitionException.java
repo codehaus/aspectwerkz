@@ -12,9 +12,9 @@ import java.io.PrintWriter;
 
 /**
  * Thrown when error in definition.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:vmassol@apache.org">Vincent Massol</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:vmassol@apache.org">Vincent Massol </a>
  */
 public class DefinitionException extends RuntimeException {
     /**
@@ -24,7 +24,7 @@ public class DefinitionException extends RuntimeException {
 
     /**
      * Sets the message for the exception.
-     *
+     * 
      * @param message the message
      */
     public DefinitionException(final String message) {
@@ -33,8 +33,8 @@ public class DefinitionException extends RuntimeException {
 
     /**
      * Sets the message for the exception and the original exception being wrapped.
-     *
-     * @param message   the detail of the error message
+     * 
+     * @param message the detail of the error message
      * @param throwable the original exception
      */
     public DefinitionException(String message, Throwable throwable) {
@@ -51,7 +51,7 @@ public class DefinitionException extends RuntimeException {
 
     /**
      * Print the full stack trace, including the original exception.
-     *
+     * 
      * @param ps the byte stream in which to print the stack trace
      */
     public void printStackTrace(PrintStream ps) {
@@ -63,7 +63,7 @@ public class DefinitionException extends RuntimeException {
 
     /**
      * Print the full stack trace, including the original exception.
-     *
+     * 
      * @param pw the character stream in which to print the stack trace
      */
     public void printStackTrace(PrintWriter pw) {

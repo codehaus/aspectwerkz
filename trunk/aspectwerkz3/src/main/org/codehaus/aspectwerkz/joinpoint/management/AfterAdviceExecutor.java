@@ -13,9 +13,9 @@ import java.io.Serializable;
 
 /**
  * Handles the execution of the after advices.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AfterAdviceExecutor implements Serializable {
     /**
@@ -25,7 +25,7 @@ public class AfterAdviceExecutor implements Serializable {
 
     /**
      * Creates a new advice executor.
-     *
+     * 
      * @param adviceIndexes
      */
     public AfterAdviceExecutor(final IndexTuple[] adviceIndexes) {
@@ -33,8 +33,9 @@ public class AfterAdviceExecutor implements Serializable {
     }
 
     /**
-     * Executes its advices one by one. After the last advice has been executed, the original method is invoked.
-     *
+     * Executes its advices one by one. After the last advice has been executed, the original method
+     * is invoked.
+     * 
      * @param joinPoint the current join point
      * @return null
      */
@@ -46,14 +47,16 @@ public class AfterAdviceExecutor implements Serializable {
             IndexTuple index = m_adviceIndexes[i];
             int aspectIndex = index.getAspectIndex();
             int methodIndex = index.getMethodIndex();
-            index.getAspectManager().getAspectContainer(aspectIndex).invokeAdvice(methodIndex, joinPoint);
+            index.getAspectManager().getAspectContainer(aspectIndex).invokeAdvice(
+                methodIndex,
+                joinPoint);
         }
         return null;
     }
 
     /**
      * Checks if the executor has any advices.
-     *
+     * 
      * @return true if it has advices
      */
     public boolean hasAdvices() {

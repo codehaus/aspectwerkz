@@ -11,7 +11,7 @@ import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @Aspect perJVM
  */
 public class TestAspect {
@@ -85,7 +85,8 @@ public class TestAspect {
     // ============ Advices ============
 
     /**
-     * @Around call_privateMethod || call_publicMethod || call_protectedMethod || call_staticFinalMethod
+     * @Around call_privateMethod || call_publicMethod || call_protectedMethod ||
+     *         call_staticFinalMethod
      */
     public Object advice_CALL(final JoinPoint joinPoint) throws Throwable {
         ModifierTest.log("call ");

@@ -10,7 +10,7 @@ package test.performance;
 import java.io.Serializable;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface PerClass extends Serializable {
     void runPerClass();

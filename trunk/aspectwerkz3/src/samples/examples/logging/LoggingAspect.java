@@ -11,17 +11,17 @@ import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @Aspect
  */
 public class LoggingAspect extends AbstractLoggingAspect {
 
     public LoggingAspect(CrossCuttingInfo info) {
         super(info);
-//        System.out.println("\t\tLoggingAspect UUID: " + info.getUuid());
-//        System.out.println("I AM PROTO " + info.isPrototype());
+        //        System.out.println("\t\tLoggingAspect UUID: " + info.getUuid());
+        //        System.out.println("I AM PROTO " + info.isPrototype());
     }
-    
+
     // ============ Pointcuts ============
 
     // AW-152: see XML - TODO move in a TestCase

@@ -20,8 +20,8 @@ import java.util.Iterator;
 
 /**
  * Parses a src tree with <code>QDox</code>.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class QDoxParser {
     /**
@@ -41,7 +41,7 @@ public class QDoxParser {
 
     /**
      * Adds a source tree to the builder.
-     *
+     * 
      * @param srcDir the source tree
      */
     public QDoxParser(final String srcDir) {
@@ -50,7 +50,7 @@ public class QDoxParser {
 
     /**
      * Parses a specific class.
-     *
+     * 
      * @param className the name of the class to compile
      * @return true if class was found and false otherwise
      * @todo QDox seems to have a problem retrieving inner classes => null
@@ -66,7 +66,7 @@ public class QDoxParser {
 
     /**
      * Returns the QDox JavaClass.
-     *
+     * 
      * @return the QDox JavaClass
      */
     public JavaClass getJavaClass() {
@@ -74,17 +74,16 @@ public class QDoxParser {
             throw new DefinitionException("no class has been parsed, call parse(..) first");
         }
         if (m_class == null) {
-            throw new DefinitionException(
-                    "could not find source file for " + m_className
-                    + " (have you specified the correct srcDir)"
-            );
+            throw new DefinitionException("could not find source file for "
+                + m_className
+                + " (have you specified the correct srcDir)");
         }
         return m_class;
     }
 
     /**
      * Returns all classes.
-     *
+     * 
      * @return a collections with all classes
      */
     public String[] getAllClassNames() {
@@ -92,18 +91,18 @@ public class QDoxParser {
         Collection classNames = new ArrayList();
         String className = null;
         for (Iterator it = classes.iterator(); it.hasNext();) {
-            className = (String)it.next();
+            className = (String) it.next();
             if ("java.lang.Object".equals(className)) {
                 continue;
             }
             classNames.add(className);
         }
-        return (String[])classNames.toArray(new String[]{});
+        return (String[]) classNames.toArray(new String[] {});
     }
 
     /**
      * Parses a specific class A returns an array with the methods.
-     *
+     * 
      * @return an array with the methods
      */
     public JavaMethod[] getJavaMethods() {
@@ -111,17 +110,16 @@ public class QDoxParser {
             throw new DefinitionException("no class has been parsed, call parse(..) first");
         }
         if (m_class == null) {
-            throw new DefinitionException(
-                    "could not find source file for " + m_className
-                    + " (have you specified the correct srcDir)"
-            );
+            throw new DefinitionException("could not find source file for "
+                + m_className
+                + " (have you specified the correct srcDir)");
         }
         return m_class.getMethods();
     }
 
     /**
      * Parses a specific class A returns an array with the methods.
-     *
+     * 
      * @return an array with the methods
      */
     public JavaField[] getJavaFields() {
@@ -129,10 +127,9 @@ public class QDoxParser {
             throw new DefinitionException("no class has been parsed, call parse(..) first");
         }
         if (m_class == null) {
-            throw new DefinitionException(
-                    "could not find source file for " + m_className
-                    + " (have you specified the correct srcDir)"
-            );
+            throw new DefinitionException("could not find source file for "
+                + m_className
+                + " (have you specified the correct srcDir)");
         }
         return m_class.getFields();
     }

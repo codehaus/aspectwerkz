@@ -10,7 +10,7 @@ package test.handler;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class HandlerTestAspect {
     public void before(final JoinPoint joinPoint) throws Throwable {

@@ -23,30 +23,31 @@ import org.codehaus.aspectwerkz.expression.ast.Node;
 
 /**
  * The advised cflow class filter visitor.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilterExpressionVisitor {
     /**
      * Creates a new cflow expression.
-     *
+     * 
      * @param expression the expression as a string
-     * @param namespace  the namespace
-     * @param root       the AST root
+     * @param namespace the namespace
+     * @param root the AST root
      */
-    public AdvisedCflowClassFilterExpressionVisitor(
-            final String expression, final String namespace, final ASTRoot root) {
+    public AdvisedCflowClassFilterExpressionVisitor(final String expression,
+                                                    final String namespace,
+                                                    final ASTRoot root) {
         super(expression, namespace, root);
     }
 
     /**
      * Matches the expression context.
-     *
+     * 
      * @param context
      * @return
      */
     public boolean match(final ExpressionContext context) {
-        boolean match = ((Boolean)visit(m_root, context)).booleanValue();
+        boolean match = ((Boolean) visit(m_root, context)).booleanValue();
         if (context.hasBeenVisitingCflow()) {
             return match;
         } else {
@@ -55,7 +56,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
     }
 
     public Object visit(ASTCflow node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         context.setHasBeenVisitingCflow(true);
         context.setInCflowSubAST(true);
         Node child = node.jjtGetChild(0);
@@ -72,7 +73,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
     }
 
     public Object visit(ASTCflowBelow node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         context.setHasBeenVisitingCflow(true);
         context.setInCflowSubAST(true);
         Node child = node.jjtGetChild(0);
@@ -89,13 +90,13 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
     }
 
     public Object visit(ASTPointcutReference node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         return new Boolean(namespace.getAdvisedCflowClassExpression(node.getName()).match(context));
     }
 
     public Object visit(ASTExecution node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
@@ -104,7 +105,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
     }
 
     public Object visit(ASTCall node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
@@ -113,7 +114,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
     }
 
     public Object visit(ASTSet node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
@@ -122,7 +123,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
     }
 
     public Object visit(ASTGet node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
@@ -131,7 +132,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
     }
 
     public Object visit(ASTHandler node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
@@ -140,7 +141,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
     }
 
     public Object visit(ASTStaticInitialization node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
@@ -149,7 +150,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
     }
 
     public Object visit(ASTWithin node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
@@ -158,7 +159,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
     }
 
     public Object visit(ASTWithinCode node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {

@@ -12,27 +12,27 @@ import java.util.List;
 
 /**
  * Base interface for the reflection info hierarchy.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface ReflectionInfo extends Serializable {
     /**
      * Returns the name of the class.
-     *
+     * 
      * @return the name of the class
      */
     String getName();
 
     /**
      * Returns the class modifiers.
-     *
+     * 
      * @return the class modifiers
      */
     int getModifiers();
 
     /**
      * Returns the annotation infos.
-     *
+     * 
      * @return the annotations infos
      */
     List getAnnotations();

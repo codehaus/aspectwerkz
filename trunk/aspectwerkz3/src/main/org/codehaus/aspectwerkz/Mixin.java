@@ -9,29 +9,29 @@ package org.codehaus.aspectwerkz;
 
 /**
  * Interface for the mixin implementations.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface Mixin {
     /**
      * Returns the name of the mixin.
-     *
+     * 
      * @return the name
      */
     String getName();
 
     /**
      * Returns the deployment model.
-     *
+     * 
      * @return the deployment model
      */
     int getDeploymentModel();
 
     /**
-     * Invokes the method with the index specified. Invoked by methods without any parameters (slight performance gain
-     * since we are saving us one array creation).
-     *
-     * @param methodIndex   the method index
+     * Invokes the method with the index specified. Invoked by methods without any parameters
+     * (slight performance gain since we are saving us one array creation).
+     * 
+     * @param methodIndex the method index
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
@@ -39,9 +39,9 @@ public interface Mixin {
 
     /**
      * Invokes an introduced method with the index specified.
-     *
-     * @param methodIndex   the method index
-     * @param parameters    the parameters for the invocation
+     * 
+     * @param methodIndex the method index
+     * @param parameters the parameters for the invocation
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
@@ -49,14 +49,14 @@ public interface Mixin {
 
     /**
      * Returns the implementation class name for the mixin.
-     *
+     * 
      * @return the implementation class name for the mixin
      */
     String getImplementationClassName();
 
     /**
      * Swaps the current introduction implementation.
-     *
+     * 
      * @param className the class name of the new implementation
      */
     void swapImplementation(String className);

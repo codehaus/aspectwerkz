@@ -10,7 +10,7 @@ package test.annotation;
 import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class PrivateFieldAnnotationProxy extends TypedAnnotationProxy {
 }

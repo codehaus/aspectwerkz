@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class InlineWeavingClassLoader extends URLClassLoader {
 
@@ -53,9 +53,8 @@ public class InlineWeavingClassLoader extends URLClassLoader {
         }
 
         ClassLoader cl = new InlineWeavingClassLoader(
-                (URL[])paths.toArray(new URL[]{}),
-                ClassLoader.getSystemClassLoader().getParent()
-        );
+            (URL[]) paths.toArray(new URL[] {}),
+            ClassLoader.getSystemClassLoader().getParent());
         Thread.currentThread().setContextClassLoader(cl);
         String s = args[0];
         String[] args1 = new String[args.length - 1];
@@ -63,7 +62,11 @@ public class InlineWeavingClassLoader extends URLClassLoader {
             System.arraycopy(args, 1, args1, 0, args.length - 1);
         }
         Class class1 = cl.loadClass(s);
-        Method method = class1.getMethod("main", new Class[]{String[].class});
-        method.invoke(null, new Object[]{args1});
+        Method method = class1.getMethod("main", new Class[] {
+            String[].class
+        });
+        method.invoke(null, new Object[] {
+            args1
+        });
     }
 }

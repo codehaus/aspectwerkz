@@ -20,7 +20,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @Aspect perJVM
  */
 public class MemberMethodTestAspect {
@@ -134,9 +134,9 @@ public class MemberMethodTestAspect {
      * @Around member_pc5 || member_pc8 || member_pc9 || member_pc12 || member_pc19
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 
@@ -144,9 +144,9 @@ public class MemberMethodTestAspect {
      * @Around member_pc8 || member_pc9 || member_pc13 || member_pc19
      */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("before2 ");
+        ((Loggable) joinPoint.getTargetInstance()).log("before2 ");
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("after2 ");
+        ((Loggable) joinPoint.getTargetInstance()).log("after2 ");
         return result;
     }
 
@@ -155,11 +155,14 @@ public class MemberMethodTestAspect {
      */
     public Object advice4(JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
-        MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
-        String metadata = joinPoint.getTargetClass().getName() + rtti.getMethod().getName()
-                          + joinPoint.getTargetInstance().hashCode() + rtti.getParameterValues()[0]
-                          + rtti.getParameterTypes()[0].getName() + rtti.getReturnType().getName()
-                          + rtti.getReturnValue();
+        MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
+        String metadata = joinPoint.getTargetClass().getName()
+            + rtti.getMethod().getName()
+            + joinPoint.getTargetInstance().hashCode()
+            + rtti.getParameterValues()[0]
+            + rtti.getParameterTypes()[0].getName()
+            + rtti.getReturnType().getName()
+            + rtti.getReturnValue();
         return metadata;
     }
 
@@ -167,9 +170,9 @@ public class MemberMethodTestAspect {
      * @Around member_pc6 || member_pc7
      */
     public Object advice5(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("before ");
+        ((Loggable) joinPoint.getTargetInstance()).log("before ");
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("after ");
+        ((Loggable) joinPoint.getTargetInstance()).log("after ");
         return result;
     }
 
@@ -184,7 +187,7 @@ public class MemberMethodTestAspect {
             out.close();
             File file = new File("joinpoint.ser");
             ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
-            joinPoint = (JoinPoint)in.readObject();
+            joinPoint = (JoinPoint) in.readObject();
             in.close();
         } catch (Exception e) {
             System.err.println("FIXME: serialization for JIT compiled join points");
@@ -196,14 +199,14 @@ public class MemberMethodTestAspect {
      * @Before member_pc16 || member_pc18 || member_pc19
      */
     public void before(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("pre ");
+        ((Loggable) joinPoint.getTargetInstance()).log("pre ");
     }
 
     /**
      * @After member_pc17 || member_pc18 || member_pc19
      */
     public void after(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("post ");
+        ((Loggable) joinPoint.getTargetInstance()).log("post ");
     }
 
     public static void main(String[] a) {

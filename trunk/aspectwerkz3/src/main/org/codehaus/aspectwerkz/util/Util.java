@@ -11,17 +11,24 @@ import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 
 /**
  * Utility methods and constants used in the AspectWerkz system.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class Util {
     public static final Integer INTEGER_DEFAULT_VALUE = new Integer(0);
+
     public static final Float FLOAT_DEFAULT_VALUE = new Float(0.0f);
+
     public static final Double DOUBLE_DEFAULT_VALUE = new Double(0.0d);
+
     public static final Long LONG_DEFAULT_VALUE = new Long(0L);
+
     public static final Boolean BOOLEAN_DEFAULT_VALUE = new Boolean(false);
+
     public static final Character CHARACTER_DEFAULT_VALUE = new Character('\u0000');
+
     public static final Short SHORT_DEFAULT_VALUE;
+
     public static final Byte BYTE_DEFAULT_VALUE;
 
     static {
@@ -33,9 +40,9 @@ public final class Util {
 
     /**
      * Calculates the hash for the class name and the meta-data.
-     *
+     * 
      * @param className the class name
-     * @param info      the meta-data
+     * @param info the meta-data
      * @return the hash
      */
     public static Integer calculateHash(final String className, final ReflectionInfo info) {
@@ -53,10 +60,9 @@ public final class Util {
     }
 
     /**
-     * Removes the AspectWerkz specific elements from the stack trace.
-     * <p/>
-     * TODO: how to mess w/ the stacktrace in JDK 1.3.x?
-     *
+     * Removes the AspectWerkz specific elements from the stack trace. <p/>TODO: how to mess w/ the
+     * stacktrace in JDK 1.3.x?
+     * 
      * @param exception the Throwable to modify the stack trace on
      * @param className the name of the fake origin class of the exception
      */
@@ -89,9 +95,9 @@ public final class Util {
     }
 
     /**
-     * Returns a String representation of a classloader Avoid to do a toString() if the resulting string is too long
-     * (occurs on Tomcat)
-     *
+     * Returns a String representation of a classloader Avoid to do a toString() if the resulting
+     * string is too long (occurs on Tomcat)
+     * 
      * @param loader
      * @return String representation (toString or FQN@hashcode)
      */

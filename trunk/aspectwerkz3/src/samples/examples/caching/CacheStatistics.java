@@ -12,41 +12,39 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class CacheStatistics {
 
     private static Map s_methodInvocations = Collections.synchronizedMap(new HashMap());
+
     private static Map s_cacheInvocations = Collections.synchronizedMap(new HashMap());
 
-    public static void addMethodInvocation(
-            final String methodName,
-            final Class[] parameterTypes) {
+    public static void addMethodInvocation(final String methodName, final Class[] parameterTypes) {
         Long hash = calculateHash(methodName, parameterTypes);
         if (!s_methodInvocations.containsKey(hash)) {
             s_methodInvocations.put(hash, new Integer(0));
         }
-        int counter = ((Integer)s_methodInvocations.get(hash)).intValue();
+        int counter = ((Integer) s_methodInvocations.get(hash)).intValue();
         counter++;
         s_methodInvocations.put(hash, new Integer(counter));
     }
 
-    public static void addCacheInvocation(
-            final String methodName,
-            final Class[] parameterTypes) {
+    public static void addCacheInvocation(final String methodName, final Class[] parameterTypes) {
         Long hash = calculateHash(methodName, parameterTypes);
         if (!s_cacheInvocations.containsKey(hash)) {
             s_cacheInvocations.put(hash, new Integer(0));
         }
-        int counter = ((Integer)s_cacheInvocations.get(hash)).intValue();
+        int counter = ((Integer) s_cacheInvocations.get(hash)).intValue();
         counter++;
         s_cacheInvocations.put(hash, new Integer(counter));
     }
 
     public static int getNrOfMethodInvocationsFor(
-            final String methodName,
-            final Class[] parameterTypes) {
-        Integer number = (Integer)s_methodInvocations.get(calculateHash(methodName, parameterTypes));
+        final String methodName,
+        final Class[] parameterTypes) {
+        Integer number = (Integer) s_methodInvocations
+                .get(calculateHash(methodName, parameterTypes));
         if (number != null) {
             return number.intValue();
         } else {
@@ -55,9 +53,10 @@ public class CacheStatistics {
     }
 
     public static int getNrOfCacheInvocationsFor(
-            final String methodName,
-            final Class[] parameterTypes) {
-        Integer number = (Integer)s_cacheInvocations.get(calculateHash(methodName, parameterTypes));
+        final String methodName,
+        final Class[] parameterTypes) {
+        Integer number = (Integer) s_cacheInvocations
+                .get(calculateHash(methodName, parameterTypes));
         if (number != null) {
             return number.intValue();
         } else {
@@ -65,9 +64,7 @@ public class CacheStatistics {
         }
     }
 
-    private static Long calculateHash(
-            final String methodName,
-            final Class[] parameterTypes) {
+    private static Long calculateHash(final String methodName, final Class[] parameterTypes) {
         int result = 17;
         result = 37 * result + methodName.hashCode();
         for (int i = 0, j = parameterTypes.length; i < j; i++) {

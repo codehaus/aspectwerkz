@@ -9,32 +9,31 @@ package org.codehaus.aspectwerkz.joinpoint;
 
 /**
  * Provides static and reflective information about the join point.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface Signature {
     /**
      * Returns the declaring class.
-     *
+     * 
      * @return the declaring class
      */
     Class getDeclaringType();
 
     /**
-     * Returns the modifiers for the signature.
-     * <p/>
-     * Could be used like this:
+     * Returns the modifiers for the signature. <p/>Could be used like this:
+     * 
      * <pre>
-     *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
+     * boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
      * </pre>
-     *
+     * 
      * @return the mofifiers
      */
     int getModifiers();
 
     /**
      * Returns the name (f.e. name of method of field).
-     *
+     * 
      * @return
      */
     String getName();

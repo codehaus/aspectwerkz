@@ -22,6 +22,5 @@ public interface Activator {
      * @param klass
      * @throws Exception
      */
-    public abstract void activate(final Context context, final Klass klass)
-            throws Exception;
+    public abstract void activate(final Context context, final Klass klass) throws Exception;
 }

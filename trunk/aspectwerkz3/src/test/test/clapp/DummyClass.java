@@ -11,21 +11,17 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- * fake class
- * <p/>
- * The clinit will load another class thru a custom classloader
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * fake class <p/>The clinit will load another class thru a custom classloader
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class DummyClass {
     static {
         try {
             // create a URLClassLoader with NO delegation
-            ClassLoader tmp = new URLClassLoader(
-                    new URL[]{
-                        new java.io.File(CrazyClassLoaderApp.DUMMYCLASS_LOCATION).toURL()
-                    }, null
-            );
+            ClassLoader tmp = new URLClassLoader(new URL[] {
+                new java.io.File(CrazyClassLoaderApp.DUMMYCLASS_LOCATION).toURL()
+            }, null);
 
             // load another class in this clinit DummyClass
             Class re = Class.forName("test.clapp.DummyReentrantClass", true, tmp);

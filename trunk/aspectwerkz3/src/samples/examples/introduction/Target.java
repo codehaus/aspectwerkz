@@ -8,16 +8,15 @@
 package examples.introduction;
 
 /**
- * @Annotation
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @Annotation @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Target {
     public static void main(String[] args) {
         Target target = new Target();
-        System.out.println("The mixin says: " + ((Mixin)target).sayHello1());
-        System.out.println("The mixin says: " + ((Mixin)target).sayHello2());
+        System.out.println("The mixin says: " + ((Mixin) target).sayHello1());
+        System.out.println("The mixin says: " + ((Mixin) target).sayHello2());
         Target target2 = new Target();
-        System.out.println("The mixin says: " + ((Mixin)target2).sayHello1());
-        System.out.println("The mixin says: " + ((Mixin)target2).sayHello2());
+        System.out.println("The mixin says: " + ((Mixin) target2).sayHello1());
+        System.out.println("The mixin says: " + ((Mixin) target2).sayHello2());
     }
 }

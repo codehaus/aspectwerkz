@@ -15,13 +15,11 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
- * Implements a server thread. Each request from the client gets its own instance.
- * <p/>
- * Response to three different commands:<br/> Command.CREATE, Command.INVOKE and Command.CLOSE.
- * <p/>
- * It redirects the method invocation to the Invoker for the class.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * Implements a server thread. Each request from the client gets its own instance. <p/>Response to
+ * three different commands: <br/>Command.CREATE, Command.INVOKE and Command.CLOSE. <p/>It redirects
+ * the method invocation to the Invoker for the class.
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class RemoteProxyServerThread implements Runnable {
     /**
@@ -61,14 +59,15 @@ public class RemoteProxyServerThread implements Runnable {
 
     /**
      * Creates a new instance.
-     *
+     * 
      * @param clientSocket the client socket
-     * @param loader       the classloader to use
-     * @param invoker      the invoker that makes the method invocation in the client thread
+     * @param loader the classloader to use
+     * @param invoker the invoker that makes the method invocation in the client thread
      */
-    public RemoteProxyServerThread(
-            final Socket clientSocket, final ClassLoader loader, final Invoker invoker,
-            final int timeout) {
+    public RemoteProxyServerThread(final Socket clientSocket,
+                                   final ClassLoader loader,
+                                   final Invoker invoker,
+                                   final int timeout) {
         if (clientSocket == null) {
             throw new IllegalArgumentException("client socket can not be null");
         }
@@ -116,16 +115,17 @@ public class RemoteProxyServerThread implements Runnable {
 
     /**
      * Handles the command CREATE.
-     *
+     * 
      * @throws IOException
      * @throws ClassNotFoundException
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    private void handleCreateCommand()
-            throws IOException, ClassNotFoundException, InstantiationException,
-                   IllegalAccessException {
-        final String className = (String)m_in.readObject();
+    private void handleCreateCommand() throws IOException,
+            ClassNotFoundException,
+            InstantiationException,
+            IllegalAccessException {
+        final String className = (String) m_in.readObject();
         Class klass = m_loader.loadClass(className);
         final Object instance = klass.newInstance();
         final String handle = RemoteProxy.wrapInstance(instance);
@@ -135,16 +135,16 @@ public class RemoteProxyServerThread implements Runnable {
 
     /**
      * Handles the command INVOKE.
-     *
+     * 
      * @throws IOException
      * @throws ClassNotFoundException
      */
     private void handleInvocationCommand() throws IOException, ClassNotFoundException {
         final Object context = m_in.readObject();
-        final String handle = (String)m_in.readObject();
-        final String methodName = (String)m_in.readObject();
-        final Class[] paramTypes = (Class[])m_in.readObject();
-        final Object[] args = (Object[])m_in.readObject();
+        final String handle = (String) m_in.readObject();
+        final String methodName = (String) m_in.readObject();
+        final Class[] paramTypes = (Class[]) m_in.readObject();
+        final Object[] args = (Object[]) m_in.readObject();
         Object result = null;
         try {
             result = m_invoker.invoke(handle, methodName, paramTypes, args, context);

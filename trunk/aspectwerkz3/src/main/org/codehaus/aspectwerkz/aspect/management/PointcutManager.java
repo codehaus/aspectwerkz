@@ -17,9 +17,9 @@ import java.util.List;
 
 /**
  * Manages pointcuts and introductions defined by a specfic aspect.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class PointcutManager {
     /**
@@ -49,7 +49,7 @@ public class PointcutManager {
 
     /**
      * Creates a new aspect.
-     *
+     * 
      * @param name the name of the aspect
      */
     public PointcutManager(final String name) {
@@ -58,8 +58,8 @@ public class PointcutManager {
 
     /**
      * Creates a new aspect.
-     *
-     * @param name            the name of the aspect
+     * 
+     * @param name the name of the aspect
      * @param deploymentModel the deployment model for the aspect
      */
     public PointcutManager(final String name, final int deploymentModel) {
@@ -67,7 +67,8 @@ public class PointcutManager {
             throw new IllegalArgumentException("name can not be null");
         }
         if (deploymentModel < 0) {
-            throw new IllegalArgumentException(deploymentModel + " is not a valid deployement model type");
+            throw new IllegalArgumentException(deploymentModel
+                + " is not a valid deployement model type");
         }
         m_name = name;
         m_deploymentModel = deploymentModel;
@@ -75,7 +76,7 @@ public class PointcutManager {
 
     /**
      * Returns the name of the aspect.
-     *
+     * 
      * @return the aspect name
      */
     public String getName() {
@@ -84,7 +85,7 @@ public class PointcutManager {
 
     /**
      * Returns the deployment model for the aspect.
-     *
+     * 
      * @return the deployment model
      */
     public int getDeploymentModel() {
@@ -93,7 +94,7 @@ public class PointcutManager {
 
     /**
      * Returns the deployment model for the aspect.
-     *
+     * 
      * @return the deployment model
      */
     public String getDeploymentModelAsString() {
@@ -102,7 +103,7 @@ public class PointcutManager {
 
     /**
      * Adds an introduction to the open class.
-     *
+     * 
      * @param introduction the name of the introduction to add
      */
     public final void addIntroduction(final String introduction) {
@@ -116,8 +117,8 @@ public class PointcutManager {
     }
 
     /**
-     * Adds an array with introductions to the open class.<br/>
-     *
+     * Adds an array with introductions to the open class. <br/>
+     * 
      * @param introductions the introductions to add
      */
     public final void addIntroductions(final String[] introductions) {
@@ -139,7 +140,7 @@ public class PointcutManager {
 
     /**
      * Adds a new pointcut.
-     *
+     * 
      * @param pointcut the pointcut to add
      */
     public void addPointcut(final Pointcut pointcut) {
@@ -147,7 +148,8 @@ public class PointcutManager {
             synchronized (m_cflowPointcuts) {
                 m_pointcuts.add(pointcut);
                 if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                    m_cflowPointcuts.add(new Pointcut(pointcut.getAspectManager(), pointcut.getExpressionInfo()));
+                    m_cflowPointcuts.add(new Pointcut(pointcut.getAspectManager(), pointcut
+                            .getExpressionInfo()));
                 }
             }
         }
@@ -155,7 +157,7 @@ public class PointcutManager {
 
     /**
      * Returns the introductions for the open class.
-     *
+     * 
      * @return an array with the introductions for the class
      */
     public String[] getIntroductions() {
@@ -164,13 +166,13 @@ public class PointcutManager {
 
     /**
      * Returns the pointcut for a specific expression.
-     *
+     * 
      * @param expression the expression
      * @return the pointcut, or null
      */
     public Pointcut getPointcut(final String expression) {
         for (Iterator it = m_pointcuts.iterator(); it.hasNext();) {
-            Pointcut pointcut = (Pointcut)it.next();
+            Pointcut pointcut = (Pointcut) it.next();
             if (pointcut.getExpressionInfo().getExpressionAsString().equals(expression)) {
                 return pointcut;
             }
@@ -180,13 +182,13 @@ public class PointcutManager {
 
     /**
      * Returns the cflow pointcut for a specific expression.
-     *
+     * 
      * @param expression the expression
      * @return the pointcut, or null
      */
     public Pointcut getCflowPointcut(final String expression) {
         for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
-            Pointcut pointcut = (Pointcut)it.next();
+            Pointcut pointcut = (Pointcut) it.next();
             if (pointcut.getExpressionInfo().getExpressionAsString().equals(expression)) {
                 return pointcut;
             }
@@ -196,7 +198,7 @@ public class PointcutManager {
 
     /**
      * Returns all the pointcuts defined by a specific aspect.
-     *
+     * 
      * @return the pointcuts
      */
     public List getPointcuts() {
@@ -205,7 +207,7 @@ public class PointcutManager {
 
     /**
      * Returns all the pointcuts defined by a specific aspect that has a cflow pointcut referenced.
-     *
+     * 
      * @return the pointcuts
      */
     public List getCflowPointcuts() {
@@ -214,7 +216,7 @@ public class PointcutManager {
 
     /**
      * Returns all the pointcuts for the join point specified.
-     *
+     * 
      * @param ctx the expression context
      * @return the pointcuts that parse
      */
@@ -224,7 +226,7 @@ public class PointcutManager {
         }
         List pointcutList = new ArrayList();
         for (Iterator it = m_pointcuts.iterator(); it.hasNext();) {
-            Pointcut pointcut = (Pointcut)it.next();
+            Pointcut pointcut = (Pointcut) it.next();
             if (pointcut.getExpressionInfo().getExpression().match(ctx)) {
                 pointcutList.add(pointcut);
             }
@@ -234,7 +236,7 @@ public class PointcutManager {
 
     /**
      * Returns all the cflow pointcuts for the join point specified.
-     *
+     * 
      * @param ctx the expression context
      * @return the pointcuts that parse
      */
@@ -244,7 +246,7 @@ public class PointcutManager {
         }
         List pointcutList = new ArrayList();
         for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
-            Pointcut pointcut = (Pointcut)it.next();
+            Pointcut pointcut = (Pointcut) it.next();
             if (pointcut.getExpressionInfo().getCflowExpression().match(ctx)) {
                 pointcutList.add(pointcut);
             }
@@ -259,7 +261,7 @@ public class PointcutManager {
         if (!(o instanceof PointcutManager)) {
             return false;
         }
-        final PointcutManager pointcutManager = (PointcutManager)o;
+        final PointcutManager pointcutManager = (PointcutManager) o;
         if (m_deploymentModel != pointcutManager.m_deploymentModel) {
             return false;
         }

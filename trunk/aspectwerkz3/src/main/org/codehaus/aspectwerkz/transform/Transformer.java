@@ -10,15 +10,15 @@ package org.codehaus.aspectwerkz.transform;
 import org.codehaus.aspectwerkz.transform.delegation.Klass;
 
 /**
- * Component for class transformation At load time / post compilation time: transform At runtime to activate prepared
- * declarations: activate
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * Component for class transformation At load time / post compilation time: transform At runtime to
+ * activate prepared declarations: activate
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public interface Transformer {
     /**
      * Transforms bytecode at load time
-     *
+     * 
      * @param context
      * @param klass
      * @throws Exception

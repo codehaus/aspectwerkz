@@ -18,27 +18,27 @@ import java.util.StringTokenizer;
 
 /**
  * Starts a target process adding JDWP option to have a listening connector and be in suspend mode
- * <p/>
- * Target process is launched using <i> $JAVA_HOME/bin/java [opt] [main]</i><br/> and [opt] is patched to use <i>-Xdebug
- * -Xrunjdwp:transport=..,address=..,server=y,suspend=y</i><br/>
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * <p/>Target process is launched using <i>$JAVA_HOME/bin/java [opt] [main] </i> <br/>and [opt] is
+ * patched to use <i>-Xdebug -Xrunjdwp:transport=..,address=..,server=y,suspend=y </i> <br/>
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class JDWPStarter extends AbstractStarter {
     private String transport;
+
     private String address;
 
     public JDWPStarter(String opt, String main, String transport, String address) {
         super(opt, main);
         Map jdwpOpt = parseJdwp();
         if (jdwpOpt.containsKey("transport")) {
-            this.transport = (String)jdwpOpt.get("transport");
+            this.transport = (String) jdwpOpt.get("transport");
         } else {
             this.transport = transport;
             jdwpOpt.put("transport", this.transport);
         }
         if (jdwpOpt.containsKey("address")) {
-            this.address = (String)jdwpOpt.get("address");
+            this.address = (String) jdwpOpt.get("address");
         } else {
             this.address = address;
             jdwpOpt.put("address", this.address);
@@ -55,8 +55,8 @@ public class JDWPStarter extends AbstractStarter {
     }
 
     /**
-     * Patch JDWP options if any to include necessary information Preserve JDWP options excepted server and
-     * suspend.<br/> If transport and address are already specified it uses them.
+     * Patch JDWP options if any to include necessary information Preserve JDWP options excepted
+     * server and suspend. <br/>If transport and address are already specified it uses them.
      */
     private void patchOptions(Map jdwpOpt) {
         if (opt.indexOf("-Xdebug") < 0) {
@@ -72,8 +72,8 @@ public class JDWPStarter extends AbstractStarter {
         //Collections.reverse(keys);
         keys = jdwpOptionSort(keys);
         for (Iterator i = keys.iterator(); i.hasNext();) {
-            String key = (String)i.next();
-            jdwp.append(key).append("=").append((String)jdwpOpt.get(key));
+            String key = (String) i.next();
+            jdwp.append(key).append("=").append((String) jdwpOpt.get(key));
             if (i.hasNext()) {
                 jdwp.append(",");
             }
@@ -102,10 +102,8 @@ public class JDWPStarter extends AbstractStarter {
         if (opt.indexOf("-Xrunjdwp:") < 0) {
             return new HashMap();
         }
-        String jdwp = opt.substring(
-                opt.indexOf("-Xrunjdwp:") + "-Xrunjdwp:".length(),
-                Math.min(opt.length(), opt.indexOf(' ', opt.indexOf("-Xrunjdwp:")))
-        );
+        String jdwp = opt.substring(opt.indexOf("-Xrunjdwp:") + "-Xrunjdwp:".length(), Math.min(opt
+                .length(), opt.indexOf(' ', opt.indexOf("-Xrunjdwp:"))));
         HashMap jdwpOpt = new HashMap();
         StringTokenizer stz = new StringTokenizer(jdwp, ",");
         while (stz.hasMoreTokens()) {
@@ -114,7 +112,8 @@ public class JDWPStarter extends AbstractStarter {
                 System.err.println("WARN - unrecognized JDWP option: " + jdwpo);
                 continue;
             }
-            jdwpOpt.put(jdwpo.substring(0, jdwpo.indexOf('=')), jdwpo.substring(jdwpo.indexOf('=') + 1));
+            jdwpOpt.put(jdwpo.substring(0, jdwpo.indexOf('=')), jdwpo
+                    .substring(jdwpo.indexOf('=') + 1));
         }
         return jdwpOpt;
     }
@@ -126,10 +125,10 @@ public class JDWPStarter extends AbstractStarter {
         Comparator c = new Comparator() {
             public int compare(Object o1, Object o2) {
                 if (o1 instanceof String && o2 instanceof String) {
-                    if ("transport".equals((String)o1)) {
+                    if ("transport".equals((String) o1)) {
                         return -1000;
                     }
-                    if ("transport".equals((String)o2)) {
+                    if ("transport".equals((String) o2)) {
                         return 1000;
                     }
                     return 0;

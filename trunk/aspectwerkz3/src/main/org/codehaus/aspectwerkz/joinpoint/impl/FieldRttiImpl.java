@@ -14,23 +14,28 @@ import java.lang.reflect.Field;
 
 /**
  * Implementation for the field signature.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class FieldRttiImpl implements FieldRtti {
     private final FieldSignatureImpl m_signature;
+
     private final WeakReference m_thisRef;
+
     private final WeakReference m_targetRef;
+
     private Object m_fieldValue;
 
     /**
      * Creates a new field RTTI.
-     *
+     * 
      * @param signature
      * @param thisInstance
      * @param targetInstance
      */
-    public FieldRttiImpl(final FieldSignatureImpl signature, final Object thisInstance, final Object targetInstance) {
+    public FieldRttiImpl(final FieldSignatureImpl signature,
+                         final Object thisInstance,
+                         final Object targetInstance) {
         m_signature = signature;
         m_thisRef = new WeakReference(thisInstance);
         m_targetRef = new WeakReference(targetInstance);
@@ -38,7 +43,7 @@ public class FieldRttiImpl implements FieldRtti {
 
     /**
      * Returns the target instance.
-     *
+     * 
      * @return the target instance
      */
     public Object getTarget() {
@@ -47,7 +52,7 @@ public class FieldRttiImpl implements FieldRtti {
 
     /**
      * Returns the instance currently executing.
-     *
+     * 
      * @return the instance currently executing
      */
     public Object getThis() {
@@ -56,7 +61,7 @@ public class FieldRttiImpl implements FieldRtti {
 
     /**
      * Returns the declaring class.
-     *
+     * 
      * @return the declaring class
      */
     public Class getDeclaringType() {
@@ -64,13 +69,12 @@ public class FieldRttiImpl implements FieldRtti {
     }
 
     /**
-     * Returns the modifiers for the signature.
-     * <p/>
-     * Could be used like this:
+     * Returns the modifiers for the signature. <p/>Could be used like this:
+     * 
      * <pre>
-     *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
+     * boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
      * </pre>
-     *
+     * 
      * @return the mofifiers
      */
     public int getModifiers() {
@@ -79,7 +83,7 @@ public class FieldRttiImpl implements FieldRtti {
 
     /**
      * Returns the name (f.e. name of method of field).
-     *
+     * 
      * @return the name
      */
     public String getName() {
@@ -88,7 +92,7 @@ public class FieldRttiImpl implements FieldRtti {
 
     /**
      * Returns the field.
-     *
+     * 
      * @return the field
      */
     public Field getField() {
@@ -97,7 +101,7 @@ public class FieldRttiImpl implements FieldRtti {
 
     /**
      * Returns the field type.
-     *
+     * 
      * @return the field type
      */
     public Class getFieldType() {
@@ -106,7 +110,7 @@ public class FieldRttiImpl implements FieldRtti {
 
     /**
      * Returns the value of the field.
-     *
+     * 
      * @return the value of the field
      */
     public Object getFieldValue() {
@@ -115,7 +119,7 @@ public class FieldRttiImpl implements FieldRtti {
 
     /**
      * Sets the value of the field.
-     *
+     * 
      * @param fieldValue the value of the field
      */
     public void setFieldValue(final Object fieldValue) {
@@ -124,7 +128,7 @@ public class FieldRttiImpl implements FieldRtti {
 
     /**
      * Returns a string representation of the signature.
-     *
+     * 
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */

@@ -27,15 +27,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AnnotationVisitor implements AnnotationParserVisitor {
     protected ASTRoot m_root;
+
     protected TypedAnnotationProxy m_annotationProxy;
 
     /**
      * Creates a new visitor.
-     *
+     * 
      * @param root the AST root
      */
     public AnnotationVisitor(final ASTRoot root, final TypedAnnotationProxy annotationProxy) {
@@ -73,20 +74,19 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     }
 
     public Object visit(ASTArray node, Object data) {
-        MethodInfo methodInfo = (MethodInfo)data;
+        MethodInfo methodInfo = (MethodInfo) data;
         Class valueType = methodInfo.valueType;
         if (!valueType.isArray()) {
-            throw new RuntimeException(
-                    "parameter type to setter method [" + methodInfo.setterMethod.getName()
-                    + "] is not of type array"
-            );
+            throw new RuntimeException("parameter type to setter method ["
+                + methodInfo.setterMethod.getName()
+                + "] is not of type array");
         }
         Class componentType = valueType.getComponentType();
         if (componentType.isArray()) {
             throw new UnsupportedOperationException(
-                    "multidimensional arrays are not supported, required for for setter method ["
-                    + methodInfo.setterMethod.getName() + "]"
-            );
+                "multidimensional arrays are not supported, required for for setter method ["
+                    + methodInfo.setterMethod.getName()
+                    + "]");
         }
         return createTypedArray(node, data, node.jjtGetNumChildren(), componentType);
     }
@@ -98,7 +98,9 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         } else if (isJavaReferenceType(identifier)) {
             return handleReferenceIdentifier(identifier);
         } else {
-            throw new RuntimeException("unsupported format for java type or reference [" + identifier + "]");
+            throw new RuntimeException("unsupported format for java type or reference ["
+                + identifier
+                + "]");
         }
     }
 
@@ -155,7 +157,9 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
                 Method getterMethod = methods[i];
                 if (getterMethod.getName().equals(valueName)) {
                     Class valueType = getterMethod.getReturnType();
-                    Method setterMethod = clazz.getMethod("set" + valueName, new Class[]{valueType});
+                    Method setterMethod = clazz.getMethod("set" + valueName, new Class[] {
+                        valueType
+                    });
                     methodInfo.getterMethod = getterMethod;
                     methodInfo.setterMethod = setterMethod;
                     methodInfo.valueType = valueType;
@@ -163,29 +167,34 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
                 }
             }
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(
-                    "could not find setter method for value [" + valueName + "] due to: "
-                    + e.toString()
-            );
+            throw new RuntimeException("could not find setter method for value ["
+                + valueName
+                + "] due to: "
+                + e.toString());
         }
         if (methodInfo.setterMethod == null) {
-            throw new RuntimeException(
-                    "setter method with the name [set" + valueName
-                    + "] can not be found in annotation proxy ["
-                    + m_annotationProxy.getClass().getName() + "]"
-            );
+            throw new RuntimeException("setter method with the name [set"
+                + valueName
+                + "] can not be found in annotation proxy ["
+                + m_annotationProxy.getClass().getName()
+                + "]");
         }
         return methodInfo;
     }
 
-    private void invokeSetterMethod(final MethodInfo methodInfo, final Object typedValue, final String valueName) {
+    private void invokeSetterMethod(
+        final MethodInfo methodInfo,
+        final Object typedValue,
+        final String valueName) {
         try {
-            methodInfo.setterMethod.invoke(m_annotationProxy, new Object[]{typedValue});
+            methodInfo.setterMethod.invoke(m_annotationProxy, new Object[] {
+                typedValue
+            });
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "could not invoke setter method for named value [" + valueName + "] due to: "
-                    + e.toString()
-            );
+            throw new RuntimeException("could not invoke setter method for named value ["
+                + valueName
+                + "] due to: "
+                + e.toString());
         }
     }
 
@@ -201,12 +210,14 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     }
 
     private Object createTypedArray(
-            final ASTArray node, final Object data, final int nrOfElements,
-            final Class componentType) {
+        final ASTArray node,
+        final Object data,
+        final int nrOfElements,
+        final Class componentType) {
         if (componentType.equals(String.class)) {
             String[] array = new String[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
-                String value = (String)node.jjtGetChild(i).jjtAccept(this, data);
+                String value = (String) node.jjtGetChild(i).jjtAccept(this, data);
                 if ((value.charAt(0) == '"') && (value.charAt(value.length() - 1) == '"')) {
                     array[i] = new String(value.substring(1, value.length() - 1));
                 } else {
@@ -217,58 +228,58 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         } else if (componentType.equals(long.class)) {
             long[] array = new long[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
-                array[i] = ((Long)node.jjtGetChild(i).jjtAccept(this, data)).longValue();
+                array[i] = ((Long) node.jjtGetChild(i).jjtAccept(this, data)).longValue();
             }
             return array;
         } else if (componentType.equals(int.class)) {
             int[] array = new int[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
-                array[i] = ((Integer)node.jjtGetChild(i).jjtAccept(this, data)).intValue();
+                array[i] = ((Integer) node.jjtGetChild(i).jjtAccept(this, data)).intValue();
             }
             return array;
         } else if (componentType.equals(short.class)) {
             short[] array = new short[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
-                array[i] = ((Short)node.jjtGetChild(i).jjtAccept(this, data)).shortValue();
+                array[i] = ((Short) node.jjtGetChild(i).jjtAccept(this, data)).shortValue();
             }
             return array;
         } else if (componentType.equals(double.class)) {
             double[] array = new double[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
-                array[i] = ((Double)node.jjtGetChild(i).jjtAccept(this, data)).doubleValue();
+                array[i] = ((Double) node.jjtGetChild(i).jjtAccept(this, data)).doubleValue();
             }
             return array;
         } else if (componentType.equals(float.class)) {
             float[] array = new float[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
-                array[i] = ((Float)node.jjtGetChild(i).jjtAccept(this, data)).floatValue();
+                array[i] = ((Float) node.jjtGetChild(i).jjtAccept(this, data)).floatValue();
             }
             return array;
         } else if (componentType.equals(byte.class)) {
             byte[] array = new byte[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
-                array[i] = ((Byte)node.jjtGetChild(i).jjtAccept(this, data)).byteValue();
+                array[i] = ((Byte) node.jjtGetChild(i).jjtAccept(this, data)).byteValue();
             }
             return array;
         } else if (componentType.equals(char.class)) {
             char[] array = new char[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
-                array[i] = ((Character)node.jjtGetChild(i).jjtAccept(this, data)).charValue();
+                array[i] = ((Character) node.jjtGetChild(i).jjtAccept(this, data)).charValue();
             }
             return array;
         } else if (componentType.equals(boolean.class)) {
             boolean[] array = new boolean[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
-                array[i] = ((Boolean)node.jjtGetChild(i).jjtAccept(this, data)).booleanValue();
+                array[i] = ((Boolean) node.jjtGetChild(i).jjtAccept(this, data)).booleanValue();
             }
             return array;
         } else if (componentType.equals(Class.class)) {
             Class[] array = new Class[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
-                array[i] = (Class)node.jjtGetChild(i).jjtAccept(this, data);
+                array[i] = (Class) node.jjtGetChild(i).jjtAccept(this, data);
             }
             return array;
-        } else { // reference type 
+        } else { // reference type
             Object[] array = new Object[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
                 array[i] = node.jjtGetChild(i).jjtAccept(this, data);
@@ -284,7 +295,9 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         int index = identifier.lastIndexOf('.');
         String className = identifier.substring(0, index);
         if (className.endsWith("[]")) {
-            throw new UnsupportedOperationException("does currently not support array types [" + identifier + "]");
+            throw new UnsupportedOperationException("does currently not support array types ["
+                + identifier
+                + "]");
         }
         if (className.equals("long")) {
             return long.class;
@@ -306,7 +319,10 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             try {
                 return Thread.currentThread().getContextClassLoader().loadClass(className);
             } catch (Exception e) {
-                throw new RuntimeException("could not load class [" + className + "] due to: " + e.toString());
+                throw new RuntimeException("could not load class ["
+                    + className
+                    + "] due to: "
+                    + e.toString());
             }
         }
     }
@@ -320,9 +336,10 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             Field field = clazz.getDeclaredField(fieldName);
             return field.get(null);
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "could not access reference field [" + identifier + "] due to: " + e.toString()
-            );
+            throw new RuntimeException("could not access reference field ["
+                + identifier
+                + "] due to: "
+                + e.toString());
         }
     }
 
@@ -331,7 +348,9 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
      */
     private static class MethodInfo {
         public Method setterMethod;
+
         public Method getterMethod;
+
         public Class valueType;
     }
 }

@@ -11,13 +11,16 @@ import junit.framework.TestCase;
 
 /**
  * Test case for AW-92 for static field
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class StaticFieldAdviceTest extends TestCase {
     public static int s_fieldA = 0;
+
     public static int s_fieldB = 0;
+
     public int m_fieldA = 0;
+
     public int m_fieldB = 0;
 
     public void testStaticFieldAccessedOutsideStaticCtx() {

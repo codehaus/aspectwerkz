@@ -11,13 +11,16 @@ import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * The 'Introduce' annotation proxy.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class IntroduceAnnotationProxy extends UntypedAnnotationProxy {
     private String m_expression;
+
     private String m_innerClassName;
+
     private String[] m_introducedInterfaces;
+
     private String m_deploymentModel;
 
     public String expression() {

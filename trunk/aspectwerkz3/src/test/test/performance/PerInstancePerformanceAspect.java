@@ -10,13 +10,13 @@ package test.performance;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @Aspect perInstance
  */
 public class PerInstancePerformanceAspect {
     /**
      * @Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerInstance()) &&
-     * within(test.performance.*)
+     *         within(test.performance.*)
      */
     public Object advice(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();

@@ -35,22 +35,26 @@ import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
 
 /**
  * Checks if the expression has a cflow pointcut.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
     protected final ASTRoot m_root;
+
     protected final String m_expression;
+
     protected final String m_namespace;
 
     /**
      * Creates a new finder.
-     *
+     * 
      * @param expression the expression as a string
-     * @param namespace  the namespace
-     * @param root       the AST root
+     * @param namespace the namespace
+     * @param root the AST root
      */
-    public CflowPointcutFinderVisitor(final String expression, final String namespace, final ASTRoot root) {
+    public CflowPointcutFinderVisitor(final String expression,
+                                      final String namespace,
+                                      final ASTRoot root) {
         m_root = root;
         m_expression = expression;
         m_namespace = namespace;
@@ -58,11 +62,11 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
 
     /**
      * Checks if the expression has a cflow pointcut.
-     *
+     * 
      * @return
      */
     public boolean hasCflowPointcut() {
-        return ((Boolean)visit(m_root, null)).booleanValue();
+        return ((Boolean) visit(m_root, null)).booleanValue();
     }
 
     // ============ Boot strap =============
@@ -82,7 +86,7 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
     public Object visit(ASTOr node, Object data) {
         int nrOfChildren = node.jjtGetNumChildren();
         for (int i = 0; i < nrOfChildren; i++) {
-            if (((Boolean)node.jjtGetChild(i).jjtAccept(this, data)).booleanValue()) {
+            if (((Boolean) node.jjtGetChild(i).jjtAccept(this, data)).booleanValue()) {
                 return Boolean.TRUE;
             }
         }
@@ -92,7 +96,7 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
     public Object visit(ASTAnd node, Object data) {
         int nrOfChildren = node.jjtGetNumChildren();
         for (int i = 0; i < nrOfChildren; i++) {
-            if (((Boolean)node.jjtGetChild(i).jjtAccept(this, data)).booleanValue()) {
+            if (((Boolean) node.jjtGetChild(i).jjtAccept(this, data)).booleanValue()) {
                 return Boolean.TRUE;
             }
         }
@@ -185,7 +189,7 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
 
     /**
      * Returns the string representation of the AST.
-     *
+     * 
      * @return
      */
     public String toString() {
@@ -194,7 +198,7 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
 
     /**
      * Returns the namespace.
-     *
+     * 
      * @return
      */
     public String getNamespace() {

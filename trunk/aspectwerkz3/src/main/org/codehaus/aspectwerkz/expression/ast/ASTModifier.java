@@ -3,6 +3,7 @@ package org.codehaus.aspectwerkz.expression.ast;
 
 public class ASTModifier extends SimpleNode {
     private int m_modifier;
+
     private boolean m_not = false;
 
     public ASTModifier(int id) {

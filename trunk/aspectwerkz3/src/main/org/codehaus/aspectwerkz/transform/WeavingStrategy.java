@@ -38,5 +38,8 @@ public interface WeavingStrategy {
      * @param loader
      * @return
      */
-    public abstract Context newContext(final String name, final byte[] bytecode, final ClassLoader loader);
+    public abstract Context newContext(
+        final String name,
+        final byte[] bytecode,
+        final ClassLoader loader);
 }

@@ -8,15 +8,23 @@
 package examples.caching;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class CacheTest {
     public static void main(String[] args) {
         Pi.getPiDecimal(3);
         Pi.getPiDecimal(4);
         Pi.getPiDecimal(3);
-        int methodInvocations = CacheStatistics.getNrOfMethodInvocationsFor("getPiDecimal", new Class[]{int.class});
-        int cacheInvocations = CacheStatistics.getNrOfCacheInvocationsFor("getPiDecimal", new Class[]{int.class});
+        int methodInvocations = CacheStatistics.getNrOfMethodInvocationsFor(
+            "getPiDecimal",
+            new Class[] {
+                int.class
+            });
+        int cacheInvocations = CacheStatistics.getNrOfCacheInvocationsFor(
+            "getPiDecimal",
+            new Class[] {
+                int.class
+            });
         if (cacheInvocations > 0) {
             double hitRate = methodInvocations / cacheInvocations;
             System.out.println("Hit rate: " + hitRate);

@@ -10,7 +10,7 @@ package examples.connectivity;
 import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface Test1 {
     String test1();

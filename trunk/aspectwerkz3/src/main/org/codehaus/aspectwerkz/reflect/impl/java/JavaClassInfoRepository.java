@@ -15,11 +15,10 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * A repository for the class info hierarchy. Is class loader aware.
- * <p/>
- * TODO refactor some with JavassistClassInfoRepository but keep em separate for system runtime sake in AOPC (WLS)
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * A repository for the class info hierarchy. Is class loader aware. <p/>TODO refactor some with
+ * JavassistClassInfoRepository but keep em separate for system runtime sake in AOPC (WLS)
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavaClassInfoRepository {
     /**
@@ -39,7 +38,7 @@ public class JavaClassInfoRepository {
 
     /**
      * Creates a new repository.
-     *
+     * 
      * @param loader
      */
     private JavaClassInfoRepository(final ClassLoader loader) {
@@ -48,7 +47,7 @@ public class JavaClassInfoRepository {
 
     /**
      * Returns the class info repository for the specific class loader
-     *
+     * 
      * @param loader
      * @return
      */
@@ -60,11 +59,9 @@ public class JavaClassInfoRepository {
             hash = loader.hashCode();
         }
         WeakReference repositoryRef = (WeakReference) s_repositories.get(hash);
-        JavaClassInfoRepository repository = (
-                (repositoryRef == null)
-                ? null
-                : (JavaClassInfoRepository) repositoryRef.get()
-                );
+        JavaClassInfoRepository repository = ((repositoryRef == null)
+            ? null
+            : (JavaClassInfoRepository) repositoryRef.get());
         if (repository != null) {
             return repository;
         } else {
@@ -76,7 +73,7 @@ public class JavaClassInfoRepository {
 
     /**
      * Remove a class from the repository.
-     *
+     * 
      * @param className the name of the class
      */
     public static void removeClassInfoFromAllClassLoaders(final String className) {
@@ -86,7 +83,7 @@ public class JavaClassInfoRepository {
 
     /**
      * Returns the class info.
-     *
+     * 
      * @param className
      * @return
      */
@@ -100,7 +97,7 @@ public class JavaClassInfoRepository {
 
     /**
      * Adds a new class info.
-     *
+     * 
      * @param classInfo
      */
     public void addClassInfo(final ClassInfo classInfo) {
@@ -114,7 +111,7 @@ public class JavaClassInfoRepository {
 
     /**
      * Checks if the class info for a specific class exists.
-     *
+     * 
      * @param name
      * @return
      */
@@ -124,12 +121,12 @@ public class JavaClassInfoRepository {
 
     /**
      * Searches for a class info up in the class loader hierarchy.
-     *
+     * 
      * @param className
      * @param loader
      * @return the class info
-     * @TODO might clash for specific class loader lookup algorithms, user need to override this class and implement
-     * this method
+     * @TODO might clash for specific class loader lookup algorithms, user need to override this
+     *       class and implement this method
      */
     public ClassInfo checkParentClassRepository(final String className, final ClassLoader loader) {
         if (loader == null) {
