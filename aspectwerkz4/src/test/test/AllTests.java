@@ -21,6 +21,7 @@ import test.staticinitialization.StaticInitializationExpressionTest;
 import test.withincode.WithincodeClinitTest;
 import test.customproceed.aw438.ArrayInCustomProceedTest;
 import test.withinstaticref.WithinStaticRefTest;
+import test.reflection.ClassInfoHelperTest;
 
 /**
  * This tests can be run without online / offline or other post compilation mode. Used to test
@@ -96,13 +97,13 @@ public class AllTests extends TestCase {
         suite.addTestSuite(ArrayInCustomProceedTest.class);
         suite.addTestSuite(WithinStaticRefTest.class);
 
-        suite.addTestSuite(test.ClassInfoTest.class);
+        suite.addTestSuite(ClassInfoTest.class);
+        suite.addTestSuite(ClassInfoHelperTest.class);
+
         // AW-361, should not throw an NPE
         SystemDefinitionContainer.getDefinitionsFor(null);
         SystemDefinitionContainer.getDefinitionsAt(null);
         SystemDefinitionContainer.getVirtualDefinitionAt(null);
-
-
 
         // NOT YET COMPLETED
 //        suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal

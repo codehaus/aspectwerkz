@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
  * Manages the mixins, registry for the mixin factories (one factory per mixin type).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class Mixins {
 
@@ -51,7 +52,7 @@ public class Mixins {
             MixinFactory factory = (MixinFactory) MIXIN_FACTORIES.get(mixinClass);
             if (factory == null) {
                 factory = createMixinFactory(mixinClass, mixinCalledFromLoader);
-                //by using a lookup by uuid/aspectNickName
+                //FIXME by using a lookup by uuid/aspectNickName
                 // right now broken since we have 1 container per mixin CLASS while the definition
                 // does allow for some mix (several mixin, several container, same mixin class)
                 MIXIN_FACTORIES.put(mixinClass, factory);
@@ -153,24 +154,7 @@ public class Mixins {
      * @param mixinCalledFromLoader classloader of the target class advised by the mixin (app server packaging)
      */
     private static MixinFactory createMixinFactory(final Class mixinClass, final ClassLoader mixinCalledFromLoader) {
-        MixinDefinition mixinDefinition = null;
-
-        Set definitions = SystemDefinitionContainer.getDefinitionsFor(mixinCalledFromLoader);
-        for (Iterator iterator = definitions.iterator(); iterator.hasNext() && mixinDefinition == null;) {
-            SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
-            for (Iterator iterator1 = systemDefinition.getMixinDefinitions().iterator(); iterator1.hasNext();) {
-                MixinDefinition mixinDef = (MixinDefinition) iterator1.next();
-                if (mixinClass.getName().replace('/', '.').equals(mixinDef.getMixinImpl().getName())) {
-                    mixinDefinition = mixinDef;
-                    break;
-                }
-            }
-        }
-        if (mixinDefinition == null) {
-            throw new DefinitionException("could not find definition for mixin: " + mixinClass.getName()
-                        + " (loader " + mixinClass.getClassLoader() + ")"
-                        + " from loader " + mixinCalledFromLoader);
-        }
+        final MixinDefinition mixinDefinition = getMixinDefinition(mixinClass, mixinCalledFromLoader);
 
         String factoryClassName = mixinDefinition.getFactoryClassName();
         try {
@@ -202,6 +186,54 @@ public class Mixins {
             cause.append(e.toString());
             throw new DefinitionException(cause.toString());
         }
+    }
+
+    /**
+     * Returns the parameter for a mixin based on the mixin implementation class and a classloader from
+     * where the mixin is visible (the classloader that owns the aop.xml with the "mixin" element, or a child of it).
+     * <p/>
+     * Note: the mixinClass classloader can be different, if you place the mixin in the system classpath, and reference
+     * it only from a deployed application.
+     * <p/>
+     * Note: you should not use a mixin more than once. Consider subclassing the mixin in this case. The returned parameters
+     * are the one from the first mixin found.
+     *
+     * @param mixinClass
+     * @return
+     */
+    public static Map getParameters(Class mixinClass, ClassLoader loader) {
+        MixinDefinition mixinDefinition = getMixinDefinition(mixinClass,  loader);
+        return mixinDefinition.getParameters();
+    }
+
+    /**
+     * Lookups a mixin definition based on the mixin impl class and a classloader from where the mixin is
+     * visible. The given classloader can be different from the mixin class classloader.
+     *
+     * @param mixinClass
+     * @param visibleFrom
+     * @return
+     */
+    private static MixinDefinition getMixinDefinition(Class mixinClass, ClassLoader visibleFrom) {
+        MixinDefinition mixinDefinition = null;
+
+        Set definitions = SystemDefinitionContainer.getDefinitionsFor(visibleFrom);
+        for (Iterator iterator = definitions.iterator(); iterator.hasNext() && mixinDefinition == null;) {
+            SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
+            for (Iterator iterator1 = systemDefinition.getMixinDefinitions().iterator(); iterator1.hasNext();) {
+                MixinDefinition mixinDef = (MixinDefinition) iterator1.next();
+                if (mixinClass.getName().replace('/', '.').equals(mixinDef.getMixinImpl().getName())) {
+                    mixinDefinition = mixinDef;
+                    break;
+                }
+            }
+        }
+        if (mixinDefinition == null) {
+            throw new DefinitionException("could not find definition for mixin: " + mixinClass.getName()
+                        + " (loader " + mixinClass.getClassLoader() + ")"
+                        + " from loader " + visibleFrom);
+        }
+        return mixinDefinition;
     }
 
     /**

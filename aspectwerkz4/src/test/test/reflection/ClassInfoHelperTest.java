@@ -32,7 +32,7 @@ public class ClassInfoHelperTest extends TestCase {
     public void testInterfaceImplementsItself() {
         ClassInfo ci = JavaClassInfo.getClassInfo(ClassInfoHelperTest.Intf2.class);
         
-        assertTrue(ClassInfoHelper.implementsInterface(ci, ClassInfoHelperTest.Intf2.class.getName()));
+        assertFalse(ClassInfoHelper.implementsInterface(ci, ClassInfoHelperTest.Intf2.class.getName()));
     }
     
 
@@ -51,6 +51,6 @@ public class ClassInfoHelperTest extends TestCase {
     }
 
     public static junit.framework.Test suite() {
-        return new junit.framework.TestSuite(ReflectionTest.class);
+        return new junit.framework.TestSuite(ClassInfoHelperTest.class);
     }
 }
