@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Field;
 import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -158,7 +157,6 @@ public abstract class AspectAttributeParser {
      * @param expression
      * @param introductionName
      * @param interfaceClassName
-     * @param methodIndex
      * @param aspectDef
      */
     protected void createAndAddInterfaceIntroductionDefToAspectDef(final String expression,

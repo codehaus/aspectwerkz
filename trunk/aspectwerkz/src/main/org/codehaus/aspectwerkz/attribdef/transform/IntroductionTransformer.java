@@ -93,6 +93,7 @@ public class IntroductionTransformer {
                                               final ConstantPoolGen cpg,
                                               final InstructionFactory factory,
                                               final AddImplementationTransformer transformer) {
+System.out.println("IntroductionTransformer.addMethodIntroductions");
         AspectWerkzDefinitionImpl def = (AspectWerkzDefinitionImpl)definition;
 
         Map metaDataRepository = context.getMetaDataRepository();
@@ -112,7 +113,6 @@ public class IntroductionTransformer {
                         List methods = aspectMetaData.getAllMethods();
                         for (Iterator it4 = methods.iterator(); it4.hasNext();) {
                             MethodMetaData methodMetaData = (MethodMetaData)it4.next();
-
                             // try to find the meta-data for the introduced method
                             if ((methodMetaData.getName().equals(introDef.getMethod().getName()) &&
                                     (methodMetaData.getModifiers() & Constants.ACC_PUBLIC) != 0 &&

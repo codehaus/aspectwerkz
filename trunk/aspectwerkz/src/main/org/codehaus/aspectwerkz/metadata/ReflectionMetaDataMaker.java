@@ -34,7 +34,6 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
         if (s_classMetaDataCache.containsKey(klass.getName())) {
             return (ClassMetaData)s_classMetaDataCache.get(klass.getName());
         }
-
         ClassMetaData classMetaData = new ClassMetaData();
         classMetaData.setName(klass.getName());
         classMetaData.setModifiers(klass.getModifiers());

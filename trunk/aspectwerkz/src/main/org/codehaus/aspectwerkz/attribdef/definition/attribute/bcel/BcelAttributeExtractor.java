@@ -98,7 +98,6 @@ public class BcelAttributeExtractor implements AttributeExtractor {
 
         Method[] methods = m_javaClass.getMethods();
         for (int i = 0; i < methods.length; i++) {
-
             if (methods[i].getName().equals(methodName)) {
                 if (Arrays.equals(methodParamTypes,
                         DescriptorUtil.convertToJavaFormat(methods[i].getSignature()))
