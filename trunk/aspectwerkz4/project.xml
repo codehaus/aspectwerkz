@@ -21,12 +21,9 @@
     </licenses>
     <url>http://aspectwerkz.codehaus.org/</url>
     <issueTrackingUrl>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10105</issueTrackingUrl>
-    <siteAddress>localhost</siteAddress>
-    <siteDirectory>C:/tools/Apache2/htdocs</siteDirectory>
-    <distributionDirectory>C:/tools/Apache2/htdocs</distributionDirectory>
-    <!--    	<siteAddress>codehaus.org</siteAddress>-->
-    <!--    	<siteDirectory>/www/aspectwerkz.codehaus.org/</siteDirectory>-->
-    <!--    	<distributionDirectory>/www/aspectwerkz.codehaus.org/downloads/</distributionDirectory>-->
+    <!--    <siteAddress>codehaus.org</siteAddress>-->
+    <!--    <siteDirectory>/www/aspectwerkz.codehaus.org/</siteDirectory>-->
+    <!--    <distributionDirectory>/www/aspectwerkz.codehaus.org/downloads/</distributionDirectory>-->
     <repository>
         <connection>scm:cvs:pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm:aspectwerkz3</connection>
         <developerConnection>scm:cvs:ext:${maven.username}@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm:aspectwerkz3</developerConnection>
@@ -88,12 +85,6 @@
                 <role>hasMethod and hasField implementation</role>
             </roles>
         </contributor>
-        <contributor>
-            <name>Allan Jones</name>
-            <roles>
-                <role>Serialization issue feedback</role>
-            </roles>
-        </contributor>
     </contributors>
     <dependencies>
         <dependency>
@@ -132,10 +123,10 @@
         <!-- ============================================================== -->
         <!-- for building, testing and samples (not needed at runtime) -->
         <!-- ============================================================== -->
-        <dependency>
-            <id>tools</id>
-            <jar>tools.jar</jar>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <id>tools</id>-->
+        <!--            <jar>tools.jar</jar>-->
+        <!--        </dependency>-->
         <dependency>
             <id>ant</id>
             <version>1.5.2</version>

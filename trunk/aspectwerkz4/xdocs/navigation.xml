@@ -21,6 +21,7 @@
             <item name="Downloads" href="/releases.html"/>
         </menu>
         <menu name="Documentation">
+            <item name="New features in 2.x" href="/new_features_in_2_0.html"/>
             <item name="Introduction" href="/introduction.html"/>
             <item name="Tutorials" href="http://docs.codehaus.org/display/AW/Tutorials"/>
             <item name="Implementation issues" href="/implementation.html"/>
