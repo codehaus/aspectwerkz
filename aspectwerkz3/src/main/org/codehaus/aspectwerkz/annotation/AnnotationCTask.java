@@ -199,14 +199,14 @@ public class AnnotationCTask extends Task {
                 System.out.println("Copytodest   : " + m_includePattern);
             }
 
-//            AnnotationC.compile(
-//                    m_verbose,
-//                    (String[])srcDirs.toArray(new String[]{}),
-//                    (String[])srcFiles.toArray(new String[]{}),
-//                    (String[])classpathDirs.toArray(new String[]{}),
-//                    m_destdir == null ? null : m_destdir.getAbsolutePath(),
-//                    m_properties == null ? null : m_properties.getAbsolutePath()
-//            );
+            AnnotationC.compile(
+                    m_verbose,
+                    (String[])srcDirs.toArray(new String[]{}),
+                    (String[])srcFiles.toArray(new String[]{}),
+                    (String[])classpathDirs.toArray(new String[]{}),
+                    m_destdir == null ? null : m_destdir.getAbsolutePath(),
+                    m_properties == null ? null : m_properties.getAbsolutePath()
+            );
 
             if (m_destdir != null) {
                 if (m_verbose) {
