@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz;
+package org.codehaus.aspectwerkz.xmldef;
 
 import java.util.Map;
 import java.util.Iterator;
@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
-import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
-import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
-import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
+import org.codehaus.aspectwerkz.xmldef.pointcut.FieldPointcut;
+import org.codehaus.aspectwerkz.xmldef.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.xmldef.pointcut.ThrowsPointcut;
+import org.codehaus.aspectwerkz.xmldef.pointcut.CallerSidePointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
