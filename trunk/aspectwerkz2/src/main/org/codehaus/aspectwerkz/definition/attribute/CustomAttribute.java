@@ -29,7 +29,7 @@ public class CustomAttribute implements Attribute {
     /**
      * The the parameters passed to the attribute.
      */
-//    private final String[] m_parameters;
+    private final String[] m_parameters;
 
     /**
      * Create a new CustomAttribute instance.
@@ -43,7 +43,7 @@ public class CustomAttribute implements Attribute {
         m_value = value;
 
         // TODO: put the parameters pairs in a hashmap to allow easy retrieval
-//        m_parameters = parameters;
+        m_parameters = parameters;
     }
 
     /**
@@ -69,7 +69,7 @@ public class CustomAttribute implements Attribute {
      *
      * @return the parameters
      */
-//    public String[] getParameters() {
-//        return m_parameters;
-//    }
+    public String[] getParameters() {
+        return m_parameters;
+    }
 }

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.codehaus.aspectwerkz.definition.attribute.bcel.BcelAttributeExtractor;
+import org.codehaus.aspectwerkz.definition.attribute.asm.AsmAttributeExtractor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
@@ -145,14 +146,15 @@ public class Attributes {
             try {
                 ClassLoader loader = klass.getClassLoader();
                 if (loader != null) {
-                    // TODO: use factory
                     extractor = new BcelAttributeExtractor();
+//                    extractor = new AsmAttributeExtractor();
                     extractor.initialize(className, klass.getClassLoader());
                     m_extractorCache.put(klass, extractor);
                 }
                 else {
                     // bootstrap classloader
                     extractor = new BcelAttributeExtractor();
+//                    extractor = new AsmAttributeExtractor();
                     extractor.initialize(className, ClassLoader.getSystemClassLoader());
                     m_extractorCache.put(klass, extractor);
                 }

@@ -37,7 +37,7 @@ public class BcelAttributeExtractor implements AttributeExtractor {
     /**
      * The BCEL java class.
      */
-    private JavaClass m_javaClass;
+    private JavaClass m_javaClass = null;
 
     /**
      * Open the classfile and parse it in to the BCEL library.

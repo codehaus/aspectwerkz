@@ -33,7 +33,7 @@ import com.jrockit.management.rmp.RmpSocketListener;
 public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
 
     /**
-     * Concrete preprocessor.
+     * Concrete AspectWerkz preprocessor.
      */
     private static ClassPreProcessor s_preProcessor;
 
