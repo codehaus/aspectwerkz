@@ -193,48 +193,6 @@ public class ExpressionTest extends TestCase {
         }
     }
 
-    public void testOneLevel_THROWS_OR() {
-        try {
-            space.registerExpression("* test.ExpressionTest.throws1(..)#java.lang.Exception", "", "pc1", PointcutType.THROWS);
-            space.registerExpression("* test.ExpressionTest.throws2(..)#java.lang.Exception", "", "pc2", PointcutType.THROWS);
-            Expression root = space.createExpression("pc1 || pc2");
-
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("throws1", new Class[]{}));
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("throws2", new Class[]{}));
-
-            assertTrue(root.match(classMetaData1));
-            assertFalse(root.match(classMetaData2));
-            assertTrue(root.match(classMetaData1, methodMetaData1));
-            assertTrue(root.match(classMetaData1, methodMetaData2));
-        }
-        catch (Exception e) {
-            fail(e.toString());
-        }
-    }
-
-    public void testOneLevel_THROWS_OR_matchDifferentException() {
-        try {
-            space.registerExpression("* test.ExpressionTest.throws1(..)#java.lang.Exception", "", "pc1", PointcutType.THROWS);
-            space.registerExpression("* test.ExpressionTest.throwsError(..)#java.lang.Error", "", "pc2", PointcutType.THROWS);
-            Expression root = space.createExpression("pc1 || pc2");
-
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("throws1", new Class[]{}));
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("throwsError", new Class[]{}));
-
-            assertTrue(root.match(classMetaData1));
-            assertTrue(root.match(classMetaData1, methodMetaData1, "java.lang.Exception"));
-            assertFalse(root.match(classMetaData1, methodMetaData1, "java.lang.Error"));
-            assertTrue(root.match(classMetaData1, methodMetaData2, "java.lang.Error"));
-            assertFalse(root.match(classMetaData1, methodMetaData2, "java.lang.Exception"));
-        }
-        catch (Exception e) {
-            fail(e.toString());
-        }
-    }
-
     public void testOneLevel_EXECUTION_AND() {
         try {
             space.registerExpression("* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION);
@@ -315,27 +273,6 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData2));
             assertFalse(root.match(classMetaData1, fieldMetaData1));
             assertTrue(root.match(classMetaData1, fieldMetaData2));
-        }
-        catch (Exception e) {
-            fail(e.toString());
-        }
-    }
-
-    public void testOneLevel_THROWS_AND() {
-        try {
-            space.registerExpression("* test.ExpressionTest.throws1(..)#java.lang.Exception", "", "pc1", PointcutType.THROWS);
-            space.registerExpression("* test.ExpressionTest.throws2(..)#java.lang.Exception", "", "pc2", PointcutType.THROWS);
-            Expression root = space.createExpression("!pc1 && pc2");
-
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("throws1", new Class[]{}));
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("throws2", new Class[]{}));
-
-            assertTrue(root.match(classMetaData1));
-            assertFalse(root.match(classMetaData2));
-            assertFalse(root.match(classMetaData1, methodMetaData1));
-            assertTrue(root.match(classMetaData1, methodMetaData2));
         }
         catch (Exception e) {
             fail(e.toString());
@@ -474,29 +411,6 @@ public class ExpressionTest extends TestCase {
             assertTrue(root.match(classMetaData1, fieldMetaData1));
             assertTrue(root.match(classMetaData1, fieldMetaData2));
             assertFalse(root.match(classMetaData1, fieldMetaData3));
-        }
-        catch (Exception e) {
-            fail(e.toString());
-        }
-    }
-
-    public void testTwoLevels_THROWS() {
-        try {
-            space.registerExpression("* test.ExpressionTest.throws1(..)#java.lang.Exception", "", "pc1", PointcutType.THROWS);
-            space.registerExpression("* test.ExpressionTest.throws2(..)#java.lang.Exception", "", "pc2", PointcutType.THROWS);
-            space.registerExpression(space.createExpression("pc1 || pc2", "pc3"));
-            space.registerExpression("* test.ExpressionTest.throwsDummy(..)#java.lang.Exception", "", "pc4", PointcutType.THROWS);
-            Expression root = space.createExpression("pc3 && !pc4");
-
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("throws1", new Class[]{}));
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("throws2", new Class[]{}));
-            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("throwsDummy", new Class[]{}));
-
-            assertTrue(root.match(classMetaData1));
-            assertTrue(root.match(classMetaData1, methodMetaData1));
-            assertTrue(root.match(classMetaData1, methodMetaData2));
-            assertFalse(root.match(classMetaData1, methodMetaData3));
         }
         catch (Exception e) {
             fail(e.toString());

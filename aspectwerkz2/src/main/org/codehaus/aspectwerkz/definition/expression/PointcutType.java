@@ -20,7 +20,6 @@ public class PointcutType {
     public static final PointcutType GET = new PointcutType("get");
     public static final PointcutType CATCH_CLAUSE = new PointcutType("catch-clause");
     public static final PointcutType CFLOW = new PointcutType("cflow");
-    public static final PointcutType THROWS = new PointcutType("throws");
     public static final PointcutType CLASS = new PointcutType("class");
     public static final PointcutType ATTRIBUTE = new PointcutType("attribute");
 

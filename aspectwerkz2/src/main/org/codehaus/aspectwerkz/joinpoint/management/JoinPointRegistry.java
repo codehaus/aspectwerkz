@@ -399,7 +399,6 @@ public class JoinPointRegistry {
         pointcutTypeToAdvicesMap.put(PointcutType.CALL, EMTPY_ARRAY_LIST);
         pointcutTypeToAdvicesMap.put(PointcutType.SET, EMTPY_ARRAY_LIST);
         pointcutTypeToAdvicesMap.put(PointcutType.GET, EMTPY_ARRAY_LIST);
-        pointcutTypeToAdvicesMap.put(PointcutType.THROWS, EMTPY_ARRAY_LIST);
         pointcutTypeToAdvicesMap.put(PointcutType.CATCH_CLAUSE, EMTPY_ARRAY_LIST);
         pointcutTypeToAdvicesMap.put(PointcutType.ATTRIBUTE, EMTPY_ARRAY_LIST);
         pointcutTypeToAdvicesMap.put(PointcutType.CLASS, EMTPY_ARRAY_LIST);

@@ -86,14 +86,34 @@ public abstract class LeafExpression extends Expression {
             throw new ExpressionException("pointcut type in context can not be null");
         }
         if (m_type.equals(PointcutType.EXECUTION)) {
-            tuple = PatternFactory.createMethodPatternTuple(m_expression, m_package);
-            m_memberPattern = Pattern.compileMethodPattern(tuple.getMemberPattern());
+            if (Pattern.isConstructor(m_expression)) {
+                tuple = PatternFactory.createConstructorPatternTuple(m_expression, m_package);
+                m_memberPattern = Pattern.compileConstructorPattern(tuple.getMemberPattern());
+            }
+            else {
+                tuple = PatternFactory.createMethodPatternTuple(m_expression, m_package);
+                m_memberPattern = Pattern.compileMethodPattern(tuple.getMemberPattern());
+            }
             m_isHierarchical = tuple.isHierarchical();
             m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
         }
         else if (m_type.equals(PointcutType.CALL)) {
-            tuple = PatternFactory.createCallPatternTuple(m_expression, m_package);
-            m_memberPattern = Pattern.compileCallerSidePattern(tuple.getMemberPattern());
+            if (Pattern.isConstructor(m_expression)) {
+                tuple = PatternFactory.createCallPatternTuple(
+                        Pattern.CONSTRUCTOR, m_expression, m_package
+                );
+                m_memberPattern = Pattern.compileCallerSidePattern(
+                        Pattern.CONSTRUCTOR, tuple.getMemberPattern()
+                );
+            }
+            else {
+                tuple = PatternFactory.createCallPatternTuple(
+                        Pattern.METHOD, m_expression, m_package
+                );
+                m_memberPattern = Pattern.compileCallerSidePattern(
+                        Pattern.METHOD, tuple.getMemberPattern()
+                );
+            }
             m_isHierarchical = tuple.isHierarchical();
             m_isHierarchicalCallee = tuple.isHierarchicalCallee();
             m_classPattern = Pattern.compileClassPattern(tuple.getCallerClassPattern());
@@ -104,16 +124,16 @@ public abstract class LeafExpression extends Expression {
             m_isHierarchical = tuple.isHierarchical();
             m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
         }
-        else if (m_type.equals(PointcutType.THROWS)) {
-            tuple = PatternFactory.createThrowsPatternTuple(m_expression, m_package);
-            m_memberPattern = Pattern.compileThrowsPattern(tuple.getMemberPattern());
-            m_isHierarchical = tuple.isHierarchical();
-            m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
-        }
         else if (m_type.equals(PointcutType.CFLOW)) {
             // cflow compiled as caller side pattern
-            tuple = PatternFactory.createCallPatternTuple(m_expression, m_package);
-            m_memberPattern = Pattern.compileCallerSidePattern(tuple.getMemberPattern());
+            if (Pattern.isConstructor(m_expression)) {
+                tuple = PatternFactory.createCallPatternTuple(Pattern.CONSTRUCTOR, m_expression, m_package);
+                m_memberPattern = Pattern.compileCallerSidePattern(Pattern.CONSTRUCTOR, tuple.getMemberPattern());
+            }
+            else {
+                tuple = PatternFactory.createCallPatternTuple(Pattern.METHOD, m_expression, m_package);
+                m_memberPattern = Pattern.compileCallerSidePattern(Pattern.METHOD, tuple.getMemberPattern());
+            }
             m_isHierarchical = tuple.isHierarchical();
             m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
         }

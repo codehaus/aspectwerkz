@@ -134,8 +134,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
                 definition.hasCallPointcut(classMetaData) ||
                 definition.hasGetPointcut(classMetaData) ||
                 definition.hasSetPointcut(classMetaData) ||
-                definition.hasIntroductions(classMetaData) ||
-                definition.hasThrowsPointcut(classMetaData)) {
+                definition.hasIntroductions(classMetaData)) {
             return false;
         }
         return true;

@@ -647,56 +647,6 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
-     * Only checks for a class match to allow early filtering.
-     *
-     * @param classMetaData the class meta-data
-     * @return boolean
-     */
-    public boolean hasThrowsPointcut(final ClassMetaData classMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                Expression expression = adviceDef.getExpression();
-                if (expression.getType().equals(PointcutType.THROWS)
-                        && expression.match(classMetaData)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
-     *
-     * @param classMetaData the class meta-data
-     * @param methodMetaData the name or the method
-     * @return boolean
-     */
-    public boolean hasThrowsPointcut(final ClassMetaData classMetaData,
-                                     final MethodMetaData methodMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                Expression expression = adviceDef.getExpression();
-                if (expression.getType().equals(PointcutType.THROWS)
-                        && expression.match(classMetaData, methodMetaData)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * Checks if a class should care about advising caller side method invocations.
      * This method matches the caller class (when the isCallerSideMethod matches the callee class)
      *
@@ -749,11 +699,6 @@ public class SystemDefinition {
                     return true;
                 }
             }
-//            for (Iterator it3 = aspectDef.getPointcuts().iterator(); it3.hasNext();) {
-//                PointcutDefinition pcDef = (PointcutDefinition) it3.next();
-//                if (pcDef.getType().equals(PointcutType.CFLOW)
-//                    && Expression.getExpressionTemplate(aspectDef.getName(), pcDef.getName()))
-//            }
         }
         return false;
     }

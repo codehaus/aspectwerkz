@@ -43,7 +43,8 @@ public class DefinitionParserHelper {
 
         // create and add a new expression template
         ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).registerExpression(
-                expression, "", name, type);
+                expression, "", name, type
+        );
     }
 
     /**

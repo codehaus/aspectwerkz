@@ -252,7 +252,7 @@ public class MethodExecutionTransformer implements Transformer {
         if (definition.inPreparePackage(className) && !isActivatePhase) {
             return true;
         }
-        if (definition.hasExecutionPointcut(classMetaData) || definition.hasThrowsPointcut(classMetaData)) {
+        if (definition.hasExecutionPointcut(classMetaData)) {
             return false;
         }
         return true;
@@ -282,9 +282,6 @@ public class MethodExecutionTransformer implements Transformer {
             return true;
         }
         else if (definition.hasExecutionPointcut(classMetaData, methodMetaData)) {
-            return false;
-        }
-        else if (definition.hasThrowsPointcut(classMetaData, methodMetaData)) {
             return false;
         }
         else {

@@ -26,8 +26,6 @@ public class StaticMethodTestAspect extends Aspect {
     Pointcut pc1;
     /** @Execution * test.StaticMethodAdviceTest.*Param*(..) */
     Pointcut pc2;
-    /** @Throws * test.StaticMethodAdviceTest.exceptionThrower(..)#java.lang.UnsupportedOperationException */
-    Pointcut pc3;
     /** @Execution void test.StaticMethodAdviceTest.methodAdvicedMethod(..) */
     Pointcut pc4;
     /** @Execution * test.StaticMethodAdviceTest.methodAdvicedMethod(..) */
@@ -104,19 +102,10 @@ public class StaticMethodTestAspect extends Aspect {
         return result;
     }
 
-
-    /**
-     * @Around pc3
-     */
-    public Object advice6(final JoinPoint joinPoint) throws Throwable {
-        return new Object();
-    }
-
     /**
      * @Around pc13
      */
     public Object advice7(final JoinPoint joinPoint) throws Throwable {
         return null;
     }
-
 }

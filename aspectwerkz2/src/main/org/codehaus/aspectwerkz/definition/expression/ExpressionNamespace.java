@@ -142,11 +142,6 @@ public class ExpressionNamespace {
                     expression, packageNamespace, name
             );
         }
-        else if (type.equals(PointcutType.THROWS)) {
-            expr = createThrowsExpression(
-                    expression, packageNamespace, name
-            );
-        }
         else if (type.equals(PointcutType.CFLOW)) {
             expr = createCflowExpression(
                     expression, packageNamespace, name
@@ -217,20 +212,6 @@ public class ExpressionNamespace {
                                              final String packageNamespace,
                                              final String name) {
         return new GetExpression(this, expression, packageNamespace, name);
-    }
-
-    /**
-     * Create new throws expression.
-     *
-     * @param expression the expression string
-     * @param packageNamespace the package namespace that the expression is living in
-     * @param name the name of the pointcut
-     * @return the expression
-     */
-    public ThrowsExpression createThrowsExpression(final String expression,
-                                                   final String packageNamespace,
-                                                   final String name) {
-        return new ThrowsExpression(this, expression, packageNamespace, name);
     }
 
     /**
