@@ -136,11 +136,10 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                 addJoinPointField(cpg, cg, mg, methodSequence);
 
                 // get the join point controller
-                final String controllerClassName =
-                        definition.getJoinPointController(
-                                classMetaData,
-                                methodMetaData
-                        );
+                final String controllerClassName = definition.getJoinPointController(
+                        classMetaData,
+                        methodMetaData
+                );
 
                 // advise all the constructors
                 for (Iterator it2 = initIndexes.iterator(); it2.hasNext();) {
@@ -175,8 +174,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
             // add the proxy methods
             for (Iterator it2 = proxyMethods.iterator(); it2.hasNext();) {
-                Method method = (Method)it2.next();
-                cg.addMethod(method);
+                cg.addMethod((Method)it2.next());
             }
         }
     }

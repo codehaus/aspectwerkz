@@ -47,6 +47,8 @@ public class StaticMethodTestAspect extends Aspect {
     Pointcut pc11;
     /** @Execution * test.attribdef.StaticMethodAdviceTest.takesArrayAsArgument(String[]) */
     Pointcut pc12;
+    /** @Execution long test.attribdef.StaticMethodAdviceTest.getPrimitiveAndNullFromAdvice() */
+    Pointcut pc13;
 
     // ============ Advices ============
 
@@ -113,4 +115,12 @@ public class StaticMethodTestAspect extends Aspect {
     public Object advice6(final JoinPoint joinPoint) throws Throwable {
         return new Object();
     }
+
+    /**
+     * @Around pc13
+     */
+    public Object advice7(final JoinPoint joinPoint) throws Throwable {
+        return null;
+    }
+
 }

@@ -120,7 +120,7 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
      */
     private void writeObject(final ObjectOutputStream stream) throws Exception {
         ObjectOutputStream.PutField fields = stream.putFields();
-        fields.put("m_targetObjectReference", m_targetObjectReference.get());
+        fields.put("m_targetInstanceReference", m_targetObjectReference.get());
         stream.writeFields();
     }
 
@@ -132,6 +132,6 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_targetObjectReference = new SoftReference(fields.get("m_targetObjectReference", null));
+        m_targetObjectReference = new SoftReference(fields.get("m_targetInstanceReference", null));
     }
 }
