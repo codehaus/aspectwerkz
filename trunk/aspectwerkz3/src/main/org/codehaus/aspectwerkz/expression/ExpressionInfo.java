@@ -16,6 +16,8 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Abstraction that holds info about the expression and the different visitors.
@@ -28,6 +30,12 @@ import java.util.Set;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class ExpressionInfo {
+
+    private final static String JOINPOINT_FULL_QUALIFIED_CLASSNAME = JoinPoint.class.getName();
+
+    private final static String JOINPOINT = "JoinPoint";
+
+
     /**
      * The sole instance of the parser.
      */
@@ -46,9 +54,22 @@ public class ExpressionInfo {
     private final AdvisedCflowClassFilterExpressionVisitor m_advisedCflowClassFilterExpression;
 
     private boolean m_hasCflowPointcut;
+
     private boolean m_hasCflowPointcutKnown = false;
 
+    /**
+     * Ordered map of the pointcut arguments type, indexed by their name.
+     */
     private final Map m_argsTypeByName = new SequencedHashMap();
+
+    /**
+     * List<String> of possible arguments names/references that appear in the expression.
+     * This list is lasily populated once using the ExpressionValidateVisitor.
+     * Note that "types" are part of the populated list:
+     * <br/>pointcutRef(x) ==> "x"
+     * <br/>execution(...) && args(x, int) ==> "x", "int"
+     */
+    private List m_possibleArguments = null;
 
     /**
      * Creates a new expression info instance.
@@ -90,6 +111,15 @@ public class ExpressionInfo {
      */
     public ExpressionVisitor getExpression() {
         return m_expression;
+    }
+
+    /**
+     * Returns the namespace
+     *
+     * @return
+     */
+    public String getNamespace() {
+        return m_expression.m_namespace;
     }
 
     /**
@@ -170,29 +200,42 @@ public class ExpressionInfo {
         return m_expression.toString();
     }
 
+    /**
+     * Add an argument extracted from the call signature of the expression info.
+     * Check is made to ensure that the argument is part of an args(..) or pointcutReference(..) subexpression.
+     * TODO: support this() target() 
+     * @param name
+     * @param className
+     */
     public void addArgument(final String name, final String className) {
-        // fast check if the given argument (that appears in the advice signature)
-        // is part of the pointcut expression
+        //AW-241
         // Note: we do not check the signature and we ignore JoinPoint parameters types
         // TODO: this / target support
         // TODO: skip StaticJoinPoint as well
-        // TODO - do a second step check with pointcut signature exact parsing
-        if (!(JoinPoint.class.getName().equals(className) || "JoinPoint".equals(className))) {
-            if (getExpressionAsString().indexOf(name) < 0) {
-                throw new DefinitionException("Pointcut is missing a parameter that has been encountered in the Advice: '"
-                + getExpressionAsString() + "' - '" + name + "' of type '" + className + "' missing in '" + getExpression().m_namespace+"'"
-                );
+        String expression = getExpressionAsString();
+        // fast check if we have a parenthesis
+        if (expression.indexOf('(') > 0) {
+            // fast check if the given argument (that appears in the advice signature) is part of the pointcut expression
+            if (!(JOINPOINT_FULL_QUALIFIED_CLASSNAME.equals(className) || JOINPOINT.equals(className))) {
+                if (getExpressionAsString().indexOf(name) < 0) {
+                    throw new DefinitionException("Pointcut is missing a parameter that has been encountered in the Advice: '"
+                    + getExpressionAsString() + "' - '" + name + "' of type '" + className + "' missing in '" + getExpression().m_namespace+"'"
+                    );
+                } else {
+                    // lazily populate the possible argument list
+                    if (m_possibleArguments == null) {
+                        m_possibleArguments = new ArrayList();
+                        new ExpressionValidateVisitor(getExpressionAsString(), getNamespace(), getExpression().m_root)
+                            .populate(m_possibleArguments);
+                    }
+                    if ( ! m_possibleArguments.contains(name)) {
+                        throw new DefinitionException("Pointcut is missing a parameter that has been encountered in the Advice: '"
+                        + getExpressionAsString() + "' - '" + name + "' of type '" + className + "' missing in '" + getExpression().m_namespace+"'"
+                        );
+                    }
+                }
             }
         }
-
-        //AW-241
-        // FIXME for exact match we need
-        // to visit the expr including references
-        // with a verifier visitor
-//        /** @Expression in_scope && execution(* getFirst(..)) && args(s, ..) */
-//        void pc_getFirst(String x) {;}
-        // x is in execution...
-        //
         m_argsTypeByName.put(name, className);
     }
 

@@ -7,6 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.util;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Utility methods for strings.
  * 
@@ -128,5 +131,43 @@ public class Strings {
             }
         }
         return aRet;
+    }
+
+    /**
+     * Parse a method signature or method call signature.
+     * <br/>Given a call signature like "method(Type t)", extract the method name
+     * and param type and parameter name: [method, Type, t]
+     * <br/>Given a signature like "method(X x, Y)", extract the method name
+     * and param name / param type - but leaving empty String if
+     * the information is not available: [method, X, x, Y, ""]
+     *
+     * @param methodCallSignature
+     * @return each element (2xp+1 sized) (see doc)
+     */
+    public static String[] extractMethodSignature(String methodCallSignature) {
+        List extracted = new ArrayList();
+        String methodName = methodCallSignature;
+        String methodCallDesc = null;
+        if (methodCallSignature.indexOf("(") > 0) {
+            methodName = methodName.substring(0, methodCallSignature.indexOf("("));
+            methodCallDesc =
+            methodCallSignature.substring(methodCallSignature.indexOf("(") + 1, methodCallSignature.lastIndexOf(")"));
+        }
+        extracted.add(methodName);
+        if (methodCallDesc != null) {
+            String[] parameters = Strings.splitString(methodCallDesc, ",");
+            for (int i = 0; i < parameters.length; i++) {
+                String[] parameterInfo = Strings.splitString(
+                        Strings.replaceSubString(
+                                parameters[i].trim(),
+                                "  ",
+                                " "
+                        ), " "
+                );
+                extracted.add(parameterInfo[0]);
+                extracted.add((parameterInfo.length>1)?parameterInfo[1]:"");
+            }
+        }
+        return (String[]) extracted.toArray(new String[]{});
     }
 }
