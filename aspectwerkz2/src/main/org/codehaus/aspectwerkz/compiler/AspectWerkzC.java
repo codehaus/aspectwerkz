@@ -34,6 +34,8 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 
 /**
  * AspectWerkzC allow for precompilation of class / jar / zip given a class preprocessor.
@@ -601,6 +603,14 @@ public class AspectWerkzC {
         paths.addAll(files);
         compiler.setCompilationPath((File[])(paths.toArray(new File[0])));
         Thread.currentThread().setContextClassLoader(compiler.compilationLoader);
+
+        // AOPC special fix
+        // turn off -Daspectwerkz.definition.file registration and register it at the compilationLoader level instead
+        SystemDefinitionContainer.disableSystemWideDefinition();
+        SystemDefinitionContainer.deploySystemDefinitions(
+                compiler.compilationLoader,
+                DefinitionLoader.getDefaultDefinition(compiler.compilationLoader)
+        );
 
         // set preprocessor
         try {
