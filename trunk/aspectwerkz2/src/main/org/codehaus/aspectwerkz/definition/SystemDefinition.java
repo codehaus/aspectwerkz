@@ -45,7 +45,7 @@ public class SystemDefinition {
     public static final String PER_THREAD = "perThread";
     public static final String THROWS_DELIMITER = "#";
     public static final String CALLER_SIDE_DELIMITER = "#";
-    public static final String SYSTEM_ASPECT = "___AW_system";
+    public static final String SYSTEM_CFLOW_ASPECT = "___AW_system_cflow";
 
     /**
      * Holds the indexes for the aspects. The aspect indexes are needed here (instead of in the
@@ -107,12 +107,14 @@ public class SystemDefinition {
     private final Map m_parametersToAspects = new HashMap();
 
     /**
-     * Creates a new instance, creates and sets the system aspect.
+     * Creates a new instance, creates and sets the system cflow aspect.
      */
     public SystemDefinition() {
-        AspectDefinition systemAspect = new AspectDefinition(SYSTEM_ASPECT, CFlowSystemAspect.CLASS_NAME, CFlowSystemAspect.DEPLOYMENT_MODEL);
+        AspectDefinition systemAspect = new AspectDefinition(
+                SYSTEM_CFLOW_ASPECT, CFlowSystemAspect.CLASS_NAME, CFlowSystemAspect.DEPLOYMENT_MODEL
+        );
         synchronized (m_aspectMap) {
-            m_aspectMap.put(SYSTEM_ASPECT, systemAspect);
+            m_aspectMap.put(SYSTEM_CFLOW_ASPECT, systemAspect);
         }
     }
 
