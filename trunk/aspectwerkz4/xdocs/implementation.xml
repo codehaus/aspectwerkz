@@ -6,12 +6,13 @@
         <title>Implementation issues</title>
     </properties>
     <body>
+
         <section name="Table of Contents">
             <p>
                 <b>Implementation issues</b>
             </p>
             <p>
-                This section documents the programming model for Aspects, Advices and Introductions (Mixins)
+                This section documents the programming model for Aspects, Advices and Mixins
                 in AspectWerkz.
             </p>
             <p>
@@ -35,7 +36,10 @@
                         <a href="#Using the AspectContext class">Using the AspectContext class</a>
                     </li>
                     <li>
-                        <a href="#Introductions">Introductions</a>
+                        <a href="#Mixins">Mixins</a>
+                    </li>
+                    <li>
+                        <a href="#Retrieval of Aspect instances">Retrieval of Aspect instances</a>
                     </li>
                     <li>
                         <a href="#Example of an Aspect">Example of an Aspect</a>
@@ -288,11 +292,9 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.FieldSignature</code>
                     </li>
-                    <!-- TODO: uncomment when impl.
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature</code>
                     </li>
-                    -->
                 </ul>
                 See the JavaDoc for API details.
             </p>
@@ -332,11 +334,9 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.FieldRtti</code>
                     </li>
-                    <!-- uncomment when impl.
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti</code>
                     </li>
-                    -->
                 </ul>
                 See the JavaDoc for API details.
             </p>
@@ -374,86 +374,250 @@ int getDeploymentModel()
                 ]]></source>
             </p>
         </section>
-        <section name="Introductions">
-            <p>
-                FIXME: Jonas can you do that part ?
-            </p>
-            <p>
-                Introductions makes it possible to extend a class with a new interface and/or a new implementation
-                (methods and fields).
-                <code>AspectWerkz</code> supports two different types of introductions:
-                <ul>
-                    <li>
-                        Interface introductions - in which you introduce an interface to the target class.
-                    </li>
-                    <br/>
-                    <li>
-                        Implementation introductions - where you introduce implementations to a target class.
-                    </li>
-                </ul>
-            </p>
-            <p>
-                Implementation introductions (interface with concrete implementation), in
-                <code>AspectWerkz</code> implemented as
-                <i>Mixins</i>, are defined as public static inner classes of the aspect class or as regular POJOs outside
-                the aspect class.
-            </p>
-            <p>
-                It is mandatory for the inner class to be public, apart from this the only requirement is that the aspect
-                needs to have either
-                <b>no</b> constructor at all (meaning implicitly a default one)
-                <b>or</b> one of these
-                two different constructors defined:
-                <ul>
-                    <li>
-                        a default no-argument constructor - only needed if the aspect has a other constructors that
-                        takes parameters (apart from the one below if defined)
-                    </li>
-                    <br/>
-                    <li>
-                        a constructor that takes a
-                        <code>org.codehaus.aspectwerkz.AspectContext</code> instance
-                        as its only parameter - this is needed if you want to retrieve information about the runtime
-                        system, access paramaters defined at deployment time, access meta-data etc.
-                        See
-                        <a href="#Using the AspectContext class">Using the AspectContext class</a> section
-                        for details.
-                    </li>
-                    <br/>
-                </ul>
-                If a constructor of type 2 is found then it is used else the default constructor. If no default
-                constructor can be found then an exception is thrown.
-            </p>
-            <p>
-                The inner class implements the interface(s) to introduce on the target class.
-            </p>
-            <p>
-                Example of an implementation introduction that will introduce the implemetatation of the inner class
-                along with the interfaces the inner class implements to the target classes defined in the definition.
-                <source><![CDATA[
-public MyAspect {
+        <section name="Mixins">
+         <p>
+             We have replaced the old mixin implementation with a comletely new and better one.
+             The new implementation mainly gives you two things you did not have before:
+             <ul>
+                 <li>
+                     Serialization of the Mixins -
+                     <br/>
+                     The default behaviour is that the mixins will be serialized along with the target class.
+                     But you have the option of making the mixins <code>transient</code> (e.g. not serialized with
+                     when the target class is serialized), by setting the <code>transient=true</code> flag.
+                 </li>
+                 <br/>
+                 <li>
+                     Providing your own factory to control the instantiation of the mixin. This means that you
+                     can plug in any IoC (dependency injection) framework to handle this for you. The custom
+                     factories needs only to implement the <code>org.codehaus.aspectwerkz.aspect.MixinFactory</code>
+                     interface.
+                 </li>
+             </ul>
+         </p>
+         <p>
+             The mixins can be any regular class, which means that it can be a standalone class, an inner class
+             of a regular class or an inner class in your aspect class.
+         </p>
+         <p>
+             Two different <code>deployment models</code> are supported, <code>perClass</code> and <code>perInstance</code>.
+             <ul>
+                 <li>
+                     <code>perClass</code> - means that there will be one instance per mixin per
+                     target class.
+                 </li>
+                 <li>
+                     <code>perInstance</code> - means that there will be one instance per mixin per
+                     target instance.
+                 </li>
+             </ul>
+             Note: the <code>perThread</code> deployment model has been left to die in peace. The <code>perJVM</code>
+             deployment model is currently not supported but might come back.
+         </p>
+         <p>
+             If you are using the default factory implementation you have to either provide an no argument constructor
+             or a constructor that takes the:
+             <ul>
+                 <li>
+                     target class as its only parameter - to be used with the <code>perClass</code> deployment model.
+                 </li>
+                 <li>
+                     target instance as its only parameter - to be used with the <code>perInstance</code> deployment model.
+                 </li>
+             </ul>
+         </p>
 
-    public static class MyIntroduction extends SuperIntroduction implements ToBeIntroduced {
-        // methods to be introduced
-        ...
-    }
-}
-                ]]></source>
-            </p>
-            <subsection name="Implementation swapping">
+         <subsection name="Annotation definition">
+             <p>
+                 To define the mixin using annotations you have to use the
+                 <code>org.codehaus.aspectwerkz.annotation.Mixin</code> annotation.
+                 If using Java 5 this is an annotation interface (e.g. <code>@interface</code>) else
+                 (for JavaDoc annotations) it is a regular interface.
+             </p>
+             <p>
+                 This annotation has three different parameters:
+                 <ul>
+                     <li>
+                         <code>expression</code> (can be used as the default anonymous value) - the pointcut expression that is used to pick out the set of classes
+                         to apply this mixin to.
+                     </li>
+                     <li>
+                         <code>deploymentModel</code> (optional) - has to me one of <code>perClass</code> or
+                         <code>perInstance</code>. If not specified then <code>perInstance</code> is used.
+                     </li>
+                     <li>
+                         <code>isTransient</code> (optional) - defines the mixin as transient or not. If not
+                         specified then the default is <code>false</code>, e.g. serializable.
+                     </li>
+                 </ul>
+             </p>
+             <p>
+                 <b>Definition using Java 5 annotations</b>
+                 <source><![CDATA[
+ @Mixin("within(*..domain.*)")
+ public class MyMixin { ... }
+
+ @Mixin(
+ pointcut="within(*..domain.*)",
+ deploymentModel="perClass",
+ isTransient=true
+ )
+ public class MyOtherMixin { ... }
+                 ]]></source>
+             </p>
+             <p>
+                <b>Definition using JavaDoc annotations</b>
+                 <source><![CDATA[
+ /** @Mixin("within(*..domain.*)") */
+ public class MyMixin { ... }
+
+ /**
+  * @Mixin(
+  *   pointcut="within(*..domain.*)",
+  *   deploymentModel="perClass",
+  *   isTransient=true
+  * )
+  */
+ public class MyOtherMixin { ... }
+                 ]]></source>
+             </p>
+         </subsection>
+
+         <subsection name="XML definition">
+             <p>
+                 The XML definition (in the <code>META-INF/aop.xml</code> file) can be used for
+                 three different purposes:
+                 <ul>
+                     <li>
+                         Only to define which mixins should be used. Similar to how you declare which aspects
+                         should be used.) This can be the option if the mixin is defined in annotations.
+                         Then you only need to use the <code>class</code> attribute, e.g.
+                         <code>&lt;mixin class="foo.bar.MyMixinImpl"/&gt;</code>. See below for details.
+                     </li>
+                     <li>
+                         To completely define the mixin. See below for all the attributes that can be used.
+                     </li>
+                     <li>
+                         To override and/or resolve ad definition made using annotations.
+                         See below for all the attributes that can be used.
+                     </li>
+                 </ul>
+             </p>
+             <p>
+                 To define the mixin using the XML definition, use the <code>mixin</code> element. It has
+                 five different attributes that can be used:
+                 <ul>
+                     <li>
+                         <code>class</code> (mandatory) - defines which class to use as the implementation class.
+                         Has to be the fully qualified name of the class.
+                     </li>
+                     <li>
+                         <code>deployment-model</code> (optional) - defines the deployment model. Can be one of
+                         <code>perClass</code> of <code>perInstance</code>.
+                     </li>
+                     <li>
+                         <code>transient</code> (optional) - defines the mixin as <code>transient</code> or not.
+                     </li>
+                     <li>
+                         <code>factory</code> (optional) - defines the custom mixin factory implementation to use
+                         with the specific mixin.
+                     </li>
+                     <li>
+                         <code>bind-to</code> (optional) - defines to which class set the mixin should be applied to.
+                     </li>
+                 </ul>
+             </p>
+             <p>
+                Example:
+                 <source><![CDATA[
+ <mixin class="foo.bar.MyMixinImpl"/>
+
+ <mixin class="foo.bar.MyOtherMixinImpl"
+    deployment-model="perClass"
+    transient="true"
+    factory="factories.MyMixinFactory"
+    bind-to="within(*..domain.*)"/>
+                 ]]></source>
+             </p>
+         </subsection>
+
+         <subsection name="Custom Mixin factory">
+             <p>
+                 If you need to be in control of how hte aspects are instantiated and/or need to pass in
+                 additional dependencies or configuration using an IoC (dependency injection) framework or similar.
+                 Then you can create custom mixin factory.
+             </p>
+             <p>
+                 The custom factories needs to implement the <code>org.codehaus.aspectwerkz.aspect.MixinFactory</code>:
+                 <source><![CDATA[
+ public interface MixinFactory {
+
+ /**
+  * Creates a new perClass mixin instance, if it already exists then return it.
+  *
+  * @param the target class
+  * @return the mixin instance
+  */
+ Object mixinOf(Class klass);
+
+ /**
+  * Creates a new perInstance mixin instance, if it already exists then return it.
+  *
+  * @param the target instance
+  * @return the mixin instance
+  */
+ Object mixinOf(Object instance);
+ }
+                 ]]></source>
+             </p>
+             <p>
+                 The custom mixin factory can only be defined in the <code>mixin</code> element in the
+                 <code>META-INF/aop.xml</code> file.
+             </p>
+
+            </subsection>
+
+            <subsection name="Retrieval of Mixin instances">
                 <p>
-                    It is possible to replace the introduction implementation at runtime using a call like
-                    <source><![CDATA[
-SystemLoader.getSystem("systemId").getAspectManager().getMixin("test.attribdef.aspect.IntroductionTestAspect$MyImpl").
-    swapImplementation("test.attribdef.aspect.IntroductionTestAspectMyImplReplacement");
-                    ]]></source>
+                    You can get a hold of the mixin instances for a specific instance or class through the
+                    <code>org.codehaus.aspectwerkz.aspect.management.Mixins</code> class.
                 </p>
                 <p>
-                    The swapped implementation must implement the introduced interfaces, but can be an anonymous class
-                    or an aspect inner class. Only the default introduced implementation must be an inner class.
+                Example:
+                    <source><![CDATA[
+// get per class deplolyed mixin
+Object perclassMixin = Mixins.mixinOf(MyMixin.class, Target.class);
+
+// get per instance deplolyed mixin
+Object perinstanceMixin = Mixins.mixinOf(MyMixin.class, targetInstance);
+                    ]]></source>
                 </p>
             </subsection>
         </section>
+
+    <section name="Retrieval of Aspect instances">
+        <p>
+            You can get a hold of specific aspect instances using the
+            <code>org.codehaus.aspectwerkz.aspect.management.Aspects</code> class.
+        </p>
+        <p>
+        Example:
+            <source><![CDATA[
+// get per jvm deployed aspect
+Object singletonAspect = Aspects.aspectOf(MyAspect.class);
+               ... = Aspects.aspectOf("uniqueNameOfAspect");
+
+// get per class deployed aspect
+Object perclassAspect = Aspects.aspectOf(MyAspect.class, Target.class);
+              ... = Aspects.aspectOf("uniqueNameOfAspect", Target.class);
+
+// get per instance deployed aspect
+Object perinstanceAspect = Aspects.aspectOf(MyAspect.class, targetInstance);
+                 ... = Aspects.aspectOf("uniqueNameOfAspect", targetInstance);
+            ]]></source>
+        </p>
+    </section>
+
         <section name="Example of an Aspect">
             <p>
                    This is a simple example showing how an aspect implementation with a couple of advice
@@ -480,6 +644,7 @@ public class MyAspect {
                     ]]></source>
             </p>
         </section>
+
         <section name="Choosing a definition model">
             <p>
                 The
