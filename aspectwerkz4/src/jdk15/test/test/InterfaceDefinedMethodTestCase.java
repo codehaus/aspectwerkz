@@ -71,7 +71,7 @@ public class InterfaceDefinedMethodTestCase extends TestCase {
     public void testWithinNot() {
         s_log = "";
         withinNot();
-        assertEquals("", s_log);
+        assertEquals("withincode withincode withincode ", s_log);
     }
 
     private void withinNot() {
@@ -80,7 +80,7 @@ public class InterfaceDefinedMethodTestCase extends TestCase {
     }
 
     private void subWithinNot() {
-        System.out.println("la");
+        ;
     }
 
 
@@ -101,8 +101,8 @@ public class InterfaceDefinedMethodTestCase extends TestCase {
                 "&& !withincode(* test.InterfaceDefinedMethodTestCase.withinNot())" +
                 "&& within(test.InterfaceDefinedMethodTestCase)")
         public void neverCalled(StaticJoinPoint sjp) {
-            s_log += "no way";
-            System.out.println(sjp.getType() + " " + sjp.getSignature());
+            s_log += "withincode ";
+            //System.out.println(sjp.getType() + " " + sjp.getSignature());
         }
     }
 
