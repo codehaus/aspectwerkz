@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
 import org.codehaus.aspectwerkz.expression.ast.ExpressionParser;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -170,6 +171,28 @@ public class ExpressionInfo {
     }
 
     public void addArgument(final String name, final String className) {
+        // fast check if the given argument (that appears in the advice signature)
+        // is part of the pointcut expression
+        // Note: we do not check the signature and we ignore JoinPoint parameters types
+        // TODO: this / target support
+        // TODO: skip StaticJoinPoint as well
+        // TODO - do a second step check with pointcut signature exact parsing
+        if (!(JoinPoint.class.getName().equals(className) || "JoinPoint".equals(className))) {
+            if (getExpressionAsString().indexOf(name) < 0) {
+                throw new DefinitionException("Pointcut is missing a parameter that has been encountered in the Advice: '"
+                + getExpressionAsString() + "' - '" + name + "' of type '" + className + "' missing in '" + getExpression().m_namespace+"'"
+                );
+            }
+        }
+
+        //AW-241
+        // FIXME for exact match we need
+        // to visit the expr including references
+        // with a verifier visitor
+//        /** @Expression in_scope && execution(* getFirst(..)) && args(s, ..) */
+//        void pc_getFirst(String x) {;}
+        // x is in execution...
+        //
         m_argsTypeByName.put(name, className);
     }
 
