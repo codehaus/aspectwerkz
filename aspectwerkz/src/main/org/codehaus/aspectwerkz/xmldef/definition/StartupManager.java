@@ -80,13 +80,13 @@ public class StartupManager {
      * The default introduction container class.
      */
     public static final String DEFAULT_INTRODUCTION_CONTAINER =
-            "org.codehaus.aspectwerkz.introduction.DefaultIntroductionContainerStrategy";
+            "org.codehaus.aspectwerkz.xmldef.introduction.DefaultIntroductionContainerStrategy";
 
     /**
      * The default advice container class.
      */
     public static final String DEFAULT_ADVICE_CONTAINER =
-            "org.codehaus.aspectwerkz.advice.DefaultAdviceContainerStrategy";
+            "org.codehaus.aspectwerkz.xmldef.advice.DefaultAdviceContainerStrategy";
 
     /**
      * The introduction container class to use.
