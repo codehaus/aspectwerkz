@@ -17,9 +17,9 @@
         <aspect class="awbench.extension.spring.MethodExecutionAfterReturningAdvice">
             <advice name="afterReturning" type="after returning(java.lang.String)" bind-to="execution(* awbench.method.Execution.afterReturningString())"/>
         </aspect>
-        <aspect class="awbench.extension.spring.MethodExecutionAfterThrowingAdvice">
-            <advice name="afterThrowing" type="after throwing(java.lang.RuntimeException)" bind-to="execution(* awbench.method.Execution.afterThrowingRTE())"/>
-        </aspect>
+<!--        <aspect class="awbench.extension.spring.MethodExecutionAfterThrowingAdvice">-->
+<!--            <advice name="afterThrowing" type="after throwing(java.lang.RuntimeException)" bind-to="execution(* awbench.method.Execution.afterThrowingRTE())"/>-->
+<!--        </aspect>-->
         <aspect name="around1" class="awbench.extension.spring.MethodExecutionGetTargetAndArgsAroundAdvice">
             <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(..))"/>
         </aspect>
