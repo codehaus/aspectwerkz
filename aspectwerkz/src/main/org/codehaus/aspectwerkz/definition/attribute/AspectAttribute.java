@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-import attrib4j.Attribute;
+import java.io.Serializable;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
 
@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.DeploymentModel;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AspectAttribute implements Attribute {
+public class AspectAttribute implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

@@ -5,12 +5,18 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.definition;
+package org.codehaus.aspectwerkz.definition.attribute;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.definition.AdviceDefinition;
+import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
+import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
+import org.codehaus.aspectwerkz.definition.IntroductionWeavingRule;
 
 /**
  * Abstract base class for all the aspect attribute parsers to extend.

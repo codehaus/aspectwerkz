@@ -7,7 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-import attrib4j.Attribute;
+import java.io.Serializable;
+
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
@@ -15,7 +16,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class PointcutAttribute implements Attribute {
+public class PointcutAttribute implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -54,7 +55,7 @@ public class PointcutAttribute implements Attribute {
         String type = pointcut.substring(0, index);
         validateType(type);
         m_type = type;
-        m_expression = pointcut.substring(index + 1, pointcut.length());
+        m_expression = pointcut.substring(index + 1, pointcut.length() - 1);
     }
 
     /**

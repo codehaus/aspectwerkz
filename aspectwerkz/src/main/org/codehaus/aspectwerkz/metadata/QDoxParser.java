@@ -53,7 +53,8 @@ public class QDoxParser {
      * @param srcDir the source tree to getJavaMethods
      */
     public QDoxParser(final String srcDir) {
-        m_builder.addSourceTree(new File(srcDir));
+        File file = new File(srcDir);
+        m_builder.addSourceTree(file);
     }
 
     /**
@@ -89,7 +90,7 @@ public class QDoxParser {
      *
      * @return a collections with all classes
      */
-    public String[] getAllClassesNames() {
+    public String[] getAllClassNames() {
         Collection classes = m_builder.getClassLibrary().all();
         String[] classNames = new String[classes.size()];
         int i = 0;

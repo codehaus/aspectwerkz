@@ -7,14 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-import attrib4j.Attribute;
+import java.io.Serializable;
 
 /**
  * Attribute for the Around Advice construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AroundAdviceAttribute implements Attribute {
+public class AroundAdviceAttribute implements Serializable {
 
     /**
      * The expression for the advice.
