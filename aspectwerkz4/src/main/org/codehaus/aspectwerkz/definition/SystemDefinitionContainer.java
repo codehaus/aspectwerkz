@@ -21,10 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.io.File;
 
-import EDU.oswego.cs.dl.util.concurrent.ReadWriteLock;
-import EDU.oswego.cs.dl.util.concurrent.ReentrantWriterPreferenceReadWriteLock;
-import EDU.oswego.cs.dl.util.concurrent.Sync;
-
 /**
  * The SystemDefintionContainer maintains all the definition and is aware of the classloader hierarchy. <p/>A
  * ThreadLocal structure is used during weaving to store current classloader defintion hierarchy. <p/>Due to
@@ -34,8 +30,6 @@ import EDU.oswego.cs.dl.util.concurrent.Sync;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class SystemDefinitionContainer {
-
-    private static final ReadWriteLock s_lock = new ReentrantWriterPreferenceReadWriteLock();
 
     /**
      * Map of SystemDefinition[List] per ClassLoader.
@@ -89,14 +83,7 @@ public class SystemDefinitionContainer {
      * @param loader the class loader to register
      */
     private static void registerClassLoader(final ClassLoader loader) {
-        // note: read lock is alreayd owned
-        Sync writeLock = s_lock.writeLock();
-        if (s_classLoaderSystemDefinitions.containsKey(loader)) {
-            return;
-        }
-        try {
-            writeLock.acquire();
-            // recheck
+        synchronized (s_classLoaderSystemDefinitions) {
             if (s_classLoaderSystemDefinitions.containsKey(loader)) {
                 return;
             }
@@ -161,11 +148,6 @@ public class SystemDefinitionContainer {
             } catch (Throwable t) {
                 t.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            throw new WrappedRuntimeException(e);
-        } finally {
-            //downgrade lock by releasing directly
-            writeLock.release();
         }
     }
 
@@ -178,9 +160,7 @@ public class SystemDefinitionContainer {
      * @param definitions SystemDefinitions list
      */
     public static void deployDefinitions(final ClassLoader loader, final Set definitions) {
-        Sync lock = s_lock.writeLock();
-        try {
-            lock.acquire();
+        synchronized (s_classLoaderSystemDefinitions) {
 
             // make sure the classloader is known
             registerClassLoader(loader);
@@ -194,15 +174,12 @@ public class SystemDefinitionContainer {
             Set defs = (Set) s_classLoaderSystemDefinitions.get(loader);
             defs.addAll(definitions);
             dump(loader);
-        } catch (InterruptedException e) {
-            throw new WrappedRuntimeException(e);
-        } finally {
-            lock.release();
         }
     }
 
     private static void flushHierarchicalSystemDefinitionsBelow(ClassLoader loader) {
-        // write lock is supposed to be owned already
+        // lock already owned
+        //synchronized (s_classLoaderSystemDefinitions) {
         Map classLoaderHierarchicalSystemDefinitions = new WeakHashMap();
         for (Iterator iterator = s_classLoaderHierarchicalSystemDefinitions.entrySet().iterator(); iterator.hasNext();) {
             Map.Entry entry = (Map.Entry) iterator.next();
@@ -214,6 +191,7 @@ public class SystemDefinitionContainer {
             }
         }
         s_classLoaderHierarchicalSystemDefinitions = classLoaderHierarchicalSystemDefinitions;
+        //}
     }
 
     /**
@@ -226,21 +204,13 @@ public class SystemDefinitionContainer {
      * @return SystemDefinition or null if no such defined definition
      */
     public static SystemDefinition getDefinitionFor(final ClassLoader loader, final String uuid) {
-        Sync lock = s_lock.readLock();
-        try {
-            lock.acquire();
-            for (Iterator defs = getDefinitionsFor(loader).iterator(); defs.hasNext();) {
-                SystemDefinition def = (SystemDefinition) defs.next();
-                if (def.getUuid().equals(uuid)) {
-                    return def;
-                }
+        for (Iterator defs = getDefinitionsFor(loader).iterator(); defs.hasNext();) {
+            SystemDefinition def = (SystemDefinition) defs.next();
+            if (def.getUuid().equals(uuid)) {
+                return def;
             }
-            return null;
-        } catch (InterruptedException e) {
-            throw new WrappedRuntimeException(e);
-        } finally {
-            lock.release();
         }
+        return null;
     }
 
     /**
@@ -252,15 +222,7 @@ public class SystemDefinitionContainer {
      * @return SystemDefinitions list
      */
     public static Set getDefinitionsFor(final ClassLoader loader) {
-        Sync lock = s_lock.readLock();
-        try {
-            lock.acquire();
-            return getHierarchicalDefinitionsFor(loader);
-        } catch (InterruptedException e) {
-            throw new WrappedRuntimeException(e);
-        } finally {
-            lock.release();
-        }
+        return getHierarchicalDefinitionsFor(loader);
     }
 
     /**
@@ -272,17 +234,9 @@ public class SystemDefinitionContainer {
      * @return SystemDefinitions list
      */
     public static Set getDefinitionsAt(final ClassLoader loader) {
-        Sync lock = s_lock.readLock();
-        try {
-            lock.acquire();
-            // make sure the classloader is registered
-            registerClassLoader(loader);
-            return (Set) s_classLoaderSystemDefinitions.get(loader);
-        } catch (InterruptedException e) {
-            throw new WrappedRuntimeException(e);
-        } finally {
-            lock.release();
-        }
+        // make sure the classloader is registered
+        registerClassLoader(loader);
+        return (Set) s_classLoaderSystemDefinitions.get(loader);
     }
 
 //    /**
@@ -354,41 +308,27 @@ public class SystemDefinitionContainer {
      * @return set with the system definitions
      */
     private static Set getHierarchicalDefinitionsFor(final ClassLoader loader) {
-        // check cache
-        // note: read Lock is already acquired at this stage
-        Sync writeLock = s_lock.writeLock();
-        if (!s_classLoaderHierarchicalSystemDefinitions.containsKey(loader)) {
-            // upgrade lock
-            try {
-                writeLock.acquire();
-                // recheck [see JavaDoc for read / write lock
-                if (!s_classLoaderHierarchicalSystemDefinitions.containsKey(loader)) {
-                    // make sure the classloader is known
-                    registerClassLoader(loader);
+        synchronized (s_classLoaderSystemDefinitions) {
+            // check cache
+            if (s_classLoaderHierarchicalSystemDefinitions.containsKey(loader)) {
+                return (Set) s_classLoaderHierarchicalSystemDefinitions.get(loader);
+            } else {
+                // make sure the classloader is known
+                registerClassLoader(loader);
 
-                    Set defs = new HashSet();
-                    // put it in the cache now since this method is recursive
-                    s_classLoaderHierarchicalSystemDefinitions.put(loader, defs);
-                    if (loader == null) {
-                        ; // go on to put in the cache at the end
-                    } else {
-                        ClassLoader parent = loader.getParent();
-                        defs.addAll(getHierarchicalDefinitionsFor(parent));
-                    }
-                    defs.addAll((Set) s_classLoaderSystemDefinitions.get(loader));
-
-                    return defs;
+                Set defs = new HashSet();
+                // put it in the cache now since this method is recursive
+                s_classLoaderHierarchicalSystemDefinitions.put(loader, defs);
+                if (loader == null) {
+                    ; // go on to put in the cache at the end
                 } else {
-                    return ((Set) s_classLoaderHierarchicalSystemDefinitions.get(loader));
+                    ClassLoader parent = loader.getParent();
+                    defs.addAll(getHierarchicalDefinitionsFor(parent));
                 }
-            } catch (InterruptedException e) {
-                throw new WrappedRuntimeException(e);
-            } finally {
-                // downgrade lock
-                writeLock.release(); // release write, still hold read
+                defs.addAll((Set) s_classLoaderSystemDefinitions.get(loader));
+
+                return defs;
             }
-        } else {
-            return ((Set) s_classLoaderHierarchicalSystemDefinitions.get(loader));
         }
     }
 

@@ -7,9 +7,6 @@
  **************************************************************************************/
 package examples.logging;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
 import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 
 /**
@@ -51,6 +48,21 @@ public class LoggerIdiom {
 
     public static interface Loggable {
         Logger getLog();
+    }
+
+    // some backport of Java 1.4 logging so that the sample can run on 1.3
+    //TODO : else move to jdk15 samples
+    static class Level {
+        static final Level ALL = new Level();
+    }
+    static class Logger {
+        private static Logger SINGLETON = new Logger();
+        static Logger getLogger(String name) {
+            return SINGLETON;
+        }
+        void log(Level level, String m) {
+            System.out.println("examples.logging.Logger : " + m);
+        }
     }
 }
 
