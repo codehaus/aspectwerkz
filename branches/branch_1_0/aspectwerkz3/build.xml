@@ -16,6 +16,7 @@
     <!--    define the AspectWerkz classpath used to compile the project -->
     <!--    we exclude jarjar and alike, used only for build purpose -->
     <path id="project.class.path">
+        <pathelement path="_IDE"/>
         <pathelement path="${java.home}/../lib/tools.jar" />
         <fileset dir="${basedir}/lib">
             <exclude name="jarjar*"/>
@@ -540,5 +541,26 @@
 
     <target name="samples" depends="samples:logging, samples:caching, samples:cflow, samples:exception, samples:introduction, samples:annotation, samples:offline:logging, samples:offline:introduction, samples:offline:annotation"/>
 
+
+    <!-- =================================================== -->
+    <!--  how to use the annotationc ant task -->
+    <!-- =================================================== -->
+    <target name="samples:task:annotationc" depends="init">
+        <taskdef name="annotationc" classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" classpathref="project.class.path"/>
+        <annotationc
+            verbose="true"
+            destdir="${basedir}/target/samples-classes"
+            properties="${basedir}/src/samples/annotation.properties"
+            copytodest="**/*.RESIDUALPROPS">
+            <src path="${basedir}/src/samples"/>
+            <src path="${basedir}/src/test"/>
+            <classpath path="${basedir}/target/samples-classes"/>
+            <classpath path="${basedir}/target/test-classes"/>
+            <classpath path="${basedir}/target/classes"/>
+            <fileset dir=".">
+                <include name="**/BAZ.java"/>
+            </fileset>
+        </annotationc>
+    </target>
 </project>
 

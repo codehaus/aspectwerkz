@@ -85,7 +85,7 @@ public class AnnotationC {
      * The custom annotations.
      */
     private static Map s_customAnnotations = new HashMap();
-    private static final String FILE_SEPARATOR = ",";
+    private static final String FILE_SEPARATOR = ",";//FIXME why not using System default ? Is it for Ant task ??
 
     /**
      * Runs the compiler from the command line.
@@ -154,15 +154,15 @@ public class AnnotationC {
      * Compiles the annotations.
      *
      * @param verbose
-     * @param src
-     * @param useDirs
+     * @param srcDirs
+     * @param srcFiles
      * @param classpath
      * @param destDir
      * @param annotationPropertiesFile
      */
     public static void compile(final boolean verbose,
-                               final String[] src,
-                               boolean useDirs,
+                               final String[] srcDirs,
+                               final String[] srcFiles,
                                final String[] classpath,
                                final String destDir,
                                final String annotationPropertiesFile) {
@@ -183,15 +183,14 @@ public class AnnotationC {
         final AnnotationManager manager = new AnnotationManager();
 
         logInfo("parsing source dirs:");
-        for (int i = 0; i < src.length; i++) {
-            logInfo("    " + src[i]);
+        for (int i = 0; i < srcDirs.length; i++) {
+            logInfo("    " + srcDirs[i]);
         }
-        if (useDirs) {
-            manager.addSourceTrees(src);
-        } else {
-            for (int i = 0; i < src.length; i++) {
-                manager.addSource(src[i]);
-            }
+        manager.addSourceTrees(srcDirs);
+
+        for (int i = 0; i < srcFiles.length; i++) {
+            logInfo("    " + srcFiles[i]);
+            manager.addSource(srcFiles[i]);
         }
 
         doCompile(annotationPropertiesFile, classPath, manager, destDir);
