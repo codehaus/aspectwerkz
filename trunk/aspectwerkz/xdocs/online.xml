@@ -68,12 +68,12 @@
                 The releases prior to 0.8 where using <a href="http://javalab.cs.uni-bonn.de/research/jmangler/">JMangler</a>
                 to plug in the class loading hierarchy. JMangler is a very innovative solution, but starting with 0.8, AspectWerkz
                 uses its own architecture, having full control over it.<br/>
-                The core <i>theorical concept</i> of hooking in the class loader hierarchy is inspired from the JMangler project.<br/>
+                The core <i>theoretical concept</i> of hooking in the class loader hierarchy is inspired by the JMangler project.<br/>
             </p>
             <p>
                 Having full control over this low level architecture was a crucial point to achieve for AspectWerkz.<br/>
                 All the options described here are not part of JMangler and neither provided by JMangler. These are the fruits of the
-                efforts AspectWerkz team made to provide several ligthweight, cross platform, efficient and tight to the needs options
+                efforts the AspectWerkz team made to provide several lightweight, cross platform, efficient and tight to the needs options
                 to integrate AspectWerkz online mode in the most seamless way.
             </p>
         </section>
@@ -86,7 +86,7 @@
                 </p>
                 <p>
                     A first tiny JVM launchs your target application in a second JVM. The second JVM is launched with -Xdebug and -Xrunjdwp option to allow HotSwap.
-                    The first JVM hooks AspectWerkz in the second one just before the <i>main class</i> (and all dependancies) gets loaded,
+                    The first JVM hooks AspectWerkz in the second one just before the <i>main class</i> (and all dependencies) gets loaded,
                     and then connects to the stdout / stderr / stdin stream ot the
                     second JVM to make them appear as usual thru the first JVM.<br/>
                     Note: this dual JVM mechanism was the single option in previous JMangler based releases, but there is a key improvement.
@@ -118,14 +118,14 @@ $ASPECTWERKZ_HOME/bin/aspectwerkz -cp myJar.jar -Daspectwerkz.definition.file=..
                         <li>add JAVA_HOME/jre/bin to your PATH to enable HotSwap API</li>
                         <li>add aspectwerkz-core.jar and bcel.jar in the first VM classpath</li>
                         <li>add aspectwerkz-core.jar, bcel.jar and JAVA_HOME/lib/tools.jar in the second VM bootclasspath</li>
-                        <li>add aspectwerkz.jar and dependancies in the second VM classpath</li>
+                        <li>add aspectwerkz.jar and dependencies in the second VM classpath</li>
                     </ul>
 <source>
 set JAVA_HOME=...
 set PATH=$JAVA_HOME/jre/bin:$PATH
 
-# set AspectWerk version
-# set AspectWerkz jar dependancies
+# set AspectWerkz version
+# set AspectWerkz jar dependencies
 set VERSION=0.8
 set DEPS=...
 
@@ -151,7 +151,7 @@ java -cp $CLASSPATH_1 org.codehaus.aspectwerkz.ProcessStarter ..
                     The script described above is basically <i>bin/aspectwerkz</i>, but you can now add more options.<br/>
                     Use the following options as regular java options <b>after ProcessStarter</b>:
                     <ul>
-                        <li><i>-Daspectwerkz.transform.verbose=yes</i> turns on verbose output on class beeing weaved. You can
+                        <li><i>-Daspectwerkz.transform.verbose=yes</i> turns on verbose output on class being weaved. You can
                         also set the value to <i>true</i></li>
                         <li><i>-Daspectwerkz.transform.dump=my.</i> will dumps the weaved class of package "my." (eg my.App) in
                         the directory <i>./_dump/</i>. In the previous sample, the file <i>./_dump/my/App.class</i> will be written.
@@ -189,7 +189,7 @@ java ... org.codehaus.aspectwerkz.ProcessStarter -Daspectwerkz.transform.verbose
                 application VM bootclasspath.<br/>
                 This option is part of an autodetection mechanism, which allow to use it
                 the same way as the <a href="#HotSwap">previously described option</a>.
-                For java 1.4 VM supporting HotSwap, iy is possible to force this mode, which
+                For java 1.4 VM supporting HotSwap, it is possible to force this mode, which
                 does not run the target application VM with -Xdebug option.
             </p>
         </subsection>
