@@ -8,10 +8,13 @@
 package org.codehaus.aspectwerkz.definition.expression;
 
 import java.io.ObjectInputStream;
+import java.util.List;
+import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 
 /**
@@ -30,16 +33,24 @@ public class CallExpression extends LeafExpression {
      * @return boolean
      */
     public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
-        /*if (!match(classMetaData)) {
+        if (!match(classMetaData)) {
             return false;
-        }*/
+        }
         if (!(memberMetaData instanceof MethodMetaData)) {
             return false;
         }
-        return ((CallerSidePattern)m_memberPattern).matches(
-                classMetaData.getName(),/* TODO BOGUS with HIERARCHICAL */
-                (MethodMetaData)memberMetaData
-        );
+        // hierarchical on callee side handling
+        boolean matchCallerSide = false;
+        if (m_isHierarchicalCallee) {
+            if (matchSuperClassCallee(classMetaData, (MethodMetaData)memberMetaData)) {
+                matchCallerSide = true;
+            }
+        }
+        else {
+            matchCallerSide = ((CallerSidePattern)m_memberPattern).matches(classMetaData.getName(), (MethodMetaData)memberMetaData);
+        }
+
+        return matchCallerSide;
     }
 
     /**
@@ -93,4 +104,63 @@ public class CallExpression extends LeafExpression {
                    final String pointcutName) {
         super(namespace, expression, packageNamespace, pointcutName, PointcutType.CALL);
     }
+
+    /**
+     * Try to find a match in super class hierarchy on callee side
+     * Crawl interfaces at each level as well
+     *
+     * @param classMetaData
+     * @param methodMetaData
+     * @return boolean
+     */
+    private boolean matchSuperClassCallee(ClassMetaData classMetaData,
+                                          MethodMetaData methodMetaData) {
+        if (classMetaData == null) {
+            return false;
+        }
+        // match class
+        if (((CallerSidePattern)m_memberPattern).matches(classMetaData.getName(), methodMetaData)) {
+            return true;
+        }
+        else {
+            // match interfaces
+            if (matchInterfacesCallee(classMetaData.getInterfaces(), methodMetaData)) {
+                return true;
+            }
+            // no match; get the next superclass
+            return matchSuperClassCallee(classMetaData.getSuperClass(), methodMetaData);
+        }
+    }
+
+    /**
+      * Tries to finds a match at some interface in the hierarchy.
+      * <p/>Only checks for a class match to allow early filtering.
+      * <p/>Recursive.
+      *
+      * @param interfaces the interfaces
+      * @param methodMetaData the class meta-data
+      * @return boolean
+      */
+     protected boolean matchInterfacesCallee(final List interfaces, final MethodMetaData methodMetaData) {
+         if (interfaces.isEmpty()) {
+             return false;
+         }
+         CallerSidePattern pattern = (CallerSidePattern)m_memberPattern;
+         for (Iterator it = interfaces.iterator(); it.hasNext();) {
+             InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
+             if ((pattern.matches(interfaceMD.getName(), methodMetaData))) {
+                 return true;
+             }
+             else {
+                 if (matchInterfacesCallee(interfaceMD.getInterfaces(), methodMetaData)) {
+                     return true;
+                 }
+                 else {
+                     continue;
+                 }
+             }
+         }
+         return false;
+     }
+
 }
