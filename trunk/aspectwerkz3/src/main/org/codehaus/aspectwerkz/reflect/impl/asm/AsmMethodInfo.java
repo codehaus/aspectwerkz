@@ -97,6 +97,15 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
     }
 
     /**
+     * Returns the signature for the element.
+     *
+     * @return the signature for the element
+     */
+    public String getSignature() {
+        return AsmHelper.getMethodDescriptor(this);
+    }
+
+    /**
      * Returns the return type.
      *
      * @return the return type

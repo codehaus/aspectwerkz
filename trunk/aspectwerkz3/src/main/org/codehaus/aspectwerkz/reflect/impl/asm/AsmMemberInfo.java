@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttributeHe
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
+import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
 import org.objectweb.asm.attrs.Annotation;
@@ -84,15 +85,6 @@ public abstract class AsmMemberInfo implements MemberInfo {
      */
     public String getName() {
         return m_member.name;
-    }
-
-    /**
-     * Returns the signature for the element.
-     *
-     * @return the signature for the element
-     */
-    public String getSignature() {
-        return m_member.desc;
     }
 
     /**

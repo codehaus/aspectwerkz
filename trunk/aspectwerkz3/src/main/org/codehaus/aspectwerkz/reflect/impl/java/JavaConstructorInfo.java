@@ -32,6 +32,11 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
     private ClassInfo[] m_exceptionTypes = null;
 
     /**
+     * The signature of the class.
+     */
+    private String m_signature;
+
+    /**
      * Creates a new method meta data instance.
      *
      * @param constructor
@@ -39,6 +44,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
      */
     JavaConstructorInfo(final Constructor constructor, final JavaClassInfo declaringType) {
         super(constructor, declaringType);
+        m_signature = ReflectHelper.getConstructorSignature(constructor);
     }
 
     /**
@@ -55,6 +61,15 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
         }
         return classInfo.getConstructor(ReflectHelper.calculateHash(constructor));
+    }
+
+    /**
+     * Returns the signature for the element.
+     *
+     * @return the signature for the element
+     */
+    public String getSignature() {
+        return m_signature;
     }
 
     /**

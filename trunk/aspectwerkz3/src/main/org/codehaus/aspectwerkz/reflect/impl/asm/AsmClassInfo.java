@@ -86,6 +86,11 @@ public class AsmClassInfo implements ClassInfo {
     private boolean m_isArray = false;
 
     /**
+     * Flag for the static initializer method.
+     */
+    private boolean m_hasStaticInitializer = false;
+
+    /**
      * A list with the <code>ConstructorInfo</code> instances.
      */
     private final TIntObjectHashMap m_constructors = new TIntObjectHashMap();
@@ -216,7 +221,7 @@ public class AsmClassInfo implements ClassInfo {
         m_superClassName = m_superClass.getName();
         m_interfaceClassNames = new String[0];
         m_interfaces = new ClassInfo[0];
-        m_signature = AsmHelper.getDescriptor(this);
+        m_signature = AsmHelper.getClassDescriptor(this);
         m_classInfoRepository.addClassInfo(this);
     }
 
@@ -437,6 +442,15 @@ public class AsmClassInfo implements ClassInfo {
      */
     public int getModifiers() {
         return m_modifiers;
+    }
+
+    /**
+     * Checks if the class has a static initalizer.
+     *
+     * @return
+     */
+    public boolean hasStaticInitializer() {
+        return m_hasStaticInitializer;
     }
 
     /**
@@ -856,7 +870,7 @@ public class AsmClassInfo implements ClassInfo {
             struct.exceptions = exceptions;
             int hash = AsmHelper.calculateMethodHash(name, desc);
             if (name.equals(CLINIT_METHOD_NAME)) {
-                // skip <clinit>
+                m_hasStaticInitializer = true;
             } else {
                 AsmMemberInfo memberInfo = null;
                 if (name.equals(INIT_METHOD_NAME)) {
@@ -877,7 +891,5 @@ public class AsmClassInfo implements ClassInfo {
 
             return super.visitMethod(access, name, desc, exceptions, attrs);
         }
-
     }
-
 }

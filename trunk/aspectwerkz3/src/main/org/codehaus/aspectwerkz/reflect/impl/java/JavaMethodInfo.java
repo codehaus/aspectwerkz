@@ -37,6 +37,11 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     private ClassInfo[] m_exceptionTypes = null;
 
     /**
+     * The signature of the method.
+     */
+    private String m_signature;
+
+    /**
      * Creates a new method meta data instance.
      *
      * @param method
@@ -44,6 +49,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
      */
     JavaMethodInfo(final Method method, final JavaClassInfo declaringType) {
         super(method, declaringType);
+        m_signature = ReflectHelper.getMethodSignature(method);
     }
 
     /**
@@ -60,6 +66,15 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
         }
         return classInfo.getMethod(ReflectHelper.calculateHash(method));
+    }
+
+    /**
+     * Returns the signature for the element.
+     *
+     * @return the signature for the element
+     */
+    public String getSignature() {
+        return m_signature;
     }
 
     /**

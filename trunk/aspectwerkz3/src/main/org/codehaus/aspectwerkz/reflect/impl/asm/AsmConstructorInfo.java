@@ -85,6 +85,15 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
     }
 
     /**
+     * Returns the signature for the element.
+     *
+     * @return the signature for the element
+     */
+    public String getSignature() {
+        return AsmHelper.getConstructorDescriptor(this);
+    }
+
+    /**
      * Returns the parameter types.
      *
      * @return the parameter types

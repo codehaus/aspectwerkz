@@ -11,36 +11,31 @@ import junit.framework.TestCase;
 
 import java.io.Serializable;
 
+import org.codehaus.aspectwerkz.transform.inlining.FinalizingVisitor;
+import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.ContextClassLoader;
+
 /**
- * Test the Javassist based SerialVerUid computation.
- * See AW-244 for synthetic members bug.
- * <p/>
- * FIXME impl with ASM
+ * Test for the SerialVerionUid computation.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class SerialVerUidTest extends TestCase implements Serializable {
+    static {
+        System.gc();
+    }
 
     public Object[] someMethod() {
         return null;
     }
 
-    public SerialVerUidTest() {
-        super();
-    }
-
-    public SerialVerUidTest(Object[] foo) {
-        ;
-    }
-
     protected static final int someField = 32;
 
     public void testSerialVerUid() throws Throwable {
-        //FIXME assertFalse("implement test", true);
-    }
-
-    public void testSerialVerUidSynthetic() throws Throwable {
-        //FIXME assertFalse("implement test", true);
+        ClassInfo classInfo = AsmClassInfo.getClassInfo("test.SerialVerUidTest", ContextClassLoader.getLoader());
+        long UID = FinalizingVisitor.calculateSerialVersionUID(classInfo);
+        assertEquals(-6289975506796941698L, UID);
     }
 
     public static void main(String[] args) {

@@ -15,7 +15,6 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
-import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -109,8 +108,7 @@ public class JavaClassInfo implements ClassInfo {
         }
         m_class = klass;
 
-        // FIXME does not handle arrays
-        m_signature = 'L' + klass.getName().replace('.', '/') + ';';
+        m_signature = ReflectHelper.getClassSignature(klass);
 
         m_classInfoRepository = JavaClassInfoRepository.getRepository(klass.getClassLoader());
         m_isInterface = klass.isInterface();
@@ -186,15 +184,21 @@ public class JavaClassInfo implements ClassInfo {
     }
 
     /**
+     * Checks if the class has a static initalizer.
+     *
+     * @return
+     */
+    public boolean hasStaticInitializer() {
+        throw new UnsupportedOperationException("FIXME: hasStaticInitializer() not implemented yet");
+    }
+
+    /**
      * Returns the signature for the element.
      *
      * @return the signature for the element
      */
     public String getSignature() {
-        throw new UnsupportedOperationException(
-                "FIXME: getSignature() not implemented yet (does not handle arrays properly)"
-        );
-//        return m_signature;
+        return m_signature;
     }
 
     /**
