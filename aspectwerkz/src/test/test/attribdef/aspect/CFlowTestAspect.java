@@ -30,7 +30,7 @@ public class CFlowTestAspect extends Aspect {
     // ============ Advices ============
 
     /**
-     * @Around pc1 && pc2
+     * @Around pc2 IN pc1
      */
     public Object execute(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
