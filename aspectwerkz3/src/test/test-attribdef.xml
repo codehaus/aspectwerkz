@@ -32,7 +32,7 @@
         <aspect class="test.superclassconstructor.TestAspect"/>
         <aspect class="test.constructor.ConstructorTestAspect"/>
         <aspect class="test.handler.HandlerTestAspect">
-            <advice bind-to="handler" type="before" name="before(JoinPoint, Rtti)"/>
+            <advice bind-to="handler" type="before" name="before(JoinPoint)"/>
         </aspect>
         <aspect class="test.proceedinnewthread.TestAspect">
             <advice bind-to="execution(void test.proceedinnewthread.ProceedTest.adviseMe*(..))" type="around" name="advice1"/>
