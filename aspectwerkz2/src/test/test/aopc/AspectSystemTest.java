@@ -29,13 +29,13 @@ public class AspectSystemTest extends TestCase {
             }, ClassLoader.getSystemClassLoader());
 
         //TODO if CLA is runned, CLB fails. Might be related to metadata/TF/jpindex (see TF verbose)
-//        ClassLoader mySubCLA = new URLClassLoader(new URL[]{
-//            ClassCreator.getPathFor(Callable.class.getResource("a/META-INF/aop.xml"))
-//            }, myCL);
-//        Callable ca = (Callable)ClassCreator.createInstance("test.aopc.a.Callee", mySubCLA);
-//        ca.methodAround();
-//        ca.debug();
-//        assertEquals("beforeAround beforeAround methodAround afterAround afterAround ", ca.getLogString());
+        ClassLoader mySubCLA = new URLClassLoader(new URL[]{
+            ClassCreator.getPathFor(Callable.class.getResource("a/META-INF/aop.xml"))
+            }, myCL);
+        Callable ca = (Callable)ClassCreator.createInstance("test.aopc.a.Callee", mySubCLA);
+        ca.methodAround();
+        ca.debug();
+        assertEquals("beforeAround beforeAround methodAround afterAround afterAround ", ca.getLogString());
 
         ClassLoader mySubCLB = new URLClassLoader(new URL[]{
             }, myCL);

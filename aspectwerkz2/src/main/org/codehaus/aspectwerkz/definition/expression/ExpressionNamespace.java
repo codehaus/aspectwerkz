@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.WeakHashMap;
 
 import org.codehaus.aspectwerkz.exception.ExpressionException;
+import org.codehaus.aspectwerkz.definition.AspectDefinition;
 
 /**
  * Expression Namespace. A namespace is usually defined by the Aspect name.
@@ -25,7 +26,7 @@ public class ExpressionNamespace {
     /**
      * Default name.
      */
-    private static final String DEFAULT_NAMESPACE = "DEFAULT_NAMESPACE";
+    private static final AspectDefinition DEFAULT_NAMESPACE = new AspectDefinition("DEFAULT_NAMESPACE", "java.lang.Object");
 
     /**
      * Namespace container.
@@ -50,9 +51,14 @@ public class ExpressionNamespace {
      * @param namespace
      * @return the expression namespace
      */
-    public static synchronized ExpressionNamespace getExpressionNamespace(final Object namespace) {
+    public static synchronized ExpressionNamespace getExpressionNamespace(final AspectDefinition namespace) {
         if (!s_namespaces.containsKey(namespace)) {
             s_namespaces.put(namespace, new ExpressionNamespace(namespace.toString()));
+            //TODO AVAOPC remove toString here
+            // AV : I think we need for informational purpose the system object + the aspect def
+            // and a convention to say the namespace "string repr" is not unique in the whole VM
+            // since uuid is not unique (it is in a CL hierarchy)
+            // Then we can set m_namespace to "uuid/aspectName" just for info purpose
         }
         return (ExpressionNamespace)s_namespaces.get(namespace);
     }

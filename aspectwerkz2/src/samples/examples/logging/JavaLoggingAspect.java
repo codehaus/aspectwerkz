@@ -76,7 +76,7 @@ public class JavaLoggingAspect {
      */
     public static void addPointcutForLoggingAdvice(String pointcut, String pointcutName) {
         final String aspectName = "examples.logging.JavaLoggingAspect";
-        Expression pcExpression = ExpressionNamespace.getExpressionNamespace(aspectName)
+        Expression pcExpression = ExpressionNamespace.getExpressionNamespace(null/*aspectName*/)//AVAOPC TODO classloader or CCI ?
                 .createExpression(
                         pointcut,
                         "",
