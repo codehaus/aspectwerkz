@@ -29,7 +29,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class FinalizingVisitor extends ClassAdapter implements TransformationConstants {
+public class AddSerialVersionUidVisitor extends ClassAdapter implements TransformationConstants {
 
     private final ContextImpl m_ctx;
     private final ClassInfo m_classInfo;
@@ -42,7 +42,7 @@ public class FinalizingVisitor extends ClassAdapter implements TransformationCon
      * @param classInfo
      * @param ctx
      */
-    public FinalizingVisitor(final ClassVisitor cv, final ClassInfo classInfo, final Context ctx) {
+    public AddSerialVersionUidVisitor(final ClassVisitor cv, final ClassInfo classInfo, final Context ctx) {
         super(cv);
         m_ctx = (ContextImpl) ctx;
         m_classInfo = classInfo;
