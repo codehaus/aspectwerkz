@@ -47,8 +47,21 @@ public class JoinPointFactory {
      */
     public static Class compileJoinPointAndAttachToClassLoader(final CompilationInfo.Model model,
                                                                final ClassLoader loader) {
-        final byte[] bytecode = compileJoinPoint(model);
-        return AsmHelper.defineClass(loader, bytecode, model.getJoinPointClassName());
+        return attachToClassLoader(model.getJoinPointClassName(), loader, compileJoinPoint(model));
+    }
+
+    /**
+     * Loads a join point class, one specific class for each distinct join point.
+     *
+     * @param joinpointClassName
+     * @param loader the class loader that the compiled join point should live in
+     * @param bytecode of the joinpoint
+     * @return the compiled join point class
+     */
+    public static Class attachToClassLoader(final String joinpointClassName,
+                                            final ClassLoader loader,
+                                            final byte[] bytecode) {
+        return AsmHelper.defineClass(loader, bytecode, joinpointClassName);
     }
 
     /**

@@ -10,6 +10,10 @@ package org.codehaus.aspectwerkz.compiler;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
+import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
+import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -53,6 +57,7 @@ import java.util.zip.ZipOutputStream;
  *       Ant 1.5 must be in the classpath
  * </pre>
  * <p/>
+ * <p>
  * <h2>Classpath note</h2>
  * At the beginning of the compilation, all {target i} are added to the classpath automatically. <br/>This is required
  * to support caller side advices. <p/>
@@ -78,6 +83,7 @@ public class AspectWerkzC {
     // COMMAND LINE OPTIONS
     private static final String COMMAND_LINE_OPTION_DASH = "-";
     private static final String COMMAND_LINE_OPTION_VERBOSE = "-verbose";
+    private static final String COMMAND_LINE_OPTION_KEEPJP = "-keepjp";
     private static final String COMMAND_LINE_OPTION_HALT = "-haltOnError";
     private static final String COMMAND_LINE_OPTION_VERIFY = "-verify";
     private static final String COMMAND_LINE_OPTION_CLASSPATH = "-cp";
@@ -107,6 +113,8 @@ public class AspectWerkzC {
 
     private boolean verify = false;
 
+    private boolean keepJp = false;
+
     private boolean haltOnError = false;
 
     private String backupDir = BACKUP_DIR;
@@ -120,6 +128,7 @@ public class AspectWerkzC {
      * class preprocessor instance used to compile targets
      */
     private ClassPreProcessor preprocessor = null;
+    private boolean isAspectWerkzPreProcessor = false;
 
     /**
      * index to keep track of {target i} backups
@@ -161,6 +170,10 @@ public class AspectWerkzC {
         utility.setVerbose(verbose);
     }
 
+    public void setKeepJp(boolean keepJp) {
+        this.keepJp = keepJp;
+    }
+
     public void setHaltOnError(boolean haltOnError) {
         this.haltOnError = haltOnError;
     }
@@ -186,6 +199,10 @@ public class AspectWerkzC {
             Class pp = Class.forName(preprocessor);
             this.preprocessor = (ClassPreProcessor) pp.newInstance();
             this.preprocessor.initialize();
+
+            if (this.preprocessor instanceof AspectWerkzPreProcessor) {
+                isAspectWerkzPreProcessor = true;
+            }
         } catch (Exception e) {
             throw new CompileException("failed to instantiate preprocessor " + preprocessor, e);
         }
@@ -294,17 +311,34 @@ public class AspectWerkzC {
             }
 
             // transform
-            byte[] transformed = null;
+            AspectWerkzPreProcessor.Output out = null;
             try {
-                transformed = preprocessor.preProcess(className, bos.toByteArray(), compilationLoader);
+                out = preProcess(preprocessor, className, bos.toByteArray(), compilationLoader);
             } catch (Throwable t) {
                 throw new CompileException("weaver failed for class: " + className, t);
             }
 
             // override file
             fos = new FileOutputStream(file);
-            fos.write(transformed);
+            fos.write(out.bytecode);
             fos.close();
+
+            // if AW and keepjp
+            if (out.emittedJoinPoints != null && keepJp) {
+                for (int i = 0; i < out.emittedJoinPoints.length; i++) {
+                    EmittedJoinPoint emittedJoinPoint = out.emittedJoinPoints[i];
+                    //TODO we assume same package here.. make more generic
+                    String jpClassNoPackage = emittedJoinPoint.getJoinPointClassName();
+                    if (jpClassNoPackage.indexOf('/')>0) {
+                        jpClassNoPackage = jpClassNoPackage.substring(jpClassNoPackage.lastIndexOf('/'));
+                    }
+                    File jpFile = new File(file.getParent(), jpClassNoPackage+".class");
+                    utility.log(" [keepjp] " + jpFile.getCanonicalPath());
+                    FileOutputStream jpFos = new FileOutputStream(jpFile);
+                    jpFos.write(compileJoinPoint(emittedJoinPoint, compilationLoader));
+                    jpFos.close();
+                }
+            }
 
             // verify modified class
             if (verify) {
@@ -370,19 +404,19 @@ public class AspectWerkzC {
                 in.close();
 
                 // transform only .class file
+                AspectWerkzPreProcessor.Output out = null;
                 byte[] transformed = null;
                 if (ze.getName().toLowerCase().endsWith(".class")) {
                     utility.log(" [compilejar] compile " + file.getName() + ":" + ze.getName());
                     String className = ze.getName().substring(0, ze.getName().length() - 6);
                     try {
-                        transformed = preprocessor.preProcess(
-                                className, bos.toByteArray(),
-                                compilationLoader
-                        );
+                        out = preProcess(preprocessor, className, bos.toByteArray(), compilationLoader);
+                        transformed = out.bytecode;
                     } catch (Throwable t) {
                         throw new CompileException("weaver failed for class: " + className, t);
                     }
                 } else {
+                    out = null;
                     transformed = bos.toByteArray();
                 }
 
@@ -413,6 +447,23 @@ public class AspectWerkzC {
                 transformedZe.setMethod(ze.getMethod());
                 zos.putNextEntry(transformedZe);
                 zos.write(transformed, 0, transformed.length);
+
+                // if AW and keepjp
+                if (keepJp && out != null && out.emittedJoinPoints!=null) {
+                    for (int i = 0; i < out.emittedJoinPoints.length; i++) {
+                        EmittedJoinPoint emittedJoinPoint = out.emittedJoinPoints[i];
+                        byte[] transformedJp = compileJoinPoint(emittedJoinPoint, compilationLoader);
+                        utility.log(" [compilejar] keepjp " + file.getName() + ":" + emittedJoinPoint.getJoinPointClassName());
+                        ZipEntry transformedZeJp = new ZipEntry(emittedJoinPoint.getJoinPointClassName()+".class");
+                        transformedZeJp.setSize(transformedJp.length);
+                        CRC32 crcJp = new CRC32();
+                        crcJp.update(transformedJp);
+                        transformedZeJp.setCrc(crcJp.getValue());
+                        transformedZeJp.setMethod(ze.getMethod());
+                        zos.putNextEntry(transformedZeJp);
+                        zos.write(transformedJp, 0, transformedJp.length);
+                    }
+                }
             }
             zip.close();
             zos.close();
@@ -527,6 +578,8 @@ public class AspectWerkzC {
                 compiler.setHaltOnError(Boolean.TRUE.equals(param.getValue()));
             } else if (COMMAND_LINE_OPTION_VERIFY.equals(param.getKey())) {
                 compiler.setVerify(Boolean.TRUE.equals(param.getValue()));
+            } else if (COMMAND_LINE_OPTION_KEEPJP.equals(param.getKey())) {
+                compiler.setKeepJp(Boolean.TRUE.equals(param.getValue()));
             }
         }
 
@@ -637,6 +690,8 @@ public class AspectWerkzC {
         for (int i = 0; i < args.length; i++) {
             if (COMMAND_LINE_OPTION_VERBOSE.equals(args[i])) {
                 options.put(COMMAND_LINE_OPTION_VERBOSE, Boolean.TRUE);
+            } else if (COMMAND_LINE_OPTION_KEEPJP.equals(args[i])) {
+                options.put(COMMAND_LINE_OPTION_KEEPJP, Boolean.TRUE);
             } else if (COMMAND_LINE_OPTION_HALT.equals(args[i])) {
                 options.put(COMMAND_LINE_OPTION_HALT, Boolean.TRUE);
             } else if (COMMAND_LINE_OPTION_VERIFY.equals(args[i])) {
@@ -692,5 +747,48 @@ public class AspectWerkzC {
         File file = new File(path);
 
         return file.exists() ? file : null;
+    }
+
+    /**
+     * Helper method to have the emitted joinpoint back when dealing with AspectWerkz pp
+     * @param preProcessor
+     * @param className
+     * @param bytecode
+     * @param compilationLoader
+     * @return
+     */
+    private AspectWerkzPreProcessor.Output preProcess(ClassPreProcessor preProcessor, String className, byte[] bytecode, ClassLoader compilationLoader) {
+        if (isAspectWerkzPreProcessor) {
+            return ((AspectWerkzPreProcessor)preProcessor).preProcessWithOutput(className, bytecode, compilationLoader);
+        } else {
+            byte[] newBytes = preProcessor.preProcess(className, bytecode, compilationLoader);
+            AspectWerkzPreProcessor.Output out = new AspectWerkzPreProcessor.Output();
+            out.bytecode = newBytes;
+            return out;
+        }
+    }
+
+    private byte[] compileJoinPoint(EmittedJoinPoint emittedJoinPoint, ClassLoader loader) throws IOException {
+        try {
+            Class callerClass = ContextClassLoader.forName(emittedJoinPoint.getCallerClassName().replace('/', '.'));
+            Class calleeClass = ContextClassLoader.forName(emittedJoinPoint.getCalleeClassName().replace('/', '.'));
+            JoinPointManager.CompiledJoinPoint jp = JoinPointManager.compileJoinPoint(
+                    emittedJoinPoint.getJoinPointType(),
+                    callerClass,
+                    emittedJoinPoint.getCallerMethodName(),
+                    emittedJoinPoint.getCallerMethodDesc(),
+                    emittedJoinPoint.getCallerMethodModifiers(),
+                    emittedJoinPoint.getCalleeClassName(),
+                    emittedJoinPoint.getCalleeMemberName(),
+                    emittedJoinPoint.getCalleeMemberDesc(),
+                    emittedJoinPoint.getCalleeMemberModifiers(),
+                    emittedJoinPoint.getJoinPointHash(),
+                    emittedJoinPoint.getJoinPointClassName(),
+                    calleeClass
+            );
+            return jp.bytecode;
+        } catch (ClassNotFoundException e) {
+            throw new IOException("Could not compile joinpoint : " + e.toString());
+        }
     }
 }
