@@ -888,6 +888,24 @@ public class AsmHelper implements TransformationConstants {
     }
 
     /**
+     * Compute the index on the signature of a given argument based on its index as if it was on the stack
+     * where the stack would start at the first argument
+     *
+     * @param typesOnStack
+     * @param registerIndex
+     * @return
+     */
+    public static int getTypeIndexOf(final Type[] typesOnStack, final int registerIndex) {
+        for (int i = 0; i < typesOnStack.length; i++) {
+            int presumedRegisterIndex = getRegisterIndexOf(typesOnStack, i);
+            if (registerIndex == presumedRegisterIndex) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
      * Checks if the Type is a primitive.
      *
      * @param returnType

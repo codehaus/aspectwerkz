@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.ClassReader;
 
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Modifier;
 
 /**
  * ASM implementation of the MethodInfo interface.
@@ -32,7 +34,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
     private String m_returnTypeName = null;
 
     /**
-     * A list with the parameter names as they appear in the source code§.
+     * A list with the parameter names as they appear in the source code.
      * This information may not be available.
      */
     protected String[] m_parameterNames = null;
@@ -257,5 +259,29 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
         sb.append('.').append(m_member.name);
         sb.append(m_member.desc);
         return sb.toString();
+    }
+
+    /**
+     * Update the parameter name given the parameter information
+     * the index is the one from the register ie a long or double will needs 2 register
+     *
+     * @param registerIndex
+     * @param parameterName
+     */
+    public void pushParameterNameFromRegister(int registerIndex, String parameterName) {
+        int registerStart = 1;
+        if (Modifier.isStatic(m_member.modifiers)) {
+            registerStart = 0;
+        }
+        // assume we have a stack starting at the first parameter
+        int registerIndexFrom0 = registerIndex - registerStart;
+        Type[] parameters = Type.getArgumentTypes(m_member.desc);
+        int typeIndex = AsmHelper.getTypeIndexOf(parameters, registerIndexFrom0);
+        if (typeIndex >= 0 && typeIndex < m_parameterNames.length) {
+            m_parameterNames[typeIndex] = parameterName;
+        } else {
+            throw new DefinitionException("Could not register parameter named " + parameterName
+                + " from register " + registerIndex + " for " + m_member.name + "." + m_member.desc);
+        }
     }
 }

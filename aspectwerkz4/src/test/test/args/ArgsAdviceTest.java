@@ -34,6 +34,15 @@ public class ArgsAdviceTest extends TestCase implements Loggable {
         assertEquals("before 1 invocation ", m_logString);
     }
 
+    // all bounded :(long l, String s, int[][] matrix)
+    public void testWithArray() {
+        m_logString = "";
+        //int[][] iis = new int[][]{{1, 2}, {3}}; //FIXME issue in XXClassInfo for mutl. dim. array
+        int[] iis = new int[]{1, 2};
+        withArray(1L, "h", iis);
+        assertEquals("before 1 h 1-2- invocation ", m_logString);
+    }
+
     //args(String, String, long)
     public void testMatchAll() {
         m_logString = "";
@@ -175,6 +184,10 @@ public class ArgsAdviceTest extends TestCase implements Loggable {
     }
 
     public void singleAndDotDot(int i) {
+        log("invocation ");
+    }
+
+    public void withArray(long l, String s, int[] matrix) {
         log("invocation ");
     }
 

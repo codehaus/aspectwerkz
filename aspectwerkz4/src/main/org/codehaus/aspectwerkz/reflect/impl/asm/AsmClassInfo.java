@@ -979,27 +979,47 @@ public class AsmClassInfo implements ClassInfo {
     static class MethodParameterNamesCodeAdapter extends AsmAnnotationHelper.NullCodeAdapter {
         private final boolean m_isStatic;
         private final int m_parameterCount;
-        private int m_parameterFound = 0;
-        private int m_parameterIndex = 0;
         private AsmMethodInfo m_methodInfo;
+        private int m_signatureParameterRegisterDepth = 0;
 
         public MethodParameterNamesCodeAdapter(boolean isStatic, int parameterCount, AsmMethodInfo methodInfo) {
             m_isStatic = isStatic;
             m_parameterCount = parameterCount;
             m_methodInfo = methodInfo;
             m_methodInfo.m_parameterNames = new String[m_parameterCount];
+
+            // compute the max index of the arguments that appear in the method signature
+            // including "this" on register 0 for non static methods
+            // a long or double needs 2 registers
+            if (!m_isStatic) {
+                m_signatureParameterRegisterDepth++;// index 0 = this
+            }
+            m_signatureParameterRegisterDepth += AsmHelper.getRegisterDepth(Type.getArgumentTypes(m_methodInfo.m_member.desc));
         }
 
+        /**
+         * Do not assume to visit the local variable with index always increasing since it is a wrong assumption
+         * [ see f.e. test.args.ArgsAspect.withArray advice ]
+         * @param name
+         * @param desc
+         * @param start
+         * @param end
+         * @param index the index of the argument on the stack
+         */
         public void visitLocalVariable(String name, String desc, Label start, Label end, int index) {
-            if (m_parameterFound == 0 && !m_isStatic) {
-                m_parameterFound++;// skip "this"
-            } else {
-                m_parameterFound++;
-                if (m_parameterIndex < m_methodInfo.m_parameterNames.length) {
-                    m_methodInfo.m_parameterNames[m_parameterIndex++] = name;
+            if (index < m_signatureParameterRegisterDepth) {
+                // this is not a local variable
+                if (index == 0) {
+                    if (!m_isStatic) {
+                        ;//skip this
+                    } else {
+                        m_methodInfo.pushParameterNameFromRegister(index, name);                        
+                    }
                 } else {
-                    ;// skip code block locals
+                    m_methodInfo.pushParameterNameFromRegister(index, name);
                 }
+            } else {
+                ;// skip code block locals
             }
         }
     }
