@@ -17,6 +17,27 @@ import java.util.List;
 public interface Context {
 
     /**
+     * Sets the current bytecode.
+     * 
+     * @param bytecode
+     */
+    public abstract void setCurrentBytecode(final byte[] bytecode);
+
+    /**
+     * Returns the initial bytecode.
+     * 
+     * @return bytecode
+     */
+    public abstract byte[] getInitialBytecode();
+
+    /**
+     * Returns the current bytecode.
+     * 
+     * @return bytecode
+     */
+    public abstract byte[] getCurrentBytecode();
+
+    /**
      * Returns the class abstraction.
      * 
      * @return clazz
@@ -94,20 +115,6 @@ public interface Context {
      * @param value the value
      */
     public abstract void addMetaData(final Object key, final Object value);
-
-    /**
-     * Returns the initial bytecode.
-     * 
-     * @return bytecode
-     */
-    public abstract byte[] getInitialBytecode();
-
-    /**
-     * Returns the current bytecode.
-     * 
-     * @return bytecode
-     */
-    public abstract byte[] getCurrentBytecode();
 
     /**
      * Dump the class to specific directory.
