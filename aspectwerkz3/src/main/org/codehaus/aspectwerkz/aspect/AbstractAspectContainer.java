@@ -12,8 +12,6 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -103,26 +101,26 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     }
 
     /**
-     * Invokes an introduced method with the index specified.
+     * Invokes an advice with the index specified.
      * 
-     * @param methodIndex the method index
+     * @param adviceIndex the advice index
      * @param joinPoint the join point
      * @return the result from the invocation
      */
-    public Object invokeAdvice(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
+    public Object invokeAdvice(final int adviceIndex, final JoinPoint joinPoint) throws Throwable {
         Object result = null;
         switch (m_infoPrototype.getDeploymentModel()) {
             case DeploymentModel.PER_JVM:
-                result = invokeAdvicePerJvm(methodIndex, joinPoint);
+                result = invokeAdvicePerJvm(adviceIndex, joinPoint);
                 break;
             case DeploymentModel.PER_CLASS:
-                result = invokeAdvicePerClass(methodIndex, joinPoint);
+                result = invokeAdvicePerClass(adviceIndex, joinPoint);
                 break;
             case DeploymentModel.PER_INSTANCE:
-                result = invokeAdvicePerInstance(methodIndex, joinPoint);
+                result = invokeAdvicePerInstance(adviceIndex, joinPoint);
                 break;
             case DeploymentModel.PER_THREAD:
-                result = invokeAdvicePerThread(methodIndex, joinPoint);
+                result = invokeAdvicePerThread(adviceIndex, joinPoint);
                 break;
             default:
                 throw new RuntimeException("invalid deployment model: "
@@ -156,15 +154,15 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     /**
      * Invokes the advice method on a per JVM basis.
      * 
-     * @param methodIndex the method index
+     * @param adviceIndex the advice index
      * @param joinPoint the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerJvm(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
+    private Object invokeAdvicePerJvm(final int adviceIndex, final JoinPoint joinPoint) throws Throwable {
         Object result;
         try {
             createPerJvmAspect();
-            Method method = m_adviceRepository[methodIndex];
+            Method method = m_adviceRepository[adviceIndex];
             result = method.invoke(m_perJvm, new Object[] {
                 joinPoint
             });
@@ -179,16 +177,16 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     /**
      * Invokes the advice method on a per class basis.
      * 
-     * @param methodIndex the method index
+     * @param adviceIndex the advice index
      * @param joinPoint the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
+    private Object invokeAdvicePerClass(final int adviceIndex, final JoinPoint joinPoint) throws Throwable {
         final Class targetClass = joinPoint.getTargetClass();
         Object result;
         try {
             createPerClassAspect(targetClass);
-            result = m_adviceRepository[methodIndex].invoke(
+            result = m_adviceRepository[adviceIndex].invoke(
                 m_perClass.get(targetClass),
                 new Object[] {
                     joinPoint
@@ -204,21 +202,21 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     /**
      * Invokes the advice method on a per instance basis.
      * 
-     * @param methodIndex the method index
+     * @param adviceIndex the advice index
      * @param joinPoint the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerInstance(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
+    private Object invokeAdvicePerInstance(final int adviceIndex, final JoinPoint joinPoint) throws Throwable {
         Object result = null;
         Object targetInstance = joinPoint.getTargetInstance();
         if (targetInstance == null) { // can be null if f.e. an aspect has deployment model
                                       // perInstance and has caller
             // side pointcuts defined
-            return invokeAdvicePerClass(methodIndex, joinPoint);
+            return invokeAdvicePerClass(adviceIndex, joinPoint);
         }
         try {
             createPerInstanceAspect(targetInstance);
-            result = m_adviceRepository[methodIndex].invoke(
+            result = m_adviceRepository[adviceIndex].invoke(
                 m_perInstance.get(targetInstance),
                 new Object[] {
                     joinPoint
@@ -234,16 +232,16 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     /**
      * Invokes the advice method on a per thread basis.
      * 
-     * @param methodIndex the method index
+     * @param adviceIndex the advice index
      * @param joinPoint the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
+    private Object invokeAdvicePerThread(final int adviceIndex, final JoinPoint joinPoint) throws Throwable {
         Object result;
         try {
             final Thread currentThread = Thread.currentThread();
             createPerThreadAspect(currentThread);
-            Method method = m_adviceRepository[methodIndex];
+            Method method = m_adviceRepository[adviceIndex];
             result = method.invoke(m_perThread.get(currentThread), new Object[] {
                 joinPoint
             });

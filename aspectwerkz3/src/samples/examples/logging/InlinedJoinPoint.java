@@ -43,10 +43,11 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {//implements JoinPoi
         InlinedJoinPoint joinPoint = new InlinedJoinPoint();
         joinPoint.m_target = targetInstance;
         joinPoint.m_i = i;
-        return joinPoint.proceed();
+        Object returnValue = joinPoint.proceed();
+        return ((Integer)returnValue).intValue();
     }
 
-    public final int proceed() throws Throwable {
+    public final Object proceed() throws Throwable {
         m_stackFrame++;
         try {
             // add 'before' advice
@@ -75,7 +76,7 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {//implements JoinPoi
             // check for return type here for 'after returning ...'
 //            }
 
-            return m_target.toLog1(m_i);
+            return new Integer(m_target.toLog1(m_i));
 
 //        } catch (Throwable throwable) {
 //            // add 'after throwing ...' advice
