@@ -20,7 +20,7 @@ public interface TransformationConstants {
 
     // prefixes
     public static final String ASPECTWERKZ_PREFIX = "___AW_";
-    public static final String WRAPPER_METHOD_PREFIX = "access$";
+    public static final String WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX  + "access$";//CAUTION: keep AW prefix or fix the AspectRegistry etc
     public static final String DELIMITER = "$_AW_$";
     public static final String STATIC_CLASS_FIELD = ASPECTWERKZ_PREFIX + "clazz";
     public static final String JOIN_POINT_PREFIX = ASPECTWERKZ_PREFIX + "jp";
