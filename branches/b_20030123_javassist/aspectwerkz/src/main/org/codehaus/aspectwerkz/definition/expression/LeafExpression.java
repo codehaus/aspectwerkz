@@ -35,6 +35,11 @@ public abstract class LeafExpression extends Expression {
     protected boolean m_isHierarchical = false;
 
     /**
+     * Hierarchical flag for callee side on Call expressions
+     */
+    protected boolean m_isHierarchicalCallee = false;
+
+    /**
      * The compiled class pattern.
      */
     protected ClassPattern m_classPattern;
@@ -64,6 +69,15 @@ public abstract class LeafExpression extends Expression {
     }
 
     /**
+     * Checks if the expression is hierachical on Callee side.
+     *
+     * @return boolean
+     */
+    public boolean isHierarchicalCallee() {
+        return m_isHierarchicalCallee;
+    }
+
+    /**
      * Compiles the pattern for the expression.
      */
     protected void compilePattern() {
@@ -81,6 +95,7 @@ public abstract class LeafExpression extends Expression {
             tuple = PatternFactory.createCallPatternTuple(m_expression, m_package);
             m_memberPattern = Pattern.compileCallerSidePattern(tuple.getMemberPattern());
             m_isHierarchical = tuple.isHierarchical();
+            m_isHierarchicalCallee = tuple.isHierarchicalCallee();
             m_classPattern = Pattern.compileClassPattern(tuple.getCallerClassPattern());
         }
         else if (m_type.equals(PointcutType.SET) || m_type.equals(PointcutType.GET)) {
