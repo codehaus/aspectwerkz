@@ -29,6 +29,7 @@ import java.io.ObjectInputStream;
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import gnu.trove.THashMap;
@@ -54,7 +55,7 @@ import org.codehaus.aspectwerkz.persistence.DirtyFieldCheckAdvice;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.5 2003-06-05 09:36:08 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.6 2003-06-05 11:55:00 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -214,16 +215,14 @@ public class WeaveModel implements Serializable {
         weaveModelName.append(MetaDataCompiler.WEAVE_MODEL);
         weaveModelName.append(MetaDataCompiler.META_DATA_FILE_SUFFIX);
 
-        URL weaveModelURL = Thread.currentThread().getContextClassLoader().
-                getResource(weaveModelName.toString());
-        if (weaveModelURL == null) throw new DefinitionException("no meta-data dir specified or weave model found on classpath (either specify the meta-data dir by using the -Daspectwerkz.metadata.dir=.. option or by having the pre-compiled weave model somewhere on the classpath)");
+        InputStream in = Thread.currentThread().getContextClassLoader().
+                getResourceAsStream(weaveModelName.toString());
+        if (in == null) throw new DefinitionException("no meta-data dir specified or weave model found on classpath (either specify the meta-data dir by using the -Daspectwerkz.metadata.dir=.. option or by having the pre-compiled weave model somewhere on the classpath)");
 
         try {
-            File file = new File(weaveModelURL.getFile());
-            ObjectInputStream in =
-                    new ObjectInputStream(new FileInputStream(file));
-            s_weaveModel = (WeaveModel)in.readObject();
-            in.close();
+            ObjectInputStream oin = new ObjectInputStream(in);
+            s_weaveModel = (WeaveModel)oin.readObject();
+            oin.close();
             return s_weaveModel;
         }
         catch (Exception e) {
@@ -990,7 +989,7 @@ public class WeaveModel implements Serializable {
      * Holds the weave meta-data for each class.
      *
      * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
-     * @version $Id: WeaveModel.java,v 1.5 2003-06-05 09:36:08 jboner Exp $
+     * @version $Id: WeaveModel.java,v 1.6 2003-06-05 11:55:00 jboner Exp $
      */
     public static class WeaveMetaData implements Serializable {
 
