@@ -28,6 +28,7 @@ public class MethodPatternTest extends TestCase {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* meth*(..)");
         assertTrue(methodPattern.matchMethodName("method"));
         assertTrue(methodPattern.matchMethodName("methods"));
+        assertTrue(methodPattern.matchMethodName("meth"));
         assertFalse(methodPattern.matchMethodName("m"));
         assertFalse(methodPattern.matchMethodName(""));
     }
@@ -174,6 +175,13 @@ public class MethodPatternTest extends TestCase {
                 new String[]{"java.util.List[][]"}));
     }
 
+    public void testMatchParameterTypes12() {
+        MethodPattern methodPattern = Pattern.compileMethodPattern("* method(java.lang.String*)");
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.StringBuffer"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String", "int"}));
+    }
+
     public void testMatchReturnType1() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method()");
         assertTrue(methodPattern.matchReturnType("int"));
@@ -217,6 +225,17 @@ public class MethodPatternTest extends TestCase {
 
         assertFalse(methodPattern.matchReturnType("int"));
         assertTrue(methodPattern.matchReturnType("void"));
+        assertFalse(methodPattern.matchReturnType("java.foo.String"));
+        assertFalse(methodPattern.matchReturnType("String"));
+        assertFalse(methodPattern.matchReturnType(""));
+    }
+
+    public void testMatchReturnType6() {
+        MethodPattern methodPattern = Pattern.compileMethodPattern("java.lang.String* method()");
+
+        assertFalse(methodPattern.matchReturnType("int"));
+        assertTrue(methodPattern.matchReturnType("java.lang.String"));
+        assertTrue(methodPattern.matchReturnType("java.lang.StringBuffer"));
         assertFalse(methodPattern.matchReturnType("java.foo.String"));
         assertFalse(methodPattern.matchReturnType("String"));
         assertFalse(methodPattern.matchReturnType(""));

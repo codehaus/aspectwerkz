@@ -73,7 +73,7 @@ public class ClassPattern extends Pattern {
             else {
                 className = Strings.replaceSubString(className, "..", "[a-zA-Z0-9_$.]+");
                 className = Strings.replaceSubString(className, ".", "\\.");
-                className = Strings.replaceSubString(className, "*", "[a-zA-Z0-9_$]+");
+                className = Strings.replaceSubString(className, "*", "[a-zA-Z0-9_$]*");
             }
             m_classNamePattern = new com.karneim.util.collection.regex.Pattern(className);
         }

@@ -145,7 +145,7 @@ public class FieldPattern extends Pattern {
             fieldType = Strings.replaceSubString(fieldType, ".", "\\.");
             fieldType = Strings.replaceSubString(fieldType, "[", "\\[");
             fieldType = Strings.replaceSubString(fieldType, "]", "\\]");
-            fieldType = Strings.replaceSubString(fieldType, "*", "[a-zA-Z0-9_$]+");
+            fieldType = Strings.replaceSubString(fieldType, "*", "[a-zA-Z0-9_$]*");
         }
         m_fieldTypePattern = new com.karneim.util.collection.regex.Pattern(fieldType);
     }

@@ -44,6 +44,7 @@ public class ClassPatternTest extends TestCase {
         ClassPattern classPattern = Pattern.compileClassPattern("foo.ba*.*");
         assertTrue(classPattern.matches("foo.bag.SomeClass"));
         assertTrue(classPattern.matches("foo.bar.SomeClass"));
+        assertTrue(classPattern.matches("foo.ba.SomeClass"));
         assertFalse(classPattern.matches("foo.bear.SomeClass"));
         assertFalse(classPattern.matches("foo"));
     }
