@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
@@ -23,6 +24,7 @@ import org.codehaus.aspectwerkz.annotation.MixinAnnotationParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.dom4j.Attribute;
 import org.dom4j.Document;

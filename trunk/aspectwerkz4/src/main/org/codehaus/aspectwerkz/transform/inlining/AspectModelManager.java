@@ -9,7 +9,8 @@ package org.codehaus.aspectwerkz.transform.inlining;
 
 import java.util.StringTokenizer;
 
-import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;

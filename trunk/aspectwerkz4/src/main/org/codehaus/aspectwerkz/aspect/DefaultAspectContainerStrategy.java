@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import org.codehaus.aspectwerkz.AspectContext;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.AspectContext;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

@@ -11,9 +11,10 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
+import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfoRepository;
-import org.codehaus.aspectwerkz.transform.ReflectHelper;
+import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
 

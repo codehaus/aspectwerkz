@@ -15,7 +15,8 @@ import org.codehaus.aspectwerkz.transform.inlining.weaver.AddSerialVersionUidVis
 import org.codehaus.aspectwerkz.transform.inlining.weaver.AddSerialVersionUidVisitor;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
 
 /**
  * Test for the SerialVerionUid computation.

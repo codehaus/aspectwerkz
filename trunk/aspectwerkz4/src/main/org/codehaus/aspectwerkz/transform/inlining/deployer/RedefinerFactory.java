@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.deployer;
 
-import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
 
 /**
  * Factory for the different redefiner implementations.
@@ -27,9 +27,11 @@ public class RedefinerFactory {
         if (type.equals(Type.HOTSWAP)) {
             try {
                 Class redefinerClass = ContextClassLoader.loadClass(HOT_SWAP_REDEFINER_CLASS_NAME);
-                return (Redefiner)redefinerClass.newInstance();
+                return (Redefiner) redefinerClass.newInstance();
             } catch (ClassNotFoundException e) {
-                throw new RuntimeException("redefiner class [HotSwapRedefiner] could not be found on classpath, make sure you have the aspectwerkz extensions jar file in your classpath");
+                throw new RuntimeException(
+                        "redefiner class [HotSwapRedefiner] could not be found on classpath, make sure you have the aspectwerkz extensions jar file in your classpath"
+                );
             } catch (Exception e) {
                 throw new RuntimeException("redefiner class [HotSwapRedefiner] could not be instantiated");
             }

@@ -8,7 +8,6 @@
 package examples.logging;
 
 import org.codehaus.aspectwerkz.definition.Pointcut;
-import org.codehaus.aspectwerkz.definition.Pointcut;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>

@@ -5,13 +5,12 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz;
+package org.codehaus.aspectwerkz.util;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
-import java.lang.reflect.Proxy;
 
 /**
  * Fixes the ObjectInputStream class, which does not always resolve the class correctly in complex

@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation.asm;
 
-import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
+import org.codehaus.aspectwerkz.util.UnbrokenObjectInputStream;
 import org.codehaus.aspectwerkz.util.Base64;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;

@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.impl;
 
-import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
 

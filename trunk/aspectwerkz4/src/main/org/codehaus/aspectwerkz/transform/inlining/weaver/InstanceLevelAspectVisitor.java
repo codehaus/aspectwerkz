@@ -7,15 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
-import java.util.Iterator;
-import java.util.Set;
-
 import org.objectweb.asm.*;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 
 /**

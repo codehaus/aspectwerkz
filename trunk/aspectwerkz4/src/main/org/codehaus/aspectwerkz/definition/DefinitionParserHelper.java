@@ -12,9 +12,11 @@ import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.DeploymentModel;
 
 import java.util.Iterator;

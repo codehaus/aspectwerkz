@@ -7,11 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import org.codehaus.aspectwerkz.AspectContext;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
+
+import org.codehaus.aspectwerkz.AspectContext;
 
 
 /**

@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
-import org.codehaus.aspectwerkz.transform.ReflectHelper;
+import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 
 import java.lang.reflect.Field;
 import java.util.List;

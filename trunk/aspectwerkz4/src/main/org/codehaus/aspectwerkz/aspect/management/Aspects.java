@@ -10,13 +10,16 @@ package org.codehaus.aspectwerkz.aspect.management;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy;
+import org.codehaus.aspectwerkz.AspectContext;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.AspectContext;
-import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.AspectContext;
 
 import java.util.*;
 import java.lang.reflect.Constructor;

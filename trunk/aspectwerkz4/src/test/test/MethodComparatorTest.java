@@ -8,7 +8,8 @@
 package test;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.reflect.MethodComparator;
+import org.codehaus.aspectwerkz.reflect.MethodComparator;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
