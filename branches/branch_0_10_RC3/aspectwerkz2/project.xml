@@ -56,15 +56,15 @@
     <mailingLists>
         <mailingList>
             <name>AspectWerkz User List</name>
-            <subscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-user</subscribe>
-            <unsubscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-user</unsubscribe>
-            <archive>http://lists.codehaus.org/pipermail/aspectwerkz-user/</archive>
+            <subscribe>mailto:user-subscribe@aspectwerkz.codehaus.org</subscribe>
+            <unsubscribe>mailto:user-subscribe@aspectwerkz.codehaus.org</unsubscribe>
+            <archive>http://archive.aspectwerkz.codehaus.org/user/</archive>
         </mailingList>
         <mailingList>
             <name>AspectWerkz Developer List</name>
-            <subscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-devel</subscribe>
-            <unsubscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-devel</unsubscribe>
-            <archive>http://lists.codehaus.org/pipermail/aspectwerkz-devel/</archive>
+            <subscribe>mailto:dev-subscribe@aspectwerkz.codehaus.org</subscribe>
+            <unsubscribe>mailto:dev-subscribe@aspectwerkz.codehaus.org</unsubscribe>
+            <archive>http://archive.aspectwerkz.codehaus.org/dev/</archive>
         </mailingList>
     </mailingLists>
 
