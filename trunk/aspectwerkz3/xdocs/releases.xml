@@ -63,6 +63,11 @@
                         expressive and powerful.
                         <ul>
                             <li>
+                                Support for deploying several <code>aop.xml</code> Aspect defintion/deployment files alongside deployed
+                                application (<code>WEB-INF/aop.xml</code>, <code>META-INF/aop.xml</code>) and have them following
+                                the classloader hierarchy.
+                            </li>
+                            <li>
                                <code>within</code> and <code>withincode</code> pointcuts
                             </li>
                             <li>
@@ -83,6 +88,9 @@
                             </li>
                             <li>
                                 Pointcut references (refer to pointcuts defined in other aspects).
+                            </li>
+                            <li>
+                                JSR-163 JVMTI support for Java 1.5 class load time weaving with <code>-javaagent:</code>
                             </li>
                             <li>
                                 Many bug fixes.

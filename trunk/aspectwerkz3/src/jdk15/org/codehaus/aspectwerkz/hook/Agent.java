@@ -18,17 +18,27 @@ import java.lang.instrument.ClassFileTransformer;
  */
 public class Agent {
 
+    /**
+     * The instrumentation instance
+     */
     private static Instrumentation s_instrumentation;
 
+    /**
+     * The ClassFileTransformer wrapping AspectWerkz weaver
+     */
     public static ClassFileTransformer s_transformer = new PreProcessorAdapter();
 
-    public Agent() {}
-
+    /**
+     * JSR-163 preMain Agent entry method
+     */
     public static void premain(String options, Instrumentation instrumentation) {
         s_instrumentation = instrumentation;
         s_instrumentation.addTransformer(s_transformer);
     }
 
+    /**
+     * Returns the Instrumentation system level instance
+     */
     public static Instrumentation getInstrumentation() {
         return s_instrumentation;
     }

@@ -33,8 +33,15 @@ public class PreProcessorAdapter implements ClassFileTransformer {
         }
     }
 
-    public PreProcessorAdapter() {}
-
+    /**
+     * Weaving delegation
+     * @param loader the defining class loader
+     * @param className the name of class beeing loaded
+     * @param classBeingRedefined when hotswap is called
+     * @param protectionDomain
+     * @param bytes the bytecode before weaving
+     * @return the weaved bytecode
+     */
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] bytes) throws IllegalClassFormatException
     {
         // skip hotswap
