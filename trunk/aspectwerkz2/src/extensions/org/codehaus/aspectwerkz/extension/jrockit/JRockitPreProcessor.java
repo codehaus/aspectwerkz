@@ -8,17 +8,9 @@
 package org.codehaus.aspectwerkz.extension.jrockit;
 
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
-import org.codehaus.aspectwerkz.compiler.VerifierClassLoader;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-
 import com.bea.jvm.JVMFactory;
 import com.jrockit.management.rmp.RmpSocketListener;
 
-import java.net.URL;
-import java.io.File;
-import java.util.Iterator;
 
 /**
  * JRockit (tested with 7SP4 and 8.1) preprocessor Adapter based on JMAPI
@@ -45,13 +37,13 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
      */
     private static ClassPreProcessor s_preProcessor;
 
-    private static String START_RMP_SERVER = null;
+    private static boolean START_RMP_SERVER = false;
 
     static {
         String clpp = System.getProperty(
                 "aspectwerkz.classloader.preprocessor", "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor"
         );
-        START_RMP_SERVER = System.getProperty("aspectwerkz.jrockit.rmpserver.start", "false");
+        START_RMP_SERVER = System.getProperties().containsKey("management");
 
         try {
             // note: CLPP loaded by current thread classloader which is bootstrap classloader
@@ -70,18 +62,10 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
      * The JMAPI ClassPreProcessor must be self registrating
      */
     public JRockitPreProcessor() {
-        if (START_RMP_SERVER.equalsIgnoreCase("true") || START_RMP_SERVER.equalsIgnoreCase("yes")) {
-            Thread rmpThread = new Thread(
-                    new Runnable() {
-                        public void run() {
-                            RmpSocketListener management = new RmpSocketListener();
-                            management.run();
-                        }
-                    }
-            );
-            rmpThread.start();
+        if (START_RMP_SERVER) {
+            // the management server will be spawned in a new thread
+            RmpSocketListener management = new RmpSocketListener();
         }
-
         JVMFactory.getJVM().getClassLibrary().setClassPreProcessor(this);
     }
 
@@ -112,16 +96,18 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
 
         Class loadedCP = Class.forName("java.math.BigDecimal");
 
-        System.out.println(org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor.class.getClassLoader());
+        //System.out.println(org.codehaus.aspectwerkz.Pointcut.class.getClassLoader());
 
         while (true) {
             System.out.print(".");
+            /*
             ClassLoader nonDelegatingCL = new VerifierClassLoader(
                     new URL[]{(new File(args[0])).toURL()}, ClassLoader.getSystemClassLoader()
             );
             Class loaded = nonDelegatingCL.loadClass(
                     org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor.class.getName()
             );
+            */
             Thread.sleep(500);
         }
     }
