@@ -12,15 +12,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.codehaus.aspectwerkz.pointcut.GetPointcut;
-import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
-import org.codehaus.aspectwerkz.pointcut.CallPointcut;
-import org.codehaus.aspectwerkz.pointcut.SetPointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.DeploymentModel;
