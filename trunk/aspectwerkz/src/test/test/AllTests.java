@@ -28,6 +28,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.MethodComparatorTest.class);
         suite.addTestSuite(test.JexlTest.class);
         suite.addTestSuite(test.StringsTest.class);
+        suite.addTestSuite(test.ExpressionTest.class);
 
         return suite;
     }
