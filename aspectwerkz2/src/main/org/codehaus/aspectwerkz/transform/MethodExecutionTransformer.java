@@ -162,7 +162,7 @@ public class MethodExecutionTransformer implements Transformer {
             // thus that have not been changed in the previous transformation steps
             for (Iterator i = sorteMethodTuples.iterator(); i.hasNext();) {
                 MethodSequenceTuple tuple = (MethodSequenceTuple)i.next();
-                //System.out.println(" tuple " + tuple.getMethod().getName() + " : " + tuple.getStatus());
+                //System.out.println(" tuple " + tuple.getAdvice().getName() + " : " + tuple.getStatus());
                 if (tuple.getStatus() != STATUS_HASNOPOINTCUT) {
                     continue;
                 }

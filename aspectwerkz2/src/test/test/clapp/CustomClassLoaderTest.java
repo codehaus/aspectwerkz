@@ -60,7 +60,7 @@ public class CustomClassLoaderTest extends TestCase {
                     ClassLoader.getSystemClassLoader());
             Class target = wcl.loadClass("test.xmldef.clapp.Target");
             assertEquals(target.getClassLoader().hashCode(), wcl.hashCode());
-            Method m = target.getMethod("callme", new Class[]{});
+            Method m = target.getAdvice("callme", new Class[]{});
             String res = (String) m.invoke(target.newInstance(), new Object[]{});
             assertEquals("before call after", res);
         } catch (Throwable t) {

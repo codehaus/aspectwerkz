@@ -20,8 +20,8 @@ import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.aspect.Aspect;
+import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
@@ -213,7 +213,7 @@ public final class AspectManager {
         prototype.___AW_setDeploymentModel(deploymentModel);
         prototype.___AW_setName(name);
         prototype.___AW_setAspectClass(prototype.getClass());
-        prototype.___AW_setContainer(StartupManager.createAspectContainer(prototype));
+        prototype.___AW_setContainer(new AspectContainer(prototype));
         prototype.___AW_setAspectDef(aspectDef);
 
         m_aspectRegistry.register(prototype, new PointcutManager(m_uuid, name, deploymentModel));
