@@ -89,7 +89,6 @@ public aspect MethodExecutionAspect {
 	}
 
     //TODO: add Rtti around
-
 	before(int i, Execution t) :
 	execution(* awbench.method.Execution.beforeWithArgsAndTarget(int)) && args(i) && target(t) {
         int j = i;

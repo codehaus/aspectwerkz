@@ -87,11 +87,11 @@ public class MethodExecutionRun {
         run.end();
 
         // Not in other benches and same as aroundSJP
-//        run = new Run("method execution, around advice");
-//        for (int i = 0; i < Run.ITERATIONS; i++) {
-//            test.around_();
-//        }
-//        run.end();
+        run = new Run("method execution, around advice");
+        for (int i = 0; i < Run.ITERATIONS; i++) {
+            test.around_();
+        }
+        run.end();
 
         run = new Run("method execution, around advice, JP");
         for (int i = 0; i < Run.ITERATIONS; i++) {

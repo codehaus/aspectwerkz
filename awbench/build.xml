@@ -388,4 +388,35 @@
         <antcall target="run:ext:aspectj"/>
     </target>
 
+
+    <!-- ===================================== Weaver bench ============ -->
+    <target name="weaver:aw" depends="weaver:aspectwerkz"/>
+    <target name="weaver:aspectwerkz" depends="init, compile, compile:aspectwerkz">
+        <delete dir="_dump2"/>
+        <java classname="awbench.weave.GenerateClasses" fork="true" classpathref="project.classpath">
+            <arg line="10 100"/>
+        </java>
+        <java classname="awbench.weave.PrintTime" fork="true" classpathref="project.classpath"/>
+        <awweave classpathref="project.classpath" targetdir="_dump2"
+            verbose="false"
+            keepjp="true"
+            definition="${d}/src/aspectwerkz/META-INF/aop.xml"/>
+        <awweave/>
+        <java classname="awbench.weave.PrintTime" fork="true" classpathref="project.classpath"/>
+    </target>
+
+    <target name="weaver:aspectj" depends="init, compile, compile:aspectj">
+        <delete dir="_dump2"/>
+        <java classname="awbench.weave.GenerateClasses" fork="true" classpathref="project.classpath">
+            <arg line="10 100"/>
+        </java>
+        <jar destfile="target.jar" basedir="${d}/target"/>
+        <java classname="awbench.weave.PrintTime" fork="true" classpathref="project.classpath"/>
+        <ajc aspectpath="${d}/target.jar" inpath="_dump2" destdir="_dump2">
+            <classpath>
+                <path refid="project.classpath"/>
+            </classpath>
+        </ajc>
+        <java classname="awbench.weave.PrintTime" fork="true" classpathref="project.classpath"/>
+    </target>
 </project>
