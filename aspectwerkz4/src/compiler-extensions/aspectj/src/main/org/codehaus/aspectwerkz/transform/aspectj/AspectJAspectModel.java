@@ -163,9 +163,7 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
      * @return the closure class info
      */
     public AroundClosureClassInfo getAroundClosureClassInfo() {
-        return new AspectModel.AroundClosureClassInfo(
-                ASPECTJ_AROUND_CLOSURE_CLASS_NAME, AspectModel.AroundClosureClassInfo.Type.CLASS
-        );
+        return new AspectModel.AroundClosureClassInfo( ASPECTJ_AROUND_CLOSURE_CLASS_NAME, new String[]{});
     }
 
 
@@ -272,7 +270,7 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
         final int specialArgumentIndex = adviceMethodInfo.getSpecialArgumentIndex();
         final String specialArgumentTypeName = adviceMethodInfo.getSpecialArgumentTypeName();
         if (adviceType.equals(AdviceType.AFTER_RETURNING) ||
-                adviceType.equals(AdviceType.AFTER_THROWING)) {
+            adviceType.equals(AdviceType.AFTER_THROWING)) {
             cv.visitVarInsn(ALOAD, specialArgumentIndex);
             cv.visitTypeInsn(CHECKCAST, specialArgumentTypeName);
         }

@@ -18,6 +18,8 @@ import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.ConstructorInterceptor;
 
+//import org.objectweb.asm.CodeVisitor;
+//import org.objectweb.asm.ClassWriter;
 import org.codehaus.aspectwerkz.org.objectweb.asm.CodeVisitor;
 import org.codehaus.aspectwerkz.org.objectweb.asm.ClassWriter;
 
@@ -33,18 +35,18 @@ import org.codehaus.aspectwerkz.org.objectweb.asm.ClassWriter;
  */
 public class AopAllianceAspectModel implements AspectModel, TransformationConstants {
 
-    private static final String ASPECT_MODEL_TYPE = "aop-alliance";
-    private static final String AOP_ALLIANCE_AROUND_CLOSURE_CLASS_NAME = "org/aopalliance/intercept/MethodInvocation";
-    private static final String AOP_ALLIANCE_AROUND_CLOSURE_RUN_METHOD_NAME = "invoke";
-    private static final String AOP_ALLIANCE_AROUND_CLOSURE_RUN_METHOD_SIGNATURE = "(Lorg/aopalliance/intercept/MethodInvocation;)Ljava/lang/Object;";
-    private static final String AOP_ALLIANCE_ASPECT_CONTAINER_CLASS_NAME = AopAllianceAspectContainer.class.getName();
-    private static final String AOP_ALLIANCE_GET_METHOD_METHOD_NAME = "getMethod";
-    private static final String AOP_ALLIANCE_GET_METHOD_METHOD_SIGNATURE = "()Ljava/lang/reflect/Method;";
-    private static final String AOP_ALLIANCE_GET_STATIC_PART_METHOD_NAME = "getStaticPart";
-    private static final String AOP_ALLIANCE_GET_STATIC_PART_METHOD_SIGNATURE = "()Ljava/lang/reflect/AccessibleObject;";
-    private static final String GET_PARAMETER_VALUES_METHOD_NAME = "getParameterValues";
-    private static final String AOP_ALLIANCE_GET_ARGUMENTS_METHOD_SIGNATURE = "()[Ljava/lang/Object;";
-    private static final String AOP_ALLIANCE_GET_ARGUMENTS_METHOD_NAME = "getArguments";
+    protected static final String ASPECT_MODEL_TYPE = "aop-alliance";
+    protected static final String AOP_ALLIANCE_CLOSURE_CLASS_NAME = "org/aopalliance/intercept/MethodInvocation";
+    protected static final String AOP_ALLIANCE_CLOSURE_PROCEED_METHOD_NAME = "invoke";
+    protected static final String AOP_ALLIANCE_CLOSURE_PROCEED_METHOD_SIGNATURE = "(Lorg/aopalliance/intercept/MethodInvocation;)Ljava/lang/Object;";
+    protected static final String ASPECT_CONTAINER_CLASS_NAME = AopAllianceAspectContainer.class.getName();
+    protected static final String GET_METHOD_METHOD_NAME = "getMethod";
+    protected static final String GET_METHOD_METHOD_SIGNATURE = "()Ljava/lang/reflect/Method;";
+    protected static final String GET_STATIC_PART_METHOD_NAME = "getStaticPart";
+    protected static final String GET_STATIC_PART_METHOD_SIGNATURE = "()Ljava/lang/reflect/AccessibleObject;";
+    protected static final String GET_PARAMETER_VALUES_METHOD_NAME = "getParameterValues";
+    protected static final String GET_ARGUMENTS_METHOD_SIGNATURE = "()[Ljava/lang/Object;";
+    protected static final String GET_ARGUMENTS_METHOD_NAME = "getArguments";
 
 
     /**
@@ -71,9 +73,9 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
         for (int i = 0; i < interfaces.length; i++) {
             ClassInfo anInterface = interfaces[i];
             if (anInterface.getName().equals(MethodInterceptor.class.getName()) ||
-                    anInterface.getName().equals(ConstructorInterceptor.class.getName())) {
+                anInterface.getName().equals(ConstructorInterceptor.class.getName())) {
                 aspectDef.setAspectModel(ASPECT_MODEL_TYPE);
-                aspectDef.setContainerClassName(AOP_ALLIANCE_ASPECT_CONTAINER_CLASS_NAME);
+                aspectDef.setContainerClassName(ASPECT_CONTAINER_CLASS_NAME);
                 return;
             }
         }
@@ -94,9 +96,7 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
      * @return the closure class info
      */
     public AroundClosureClassInfo getAroundClosureClassInfo() {
-        return new AspectModel.AroundClosureClassInfo(
-                AOP_ALLIANCE_AROUND_CLOSURE_CLASS_NAME, AspectModel.AroundClosureClassInfo.Type.INTERFACE
-        );
+        return new AspectModel.AroundClosureClassInfo(null, new String[] {AOP_ALLIANCE_CLOSURE_CLASS_NAME});
     }
 
 
@@ -114,8 +114,8 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
         {
             cv = cw.visitMethod(
                     ACC_PUBLIC,
-                    AOP_ALLIANCE_AROUND_CLOSURE_RUN_METHOD_NAME,
-                    AOP_ALLIANCE_AROUND_CLOSURE_RUN_METHOD_SIGNATURE,
+                    AOP_ALLIANCE_CLOSURE_PROCEED_METHOD_NAME,
+                    AOP_ALLIANCE_CLOSURE_PROCEED_METHOD_SIGNATURE,
                     new String[]{THROWABLE_CLASS_NAME},
                     null
             );
@@ -129,15 +129,15 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
         {
             cv = cw.visitMethod(
                     ACC_PUBLIC,
-                    AOP_ALLIANCE_GET_STATIC_PART_METHOD_NAME,
-                    AOP_ALLIANCE_GET_STATIC_PART_METHOD_SIGNATURE,
+                    GET_STATIC_PART_METHOD_NAME,
+                    GET_STATIC_PART_METHOD_SIGNATURE,
                     null, null
             );
             cv.visitFieldInsn(GETSTATIC, className, SIGNATURE_FIELD_NAME, METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE);
             cv.visitTypeInsn(CHECKCAST, METHOD_SIGNATURE_IMPL_CLASS_NAME);
             cv.visitMethodInsn(
-                    INVOKEVIRTUAL, METHOD_SIGNATURE_IMPL_CLASS_NAME, AOP_ALLIANCE_GET_METHOD_METHOD_NAME,
-                    AOP_ALLIANCE_GET_METHOD_METHOD_SIGNATURE
+                    INVOKEVIRTUAL, METHOD_SIGNATURE_IMPL_CLASS_NAME, GET_METHOD_METHOD_NAME,
+                    GET_METHOD_METHOD_SIGNATURE
             );
             cv.visitInsn(ARETURN);
             cv.visitMaxs(1, 1);
@@ -146,17 +146,17 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
         // getMethod
         {
             cv =
-                    cw.visitMethod(
-                            ACC_PUBLIC,
-                            AOP_ALLIANCE_GET_METHOD_METHOD_NAME,
-                            AOP_ALLIANCE_GET_METHOD_METHOD_SIGNATURE,
-                            null, null
-                    );
+            cw.visitMethod(
+                    ACC_PUBLIC,
+                    GET_METHOD_METHOD_NAME,
+                    GET_METHOD_METHOD_SIGNATURE,
+                    null, null
+            );
             cv.visitFieldInsn(GETSTATIC, className, SIGNATURE_FIELD_NAME, METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE);
             cv.visitTypeInsn(CHECKCAST, METHOD_SIGNATURE_IMPL_CLASS_NAME);
             cv.visitMethodInsn(
-                    INVOKEVIRTUAL, METHOD_SIGNATURE_IMPL_CLASS_NAME, AOP_ALLIANCE_GET_METHOD_METHOD_NAME,
-                    AOP_ALLIANCE_GET_METHOD_METHOD_SIGNATURE
+                    INVOKEVIRTUAL, METHOD_SIGNATURE_IMPL_CLASS_NAME, GET_METHOD_METHOD_NAME,
+                    GET_METHOD_METHOD_SIGNATURE
             );
             cv.visitInsn(ARETURN);
             cv.visitMaxs(1, 1);
@@ -166,8 +166,8 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
         {
             cv = cw.visitMethod(
                     ACC_PUBLIC,
-                    AOP_ALLIANCE_GET_ARGUMENTS_METHOD_NAME,
-                    AOP_ALLIANCE_GET_ARGUMENTS_METHOD_SIGNATURE,
+                    GET_ARGUMENTS_METHOD_NAME,
+                    GET_ARGUMENTS_METHOD_SIGNATURE,
                     null, null
             );
             cv.visitVarInsn(ALOAD, 0);
@@ -177,7 +177,7 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
                     INVOKEVIRTUAL,
                     METHOD_RTTI_IMPL_CLASS_NAME,
                     GET_PARAMETER_VALUES_METHOD_NAME,
-                    AOP_ALLIANCE_GET_ARGUMENTS_METHOD_SIGNATURE
+                    GET_ARGUMENTS_METHOD_SIGNATURE
             );
             cv.visitInsn(ARETURN);
             cv.visitMaxs(1, 1);

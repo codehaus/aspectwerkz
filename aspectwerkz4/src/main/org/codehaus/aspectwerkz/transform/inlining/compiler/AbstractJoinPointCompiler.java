@@ -201,15 +201,20 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         for (int i = 0; i < m_aspectModels.length; i++) {
             AspectModel aspectModel = m_aspectModels[i];
             AspectModel.AroundClosureClassInfo closureClassInfo = aspectModel.getAroundClosureClassInfo();
-            if (closureClassInfo.isClass()) {
+            final String superClassName = closureClassInfo.getSuperClassName();
+            final String[] interfaceNames = closureClassInfo.getInterfaceNames();
+            if (superClassName != null) {
                 if (!baseClass.equals(OBJECT_CLASS_NAME)) {
                     throw new RuntimeException(
                             "compiled join point can only subclass one around closure base class but more than registered aspect model requires a closure base class"
                     );
                 }
-                baseClass = closureClassInfo.getClassName();
-            } else if (closureClassInfo.isInterface()) {
-                interfaces.add(closureClassInfo.getClassName());
+                baseClass = superClassName;
+            }
+            if (interfaceNames.length != 0) {
+                for (int j = 0; j < interfaceNames.length; j++) {
+                    interfaces.add(interfaceNames[j]);
+                }
             }
         }
         int i = 1;
@@ -269,7 +274,11 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                     adviceInfo,
                     ASPECT_FIELD_PREFIX + aspectIndex,
                     aspectClassName,
-                    L + aspectClassName + SEMICOLON
+                    L + aspectClassName + SEMICOLON,
+                    m_callerClassSignature,
+                    m_calleeClassSignature,
+                    m_joinPointClassName,
+                    m_calleeMemberDesc
             );
             adviceMethodInfos[i] = adviceMethodInfo;
             aspectInfos.add(adviceMethodInfo.getAspectInfo());
@@ -431,7 +440,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
 
         for (int i = 0; i < m_aspectModels.length; i++) {
             aspectModel = m_aspectModels[i];
-            if (aspectModel.getAroundClosureClassInfo().isClass()) {
+            if (aspectModel.getAroundClosureClassInfo().getSuperClassName() != null) {
                 hasAroundClosureBaseClass = true;
                 break;
             }
@@ -1253,6 +1262,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 }
             } else {
                 // non-AW aspect
+                adviceMethodInfo.setJoinPointIndex(joinPointInstanceIndex);
                 for (int j = 0; j < m_aspectModels.length; j++) {
                     AspectModel aspectModel = m_aspectModels[j];
                     if (aspectDef.getAspectModel().equals(aspectModel.getAspectModelType())) {
@@ -1430,6 +1440,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             }
         } else {
             // non-AW aspect
+            adviceMethodInfo.setJoinPointIndex(joinPointInstanceIndex);
             for (int i = 0; i < m_aspectModels.length; i++) {
                 AspectModel aspectModel = m_aspectModels[i];
                 if (aspectDef.getAspectModel().equals(aspectModel.getAspectModelType())) {

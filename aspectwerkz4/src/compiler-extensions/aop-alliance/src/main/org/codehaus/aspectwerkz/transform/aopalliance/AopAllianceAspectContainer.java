@@ -12,6 +12,9 @@ import org.codehaus.aspectwerkz.AspectContext;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 
 /**
+ * Default aspect container for the AOP Alliance compliant aspects, can only handle aspects/interceptors
+ * with no argument default constructors.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AopAllianceAspectContainer extends AbstractAspectContainer {
@@ -33,9 +36,12 @@ public class AopAllianceAspectContainer extends AbstractAspectContainer {
     protected Object createAspect() {
         final String className = m_aspectContext.getAspectDefinition().getClassName();
         try {
-            return ContextClassLoader.loadClass(className);
+            return ContextClassLoader.loadClass(className).newInstance();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("could not load AOP Alliance interceptor [" + className + "]: " + e.toString());
+        } catch (Exception e) {
+            throw new RuntimeException("could not instantiate AOP Alliance interceptor [" + className + "]: " + e.toString());
         }
+
     }
 }

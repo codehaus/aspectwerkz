@@ -33,7 +33,7 @@
     <!--  initializes parameters  -->
     <!-- =================================================== -->
     <target name="init">
-        <property name="name" value="aspectj-aspectwerkz-compiler-extension"/>
+        <property name="name" value="aw-ext-aspectj"/>
         <property name="version" value="0.1"/>
         <property name="basedir" value="."/>
         <property name="src.dir" value="${basedir}/src"/>

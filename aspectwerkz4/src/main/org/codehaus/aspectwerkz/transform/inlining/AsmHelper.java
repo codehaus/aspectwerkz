@@ -624,13 +624,12 @@ public class AsmHelper implements TransformationConstants {
                 cv.visitInsn(ACONST_NULL);
                 break;
             case Type.SHORT:
-                cv
-                        .visitMethodInsn(
-                                INVOKESPECIAL,
-                                SHORT_CLASS_NAME,
-                                INIT_METHOD_NAME,
-                                SHORT_CLASS_INIT_METHOD_SIGNATURE
-                        );
+                cv.visitMethodInsn(
+                        INVOKESPECIAL,
+                        SHORT_CLASS_NAME,
+                        INIT_METHOD_NAME,
+                        SHORT_CLASS_INIT_METHOD_SIGNATURE
+                );
                 break;
             case Type.INT:
                 cv.visitMethodInsn(
@@ -644,13 +643,12 @@ public class AsmHelper implements TransformationConstants {
                 cv.visitMethodInsn(INVOKESPECIAL, LONG_CLASS_NAME, INIT_METHOD_NAME, LONG_CLASS_INIT_METHOD_SIGNATURE);
                 break;
             case Type.FLOAT:
-                cv
-                        .visitMethodInsn(
-                                INVOKESPECIAL,
-                                FLOAT_CLASS_NAME,
-                                INIT_METHOD_NAME,
-                                FLOAT_CLASS_INIT_METHOD_SIGNATURE
-                        );
+                cv.visitMethodInsn(
+                        INVOKESPECIAL,
+                        FLOAT_CLASS_NAME,
+                        INIT_METHOD_NAME,
+                        FLOAT_CLASS_INIT_METHOD_SIGNATURE
+                );
                 break;
             case Type.DOUBLE:
                 cv.visitMethodInsn(
@@ -728,13 +726,12 @@ public class AsmHelper implements TransformationConstants {
                 break;
             case Type.INT:
                 cv.visitTypeInsn(CHECKCAST, INTEGER_CLASS_NAME);
-                cv
-                        .visitMethodInsn(
-                                INVOKEVIRTUAL,
-                                INTEGER_CLASS_NAME,
-                                INT_VALUE_METHOD_NAME,
-                                INT_VALUE_METHOD_SIGNATURE
-                        );
+                cv.visitMethodInsn(
+                        INVOKEVIRTUAL,
+                        INTEGER_CLASS_NAME,
+                        INT_VALUE_METHOD_NAME,
+                        INT_VALUE_METHOD_SIGNATURE
+                );
                 break;
             case Type.LONG:
                 cv.visitTypeInsn(CHECKCAST, LONG_CLASS_NAME);

@@ -31,11 +31,11 @@ public interface AspectModel {
     /**
      * Defines the aspect and adds definition to the aspect definition.
      *
-     * @param classInfo
+     * @param aspectClassInfo
      * @param aspectDef
      * @param loader
      */
-    void defineAspect(ClassInfo classInfo, AspectDefinition aspectDef, ClassLoader loader);
+    void defineAspect(ClassInfo aspectClassInfo, AspectDefinition aspectDef, ClassLoader loader);
 
     /**
      * Returns info about the closure class, name and type (interface or class).
@@ -119,24 +119,19 @@ public interface AspectModel {
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
     public static class AroundClosureClassInfo {
-        private final String m_className;
-        private final Type m_type;
-
-        public AroundClosureClassInfo(final String className, final Type type) {
-            m_className = className;
-            m_type = type;
+        private final String m_superClassName;
+        private final String[] m_interfaceNames;
+        public AroundClosureClassInfo(final String superClassName, final String[] interfaceNames) {
+            m_superClassName = superClassName;
+            m_interfaceNames = interfaceNames;
         }
 
-        public String getClassName() {
-            return m_className;
+        public String getSuperClassName() {
+            return m_superClassName;
         }
 
-        public boolean isClass() {
-            return m_type.equals(Type.CLASS);
-        }
-
-        public boolean isInterface() {
-            return m_type.equals(Type.INTERFACE);
+        public String[] getInterfaceNames() {
+            return m_interfaceNames;
         }
 
         /**

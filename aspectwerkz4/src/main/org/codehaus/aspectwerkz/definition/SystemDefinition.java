@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -105,25 +106,13 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns the "virtual" system definitions in a specific class loader, e.g. the system that houses
-     * the hot deployed aspects that has not been explicitly bound to a system.
-     *
-     * @param loader the class loader that the definition lives in
-     * @return the system definition
-     */
-    // TODO expose or not?
-//    public static SystemDefinition getVirtualDefinitionFor(final ClassLoader loader) {
-//        return SystemDefinitionContainer.getVirtualDefinitionFor(loader);
-//    }
-
-    /**
      * Creates a new instance, creates and sets the system cflow aspect.
      */
     public SystemDefinition(final String uuid) {
         setUuid(uuid);
         AspectDefinition systemAspect = new AspectDefinition(
-                CFlowSystemAspect.CLASS_NAME,
-                CFlowSystemAspect.CLASS_NAME,
+                CFlowSystemAspect.class.getName(),
+                JavaClassInfo.getClassInfo(CFlowSystemAspect.class),
                 this
         );
         systemAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
