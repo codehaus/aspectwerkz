@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+
 /**
  * Validates an AspectWerkz definition, looking for:
  * <ul>
