@@ -1,0 +1,7 @@
+<!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+<aspectwerkz>
+    <system id="tutorial-tx-sample">
+        <include package="aspectwerkz.tutorial"/>
+        <aspect class="aspectwerkz.tutorial.tx.TransactionAttribyteTypeAwareTransactionProtocol"/>
+    </system>
+</aspectwerkz>
