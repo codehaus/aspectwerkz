@@ -110,22 +110,22 @@ public class AnnotationC {
     /**
      * Compiles the annotations.
      *
-     * @param srcDirs
+     * @param srcDirList
      * @param srcFileList
      * @param classPath
      * @param destDir
      * @param annotationPropetiesFile
      */
-    private static void compile(final String srcDirs,
+    private static void compile(final String srcDirList,
                                 final String srcFileList,
                                 final String srcFileIncludes,
                                 final String classPath,
                                 String destDir,
                                 final String annotationPropetiesFile) {
-        if (srcDirs == null && srcFileList == null && srcFileIncludes == null) {
+        if (srcDirList == null && srcFileList == null && srcFileIncludes == null) {
             throw new IllegalArgumentException("one of src or srcfiles or srcincludes must be not null");
         }
-        if ((srcDirs != null && srcFileList != null) || (srcDirs != null && srcFileIncludes != null)
+        if ((srcDirList != null && srcFileList != null) || (srcDirList != null && srcFileIncludes != null)
             || (srcFileList != null && srcFileIncludes != null)) { // FIXME: refactor
             throw new IllegalArgumentException("maximum one of src, srcfiles or srcincludes must be not null");
         }
@@ -136,18 +136,19 @@ public class AnnotationC {
             destDir = classPath;
         }
 
-        String[] src = null;
-        if (srcDirs != null) {
-            src = split(srcDirs, File.pathSeparator);
+        String[] srcDirs = null;
+        String[] srcFiles = null;
+        if (srcDirList != null) {
+            srcDirs = split(srcDirList, File.pathSeparator);
         } else if (srcFileList != null) {
-            src = split(srcFileList, FILE_SEPARATOR);
+            srcFiles = split(srcFileList, FILE_SEPARATOR);
         } else {
-            src = loadSourceList(srcFileIncludes);
+            srcFiles = loadSourceList(srcFileIncludes);
         }
 
         boolean isDir = (srcDirs != null);
 
-        compile(s_verbose, src, isDir, split(classPath, File.pathSeparator), destDir, annotationPropetiesFile);
+        compile(s_verbose, srcDirs, srcFiles, split(classPath, File.pathSeparator), destDir, annotationPropetiesFile);
     }
 
     /**
@@ -318,8 +319,10 @@ public class AnnotationC {
                 ExpressionAnnotationProxy expressionProxy = (ExpressionAnnotationProxy) expressionAnnotation;
                 AnnotationC.registerCallParameters(expressionProxy, method);
                 enhancer.insertMethodAttribute(
-                        method,
-                        new AnnotationInfo(ANNOTATION_EXPRESSION, expressionProxy)
+                        method, new AnnotationInfo(
+                                ANNOTATION_EXPRESSION,
+                                expressionProxy
+                        )
                 );
                 logInfo(
                         "    pointcut [" + AnnotationC.getShortCallSignature(method) + " :: "
@@ -334,8 +337,10 @@ public class AnnotationC {
                 AroundAnnotationProxy aroundProxy = (AroundAnnotationProxy) aroundAnnotation;
                 AnnotationC.registerCallParameters(aroundProxy, method);
                 enhancer.insertMethodAttribute(
-                        method,
-                        new AnnotationInfo(ANNOTATION_AROUND, aroundProxy)
+                        method, new AnnotationInfo(
+                                ANNOTATION_AROUND,
+                                aroundProxy
+                        )
                 );
                 logInfo(
                         "    around advice [" + AnnotationC.getShortCallSignature(method) + " :: "
@@ -350,8 +355,10 @@ public class AnnotationC {
                 BeforeAnnotationProxy beforeProxy = (BeforeAnnotationProxy) beforeAnnotation;
                 AnnotationC.registerCallParameters(beforeProxy, method);
                 enhancer.insertMethodAttribute(
-                        method,
-                        new AnnotationInfo(ANNOTATION_BEFORE, beforeProxy)
+                        method, new AnnotationInfo(
+                                ANNOTATION_BEFORE,
+                                beforeProxy
+                        )
                 );
                 logInfo(
                         "    before [" + AnnotationC.getShortCallSignature(method) + " :: "
@@ -366,8 +373,10 @@ public class AnnotationC {
                 AfterAnnotationProxy afterProxy = (AfterAnnotationProxy) afterAnnotation;
                 AnnotationC.registerCallParameters(afterProxy, method);
                 enhancer.insertMethodAttribute(
-                        method,
-                        new AnnotationInfo(ANNOTATION_AFTER, afterProxy)
+                        method, new AnnotationInfo(
+                                ANNOTATION_AFTER,
+                                afterProxy
+                        )
                 );
                 logInfo(
                         "    after advice [" + AnnotationC.getShortCallSignature(method) + " :: "
@@ -382,8 +391,10 @@ public class AnnotationC {
                 Annotation customAnnotation = customAnnotations[i];
                 if (customAnnotation != null) {
                     enhancer.insertMethodAttribute(
-                            method,
-                            new AnnotationInfo(annotationName, customAnnotation)
+                            method, new AnnotationInfo(
+                                    annotationName,
+                                    customAnnotation
+                            )
                     );
                     logInfo(
                             "    custom method annotation [" + annotationName + " @ "
@@ -479,8 +490,10 @@ public class AnnotationC {
             if (expressionAnnotation != null) {
                 ExpressionAnnotationProxy expressionProxy = (ExpressionAnnotationProxy) expressionAnnotation;
                 enhancer.insertFieldAttribute(
-                        field,
-                        new AnnotationInfo(ANNOTATION_EXPRESSION, expressionProxy)
+                        field, new AnnotationInfo(
+                                ANNOTATION_EXPRESSION,
+                                expressionProxy
+                        )
                 );
                 logInfo(
                         "    pointcut [" + field.getName() + " :: " + expressionProxy.expression()
@@ -494,8 +507,10 @@ public class AnnotationC {
             if (implementsAnnotation != null) {
                 ImplementsAnnotationProxy implementsProxy = (ImplementsAnnotationProxy) implementsAnnotation;
                 enhancer.insertFieldAttribute(
-                        field,
-                        new AnnotationInfo(ANNOTATION_IMPLEMENTS, implementsProxy)
+                        field, new AnnotationInfo(
+                                ANNOTATION_IMPLEMENTS,
+                                implementsProxy
+                        )
                 );
                 logInfo(
                         "    interface introduction [" + field.getName() + " :: "
@@ -510,8 +525,10 @@ public class AnnotationC {
                 Annotation customAnnotation = customAnnotations[i];
                 if (customAnnotation != null) {
                     enhancer.insertFieldAttribute(
-                            field,
-                            new AnnotationInfo(annotationName, customAnnotation)
+                            field, new AnnotationInfo(
+                                    annotationName,
+                                    customAnnotation
+                            )
                     );
                     logInfo(
                             "    custom field annotation [" + annotationName + " @ "
