@@ -24,6 +24,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
+import org.codehaus.aspectwerkz.transform.ReflectHelper;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.util.Strings;
@@ -580,7 +581,7 @@ public class AspectRegistry {
                 MethodTuple methodTuple = new MethodTuple(wrapperMethod, prefixedMethod);
 
                 // map the tuple to the hash for the 'wrapper method'
-                int methodHash = TransformationUtil.calculateHash(wrapperMethod);
+                int methodHash = ReflectHelper.calculateHash(wrapperMethod);
                 methodMap.put(methodHash, methodTuple);
             }
         }
@@ -660,7 +661,7 @@ public class AspectRegistry {
             ConstructorTuple constructorTuple = new ConstructorTuple(wrapperConstructor, prefixedConstructor);
 
             // map the tuple to the hash for the 'wrapper constructor'
-            int constructorHash = TransformationUtil.calculateHash(wrapperConstructor);
+            int constructorHash = ReflectHelper.calculateHash(wrapperConstructor);
             constructorMap.put(constructorHash, constructorTuple);
         }
         synchronized (s_constructors) {
@@ -682,7 +683,7 @@ public class AspectRegistry {
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
             field.setAccessible(true);
-            int fieldHash = TransformationUtil.calculateHash(field);
+            int fieldHash = ReflectHelper.calculateHash(field);
             fieldMap.put(fieldHash, field);
         }
         synchronized (s_fields) {

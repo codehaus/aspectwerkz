@@ -29,6 +29,7 @@ import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfoRepository;
@@ -303,7 +304,7 @@ public class JoinPointManager {
         ThreadLocal threadLocal;
         synchronized (m_joinPoints) {
             if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
-                MemberInfo withinMemberInfo = TransformationUtil.createMemberInfo(
+                MemberInfo withinMemberInfo = ClassInfoHelper.createMemberInfo(
                         targetClass, withinMethodName,
                         withinMethodSignature
                 );

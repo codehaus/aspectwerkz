@@ -127,6 +127,7 @@ public class ProcessStarter {
     }
 
     private int run(String[] args) {
+        System.out.println("ProcessStarter.run()");
         // retrieve options and main
         String[] javaArgs = parseJavaCommandLine(args);
         String optionArgs = javaArgs[0];

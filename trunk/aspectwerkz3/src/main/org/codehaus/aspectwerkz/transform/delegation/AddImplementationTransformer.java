@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
 import org.codehaus.aspectwerkz.transform.Context;
@@ -127,7 +128,7 @@ public class AddImplementationTransformer implements Transformer {
             for (int i = 0; i < exceptionTypes.length; i++) {
                 bcelExceptionTypes[i] = ctClass.getClassPool().get(exceptionTypes[i].getName());
             }
-            if (TransformationUtil.isMethodStatic(methodInfo)) {
+            if (ClassInfoHelper.isMethodStatic(methodInfo)) {
                 return; // introductions can't be static (not for the moment at least)
             }
             if (JavassistHelper.hasMethod(ctClass, methodName, bcelParameterTypes)) {

@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.delegation;
 
+import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.transform.Context;
@@ -17,7 +18,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -594,5 +597,140 @@ public class JavassistHelper {
                 copyTo.setAttribute(attributeInfo.getName(), attributeInfo.get());
             }
         }
+    }
+
+    /**
+     * Calculate the hash for a javassist field.
+     *
+     * @param field the field
+     * @return the hash
+     */
+    public static int calculateHash(final CtField field) throws NotFoundException {
+        int hash = 17;
+        hash = (37 * hash) + field.getName().hashCode();
+        String name = convertJavassistTypeSignatureToReflectTypeSignature(
+                field.getType().getName()
+                .replace('/', '.')
+        );
+        hash = (37 * hash) + name.hashCode();
+        return hash;
+    }
+
+    /**
+     * Calculate the hash for a javassist constructor.
+     *
+     * @param constructor the constructor
+     * @return the hash
+     */
+    public static int calculateHash(final CtConstructor constructor) throws NotFoundException {
+        int hash = 17;
+        hash = (37 * hash) + constructor.getName().hashCode();
+        for (int i = 0; i < constructor.getParameterTypes().length; i++) {
+            CtClass type = constructor.getParameterTypes()[i];
+            String name = convertJavassistTypeSignatureToReflectTypeSignature(
+                    type.getName().replace('/', '.')
+            );
+            hash = (37 * hash) + name.hashCode();
+        }
+        return hash;
+    }
+
+    /**
+     * Calculate the hash for a javassist method.
+     *
+     * @param method the method
+     * @return the hash
+     */
+    public static int calculateHash(final CtMethod method) throws NotFoundException {
+        int hash = 17;
+        hash = (37 * hash) + method.getName().hashCode();
+        for (int i = 0; i < method.getParameterTypes().length; i++) {
+            CtClass type = method.getParameterTypes()[i];
+            String name = convertJavassistTypeSignatureToReflectTypeSignature(
+                    type.getName().replace('/', '.')
+            );
+            hash = (37 * hash) + name.hashCode();
+        }
+        return hash;
+    }
+
+    /**
+         * Calculate the hash for a class.
+         *
+         * @param ctClass the class
+         * @return the hash
+         */
+        public static int calculateHash(final CtClass ctClass) throws NotFoundException {
+    //        int hash = 17;
+    //        CtMethod[] methods = ctClass.getDeclaredMethods();
+    //        for (int i = 0; i < methods.length; i++) {
+    //            hash = (37 * hash) + calculateHash(methods[i]);
+    //        }
+    //        CtConstructor[] constructors = ctClass.getDeclaredConstructors();
+    //        for (int i = 0; i < constructors.length; i++) {
+    //            hash = (37 * hash) + calculateHash(constructors[i]);
+    //        }
+    //        CtField[] fields = ctClass.getDeclaredFields();
+    //        for (int i = 0; i < fields.length; i++) {
+    //            hash = (37 * hash) + calculateHash(fields[i]);
+    //        }
+    //        return hash;
+            return ctClass.getName().hashCode();
+        }
+
+    /**
+     * Creates a sorted method list of all the public methods in the class and super classes.
+     *
+     * @param klass the class with the methods
+     * @return the sorted method list
+     */
+    public static List createSortedMethodList(final CtClass klass) {
+        if (klass == null) {
+            throw new IllegalArgumentException("class to sort method on can not be null");
+        }
+    
+        // get all public methods including the inherited methods
+        CtMethod[] methods = klass.getDeclaredMethods();
+        List methodList = new ArrayList(methods.length);
+        for (int i = 0; i < methods.length; i++) {
+            CtMethod method = methods[i];
+            if (!method.getName().equals("equals") && !method.getName().equals("hashCode")
+                && !method.getName().equals("getClass") && !method.getName().equals("toString")
+                && !method.getName().equals("wait") && !method.getName().equals("notify")
+                && !method.getName().equals("notifyAll") && !method.getName().startsWith(TransformationUtil.CLASS_LOOKUP_METHOD)
+                && !method.getName().startsWith(TransformationUtil.GET_UUID_METHOD) && !method.getName().startsWith(TransformationUtil.GET_META_DATA_METHOD)
+                && !method.getName().startsWith(TransformationUtil.SET_META_DATA_METHOD)
+                && !method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
+                && !method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+                methodList.add(method);
+            }
+        }
+        Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
+        return methodList;
+    }
+
+    /**
+     * Returrns the join point index for the class.
+     *
+     * @param klass
+     * @return the index
+     */
+    public static int getJoinPointIndex(final CtClass klass) {
+        byte[] attribute = klass.getAttribute(TransformationUtil.JOIN_POINT_INDEX_ATTRIBUTE);
+        if (attribute == null) {
+            klass.setAttribute(TransformationUtil.JOIN_POINT_INDEX_ATTRIBUTE, new byte[]{new Integer(0).byteValue()});
+            return 0;
+        }
+        return new Integer(attribute[0]).intValue();
+    }
+
+    /**
+     * Sets the join point index for the class.
+     *
+     * @param klass
+     * @param index
+     */
+    public static void setJoinPointIndex(final CtClass klass, final int index) {
+        klass.setAttribute(TransformationUtil.JOIN_POINT_INDEX_ATTRIBUTE, new byte[]{new Integer(index).byteValue()});
     }
 }

@@ -103,7 +103,7 @@ public class MethodExecutionTransformer implements Transformer {
             }
             CtMethod method = tuple.getMethod();
             final int methodSequence = tuple.getSequence();
-            final int methodHash = TransformationUtil.calculateHash(method);
+            final int methodHash = JavassistHelper.calculateHash(method);
 
             // there was no empty method already
             final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(

@@ -73,7 +73,7 @@ public class ConstructorExecutionTransformer implements Transformer {
                 }
                 if (addPrefixToConstructor(ctClass, constructor)) {
                     context.markAsAdvised();
-                    int constructorHash = TransformationUtil.calculateHash(constructor);
+                    int constructorHash = JavassistHelper.calculateHash(constructor);
                     createWrapperConstructor(constructor, constructorHash, klass);
                 }
             }

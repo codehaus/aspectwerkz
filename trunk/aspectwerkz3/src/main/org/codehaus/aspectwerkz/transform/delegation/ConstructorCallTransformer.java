@@ -157,7 +157,7 @@ public class ConstructorCallTransformer implements Transformer {
                                     body.append('.');
                                     body.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
                                     body.append('(');
-                                    body.append(TransformationUtil.calculateHash(ctConstructor));
+                                    body.append(JavassistHelper.calculateHash(ctConstructor));
                                     body.append(',');
                                     body.append(klass.getJoinPointIndex());
                                     body.append(", args, ");

@@ -8,6 +8,8 @@
 package org.codehaus.aspectwerkz.transform;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.transform.delegation.JavassistHelper;
+
 import javassist.ByteArrayClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -127,7 +129,7 @@ public class Klass {
         if (m_joinPointIndex != -1) {
             return m_joinPointIndex;
         } else {
-            m_joinPointIndex = TransformationUtil.getJoinPointIndex(getCtClass());
+            m_joinPointIndex = JavassistHelper.getJoinPointIndex(getCtClass());
             return m_joinPointIndex;
         }
     }
@@ -139,7 +141,7 @@ public class Klass {
 
     public void flushJoinPointIndex() {
         if (m_joinPointIndex != -1) {
-            TransformationUtil.setJoinPointIndex(getCtClass(), m_joinPointIndex);
+            JavassistHelper.setJoinPointIndex(getCtClass(), m_joinPointIndex);
         }
     }
 }

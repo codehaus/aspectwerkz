@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.transform.ReflectHelper;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -339,7 +340,7 @@ public class DocumentParser {
     private static void parseAdviceElements(
             final Element aspectElement, final AspectDefinition aspectDef,
             final Class aspectClass) {
-        List methodList = TransformationUtil.createSortedMethodList(aspectClass);
+        List methodList = ReflectHelper.createSortedMethodList(aspectClass);
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element adviceElement = (Element)it2.next();
             if (adviceElement.getName().trim().equals("advice")) {

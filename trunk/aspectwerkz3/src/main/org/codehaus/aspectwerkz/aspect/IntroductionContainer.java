@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.transform.ReflectHelper;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -301,7 +302,7 @@ public class IntroductionContainer {
      */
     private void createMethodRepository() {
         synchronized (m_methodRepository) {
-            List methodList = TransformationUtil.createSortedMethodList(m_prototype.getImplementationClass());
+            List methodList = ReflectHelper.createSortedMethodList(m_prototype.getImplementationClass());
             m_methodRepository = new Method[methodList.size()];
             for (int i = 0; i < m_methodRepository.length; i++) {
                 Method method = (Method)methodList.get(i);
