@@ -134,8 +134,7 @@
     <target name="dist" depends="compile">
         <jar destfile="${build.dir}/${name}-${version}.jar" manifest="${lib.dir}/manifest.mf">
             <fileset dir="${build.core.dir}"/>
-            <zipfileset src="${basedir}/lib/aspectjtools.jar"/>
-            <zipfileset src="${basedir}/lib/aspectjrt.jar"/>
+            <zipfileset src="${basedir}/lib/aopalliance-1.0.jar"/>
         </jar>
     </target>
 
