@@ -94,7 +94,7 @@ public class PrepareAspectClassTransformer implements Transformer {
     }
 
     /**
-     * Adds a method that returns the cross cutting info to the target class.
+     * Adds constructor that sets the cross-cutting info instance before initializing the instance.
      *
      * @param ctClass
      * @throws CannotCompileException
