@@ -110,7 +110,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                 if (deploymentModel == DeploymentModel.PER_CLASS) {
                     fieldInfo.isStatic = true;
                     cv.visitField(
-                            ACC_PRIVATE + ACC_FINAL + ACC_STATIC,
+                            ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC,
                             fieldName,
                             signature,
                             null, null
@@ -118,7 +118,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                 } else if (deploymentModel == DeploymentModel.PER_INSTANCE) {
                     fieldInfo.isStatic = false;
                     cv.visitField(
-                            ACC_PRIVATE + ACC_FINAL,
+                            ACC_PRIVATE + ACC_FINAL + ACC_SYNTHETIC,
                             fieldName,
                             signature,
                             null, null
@@ -139,7 +139,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                     }
 
                     CodeVisitor mv = cv.visitMethod(
-                            ACC_PUBLIC | ACC_FINAL,
+                            ACC_PUBLIC + ACC_FINAL + ACC_SYNTHETIC,
                             methodName,
                             methodSignature,
                             null,
