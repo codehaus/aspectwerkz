@@ -12,10 +12,13 @@ import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
+
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.util.Strings;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,6 +54,19 @@ public class AnnotationManager {
     public void addSourceTrees(final String[] srcDirs) {
         for (int i = 0; i < srcDirs.length; i++) {
             m_parser.addSourceTree(new File(srcDirs[i]));
+        }
+    }
+
+    /**
+     * Adds a source file.
+     *
+     * @param srcFile the source file
+     */
+    public void addSource(final String srcFile) {
+        try {
+            m_parser.addSource(new File(srcFile));
+        } catch (Exception e) {
+            throw new WrappedRuntimeException(e);
         }
     }
 
