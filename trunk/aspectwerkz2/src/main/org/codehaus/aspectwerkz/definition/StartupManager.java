@@ -139,13 +139,13 @@ public class StartupManager {
      * @param crossCuttingInfo the cross-cutting info for the aspect
      */
     public static AspectContainer createAspectContainer(final CrossCuttingInfo crossCuttingInfo) {
-        if (crossCuttingInfo == null) {
-            throw new IllegalArgumentException("cross-cutting info can not be null");
-        }
         try {
             Class klass = ContextClassLoader.loadClass(ASPECT_CONTAINER_IMPLEMENTATION_CLASS);
             Constructor constructor = klass.getConstructor(new Class[]{CrossCuttingInfo.class});
             return (AspectContainer)constructor.newInstance(new Object[]{crossCuttingInfo});
+        }
+        catch (NoSuchMethodException e) {
+            throw new DefinitionException("aspect container does not have a valid constructor [" + ASPECT_CONTAINER_IMPLEMENTATION_CLASS + "] (one that takes a CrossCuttingInfo instance as its only parameter)");
         }
         catch (Exception e) {
             StringBuffer cause = new StringBuffer();
@@ -184,10 +184,7 @@ public class StartupManager {
      * @param uuid      the UUID for the AspectWerkz system to use
      * @param aspectDef the aspect definition
      */
-    private static void registerAspect(
-            final String uuid,
-            final AspectDefinition aspectDef,
-            final Map parameters) {
+    private static void registerAspect(final String uuid, final AspectDefinition aspectDef, final Map parameters) {
         try {
             String aspectClassName = aspectDef.getClassName();
 
@@ -208,26 +205,16 @@ public class StartupManager {
                 deploymentModel = DeploymentModel.getDeploymentModelAsInt(aspectDef.getDeploymentModel());
             }
 
-            Object aspectPrototype;
-            try {
-                aspectPrototype = aspectClass.newInstance();
-            }
-            catch (Exception e) {
-                throw new RuntimeException(
-                        "could not create a new instance of aspect [" + aspectClassName + "]: " + e.toString()
-                );
-            }
-
-            CrossCuttingInfo crossCuttingInfoPrototype = new CrossCuttingInfo(
+            final CrossCuttingInfo crossCuttingInfoPrototype = new CrossCuttingInfo(
                     uuid,
-                    aspectPrototype,
+                    aspectClass,
                     aspectDef.getName(),
                     deploymentModel,
                     aspectDef,
                     parameters
             );
 
-            AspectContainer container = createAspectContainer(crossCuttingInfoPrototype);
+            final AspectContainer container = createAspectContainer(crossCuttingInfoPrototype);
             crossCuttingInfoPrototype.setContainer(container);
 
             // register the aspect in the system

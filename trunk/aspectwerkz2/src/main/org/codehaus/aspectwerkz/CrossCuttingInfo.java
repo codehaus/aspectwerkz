@@ -40,11 +40,6 @@ public final class CrossCuttingInfo implements Serializable {
     private Class m_aspectClass;
 
     /**
-     * The cross-cuttable instance.
-     */
-    private Object m_aspectInstance = null;
-
-    /**
      * The container.
      */
     private AspectContainer m_container = null;
@@ -83,54 +78,24 @@ public final class CrossCuttingInfo implements Serializable {
      * Creates a new cross-cutting info instance.
      *
      * @param uuid
-     * @param aspectInstance
+     * @param aspectClass
      * @param deploymentModel
      * @param aspectDef
      * @param parameters
      */
     public CrossCuttingInfo(
             final String uuid,
-            final Object aspectInstance,
+            final Class aspectClass,
             final String name,
             final int deploymentModel,
             final AspectDefinition aspectDef,
             final Map parameters) {
         m_uuid = uuid;
-        m_aspectInstance = aspectInstance;
-        m_aspectClass = aspectInstance.getClass();
+        m_aspectClass = aspectClass;
         m_name = name;
         m_deploymentModel = deploymentModel;
         m_aspectDefinition = aspectDef;
         m_parameters = parameters;
-    }
-
-    /**
-     * Returns the cross-cutting info for a specific cross-cutting class instance.
-     * To be used if a specific name is not specified but the default (class name) is used.
-     *
-     * @param systemId             the system id
-     * @param crossCuttingInstance the cross-cutting instance (normally 'this')
-     * @return the cross-cutting info
-     */
-    public static CrossCuttingInfo getInfo(final String systemId, final Object crossCuttingInstance) {
-        String name = crossCuttingInstance.getClass().getName();
-        System system = SystemLoader.getSystem(systemId);
-        system.initialize();
-        return system.getAspectManager().getAspectContainer(name).getCrossCuttingInfo();
-    }
-
-    /**
-     * Returns the cross-cutting info for a specific cross-cutting class instance.
-     * To be used if a specific name is specified.
-     *
-     * @param systemId the system id
-     * @param name     the name of the cross-cutting class
-     * @return the cross-cutting info
-     */
-    public static CrossCuttingInfo getInfo(final String systemId, final String name) {
-        System system = SystemLoader.getSystem(systemId);
-        system.initialize();
-        return system.getAspectManager().getAspectContainer(name).getCrossCuttingInfo();
     }
 
     /**
@@ -143,7 +108,7 @@ public final class CrossCuttingInfo implements Serializable {
         try {
             return new CrossCuttingInfo(
                     prototype.m_uuid,
-                    prototype.m_aspectClass.newInstance(),
+                    prototype.m_aspectClass,
                     prototype.m_name,
                     prototype.m_deploymentModel,
                     prototype.m_aspectDefinition,
@@ -207,15 +172,6 @@ public final class CrossCuttingInfo implements Serializable {
         m_deploymentModel = deploymentModel;
     }
 
-
-    /**
-     * Returns the aspect instance.
-     *
-     * @return the aspect instance
-     */
-    public Object getAspectInstance() {
-        return m_aspectInstance;
-    }
 
     /**
      * Returns the cross-cuttable class.
@@ -300,11 +256,33 @@ public final class CrossCuttingInfo implements Serializable {
      * Returns the target instance for the mixin of given name which is defined from within this aspect (mixin can have
      * different deployment model from aspect)
      *
+     * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
+     * @return the target instance or null if not compliant deployment model
+     */
+    public Object getMixinTargetInstance(final Object mixinImpl) {
+        return getMixinTargetInstance(mixinImpl.getClass().getName(), mixinImpl);
+    }
+
+    /**
+     * Returns the target class for the mixin of given name which is defined from within this aspect (mixin can have
+     * different deployment model from aspect)
+     *
+     * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
+     * @return the target class or null if not compliant deployment model
+     */
+    public Class getMixinTargetClass(final Object mixinImpl) {
+        return getMixinTargetClass(mixinImpl.getClass().getName(), mixinImpl);
+    }
+
+    /**
+     * Returns the target instance for the mixin of given name which is defined from within this aspect (mixin can have
+     * different deployment model from aspect)
+     *
      * @param mixinName of the mixin
      * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
      * @return the target instance or null if not compliant deployment model
      */
-    public Object getMixinTargetInstance(String mixinName, Object mixinImpl) {
+    public Object getMixinTargetInstance(final String mixinName, final Object mixinImpl) {
         return m_container.getIntroductionContainer(mixinName).getTargetInstance(mixinImpl);
     }
 
@@ -316,7 +294,7 @@ public final class CrossCuttingInfo implements Serializable {
      * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
      * @return the target class or null if not compliant deployment model
      */
-    public Class getMixinTargetClass(String mixinName, Object mixinImpl) {
+    public Class getMixinTargetClass(final String mixinName, final Object mixinImpl) {
         return m_container.getIntroductionContainer(mixinName).getTargetClass(mixinImpl);
     }
 
@@ -331,7 +309,6 @@ public final class CrossCuttingInfo implements Serializable {
         m_uuid = (String)fields.get("m_uuid", null);
         m_name = (String)fields.get("m_name", null);
         m_aspectClass = (Class)fields.get("m_aspectClass", null);
-        m_aspectInstance = fields.get("m_aspectClass", null);
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
         m_aspectDefinition = (AspectDefinition)fields.get("m_aspectDefinition", null);
         m_parameters = (Map)fields.get("m_parameters", new HashMap());

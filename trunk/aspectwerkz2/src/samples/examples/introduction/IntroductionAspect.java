@@ -16,17 +16,29 @@ import org.codehaus.aspectwerkz.CrossCuttingInfo;
  */
 public class IntroductionAspect extends AbstractIntroductionAspect {
 
-    // ============ Pointcuts ============
-
     /**
      * @Introduce class(examples.introduction.Target) deploymentModel=perInstance
      */
-    public class MyConcreteImpl extends MyImpl {
+    public static class MyConcreteImpl extends MyImpl {
+
+        /**
+         * The cross-cutting info.
+         */
+        private final CrossCuttingInfo m_info;
+
+        /**
+         * We are interested in cross-cutting info, therefore we have added a constructor that takes a cross-cutting infor
+         * instance as its only parameter.
+         *
+         * @param info the cross-cutting info
+         */
+        public MyConcreteImpl(final CrossCuttingInfo info) {
+            m_info = info;
+        }
+
         public String sayHello2() {
-            String mixinName = this.getClass().getName();
-            CrossCuttingInfo info = CrossCuttingInfo.getInfo("samples", this);
-            System.out.println("mixin target class: " + info.getMixinTargetClass(mixinName, this));
-            System.out.println("mixin target instance: " + info.getMixinTargetInstance(mixinName, this));
+            System.out.println("mixin target class: " + m_info.getMixinTargetClass(this));
+            System.out.println("mixin target instance: " + m_info.getMixinTargetInstance(this));
             return "Hello World! Hello World!";
         }
     }

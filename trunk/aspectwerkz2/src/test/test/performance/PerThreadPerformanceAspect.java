@@ -35,7 +35,7 @@ public class PerThreadPerformanceAspect {
     /**
      * @Introduce mixin
      */
-    public class PerThreadImpl implements PerThread {
+    public static class PerThreadImpl implements PerThread {
         public void runPerThread() {
         }
     }

@@ -22,6 +22,21 @@ import org.codehaus.aspectwerkz.CrossCuttingInfo;
 public class CachingAspect {
 
     /**
+     * The cross-cutting info.
+     */
+    private CrossCuttingInfo m_info;
+
+    /**
+     * We are interested in cross-cutting info, therefore we have added a constructor that takes a cross-cutting infor
+     * instance as its only parameter.
+     *
+     * @param info the cross-cutting info
+     */
+    public CachingAspect(final CrossCuttingInfo info) {
+        m_info = info;
+    }
+
+    /**
      * @Before call(examples.caching.*->int examples.caching.Pi.getPiDecimal(int))
      */
     public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
@@ -44,8 +59,7 @@ public class CachingAspect {
         if (cachedResult != null) {
             System.out.println("using cache");
             CacheStatistics.addCacheInvocation(rtti.getName(), rtti.getParameterTypes());
-            CrossCuttingInfo info = CrossCuttingInfo.getInfo("samples", this);
-            System.out.println("parameter: timeout = " + info.getParameter("timeout"));
+            System.out.println("parameter: timeout = " + m_info.getParameter("timeout"));
             return cachedResult;
         }
         final Object result = joinPoint.proceed();

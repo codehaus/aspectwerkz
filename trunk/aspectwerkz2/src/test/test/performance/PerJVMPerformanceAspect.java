@@ -64,7 +64,7 @@ public class PerJVMPerformanceAspect {
     /**
      * @Introduce mixin
      */
-    public class PerJVMImpl implements PerJVM {
+    public static class PerJVMImpl implements PerJVM {
         public void runPerJVM() {
         }
     }

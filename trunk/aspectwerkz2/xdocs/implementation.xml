@@ -53,10 +53,34 @@
                 be defined to be <i>cross-cutting</i>), which means that it will become a unit of modularity
                 for crosscutting concerns.
             </p>
+
             <p>
                 They do not have to extend any special class or implement a specific interface, but can extend any
-                class they want. The only requirement is that they have to have a default no-argument constructor.
+                class they want.
             </p>
+
+            <p>
+                The only requirement is that the aspect needs to have either <b>no</b> constructor at all
+                (meaning implicitly a default one) <b>or</b> one of these two different constructors defined:
+               <ul>
+                    <li>
+                        a default no-argument constructor - only needed if the aspect has a other constructors that
+                        takes parameters (apart from the one below if defined)
+                    </li>
+                    <br/>
+                    <li>
+                        a constructor that takes a <code>org.codehaus.aspectwerkz.CrossCuttingInfo</code> instance
+                        as its only parameter - this is needed if you want to retrieve information about the runtime
+                        system, access paramaters defined at deployment time, access meta-data etc.
+                        See  <a href="#Using the CrossCuttingInfo class">Using the CrossCuttingInfo class</a> section
+                        for details.
+                    </li>
+                    <br/>
+                </ul>
+                If a constructor of type 2 is found then it is used else the default constructor. If no default
+                constructor can be found then an exception is thrown.
+            </p>
+
             <p>
                 The aspect can then be defined using XML or attributes, see the
                 <a href="xml_definition.html">XML definition</a> section or the
@@ -247,20 +271,11 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                 of the system, that can be used for introspection as well as redefinitions of the runtime system.
             </p>
             <p>
-                To retrieve the <code>CrossCuttingInfo</code> for a specific aspect (from within the aspect) use
-                one of the <code>getInfo</code> methods:
-            </p>
-             <p>
-                 If your aspect does <b>not</b> have a specific name specified you should invoke:
-            <source><![CDATA[
-CrossCuttingInfo info = CrossCuttingInfo.getInfo("systemID", this);
-            ]]></source>
-            </p>
-             <p>
-                If you have specified a specific name for the aspect, then invoke:
-            <source><![CDATA[
-CrossCuttingInfo info = CrossCuttingInfo.getInfo("systemID", "aspectName");
-            ]]></source>
+                To access the <code>CrossCuttingInfo</code> in a specific aspect or mixin you have define a
+                constructor that takes one <code>org.codehaus.aspectwerkz.CrossCuttingInfo</code> as its only
+                parameter. The system will then take care of passing in a <code>CrossCuttingInfo </code> instance
+                when the aspect of mixin is instantiated. This instance you can then use as you wish, store it in
+                a member field etc.
             </p>
 
             <p>
@@ -305,11 +320,34 @@ Class getMixinTargetClass(String mixinName, Object mixinImpl)
 
             <p>
                 Implementation introductions (interface with concrete implementation), in <code>AspectWerkz</code> implemented as
-                <i>Mixins</i>, are defined as public static inner classes of the aspect class.
+                <i>Mixins</i>, are defined as public static inner classes of the aspect class or as regular POJOs outside
+                the aspect class.
             </p>
             <p>
-                It is mandatory for the inner class to be accessible with a no-arg constructor, thus to be public or
-                to explicitly have a no-arg constructor. The inner class implements the interface(s) to introduce on the target class.
+                It is mandatory for the inner class to be public, apart from this the only requirement is that the aspect
+                needs to have either <b>no</b> constructor at all (meaning implicitly a default one) <b>or</b> one of these
+                two different constructors defined:
+               <ul>
+                    <li>
+                        a default no-argument constructor - only needed if the aspect has a other constructors that
+                        takes parameters (apart from the one below if defined)
+                    </li>
+                    <br/>
+                    <li>
+                        a constructor that takes a <code>org.codehaus.aspectwerkz.CrossCuttingInfo</code> instance
+                        as its only parameter - this is needed if you want to retrieve information about the runtime
+                        system, access paramaters defined at deployment time, access meta-data etc.
+                        See  <a href="#Using the CrossCuttingInfo class">Using the CrossCuttingInfo class</a> section
+                        for details.
+                    </li>
+                    <br/>
+                </ul>
+                If a constructor of type 2 is found then it is used else the default constructor. If no default
+                constructor can be found then an exception is thrown.
+            </p>
+
+            <p>
+                The inner class implements the interface(s) to introduce on the target class.
            </p>
             <p>
                 Example of an implementation introduction that will introduce the implemetatation of the inner class

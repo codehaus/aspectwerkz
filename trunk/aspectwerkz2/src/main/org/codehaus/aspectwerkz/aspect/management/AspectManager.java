@@ -212,7 +212,7 @@ public final class AspectManager {
 
         CrossCuttingInfo crossCuttingInfo = new CrossCuttingInfo(
                 null,
-                aspectInstance,
+                aspectClass,
                 aspectDef.getName(),
                 deploymentModel,
                 aspectDef,
@@ -533,8 +533,10 @@ public final class AspectManager {
         initialize();
         // Note: cache is done at JP level
         return m_aspectRegistry.getCflowExpressions(
-                classMetaData, memberMetaData,
-                callerClassMetaData, pointcutType
+                classMetaData,
+                memberMetaData,
+                callerClassMetaData,
+                pointcutType
         );
     }
 

@@ -68,7 +68,12 @@ public class CFlowSystemAspect {
     /**
      * Reference to the system.
      */
-    private System m_system = null;
+    private final System m_system;
+
+    /**
+     * The cross-cutting info.
+     */
+    private final CrossCuttingInfo m_crossCuttingInfo;
 
     static {
         // set the method flow indexes
@@ -93,10 +98,12 @@ public class CFlowSystemAspect {
 
     /**
      * Creates a new cflow system aspect instance.
+     *
+     * @param info the cross-cutting info
      */
-    public CFlowSystemAspect() {
-        // TODO: wait until we have AOPC, since UUID is hard to get
-        m_system = null; //SystemLoader.getSystem(asdf);
+    public CFlowSystemAspect(final CrossCuttingInfo info) {
+        m_crossCuttingInfo = info;
+        m_system = info.getSystem();
     }
 
     /**
@@ -106,7 +113,7 @@ public class CFlowSystemAspect {
      * @throws Throwable the exception from the invocation
      */
     public void enterControlFlow(final JoinPoint joinPoint) throws Throwable {
-//        m_system.enteringControlFlow(getMetaData(joinPoint));
+        m_system.enteringControlFlow(getMetaData(joinPoint));
     }
 
     /**
@@ -116,7 +123,7 @@ public class CFlowSystemAspect {
      * @throws Throwable the exception from the invocation
      */
     public void exitControlFlow(final JoinPoint joinPoint) throws Throwable {
-//        m_system.exitingControlFlow(getMetaData(joinPoint));
+        m_system.exitingControlFlow(getMetaData(joinPoint));
     }
 
     /**

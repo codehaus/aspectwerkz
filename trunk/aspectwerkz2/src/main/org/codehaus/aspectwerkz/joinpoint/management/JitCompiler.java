@@ -107,9 +107,9 @@ public class JitCompiler {
     private static final String BYTE_CLASS_INIT_METHOD_SIGNATURE = "(B)V";
     private static final String BOOLEAN_CLASS_INIT_METHOD_SIGNATURE = "(Z)V";
     private static final String CHARACTER_CLASS_INIT_METHOD_SIGNATURE = "(C)V";
-    private static final String GET_PER_JVM_ASPECT_METHOD_NAME = "createPerJvmCrossCuttingInstance";
+    private static final String GET_PER_JVM_ASPECT_METHOD_NAME = "createPerJvmAspect";
     private static final String GET_PER_JVM_ASPECT_METHOD_SIGNATURE = "()Ljava/lang/Object;";
-    private static final String GET_PER_CLASS_ASPECT_METHOD_NAME = "createPerClassCrossCuttingInstance";
+    private static final String GET_PER_CLASS_ASPECT_METHOD_NAME = "createPerClassAspect";
     private static final String GET_PER_CLASS_ASPECT_METHOD_SIGNATURE = "(Ljava/lang/Class;)Ljava/lang/Object;";
     private static final String GET_SIGNATURE_METHOD_NAME = "getSignature";
     private static final String GET_SIGNATURE_METHOD_SIGNATURE = "()Lorg/codehaus/aspectwerkz/joinpoint/Signature;";
@@ -212,8 +212,10 @@ public class JitCompiler {
             buf.append(uuid);
             final String className = buf.toString().replace('.', '_').replace('-', '_');
 
-            // try to load the class without generating it
+            // use the loader that loaded the target class
             ClassLoader loader = targetClass.getClassLoader();
+
+            // try to load the class without generating it
             Class joinPointClass = AsmHelper.loadClass(loader, className);
 
             if (joinPointClass == null) {
@@ -232,8 +234,6 @@ public class JitCompiler {
                 );
 
                 cw.visitEnd();
-
-                AsmHelper.dumpClass("./_dump", className, cw);
 
                 // load the generated class
                 joinPointClass = AsmHelper.loadClass(loader, cw.toByteArray(), className.replace('/', '.'));
@@ -1783,7 +1783,6 @@ public class JitCompiler {
                 tuple.signature = constructorSignature;
                 tuple.rtti = new ConstructorRttiImpl(constructorSignature, thisInstance, targetInstance);
 
-                // TODO: enable cflow for constructors
                 tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
                         ReflectionMetaDataMaker.createClassMetaData(declaringClass),
                         ReflectionMetaDataMaker.createConstructorMetaData(constructorTuple.getWrapperConstructor()),
@@ -1799,7 +1798,6 @@ public class JitCompiler {
                 tuple.signature = constructorSignature;
                 tuple.rtti = new ConstructorRttiImpl(constructorSignature, thisInstance, targetInstance);
 
-                 // TODO: enable cflow for constructors
                 tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
                         ReflectionMetaDataMaker.createClassMetaData(declaringClass),
                         ReflectionMetaDataMaker.createConstructorMetaData(constructorTuple.getWrapperConstructor()),
@@ -1808,17 +1806,29 @@ public class JitCompiler {
                 break;
 
             case JoinPointType.FIELD_SET:
-            case JoinPointType.FIELD_GET:
                 Field field = system.getAspectManager().getField(declaringClass, joinPointHash);
                 FieldSignatureImpl fieldSignature = new FieldSignatureImpl(field.getDeclaringClass(), field);
                 tuple.signature = fieldSignature;
                 tuple.rtti = new FieldRttiImpl(fieldSignature, thisInstance, targetInstance);
 
-                // TODO: enable cflow for field set get pointcuts
-//                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
-//                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-//                        ReflectionMetaDataMaker.createFieldMetaData()
-//                );
+                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
+                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+                        ReflectionMetaDataMaker.createFieldMetaData(field),
+                        null, PointcutType.SET
+                );
+                break;
+
+            case JoinPointType.FIELD_GET:
+                field = system.getAspectManager().getField(declaringClass, joinPointHash);
+                fieldSignature = new FieldSignatureImpl(field.getDeclaringClass(), field);
+                tuple.signature = fieldSignature;
+                tuple.rtti = new FieldRttiImpl(fieldSignature, thisInstance, targetInstance);
+
+                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
+                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+                        ReflectionMetaDataMaker.createFieldMetaData(field),
+                        null, PointcutType.GET
+                );
                 break;
 
             case JoinPointType.HANDLER:

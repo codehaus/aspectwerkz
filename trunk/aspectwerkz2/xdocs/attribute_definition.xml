@@ -266,14 +266,6 @@ public class MyAspect {
 
                 <p>
                     The supported types of advice are the following.
-<!--                    Each type is a metadata marker at the method level with:-->
-<!--                    <ol>-->
-<!--                        <li>a mandatory anonymous parameter to specify the expression for matching joinpoints.</li>-->
-<!--                        <li>an optional-->
-<!--                            <code>name=</code> parameter which specify the advice name.-->
-<!--                            Defaults to the &lt;aspect class name&gt;.&lt;method name&gt; if not specified.-->
-<!--                        </li>-->
-<!--                    </ol>-->
                     <ul>
                         <li>
                             <code>@Around &lt;poincut expression&gt;</code> - is invoked "around" the
@@ -404,7 +396,7 @@ public class MyAspect {
                 <p>
                     When using abstract aspects or aspect inheritance, the aspect's super class can define introductions without
                     specifying a <code>@Introduce &lt;classPattern&gt;</code> metadata.
-                    The concrete aspect shtrould thus declare an inner class that extends the super class aspect one's and
+                    The concrete aspect should thus declare an inner class that extends the super class aspect one's and
                     specify through metadata to which classes the introduction applies.
                 </p>
                 <p>
@@ -414,7 +406,7 @@ public class MyAspect {
      *
      * @Introduce class(com.package.*)
      */
-    public class MyIntroduction extends SuperIntroduction implements ToBeIntroduced {
+    public static class MyIntroduction extends SuperIntroduction implements ToBeIntroduced {
         // introduced methods implementation
         ...
     }
@@ -430,7 +422,7 @@ public class MyAspect {
      *
      * @Introduce pc1
      */
-    public class AnotherIntroduction implements AnotherToBeIntroduced {
+    public static class AnotherIntroduction implements AnotherToBeIntroduced {
         // introduced methods implementation
         ...
     }
@@ -464,7 +456,7 @@ public class MyAspect {
                         <td>name [0:&lt;aspect class name&gt;]</td>
                     </tr>
                     <tr>
-                        <td>@Pattern</td>
+                        <td>@Expression</td>
                         <td>Pointcut field</td>
                         <td>Pointcut, method execution</td>
                         <td>&lt;pointcut expression&gt;</td>

@@ -62,7 +62,22 @@
   */
  public class CachingAspect {
 
-     /**
+    /**
+     * The cross-cutting info.
+     */
+    private final CrossCuttingInfo m_info;
+
+    /**
+     * We are interested in cross-cutting info, therefore we have added a constructor that takes a cross-cutting info
+     * instance as its only parameter.
+     *
+     * @param info the cross-cutting info
+     */
+    public CachingAspect(final CrossCuttingInfo info) {
+        m_info = info;
+    }
+
+    /**
       * @Before call(examples.caching.*->int examples.caching.Pi.getPiDecimal(int))
       */
      public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
@@ -86,8 +101,7 @@
             System.out.println("using cache");
             CacheStatistics.addCacheInvocation(rtti.getName(), rtti.getParameterTypes());
 
-            CrossCuttingInfo info = CrossCuttingInfo.getInfo("samples", this);
-            System.out.println("parameter: timeout = " + info.getParameter("timeout"));
+            System.out.println("parameter: timeout = " + m_info.getParameter("timeout"));
 
             return cachedResult;
         }
@@ -226,25 +240,46 @@ public class LoggingAspect extends AbstractLoggingAspect {
                 <b>you</b> have to make sure that the names of the methods
                 do not collide.
                 <source><![CDATA[
-/**
- * @Aspect perClass
- */
+public abstract class AbstractIntroductionAspect {
+
+    /**
+     * The Introduce doclet is not necessary here. This aspect provides a half completed mixin impl (abstract one)
+     */
+    public static abstract class MyImpl implements Mixin {
+        public String sayHello1() {
+            return "Hello World!";
+        }
+    }
+}
+
 public class IntroductionAspect extends AbstractIntroductionAspect {
 
     /**
-     * Here we have an anonymous pointcut instead of using [AT]Class metadata at Pointcut fields level.
-     *
      * @Introduce class(examples.introduction.Target) deploymentModel=perInstance
      */
-    public static class Mixin extends MyImpl implements Serializable {
+    public static class MyConcreteImpl extends MyImpl {
+
+        /**
+         * The cross-cutting info.
+         */
+        private final CrossCuttingInfo m_info;
+
+        /**
+         * We are interested in cross-cutting info, therefore we have added a constructor that takes a cross-cutting infor
+         * instance as its only parameter.
+         *
+         * @param info the cross-cutting info
+         */
+        public MyConcreteImpl(final CrossCuttingInfo info) {
+            m_info = info;
+        }
+
         public String sayHello2() {
-            String mixinName = this.getClass().getName();
-            CrossCuttingInfo info = CrossCuttingInfo.getInfo("samples", this);
-            System.out.println("mixin target class: " + info.getMixinTargetClass(mixinName, this));
-            System.out.println("mixin target instance: " + info.getMixinTargetInstance(mixinName, this));
+            System.out.println("mixin target class: " + m_info.getMixinTargetClass(this));
+            System.out.println("mixin target instance: " + m_info.getMixinTargetInstance(this));
             return "Hello World! Hello World!";
+        }
     }
-}
 }]]></source>
                 As you can see neither the interface nor the implementation class
                 needs to implement a certain interface or extend a certain class.
@@ -324,6 +359,8 @@ public class ExceptionHandler {
      */
     public void handleException(final JoinPoint joinPoint) throws Throwable {
         // handle the exception
+        CatchClauseRtti rtti = (CatchClauseRtti)joinPoint.getRtti();
+        Exception e = (Exception)rtti.getParameterValue();
         ...
     }
 }

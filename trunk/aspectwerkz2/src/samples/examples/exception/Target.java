@@ -12,18 +12,16 @@ package examples.exception;
  */
 public class Target {
 
-    private String method() throws Exception {
+    private void method() throws Exception {
         throw new Exception("exception message");
     }
 
     public static void main(String[] args) {
         Target target = new Target();
         try {
-            String result = target.method();
-            System.out.println("result = " + result);
+            target.method();
         }
         catch (Exception e) {
-            System.out.println("should not be reached");
         }
     }
 }
