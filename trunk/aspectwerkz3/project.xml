@@ -132,6 +132,10 @@ Extensions:
             <version>1.0.2</version>
         </dependency>
         <dependency>
+            <id>jam</id>
+            <version>v2-20040613-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <id>dom4j</id>
             <version>1.4</version>
         </dependency>

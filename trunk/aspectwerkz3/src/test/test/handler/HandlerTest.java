@@ -8,14 +8,19 @@
 package test.handler;
 
 import junit.framework.TestCase;
+import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class HandlerTest extends TestCase {
+public class HandlerTest extends WeavedTestCase {
     private static String s_log = "";
 
     public HandlerTest() {
+    }
+
+    public HandlerTest(String name) {
+        super(name);
     }
 
     public void testBeforeAdvice() {

@@ -16,8 +16,10 @@ import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
+
 import java.util.Iterator;
 import java.util.List;
+
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
@@ -62,9 +64,10 @@ public class AddImplementationTransformer implements Transformer {
      * @param ctClass     the class gen
      * @param transformer the transformer
      */
-    private void addMethodIntroductions(final SystemDefinition definition, final Context context,
-                                        final ExpressionContext ctx, final CtClass ctClass,
-                                        final AddImplementationTransformer transformer) {
+    private void addMethodIntroductions(
+            final SystemDefinition definition, final Context context,
+            final ExpressionContext ctx, final CtClass ctClass,
+            final AddImplementationTransformer transformer) {
         List introductionDefs = definition.getIntroductionDefinitions(ctx);
         boolean isClassAdvised = false;
         for (Iterator it = introductionDefs.iterator(); it.hasNext();) {
@@ -73,9 +76,11 @@ public class AddImplementationTransformer implements Transformer {
             List methodsToIntroduce = introDef.getMethodsToIntroduce();
             for (Iterator mit = methodsToIntroduce.iterator(); mit.hasNext(); methodIndex++) {
                 MethodInfo methodToIntroduce = (MethodInfo)mit.next();
-                transformer.createProxyMethod(ctClass, methodToIntroduce,
-                                              definition.getMixinIndexByName(introDef.getName()), methodIndex,
-                                              definition, context);
+                transformer.createProxyMethod(
+                        ctClass, methodToIntroduce,
+                        definition.getMixinIndexByName(introDef.getName()), methodIndex,
+                        definition, context
+                );
                 isClassAdvised = true;
             }
         }
@@ -94,8 +99,9 @@ public class AddImplementationTransformer implements Transformer {
      * @param definition  the definition
      * @param context     the context
      */
-    private void createProxyMethod(final CtClass ctClass, final MethodInfo methodInfo, final int mixinIndex,
-                                   final int methodIndex, final SystemDefinition definition, final Context context) {
+    private void createProxyMethod(
+            final CtClass ctClass, final MethodInfo methodInfo, final int mixinIndex,
+            final int methodIndex, final SystemDefinition definition, final Context context) {
         try {
             String methodName = methodInfo.getName();
             ClassInfo[] parameters = methodInfo.getParameterTypes();
@@ -138,8 +144,10 @@ public class AddImplementationTransformer implements Transformer {
             }
             body.append("this").append(");");
             body.append("}");
-            CtMethod method = CtNewMethod.make(javassistReturnType, methodName, bcelParameterTypes, bcelExceptionTypes,
-                                               body.toString(), ctClass);
+            CtMethod method = CtNewMethod.make(
+                    javassistReturnType, methodName, bcelParameterTypes, bcelExceptionTypes,
+                    body.toString(), ctClass
+            );
             method.setModifiers(Modifier.PUBLIC);
             ctClass.addMethod(method);
         } catch (Exception e) {
@@ -163,7 +171,13 @@ public class AddImplementationTransformer implements Transformer {
         if (definition.inExcludePackage(className)) {
             return true;
         }
-        if (definition.inIncludePackage(className) && definition.isIntroduced(ctx)) {
+        if (definition.inExcludePackage(className)) {
+            return true;
+        }
+        if (!definition.inIncludePackage(className)) {
+            return true;
+        }
+        if (definition.isIntroduced(ctx)) {
             return false;
         }
         return true;

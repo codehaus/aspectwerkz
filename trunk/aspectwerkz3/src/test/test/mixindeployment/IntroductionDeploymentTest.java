@@ -33,6 +33,10 @@ public class IntroductionDeploymentTest extends WeavedTestCase {
         assertEquals(((Marker)c1).getTargetClass(), ((Marker)c2).getTargetClass());
     }
 
+    public IntroductionDeploymentTest(String s) {
+        super(s);
+    }
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
