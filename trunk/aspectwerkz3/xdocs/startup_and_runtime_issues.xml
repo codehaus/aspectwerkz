@@ -44,6 +44,133 @@
                 </ol>
             </p>
         </section>
+        <section name="Introduction">
+            <subsection name="Weaving Schemes">
+                <p>
+                    AW supports several integration schemes. Each schemes depends on your requirement and provides different advantages and drawbacks.
+                    It is possible to use :
+                    <ul>
+                        <li>post compilation of the application (like AspectJ does): offline weaving at application build time</li>
+                        <li>class load time weaving: online weaving at application deployment time</li>
+                        <li>runtime weaving: online weaving in a running application (experimental)</li>
+                    </ul>
+                    AW distribution contains a command line tool that helps to be up and running quickly, although it is a good thing to really
+                    understand the different schemes for a production environment.
+                </p>
+            </subsection>
+            <subsection name="Aspects deployment descriptors">
+                <p>
+                    Since release 1.0 AW support to <a href="">configure several AspectSystem alongside the deployed application and the container</a> (application server)
+                    in which it is deployed. As described <a href="">here</a>, you need to write an XML deployement descriptor for your aspect, that declares the
+                    Aspects to use, and defines or refines the pointcuts (where to do) and advices (what to do), no matter your Aspects are using an Annotations attribute based
+                    definition.
+                    <br/>
+                    When thinking about this <code>aop.xml</code> file, you need to remember that the declared Aspects will affects the classes visible from this file. For example if you
+                    package this file in <code>application.war/WEB-INF/aop.xml</code>, it will affects all web-application classes, third parties libraries from
+                    <code>application.war/WEB-INF/lib/</code> and all JSPs. If you package this file in <code>application.war/WEB-INF/classes/META-INF/aop.xml</code>
+                    then it won't be visible from the JSPs and thus will not affects JSPs.
+                    <br/>
+                    If you want to affect all JVM classes, you can use the JVM option <code>-Daspectwerkz.definition.file=path/aop.xml</code>.
+                    <br/>
+                    It is thus possible to organise your aspects alongside all your deployed application, while allowing some interesting schemes: a tracing Aspect deployed
+                    at the JVM level will affect all deployed application, while Aspects deployed within the application itself will only affects this application.
+                    <br/>
+                    If you plan to use <a href="">offline mode</a>, you need to post process your application as many time as you have aop.xml files, and still packaged the aop.xml file(s)
+                    alongside the application and/or at a JVM wide level, depending on what you want to achieve.
+                    <br/>
+                    In short, you have to remember that an <code>META-INF/aop.xml</code> or <code>WEB-INF/aop.xml</code> file will affect the classes loaded by the classloader(s)
+                    that have this aop.xml file in their path. The JVM wide aop.xml file will affect the system classloader and all child classloaders.
+                </p>
+            </subsection>
+        </section>
+        <section name="Handling several Aspects across several deployed applications">
+            <subsection name="Understanding class loading in Java">
+                <p>
+                    You need to be familiar with the way Java handles ClassLoader isolation to fully understand how to deploy your own Aspects.
+                    <br/>
+                    When you are invoking a <code>main</code> method of a Class, this class is loaded (and lives) in the <b>System ClassLoader</b>. All classes belonging to a path specified
+                    with a <code>-cp</code> or <code>-classpath</code> JVM option will lives in this ClassLoader.
+                    <br/>
+                    If this class is using <code>java.lang.Object</code> and other <code>java.*</code> classes, those have been loaded (and lives) in <b>extension ClassLoader</b>
+                    or <b>Bootstrap ClassLoader</b>.
+                    <br/>
+                    The java.lang.Object can be seen and used by your main Class since the <b>System ClassLoader</b> is by convention a <b>child</b> of the <b>Extension ClassLoader</b>
+                    which is himself a <b>child</b> of the <b>Boot ClassLoader</b>. This relation looks like this:
+                    <code>
+                        Boot ClassLoader (JRE / JDK classes)
+                           |
+                        Extension ClassLoader (JRE extension, like SSL security etc, in jre/ext directory)
+                           |
+                        System ClassLoader (your main Class, and all the -cp / -classpath jars and classes)
+                    </code>
+                    <br/>
+                    When you are using an application server, there are usually many other classloaders. A simple view is to say that there is
+                    one classloader per deployed application (that's why you don't need to add your war file in the JVM classpath right ?).
+                    In fact the picture is a bit more complex to allow JSP change while the application is running etc.
+                    Those <b>application ClassLaoders</b> are <b>child</b> of upper ClassLoaders like <b>System ClassLoader</b>, but if you deploy to war files,
+                    they cannot share classes unless thoses classes are in an upper ClassLoader.
+                    <br/>
+                    If we deploy to war file in a Tomcat we will end-up in the following (simplified) organization:
+                    <code>
+                        Boot ClassLoader (JRE / JDK classes)
+                           |
+                        Extension ClassLoader (JRE extension, like SSL security etc, in jre/ext directory)
+                           |
+                        System ClassLoader (the Tomcat main Class, and all the -cp / -classpath jars and classes)
+                           |
+                        Some Tomcat specific ClassLoader (does not really matters)
+                                 |                                   |
+                             First.war ClassLoader               Second.war ClassLoader
+                                 |                                    |
+                             WEB-INF/lib                            WEB-INF/lib
+                            and WEB-INF/classes                    and WEB-INF/classes
+                            ClassLoader                            ClassLoader for Second.war
+                                 |   |                                 |   |   |
+                            JSP ClassLoader(s)                     JSP ClassLoader(s)
+                    </code>
+                </p>
+                <p>
+                    For J2EE / EJB based application, the schemes is a bit more complex but follows the same model.
+                    <br/> Although this kind of organization is mainly J2EE oriented, some Swing based application are using
+                    ClassLoader parent-child relation to allow for example plugin life cycles etc.
+                </p>
+            </subsection>
+            <subsection name="Weaving scope of META-INF/aop.xml files">
+                <p>
+                    The single idea you need to remember is that AW deployed Aspects thru aop.xml files have the scope of the ClassLoader
+                    that has this file in its path and all its child ClassLoader.
+                </p>
+                <p>
+                    Three specific paths are used:
+                    <ul>
+                        <li>JVM wide: defined with <code>-Daspectwerkz.definition.file=path/aop.xml</code>, it impacts all JVM classes (except boot classloader for convenience). Note that it is <b>not</b> mandatory to name the file aop.xml</li>
+                        <li>defined with <code>META-INF/aop.xml</code>, it will impact the classes that can <i>see</i> this file. It is mandatory to name the file aop.xml</li>
+                        <li>defined with <code>WEB-INF/aop.xml</code>, it will impact the classes of the web application including JSPs. It is mandatory to name the file aop.xml</li>
+                    </ul>
+                    It is thus possible to place a <code>path/META-INF/aop.xml</code> in the JVM classpath (<code>-cp path/;...</code>) to have the same scope as
+                    the JVM wide defined one.<br/>
+                    If a jar file of the JVM classpath contains a <code>META-INF/aop.xml</code> file, it will aslo have the same scope.<br/>
+                    The <b>precedence</b> between the aspects is then the one of the classpath, and then the one of the order in the aop.xml file.
+                    <br/>
+                    With this model, it is thus possible to package a tracing aspect in a jar file, with a META-INF/aop.xml file (with a pointcut for all public method execution f.e.)
+                    and just add it to your classpath to allow a very simple generic tracing !
+                    <br/>
+                </p>
+            </subsection>
+            <subsection name="Aspect System">
+                <p>
+                    A single <code>aop.xml</code> file can declare several AspectSystem for convenience. All will have the same weaving scope. The goal is mainly to
+                    have a well organized namespace for organizing your aspects.
+                    The <b>precedence</b> will follow the order of the <code>system</code> elements in the XML file.
+                    <br/>
+                    TODO Put a sample here
+                    Test + Trace etc.
+                </p>
+            </subsection>
+        </section>
+
+
+
         <section name="Startup and transformation issues">
             <p>
                 <code>AspectWerkz</code> support three different ways of
