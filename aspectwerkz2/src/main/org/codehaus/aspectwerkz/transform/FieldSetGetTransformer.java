@@ -59,7 +59,7 @@ public class FieldSetGetTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            final ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            final ClassMetaData classMetaData = context.getMetaDataMaker().createClassMetaData(ctClass);
 
             // filter caller classes
             if (classFilter(definition, classMetaData, ctClass)) {

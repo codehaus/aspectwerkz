@@ -28,12 +28,6 @@ public class JavaLoggingAspect {
 
     private int m_level = 0;
 
-    private CrossCuttingInfo m_cci;
-
-    public JavaLoggingAspect(CrossCuttingInfo cci) {
-        m_cci = cci;
-    }
-
     /**
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
@@ -81,16 +75,19 @@ public class JavaLoggingAspect {
      * @param pointcut
      * @param pointcutName
      */
-    public void addPointcutForLoggingAdvice(String pointcut, String pointcutName) {
+    public static void addPointcutForLoggingAdvice(String pointcut, String pointcutName) {
         final String aspectName = "examples.logging.JavaLoggingAspect";
-        Expression pcExpression = ExpressionNamespace.getExpressionNamespace(m_cci.getAspectDefinition())
+        SystemDefinition sysDef = DefinitionLoader.getDefinition(HotSwapTarget.class.getClassLoader(), "samples");
+        AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
+
+        Expression pcExpression = ExpressionNamespace.getExpressionNamespace(aspectDef)
                 .createExpression(
                         pointcut,
                         "",
                         pointcutName
                 );
-        SystemDefinition sysDef = DefinitionLoader.getDefinition(HotSwapTarget.class.getClassLoader(), "samples");
-        AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
+
+
         AdviceDefinition newDef = null;
         for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
             AdviceDefinition around = (AdviceDefinition)arounds.next();

@@ -21,7 +21,13 @@ import java.util.StringTokenizer;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
  */
-public class ReflectionMetaDataMaker extends MetaDataMaker {
+public class ReflectionMetaDataMaker {
+
+    private MetaDataMaker m_metaDataMakerDelegate;
+
+    public ReflectionMetaDataMaker(MetaDataMaker metaDataMakerDelegate) {
+        m_metaDataMakerDelegate = metaDataMakerDelegate;
+    }
 
     /**
      * Construct class meta-data from a <code>Class</code> object.
@@ -29,13 +35,13 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      * @param klass is the class.
      * @return a <code>ClassMetaData</code> instance.
      */
-    public static ClassMetaData createClassMetaData(final Class klass) {
+    public ClassMetaData createClassMetaData(final Class klass) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
 
-        if (s_classMetaDataCache.containsKey(klass.getName())) {
-            return (ClassMetaData)s_classMetaDataCache.get(klass.getName());
+        if (m_metaDataMakerDelegate.m_classMetaDataCache.containsKey(klass.getName())) {
+            return (ClassMetaData)m_metaDataMakerDelegate.m_classMetaDataCache.get(klass.getName());
         }
         ClassMetaDataImpl classMetaData = new ClassMetaDataImpl();
         classMetaData.setName(klass.getName());
@@ -84,8 +90,8 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
             classMetaData.setSuperClass(superClassMetaData);
         }
 
-        synchronized (s_classMetaDataCache) {
-            s_classMetaDataCache.put(classMetaData.getName(), classMetaData);
+        synchronized (m_metaDataMakerDelegate.m_classMetaDataCache) {
+            m_metaDataMakerDelegate.m_classMetaDataCache.put(classMetaData.getName(), classMetaData);
         }
         return classMetaData;
     }
@@ -96,13 +102,13 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      * @param anInterface is the interface's <code>Class</code> to extract details from.
      * @return a <code>InterfaceMetaData</code> instance.
      */
-    public static InterfaceMetaData createInterfaceMetaData(final Class anInterface) {
+    public InterfaceMetaData createInterfaceMetaData(final Class anInterface) {
         if (anInterface == null) {
             throw new IllegalArgumentException("interface can not be null");
         }
 
-        if (s_interfaceMetaDataCache.containsKey(anInterface.getName())) {
-            return (InterfaceMetaData)s_interfaceMetaDataCache.get(anInterface.getName());
+        if (m_metaDataMakerDelegate.m_interfaceMetaDataCache.containsKey(anInterface.getName())) {
+            return (InterfaceMetaData)m_metaDataMakerDelegate.m_interfaceMetaDataCache.get(anInterface.getName());
         }
 
         InterfaceMetaDataImpl interfaceMetaData = new InterfaceMetaDataImpl();
@@ -116,8 +122,8 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
         }
         interfaceMetaData.setInterfaces(interfaceList);
 
-        synchronized (s_interfaceMetaDataCache) {
-            s_interfaceMetaDataCache.put(interfaceMetaData.getName(), interfaceMetaData);
+        synchronized (m_metaDataMakerDelegate.m_interfaceMetaDataCache) {
+            m_metaDataMakerDelegate.m_interfaceMetaDataCache.put(interfaceMetaData.getName(), interfaceMetaData);
         }
         return interfaceMetaData;
     }
@@ -165,7 +171,7 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      */
     public static ConstructorMetaData createConstructorMetaData(final Constructor constructor) {
         ConstructorMetaDataImpl data = new ConstructorMetaDataImpl();
-        data.setName(CONSTRUCTOR_NAME);
+        data.setName(MetaDataMaker.CONSTRUCTOR_NAME);
         data.setModifiers(constructor.getModifiers());
         data.setParameterTypes(TypeConverter.convertTypeToJava(constructor.getParameterTypes()));
         data.setExceptionTypes(TypeConverter.convertTypeToJava(constructor.getExceptionTypes()));

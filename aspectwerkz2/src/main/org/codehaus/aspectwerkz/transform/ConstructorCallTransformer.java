@@ -61,7 +61,7 @@ public class ConstructorCallTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            ClassMetaData classMetaData = context.getMetaDataMaker().createClassMetaData(ctClass);
             if (classFilter(definition, classMetaData, ctClass)) {
                 continue;
             }
@@ -100,7 +100,7 @@ public class ConstructorCallTransformer implements Transformer {
                                 ClassMetaData calleeSideClassMetaData;
                                 try {
                                     calleeSideClassMetaData =
-                                    JavassistMetaDataMaker.createClassMetaData(
+                                    context.getMetaDataMaker().createClassMetaData(
                                             context.getClassPool().get(calleeClassName)
                                     );
                                 }

@@ -9,11 +9,8 @@ package test;
 
 import junit.framework.TestCase;
 
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.*;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
@@ -27,6 +24,8 @@ import org.codehaus.aspectwerkz.exception.ExpressionException;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class ExpressionTest extends TestCase {
+
+    private ReflectionMetaDataMaker m_metaDataMaker = MetaDataMaker.getReflectionMetaDataMaker(ExpressionTest.class.getClassLoader());
 
     private ExpressionNamespace space = ExpressionNamespace.getExpressionNamespace();
 
@@ -112,12 +111,12 @@ public class ExpressionTest extends TestCase {
             Expression rootAnonymous = space.createExpression("execution(* test.ExpressionTest.set(..))");//type autodetection
             Expression rootAnonymous2 = space.createExpression("execution(* test.hierarchicalpattern.DummyInterface1+.testMethod1(..))");//type autodetection
 
-            ClassMetaData classMetaDataTrue = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            ClassMetaData classMetaDataFalse = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
-            MethodMetaData methodMetaDataTrue = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaDataTrue = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            ClassMetaData classMetaDataFalse = m_metaDataMaker.createClassMetaData(ExpressionException.class);
+            MethodMetaData methodMetaDataTrue = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaDataFalse = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaDataFalse = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
 
@@ -147,8 +146,8 @@ public class ExpressionTest extends TestCase {
             Expression rootAnonymousAnonymous = space.createExpression(
                     "execution(* test.ExpressionTest.set(..)) || execution(* test.ExpressionTest.get(..))");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            ClassMetaData classMetaData2 = m_metaDataMaker.createClassMetaData(ExpressionException.class);
             MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
@@ -252,7 +251,7 @@ public class ExpressionTest extends TestCase {
 
 
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
             MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
@@ -288,8 +287,8 @@ public class ExpressionTest extends TestCase {
             Expression root = space.createExpression("pc1 || pc2");
             Expression rootAnonymous = space.createExpression("set(* test.ExpressionTest.m_name) || pc2");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            ClassMetaData classMetaData2 = m_metaDataMaker.createClassMetaData(ExpressionException.class);
             FieldMetaData fieldMetaData1 = ReflectionMetaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_name")
             );
@@ -319,8 +318,8 @@ public class ExpressionTest extends TestCase {
             Expression root = space.createExpression("pc1 || pc2");
             Expression rootAnonymous = space.createExpression("pc1 || get(* test.ExpressionTest.m_type)");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            ClassMetaData classMetaData2 = m_metaDataMaker.createClassMetaData(ExpressionException.class);
             FieldMetaData fieldMetaData1 = ReflectionMetaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_name")
             );
@@ -348,8 +347,8 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.get(..)", "", "pc2", PointcutType.EXECUTION);
             Expression root = space.createExpression("!pc1 && pc2");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            ClassMetaData classMetaData2 = m_metaDataMaker.createClassMetaData(ExpressionException.class);
             MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
@@ -377,14 +376,14 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL);
             Expression root = space.createExpression("!pc1 && pc2");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            MethodMetaData methodMetaData1 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData2 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
-            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData3 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
 
@@ -404,12 +403,12 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.m_type", "", "pc2", PointcutType.SET);
             Expression root = space.createExpression("!pc1 && pc2");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
-            FieldMetaData fieldMetaData1 = ReflectionMetaDataMaker.createFieldMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            ClassMetaData classMetaData2 = m_metaDataMaker.createClassMetaData(ExpressionException.class);
+            FieldMetaData fieldMetaData1 = m_metaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_name")
             );
-            FieldMetaData fieldMetaData2 = ReflectionMetaDataMaker.createFieldMetaData(
+            FieldMetaData fieldMetaData2 = m_metaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_type")
             );
 
@@ -429,12 +428,12 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.m_type", "", "pc2", PointcutType.GET);
             Expression root = space.createExpression("!pc1 && pc2");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
-            FieldMetaData fieldMetaData1 = ReflectionMetaDataMaker.createFieldMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            ClassMetaData classMetaData2 = m_metaDataMaker.createClassMetaData(ExpressionException.class);
+            FieldMetaData fieldMetaData1 = m_metaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_name")
             );
-            FieldMetaData fieldMetaData2 = ReflectionMetaDataMaker.createFieldMetaData(
+            FieldMetaData fieldMetaData2 = m_metaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_type")
             );
 
@@ -456,15 +455,15 @@ public class ExpressionTest extends TestCase {
             Expression root = space.createExpression("pc1 AND cf1");
             Expression rootAnonymous = space.createExpression("pc1 AND cflow(* test.ExpressionTest.set(..))");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            ClassMetaData classMetaData2 = m_metaDataMaker.createClassMetaData(ExpressionException.class);
+            MethodMetaData methodMetaData1 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData2 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
-            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData3 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
 
@@ -490,14 +489,14 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.set(..)", "", "cf1", PointcutType.CFLOW);
             Expression root = space.createExpression("pc1 AND cf1");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            MethodMetaData methodMetaData1 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData2 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
-            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData3 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
 
@@ -519,15 +518,15 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.suite(..)", "", "pc4", PointcutType.EXECUTION);
             Expression root = space.createExpression("pc3 && !pc4");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            ClassMetaData classMetaData2 = m_metaDataMaker.createClassMetaData(ExpressionException.class);
+            MethodMetaData methodMetaData1 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData2 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
-            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData3 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
 
@@ -550,14 +549,14 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.suite(..)", "", "pc4", PointcutType.CALL);
             Expression root = space.createExpression("pc3 && !pc4");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            MethodMetaData methodMetaData1 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData2 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
-            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData3 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
 
@@ -579,14 +578,14 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.m_dummy", "", "pc4", PointcutType.SET);
             Expression root = space.createExpression("pc3 && !pc4");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            FieldMetaData fieldMetaData1 = ReflectionMetaDataMaker.createFieldMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            FieldMetaData fieldMetaData1 = m_metaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_name")
             );
-            FieldMetaData fieldMetaData2 = ReflectionMetaDataMaker.createFieldMetaData(
+            FieldMetaData fieldMetaData2 = m_metaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_type")
             );
-            FieldMetaData fieldMetaData3 = ReflectionMetaDataMaker.createFieldMetaData(
+            FieldMetaData fieldMetaData3 = m_metaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_dummy")
             );
 
@@ -608,14 +607,14 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.m_dummy", "", "pc4", PointcutType.GET);
             Expression root = space.createExpression("pc3 && !pc4");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            FieldMetaData fieldMetaData1 = ReflectionMetaDataMaker.createFieldMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            FieldMetaData fieldMetaData1 = m_metaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_name")
             );
-            FieldMetaData fieldMetaData2 = ReflectionMetaDataMaker.createFieldMetaData(
+            FieldMetaData fieldMetaData2 = m_metaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_type")
             );
-            FieldMetaData fieldMetaData3 = ReflectionMetaDataMaker.createFieldMetaData(
+            FieldMetaData fieldMetaData3 = m_metaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_dummy")
             );
 
@@ -636,14 +635,14 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.suite(..)", "", "pc3", PointcutType.EXECUTION);
             Expression root = space.createExpression("!pc3 && (pc1 || pc2)");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            MethodMetaData methodMetaData1 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData2 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
-            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData3 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
 
@@ -664,14 +663,14 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.suite(..)", "", "pc3", PointcutType.EXECUTION);
             Expression root = space.createExpression("pc1 && !(pc2 || pc3)");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            MethodMetaData methodMetaData1 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData2 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
-            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData3 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
 
@@ -692,14 +691,14 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.suite(..)", "", "pc3", PointcutType.CALL);
             Expression root = space.createExpression("!pc3 && (pc1 || pc2)");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            MethodMetaData methodMetaData1 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData2 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
-            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData3 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
 
@@ -720,14 +719,14 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.suite(..)", "", "pc3", PointcutType.CALL);
             Expression root = space.createExpression("pc1 && !(pc2 || pc3)");
 
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            MethodMetaData methodMetaData1 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData2 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
-            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData3 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
 
@@ -744,12 +743,12 @@ public class ExpressionTest extends TestCase {
     public void testMatchHierachicalExpression_EXECUTION() {
         try {
             Expression root = space.createExpression("* *..TestCase+.set(..)", PointcutType.EXECUTION);
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            ClassMetaData classMetaData2 = m_metaDataMaker.createClassMetaData(ExpressionException.class);
+            MethodMetaData methodMetaData1 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData2 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
             assertTrue(root.match(classMetaData1));
@@ -767,14 +766,14 @@ public class ExpressionTest extends TestCase {
             Expression root = space.createExpression(
                     "java.lang.Object+->* *..ExpressionTest.suite(..)", PointcutType.CALL
             );
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            MethodMetaData methodMetaData1 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData2 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
-            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData3 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
             assertTrue(root.match(classMetaData1));
@@ -790,14 +789,14 @@ public class ExpressionTest extends TestCase {
     public void testMatchCalleeHierachicalExpression_CALL() {
         try {
             Expression root = space.createExpression("*->* *..TestCase+.suite(..)", PointcutType.CALL);
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            MethodMetaData methodMetaData1 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData2 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
-            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData3 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
             assertTrue(root.match(classMetaData1));
@@ -813,14 +812,14 @@ public class ExpressionTest extends TestCase {
     public void testMatchDoubleHierachicalExpression_CALL() {
         try {
             Expression root = space.createExpression("java.lang.Object+->* *..TestCase+.suite(..)", PointcutType.CALL);
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            MethodMetaData methodMetaData1 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
             );
-            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData2 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
             );
-            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(
+            MethodMetaData methodMetaData3 = m_metaDataMaker.createMethodMetaData(
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
             assertTrue(root.match(classMetaData1));
@@ -836,14 +835,14 @@ public class ExpressionTest extends TestCase {
     public void testMatchHierachicalExpression_SET() {
         try {
             Expression root = space.createExpression("* *..TestCase+.m_dummy", PointcutType.SET);
-            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
-            FieldMetaData fieldMetaData1 = ReflectionMetaDataMaker.createFieldMetaData(
+            ClassMetaData classMetaData1 = m_metaDataMaker.createClassMetaData(ExpressionTest.class);
+            FieldMetaData fieldMetaData1 = m_metaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_name")
             );
-            FieldMetaData fieldMetaData2 = ReflectionMetaDataMaker.createFieldMetaData(
+            FieldMetaData fieldMetaData2 = m_metaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_type")
             );
-            FieldMetaData fieldMetaData3 = ReflectionMetaDataMaker.createFieldMetaData(
+            FieldMetaData fieldMetaData3 = m_metaDataMaker.createFieldMetaData(
                     ExpressionTest.class.getDeclaredField("m_dummy")
             );
             assertTrue(root.match(classMetaData1));

@@ -253,7 +253,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         }
 
         // flush Metadata cache so that new weaving is aware of wrapper method existence
-        MetaDataMaker.invalidateClassMetaData(klazz.getName());
+        MetaDataMaker.invalidateClassMetaData(klazz);
 
         // transform as if multi weaving
         byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz.getClassLoader());

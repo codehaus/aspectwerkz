@@ -14,10 +14,7 @@ import java.util.List;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.CflowMetaData;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.*;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.*;
 
@@ -147,7 +144,11 @@ public class CFlowSystemAspect {
      */
     private static ClassMetaData createClassMetaData(final JoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
-        return ReflectionMetaDataMaker.createClassMetaData(signature.getDeclaringType());
+        // TODO AV - The following leads to a synchronize at runtime to grab the MetaDataMaker
+        //         we cannot do that at the Aspect init level since an Aspect CL can be upper in the CL hierarchy
+        // the ReflectionMetaDataMaker might be separated from the TF one may be (and focus 1.5 API)
+        return MetaDataMaker.getReflectionMetaDataMaker(signature.getDeclaringType().getClassLoader())
+                            .createClassMetaData(signature.getDeclaringType());
     }
 
     /**

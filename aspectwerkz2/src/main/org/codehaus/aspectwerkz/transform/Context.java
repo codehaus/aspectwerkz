@@ -12,6 +12,8 @@ import java.util.Map;
 
 import javassist.ClassPool;
 import javassist.LoaderClassPath;
+import org.codehaus.aspectwerkz.metadata.MetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 
 /**
  * Transformation context.
@@ -32,9 +34,9 @@ public class Context {
     private final ClassPool m_repository;
 
     /**
-     * The mixin meta-data repository.
+     * The meta-data repository.
      */
-    private Map m_metaDataRepository;
+    private JavassistMetaDataMaker m_metaDataMaker;
 
     /**
      * Marks the class being transformed as advised.
@@ -65,6 +67,7 @@ public class Context {
         m_loader = loader;
         m_repository = new ClassPool(null);
         m_repository.insertClassPath(new LoaderClassPath(loader));
+        m_metaDataMaker = MetaDataMaker.getJavassistMetaDataMaker(loader);
     }
 
     /**
@@ -90,18 +93,18 @@ public class Context {
      *
      * @return the meta-data repository
      */
-    public Map getMetaDataRepository() {
-        return m_metaDataRepository;
+    public JavassistMetaDataMaker getMetaDataMaker() {
+        return m_metaDataMaker;
     }
 
-    /**
-     * Sets the meta-data repository.
-     *
-     * @param repository the meta-data repository
-     */
-    public void setMetaDataRepository(final Map repository) {
-        m_metaDataRepository = repository;
-    }
+//    /**
+//     * Sets the meta-data repository.
+//     *
+//     * @param repository the meta-data repository
+//     */
+//    public void setMetaDataRepository(final Map repository) {
+//        m_metaDataRepository = repository;
+//    }
 
     /**
      * Marks the class being transformed as advised. The marker can at most be set once per class per transformer

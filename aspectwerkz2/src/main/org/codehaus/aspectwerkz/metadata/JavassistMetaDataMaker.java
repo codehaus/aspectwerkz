@@ -35,7 +35,13 @@ import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class JavassistMetaDataMaker extends MetaDataMaker {
+public class JavassistMetaDataMaker {
+
+    private MetaDataMaker m_metaDataMakerDelegate;
+
+    public JavassistMetaDataMaker(MetaDataMaker metaDataMakerDelegate) {
+        m_metaDataMakerDelegate = metaDataMakerDelegate;
+    }
 
     /**
      * Construct class meta-data from a Javassist <code>JavaClass</code> object.
@@ -43,15 +49,15 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
      * @return a <code>ClassMetaData</code> instance.
      */
-    public static ClassMetaData createClassMetaData(final CtClass javaClass) {
+    public ClassMetaData createClassMetaData(final CtClass javaClass) {
         if (javaClass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
 
         String className = javaClass.getName().replace('/', '.');
 
-        if (s_classMetaDataCache.containsKey(className)) {
-            return (ClassMetaData)s_classMetaDataCache.get(className);
+        if (m_metaDataMakerDelegate.m_classMetaDataCache.containsKey(className)) {
+            return (ClassMetaData)m_metaDataMakerDelegate.m_classMetaDataCache.get(className);
         }
 
         ClassMetaDataImpl classMetaData = new ClassMetaDataImpl();
@@ -123,8 +129,8 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             );
         }
 
-        synchronized (s_classMetaDataCache) {
-            s_classMetaDataCache.put(classMetaData.getName(), classMetaData);
+        synchronized (m_metaDataMakerDelegate.m_classMetaDataCache) {
+            m_metaDataMakerDelegate.m_classMetaDataCache.put(classMetaData.getName(), classMetaData);
         }
         return classMetaData;
     }
@@ -135,7 +141,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
      * @return a <code>InterfaceMetaData</code> instance.
      */
-    private static InterfaceMetaData createInterfaceMetaData(final CtClass javaClass)
+    private InterfaceMetaData createInterfaceMetaData(final CtClass javaClass)
             throws NotFoundException {
         if (javaClass == null) {
             throw new IllegalArgumentException("class can not be null");
@@ -144,8 +150,8 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         String className = javaClass.getName().replace('/', '.');
         ;
 
-        if (s_interfaceMetaDataCache.containsKey(className)) {
-            return (InterfaceMetaData)s_interfaceMetaDataCache.get(className);
+        if (m_metaDataMakerDelegate.m_interfaceMetaDataCache.containsKey(className)) {
+            return (InterfaceMetaData)m_metaDataMakerDelegate.m_interfaceMetaDataCache.get(className);
         }
 
         InterfaceMetaDataImpl interfaceMetaData = new InterfaceMetaDataImpl();
@@ -170,8 +176,8 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         //    throw new WrappedRuntimeException(e);
         //}
 
-        synchronized (s_interfaceMetaDataCache) {
-            s_interfaceMetaDataCache.put(interfaceMetaData.getName(), interfaceMetaData);
+        synchronized (m_metaDataMakerDelegate.m_interfaceMetaDataCache) {
+            m_metaDataMakerDelegate.m_interfaceMetaDataCache.put(interfaceMetaData.getName(), interfaceMetaData);
         }
         return interfaceMetaData;
     }
@@ -280,7 +286,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         }
 
         ConstructorMetaDataImpl constructorMetaData = new ConstructorMetaDataImpl();
-        constructorMetaData.setName(CONSTRUCTOR_NAME);
+        constructorMetaData.setName(MetaDataMaker.CONSTRUCTOR_NAME);
 
         //Javassist modifier is the same as java modifier used in ReflectionMetaDataMaker
         constructorMetaData.setModifiers(constructor.getModifiers());

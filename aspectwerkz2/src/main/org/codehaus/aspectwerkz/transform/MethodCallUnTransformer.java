@@ -55,7 +55,7 @@ public class MethodCallUnTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            ClassMetaData classMetaData = context.getMetaDataMaker().createClassMetaData(ctClass);
 
             // filter not RuW ready classes
             if (classFilter(definition, classMetaData, ctClass)) {

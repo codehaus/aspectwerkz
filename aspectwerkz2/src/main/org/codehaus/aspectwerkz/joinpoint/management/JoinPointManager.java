@@ -37,6 +37,7 @@ import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldRttiImpl;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.MetaDataMaker;
 
 /**
  * Manages the join points, invokes the correct advice chains, handles redeployment, JIT compilation etc. Each advised
@@ -46,6 +47,8 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class JoinPointManager {
+
+    private ReflectionMetaDataMaker m_metaDataMaker;
 
     /**
      * The JIT compilation boundry for nr of method invocations before optimizing a certain method.
@@ -270,7 +273,7 @@ public class JoinPointManager {
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
             s_registry.registerJoinPoint(
                     joinPointType, methodHash, null, m_classHash, declaringClass,
-                    ReflectionMetaDataMaker.createClassMetaData(declaringClass), m_system
+                    m_metaDataMaker.createClassMetaData(declaringClass), m_system
             );
 
             threadLocal = new ThreadLocal();
@@ -376,7 +379,7 @@ public class JoinPointManager {
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
             s_registry.registerJoinPoint(
                     JoinPointType.FIELD_SET, fieldHash, fieldSignature, m_classHash, declaringClass,
-                    ReflectionMetaDataMaker.createClassMetaData(declaringClass), m_system
+                    m_metaDataMaker.createClassMetaData(declaringClass), m_system
             );
 
             threadLocal = new ThreadLocal();
@@ -463,7 +466,7 @@ public class JoinPointManager {
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
             s_registry.registerJoinPoint(
                     JoinPointType.FIELD_GET, fieldHash, fieldSignature, m_classHash, declaringClass,
-                    ReflectionMetaDataMaker.createClassMetaData(declaringClass), m_system
+                    m_metaDataMaker.createClassMetaData(declaringClass), m_system
             );
 
             threadLocal = new ThreadLocal();
@@ -546,7 +549,7 @@ public class JoinPointManager {
 
         ThreadLocal threadLocal = null;
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
-            ClassMetaData exceptionMetaData = ReflectionMetaDataMaker.createClassMetaData(
+            ClassMetaData exceptionMetaData = m_metaDataMaker.createClassMetaData(
                     exceptionInstance.getClass()
             );
             s_registry.registerJoinPoint(
@@ -679,7 +682,7 @@ public class JoinPointManager {
         List cflowExpressions = new ArrayList();
         for (int i = 0; i < m_system.getAspectManagers().length; i++) {
             cflowExpressions.addAll(m_system.getAspectManagers()[i].getCFlowExpressions(
-                    ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+                    m_metaDataMaker.createClassMetaData(declaringClass),
                     ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
                     null, PointcutType.EXECUTION//TODO CAN BE @CALL - see proceedWithCallJoinPoint
             ));
@@ -935,7 +938,8 @@ public class JoinPointManager {
         m_system = SystemLoader.getSystem(targetClass.getClassLoader());
         m_targetClass = targetClass;
         m_classHash = m_targetClass.hashCode();
-        m_targetClassMetaData = ReflectionMetaDataMaker.createClassMetaData(m_targetClass);
+        m_metaDataMaker = MetaDataMaker.getReflectionMetaDataMaker(targetClass.getClassLoader());
+        m_targetClassMetaData = m_metaDataMaker.createClassMetaData(m_targetClass);
     }
 
     /**
