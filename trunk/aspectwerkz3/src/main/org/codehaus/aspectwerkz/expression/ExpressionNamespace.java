@@ -104,6 +104,10 @@ public final class ExpressionNamespace {
         return getExpressionInfo(name).getCflowExpression();
     }
 
+    public CflowExpressionVisitorRuntime getCflowExpressionRuntime(final String name) {
+        return getExpressionInfo(name).getCflowExpressionRuntime();
+    }
+
     /**
      * Returns the advised class expression with a specific name.
      *

@@ -8,21 +8,24 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
+import org.codehaus.aspectwerkz.expression.ExpressionContext;
+
 import java.util.List;
 
 /**
  * Holds meta data about a specific join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-class JoinPointMetaData {
+public class JoinPointMetaData {
     /**
      * The indexes for the advices.
      */
     public AdviceIndexInfo[] adviceIndexes;
 
     /**
-     * The cflow expressions.
+     * The cflow expressions runtime.
      */
     public List cflowExpressions;
 
@@ -30,4 +33,9 @@ class JoinPointMetaData {
      * The cflow pointcut.
      */
     public Pointcut cflowPointcut;
+
+    /**
+     * The join point expression context
+     */
+    public ExpressionContext expressionContext;
 }

@@ -29,15 +29,15 @@ class FieldJoinPoint extends JoinPointBase {
      * @param targetClass
      * @param signature
      * @param rtti
-     * @param cflowExpressions
+     * @param joinPointMetaData
      * @param aroundAdviceExecutor
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
     public FieldJoinPoint(final int type, final Class targetClass, final Signature signature, final Rtti rtti,
-                          final List cflowExpressions, final AroundAdviceExecutor aroundAdviceExecutor,
+                          final JoinPointMetaData joinPointMetaData, final AroundAdviceExecutor aroundAdviceExecutor,
                           final BeforeAdviceExecutor beforeAdviceExecutor, final AfterAdviceExecutor afterAdviceExecutor) {
-        super(type, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
+        super(type, targetClass, joinPointMetaData, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
         m_signature = (FieldSignature)signature;
         m_rtti = (FieldRtti)rtti;
     }
