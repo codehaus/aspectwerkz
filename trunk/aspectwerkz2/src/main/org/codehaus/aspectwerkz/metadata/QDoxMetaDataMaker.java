@@ -47,9 +47,23 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
         JavaMethod[] methods = javaClass.getMethods();
         for (int i = 0; i < methods.length; i++) {
             JavaMethod method = methods[i];
+            if (method.isConstructor()) {
+                continue;
+            }
             methodList.add(createMethodMetaData(method));
         }
         classMetaData.setMethods(methodList);
+
+        // constructors
+        List constructorList = new ArrayList();
+        JavaMethod[] constructors = javaClass.getMethods();
+        for (int i = 0; i < constructors.length; i++) {
+            JavaMethod constructor = methods[i];
+            if (constructor.isConstructor()) {
+                constructorList.add(createConstructorMetaData(constructor));
+           }
+        }
+        classMetaData.setConstructors(constructorList);
 
         // fields
         List fieldList = new ArrayList();
@@ -115,12 +129,13 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
     }
 
     /**
-     * Construct meta-data from a QDox <code>JavaMethod</code> object.
+     * Construct method meta-data from a QDox <code>JavaMethod</code> object.
      *
      * @param method is the <code>JavaMethod</code> object to extract details from.
      * @return a <code>MethodMetaData</code> instance.
      */
     public static MethodMetaData createMethodMetaData(final JavaMethod method) {
+        if (method.isConstructor()) throw new IllegalArgumentException("QDox method is not a regular method but a constructor [" + method.getName() + "]");
 
         MethodMetaData data = new MethodMetaData();
         data.setName(method.getName());
@@ -146,6 +161,36 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
         data.setExceptionTypes(exceptionTypes);
 
         return data;
+    }
+
+    /**
+     * Construct constructor meta-data from a QDox <code>JavaMethod</code> object.
+     *
+     * @param constructor is the <code>JavaMethod</code> object to extract details from.
+     * @return a <code>ConstructorMetaData</code> instance.
+     */
+    public static ConstructorMetaData createConstructorMetaData(final JavaMethod constructor) {
+        if (!constructor.isConstructor()) throw new IllegalArgumentException("QDox method is not a constructor [" + constructor.getName() + "]");
+
+        ConstructorMetaData constructorMetaData = new ConstructorMetaData();
+        constructorMetaData.setName(constructor.getName());
+        constructorMetaData.setModifiers(TransformationUtil.getModifiersAsInt(constructor.getModifiers()));
+
+        JavaParameter[] parameters = constructor.getParameters();
+        String[] parameterTypes = new String[parameters.length];
+        for (int j = 0; j < parameters.length; j++) {
+            parameterTypes[j] = TypeConverter.convertTypeToJava(parameters[j].getType());
+        }
+        constructorMetaData.setParameterTypes(parameterTypes);
+
+        Type[] exceptions = constructor.getExceptions();
+        String[] exceptionTypes = new String[exceptions.length];
+        for (int j = 0; j < exceptions.length; j++) {
+            exceptionTypes[j] = TypeConverter.convertTypeToJava(exceptions[j]);
+        }
+        constructorMetaData.setExceptionTypes(exceptionTypes);
+
+        return constructorMetaData;
     }
 
     /**

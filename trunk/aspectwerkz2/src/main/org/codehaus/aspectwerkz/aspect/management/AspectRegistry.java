@@ -14,12 +14,14 @@ import org.codehaus.aspectwerkz.pointcut.PointcutManager;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.MethodTuple;
+import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
@@ -51,7 +53,7 @@ import gnu.trove.TIntObjectHashMap;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AspectRegistry {
+public class    AspectRegistry {
 
     /**
      * The UUID for the system.
@@ -411,17 +413,17 @@ public class AspectRegistry {
     }
 
     /**
-     * Returns the call pointcut list for the class and method specified.
+     * Returns the call pointcut list for the class and member specified.
      *
      * @param classMetaData the meta-data for the class
-     * @param methodMetaData meta-data for the method
+     * @param memberMetaData meta-data for the member
      * @return the pointcuts for this join point
      */
-    public List getCallPointcuts(final ClassMetaData classMetaData, final MethodMetaData methodMetaData) {
+    public List getCallPointcuts(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
-            pointcuts.addAll(aspect.getCallPointcuts(classMetaData, methodMetaData));
+            pointcuts.addAll(aspect.getCallPointcuts(classMetaData, memberMetaData));
         }
         return pointcuts;
     }
@@ -499,40 +501,37 @@ public class AspectRegistry {
     /**
      * Returns a specific constructor by the class and the method hash.
      *
-     * @TODO: use the method tuple idiom (ConstructorTuple)
-     *
      * @param klass the class housing the method
-     * @param methodHash the method hash
+     * @param constructorHash the constructor hash
      * @return the constructor
      */
-    public Constructor getConstructor(final Class klass, final int methodHash) {
+    public ConstructorTuple getConstructorTuple(final Class klass, final int constructorHash) {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
-        if (methodHash < 0) throw new IllegalArgumentException("method hash is not a valid hash");
 
         try {
-            // create the method repository lazily
+            // create the constructor repository lazily
             if (!m_constructors.containsKey(klass)) {
-                createMethodRepository(klass);
+                createConstructorRepository(klass);
             }
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
 
-        Constructor constructor;
+        ConstructorTuple constructorTuple;
         try {
-            constructor = (Constructor)((TIntObjectHashMap)m_constructors.get(klass)).get(methodHash);
+            constructorTuple = (ConstructorTuple)((TIntObjectHashMap)m_constructors.get(klass)).get(constructorHash);
         }
         catch (Throwable e1) {
             initialize();
             try {
-                constructor = (Constructor)((TIntObjectHashMap)m_constructors.get(klass)).get(methodHash);
+                constructorTuple = (ConstructorTuple)((TIntObjectHashMap)m_constructors.get(klass)).get(constructorHash);
             }
             catch (Exception e) {
                 throw new WrappedRuntimeException(e);
             }
         }
-        return constructor;
+        return constructorTuple;
     }
 
     /**
@@ -633,6 +632,8 @@ public class AspectRegistry {
     /**
      * Creates a new constructor repository for the class specified.
      *
+     * @TODO: does NOT work with execution since it does not handle wrapper constructors (see method repository impl.)
+     *
      * @param klass the class
      */
     protected void createConstructorRepository(final Class klass) {
@@ -642,9 +643,9 @@ public class AspectRegistry {
         TIntObjectHashMap constructorMap = new TIntObjectHashMap(constructors.length);
         for (int i = 0; i < constructors.length; i++) {
             Constructor constructor = constructors[i];
-
+            ConstructorTuple constructorTuple = new ConstructorTuple(constructor, constructor);
             int constructorHash = TransformationUtil.calculateHash(constructor);
-            constructorMap.put(constructorHash, constructor);
+            constructorMap.put(constructorHash, constructorTuple);
         }
 
         synchronized (m_constructors) {

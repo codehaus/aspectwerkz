@@ -20,89 +20,47 @@ public class ConstructorAdviceTest extends TestCase {
 
     public void testAroundAdvice() {
         s_logString = "";
-        TestAroundAdvice test = new TestAroundAdvice();
+        TestAroundAdvice test = new TestAroundAdvice(1L, new Object(), new String[]{});
         assertEquals("before init after ", s_logString);
+        assertNotNull(test);
+        assertTrue(test instanceof TestAroundAdvice);
     }
 
     public void testBeforeAdvice() {
         s_logString = "";
         TestBeforeAdvice test = new TestBeforeAdvice();
-        assertEquals("pre invocation ", s_logString);
+        assertEquals("pre init ", s_logString);
+        assertNotNull(test);
+        assertTrue(test instanceof TestBeforeAdvice);
     }
 
     public void testAfterAdvice() {
         s_logString = "";
-        TestAfterAdvice test = new TestAfterAdvice();
-        assertEquals("invocation post ", s_logString);
+        TestAfterAdvice test = new TestAfterAdvice("test");
+        assertEquals("test post ", s_logString);
+        assertNotNull(test);
+        assertTrue(test instanceof TestAfterAdvice);
     }
 
-//    public void testBeforeAfterAdvice() {
-//        s_logString = "";
-//        beforeAfterAdvicedMethod();
-//        assertEquals("pre invocation post ", s_logString);
-//    }
-//
-//    public void testNoArgs() {
-//        noParams();
-//    }
-//
-//    public void testIntArg() {
-//        assertEquals(12, intParam(12));
-//    }
-//
-//    public void testLongArg() {
-//        assertEquals(12L, longParam(12L));
-//    }
-//
-//    public void testShortArg() {
-//        assertEquals(3, shortParam((short)3));
-//    }
-//
-//    public void testDoubleArg() {
-//        assertEquals(new Double(2.3D), new Double(doubleParam(2.3D)));
-//    }
-//
-//    public void testFloatArg() {
-//        assertEquals(new Float(2.3F), new Float(floatParam(2.3F)));
-//    }
-//
-//    public void testByteArg() {
-//        assertEquals(Byte.parseByte("1"), byteParam(Byte.parseByte("1")));
-//    }
-//
-//    public void testCharArg() {
-//        assertEquals('B', charParam('B'));
-//    }
-//
-//    public void testBooleanArg() {
-//        assertEquals(false, booleanParam(false));
-//    }
-//
-//    public void testObjectArg() {
-//        assertEquals(this, objectParam(this));
-//    }
-//
-//    public void testArrayArg() {
-//        String[] array = new String[]{"one", "two", "three"};
-//        assertTrue(arrayParam(array)[0].equals(array[0]));
-//        assertTrue(arrayParam(array)[1].equals(array[1]));
-//        assertTrue(arrayParam(array)[2].equals(array[2]));
-//    }
-//
-//    public void testVariousArguments1() {
-//        assertEquals("dummy".hashCode() + 1 + (int)2.3F, this.hashCode() + (int)34L,
-//                variousParams1("dummy", 1, 2.3F, this, 34L));
-//    }
-//
-//    public void testVariousArguments2() {
-//        assertEquals((int)2.3F + 1 + "dummy".hashCode() + this.hashCode() + (int)34L + "test".hashCode(),
-//                variousParams2(2.3F, 1, "dummy", this, 34L, "test"));
-//    }
-//
-//    public void testVariousArguments4() {
-//        assertEquals("dummy", takesArrayAsArgument(new String[]{"dummy", "test"})[0]);
-//        assertEquals("test", takesArrayAsArgument(new String[]{"dummy", "test"})[1]);
-//    }
+    public void testBeforeAfterAdvice() {
+        s_logString = "";
+        TestBeforeAfterAdvice test = new TestBeforeAfterAdvice(new String[]{"test"});
+        assertEquals("pre test post ", s_logString);
+        assertNotNull(test);
+        assertTrue(test instanceof TestBeforeAfterAdvice);
+    }
+
+    public void testReturnFalseType() {
+        s_logString = "";
+        TestReturnFalseType test = null;
+        try {
+            test = new TestReturnFalseType();
+        }
+        catch (ClassCastException e) {
+            return;
+        }
+        fail("this point should not have been reached a class cast exception should have been thrown");
+    }
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());

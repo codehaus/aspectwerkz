@@ -80,6 +80,20 @@ public class ClassPatternTest extends TestCase {
         assertTrue(classPattern.matches("foo.bar.baz.buzz.SomeClass"));
     }
 
+    public void testMatchClassName9() {
+        ClassPattern classPattern = Pattern.compileClassPattern("foo.bar.Baz$Buzz");
+        assertTrue(classPattern.matches("foo.bar.Baz$Buzz"));
+        assertFalse(classPattern.matches("foo.bar.Baz"));
+    }
+
+    public void testMatchClassName10() {
+        ClassPattern classPattern = Pattern.compileClassPattern("foo.bar..$Buzz");
+        assertTrue(classPattern.matches("foo.bar.Baz$Buzz"));
+        assertTrue(classPattern.matches("foo.bar.Baz.Buz$Buzz"));
+        assertFalse(classPattern.matches("foo.bar.Baz.Buz$Buz"));
+        assertFalse(classPattern.matches("foo.bar.Baz"));
+    }
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }

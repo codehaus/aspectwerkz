@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 
 /**
@@ -66,6 +67,9 @@ public class CallerSidePattern extends Pattern {
      * @return true if we have a matches
      */
     public boolean matches(final MethodMetaData methodMetaData) {
+        if (!(m_memberPattern instanceof MethodPattern)) {
+            return false;
+        }
         return ((MethodPattern)m_memberPattern).matches(methodMetaData);
     }
 
@@ -77,6 +81,9 @@ public class CallerSidePattern extends Pattern {
      * @return true if we have a matches
      */
     public boolean matches(final ConstructorMetaData constructorMetaData) {
+        if (!(m_memberPattern instanceof ConstructorPattern)) {
+            return false;
+        }
         return ((ConstructorPattern)m_memberPattern).matches(constructorMetaData);
     }
 
@@ -84,22 +91,19 @@ public class CallerSidePattern extends Pattern {
      * Matches a caller side pointcut.
      *
      * @param className the class name
-     * @param methodMetaData the method meta-data
+     * @param memberMetaData the method meta-data
      * @return true if we have a matches
      */
-    public boolean matches(final String className, final MethodMetaData methodMetaData) {
-        return m_calleeClassPattern.matches(className) && matches(methodMetaData);
-    }
-
-    /**
-     * Matches a caller side pointcut.
-     *
-     * @param className the class name
-     * @param constructorMetaData the contructor meta-data
-     * @return true if we have a matches
-     */
-    public boolean matches(final String className, final ConstructorMetaData constructorMetaData) {
-        return m_calleeClassPattern.matches(className) && matches(constructorMetaData);
+    public boolean matches(final String className, final MemberMetaData memberMetaData) {
+        if (memberMetaData instanceof MethodMetaData) {
+            return m_calleeClassPattern.matches(className) && matches((MethodMetaData)memberMetaData);
+        }
+        else if (memberMetaData instanceof ConstructorMetaData) {
+            return m_calleeClassPattern.matches(className) && matches((ConstructorMetaData)memberMetaData);
+        }
+        else {
+            return false;
+        }
     }
 
     /**
@@ -119,17 +123,19 @@ public class CallerSidePattern extends Pattern {
     protected void parse(final String pattern) {
         StringTokenizer tokenizer = new StringTokenizer(m_pattern, SystemDefinition.CALLER_SIDE_DELIMITER);
         try {
-            m_calleeClassPattern = Pattern.compileClassPattern(tokenizer.nextToken());
+            String classPattern = tokenizer.nextToken();
             String memberPattern = tokenizer.nextToken();
+            m_calleeClassPattern = Pattern.compileClassPattern(classPattern);
 
             switch (m_type) {
                 case Pattern.METHOD:
                     m_memberPattern = Pattern.compileMethodPattern(memberPattern);
                     break;
-                case Pattern.FIELD:
-                    break;
                 case Pattern.CONSTRUCTOR:
                     m_memberPattern = Pattern.compileConstructorPattern(memberPattern);
+                    break;
+                case Pattern.FIELD:
+                    // will probably never be implemented
                     break;
             }
         }

@@ -16,13 +16,10 @@ import javassist.CannotCompileException;
 import javassist.CtBehavior;
 import javassist.NotFoundException;
 import javassist.CtField;
-import javassist.CtMethod;
 import javassist.CtConstructor;
 import javassist.expr.ExprEditor;
-import javassist.expr.MethodCall;
 import javassist.expr.NewExpr;
 
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
@@ -57,7 +54,8 @@ public class ConstructorCallTransformer implements Transformer {
      * @param context the transformation context
      * @param klass the class set.
      */
-    public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
+    public void transform(final Context context, final Klass klass)
+            throws NotFoundException, CannotCompileException {
 
         // loop over all the definitions
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
@@ -120,10 +118,6 @@ public class ConstructorCallTransformer implements Transformer {
                         // is this a caller side method pointcut?
                         if (definition.isPickedOutByCallPointcut(calleeSideClassMetaData, constructorMetaData)) {
 
-                            // add a class field for the declaring class
-//                            String declaringClassMethodName = addCalleeMethodDeclaringClassField(
-//                                    ctClass, methodCall.getMethod()
-
                             // check the callee class is not the same as target class, if that is the case
                             // then we have have class loaded and set in the ___AW_clazz already
                             String declaringClassMethodName = TransformationUtil.STATIC_CLASS_FIELD;
@@ -143,10 +137,15 @@ public class ConstructorCallTransformer implements Transformer {
                             body.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
                             body.append('(');
                             body.append(TransformationUtil.calculateHash(ctConstructor));
-                            body.append(", $args, $0, (Class)");
+                            if (Modifier.isStatic(where.getModifiers())) {
+                                body.append(", $args, (Object)null, (Class)");
+                            }
+                            else {
+                                body.append(", $args, this, (Class)");
+                            }
                             body.append(declaringClassMethodName);
                             body.append(',');
-                            body.append(TransformationUtil.JOIN_POINT_TYPE_METHOD_CALL);
+                            body.append(TransformationUtil.JOIN_POINT_TYPE_CONSTRUCTOR_CALL);
                             body.append(",\"");
                             body.append(ctConstructor.getSignature());
                             body.append("\"); }");

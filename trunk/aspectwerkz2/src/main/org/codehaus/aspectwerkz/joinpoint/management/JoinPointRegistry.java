@@ -167,24 +167,24 @@ public class JoinPointRegistry {
                 break;
 
             case JoinPointType.METHOD_CALL:
-                List callAdvices = new ArrayList();
-                List callPointcuts = system.getAspectManager().getCallPointcuts(
+                List methodCallAdvices = new ArrayList();
+                List methodCallPointcuts = system.getAspectManager().getCallPointcuts(
                         definedClassMetaData,
                         ReflectionMetaDataMaker.createMethodMetaData(system.getAspectManager().
                         getMethodTuple(definedClass, joinPointHash).getWrapperMethod())
                 );
-                for (Iterator it = callPointcuts.iterator(); it.hasNext();) {
+                for (Iterator it = methodCallPointcuts.iterator(); it.hasNext();) {
                     CallPointcut pointcut = (CallPointcut)it.next();
                     AdviceContainer advices = new AdviceContainer(
                             pointcut.getAroundAdviceIndexes(),
                             pointcut.getBeforeAdviceIndexes(),
                             pointcut.getAfterAdviceIndexes()
                     );
-                    callAdvices.add(advices);
+                    methodCallAdvices.add(advices);
                 }
-                adviceContainers = new AdviceContainer[callAdvices.size()];
+                adviceContainers = new AdviceContainer[methodCallAdvices.size()];
                 i = 0;
-                for (Iterator iterator = callAdvices.iterator(); iterator.hasNext(); i++) {
+                for (Iterator iterator = methodCallAdvices.iterator(); iterator.hasNext(); i++) {
                     AdviceContainer adviceContainer = (AdviceContainer)iterator.next();
                     adviceContainers[i] = adviceContainer;
                 }
@@ -192,10 +192,32 @@ public class JoinPointRegistry {
                 break;
 
             case JoinPointType.CONSTRUCTOR_EXECUTION:
-                throw new UnsupportedOperationException("not implemented");
+                throw new UnsupportedOperationException("not implemented: CONSTRUCTOR_EXECUTION");
 
             case JoinPointType.CONSTRUCTOR_CALL:
-                throw new UnsupportedOperationException("not implemented");
+                List constructorCallAdvices = new ArrayList();
+                List constructorCallPointcuts = system.getAspectManager().getCallPointcuts(
+                        definedClassMetaData,
+                        ReflectionMetaDataMaker.createConstructorMetaData(system.getAspectManager().
+                        getConstructorTuple(definedClass, joinPointHash).getWrapperConstructor())
+                );
+                for (Iterator it = constructorCallPointcuts.iterator(); it.hasNext();) {
+                    CallPointcut pointcut = (CallPointcut)it.next();
+                    AdviceContainer advices = new AdviceContainer(
+                            pointcut.getAroundAdviceIndexes(),
+                            pointcut.getBeforeAdviceIndexes(),
+                            pointcut.getAfterAdviceIndexes()
+                    );
+                    constructorCallAdvices.add(advices);
+                }
+                adviceContainers = new AdviceContainer[constructorCallAdvices.size()];
+                i = 0;
+                for (Iterator iterator = constructorCallAdvices.iterator(); iterator.hasNext(); i++) {
+                    AdviceContainer adviceContainer = (AdviceContainer)iterator.next();
+                    adviceContainers[i] = adviceContainer;
+                }
+                pointcutTypeToAdvicesMap.put(PointcutType.CALL, adviceContainers);
+                break;
 
             case JoinPointType.FIELD_SET:
                 List setAdvices = new ArrayList();

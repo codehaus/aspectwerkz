@@ -21,10 +21,10 @@ import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
 
 /**
- * AspectWerkzPreProcessor is the entry poinbt of the AspectWerkz layer 2
- *
- * It implements the ClassPreProcessor interface defined in layer 1.<br/>
- * <br/>
+ * AspectWerkzPreProcessor is the entry point of the AspectWerkz layer 2.
+ * <p/>
+ * It implements the ClassPreProcessor interface defined in layer 1.
+ * <p/>
  * Available options are:
  * <ul>
  *      <li><code>-Daspectwerkz.transform.verbose=yes</code> turns on verbose mode:
@@ -37,9 +37,9 @@ import org.codehaus.aspectwerkz.regexp.Pattern;
  *      <li>else <code>-Daspectwerkz.transform.dump=org.myapp.*,before</code> dumps class before and after the
  *      transformation whose name starts with <i>org.myapp.</i>(even unmodified ones)
  *      in <i>./_dump/before</i> and <i>./_dump/after</i> directories (relative to where application starts)</li>
- *      <li><code>-Daspectwerkz.transform.filter=no</code> (or false) disables filtering of org.codehaus.aspectwerkz
- *      and related classes (jexl, trove, dom4j...). This should only be used in offline mode where weaving
- *      of those classes is needed. Setting this option in online mode will lead to ClassCircularityError.</li>
+ *      <li><code>-Daspectwerkz.transform.filter=no</code> (or false) disables filtering of <code>org.codehaus.aspectwerkz</code>
+ *      and related classes (trove, dom4j etc.). This should only be used in offline mode where weaving
+ *      of those classes is needed. Setting this option in online mode will lead to <code>ClassCircularityError</code>.</li>
  * </ul>
  *
  *
@@ -184,7 +184,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                     klass.getCtClass().getClassPool().writeFile(className, "_dump/before/");
                 }
                 catch (Exception e) {
-                    System.err.println("failed to dump " + className);
+                    log("failed to dump " + className);
                     e.printStackTrace();
                 }
             }
@@ -237,7 +237,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         // handle the prepared Class cache
         if (context.isPrepared()) {
             ClassCacheTuple key = new ClassCacheTuple(loader, className);
-            System.out.println("cache prepared " + className);
+            log("cache prepared " + className);
             m_classByteCache.put(key, new ByteArray(klass.getBytecode()));
         }
 
@@ -251,7 +251,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                     );
                 }
                 catch (Exception e) {
-                    System.err.println("failed to dump " + className);
+                    log("failed to dump " + className);
                     e.printStackTrace();
                 }
             }
@@ -299,7 +299,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         ClassCacheTuple key = new ClassCacheTuple(klazz);
         ByteArray bytesO = (ByteArray)m_classByteCache.get(key);
         if (bytesO == null) {
-            System.err.println("*** CANNOT FIND CACHED " + className);
+            log("*** CANNOT FIND CACHED " + className);
             throw new RuntimeException("CANNOT FIND CACHED " + className);
         }
 
@@ -336,7 +336,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                     klass.getCtClass().getClassPool().writeFile(className, "_dump2/before/");
                 }
                 catch (Exception e) {
-                    System.err.println("failed to dump " + className);
+                    log("failed to dump " + className);
                     e.printStackTrace();
                 }
             }
@@ -392,7 +392,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                     );
                 }
                 catch (Exception e) {
-                    System.err.println("failed to dump " + className);
+                    log("failed to dump " + className);
                     e.printStackTrace();
                 }
             }

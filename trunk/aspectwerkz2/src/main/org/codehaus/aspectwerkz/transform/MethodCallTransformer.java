@@ -123,11 +123,6 @@ public class MethodCallTransformer implements Transformer {
 //                            CtClass[] callerMethodParameterTypes = callerBehaviour.getParameterTypes();
 //                            int callerMethodModifiers = callerBehaviour.getModifiers();
 
-                            // add a class field for the declaring class
-//                            String declaringClassMethodName = addCalleeMethodDeclaringClassField(
-//                                    ctClass, methodCall.getMethod()
-//                            );
-
                             // check the callee class is not the same as target class, if that is the case
                             // then we have have class loaded and set in the ___AW_clazz already
                             String declaringClassMethodName = TransformationUtil.STATIC_CLASS_FIELD;

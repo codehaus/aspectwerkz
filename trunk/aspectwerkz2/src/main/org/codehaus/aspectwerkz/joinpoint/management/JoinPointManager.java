@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 import gnu.trove.TLongObjectHashMap;
@@ -22,6 +21,7 @@ import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
+import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
@@ -30,6 +30,7 @@ import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
+import org.codehaus.aspectwerkz.joinpoint.CodeSignature;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodJoinPoint;
@@ -38,6 +39,7 @@ import org.codehaus.aspectwerkz.joinpoint.impl.FieldJoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseJoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.JoinPointBase;
 
 /**
  * Manages the join points, invokes the correct advice chains, handles redeployment, JIT compilation etc.
@@ -203,8 +205,8 @@ public class JoinPointManager {
             m_joinPoints.put(methodHash, threadLocal);
         }
 
-        ((MethodJoinPoint)joinPoint).setTargetInstance(targetInstance);
-        ((MethodSignature)joinPoint.getSignature()).setParameterValues(parameters);
+        ((JoinPointBase)joinPoint).setTargetInstance(targetInstance);
+        ((CodeSignature)joinPoint.getSignature()).setParameterValues(parameters);
 
         return joinPoint.proceed();
     }
@@ -294,8 +296,8 @@ public class JoinPointManager {
             }
         }
 
-        ((MethodJoinPoint)joinPoint).setTargetInstance(targetInstance);
-        ((MethodSignature)joinPoint.getSignature()).setParameterValues(parameters);
+        ((JoinPointBase)joinPoint).setTargetInstance(targetInstance);
+        ((CodeSignature)joinPoint.getSignature()).setParameterValues(parameters);
 
         return joinPoint.proceed();
     }
@@ -386,8 +388,8 @@ public class JoinPointManager {
             }
         }
 
-        ((MethodJoinPoint)joinPoint).setTargetInstance(targetInstance);
-        ((MethodSignature)joinPoint.getSignature()).setParameterValues(parameters);
+        ((JoinPointBase)joinPoint).setTargetInstance(targetInstance);
+        ((CodeSignature)joinPoint.getSignature()).setParameterValues(parameters);
 
         return joinPoint.proceed();
     }
@@ -455,7 +457,7 @@ public class JoinPointManager {
         }
 
         // intialize the join point before each usage
-        ((FieldJoinPoint)joinPoint).setTargetInstance(targetInstance);
+        ((JoinPointBase)joinPoint).setTargetInstance(targetInstance);
         ((FieldSignature)joinPoint.getSignature()).setFieldValue(fieldValue[0]);
 
         joinPoint.proceed();
@@ -522,7 +524,7 @@ public class JoinPointManager {
         }
 
         // intialize the join point before each usage
-        ((FieldJoinPoint)joinPoint).setTargetInstance(targetInstance);
+        ((JoinPointBase)joinPoint).setTargetInstance(targetInstance);
 
         return joinPoint.proceed();
     }
@@ -599,7 +601,7 @@ public class JoinPointManager {
         }
 
         // intialize the join point before each usage
-        ((CatchClauseJoinPoint)joinPoint).setTargetInstance(targetInstance);
+        ((JoinPointBase)joinPoint).setTargetInstance(targetInstance);
         ((CatchClauseSignature)joinPoint.getSignature()).setParameterValue(exceptionInstance);
 
         joinPoint.proceed();
@@ -695,13 +697,12 @@ public class JoinPointManager {
                                                  final int joinPointType,
                                                  final Class declaringClass,
                                                  final AdviceContainer[] adviceIndexes) {
-        // TODO: use constructor tuple
-        Constructor constructor = m_system.getAspectManager().getConstructor(declaringClass, constructorHash);
-        // TODO: set in constructor tuple
-        constructor.setAccessible(true);
+        ConstructorTuple constructorTuple = m_system.getAspectManager().getConstructorTuple(
+                declaringClass, constructorHash
+        );
 
-        Class declaringType = constructor.getDeclaringClass();
-        Signature signature = new ConstructorSignatureImpl(declaringType, constructor);
+        Class declaringType = constructorTuple.getDeclaringClass();
+        Signature signature = new ConstructorSignatureImpl(declaringType, constructorTuple);
 
         // TODO: enable cflow for constructors
 //        List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(

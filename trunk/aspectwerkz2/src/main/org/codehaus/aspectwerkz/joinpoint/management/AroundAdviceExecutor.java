@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
+import java.lang.reflect.Constructor;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
+import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
 
 /**
  *
@@ -107,14 +109,23 @@ public class AroundAdviceExecutor implements AdviceExecutor {
             m_currentAdviceIndex = -1;
             try {
                 switch (m_joinPointType) {
+                    case JoinPointType.METHOD_EXECUTION:
+                        result = invokeTargetMethod(joinPoint);
+                        break;
+                    case JoinPointType.METHOD_CALL:
+                        result = invokeTargetMethod(joinPoint);
+                        break;
+                    case JoinPointType.CONSTRUCTOR_EXECUTION:
+                        result = invokeTargetConstructor(joinPoint);
+                        break;
+                    case JoinPointType.CONSTRUCTOR_CALL:
+                        result = invokeTargetConstructor(joinPoint);
+                        break;
                     case JoinPointType.FIELD_SET:
                         setTargetField(joinPoint);
                         break;
                     case JoinPointType.FIELD_GET:
                         result = getTargetField(joinPoint);
-                        break;
-                    default:
-                        result = invokeTargetMethod(joinPoint);
                         break;
                 }
             }
@@ -155,7 +166,7 @@ public class AroundAdviceExecutor implements AdviceExecutor {
     }
 
     /**
-     * Invokes the origignal method.
+     * Invokes the original method.
      *
      * @param joinPoint the join point instance
      * @return the result from the method invocation
@@ -170,7 +181,26 @@ public class AroundAdviceExecutor implements AdviceExecutor {
             return targetMethod.invoke(targetInstance, parameterValues);
         }
         catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
+            throw e.getTargetException();
+        }
+    }
+
+    /**
+     * Invokes the original constructor.
+     *
+     * @param joinPoint the join point instance
+     * @return the newly created instance
+     * @throws Throwable the exception from the original constructor
+     */
+    public Object invokeTargetConstructor(final JoinPoint joinPoint) throws Throwable {
+        ConstructorSignature signature = (ConstructorSignature)joinPoint.getSignature();
+        Constructor targetConstructor = signature.getConstructor();
+        Object[] parameterValues = signature.getParameterValues();
+        try {
+            return targetConstructor.newInstance(parameterValues);
+        }
+        catch (InvocationTargetException e) {
+            throw e.getTargetException();
         }
     }
 

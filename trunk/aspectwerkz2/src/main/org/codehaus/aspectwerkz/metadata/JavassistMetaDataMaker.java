@@ -43,9 +43,18 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         classMetaData.setName(javaClass.getName());
         classMetaData.setModifiers(javaClass.getModifiers());
 
+        // constructors
+        List constructorList = new ArrayList();
+        CtConstructor[] constructors = javaClass.getConstructors();
+        for (int i = 0; i < constructors.length; i++) {
+            CtConstructor constructor = constructors[i];
+            constructorList.add(createConstructorMetaData(constructor));
+        }
+        classMetaData.setConstructors(constructorList);
+
         // methods
         List methodList = new ArrayList();
-        CtMethod[] methods = javaClass.getDeclaredMethods(); //TODO declared method ?
+        CtMethod[] methods = javaClass.getDeclaredMethods();
         for (int i = 0; i < methods.length; i++) {
             CtMethod method = methods[i];
             methodList.add(createMethodMetaData(method));
@@ -197,7 +206,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
 
         try {
             ConstructorMetaData constructorMetaData = new ConstructorMetaData();
-            constructorMetaData.setName(constructor.getName());
+            constructorMetaData.setName(CONSTRUCTOR_NAME);
 
             // parameters
             CtClass[] javaParameters = constructor.getParameterTypes();

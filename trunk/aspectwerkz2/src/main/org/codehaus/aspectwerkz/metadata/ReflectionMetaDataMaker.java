@@ -39,25 +39,25 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
         classMetaData.setName(klass.getName());
         classMetaData.setModifiers(klass.getModifiers());
 
-        // methods
-        List methodList = new ArrayList();
         // get the methods for the class only (not the super class' methods)
+        List methodList = new ArrayList();
         Method[] methods = klass.getDeclaredMethods();
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
             methodList.add(createMethodMetaData(method));
         }
+
         // get the constructors (<init> methods)
+        List constructorList = new ArrayList();
         Constructor[] constructors = klass.getDeclaredConstructors();
         for (int i = 0; i < constructors.length; i++) {
             Constructor constructor = constructors[i];
-            methodList.add(createConstructorMetaData(constructor));
+            constructorList.add(createConstructorMetaData(constructor));
         }
-        classMetaData.setMethods(methodList);
+        classMetaData.setConstructors(constructorList);
 
-        // fields
-        List fieldList = new ArrayList();
         // get the fields for the class only (not the super class' fields)
+        List fieldList = new ArrayList();
         Field[] fields = klass.getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
@@ -159,7 +159,7 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      */
     public static ConstructorMetaData createConstructorMetaData(final Constructor constructor) {
         ConstructorMetaData data = new ConstructorMetaData();
-        data.setName("<init>");
+        data.setName(CONSTRUCTOR_NAME);
         data.setModifiers(constructor.getModifiers());
         data.setParameterTypes(TypeConverter.convertTypeToJava(constructor.getParameterTypes()));
         data.setExceptionTypes(TypeConverter.convertTypeToJava(constructor.getExceptionTypes()));

@@ -12,7 +12,7 @@ package test.constructor;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class TestAfterAdvice {
-    public TestAfterAdvice() {
-        ConstructorAdviceTest.log("init ");
+    public TestAfterAdvice(String test) {
+        ConstructorAdviceTest.log(test + " ");
     }
 }

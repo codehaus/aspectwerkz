@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.pointcut.SetPointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.DeploymentModel;
@@ -391,18 +392,18 @@ public class PointcutManager {
      * Returns all the pointcuts for the caller side join point specified.
      *
      * @param classMetaData the class metadata
-     * @param methodMetaData the meta-data for the method
+     * @param memberMetaData the meta-data for the member
      * @return the pointcuts
      */
     public List getCallPointcuts(final ClassMetaData classMetaData,
-                                 final MethodMetaData methodMetaData) {
+                                 final MemberMetaData memberMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+        if (memberMetaData == null) throw new IllegalArgumentException("member meta-data can not be null");
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_callPointcuts.iterator(); it.hasNext();) {
             final CallPointcut pointcut = (CallPointcut)it.next();
-            if (pointcut.getExpression().match(classMetaData, methodMetaData)) {
+            if (pointcut.getExpression().match(classMetaData, memberMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
