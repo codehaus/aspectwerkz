@@ -10,6 +10,9 @@ package org.codehaus.aspectwerkz.reflect.impl.asm;
 import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttribute;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
+import org.codehaus.aspectwerkz.annotation.Annotations;
+import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
+import org.codehaus.aspectwerkz.annotation.UntypedAnnotationProxy;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
@@ -30,7 +33,6 @@ import org.objectweb.asm.attrs.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
@@ -590,6 +592,56 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
+     * Creates and returns a new annotation info build up from the Java5 annotation.
+     *
+     * @param annotation the ASM annotation abstractiono
+     * @param loader     the class loader that has loaded the proxy class to use
+     * @return the annotation info
+     */
+    public static AnnotationInfo getAnnotationInfo(final Annotation annotation, final ClassLoader loader) {
+        String annotationName = annotation.type.substring(1, annotation.type.length() - 1).replace('/', '.');
+        String annotationValues = createAnnotationKeyValueString(annotation);
+
+        Class proxyClass = Annotations.getProxyClass(annotationName, loader);
+        org.codehaus.aspectwerkz.annotation.Annotation proxy;
+        if (proxyClass == null) {
+            proxy = new UntypedAnnotationProxy(); // no proxy specified, wrap in an untyped proxy
+        } else {
+            try {
+                proxy = (TypedAnnotationProxy)proxyClass.newInstance(); // proxy specified
+            } catch (Exception e) {
+                throw new WrappedRuntimeException(e);
+            }
+        }
+        proxy.initialize(annotationName, annotationValues);
+        return new AnnotationInfo(annotationName, proxy);
+    }
+
+    /**
+     * Creates a string with the annotation key value pairs.
+     *
+     * @param annotation
+     * @return the string
+     */
+    private static String createAnnotationKeyValueString(final Annotation annotation) {
+        List elementValues = annotation.elementValues;
+        StringBuffer annotationValues = new StringBuffer();
+        if (elementValues.size() != 0) {
+            int i = 0;
+            for (Iterator iterator = elementValues.iterator(); iterator.hasNext();) {
+                Object[] keyValuePair = (Object[])iterator.next();
+                annotationValues.append((String)keyValuePair[0]);
+                annotationValues.append('=');
+                annotationValues.append(((AnnotationElementValue)keyValuePair[1]).getValue());
+                if (i < elementValues.size() - 1) {
+                    annotationValues.append(',');
+                }
+            }
+        }
+        return annotationValues.toString();
+    }
+
+    /**
      * ASM bytecode visitor that retrieves the class name from the bytecode.
      *
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -720,18 +772,25 @@ public class AsmClassInfo implements ClassInfo {
                         System.err.println("WARNING: could not deserialize annotation due to: " + e.toString());
                     }
                 }
-                if (attrs instanceof RuntimeInvisibleAnnotations) {
-                    for (Iterator it = ((RuntimeInvisibleAnnotations)attrs).annotations.iterator(); it.hasNext();) {
+                if (attributes instanceof RuntimeInvisibleAnnotations) {
+                    for (Iterator it = ((RuntimeInvisibleAnnotations)attributes).annotations.iterator();
+                         it.hasNext();) {
                         Annotation annotation = (Annotation)it.next();
-                        // FIXME build up annotation info
-                        m_annotations.add(new AnnotationInfo(annotation.type, null));
+                        AnnotationInfo annotationInfo = AsmClassInfo.getAnnotationInfo(
+                                annotation,
+                                (ClassLoader)m_loaderRef.get()
+                        );
+                        m_annotations.add(annotationInfo);
                     }
                 }
-                if (attrs instanceof RuntimeVisibleAnnotations) {
-                    for (Iterator it = ((RuntimeVisibleAnnotations)attrs).annotations.iterator(); it.hasNext();) {
+                if (attributes instanceof RuntimeVisibleAnnotations) {
+                    for (Iterator it = ((RuntimeVisibleAnnotations)attributes).annotations.iterator(); it.hasNext();) {
                         Annotation annotation = (Annotation)it.next();
-                        // FIXME build up annotation info
-                        m_annotations.add(new AnnotationInfo(annotation.type, null));
+                        AnnotationInfo annotationInfo = AsmClassInfo.getAnnotationInfo(
+                                annotation,
+                                (ClassLoader)m_loaderRef.get()
+                        );
+                        m_annotations.add(annotationInfo);
                     }
                 }
                 attributes = attributes.next;

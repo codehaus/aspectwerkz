@@ -28,7 +28,7 @@ public class TypedExpressionTest extends TestCase {
     }
 
     public void testGrammar() throws Throwable {
-//        s_parser.parse("pc(String, a) && ! ( args(s) )").dump(" ");
+//        PARSER.parse("pc(String, a) && ! ( args(s) )").dump(" ");
         s_parser.parse(
 //"NOT(execution(void test.expression.Target.modifiers1()) OR NOT execution(* java.lang.String.*(..)))"
 "dummy(s) OR not(dummy2)"

@@ -9,9 +9,13 @@ package org.codehaus.aspectwerkz.reflect.impl.asm;
 
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttribute;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
+import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
+import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
 import org.objectweb.asm.attrs.Annotation;
@@ -19,17 +23,18 @@ import org.objectweb.asm.attrs.RuntimeVisibleAnnotations;
 import org.objectweb.asm.attrs.AnnotationElementValue;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * ASM implementation of the MemberInfo interface.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public abstract class AsmMemberInfo implements MemberInfo {
+
     /**
      * The member.
      */
@@ -62,7 +67,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
 
     /**
      * Creates a new member meta data instance.
-     * 
+     *
      * @param member
      * @param declaringType
      * @param loader
@@ -82,7 +87,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
 
     /**
      * Returns the name.
-     * 
+     *
      * @return the name
      */
     public String getName() {
@@ -91,7 +96,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
 
     /**
      * Returns the modifiers.
-     * 
+     *
      * @return the modifiers
      */
     public int getModifiers() {
@@ -100,7 +105,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
 
     /**
      * Returns the declaring type.
-     * 
+     *
      * @return the declaring type
      */
     public ClassInfo getDeclaringType() {
@@ -112,7 +117,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
 
     /**
      * Returns the annotations.
-     * 
+     *
      * @return the annotations
      */
     public List getAnnotations() {
@@ -125,16 +130,14 @@ public abstract class AsmMemberInfo implements MemberInfo {
 
     /**
      * Retrieves and adds the annotations.
-     * 
+     *
      * @param attrs
      */
     private void addAnnotations(final Attribute attrs) {
         Attribute attributes = attrs;
-        System.out.println("m_declaringTypeName = " + m_declaringTypeName);
-        System.out.println("this.getName() = " + this.getName());
         while (attributes != null) {
             if (attributes instanceof CustomAttribute) {
-                CustomAttribute customAttribute = (CustomAttribute) attributes;
+                CustomAttribute customAttribute = (CustomAttribute)attributes;
                 byte[] bytes = customAttribute.getBytes();
                 try {
                     m_annotations.add(new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
@@ -145,26 +148,21 @@ public abstract class AsmMemberInfo implements MemberInfo {
             if (attributes instanceof RuntimeInvisibleAnnotations) {
                 for (Iterator it = ((RuntimeInvisibleAnnotations)attributes).annotations.iterator(); it.hasNext();) {
                     Annotation annotation = (Annotation)it.next();
-                    // FIXME build up annotation info
-                    m_annotations.add(new AnnotationInfo(annotation.type, null));
+                    AnnotationInfo annotationInfo = AsmClassInfo.getAnnotationInfo(
+                            annotation,
+                            (ClassLoader)m_loaderRef.get()
+                    );
+                    m_annotations.add(annotationInfo);
                 }
             }
             if (attributes instanceof RuntimeVisibleAnnotations) {
                 for (Iterator it = ((RuntimeVisibleAnnotations)attributes).annotations.iterator(); it.hasNext();) {
                     Annotation annotation = (Annotation)it.next();
-                    System.out.println("==============> RuntimeVisibleAnnotations = " + annotation.type);
-                    List elementValues = annotation.elementValues;
-                    for (Iterator iterator = elementValues.iterator(); iterator.hasNext();) {
-                        AnnotationElementValue elementValue = (AnnotationElementValue) iterator.next();
-                        int tag = elementValue.getTag();
-                        Object value = elementValue.getValue();
-                        System.out.println("tag = " + tag);                                       
-                        System.out.println("value = " + value.toString());
-                        System.out.println("elementValue.toString() = " + elementValue.toString());
-                    }
-                    System.out.println("annotation.toString() = " + annotation.toString());
-                    // FIXME build up annotation info
-                    m_annotations.add(new AnnotationInfo(annotation.type, null));
+                    AnnotationInfo annotationInfo = AsmClassInfo.getAnnotationInfo(
+                            annotation,
+                            (ClassLoader)m_loaderRef.get()
+                    );
+                    m_annotations.add(annotationInfo);
                 }
             }
             attributes = attributes.next;

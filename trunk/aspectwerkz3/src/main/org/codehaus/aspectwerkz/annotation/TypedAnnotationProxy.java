@@ -22,7 +22,7 @@ public abstract class TypedAnnotationProxy implements Annotation, Serializable {
     /**
      * The one and only annotation parser.
      */
-    protected static final AnnotationParser s_parser = new AnnotationParser(System.in);
+    protected static final AnnotationParser PARSER = new AnnotationParser(System.in);
 
     /**
      * The name of the annotation.
@@ -49,21 +49,37 @@ public abstract class TypedAnnotationProxy implements Annotation, Serializable {
 
     /**
      * Sets the full value of the annotation (including possible named parameters etc.)
-     * as @Foo(x=3 ...)
+     * as @Foo(x=3 ...).
+     *
+     * @param name the name of the annotation FQN with package name etc
+     * @param value the key/value pairs separated with commas (key1=value1, key2=value2, ...)
      */
     public void initialize(final String name, String value) {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
         }
+        setName(name);
+        
+        String shortName = name;
+        int index = name.lastIndexOf('$');
+        if (index > 0) {
+            shortName = name.substring(index + 1, name.length());
+        } else {
+            index = name.lastIndexOf('.');
+            if (index > 0) {
+                shortName = name.substring(index + 1, name.length());
+            }
+        }
+
         StringBuffer representation = new StringBuffer("@");
-        representation.append(name).append('(');
+        representation.append(shortName).append('(');
         if (value!=null) {
             representation.append(value);
         }
         representation.append(')');
 
         try {
-            AnnotationVisitor.parse(this, s_parser.parse(representation.toString()));
+            AnnotationVisitor.parse(this, PARSER.parse(representation.toString()));
         } catch (ParseException e) {
             e.printStackTrace();
             throw new RuntimeException("could not parse annotation [" + m_name + " " + representation.toString() + "]");

@@ -15,6 +15,7 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface ReflectionInfo {
+
     /**
      * Returns the name of the class.
      * 

@@ -25,7 +25,7 @@ import java.util.Map;
 
 /**
  * Parses and retrieves annotations.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
@@ -45,7 +45,7 @@ public class AnnotationManager {
 
     /**
      * Adds a source tree to the builder.
-    *
+     *
      * @param srcDirs the source trees
      */
     public void addSourceTrees(final String[] srcDirs) {
@@ -56,8 +56,8 @@ public class AnnotationManager {
 
     /**
      * Register an annotation together with its proxy implementation.
-     * 
-     * @param proxyClass the proxy class
+     *
+     * @param proxyClass     the proxy class
      * @param annotationName the name of the annotation
      */
     public void registerAnnotationProxy(final Class proxyClass, final String annotationName) {
@@ -66,7 +66,7 @@ public class AnnotationManager {
 
     /**
      * Returns all classes.
-     * 
+     *
      * @return an array with all classes
      */
     public JavaClass[] getAllClasses() {
@@ -74,19 +74,19 @@ public class AnnotationManager {
         Collection javaClasses = new ArrayList();
         String className;
         for (Iterator it = classes.iterator(); it.hasNext();) {
-            className = (String) it.next();
+            className = (String)it.next();
             if (JAVA_LANG_OBJECT_CLASS_NAME.equals(className)) {
                 continue;
             }
             JavaClass clazz = m_parser.getClassByName(className);
             javaClasses.add(clazz);
         }
-        return (JavaClass[]) javaClasses.toArray(new JavaClass[] {});
+        return (JavaClass[])javaClasses.toArray(new JavaClass[]{});
     }
 
     /**
      * Returns the annotations with a specific name for a specific class.
-     * 
+     *
      * @param name
      * @param clazz
      * @return an array with the annotations
@@ -101,12 +101,12 @@ public class AnnotationManager {
                 annotations.add(instantiateAnnotation(rawAnnotation));
             }
         }
-        return (Annotation[]) annotations.toArray(new Annotation[] {});
+        return (Annotation[])annotations.toArray(new Annotation[]{});
     }
 
     /**
      * Returns the annotations with a specific name for a specific method.
-     * 
+     *
      * @param name
      * @param method
      * @return an array with the annotations
@@ -121,12 +121,12 @@ public class AnnotationManager {
                 annotations.add(instantiateAnnotation(rawAnnotation));
             }
         }
-        return (Annotation[]) annotations.toArray(new Annotation[] {});
+        return (Annotation[])annotations.toArray(new Annotation[]{});
     }
 
     /**
      * Returns the annotations with a specific name for a specific field.
-     * 
+     *
      * @param name
      * @param field
      * @return an array with the annotations
@@ -141,32 +141,32 @@ public class AnnotationManager {
                 annotations.add(instantiateAnnotation(rawAnnotation));
             }
         }
-        return (Annotation[]) annotations.toArray(new Annotation[] {});
+        return (Annotation[])annotations.toArray(new Annotation[]{});
     }
 
     /**
-     * Instantiate the given annotation based on its name, and initialize it
-     * by passing the given value (may be parsed or not, depends on type/untyped)
+     * Instantiate the given annotation based on its name, and initialize it by passing the given value (may be parsed
+     * or not, depends on type/untyped)
      *
      * @param rawAnnotation
      * @return
      */
     private Annotation instantiateAnnotation(RawAnnotation rawAnnotation) {
-        Class proxyClass = (Class) m_registeredAnnotations.get(rawAnnotation.name);
+        Class proxyClass = (Class)m_registeredAnnotations.get(rawAnnotation.name);
         Annotation annotation;
         try {
-            annotation = (Annotation) proxyClass.newInstance();
+            annotation = (Annotation)proxyClass.newInstance();
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
         annotation.setName(rawAnnotation.name);
-        annotation.initialize(rawAnnotation.name, (rawAnnotation.value==null)?"":rawAnnotation.value);
+        annotation.initialize(rawAnnotation.name, (rawAnnotation.value == null) ? "" : rawAnnotation.value);
         return annotation;
     }
 
     /**
-     * Extrac the raw information (name + unparsed value without optional parenthesis) from a Qdox doclet
-     * Note: StringBuffer.append(null<string>) sucks and produce "null" string..
+     * Extrac the raw information (name + unparsed value without optional parenthesis) from a Qdox doclet Note:
+     * StringBuffer.append(null<string>) sucks and produce "null" string..
      *
      * @param annotationName
      * @param tag
@@ -182,7 +182,7 @@ public class AnnotationManager {
 
         // check first for untyped annotations
         if (m_registeredAnnotations.containsKey(annotationName)) {
-            Class proxyClass = (Class) m_registeredAnnotations.get(annotationName);
+            Class proxyClass = (Class)m_registeredAnnotations.get(annotationName);
             if (UntypedAnnotationProxy.class.isAssignableFrom(proxyClass)) {
                 // we do have an untyped annotation
                 // does it match
@@ -203,38 +203,38 @@ public class AnnotationManager {
         // character
         String rawValue = null;
         if (tagName.indexOf('(') > 0) {//@Void(), @Do(x = 3), @Do(x=3)
-            rawValue = tagName.substring(tagName.indexOf('(')+1).trim();//), x, x=3)
+            rawValue = tagName.substring(tagName.indexOf('(') + 1).trim();//), x, x=3)
             tagName = tagName.substring(0, tagName.indexOf('(')).trim();//Void, Do
             if (rawValue.endsWith(")")) {
                 if (rawValue.length() > 1) {
-                    rawValue = rawValue.substring(0, rawValue.length()-1);
+                    rawValue = rawValue.substring(0, rawValue.length() - 1);
                 } else {
                     rawValue = null;
                 }
             }
         }
-
         String rawEndValue = Strings.removeFormattingCharacters(tag.getValue().trim());
         if (rawEndValue.endsWith(")")) {
             if (rawEndValue.length() > 1) {
-                rawEndValue = rawEndValue.substring(0, rawEndValue.length()-1);
+                rawEndValue = rawEndValue.substring(0, rawEndValue.length() - 1);
             } else {
                 rawEndValue = null;
             }
         }
-
         StringBuffer raw = new StringBuffer();
-        if (rawValue!=null)
+        if (rawValue != null) {
             raw.append(rawValue);
-        if (rawEndValue!=null)
+        }
+        if (rawEndValue != null) {
             raw.append(rawEndValue);
+        }
 
         // exact filtering
         if (tagName.equals(annotationName) && m_registeredAnnotations.containsKey(tagName)) {
-                RawAnnotation rawAnnotation = new RawAnnotation();
-                rawAnnotation.name = annotationName;
-                rawAnnotation.value = raw.toString();
-                return rawAnnotation;
+            RawAnnotation rawAnnotation = new RawAnnotation();
+            rawAnnotation.name = annotationName;
+            rawAnnotation.value = raw.toString();
+            return rawAnnotation;
         }
 
         // no match
@@ -242,9 +242,7 @@ public class AnnotationManager {
     }
 
     /**
-     * Raw info about an annotation:
-     * Do(foo) ==> Do + foo [unless untyped then ==> Do(foo) + null
-     * Do foo  ==> Do + foo
+     * Raw info about an annotation: Do(foo) ==> Do + foo [unless untyped then ==> Do(foo) + null Do foo  ==> Do + foo
      * etc
      */
     private static class RawAnnotation {
