@@ -178,6 +178,7 @@ public class DocumentParser {
 
             Class aspectClass = null;
             try {
+                // TODO: use passed loader or context CL?
                 aspectClass = ContextClassLoader.loadClass(aspectClassName);
 //                aspectClass = loader.loadClass(aspectClassName);
             }

@@ -19,6 +19,8 @@ import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
  */
 public class ConstructorSignatureImpl implements ConstructorSignature {
 
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
+
     private final Class m_declaringType;
     private final ConstructorTuple m_constructorTuple;
 
