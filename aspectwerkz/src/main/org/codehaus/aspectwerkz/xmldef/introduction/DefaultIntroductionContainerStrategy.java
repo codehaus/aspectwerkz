@@ -36,27 +36,27 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Implements the default introduction container strategy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefaultIntroductionContainerStrategy.java,v 1.5 2003-07-08 19:35:02 jboner Exp $
+ * @version $Id: DefaultIntroductionContainerStrategy.java,v 1.6 2003-07-09 11:31:42 jboner Exp $
  */
 public class DefaultIntroductionContainerStrategy implements IntroductionContainer {
 
     /**
-     * Holds a reference to the sole per JVM advice.
+     * Holds a reference to the sole per JVM introduction.
      */
     protected Object m_perJvm;
 
     /**
-     * Holds references to the per class advices.
+     * Holds references to the per class introductions.
      */
     protected Map m_perClass = new HashMap();
 
     /**
-     * Holds references to the per instance advices.
+     * Holds references to the per instance introductions.
      */
     protected Map m_perInstance = new WeakHashMap();
 
     /**
-     * Holds references to the per thread advices.
+     * Holds references to the per thread introductions.
      */
     protected Map m_perThread = new WeakHashMap();
 
@@ -71,7 +71,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
     protected Method[] m_methods = new Method[0];
 
     /**
-     * Creates a new transient container strategy.
+     * Creates a new default introduction container.
      *
      * @param implClass the implementation class
      */
@@ -89,16 +89,16 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
 
                 // remove the ___AW_getUuid, ___AW_getMetaData, ___AW_addMetaData and class$ methods
                 // as well as the added proxy methods before sorting the method list
-                if (!declaredMethods[i].getName().equals(
-                        TransformationUtil.GET_UUID_METHOD) &&
-                        !declaredMethods[i].getName().equals(
+                if (!declaredMethods[i].getName().startsWith(
+                        TransformationUtil.CLASS_LOOKUP_METHOD) &&
+                        !declaredMethods[i].getName().startsWith(
+                                TransformationUtil.GET_UUID_METHOD) &&
+                        !declaredMethods[i].getName().startsWith(
                                 TransformationUtil.GET_META_DATA_METHOD) &&
-                        !declaredMethods[i].getName().equals(
+                        !declaredMethods[i].getName().startsWith(
                                 TransformationUtil.SET_META_DATA_METHOD) &&
                         !declaredMethods[i].getName().startsWith(
-                                TransformationUtil.ORIGINAL_METHOD_PREFIX) &&
-                        !declaredMethods[i].getName().startsWith(
-                                TransformationUtil.CLASS_LOOKUP_METHOD)) {
+                                TransformationUtil.ORIGINAL_METHOD_PREFIX)) {
                     toSort.add(declaredMethods[i]);
                 }
             }
