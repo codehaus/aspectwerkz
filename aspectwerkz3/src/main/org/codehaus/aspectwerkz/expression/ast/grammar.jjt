@@ -1,0 +1,732 @@
+/**************************************************************************************
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the LGPL license      *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
+
+/**
+ * JJTree grammar for pointcut expressions.
+ *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ */
+
+options {
+    MULTI=true;
+    VISITOR=true;
+    NODE_DEFAULT_VOID=true;
+    NODE_PACKAGE="org.codehaus.aspectwerkz.expression.ast";
+    NODE_USES_PARSER=false;
+}
+
+PARSER_BEGIN(ExpressionParser)
+/**************************************************************************************
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the LGPL license      *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
+package org.codehaus.aspectwerkz.expression.ast;
+
+import java.lang.reflect.Modifier;
+import java.io.Reader;
+import java.io.StringReader;
+
+/**
+ * Usage:
+ *  <pre>
+ *     ExpressionParser parser = new ExpressionParser(System.in); // can be only one
+ *     ASTRoot root = parser.parse("call(@RequiresNew public * foo.Bar.*(String, ..) AND withincode(* foo.Baz.within(..)");
+ *     Expression expression = new Expression(root);
+ *     ...
+ *  </pre>
+ *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ */
+public class ExpressionParser {
+
+    public ASTRoot parse(String expression) throws ParseException {
+        return parse(new StringReader(expression));
+    }
+
+    public ASTRoot parse(Reader reader) throws ParseException {
+        ReInit(reader);
+        return Root();
+    }
+}
+PARSER_END(ExpressionParser)
+
+//------------------ Global lexical scope ------------------
+
+SKIP : /* WHITE SPACE */
+{
+    " "
+|
+    "\t"
+}
+TOKEN : /* LOGICAL OPERATORS */
+{
+    < AND : "&&" | "and" | "AND" | "&" >
+|
+    < OR  : "||" | "or"  | "OR"  | "|" >
+|
+    < NOT : "!"  | "not" | "NOT" >
+}
+TOKEN : /* POINTCUTS */
+{
+    < POINTCUT_REFERENCE : (["a"-"z", "A"-"Z", "_", "$", "0"-"9"])+ >
+|
+    < EXECUTION : "execution(" > : METHOD
+|
+    < CALL : "call(" > : METHOD
+|
+    < SET : "set(" > : FIELD
+|
+    < GET : "get(" > : FIELD
+|
+    < HANDLER : "handler(" > : CLASS
+|
+    < WITHIN : "within(" > : CLASS
+|
+    < WITHIN_CODE : "withincode(" > : METHOD
+|
+    < STATIC_INITIALIZATION : "staticinitialization(" > : CLASS
+|
+    < CFLOW : "cflow(" >
+|
+    < CFLOW_BELOW : "cflowbelow(" >
+|
+    < ARGS : "args(" >
+|
+    < TARGET : "target(" > : CLASS
+|
+    < THIS : "this(" > : CLASS
+|
+    < IF : "if(" >
+|
+    < #DOT: "." >
+|
+    < #WILDCARD: "*" >
+|
+    < #ARRAY: "[]" >
+|
+    < EAGER_WILDCARD: <DOT> <DOT> >
+}
+
+//------------------ Lexical scope for classes ------------------
+
+<CLASS> SKIP : /* WHITE SPACE */
+{
+    " "
+|
+    "\t"
+}
+<CLASS> TOKEN :
+{
+    < CLASS_PRIVATE: "private" >
+|
+    < CLASS_PROTECTED: "protected" >
+|
+    < CLASS_PUBLIC: "public" >
+|
+    < CLASS_STATIC: "static" >
+|
+    < CLASS_ABSTRACT: "abstract" >
+|
+    < CLASS_FINAL: "final" >
+|
+    < CLASS_ATTRIBUTE : "@" <CLASS_IDENTIFIER> >
+|
+    < CLASS_PATTERN: <CLASS_IDENTIFIER> (<DOT> <CLASS_IDENTIFIER>)* >
+|
+    < #CLASS_IDENTIFIER: (<CLASS_JAVA_NAME_LETTER> | <EAGER_WILDCARD> | <WILDCARD>)+ >
+|
+    < #CLASS_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "0"-"9"] >
+|
+    < CLASS_POINTCUT_END: ")" > : DEFAULT
+|
+    < CLASS_HIERARCHICAL: "+" >
+}
+
+//------------------ Lexical scope for methods ------------------
+
+<METHOD> SKIP : /* WHITE SPACE */
+{
+    " "
+|
+    "\t"
+}
+<METHOD> TOKEN :
+{
+    < METHOD_PUBLIC: "public" >
+|
+    < METHOD_PROTECTED: "protected" >
+|
+    < METHOD_PRIVATE: "private" >
+|
+    < METHOD_STATIC: "static" >
+|
+    < METHOD_ABSTRACT: "abstract" >
+|
+    < METHOD_FINAL: "final" >
+|
+    < METHOD_NATIVE: "native" >
+|
+    < METHOD_SYNCHRONIZED: "synchronized" >
+|
+    < METHOD_ATTRIBUTE : "@" <METHOD_IDENTIFIER> >
+|
+    < #METHOD_IDENTIFIER: (<METHOD_JAVA_NAME_LETTER> | <EAGER_WILDCARD> | <WILDCARD>)+ >
+|
+    < METHOD_CLASS_PATTERN: <METHOD_IDENTIFIER> (<DOT> <METHOD_IDENTIFIER>)* >
+|
+    < METHOD_ARRAY_CLASS_PATTERN: <METHOD_CLASS_PATTERN> (<ARRAY>)+ >
+|
+    < COMMA: "," >
+|
+    < PARAMETER_START: "(" >
+|
+    < PARAMETER_END: ")" > : DEFAULT
+|
+    < #METHOD_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "0"-"9"] >
+}
+
+//------------------ Lexical scope for fields ------------------
+
+<FIELD> SKIP : /* WHITE SPACE */
+{
+    " "
+|
+    "\t"
+}
+<FIELD> TOKEN :
+{
+    < FIELD_PRIVATE: "private" >
+|
+    < FIELD_PROTECTED: "protected" >
+|
+    < FIELD_PUBLIC: "public" >
+|
+    < FIELD_STATIC: "static" >
+|
+    < FIELD_ABSTRACT: "abstract" >
+|
+    < FIELD_FINAL: "final" >
+|
+    < FIELD_TRANSIENT: "transient" >
+|
+    < FIELD_ATTRIBUTE : "@" <FIELD_IDENTIFIER> >
+|
+    < #FIELD_IDENTIFIER: (<FIELD_JAVA_NAME_LETTER> | <EAGER_WILDCARD> | <WILDCARD>)+ >
+|
+    < FIELD_CLASS_PATTERN: <FIELD_IDENTIFIER> (<DOT> <FIELD_IDENTIFIER>)* >
+|
+    < FIELD_ARRAY_CLASS_PATTERN: <FIELD_CLASS_PATTERN> (<ARRAY>)+ >
+|
+    < #FIELD_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "0"-"9"] >
+|
+    < FIELD_POINTCUT_END: ")" > : DEFAULT
+}
+
+//------------------ Lexical scope for parameters ------------------
+
+<PARAMETERS> SKIP : /* WHITE SPACE */
+{
+    " "
+|
+    "\t"
+}
+<PARAMETERS> TOKEN :
+{
+    < #PARAMETER_IDENTIFIER: (<PARAMETER_JAVA_NAME_LETTER> | <EAGER_WILDCARD> | <WILDCARD>)+ >
+|
+    < PARAMETER_CLASS_PATTERN: <PARAMETER_IDENTIFIER> (<DOT> <PARAMETER_IDENTIFIER>)* >
+|
+    < PARAMETER_HIERARCHICAL: "+" >
+|
+    < PARAMETER_ARRAY_CLASS_PATTERN: <PARAMETER_CLASS_PATTERN> (<ARRAY>)+ >
+|
+    < PARAMETER_ANNOTATION: "@" <PARAMETER_IDENTIFIER> >
+|
+    < #PARAMETER_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "0"-"9"] >
+}
+
+//------------------ Bootstrap ------------------
+
+/**
+ * Entry point.
+ */
+ASTRoot Root() #Root : {}
+{
+    Expression() <EOF>
+    { return jjtThis; }
+}
+
+/**
+ * Expression.
+ */
+void Expression() : {}
+{
+    AndExpression()
+}
+
+//------------------ Logical operators ------------------
+
+/**
+ * AndExpression.
+ */
+void AndExpression() : {}
+{
+    (OrExpression() (LOOKAHEAD(2) <AND> OrExpression())*) #And(>1)
+}
+
+/**
+ * OrExpression.
+ */
+void OrExpression() : {}
+{
+    (UnaryExpression() (LOOKAHEAD(2) <OR> AndExpression())*) #Or(>1)
+}
+
+/**
+ * UnaryExpression.
+ */
+void UnaryExpression() : {}
+{
+    NotExpression() | "(" Expression() ")" | Pointcut()
+}
+
+
+/**
+ * NotExpression.
+ */
+void NotExpression() : {}
+{
+    <NOT> UnaryExpression() #Not()
+}
+
+//------------------ Pointcuts ------------------
+
+/**
+ * Pointcut.
+ */
+void Pointcut() : {}
+{
+    LOOKAHEAD(4) PointcutReference() |
+    LOOKAHEAD(4) Call() |
+    LOOKAHEAD(4) Execution() |
+    LOOKAHEAD(4) Set() |
+    LOOKAHEAD(4) Get() |
+    LOOKAHEAD(4) Handler() |
+    LOOKAHEAD(4) Within() |
+    LOOKAHEAD(4) WithinCode() |
+    LOOKAHEAD(4) StaticInitialization() |
+    LOOKAHEAD(4) Cflow() |
+    LOOKAHEAD(4) CflowBelow()
+}
+
+/**
+ * Pointcut reference.
+ */
+void PointcutReference() #PointcutReference :
+{
+    Token name;
+}
+{
+    name=<POINTCUT_REFERENCE>
+    {
+        jjtThis.setName(name.image);
+    }
+}
+
+/**
+ * Execution.
+ */
+void Execution() #Execution : {}
+{
+    <EXECUTION> (LOOKAHEAD(2) MethodPattern() | ConstructorPattern()) ")"
+}
+
+/**
+ * Call.
+ */
+void Call() #Call : {}
+{
+    <CALL> (LOOKAHEAD(2) MethodPattern() | ConstructorPattern()) ")"
+}
+
+/**
+ * Set.
+ */
+void Set() #Set : {}
+{
+    <SET> FieldPattern() <FIELD_POINTCUT_END>
+}
+
+/**
+ * Get.
+ */
+void Get() #Get : {}
+{
+    <GET> FieldPattern() <FIELD_POINTCUT_END>
+}
+
+/**
+ * Handler.
+ */
+void Handler() #Handler : {}
+{
+    <HANDLER> ClassPattern() <CLASS_POINTCUT_END>
+}
+
+/**
+ * Within.
+ */
+void Within() #Within : {}
+{
+    <WITHIN> ClassPattern() <CLASS_POINTCUT_END>
+}
+
+/**
+ * WithinCode.
+ */
+void WithinCode() #WithinCode : {}
+{
+   <WITHIN_CODE> MethodPattern() ")"
+}
+
+/**
+ * StaticInitialization.
+ */
+void StaticInitialization() #StaticInitialization : {}
+{
+    <STATIC_INITIALIZATION> ClassPattern() <CLASS_POINTCUT_END>
+}
+
+/**
+ * Cflow.
+ */
+void Cflow() #Cflow : {}
+{
+   <CFLOW> Expression() ")"
+}
+
+/**
+ * CflowBelow.
+ */
+void CflowBelow() #CflowBelow : {}
+{
+   <CFLOW_BELOW> Expression() ")"
+}
+
+//------------------ Patterns ------------------
+
+/**
+ * Class pattern.
+ */
+void ClassPattern() #ClassPattern :
+{
+    Token pattern;
+}
+{
+    (ClassAttribute())*
+    (ClassModifier())*
+    pattern=<CLASS_PATTERN>
+    {
+        jjtThis.setTypePattern(pattern.image);
+    }
+    (<CLASS_HIERARCHICAL>
+    {
+        jjtThis.setHierarchical(true);
+    }
+    )*
+}
+
+/**
+ * Method pattern.
+ *
+ * @TODO: split class name and method name.
+ * @TODO: handle '+'.
+ * @TODO: put method name, return type and declaring class in different nodes.
+ */
+void MethodPattern() #MethodPattern :
+{
+    Token returnType, name;
+}
+{
+    (MethodAttribute())*
+    (MethodModifier())*
+    (returnType=<METHOD_CLASS_PATTERN> | returnType=<METHOD_ARRAY_CLASS_PATTERN>)
+    {
+        jjtThis.setReturnTypePattern(returnType.image);
+    }
+    name=<METHOD_CLASS_PATTERN>
+    {
+        jjtThis.setFullNamePattern(name.image);
+    }
+    Parameters()
+}
+
+/**
+ * Constructor pattern.
+ *
+ * @TODO: split class name and constructor name ('new').
+ * @TODO: handle '+'.
+ * @TODO: put declaring class in a different node.
+ */
+void ConstructorPattern() #ConstructorPattern :
+{
+    Token name;
+}
+{
+    (MethodAttribute())*
+    (ConstructorModifier())*
+    name=<METHOD_CLASS_PATTERN>
+    {
+        if (!name.image.endsWith("new")) {
+            throw new RuntimeException("constructor pattern must have 'new' as method name");
+        }
+        jjtThis.setFullNamePattern(name.image);
+    }
+    Parameters()
+}
+
+/**
+ * Field pattern.
+ *
+ * @TODO: split class name and field name.
+ * @TODO: handle '+'.
+ * @TODO: put field name, field type and declaring class in different nodes.
+ */
+void FieldPattern() #FieldPattern :
+{
+    Token type, name;
+}
+{
+    (FieldAttribute())*
+    (FieldModifier())*
+    (type=<FIELD_CLASS_PATTERN> | type=<FIELD_ARRAY_CLASS_PATTERN>)
+    {
+        jjtThis.setFieldTypePattern(type.image);
+    }
+    name=<FIELD_CLASS_PATTERN>
+    {
+        jjtThis.setFullNamePattern(name.image);
+    }
+}
+
+/**
+ * Parameters.
+ */
+void Parameters() : {}
+{
+    <PARAMETER_START> (<EAGER_WILDCARD> | [Parameter() (<COMMA> Parameter())* ]) <PARAMETER_END>
+}
+
+/**
+ * Parameter pattern.
+ */
+void Parameter() #Parameter :
+{
+    Token parameter;
+}
+{
+    (parameter=<METHOD_CLASS_PATTERN> | parameter=<METHOD_ARRAY_CLASS_PATTERN>)
+    {
+        jjtThis.setTypePattern(parameter.image);
+    }
+}
+
+/**
+ * Class attribute.
+ */
+void ClassAttribute() #Attribute :
+{
+    Token attribute;
+}
+{
+    attribute=<CLASS_ATTRIBUTE>
+    {
+        jjtThis.setName(attribute.image);
+    }
+}
+
+/**
+ * Method attribute.
+ */
+void MethodAttribute() #Attribute :
+{
+    Token attribute;
+}
+{
+    attribute=<METHOD_ATTRIBUTE>
+    {
+        jjtThis.setName(attribute.image);
+    }
+}
+
+/**
+ * Field attribute.
+ */
+void FieldAttribute() #Attribute :
+{
+    Token attribute;
+}
+{
+    attribute=<FIELD_ATTRIBUTE>
+    {
+        jjtThis.setName(attribute.image);
+    }
+}
+
+/**
+ * Class modifier.
+ */
+void ClassModifier() #Modifier : {}
+{
+   <CLASS_PUBLIC>
+    {
+        jjtThis.setModifier(Modifier.PUBLIC);
+    }
+    |
+    <CLASS_PROTECTED>
+    {
+        jjtThis.setModifier(Modifier.PROTECTED);
+    }
+    |
+    <CLASS_PRIVATE>
+    {
+        jjtThis.setModifier(Modifier.PRIVATE);
+    }
+    |
+    <CLASS_STATIC>
+    {
+        jjtThis.setModifier(Modifier.STATIC);
+    }
+    |
+    <CLASS_ABSTRACT>
+    {
+        jjtThis.setModifier(Modifier.ABSTRACT);
+    }
+    |
+    <CLASS_FINAL>
+    {
+        jjtThis.setModifier(Modifier.FINAL);
+    }
+}
+
+/**
+ * Method modifier.
+ */
+void MethodModifier() #Modifier : {}
+{
+    <METHOD_PUBLIC>
+    {
+        jjtThis.setModifier(Modifier.PUBLIC);
+    }
+    |
+    <METHOD_PROTECTED>
+    {
+        jjtThis.setModifier(Modifier.PROTECTED);
+    }
+    |
+    <METHOD_PRIVATE>
+    {
+        jjtThis.setModifier(Modifier.PRIVATE);
+    }
+    |
+    <METHOD_STATIC>
+    {
+        jjtThis.setModifier(Modifier.STATIC);
+    }
+    |
+    <METHOD_ABSTRACT>
+    {
+        jjtThis.setModifier(Modifier.ABSTRACT);
+    }
+    |
+    <METHOD_FINAL>
+    {
+        jjtThis.setModifier(Modifier.FINAL);
+    }
+    |
+    <METHOD_NATIVE>
+    {
+        jjtThis.setModifier(Modifier.NATIVE);
+    }
+    |
+    <METHOD_SYNCHRONIZED>
+    {
+        jjtThis.setModifier(Modifier.SYNCHRONIZED);
+    }
+}
+
+/**
+ * Constructor modifier.
+ */
+void ConstructorModifier() #Modifier : {}
+{
+    <METHOD_PUBLIC>
+    {
+        jjtThis.setModifier(Modifier.PUBLIC);
+    }
+    |
+    <METHOD_PROTECTED>
+    {
+        jjtThis.setModifier(Modifier.PROTECTED);
+    }
+    |
+    <METHOD_PRIVATE>
+    {
+        jjtThis.setModifier(Modifier.PRIVATE);
+    }
+    |
+    <METHOD_SYNCHRONIZED>
+    {
+        jjtThis.setModifier(Modifier.SYNCHRONIZED);
+    }
+}
+
+/**
+ * Field modifier.
+ */
+void FieldModifier() #Modifier : {}
+{
+   <FIELD_PUBLIC>
+    {
+        jjtThis.setModifier(Modifier.PUBLIC);
+    }
+    |
+    <FIELD_PROTECTED>
+    {
+        jjtThis.setModifier(Modifier.PROTECTED);
+    }
+    |
+    <FIELD_PRIVATE>
+    {
+        jjtThis.setModifier(Modifier.PRIVATE);
+    }
+    |
+    <FIELD_STATIC>
+    {
+        jjtThis.setModifier(Modifier.STATIC);
+    }
+    |
+    <FIELD_ABSTRACT>
+    {
+        jjtThis.setModifier(Modifier.ABSTRACT);
+    }
+    |
+    <FIELD_FINAL>
+    {
+        jjtThis.setModifier(Modifier.FINAL);
+    }
+    |
+    <FIELD_TRANSIENT>
+    {
+        jjtThis.setModifier(Modifier.TRANSIENT);
+    }
+}
+

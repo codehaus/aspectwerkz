@@ -1,0 +1,395 @@
+<?xml version="1.0"?>
+
+<!-- ============================================================== -->
+<!-- Ant build file for the AspectWerkz project -->
+<!-- ============================================================== -->
+<project name="AspectWerkz" default="aspectwerkz:jar" basedir=".">
+
+    <path id="project.class.path">
+        <pathelement path="${java.class.path}"/>
+        <pathelement path="${build.core.dir}"/>
+        <fileset dir="${basedir}/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement location="${basedir}/src/samples"/>
+    </path>
+
+    <path id="aspectwerkz.classpath">
+        <fileset dir="${basedir}/lib">
+            <include name="${basedir}/target/classes"/>
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+    <property name="aspectwerkz.classpath" refid="aspectwerkz.classpath"/>
+
+    <!-- =================================================== -->
+    <!--  initializes parameters  -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:init">
+        <property name="name" value="aspectwerkz"/>
+        <property name="version" value="0.10.RC2"/>
+        <property name="basedir" value="."/>
+        <property name="src.dir" value="${basedir}/src"/>
+        <property name="test.src.dir" value="${basedir}/src/test"/>
+        <property name="build.dir" value="${basedir}/target"/>
+        <property name="build.core.dir" value="${build.dir}/classes"/>
+        <property name="build.test.dir" value="${build.dir}/test-classes"/>
+        <property name="lib.dir" value="${basedir}/lib"/>
+        <property name="dist.dir" value="${basedir}/dist"/>
+        <property name="config.dir" value="${basedir}/config"/>
+        <property name="javac.debug" value="on"/>
+        <property name="javac.deprecation" value="on"/>
+        <property name="javac.optimize" value="off"/>
+        <property name="javac.depend" value="off"/>
+        <property name="javac.verbose" value="off"/>
+        <mkdir dir="${dist.dir}"/>
+
+        <!-- os specific -->
+        <condition property="pathseparator" value=";">
+            <os family="dos"/>
+        </condition>
+        <condition property="executableSuffix" value=".bat">
+            <os family="dos"/>
+        </condition>
+        <!-- os specific -->
+        <condition property="pathseparator" value=":">
+            <not>
+                <os family="dos"/>
+            </not>
+        </condition>
+        <condition property="executableSuffix" value="">
+            <not>
+                <os family="dos"/>
+            </not>
+        </condition>
+        <property name="target.dir" value="${basedir}/target"/>
+        <property name="lib.dir" value="${basedir}/lib"/>
+        <property name="bin.dir" value="${basedir}/bin"/>
+        <property name="dist.dir" value="${basedir}/dist"/>
+        <property name="main.classes" value="${target.dir}/classes"/>
+        <property name="test.classes" value="${target.dir}/test-classes"/>
+        <property name="samples.classes" value="${target.dir}/samples-classes"/>
+        <property name="extensions.classes" value="${target.dir}/extensions-classes"/>
+        <property name="project.name" value="aspectwerkz"/>
+        <property environment="env"/>
+    </target>
+
+    <!-- ============================================================== -->
+    <!-- clean -->
+    <!-- ============================================================== -->
+    <target name="clean" depends="aspectwerkz:init">
+        <delete dir="${build.core.dir}"/>
+        <delete dir="${build.test.dir}"/>
+        <delete dir="${samples.classes}"/>
+        <delete dir="${extensions.classes}"/>
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.core.dir}"/>
+        <mkdir dir="${build.test.dir}"/>
+        <mkdir dir="${samples.classes}"/>
+        <mkdir dir="${extensions.classes}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+
+    <!-- ============================================================== -->
+    <!-- compilation targets -->
+    <!-- ============================================================== -->
+    <target name="aspectwerkz:compile" depends="aspectwerkz:init, java:compile">
+        <antcall target="aspectwerkz:jar"/>
+        <antcall target="aspectwerkz:extensions:compile"/>
+        <antcall target="aspectwerkz:samples:compile"/>
+    </target>
+
+    <target name="java:compile" depends="aspectwerkz:init">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.core.dir}"/>
+        <javac destdir="${build.core.dir}" debug="on">
+            <src path="${src.dir}/main"/>
+            <classpath>
+                <pathelement path="${java.class.path}"/>
+                <fileset dir="${lib.dir}">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+        <mkdir dir="${build.test.dir}"/>
+        <javac destdir="${build.test.dir}" debug="off">
+            <src path="${test.src.dir}"/>
+            <classpath>
+                <pathelement path="${java.class.path}"/>
+                <pathelement path="${build.core.dir}"/>
+                <fileset dir="${lib.dir}">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- ============================================================== -->
+    <!-- create distribution -->
+    <!-- ============================================================== -->
+    <target name="aspectwerkz:jar" depends="java:compile">
+        <mkdir dir="${dist.dir}"/>
+        <copy file="${src.dir}/main/aspectwerkz.dtd" todir="${build.core.dir}"/>
+        <jar destfile="${build.dir}/aspectwerkz-${version}.jar" manifest="${lib.dir}/manifest.mf">
+            <fileset dir="${build.core.dir}">
+                <exclude name="**/aspectwerkz/hook/**/*"/>
+            </fileset>
+        </jar>
+        <copy tofile="${lib.dir}/aspectwerkz-${version}.jar" file="${build.dir}/aspectwerkz-${version}.jar" overwrite="true"/>
+        <!-- split dist for layer 1 separation -->
+        <jar destfile="${build.dir}/aspectwerkz-core-${version}.jar">
+            <fileset dir="${build.core.dir}">
+                <include name="**/aspectwerkz/hook/**/*"/>
+            </fileset>
+        </jar>
+        <copy tofile="${lib.dir}/aspectwerkz-core-${version}.jar" file="${build.dir}/aspectwerkz-core-${version}.jar" overwrite="true"/>
+        <antcall target="aspectwerkz:extensions:compile"/>
+        <copy tofile="${lib.dir}/aspectwerkz-extensions-${version}.jar" file="${target.dir}/extensions.jar" overwrite="true"/>
+    </target>
+
+    <target name="aspectwerkz:jjtree"
+        depends="aspectwerkz:init">
+        <delete dir="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast/">
+            <include name="*.java"/>
+            <exclude name="Identifier.java"/>
+            <exclude name="Anonymous.java"/>
+            <exclude name="CflowPattern.java"/>
+        </delete>
+        <delete dir="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast/" includes="*.jj"/>
+        <jjtree target="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast/expression_grammar.jjt"
+            outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast"
+            javacchome="D:\java\javacc-3.2"/>
+        <javacc target="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast/expression_grammar.jj"
+            outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast"
+            javacchome="D:\java\javacc-3.2"/>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  compiles the samples -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:compile"
+        depends="aspectwerkz:init">
+        <mkdir dir="${samples.classes}"/>
+
+        <javac destdir="${samples.classes}" deprecation="true"
+            debug="true" optimize="false" excludes="**/samples.xml">
+            <src>
+                <pathelement location="src/samples"></pathelement>
+            </src>
+            <classpath>
+                <pathelement path="${main.classes}"/>
+                <fileset dir="${lib.dir}">
+                    <include name="*.jar"></include>
+                </fileset>
+                <fileset dir="${dist.dir}">
+                    <include name="*.jar"></include>
+                </fileset>
+            </classpath>
+        </javac>
+        <jar jarfile="${target.dir}/samples.jar" basedir="${samples.classes}"/>
+        <copy tofile="${dist.dir}/samples.jar" file="${target.dir}/samples.jar" overwrite="true"/>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  compiles the extensions -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:extensions:compile"
+        depends="aspectwerkz:init">
+        <mkdir dir="${extensions.classes}"/>
+
+        <javac destdir="${extensions.classes}" deprecation="true"
+            debug="true" optimize="false" excludes="**/*.xml">
+            <src>
+                <pathelement location="src/extensions"></pathelement>
+            </src>
+            <classpath>
+                <pathelement path="${main.classes}"/>
+                <fileset dir="${lib.dir}">
+                    <include name="*.jar"></include>
+                </fileset>
+                <fileset dir="${dist.dir}">
+                    <include name="*.jar"></include>
+                </fileset>
+            </classpath>
+        </javac>
+        <jar jarfile="${target.dir}/extensions.jar" basedir="${extensions.classes}"/>
+        <copy tofile="${dist.dir}/extensions.jar" file="${target.dir}/extensions.jar" overwrite="true"/>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  all tests -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:test"
+        depends="aspectwerkz:init, aspectwerkz:jar, aspectwerkz:test:aspectc">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
+        </exec>
+        <!--        -->
+        <!--        <java classname="test.AllTests" fork="true">-->
+        <!--            <classpath>-->
+        <!--                <pathelement path="${main.classes}"/>-->
+        <!--                <pathelement path="${test.classes}"/>-->
+        <!--                <fileset dir="${lib.dir}">-->
+        <!--                    <include name="*.jar"></include>-->
+        <!--                </fileset>-->
+        <!--            </classpath>-->
+        <!--        </java>-->
+        <!--        <antcall target="aspectwerkz:xmldef:test"/>-->
+        <!--        <antcall target="aspectwerkz:attribdef:test"/>-->
+    </target>
+
+    <!--    <target name="aspectwerkz:xmldef:test"-->
+    <!--        depends="aspectwerkz:init, aspectwerkz:jar">-->
+    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
+    <!--            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/test-xmldef.xml test.xmldef.AllTests"/>-->
+    <!--        </exec>-->
+    <!--    </target>-->
+
+    <!--    <target name="aspectwerkz:attribdef:test"-->
+    <!--        depends="aspectwerkz:init, aspectwerkz:jar, aspectwerkz:attribdef:test:aspectc">-->
+    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
+    <!--            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.attribdef.AllTests"/>-->
+    <!--        </exec>-->
+    <!--    </target>-->
+
+    <!-- =================================================== -->
+    <!--  compiles aspects for the attribdef tests -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:test:aspectc"
+        depends="clean, aspectwerkz:compile">
+        <exec executable="java">
+            <arg line="-cp ${test.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.3.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.definition.AspectC ${basedir}/src/test ${basedir}/target/test-classes"/>
+        </exec>
+    </target>
+
+
+    <!-- =================================================== -->
+    <!--  runs perf tests -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:test:perf"
+        depends="aspectwerkz:init, aspectwerkz:jar">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.xmldef.AllPerfTests"/>
+        </exec>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  multithreaded custom classloader tests -->
+    <!--  thread number and loops can be passed as argument -->
+    <!--  refer to test.xmldef.clapp javadoc -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:test:clapp"
+        depends="aspectwerkz:init, aspectwerkz:compile">
+        <!-- run the application in regular mode -->
+        <java classname="test.clapp.CrazyClassLoaderApp" fork="true">
+            <classpath>
+                <pathelement path="${test.classes}"/>
+            </classpath>
+            <jvmarg value="-DDummyClass=${test.classes}"/>
+        </java>
+        <!-- run the application thru AspectWerkz -->
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/test/test-attribdef.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp"/>
+        </exec>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  JDWP interactive Plug -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:plug"
+        depends="aspectwerkz:init, aspectwerkz:compile">
+        <input message="Input args ? (-info .., -resume .., -hotswap .., -target file.jar)" addproperty="input.args"/>
+        <java classname="org.codehaus.aspectwerkz.hook.Plug" fork="true">
+            <classpath>
+                <pathelement path="${main.classes}"/>
+                <pathelement path="${java.home}/../lib/tools.jar"/>
+                <fileset dir="${lib.dir}">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+            <arg line="${input.args}"/>
+        </java>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the logging test -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:logging"
+        depends="aspectwerkz:samples:aspectc">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.logging.Target"/>
+        </exec>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the caching test -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:caching"
+        depends="aspectwerkz:samples:aspectc">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.caching.CacheTest"/>
+        </exec>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the cflow test -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:cflow"
+        depends="aspectwerkz:samples:aspectc">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
+        </exec>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the introduction test -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:introduction"
+        depends="aspectwerkz:samples:aspectc">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
+        </exec>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the exception handling test -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:exception"
+        depends="aspectwerkz:samples:aspectc">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
+        </exec>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the remote test - client side -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:remote:client"
+        depends="aspectwerkz:init, aspectwerkz:compile">
+        <exec executable="java">
+            <arg line="-cp ${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${samples.classes} examples.connectivity.Client"/>
+        </exec>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the remote test - server side -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:remote:server"
+        depends="aspectwerkz:init, aspectwerkz:compile">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.remote.server.run=true -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Server"/>
+        </exec>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  compiles aspects for the  samples -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:aspectc"
+        depends="clean, aspectwerkz:compile">
+        <exec executable="java">
+            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.3.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.definition.AspectC ${basedir}/src/samples ${basedir}/target/samples-classes"/>
+        </exec>
+    </target>
+
+</project>
+

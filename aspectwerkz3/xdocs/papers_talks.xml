@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+
+    <properties>
+        <title>Papers &amp; Talks</title>
+        <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
+        <author email="alex at gnilux dot com">alexandre vasseur</author>
+    </properties>
+
+    <body>
+
+        <section name="Papers">
+            <p>
+                <ul>
+                    <!-- TODO dev2dev  -->
+                    <li>AOSD 2004, Dynamic AOP WorkShop (March 2004)
+                        <br/>
+                        <i>Dynamic AOP and Runtime Weaving for Java - How does AspectWerkz Address it?</i>
+                        <br/>
+                        Alexandre Vasseur's technical paper about dynamic AOP and especially the feature allowing
+                        addition of new pointcuts at runtime using HotSwap (since 0.10).
+                        <br/>
+                        [
+                        <a href="/downloads/papers/aosd2004-daw-aspectwerkz.pdf">pdf</a>]
+                    </li>
+                    <br/>
+                    <li>AOSD 2004, Invited Industry Talk Abstract Paper (March 2004)
+                        <br/>
+                        <i>What are the key issues for commercial AOP use - how does AspectWerkz address them?</i>
+                        <br/>
+                        The abstract paper of Jonas Bon&#233;r's invited talk at AOSD 2004, gives an in depth discussion
+                        about the key issues for commercial AOP use and how AspectWerkz tries to address them.
+                        <br/>
+                        [
+                        <a href="htt://codehaus.org/~jboner/papers/aosd2004_commercial_aop_aspectwerkz.pdf">pdf</a>]
+                    </li>
+                    <br/>
+                    <li>AOSD 2004, (rejected technical paper) (October 2003)
+                        <br/>
+                        <i>AspectWerkz - dynamic AOP for Java</i>
+                        <br/>
+                        Jonas Bon&#233;r's technical paper about the architecture, design and implementation AspectWerkz.
+                        <br/>
+                        [
+                        <a href="htt://codehaus.org/~jboner/papers/aosd2004_aspectwerkz.pdf">pdf</a>]
+                    </li>
+                    <br/>
+                    <li>Hooking architecture (since 0.8) (August 12, 2003)
+                        <br/>
+                        The hooking architecture allows class load time weaving for all Java version since 1.3 and all
+                        JVMs (Sun, IBM, BEA).
+                        <br/>
+                        [
+                        <a href="/downloads/papers/AspectWerkz-online-architecture.pdf.zip">pdf</a>,
+                        <a href="/downloads/papers/AspectWerkz-online-architecture.ppt.zip">ppt</a>]
+                    </li>
+                    <br/>
+                </ul>
+            </p>
+        </section>
+
+        <section name="Talks">
+            <p>
+                <ul>
+                    <!-- TODO j1 + BUG + eW, only after J1 show -->
+                    <li>
+                        AOSD 2004, AspectWerkz tutorial (March 2004)
+                        <br/>
+                        Jonas Bon&#233;r's and Alexandre Vasseur's three hour tutorial providing detailled information about AspectWerkz
+                        with emphasis on the
+                        <i>Aspects are regular Java classes</i> idea and
+                        <i>ease of integration</i>, with a complete
+                        demo (available from CVS usually for latest AspectWerkz release, module
+                        <i>tutorial-aosd2004</i>).
+                        <br/>
+                        [
+                        <a href="/downloads/papers/aosd2004_tutorial_aspectwerkz.pdf">pdf</a>]
+                    </li>
+                    <br/>
+                    <li>
+                        AOSD 2004, Invited Industry Talk (March 2004)
+                        <br/>
+                        <i>What are the key issues for commercial AOP use - how does AspectWerkz address them?</i>
+                        <br/>
+                        Jonas Bon&#233;r's keynote about commercial AOP use and design decision for AspectWerkz.
+                        <br/>
+                        [
+                        <a href="/downloads/papers/InvitedTalkAOSD2004.pdf">pdf</a>]
+                    </li>
+                    <br/>
+                    <li>BeJUG JavaPolis, Antwerp 2003 (December 16, 2003)
+                        <br/>
+                        Jonas Bon&#233;r's one hour talk provides an introduction to AspectWerkz (targets 0.9) and gives concrete
+                        hands on samples (Unit Of Work pattern, JAAS security for POJOs).
+                        <br/>
+                        [
+                        <a href="/downloads/papers/bejug-aspectwerkz-boner.ppt.gz">ppt</a>]
+                    </li>
+                    <br/>
+                </ul>
+            </p>
+        </section>
+
+    </body>
+</document>
