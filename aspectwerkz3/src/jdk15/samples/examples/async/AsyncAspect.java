@@ -18,14 +18,14 @@ import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
 @Aspect
-        public class AsyncAspect {
+public class AsyncAspect {
 
     private Executor m_threadPool = Executors.newCachedThreadPool();
 
     @Around
-            @Execution(Async.class)
-            @Within(Service.class)
-            public Object async(final JoinPoint jp) throws Throwable {
+    @Execution(Async.class)
+    @Within(Service.class)
+    public Object async(final JoinPoint jp) throws Throwable {
         m_threadPool.execute(
                 new Runnable() {
                     public void run() {
@@ -38,17 +38,18 @@ import java.lang.annotation.ElementType;
                     }
                 }
         );
-        return null;
+        // continue with the same invocation in the main thread
+        return jp.deepCopy().proceed();
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-            @Target(ElementType.METHOD)
-            public static @interface Async {
+    @Target(ElementType.METHOD)
+    public static @interface Async {
         int timeout() default 0;
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-            @Target(ElementType.TYPE)
-            public static @interface Service {
+    @Target(ElementType.TYPE)
+    public static @interface Service {
     }
 }

@@ -39,7 +39,7 @@ public interface StaticJoinPoint {
      *
      * @return the cloned join point instance
      */
-    StaticJoinPoint clone();
+    StaticJoinPoint deepCopy();
 
     /**
      * Returns metadata matchingn a specfic key.
