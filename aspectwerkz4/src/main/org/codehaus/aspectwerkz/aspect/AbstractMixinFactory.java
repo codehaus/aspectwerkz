@@ -29,11 +29,6 @@ public abstract class AbstractMixinFactory implements MixinFactory {
         m_mixinClass = mixinClass;
         m_deploymentModel = DeploymentModel.getDeploymentModelAsInt(deploymentModel);
         try {
-            m_defaultConstructor = m_mixinClass.getConstructor(new Class[]{});
-        } catch (NoSuchMethodException e) {
-            // ignore
-        }
-        try {
             if (m_deploymentModel == DeploymentModel.PER_CLASS) {
                 m_perClassConstructor = m_mixinClass.getConstructor(new Class[]{Class.class});
             } else if (m_deploymentModel == DeploymentModel.PER_INSTANCE) {
@@ -44,11 +39,15 @@ public abstract class AbstractMixinFactory implements MixinFactory {
                         DeploymentModel.getDeploymentModelAsString(m_deploymentModel)
                 );
             }
-        } catch (NoSuchMethodException e) {
-            throw new DefinitionException(
-                    "mixin [" + m_mixinClass.getName() +
-                    "] does not have a constructor that matches with its deployment model"
-            );
+        } catch (NoSuchMethodException e1) {
+            try {
+                m_defaultConstructor = m_mixinClass.getConstructor(new Class[]{});
+            } catch (NoSuchMethodException e2) {
+                throw new DefinitionException(
+                        "mixin [" + m_mixinClass.getName() +
+                        "] does not have a constructor that matches with its deployment model or a non-argument default constructor"
+                );
+            }
         }
     }
 

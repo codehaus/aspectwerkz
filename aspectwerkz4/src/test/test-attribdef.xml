@@ -8,6 +8,14 @@
             within(test.handler.*)
         </pointcut>
         <exclude package="test.attribdeff"/>
+        <mixin class="test.mixin.perinstance.MyImpl"
+            deployment-model="perInstance"
+            bind-to="within(test.mixin.perinstance.ToBeIntroduced) or hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique_perinstance)"/>
+        <aspect class="test.mixin.perinstance.IntroductionTestAspect"/>
+        <mixin class="test.mixin.perclass.MyImpl"
+            deployment-model="perClass"
+            bind-to="within(test.mixin.perclass.ToBeIntroduced) or hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique_perclass)"/>
+        <aspect class="test.mixin.perclass.IntroductionTestAspect"/>
         <package name="test.aspect">
             <aspect class="MemberMethodTestAspect" deployment-model="perInstance"/>
             <aspect class="StaticMethodTestAspect" deployment-model="perClass" />
@@ -22,7 +30,7 @@
             <aspect class="PerInstancePerformanceAspect" deployment-model="perInstance"/>
             <aspect class="PerThreadPerformanceAspect" deployment-model="perThread"/>
         </package>
-        <aspect class="test.mixin.IntroductionTestAspect"/>
+        <aspect class="test.mixin.perinstance.IntroductionTestAspect"/>
         <aspect class="test.mixindeployment.IntroductionDeploymentAspect"/>
         <aspect class="test.abstractclass.TestAspect"/>
         <aspect class="test.hierarchicalpattern.TestAspect"/>

@@ -64,7 +64,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
 
         //TODO: I found it unefficient - would be better to skip the whole ClassAdapter if no JP
         if (!m_ctx.isAdvised()) {
-            return cv.visitMethod(access, name, desc, exceptions, attrs);
+            return super.visitMethod(access, name, desc, exceptions, attrs);
         }
 
         if (CLINIT_METHOD_NAME.equals(name)) {
@@ -85,7 +85,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
             ca.visitMaxs(0, 0);
             return ca;
         } else {
-            return cv.visitMethod(access, name, desc, exceptions, attrs);
+            return super.visitMethod(access, name, desc, exceptions, attrs);
         }
     }
 
@@ -102,7 +102,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
         if (TARGET_CLASS_FIELD_NAME.equals(name)) {
             m_hasClassField = true;
         }
-        cv.visitField(access, name, desc, value, attrs);
+        super.visitField(access, name, desc, value, attrs);
     }
 
     /**
@@ -111,6 +111,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
      */
     public void visitEnd() {
         if (!m_ctx.isAdvised()) {
+            super.visitEnd();
             return;
         }
 
@@ -164,15 +165,17 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
 
         public InsertBeforeClinitCodeAdapter(CodeVisitor ca) {
             super(ca);
-            cv.visitLdcInsn(m_ctx.getClassName().replace('/', '.'));
-            cv.visitMethodInsn(INVOKESTATIC, CLASS_CLASS, FOR_NAME_METHOD_NAME, FOR_NAME_METHOD_SIGNATURE);
-            cv.visitFieldInsn(PUTSTATIC, m_ctx.getClassName(), TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
-            cv.visitMethodInsn(
-                    INVOKESTATIC,
-                    m_ctx.getClassName(),
-                    INIT_JOIN_POINTS_METHOD_NAME,
-                    NO_PARAMS_RETURN_VOID_METHOD_SIGNATURE
-            );
+            if (!m_hasClassField) {
+                cv.visitLdcInsn(m_ctx.getClassName().replace('/', '.'));
+                cv.visitMethodInsn(INVOKESTATIC, CLASS_CLASS, FOR_NAME_METHOD_NAME, FOR_NAME_METHOD_SIGNATURE);
+                cv.visitFieldInsn(PUTSTATIC, m_ctx.getClassName(), TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+                cv.visitMethodInsn(
+                        INVOKESTATIC,
+                        m_ctx.getClassName(),
+                        INIT_JOIN_POINTS_METHOD_NAME,
+                        NO_PARAMS_RETURN_VOID_METHOD_SIGNATURE
+                );
+            }
         }
     }
 

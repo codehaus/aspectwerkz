@@ -35,7 +35,7 @@ public class MixinDefinition {
     /**
      * The interface classes name.
      */
-    private final List m_interfaceClassNames = new ArrayList();
+    private final List m_interfaceClassInfos = new ArrayList();
 
     /**
      * The name of the interface mixin.
@@ -148,17 +148,8 @@ public class MixinDefinition {
      *
      * @return the class name of the interface
      */
-    public String getInterfaceClassName() {
-        return (String) m_interfaceClassNames.get(0);
-    }
-
-    /**
-     * Returns the class name of the interface.
-     *
-     * @return the class name of the interface
-     */
-    public List getInterfaceClassNames() {
-        return m_interfaceClassNames;
+    public List getInterfaces() {
+        return m_interfaceClassInfos;
     }
 
     /**
@@ -215,7 +206,7 @@ public class MixinDefinition {
         List interfaceDeclaredMethods = new ArrayList();
         ClassInfo[] interfaces = mixinClass.getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
-            m_interfaceClassNames.add(interfaces[i].getName());
+            m_interfaceClassInfos.add(interfaces[i]);
             interfaceDeclaredMethods.addAll(ClassInfoHelper.createSortedMethodList(interfaces[i]));//FIXME redundant since goes in hierarchy there as well
         }
         ClassInfo superClass = mixinClass.getSuperclass();

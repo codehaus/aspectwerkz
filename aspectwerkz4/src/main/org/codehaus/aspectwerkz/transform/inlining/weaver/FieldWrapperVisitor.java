@@ -86,7 +86,8 @@ public class FieldWrapperVisitor extends ClassAdapter implements TransformationC
         // we need the field anyway
         super.visitField(access, fieldName, fieldDesc, value, attrs);
 
-        if (fieldName.startsWith("class$") || // synthetic field
+        if (fieldName.startsWith(SYNTHETIC_MEMBER_PREFIX) || // synthetic field
+            fieldName.startsWith(TARGET_CLASS_FIELD_NAME) ||
             fieldName.equals(SERIAL_VERSION_UID_FIELD_NAME)) {  // can have been added by the weaver (not safe)
             return;
         }

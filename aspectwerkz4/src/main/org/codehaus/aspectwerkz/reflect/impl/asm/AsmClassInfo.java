@@ -26,6 +26,7 @@ import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.attrs.Annotation;
 
 import java.io.IOException;
@@ -260,7 +261,8 @@ public class AsmClassInfo implements ClassInfo {
      * @param loader
      * @return the class info
      */
-    public static ClassInfo getClassInfo(final String className, final ClassLoader loader,
+    public static ClassInfo getClassInfo(final String className,
+                                         final ClassLoader loader,
                                          final boolean lazyAttributes) {
         AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(className);
@@ -667,13 +669,14 @@ public class AsmClassInfo implements ClassInfo {
      * Creates a ClassInfo based on the stream retrieved from the class loader through
      * <code>getResourceAsStream</code>.
      *
-     * @param className
+     * @param name
      * @param loader
      * @param lazyAttributes
      */
-    private static ClassInfo createClassInfoFromStream(String className, final ClassLoader loader,
+    private static ClassInfo createClassInfoFromStream(final String name,
+                                                       final ClassLoader loader,
                                                        boolean lazyAttributes) {
-        className = className.replace('.', '/');
+        final String className = name.replace('.', '/');
 
         // compute array type dimension if any
         int componentTypeIndex = className.indexOf('[');
@@ -830,6 +833,7 @@ public class AsmClassInfo implements ClassInfo {
                           final String superName,
                           final String[] interfaces,
                           final String sourceFile) {
+
             m_name = name.replace('/', '.');
             m_modifiers = access;
             m_isInterface = Modifier.isInterface(m_modifiers);
@@ -928,6 +932,10 @@ public class AsmClassInfo implements ClassInfo {
             }
 
             return super.visitMethod(access, name, desc, exceptions, attrs);
+        }
+
+        public void visitEnd() {
+            m_signature = AsmHelper.getClassDescriptor(AsmClassInfo.this);
         }
     }
 }

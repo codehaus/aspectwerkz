@@ -49,7 +49,7 @@ public class DefaultMixinFactory extends AbstractMixinFactory {
             }
         } else {
             throw new DefinitionException(
-                    "mixinOf(Class targetClass) is can not be invoked for mixin deployed using as " +
+                    "Mixins.mixinOf(Class) is can not be invoked for mixin deployed using as " +
                     DeploymentModel.getDeploymentModelAsString(m_deploymentModel)
             );
         }
@@ -64,8 +64,8 @@ public class DefaultMixinFactory extends AbstractMixinFactory {
     public Object mixinOf(final Object instance) {
         if (m_deploymentModel == DeploymentModel.PER_INSTANCE) {
             try {
-                if (m_perClassConstructor != null) {
-                    return m_perClassConstructor.newInstance(new Object[]{instance});
+                if (m_perInstanceConstructor != null) {
+                    return m_perInstanceConstructor.newInstance(new Object[]{instance});
                 } else if (m_defaultConstructor != null) {
                     return m_defaultConstructor.newInstance(new Object[]{});
                 } else {
@@ -80,7 +80,7 @@ public class DefaultMixinFactory extends AbstractMixinFactory {
             }
         } else {
             throw new DefinitionException(
-                    "mixinOf(Object target) is can not be invoked for mixin deployed using as " +
+                    "Mixins.mixinOf(Object) is can not be invoked for mixin deployed using as " +
                     DeploymentModel.getDeploymentModelAsString(m_deploymentModel)
             );
         }

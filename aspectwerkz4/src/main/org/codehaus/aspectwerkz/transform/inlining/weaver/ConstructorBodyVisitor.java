@@ -241,7 +241,5 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
                 cv.visitMethodInsn(opcode, owner, name, desc);
             }
         }
-
-
     }
 }
