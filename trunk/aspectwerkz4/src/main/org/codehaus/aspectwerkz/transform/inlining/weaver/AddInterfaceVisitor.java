@@ -29,6 +29,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
  * Adds an interface to the target class.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AddInterfaceVisitor extends ClassAdapter implements TransformationConstants {
 
@@ -71,7 +72,16 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
             return;
         }
 
+        // javaclass names of interface to have
+        // use a Set to avoid doublons
         final Set interfacesToAdd = new HashSet();
+
+        // already there interface javaclass names
+        for (int i = 0; i < interfaces.length; i++) {
+            interfacesToAdd.add(interfaces[i].replace('/', '.'));
+        }
+
+        // add new ones
         final Set systemDefinitions = m_ctx.getDefinitions();
         for (Iterator it = systemDefinitions.iterator(); it.hasNext();) {
             SystemDefinition systemDefinition = (SystemDefinition) it.next();
@@ -85,13 +95,9 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
                 final MixinDefinition mixinDef = (MixinDefinition) it2.next();
                 final List interfaceList = mixinDef.getInterfaceClassNames();
                 for (Iterator it3 = interfaceList.iterator(); it3.hasNext();) {
-                    interfacesToAdd.add((String) it3.next());
+                    interfacesToAdd.add(((String) it3.next()));
                 }
             }
-        }
-
-        for (int i = 0; i < interfaces.length; i++) {
-            interfacesToAdd.add(interfaces[i]);
         }
 
         if (ClassInfoHelper.hasMethodClash(interfacesToAdd, m_ctx.getLoader())) {

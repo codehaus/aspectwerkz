@@ -640,4 +640,16 @@ public class SystemDefinition {
     public int hashCode() {
         return m_uuid.hashCode();
     }
+
+    /**
+     * Create a new virtual system definition for the given loader and add the virtual aspect in it.
+     * 
+     * @param loader
+     * @return
+     */
+    public static SystemDefinition createVirtualDefinitionAt(ClassLoader loader) {
+        SystemDefinition def = new SystemDefinition(SystemDefinitionContainer.getVirtualDefinitionUuid(loader));
+        DocumentParser.addVirtualAspect(def);
+        return def;
+    }
 }

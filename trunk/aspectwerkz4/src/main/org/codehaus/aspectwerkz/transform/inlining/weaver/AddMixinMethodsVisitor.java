@@ -111,6 +111,12 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                 final MixinDefinition mixinDef = (MixinDefinition) it2.next();
                 final ClassInfo mixinImpl = mixinDef.getMixinImpl();
                 final DeploymentModel deploymentModel = mixinDef.getDeploymentModel();
+
+                //FIXME - does not check for multiweaving and fields already there
+                //Note: classInfo won't expose aw$MIXIN_n fields
+                //Note: what is the "n" here ? Probably broken.
+                //we need a way to remember that n was for mixin XXX
+                //we could add an annotion on the field to remember that ?
                 if (m_mixinFields.containsKey(mixinImpl)) {
                     continue;
                 }
@@ -267,7 +273,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
             modifiers += ACC_TRANSIENT;
         }
         cv.visitField(modifiers, fieldInfo.fieldName, signature, null, null);
-        m_mixinFields.put(fieldInfo.mixinClassInfo, fieldInfo);
+        m_mixinFields.put(mixinDef.getMixinImpl(), fieldInfo);
     }
 
     /**

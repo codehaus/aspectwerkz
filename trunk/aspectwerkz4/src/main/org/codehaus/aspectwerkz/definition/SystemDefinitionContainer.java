@@ -107,7 +107,7 @@ public class SystemDefinitionContainer {
             if (loader == null) {
                 // by defaults, there is alwasy the virtual definition, that has lowest precedence
                 Set defaults = new HashSet();
-                defaults.add(new SystemDefinition(getVirtualDefinitionUuid(loader)));
+                defaults.add(SystemDefinition.createVirtualDefinitionAt(loader));
                 s_classLoaderSystemDefinitions.put(loader, defaults);
                 s_classLoaderDefinitionLocations.put(loader, new ArrayList());
                 return;
@@ -154,8 +154,8 @@ public class SystemDefinitionContainer {
                     }
                 }
 
-                // there is alwasy the virtual definition, that has lowest precedence
-                definitions.add(new SystemDefinition(getVirtualDefinitionUuid(loader)));
+                // there is always the virtual definition, that has lowest precedence
+                definitions.add(SystemDefinition.createVirtualDefinitionAt(loader));
 
                 dump(loader);
             } catch (Throwable t) {
@@ -319,7 +319,7 @@ public class SystemDefinitionContainer {
      * @param loader
      * @return
      */
-    private static String getVirtualDefinitionUuid(ClassLoader loader) {
+    public static String getVirtualDefinitionUuid(ClassLoader loader) {
         // handle bootclassloader with care
         int hash = loader == null ? 0 : loader.hashCode();
         StringBuffer sb = new StringBuffer(VIRTUAL_SYSTEM_ID_PREFIX);
