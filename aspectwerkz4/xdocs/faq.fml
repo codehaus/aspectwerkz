@@ -125,11 +125,16 @@
                     </li>
                     <li>use -Daspectwerkz.transform.details=true (or -details with offline mode command line tool and Ant task)
                     to turn on pointcut matching verbose mode that will tell more when pointcuts match. This is usefull to understand
-                    why "nothing happen !" or why "the application is very low to start up!" (due to a pointcut matching almost every single instruction..)
+                    why "nothing happen !" or why "the application is very low to start up!" (due to a pointcut matching almost every single instruction f.e.).
+                    The output will print message about "earlymatch" and "match". An early match
+                    means that there might be a match but that further analysis of the class beeing weaved is needed.
+                    A match thus means a pointcut match (thus an actual join point).
+                    When a mixin is used, you only see early matches.
                     </li>
                     <li>use -Daspectwerkz.transform.dump=* (or -Daspectwerkz.transform.dump=*,before) to dump to disk the weaved classes.
                     The second form dumps classes before and after weaving. The dump folder cannot be changed and is "./_dump" relative to application
                     startup folder.
+                    You can replace "*" with some package prefix like "com.bar.*" to narrow the dump.
                     </li>
                     <li>use offline mode to see how it goes before using online weaving (that can be sometime more complex to set up)</li>
                     <li>make sure you practice successfully the HelloWorld tutorial in the tutorial section</li>
@@ -349,6 +354,23 @@
                 Yes you can.
                 We don't support such a usage since you should not modify your JDK classes. A how-to has been posted
                 in February 2005 on the user mailling list. You can search in the mailing list archives.
+            </answer>
+        </faq>
+        <faq id="other/nodeps">
+            <question>
+                What are the jar needed at runtime? Is there a nodeps jar?
+            </question>
+            <answer>
+                The jar needed at runtime are aspectwerkz-V.jar, aspectwerkz-jdkX-V.jar,
+                dom4j-V.jar, jrexx-V.jar and trove-V.jar.
+                When using Offline compilation, annotation compilation and Ant task for those, you further
+                need ant-V.jar and qdox-V.jar.
+                When using Java 1.3, you further need piccolo-V.jar (see other entry in this FAQ) or any other XML
+                parser implementation.
+                <br/>
+                There is also an aspectwerkz-nodeps-jdkX-V.jar that contains all you need for the runtime.
+                <br/>
+                Make sure you are using the correct version for your JDK (use the jdk14 for Java 1.3 as well).
             </answer>
         </faq>
     </part>
