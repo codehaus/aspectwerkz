@@ -92,8 +92,8 @@ public class MemberMethodTestAspect extends Aspect {
                 jp.getTargetClass().getName() +
                 jp.getMethod().getName() +
                 jp.getTargetInstance().hashCode() +
-//                jp.getParameters()[0] +
-//                jp.getParameterTypes()[0].getName() +
+                jp.getParameters()[0] +
+                jp.getParameterTypes()[0].getName() +
                 jp.getReturnType().getName() +
                 jp.getResult();
         return metadata;
