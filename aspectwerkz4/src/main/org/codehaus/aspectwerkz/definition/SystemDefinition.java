@@ -261,10 +261,10 @@ public class SystemDefinition {
                 return;
             }
 
-            m_aspectMap.put(aspectDef.getName(), aspectDef);
-
             // hook for the registration of cflow aspects
             // note: this one will even support cflow(xx && cflow())
+            // note: the cflow aspect MUST be registered first for precedence purpose
+            // so that pcX && cflow(pcX) match on pcX
             for (Iterator iterator = aspectDef.getAdviceDefinitions().iterator(); iterator.hasNext();) {
                 AdviceDefinition adviceDefinition = (AdviceDefinition) iterator.next();
                 List cflowBindings = CflowBinding.getCflowBindingsForCflowOf(adviceDefinition.getExpressionInfo());
@@ -273,6 +273,10 @@ public class SystemDefinition {
                     addAspect(cflowBinding.getAspectDefinition(this, aspectDef.getClassInfo().getClassLoader()));
                 }
             }
+
+            m_aspectMap.put(aspectDef.getName(), aspectDef);
+
+
         }
     }
 

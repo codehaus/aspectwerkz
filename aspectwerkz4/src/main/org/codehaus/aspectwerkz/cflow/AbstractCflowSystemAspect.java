@@ -55,11 +55,13 @@ public abstract class AbstractCflowSystemAspect {
      * @return true if in the cflowbelow
      */
     public boolean inCflowBelow() {
-        return ((Stack)m_cflowStackLocal.get()).size() == 1;
+        return ((Stack)m_cflowStackLocal.get()).size() > 1;
     }
 
     /**
      * Sample jit cflow aspect that will gets generated.
+     * Note that we need to test the INSTANCE in case the cflow subexpression
+     * was out of the scope of the weaver (else we gets NullPointerExceptions)
      *
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
@@ -76,6 +78,9 @@ public abstract class AbstractCflowSystemAspect {
          * this method will be invoked by the JIT joinpoint
          */
         public static boolean isInCflow() {
+            if (INSTANCE == null) {
+                return false;
+            }
             return INSTANCE.inCflow();
         }
 
@@ -83,6 +88,9 @@ public abstract class AbstractCflowSystemAspect {
          * this method will be invoked by the JIT joinpoint
          */
         public static boolean isInCflowBelow() {
+            if (INSTANCE == null) {
+                return false;
+            }
             return INSTANCE.inCflowBelow();
         }
     }

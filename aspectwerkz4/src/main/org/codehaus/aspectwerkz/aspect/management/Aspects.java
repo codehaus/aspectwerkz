@@ -86,7 +86,21 @@ public class Aspects {
             if (className != null) {
                 return aspectOf(className);
             } else {
-                throw new Error("Could not load aspect " + name + " from " + loader);
+                // can occur when the jointpoint target is a rt.jar class
+                // f.e. System.out and field get
+                // in such a case, trim the uuid...
+                int index = name.lastIndexOf("/");
+                if (index > 0) {
+                    className = name.substring(index+1);
+                    try {
+                        Class aspectClass = ContextClassLoader.loadClass(loader, className);
+                        return aspectOf(aspectClass);
+                    } catch (ClassNotFoundException ee) {
+                        throw new Error("Could not load aspect " + name + " from " + loader);
+                    }
+                } else {
+                    throw new Error("Could not load aspect " + name + " from " + loader);
+                }
             }
         }
     }
