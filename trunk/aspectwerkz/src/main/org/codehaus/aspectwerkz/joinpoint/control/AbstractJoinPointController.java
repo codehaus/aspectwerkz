@@ -17,7 +17,6 @@ import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
 import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
 import org.codehaus.aspectwerkz.xmldef.advice.Advice;
 import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
-import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.attribdef.AttribDefSystem;
 
 /**

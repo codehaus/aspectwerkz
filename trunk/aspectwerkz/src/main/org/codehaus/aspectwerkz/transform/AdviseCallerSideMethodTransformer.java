@@ -298,15 +298,15 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                         factory
                 );
             }
-        //}//TODO CHECK THIS
-        // update the old methods
-        cg.setMethods(methods);
+            //}//TODO CHECK THIS
+            // update the old methods
+            cg.setMethods(methods);
 
-        // add the new methods
-        for (Iterator it = newMethods.iterator(); it.hasNext();) {
-            Method method = (Method)it.next();
-            cg.addMethod(method);
-        }
+            // add the new methods
+            for (Iterator it = newMethods.iterator(); it.hasNext();) {
+                Method method = (Method)it.next();
+                cg.addMethod(method);
+            }
         }//TODO CHECK THIS
     }
 
@@ -698,7 +698,11 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
      * @return boolean true if the method should be filtered away
      */
     private boolean classFilter(final ClassMetaData classMetaData, final ClassGen cg) {
-        if (cg.isInterface()) {
+        if (cg.isInterface() ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
             return true;
         }
         String className = cg.getClassName();

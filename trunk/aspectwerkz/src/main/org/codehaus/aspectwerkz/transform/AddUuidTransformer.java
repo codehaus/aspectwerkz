@@ -29,6 +29,8 @@ import org.apache.bcel.classfile.ConstantClass;
 
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 
 /**
  * Adds an UuidGenerator to all transformed classes.
@@ -81,7 +83,9 @@ public final class AddUuidTransformer
             final ConstantPoolGen cpg = cg.getConstantPool();
             final InstructionFactory factory = new InstructionFactory(cg);
 
-            if (classFilter(cg, definition)) {
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+
+            if (classFilter(classMetaData, cg, definition)) {
                 return;
             }
             if (m_hasBeenTransformed.contains(cg.getClassName())) {
@@ -111,7 +115,10 @@ public final class AddUuidTransformer
             AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
 
             final ClassGen cg = klass.getClassGen();
-            if (classFilter(cg, definition)) {
+
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+
+            if (classFilter(classMetaData, cg, definition)) {
                 return;
             }
             if (cg.containsField(TransformationUtil.UUID_FIELD) == null) {
@@ -283,20 +290,26 @@ public final class AddUuidTransformer
      * @param cu ConstantUtf8 constant
      * @return true if the class implements the interface
      */
-    private boolean implementsInterface(final ConstantUtf8 cu,
-                                        final String interfaceName) {
+    private boolean implementsInterface(final ConstantUtf8 cu, final String interfaceName) {
         return cu.getBytes().equals(interfaceName.replace('.', '/'));
     }
 
     /**
      * Filters the classes to be transformed.
      *
+     * @param classMetaData the class meta-data
      * @param cg the class to filter
      * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg, final AspectWerkzDefinition definition) {
-        if (cg.isInterface()) {
+    private boolean classFilter(final ClassMetaData classMetaData,
+                                final ClassGen cg,
+                                final AspectWerkzDefinition definition) {
+        if (cg.isInterface() ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
             return true;
         }
         String className = cg.getClassName();

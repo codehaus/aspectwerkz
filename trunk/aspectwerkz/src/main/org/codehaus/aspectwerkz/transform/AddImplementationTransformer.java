@@ -443,7 +443,11 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
     private boolean classFilter(final ClassGen cg,
                                 final ClassMetaData classMetaData,
                                 final AspectWerkzDefinition definition) {
-        if (cg.isInterface()) {
+        if (cg.isInterface() ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
             return true;
         }
         String className = cg.getClassName();

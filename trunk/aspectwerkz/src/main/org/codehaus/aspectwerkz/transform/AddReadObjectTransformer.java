@@ -136,7 +136,11 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
      * @return boolean true if the method should be filtered away
      */
     private boolean classFilter(final ClassGen cg, final AspectWerkzDefinition definition) {
-        if (cg.isInterface()) {
+        if (cg.isInterface() ||
+                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
+                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
+                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
+                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
             return true;
         }
         String className = cg.getClassName();

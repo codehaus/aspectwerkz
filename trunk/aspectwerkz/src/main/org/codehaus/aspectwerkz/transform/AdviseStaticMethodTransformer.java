@@ -107,19 +107,6 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                     continue;
                 }
                 methodLookupList.add(methods[i]);
-
-                // TODO: does not work, needs to be thought through more
-                // if advised swap add the prefixed one as well to enable second-round instrumentation
-//                String originalPrefixedName =
-//                        TransformationUtil.ORIGINAL_METHOD_PREFIX +
-//                        methods[i].getName();
-//                Method[] declaredMethods = cg.getMethods();
-//                for (int j = 0; j < declaredMethods.length; j++) {
-//                    Method declaredMethod = declaredMethods[j];
-//                    if (declaredMethod.getName().startsWith(originalPrefixedName)) {
-//                        methodLookupList.add(declaredMethod);
-//                    }
-//                }
             }
 
             Collections.sort(methodLookupList, BCELMethodComparator.getInstance());
@@ -139,19 +126,6 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                 }
 
                 isClassAdvised = true;
-
-                // TODO: does not work, needs to be thought through more
-                // if advised swap the method to the prefixed one
-//                String originalPrefixedName =
-//                        TransformationUtil.ORIGINAL_METHOD_PREFIX +
-//                        methods[i].getName();
-//                Method[] declaredMethods = cg.getMethods();
-//                for (int j = 0; j < declaredMethods.length; j++) {
-//                    Method declaredMethod = declaredMethods[j];
-//                    if (declaredMethod.getName().startsWith(originalPrefixedName)) {
-//                        method = declaredMethod;
-//                    }
-//                }
 
                 final MethodGen mg = new MethodGen(method, cg.getClassName(), cpg);
 
@@ -578,10 +552,6 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
         biIfNotNull = factory.createBranchInstruction(Constants.IFNONNULL, null);
         il.append(biIfNotNull);
 
-        // joinPoint = new WeakReference(new MemberMethodJoinPoint(uuid, this, "foo.bar.Baz", 10));
-//        il.append(factory.createNew(TransformationUtil.WEAK_REFERENCE_CLASS));
-//        il.append(InstructionConstants.DUP);
-
         il.append(factory.createNew(TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS));
         il.append(InstructionConstants.DUP);
 
@@ -603,13 +573,6 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                 new Type[]{Type.STRING, new ObjectType("java.lang.Class"), Type.INT, Type.STRING},
                 Constants.INVOKESPECIAL
         ));
-//        il.append(factory.createInvoke(
-//                TransformationUtil.WEAK_REFERENCE_CLASS,
-//                "<init>",
-//                Type.VOID,
-//                new Type[]{Type.OBJECT},
-//                Constants.INVOKESPECIAL)
-//        );
         il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
         // ___jp.set(joinPoint);
@@ -631,18 +594,6 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
         ihIfNotNull = il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
         indexJoinPoint += 2;
 
-        // cast the weak ref, retrieve the join point from the weak ref and cast the join point
-//        il.append(factory.createCheckCast(TransformationUtil.WEAK_REFERENCE_TYPE));
-//        il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
-//        il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
-//        indexJoinPoint += 1;
-//        il.append(factory.createInvoke(
-//                TransformationUtil.WEAK_REFERENCE_CLASS,
-//                "get",
-//                Type.OBJECT,
-//                Type.NO_ARGS,
-//                Constants.INVOKEVIRTUAL)
-//        );
         il.append(factory.createCheckCast(TransformationUtil.STATIC_METHOD_JOIN_POINT_TYPE));
         il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
@@ -959,9 +910,10 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                                 final ClassMetaData classMetaData,
                                 final ClassGen cg) {
         if (cg.isInterface() ||
-                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.AroundAdvice") ||
-                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PreAdvice") ||
-                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PostAdvice")) {
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
             return true;
         }
         String className = cg.getClassName();
