@@ -38,6 +38,15 @@
                     <li>
                         <a href="#Retrieval of Aspect instances">Retrieval of Aspect instances</a>
                     </li>
+                    <li>
+                        <a href="#Strongly typed proceed">Strongly typed proceed(..)</a>
+                    </li>
+                    <li>
+                        <a href="#Per instance interception">Per instance interception</a>
+                    </li>
+                    <li>
+                        <a href="#AWProxy: proxy awareness of aspects">AWProxy: proxy awareness of aspects</a>
+                    </li>
                 </ol>
             </p>
         </section>
@@ -1062,6 +1071,245 @@ Object perclassAspect = Aspects.aspectOf(MyAspect.class, Target.class);
 // get per instance deployed aspect
 Object perinstanceAspect = Aspects.aspectOf(MyAspect.class, targetInstance);
                      ... = Aspects.aspectOf("uniqueNameOfAspect", targetInstance);
+                ]]></source>
+            </p>
+        </section>
+
+        <section name="Strongly typed proceed">
+            <p>
+                When using around, it can be usefull to modify advised target argument before proceeding
+                to the next advice or target invocation.
+                It is now possible to do it using a strongly typed user defined sub-interface of <code>JoinPoint</code>
+                or <code>StaticJoinPoint</code>.
+            </p>
+            <p>
+                When using this feature, all you have to write is a <code>public interface</code> with a single method
+                whose signature is <code>Object proceed(&lt; any parameters you need &gt;)</code>.
+                Then when writing an around advice, you simply declare this interface to be the first parameter of your
+                advice method, instead of using the regular <code>JoinPoint</code>
+                or <code>StaticJoinPoint</code> interface as described <a href="implementation.html#Advice">here</a>.
+            </p>
+            <p>
+                Example:
+                <source><![CDATA[
+public class MyAspect {
+
+   // we could inherit StaticJoinPoint instead
+   public static interface MyCustomJoinPoint extends JoinPoint {
+       Object proceed(String arg0, int[] arg1);
+   }
+
+   // see here the use of MyCustomJoinPoint as first argument, and the
+   // advice signature be in the order of the MyCustomJoinPoint.proceed(..) method
+   @Around("somePointcut(arg0, arg1)")
+   // we could write @Around("execution(* Foo.m(..)) && args(arg0, arg1)") as well
+   public Object around(MyCustomJoinPoint jp, String arg0, int[] arg1) throws Throwable {
+      ...
+      // lets change the args :
+      return jp.proceed("new arg0", new int[]{1,2,3});
+   }
+}
+                ]]></source>
+            </p>
+        </section>
+
+        <section name="Per instance interception">
+            <p>
+                Aspects can be deployed as <code>perInstance</code> as described <a href="definition_issues.html#Deployment_models">here</a>.
+                In such a case, <b>every single instance</b> will be advised, even though each one will have a distinct aspect instance.
+            </p>
+            <p>
+                Per instance interception allow to programmatically add a new <i>interceptor</i> to a <b>given instance only</b>.
+                We name it <i>interceptor</i> since to allow this dynamicity, the semantics are limited and the interceptor
+                must conform to a given interface, hence the regular semantics of advice (like parameter binging with <code>args()</code>)
+                cannot apply.
+            </p>
+            <p>
+                For this to work, the <code>META-INF/aop.xml</code> definition has to declare which classes should be
+                opened for per instance interception. Fine grained control is provided to only open to a specific
+                set of join points f.e. only <code>execution</code>, only <code>call</code>, <code>get</code>, <code>set</code>
+                or any composition of those <code>get|set|execution</code> or <code>all</code>.
+            </p>
+            <p>
+                Then at runtime, you simply cast the instance to <code>org.codehaus.aspectwerkz.intercept.Advisable</code> and use the API provided thru it.
+                The interceptors must implements one of the interface among:
+                <ul>
+                    <li><code>org.codehaus.aspectwerkz.intercept.BeforeAdvice</code></li>
+                    <li><code>org.codehaus.aspectwerkz.intercept.AroundAdvice</code></li>
+                    <li><code>org.codehaus.aspectwerkz.intercept.AfterReturningAdvice</code></li>
+                    <li><code>org.codehaus.aspectwerkz.intercept.AfterThrowingAdvice</code></li>
+                    <li><code>org.codehaus.aspectwerkz.intercept.AfterAdvice</code></li>
+                </ul>
+            </p>
+            <p>
+                The API allows to programmatically bind an interceptor to a <b>new pointcut</b>, which will be implicitly narrowed
+                to the advisable instance. It is possible to use <i>anonymous inner interceptors</i>:
+                Example for the definition:
+                <source><![CDATA[
+<aspectwerkz>
+    <system id="tests">
+        <advisable pointcut-type="execution" expression="within(test.intercept.execution.InterceptTest)"/>
+        <advisable pointcut-type="call" expression="within(test.intercept.call.Callee)"/>
+        <advisable pointcut-type="set" expression="within(test.intercept.set.InterceptTest)"/>
+        <advisable pointcut-type="get" expression="within(test.intercept.get.InterceptTest)"/>
+        <advisable pointcut-type="call|execution|set|get" expression="within(test.aspect.MemberMethodTestAspect)"/>
+        <advisable pointcut-type="all" expression="within(test.aspect.AllMemberMethodTestAspect)"/>
+        ...
+        ... regular aspect / mixin definition
+    </system>
+</aspectwerkz>
+                ]]></source>
+                Example for the runtime API:
+                <source><![CDATA[
+Callee callee = new Callee();
+// Callee was declared as advisable for "call" pointcuts
+// hence any caller of Callee is able to handle interceptor addition / removal
+
+// this call will occur with regular aspects bounded - if any
+callee.adviseWithAround();
+callee.adviseWithAround(1);
+
+// lets add an around interceptor to this specific callee instance
+// and for the given method
+// Note that the change will affect both call and execution side if the advisable definition
+// was pointcut-type="call|execution"
+((Advisable) callee).aw$addAdvice(
+        "* test.intercept.call.Callee.adviseWithAround(..)",
+        // we use an anonymous inner class here
+        new AroundAdvice() {
+            // notice the generic invoke() method defined in the
+            // org.codehaus.aspectwerkz.intercept.AroundAdvice interface
+            public Object invoke(JoinPoint jp) throws Throwable {
+                InterceptTest.log("around1_pre_call ");
+                Object result = jp.proceed();
+                InterceptTest.log("around1_post_call ");
+                return result;
+            }
+        }
+);
+
+// this call will occur with regular aspects bounded - if any
+// and with the new around advice (with lower precedence)
+callee.adviseWithAround();
+callee.adviseWithAround(1);
+
+// this call on another instance will not be affected by the new around advice
+Callee callee2 = new Callee();
+callee2.adviseWithAround();
+
+// we can now remove the advice
+// it will remove the first advice found of the given class type
+// thus cannot really be used when an anonymous class has been used,
+// but using the interface enables us to remove ALL around advice.
+// Again we narrow the pointcut
+((Advisable) callee).aw$removeAdvice("* test.intercept.call.Callee.adviseWithAround(int)", AroundAdvice.class);
+
+// will still have the interceptor
+callee.adviseWithAround();
+
+// will not have the interceptor any more : adviseWithAround(int) signature
+callee.adviseWithAround(2);
+                ]]></source>
+            </p>
+            <p>
+                Note: constructors are not made advisable ie open for this programmatic interception for now (2.0.RC2)
+            </p>
+        </section>
+
+        <section name="AWProxy: proxy awareness of aspects">
+            <p>
+                Sometimes it is not possible to use the weaver be it with offline mode (post compilation)
+                or online mode (load time weaving).
+                In such a case, you may still want to make use of a subset (at least) of AOP concepts.
+                <code>AspectWerkz</code> provides its own proxy implementation to make use of the aspects (unchanged)
+                with proxies. The implementation relies on subclassing hence it is not needed to use interface based proxies.
+            </p>
+            <p>
+                For a tutorial on AWProxy, you can read this <a href="http://blogs.codehaus.org/people/jboner/archives/000914_awproxy_proxy_on_steriods.html">blog article</a> that explains some more details
+                about the API.
+            </p>
+            <p>
+                The distribution includes out of the box support for <code>org.codehaus.aspectwerkz.proxy.Proxy</code>.
+                Just include the aspectwerkz.jar, aspectwerkz-core.jar and aspectwerkz-jdkXXX.jar in your classpath,
+                have your aspects declared in (one or more) META-INF/aop.xml available in the classpath
+                (defined thru annotations or XML - <a href="implementation.html#Choosing_a_definition_model">the usual documentation</a> applies), and start up the application
+                as usual (no JVM option for weaving - though it is compatible as well).
+            </p>
+            <p>
+                Then to obtain a proxy of a class that is aware of the aspects available in the application classpath
+                (following the regular deployment hierarchy rules according to classloader delegation described
+                <a href="deployment.html">here</a>) invoke the <code>org.codehaus.aspectwerkz.proxy.Proxy</code> API.
+                You will get a proxy of the given class that will be aware of the aspects.
+            </p>
+            <p>
+                Note that only execution pointcuts will be applied (for both methods and constructors), though field get / set
+                , call and handler pointcuts may have been defined within your aspects. This is the tradeoff of using proxy.
+            </p>
+            <p>
+                The advantages of using this approach is that you stick to <b>one sole model</b> to write your aspects
+                and immediately obtain proxy aware of them without any changes.
+                All pointcuts semantics like <code>args(), this(), targe()</code> apply, as well as composition with
+                <code>within()</code>, and <code>cflow()</code>.
+            </p>
+            <p>
+                The performance is as good as for regular weaved class, and actually better than CGLIB proxies.
+                You can read more about that in our <a href="http://docs.codehaus.org/display/AW/AOP+Benchmark">AWBench project</a> (see AW Proxy).
+            </p>
+            <p>
+                Example (assuming you have some aspects in the classpath):
+                <source><![CDATA[
+public class TraceMe {
+
+    public TraceMe(String name) {
+    }
+
+    public void step1() {
+        step2();
+    }
+
+    // this method is final hence won't be exposed in the proxy
+    public final void step2() {
+    }
+
+    public static void main(String[] args) {
+        // obtain a proxy that would be aware of the aspect(s) on "TraceMe"
+        // TraceMe traceMe = new TraceMe("foo") is replaced by (regular reflective syntax)
+        TraceMe traceMe = (TraceMe) Proxy.newInstance(
+                TraceMe.class, new Class[]{String.class}, new String[]{"foo"}
+        );
+        traceMe.step1();
+    }
+                ]]></source>
+            </p>
+            <p>
+                Note that it is perfectly possible to use the per instance interception feature with proxies.
+                Read more about it <a name="Per instance interception">here</a>.
+            </p>
+            <p>
+                AWProxy also provides a modified version of CGLIB so that CGLIB proxy are made aware
+                of the AspectWerkz aspects.
+                This version is not part of the distribution and you have to checkout it from the CVS, build it
+                and include it first in your classpath so that your regular CGLIB becomes aware of it. This may not work
+                if your CGLIB version has been repackaged - hence refer to the source code to rename the package as well.
+            </p>
+            <p>
+                CGLIB patch for AspectWerkz integration is available <a href="http://cvs.aspectwerkz.codehaus.org/viewrep/aspectwerkz/aspectwerkz4/src/cglib-ext/src/main/net/sf/cglib/core">here</a>
+                To build a jar from this patch, checkout the CVS and run the following:
+                <source><![CDATA[
+// in root folder of the distribution
+
+// adapt for unix / mac
+set ASPECTWERKZ_HOME=.
+
+// build AW
+ant clean dist
+
+// build the CGLIB extension
+cd src
+cd cglib-ext
+ant clean dist
+
+// the jar is in src/cglib-ext/target/
                 ]]></source>
             </p>
         </section>

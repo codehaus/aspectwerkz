@@ -34,6 +34,14 @@
                     file.
                 </p>
                 <p>
+                    <code>AspectWerkz</code> provides an API to use the very same aspects for <i>proxies</i>, hence
+                    providing a transparent experience, allowing a smooth transition
+                    for users familiar with proxies.
+                </p>
+                <p>
+                    <code>AspectWerkz</code> performance is reported in this <a href="http://docs.codehaus.org/display/AW/AOP+Benchmark">separate project</a>.
+                </p>
+                <p>
                     <code>AspectWerkz</code> is Free Software. The
                     <a href="license.html">LGPL-style</a> license allows the use of
                     <code>AspectWerkz 2.0 RC2</code>
