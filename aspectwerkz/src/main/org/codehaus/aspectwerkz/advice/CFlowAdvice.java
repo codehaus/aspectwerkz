@@ -20,7 +20,7 @@ package org.codehaus.aspectwerkz.advice;
 
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.WeakHashMap;
 
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
@@ -34,7 +34,7 @@ import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
  * Registers the join point as the start of a control flow (cflow) in the AspectWerkz system.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CFlowAdvice.java,v 1.2 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: CFlowAdvice.java,v 1.3 2003-07-11 10:45:18 jboner Exp $
  */
 public class CFlowAdvice extends AroundAdvice {
 
@@ -51,7 +51,7 @@ public class CFlowAdvice extends AroundAdvice {
     /**
      * Caches the meta-data A maps it to the method instance.
      */
-    private final Map m_metaDataCache = new HashMap();
+    private final Map m_metaDataCache = new WeakHashMap();
 
     /**
      * Creates a new cflow advice.

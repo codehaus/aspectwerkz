@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.WeakHashMap;
 import java.lang.reflect.Method;
 
 import gnu.trove.TObjectIntHashMap;
@@ -37,15 +38,15 @@ import org.codehaus.aspectwerkz.introduction.Introduction;
 import org.codehaus.aspectwerkz.definition.DefinitionManager;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
-import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 import org.codehaus.aspectwerkz.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MetaData;
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
+import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * Manages the aspects in the AspectWerkz system.<br/>
@@ -55,7 +56,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * Stores and indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkz.java,v 1.12 2003-07-09 11:33:00 jboner Exp $
+ * @version $Id: AspectWerkz.java,v 1.13 2003-07-11 10:45:18 jboner Exp $
  */
 public final class AspectWerkz {
 
@@ -80,42 +81,42 @@ public final class AspectWerkz {
      *
      * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
-    private final Map m_methodPointcutCache = new HashMap();
+    private final Map m_methodPointcutCache = new WeakHashMap();
 
     /**
      * and cache for the get field pointcuts.
      *
      * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
-    private final Map m_getFieldPointcutCache = new HashMap();
+    private final Map m_getFieldPointcutCache = new WeakHashMap();
 
     /**
      * and cache for the set field pointcuts.
      *
      * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
-    private final Map m_setFieldPointcutCache = new HashMap();
+    private final Map m_setFieldPointcutCache = new WeakHashMap();
 
     /**
      * and cache for the throws pointcuts.
      *
      * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
-    private final Map m_throwsPointcutCache = new HashMap();
+    private final Map m_throwsPointcutCache = new WeakHashMap();
 
     /**
      * and cache for the caller side pointcuts.
      *
      * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
-    private final Map m_callerSidePointcutCache = new HashMap();
+    private final Map m_callerSidePointcutCache = new WeakHashMap();
 
     /**
      * and cache for the cflow pointcuts.
      *
      * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
-    private final Map m_cflowPointcutCache = new HashMap();
+    private final Map m_cflowPointcutCache = new WeakHashMap();
 
     /**
      * Holds references to all the the advised methods in the system.
@@ -188,7 +189,6 @@ public final class AspectWerkz {
      */
     public static AspectWerkz getSystem(final String uuid) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-
         AspectWerkz system = (AspectWerkz)s_systems.get(uuid);
         if (system == null) {
             synchronized (s_systems) {
@@ -335,7 +335,7 @@ public final class AspectWerkz {
      * @param metaData the classname:methodMetaData metaData
      */
     public void enteringControlFlow(final ClassNameMethodMetaDataTuple metaData) {
-        if (metaData == null) throw new IllegalArgumentException("the classname:methodMetaData tuple can not be null");
+        if (metaData == null) throw new IllegalArgumentException("classname:methodMetaData tuple can not be null");
 
         Set cflowSet = (Set)m_controlFlowLog.get();
         if (cflowSet == null) {
@@ -351,7 +351,7 @@ public final class AspectWerkz {
      * @param metaData the classname:methodMetaData metaData
      */
     public void exitingControlFlow(final ClassNameMethodMetaDataTuple metaData) {
-        if (metaData == null) throw new IllegalArgumentException("the classname:methodMetaData tuple can not be null");
+        if (metaData == null) throw new IllegalArgumentException("classname:methodMetaData tuple can not be null");
 
         Set cflowSet = (Set)m_controlFlowLog.get();
         if (cflowSet == null) {
@@ -426,8 +426,7 @@ public final class AspectWerkz {
             throw new RuntimeException(cause.toString());
         }
 
-        prototype.setDeploymentModel(DeploymentModel.
-                getDeploymentModelAsInt(deploymentModel));
+        prototype.setDeploymentModel(DeploymentModel.getDeploymentModelAsInt(deploymentModel));
         prototype.setName(name);
         prototype.setAdviceClass(prototype.getClass());
 
@@ -858,16 +857,6 @@ public final class AspectWerkz {
             method = ((Method[])m_methods.get(klass))[index];
         }
         catch (Throwable e1) {
-//            System.out.println("======= getMethod(..) =======");
-//            System.out.println("class = " + klass);
-//            System.out.println("index = " + index);
-//            Method[] methods = ((Method[])m_methods.get(klass));
-//            for (int it = 0; it < methods.length; it++) {
-//                Method m = methods[it];
-//                System.out.println("method = " + m.getName());
-//            }
-//            System.out.println("ERROR = " + e1);
-
             initialize();
             try {
                 method = ((Method[])m_methods.get(klass))[index];

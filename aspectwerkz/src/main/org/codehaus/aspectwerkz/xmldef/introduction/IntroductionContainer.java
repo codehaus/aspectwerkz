@@ -26,7 +26,7 @@ import org.codehaus.aspectwerkz.ContainerType;
  * Interface for the introduction container implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: IntroductionContainer.java,v 1.3 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: IntroductionContainer.java,v 1.4 2003-07-11 10:45:18 jboner Exp $
  */
 public interface IntroductionContainer {
     /**
@@ -36,8 +36,7 @@ public interface IntroductionContainer {
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    Object invokePerJvm(int methodIndex,
-                        Object[] parameters);
+    Object invokePerJvm(int methodIndex, Object[] parameters);
 
     /**
      * Invokes the method on a per class basis.
@@ -47,9 +46,7 @@ public interface IntroductionContainer {
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    Object invokePerClass(Object callingObject,
-                          int methodIndex,
-                          Object[] parameters);
+    Object invokePerClass(Object callingObject, int methodIndex, Object[] parameters);
 
     /**
      * Invokes the method on a per instance basis.
@@ -59,9 +56,7 @@ public interface IntroductionContainer {
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    Object invokePerInstance(Object callingObject,
-                             int methodIndex,
-                             Object[] parameters);
+    Object invokePerInstance(Object callingObject, int methodIndex, Object[] parameters);
 
     /**
      * Invokes the method on a per thread basis.
@@ -70,8 +65,7 @@ public interface IntroductionContainer {
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    Object invokePerThread(int methodIndex,
-                           Object[] parameters);
+    Object invokePerThread(int methodIndex, Object[] parameters);
 
     /**
      * Returns a specific method by the method index.

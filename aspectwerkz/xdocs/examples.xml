@@ -219,7 +219,7 @@ public class SynchronizationAdvice extends AroundAdvice {
  */
  public class LoggingAdvice extends AroundAdvice {
 
-    private static Log s_log = ... // initialize logger
+    private int m_level = 0;
 
     public LoggingAdvice() {
         super();
@@ -229,12 +229,20 @@ public class SynchronizationAdvice extends AroundAdvice {
         String parameter = getParameter("param")); // get the parameter defined in the definition
 
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
-        s_log.debug("--> " + jp.getTargetClass().getName() + "::" + jp.getMethodName());
-
+        indent();
+        System.out.println("--> " + jp.getTargetClass().getName() + "::" + jp.getMethodName());
+        m_level++;
         final Object result = joinPoint.proceed();
-
-        s_log.debug("<-- " + jp.getTargetClass().getName() + "::" + jp.getMethodName());
+        m_level--;
+        indent();
+        System.out.println("<-- " + jp.getTargetClass().getName() + "::" + jp.getMethodName());
         return result;
+    }
+
+    private void indent() {
+        for (int i = 0; i < m_level; i++) {
+            System.out.print("  ");
+        }
     }
 }]]></source>
             <p>
@@ -253,21 +261,20 @@ public class Target {
      * @aspectwerkz.advice.method log
      */
     public static void toLog1() {
-        System.out.println("\tinvoking toLog1");
+        new Target().toLog2("parameter");
     }
 
     /**
      * @aspectwerkz.advice.method log
      */
     private void toLog2(java.lang.String arg) {
-        System.out.println("\tinvoking toLog2");
+        new Target().toLog3();
     }
 
     /**
      * @aspectwerkz.advice.method log
      */
     private String toLog3() {
-        System.out.println("\tinvoking toLog3");
         return "result";
     }
 
@@ -275,10 +282,7 @@ public class Target {
      * @aspectwerkz.advice.method log
      */
     public static void main(String[] args) {
-        Target target = new Target();
         Target.toLog1();
-        target.toLog2("parameter");
-        target.toLog3();
     }
 }]]></source>
         </section>

@@ -20,13 +20,19 @@ package examples.logging;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Target.java,v 1.10 2003-07-08 18:49:46 jboner Exp $
+ * @version $Id: Target.java,v 1.11 2003-07-11 10:45:19 jboner Exp $
  */
 public class Target {
 
-    public Target() { this(1); }
-    public Target(int i) {}
-    public Target(String i) {}
+    public Target() {
+        this(1);
+    }
+
+    public Target(int i) {
+    }
+
+    public Target(String i) {
+    }
 
     /**
      * @aspectwerkz.advice.method log
