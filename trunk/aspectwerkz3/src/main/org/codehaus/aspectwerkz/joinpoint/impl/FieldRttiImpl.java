@@ -133,8 +133,4 @@ public class FieldRttiImpl implements FieldRtti {
     public String toString() {
         return super.toString();
     }
-
-    public Object[] getParameterValues() {
-        return new Object[]{m_fieldValue};
-    }
 }

@@ -8,11 +8,18 @@
 package org.codehaus.aspectwerkz.joinpoint;
 
 /**
- * Provides static and reflective information about the join point (Runtime Type Information).
+ * Holds static and reflective information about the join point (Runtime Type Information).
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface Rtti {
+    /**
+     * Returns the name (f.e. name of method of field).
+     *
+     * @return
+     */
+    String getName();
+
     /**
      * Returns the target instance.
      * 
@@ -21,9 +28,9 @@ public interface Rtti {
     Object getTarget();
 
     /**
-     * Returns the instance currently executing.
+     * Returns the instance currently executing (this).
      * 
-     * @return the instance currently executing
+     * @return the instance currently executing (this)
      */
     Object getThis();
 
@@ -44,11 +51,4 @@ public interface Rtti {
      * @return the mofifiers
      */
     int getModifiers();
-
-    /**
-     * Returns the name (f.e. name of method of field).
-     * 
-     * @return
-     */
-    String getName();
 }

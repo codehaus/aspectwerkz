@@ -9,6 +9,8 @@ package org.codehaus.aspectwerkz.joinpoint;
 
 /**
  * Interface for the catch clause signature.
+ *
+ * @TODO rename to HandlerSignature in 2.0
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
