@@ -554,21 +554,6 @@ public class AspectWerkzC {
             System.exit(-1);
         }
 
-        // set preprocessor
-        try {
-            compiler.setPreprocessor(
-                    System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT)
-            );
-        }
-        catch (CompileException e) {
-            System.err.println(
-                    "Cannot instantiate ClassPreProcessor: " +
-                    System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT)
-            );
-            e.printStackTrace();
-            System.exit(-1);
-        }
-
         // target to compile
         List files = new ArrayList();
         // additional classpath
@@ -613,8 +598,26 @@ public class AspectWerkzC {
         }
 
         // build the compilation classloader based on -cp entries and targets
+        // done before pp initialization (will be fixed in AOPC, for now because of the m_def fields in TF)
+        // AW-151
         paths.addAll(files);
         compiler.setCompilationPath((File[])(paths.toArray(new File[0])));
+        Thread.currentThread().setContextClassLoader(compiler.compilationLoader);
+
+        // set preprocessor
+        try {
+            compiler.setPreprocessor(
+                    System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT)
+            );
+        }
+        catch (CompileException e) {
+            System.err.println(
+                    "Cannot instantiate ClassPreProcessor: " +
+                    System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT)
+            );
+            e.printStackTrace();
+            System.exit(-1);
+        }
 
         // do the compilation
         for (Iterator i = files.iterator(); i.hasNext();) {
