@@ -74,6 +74,7 @@
             <advice type="after" bind-to="xml_matchAll" name="matchAllAfter"/>
             <pointcut name="xml_getFirst(String s)"
                 expression="within(test.args.ArgsAdviceTest) AND execution(* getFirstXML(..)) AND args(s, ..)"/>
+            <advice type="before" bind-to="xml_getFirst(as)" name="getFirstBefore(JoinPoint jp, String as)"/>
             <advice type="around" bind-to="xml_getFirst(as)" name="getFirstAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,java.lang.String as)"/>
             <advice type="after" bind-to="xml_getFirst(as)" name="getFirstAfter(String as, JoinPoint jp)"/>
             <pointcut name="xml_orderChangedInPointcutAndAdviceSignature(String s1, String s0)"

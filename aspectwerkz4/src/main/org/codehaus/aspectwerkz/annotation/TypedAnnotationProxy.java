@@ -19,10 +19,8 @@ import java.io.Serializable;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public abstract class TypedAnnotationProxy implements Annotation, Serializable {
-    /**
-     * The one and only annotation parser.
-     */
-    protected static final AnnotationParser PARSER = new AnnotationParser(System.in);
+
+    public Class annotationType() {return null;}
 
     /**
      * The name of the annotation.
@@ -81,14 +79,14 @@ public abstract class TypedAnnotationProxy implements Annotation, Serializable {
         }
         representation.append(')');
 
-        try {
-            AnnotationVisitor.parse(this, PARSER.parse(representation.toString()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-            throw new RuntimeException(
-                    "could not parse annotation [" + m_name + " " + representation.toString() + "]"
-            );
-        }
+//        try {
+//            AnnotationVisitor.parse(this, PARSER.parse(representation.toString()));
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//            throw new RuntimeException(
+//                    "could not parse annotation [" + m_name + " " + representation.toString() + "]"
+//            );
+//        }
     }
 
     /**

@@ -21,6 +21,7 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
+
     /**
      * The return type.
      */
@@ -129,6 +130,18 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
             }
         }
         return m_parameterTypes;
+    }
+
+    /**
+     * Returns the parameter names as they appear in the source code.
+     * <p/>
+     * This information is not available from Reflect.
+     * We may use ASM to grab it - is that needed ?
+     *
+     * @return null / not supported for now.
+     */
+    public String[] getParameterNames() {
+        return null;
     }
 
     /**

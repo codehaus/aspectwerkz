@@ -125,6 +125,12 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         // needed for JRockit (as well as all in all TFs)
         final String className = name.replace('/', '.');
 
+        //**************
+        // ALEX Eclipse test
+        if ("pack.Hello".equals(className)) {
+            new Exception().printStackTrace();
+        }
+
         if (filter(className) || !m_initialized) {
             return bytecode;
         }

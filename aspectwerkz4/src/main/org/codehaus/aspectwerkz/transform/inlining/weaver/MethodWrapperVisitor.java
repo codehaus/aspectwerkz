@@ -144,7 +144,7 @@ public class MethodWrapperVisitor extends ClassAdapter implements Transformation
         final String wrapperName = TransformationUtil.getWrapperMethodName(
                 name, desc, m_declaringTypeName, INVOKE_WRAPPER_METHOD_PREFIX
         );
-        if (m_addedMethods.contains(AlreadyAddedMethodVisitor.getMethodKey(wrapperName, desc))) {
+        if (m_addedMethods.contains(AlreadyAddedMethodAdapter.getMethodKey(wrapperName, desc))) {
             return;
         }
 

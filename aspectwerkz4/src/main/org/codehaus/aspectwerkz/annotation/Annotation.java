@@ -14,18 +14,11 @@ package org.codehaus.aspectwerkz.annotation;
  */
 public interface Annotation {
     /**
-     * Returns the name.
+     * Returns the annotation type - @[type].
      *
-     * @return the name
+     * @return the type
      */
-    public String getName();
-
-    /**
-     * Sets the name of the annotation, the '@[name]'.
-     *
-     * @param name
-     */
-    void setName(String name);
+    public Class annotationType();
 
     /**
      * Sets the full value of the annotation (including possible named parameters etc.).

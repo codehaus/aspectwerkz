@@ -23,31 +23,53 @@ import org.codehaus.aspectwerkz.annotation.expression.ast.ASTRoot;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ASTString;
 import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParserVisitor;
 import org.codehaus.aspectwerkz.annotation.expression.ast.SimpleNode;
+import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AnnotationVisitor implements AnnotationParserVisitor {
-    protected ASTRoot m_root;
 
-    protected TypedAnnotationProxy m_annotationProxy;
+    /**
+     * The one and only annotation parser.
+     */
+    protected static final AnnotationParser PARSER = new AnnotationParser(System.in);
+
+    protected Map m_annnotationValues;
+
+    protected Class m_annotationClass;//TODO - since we use reflect, we may trigger some early loading use AsmClassInfo instead
 
     /**
      * Creates a new visitor.
      *
-     * @param root the AST root
      */
-    public AnnotationVisitor(final ASTRoot root, final TypedAnnotationProxy annotationProxy) {
-        m_root = root;
-        m_annotationProxy = annotationProxy;
+    public AnnotationVisitor(final Map annotationValues, final Class annotationClass) {
+        m_annnotationValues = annotationValues;
+        m_annotationClass = annotationClass;
     }
 
-    public static void parse(final TypedAnnotationProxy annotation, final ASTRoot root) {
-        new AnnotationVisitor(root, annotation).visit(root, annotation);
+    /**
+     * Parse the given annotationRepresentation (@XXX(...)) to feed the given annotationElements map,
+     * based on the annotationClass annotation interface.
+     *
+     * @param annotationElements
+     * @param annotationRepresentation
+     * @param annotationClass
+     */
+    public static void parse(final Map annotationElements, final String annotationRepresentation, final Class annotationClass) {
+        try {
+            ASTRoot root = PARSER.parse(annotationRepresentation);
+            new AnnotationVisitor(annotationElements, annotationClass).visit(root, null);
+        } catch (ParseException e) {
+            throw new RuntimeException("cannot parse annotation [" + annotationRepresentation+"]", e);
+        }
     }
 
     public Object visit(SimpleNode node, Object data) {
@@ -63,8 +85,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         if (nr == 1 && !(node.jjtGetChild(0) instanceof ASTKeyValuePair)) {
             // single "value" default
             Object value = node.jjtGetChild(0).jjtAccept(this, data);
-            MethodInfo valueMethodInfo = getMethodInfo("value");
-            invokeSetterMethod(valueMethodInfo, value, "default value");
+            m_annnotationValues.put("value", value);
         } else {
             for (int i = 0; i < nr; i++) {
                 node.jjtGetChild(i).jjtAccept(this, data);
@@ -75,10 +96,12 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
 
     public Object visit(ASTKeyValuePair node, Object data) {
         String valueName = node.getKey();
-        MethodInfo methodInfo = getMethodInfo(valueName);
-        Object typedValue = node.jjtGetChild(0).jjtAccept(this, methodInfo);
+        //FIXME support for nested annotation when grammar supports it, should create the dynamic proxy
 
-        invokeSetterMethod(methodInfo, typedValue, valueName);
+        // get the methodInfo for this valueName
+        MethodInfo valueMethod = getMethodInfo(valueName);
+        Object typedValue = node.jjtGetChild(0).jjtAccept(this, valueMethod);
+        m_annnotationValues.put(valueName, typedValue);
         return null;
     }
 
@@ -87,16 +110,16 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         Class valueType = methodInfo.valueType;
         if (!valueType.isArray()) {
             throw new RuntimeException(
-                    "parameter type to setter method ["
-                    + methodInfo.setterMethod.getName()
+                    "value type for method ["
+                    + methodInfo.valueMethod.getName()
                     + "] is not of type array"
             );
         }
         Class componentType = valueType.getComponentType();
         if (componentType.isArray()) {
             throw new UnsupportedOperationException(
-                    "multidimensional arrays are not supported, required for for setter method ["
-                    + methodInfo.setterMethod.getName()
+                    "multidimensional arrays are not supported for value type, was required method ["
+                    + methodInfo.valueMethod.getName()
                     + "]"
             );
         }
@@ -179,63 +202,44 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         }
 
         MethodInfo methodInfo = new MethodInfo();
-        try {
-            Class clazz = m_annotationProxy.getClass();
-            Method[] methods = clazz.getMethods();
-            // look for getter method
-            for (int i = 0; i < methods.length; i++) {
-                Method getterMethod = methods[i];
-                if (getterMethod.getName().equals(valueName) ||
-                    getterMethod.getName().equalsIgnoreCase("get" + valueName)) {
-                    methodInfo.getterMethod = getterMethod;
-                    methodInfo.valueType = getterMethod.getReturnType();
-                    // look for setter method
-                    try {
-                        methodInfo.setterMethod =
-                        clazz.getMethod("set" + javaBeanMethodPostfix, new Class[]{methodInfo.valueType});
-                    } catch (NoSuchMethodException e) {
-                        methodInfo.setterMethod =
-                        clazz.getMethod("set" + valueName, new Class[]{methodInfo.valueType});
-                    }
-                    break;
-                }
+        Method[] methods = m_annotationClass.getDeclaredMethods();
+        // look for value methods
+        for (int i = 0; i < methods.length; i++) {
+            Method valueMethod = methods[i];
+            if (valueMethod.getName().equals(valueName)) {
+                methodInfo.valueMethod= valueMethod;
+                methodInfo.valueType = valueMethod.getReturnType();
+                break;
             }
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(
-                    "could not find setter method for value ["
-                    + valueName
-                    + "] due to: "
-                    + e.toString()
-            );
         }
-        if (methodInfo.getterMethod == null) {
+        if (methodInfo.valueMethod == null) {
             throw new RuntimeException(
-                    "setter method with the name [set"
+                    "value method for the annotation value ["
                     + valueName
-                    + "] can not be found in annotation proxy ["
-                    + m_annotationProxy.getClass().getName()
+                    + "] can not be found in annotation interface ["
+                    + m_annotationClass.getName()
                     + "]"
             );
         }
         return methodInfo;
     }
 
-    private void invokeSetterMethod(final MethodInfo methodInfo, final Object typedValue, final String valueName) {
-        try {
-            methodInfo.setterMethod.invoke(
-                    m_annotationProxy, new Object[]{
-                        typedValue
-                    }
-            );
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "could not invoke setter method for named value ["
-                    + valueName
-                    + "] due to: "
-                    + e.toString()
-            );
-        }
-    }
+//    private void invokeSetterMethod(final MethodInfo methodInfo, final Object typedValue, final String valueName) {
+//        try {
+//            methodInfo.setterMethod.invoke(
+//                    m_annotationProxy, new Object[]{
+//                        typedValue
+//                    }
+//            );
+//        } catch (Exception e) {
+//            throw new RuntimeException(
+//                    "could not invoke setter method for named value ["
+//                    + valueName
+//                    + "] due to: "
+//                    + e.toString()
+//            );
+//        }
+//    }
 
     private boolean isJavaReferenceType(final String valueAsString) {
         int first = valueAsString.indexOf('.');
@@ -362,6 +366,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     }
 
     private Object handleReferenceIdentifier(String identifier) {
+        //FIXME avoid loading of the Class unless the annotation value is accessed
         int index = identifier.lastIndexOf('.');
         String className = identifier.substring(0, index);
         String fieldName = identifier.substring(index + 1, identifier.length());
@@ -380,9 +385,8 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
      * Holds the setter, getter methods and the value type.
      */
     private static class MethodInfo {
-        public Method setterMethod;
 
-        public Method getterMethod;
+        public Method valueMethod;
 
         public Class valueType;
     }

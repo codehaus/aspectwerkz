@@ -46,7 +46,7 @@ public class Test extends TestCase {
             aroundFinallyReturningThrowing();
         } catch (UnsupportedOperationException e) {
         }
-        assertEquals("logAround logAfterThrowing logAfterThrowingRTE logAfterFinally ", s_log);
+        assertEquals("logAround logAfterThrowingRTE logAfterFinally ", s_log);
     }
 
     public void testAroundReturningThrowing() {
@@ -55,7 +55,7 @@ public class Test extends TestCase {
             aroundReturningThrowing();
         } catch (UnsupportedOperationException e) {
         }
-        assertEquals("logAround logAfterThrowing logAfterThrowingRTE ", s_log);
+        assertEquals("logAround logAfterThrowingRTE ", s_log);
     }
 
     public void testFinally() {
@@ -67,7 +67,7 @@ public class Test extends TestCase {
     public void testFinallyReturning() {
         s_log = "";
         finallyReturning();
-        assertEquals("logAfterReturningString logAfterReturning logAfter ", s_log);
+        assertEquals("logAfterReturningString logAfterReturning logAfter logAfterFinally ", s_log);
     }
 
     public void testFinallyReturningThrowing() {
@@ -76,7 +76,7 @@ public class Test extends TestCase {
             finallyReturningThrowing();
         } catch (UnsupportedOperationException e) {
         }
-        assertEquals("logAfterThrowing logAfterThrowingRTE logAfterFinally ", s_log);
+        assertEquals("logAfterThrowingRTE logAfterFinally ", s_log);
     }
 
     public void testReturning() {
@@ -91,7 +91,7 @@ public class Test extends TestCase {
             returningThrowing();
         } catch (Exception e) {
         }
-        assertEquals("logAfterThrowing ", s_log);
+        assertEquals("", s_log);
     }
 
     public Test(String name) {

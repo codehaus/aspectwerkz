@@ -25,10 +25,17 @@ import java.io.InputStream;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
+
     /**
      * The return type name.
      */
     private String m_returnTypeName = null;
+
+    /**
+     * A list with the parameter names as they appear in the source code§.
+     * This information may not be available.
+     */
+    protected String[] m_parameterNames = null;
 
     /**
      * A list with the parameter type names.
@@ -134,6 +141,19 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
             }
         }
         return m_parameterTypes;
+    }
+
+    /**
+     * Returns the parameter names as they appear in the source code.
+     * This information is available only when class are compiled with javac -g (debug info), but is required
+     * for Aspect that are using args() and target()/this() bindings.
+     * <p/>
+     * It returns null if not available.
+     *
+     * @return
+     */
+    public String[] getParameterNames() {
+        return m_parameterNames;
     }
 
     /**

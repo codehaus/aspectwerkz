@@ -28,9 +28,21 @@ public interface MethodInfo extends MemberInfo {
     ClassInfo[] getParameterTypes();
 
     /**
+     * Returns the parameter names as they appear in the source code.
+     * This information is available only when class are compiled with javac -g (debug info), but is required
+     * for Aspect that are using args() and target()/this() bindings.
+     * <p/>
+     * It returns null if not available.
+     *
+     * @return
+     */
+    String[] getParameterNames();
+
+    /**
      * Returns the exception types.
      *
      * @return the exception types
      */
     ClassInfo[] getExceptionTypes();
+
 }

@@ -13,6 +13,9 @@ import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
 import org.codehaus.aspectwerkz.annotation.UntypedAnnotationProxy;
 import junit.framework.TestCase;
 
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -20,24 +23,42 @@ public class AnnotationParserTest extends TestCase {
 
     protected static final AnnotationParser s_parser = Helper.getAnnotationParser();
 
+    private void check(Map elements, String key, Object expected) {
+        Object o = elements.get(key);
+        if (o == null) {
+            fail("No such element - " + key);
+        } else {
+            assertEquals(expected, o);
+        }
+    }
+
     public void testSimple() {
         try {
-            Simple annotation = new Simple();
-            AnnotationVisitor.parse(annotation, s_parser.parse("@Single(val=\"foo\")"));
-            assertEquals("foo", annotation.getVal());
-            AnnotationVisitor.parse(annotation, s_parser.parse("@Single(val=\"foo bar\")"));
-            AnnotationVisitor.parse(annotation, s_parser.parse("@Single (val=\"foo bar\")"));
-            AnnotationVisitor.parse(annotation, s_parser.parse("@Single(val=\"foo bar\"       )"));
+            Map elements = new HashMap();
+            AnnotationVisitor.parse(elements, "@Simple(val=\"foo\")", Simple.class);
+            check(elements, "val", "foo");
+            AnnotationVisitor.parse(elements, "@Simple(val=\"foo bar\")", Simple.class);
+            AnnotationVisitor.parse(elements, "@Simple (val=\"foo bar\")", Simple.class);
+            AnnotationVisitor.parse(elements, "@Simple(val=\"foo bar\"       )", Simple.class);
 
-            AnnotationVisitor.parse(annotation, s_parser.parse("@Single(s=\"foo\")"));
-            assertEquals("foo", annotation.s());
-            AnnotationVisitor.parse(annotation, s_parser.parse("@Single(s=\"foo bar\")"));
-            AnnotationVisitor.parse(annotation, s_parser.parse("@Single (s=\"foo bar\")"));
-            AnnotationVisitor.parse(annotation, s_parser.parse("@Single(s=\"foo bar\"       )"));
+            elements = new HashMap();
+            AnnotationVisitor.parse(elements, "@Simple(s=\"foo\")", Simple.class);
+            check(elements, "s", "foo");
 
-            VoidTyped annotation2 = new VoidTyped();
-            AnnotationVisitor.parse(annotation2, s_parser.parse("@Void()"));
-            AnnotationVisitor.parse(annotation2, s_parser.parse("@Void"));
+            AnnotationVisitor.parse(elements, "@Simple(s=\"foo bar\")", Simple.class);
+            AnnotationVisitor.parse(elements, "@Simple (s=\"foo bar\")", Simple.class);
+            AnnotationVisitor.parse(elements, "@Simple(s=\"foo bar\"       )", Simple.class);
+
+            elements = new HashMap();
+            AnnotationVisitor.parse(elements, "@Simple(s=\"foo\", val=\"bar\")", Simple.class);
+            check(elements, "s", "foo");
+            check(elements, "val", "bar");
+
+            elements = new HashMap();
+            AnnotationVisitor.parse(elements, "@Void()", VoidTyped.class);
+            assertEquals(0, elements.size());
+            AnnotationVisitor.parse(elements, "@Void", VoidTyped.class);
+            assertEquals(0, elements.size());
         } catch (Throwable t) {
             fail(t.toString());
         }
@@ -45,17 +66,13 @@ public class AnnotationParserTest extends TestCase {
 
     public void testDefault() {
         try {
-            DefaultString annotation = new DefaultString();
-            AnnotationVisitor.parse(annotation, s_parser.parse("@DefaultString(\"foo\")"));
-            assertEquals("foo", annotation.getValue());
+            Map elements = new HashMap();
+            AnnotationVisitor.parse(elements, "@DefaultString(\"foo\")", DefaultString.class);
+            check(elements, "value", "foo");
 
-            DefaultInt annotationInt = new DefaultInt();
-            AnnotationVisitor.parse(annotationInt, s_parser.parse("@DefaultInt(3)"));
-            assertEquals(3, annotationInt.getValue());
-
-            DefaultString annotation2 = new DefaultString();
-            AnnotationVisitor.parse(annotation2, s_parser.parse("@packaged.DefaultString(\"foo\")"));
-            assertEquals("foo", annotation2.getValue());
+            elements = new HashMap();
+            AnnotationVisitor.parse(elements, "@DefaultInt(3)", DefaultInt.class);
+            check(elements, "value", new Integer(3));
         } catch (Throwable t) {
             fail(t.toString());
         }
@@ -64,19 +81,18 @@ public class AnnotationParserTest extends TestCase {
     // note that for correct long type handling, it is mandatory to have the l or L suffix
     public void testComplex() {
         try {
-            Complex annotation = new Complex();
+            Map elements = new HashMap();
             AnnotationVisitor.parse(
-                    annotation, s_parser.parse("@Complex(i=3  ls={1l,2l,6L}  klass=java.lang.String.class)")
+                    elements, "@Complex(i=3  ls={1l,2l,6L}  klass=java.lang.String.class)", Complex.class
             );
-            assertEquals(String.class, annotation.getKlass());
-            AnnotationVisitor.parse(
-                    annotation, s_parser.parse("@Complex(i=3, ls={1l,2l,6L},  klass=java.lang.String.class)")
-            );
-            assertEquals(String.class, annotation.getKlass());
-            AnnotationVisitor.parse(
-                    annotation, s_parser.parse("@Complex(i=3 ls={1l,2l,6L} klass=java.lang.String.class)")
-            );
-            assertEquals(String.class, annotation.getKlass());
+            check(elements, "i", new Integer(3));
+            long[] ls = new long[]{1L, 2L, 6L};
+            long[] lsGet = (long[]) elements.get("ls");
+            for (int i = 0; i < ls.length; i++) {
+                assertEquals(ls[i], lsGet[i]);
+            }
+            // TODO change when support for LazyClass is there
+            check(elements, "klass", String.class);
         } catch (Throwable t) {
             fail(t.toString());
         }
@@ -84,98 +100,58 @@ public class AnnotationParserTest extends TestCase {
 
     public void testStringArray() {
         try {
-            StringArray annotation = new StringArray();
-            AnnotationVisitor.parse(annotation, s_parser.parse("@StringArray(i=3  ss={\"hello\", \"foo\"})"));
-            assertEquals("foo", annotation.ss()[1]);
-            AnnotationVisitor.parse(annotation, s_parser.parse("@StringArray(i=3, ss={\"hello\", \"foo\"})"));
-            assertEquals("foo", annotation.ss()[1]);
+            Map elements = new HashMap();
+            AnnotationVisitor.parse(elements, "@StringArray(i=3  ss={\"hello\", \"foo\"})", StringArray.class);
+            check(elements, "i", new Integer(3));
+            String[] ss = new String[]{"hello", "foo"};
+            String[] ssGet = (String[]) elements.get("ss");
+            for (int i = 0; i < ss.length; i++) {
+                assertEquals(ss[i], ssGet[i]);
+
+            }
         } catch (Throwable t) {
             fail(t.toString());
         }
     }
 
-    public static class Helper extends TypedAnnotationProxy {
+    public static class Helper extends AnnotationVisitor {
+        public Helper(final Map annotationValues, final Class annotationClass) {
+            super(annotationValues, annotationClass);
+        }
         public static AnnotationParser getAnnotationParser() {
             return PARSER;
         }
     }
 
-    public static class VoidTyped extends TypedAnnotationProxy {
+    public static interface VoidTyped {
     }
 
-    public static class Simple extends TypedAnnotationProxy {
-        String s;
+    public static interface Simple {
 
-        public void setVal(String s) {
-            this.s = s;
-        }
+        public String val();
 
-        public String getVal() {
-            return this.s;
-        }
-
-        public void sets(String s) {
-            this.s = s;
-        }
-
-        public String s() {
-            return this.s;
-        }
+        public String s();
     }
 
-    public static class DefaultString extends TypedAnnotationProxy {
-        String s;
+    public static interface DefaultString {
 
-        public void setValue(String s) {
-            this.s = s;
-        }
-
-        public String getValue() {
-            return this.s;
-        }
+        public String value();
     }
 
-    public static class DefaultInt extends TypedAnnotationProxy {
-        int i;
+    public static interface DefaultInt {
 
-        public void setValue(int i) {
-            this.i = i;
-        }
-
-        public int getValue() {
-            return this.i;
-        }
+        public int value();
     }
 
 
-    public static class Complex extends TypedAnnotationProxy {
-        int i;
-        long[] ls;
-        Class klass;
+    public static interface Complex {
 
-        public void setI(int i) {
-            this.i = i;
-        }
+        public int i();
 
-        public int getI() {
-            return this.i;
-        }
+        public long[] ls();
 
-        public void setLs(long[] ls) {
-            this.ls = ls;
-        }
+        public Class klass();
 
-        public long[] getLs() {
-            return this.ls;
-        }
-
-        public void setKlass(Class k) {
-            this.klass = k;
-        }
-
-        public Class getKlass() {
-            return this.klass;
-        }
     }
 
     public static class StringArray extends TypedAnnotationProxy {
@@ -199,6 +175,7 @@ public class AnnotationParserTest extends TestCase {
         }
     }
 
-    public static class Untyped extends UntypedAnnotationProxy {
+    public static interface Untyped {
+        public String value();
     }
 }

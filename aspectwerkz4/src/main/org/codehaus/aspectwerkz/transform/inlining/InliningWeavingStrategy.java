@@ -31,7 +31,7 @@ import org.codehaus.aspectwerkz.transform.inlining.weaver.JoinPointInitVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodCallVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodExecutionVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodWrapperVisitor;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.AlreadyAddedMethodVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.AlreadyAddedMethodAdapter;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.AddInterfaceVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.AddMixinMethodsVisitor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -126,7 +126,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             // gather wrapper methods to support multi-weaving
             // skip annotations visit and debug info by using the lookahead read-only classreader
             Set addedMethods = new HashSet();
-            crLookahead.accept(new AlreadyAddedMethodVisitor(addedMethods), true);
+            crLookahead.accept(new AlreadyAddedMethodAdapter(addedMethods), true);
 
             // chain the visitors by registering them from last to first
             ClassVisitor reversedChain = cw;

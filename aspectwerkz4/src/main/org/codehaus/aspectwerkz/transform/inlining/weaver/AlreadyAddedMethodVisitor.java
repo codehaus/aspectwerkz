@@ -20,7 +20,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class AlreadyAddedMethodVisitor extends AsmAnnotationHelper.NullClassVisitor implements TransformationConstants {
+public class AlreadyAddedMethodVisitor extends AsmAnnotationHelper.NullClassAdapter implements TransformationConstants {
 
     /**
      * Set of "<methodName><methodDesc>" strings populated with wrapper methods, prefixed originals

@@ -123,7 +123,7 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
             return cv.visitMethod(access, name, desc, exceptions, attrs);
         } else {
             String prefixedOriginalName = TransformationUtil.getPrefixedOriginalMethodName(name, m_declaringTypeName);
-            if (m_addedMethods.contains(AlreadyAddedMethodVisitor.getMethodKey(prefixedOriginalName, desc))) {
+            if (m_addedMethods.contains(AlreadyAddedMethodAdapter.getMethodKey(prefixedOriginalName, desc))) {
                 return cv.visitMethod(access, name, desc, exceptions, attrs);
             }
 
