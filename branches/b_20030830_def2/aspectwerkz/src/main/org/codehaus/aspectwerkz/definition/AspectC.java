@@ -15,8 +15,8 @@ import com.thoughtworks.qdox.model.JavaField;
 import org.codehaus.aspectwerkz.metadata.QDoxParser;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.AroundAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.PreAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.PostAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.BeforeAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.AfterAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.IntroductionAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.AttributeEnhancer;
 import org.codehaus.aspectwerkz.definition.attribute.ExecutionAttribute;
@@ -45,8 +45,8 @@ public class AspectC {
     public static final String ATTR_THROWS = "Throws";
     public static final String ATTR_CFLOW = "CFlow";
     public static final String ATTR_AROUND = "Around";
-    public static final String ATTR_PRE = "Pre";
-    public static final String ATTR_POST = "Post";
+    public static final String ATTR_BEFORE = "Before";
+    public static final String ATTR_AFTER = "After";
     public static final String ATTR_INTRODUCTION = "Introduction";
     public static final String ATTR_IMPLEMENTS = "Implements";
 
@@ -104,8 +104,8 @@ public class AspectC {
                     for (int j = 0; j < javaMethods.length; j++) {
                         JavaMethod javaMethod = javaMethods[j];
                         parseAroundAdvice(javaMethod, enhancer);
-                        parsePreAdvice(javaMethod, enhancer);
-                        parsePostAdvice(javaMethod, enhancer);
+                        parseBeforeAdvice(javaMethod, enhancer);
+                        parseAfterAdvice(javaMethod, enhancer);
                         parseIntroduction(javaMethod, enhancer);
                     }
                     enhancer.write(destDir);
@@ -346,9 +346,9 @@ public class AspectC {
      * @param javaMethod the java method
      * @param enhancer the attribute enhancer
      */
-    private static void parsePreAdvice(final JavaMethod javaMethod,
+    private static void parseBeforeAdvice(final JavaMethod javaMethod,
                                        final AttributeEnhancer enhancer) {
-        DocletTag[] preAdviceTags = javaMethod.getTagsByName(ATTR_PRE);
+        DocletTag[] preAdviceTags = javaMethod.getTagsByName(ATTR_BEFORE);
         StringBuffer preAdviceExpr = new StringBuffer();
         for (int k = 0; k < preAdviceTags.length; k++) {
             preAdviceExpr.append(preAdviceTags[k].getValue());
@@ -357,7 +357,7 @@ public class AspectC {
             String expression = preAdviceExpr.toString();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new PreAttribute(expression)
+                    new BeforeAttribute(expression)
             );
             log("\tpre advice [" + javaMethod.getName() + "::" + expression + "]");
         }
@@ -369,9 +369,9 @@ public class AspectC {
      * @param javaMethod the java method
      * @param enhancer the attribute enhancer
      */
-    private static void parsePostAdvice(final JavaMethod javaMethod,
+    private static void parseAfterAdvice(final JavaMethod javaMethod,
                                         final AttributeEnhancer enhancer) {
-        DocletTag[] postAdviceTags = javaMethod.getTagsByName(ATTR_POST);
+        DocletTag[] postAdviceTags = javaMethod.getTagsByName(ATTR_AFTER);
         StringBuffer postAdviceExpr = new StringBuffer();
         for (int k = 0; k < postAdviceTags.length; k++) {
             postAdviceExpr.append(postAdviceTags[k].getValue());
@@ -380,7 +380,7 @@ public class AspectC {
             String expression = postAdviceExpr.toString();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new PostAttribute(expression)
+                    new AfterAttribute(expression)
             );
             log("\tpost advice [" + javaMethod.getName() + "::" + expression + "]");
         }

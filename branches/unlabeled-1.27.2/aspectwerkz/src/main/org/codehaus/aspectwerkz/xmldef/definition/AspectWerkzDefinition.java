@@ -539,8 +539,8 @@ public class AspectWerkzDefinition implements Serializable {
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
             adviceDefs.addAll(aspectDef.getAroundAdvices());
-            adviceDefs.addAll(aspectDef.getPreAdvices());
-            adviceDefs.addAll(aspectDef.getPostAdvices());
+            adviceDefs.addAll(aspectDef.getBeforeAdvices());
+            adviceDefs.addAll(aspectDef.getAfterAdvices());
         }
         return adviceDefs;
     }

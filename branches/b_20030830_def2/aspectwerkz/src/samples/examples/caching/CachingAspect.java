@@ -38,7 +38,7 @@ public class CachingAspect extends AbstractAspect {
     // ============ Advices ============
 
     /**
-     * @Pre invocationCount
+     * @Before invocationCount
      */
     public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
         CallerSideJoinPoint jp = (CallerSideJoinPoint)joinPoint;

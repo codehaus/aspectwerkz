@@ -47,14 +47,14 @@ public class AspectDefinition {
     private final List m_aroundAdvices = new ArrayList();
 
     /**
-     * The pre advices.
+     * The before advices.
      */
-    private final List m_preAdvices = new ArrayList();
+    private final List m_beforeAdvices = new ArrayList();
 
     /**
-     * The post advices.
+     * The after advices.
      */
-    private final List m_postAdvices = new ArrayList();
+    private final List m_afterAdvices = new ArrayList();
 
     /**
      * The method introductions.
@@ -153,39 +153,39 @@ public class AspectDefinition {
     }
 
     /**
-     * Adds a new pre advice.
+     * Adds a new before advice.
      *
-     * @param adviceMetaData the pre advice
+     * @param adviceMetaData the before advice
      */
-    public void addPreAdvice(final AdviceDefinition adviceMetaData) {
-        m_preAdvices.add(adviceMetaData);
+    public void addBeforeAdvice(final AdviceDefinition adviceMetaData) {
+        m_beforeAdvices.add(adviceMetaData);
     }
 
     /**
-     * Returns the pre advices.
+     * Returns the before advices.
      *
-     * @return the pre advices
+     * @return the before advices
      */
-    public List getPreAdvices() {
-        return m_preAdvices;
+    public List getBeforeAdvices() {
+        return m_beforeAdvices;
     }
 
     /**
-     * Adds a new post advice.
+     * Adds a new after advice.
      *
-     * @param adviceMetaData the post advice
+     * @param adviceMetaData the after advice
      */
-    public void addPostAdvice(final AdviceDefinition adviceMetaData) {
-        m_postAdvices.add(adviceMetaData);
+    public void addAfterAdvice(final AdviceDefinition adviceMetaData) {
+        m_afterAdvices.add(adviceMetaData);
     }
 
     /**
-     * Returns the post advices.
+     * Returns the after advices.
      *
-     * @return the post advices
+     * @return the after advices
      */
-    public List getPostAdvices() {
-        return m_postAdvices;
+    public List getAfterAdvices() {
+        return m_afterAdvices;
     }
 
     /**
@@ -307,8 +307,8 @@ public class AspectDefinition {
     public List getAllAdvices() {
         final List allAdvices = new ArrayList();
         allAdvices.addAll(m_aroundAdvices);
-        allAdvices.addAll(m_preAdvices);
-        allAdvices.addAll(m_postAdvices);
+        allAdvices.addAll(m_beforeAdvices);
+        allAdvices.addAll(m_afterAdvices);
         return sortAdvices(allAdvices);
     }
 

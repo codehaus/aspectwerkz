@@ -302,7 +302,7 @@ public class StartupManager {
             AspectMetaData aspectMetaData =
                     AspectWerkz.getSystem(uuid).getAspectMetaData(aspectDef.getName());
 
-            List preAdvices = aspectDef.getPreAdvices();
+            List preAdvices = aspectDef.getBeforeAdvices();
             for (Iterator it2 = preAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
@@ -333,7 +333,7 @@ public class StartupManager {
                 }
             }
 
-            List postAdvices = aspectDef.getPreAdvices();
+            List postAdvices = aspectDef.getBeforeAdvices();
             for (Iterator it2 = postAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
@@ -377,7 +377,7 @@ public class StartupManager {
             AspectMetaData aspectMetaData =
                     AspectWerkz.getSystem(uuid).getAspectMetaData(aspectDef.getName());
 
-            List preAdvices = aspectDef.getPreAdvices();
+            List preAdvices = aspectDef.getBeforeAdvices();
             for (Iterator it2 = preAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
@@ -408,7 +408,7 @@ public class StartupManager {
                 }
             }
 
-            List postAdvices = aspectDef.getPostAdvices();
+            List postAdvices = aspectDef.getAfterAdvices();
             for (Iterator it2 = postAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 FieldPointcut fieldPointcut = new FieldPointcut(
@@ -453,7 +453,7 @@ public class StartupManager {
             AspectMetaData aspectMetaData =
                     AspectWerkz.getSystem(uuid).getAspectMetaData(aspectDef.getName());
 
-            List preAdvices = aspectDef.getPreAdvices();
+            List preAdvices = aspectDef.getBeforeAdvices();
             for (Iterator it2 = preAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
@@ -484,7 +484,7 @@ public class StartupManager {
                 }
             }
 
-            List postAdvices = aspectDef.getPostAdvices();
+            List postAdvices = aspectDef.getAfterAdvices();
             for (Iterator it2 = postAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 CallerSidePointcut callerSidePointcut = new CallerSidePointcut(
@@ -565,7 +565,7 @@ public class StartupManager {
 
                             Class cflowAspectClass = CFlowSystemAspect.class;
                             // add the cflow pre advice
-                            cflowAspect.addPreAdvice(new AdviceDefinition(
+                            cflowAspect.addBeforeAdvice(new AdviceDefinition(
                                     CFlowSystemAspect.PRE_ADVICE,
                                     cflowAspect.getName(),
                                     cflowAspect.getClassName(),
@@ -578,7 +578,7 @@ public class StartupManager {
                             ));
 
                             // add the cflow post advice
-                            cflowAspect.addPostAdvice(new AdviceDefinition(
+                            cflowAspect.addAfterAdvice(new AdviceDefinition(
                                     CFlowSystemAspect.POST_ADVICE,
                                     cflowAspect.getName(),
                                     cflowAspect.getClassName(),
