@@ -3,7 +3,7 @@
 <project>
     <pomVersion>3</pomVersion>
 
-    <name>AspectWerkz</name>
+    <name>AspectWerkz - Dynamic Aspect-Oriented Programming (AOP) for Java</name>
     <id>aspectwerkz</id>
 
     <currentVersion>0.10.RC1</currentVersion>
@@ -206,12 +206,12 @@ Extensions:
 
     <reports>
         <report>maven-license-plugin</report>
-        <report>maven-tasklist-plugin</report>
         <report>maven-jdepend-plugin</report>
         <report>maven-pmd-plugin</report>
         <report>maven-changes-plugin</report>
         <report>maven-jxr-plugin</report>
         <report>maven-javadoc-plugin</report>
+        <!--        <report>maven-tasklist-plugin</report>-->
         <!--        <report>maven-changelog-plugin</report>-->
         <!--        <report>maven-file-activity-plugin</report>-->
         <!--        <report>maven-developer-activity-plugin</report>-->

@@ -7,8 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint;
 
-import org.codehaus.aspectwerkz.joinpoint.CodeSignature;
-
 import java.lang.reflect.Constructor;
 
 /**

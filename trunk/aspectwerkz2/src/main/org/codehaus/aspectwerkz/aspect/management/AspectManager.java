@@ -322,7 +322,6 @@ public final class AspectManager {
         }
 
         List pointcuts = m_aspectRegistry.getExecutionPointcuts(classMetaData, memberMetaData);
-
         synchronized (m_executionPointcutCache) {
             m_executionPointcutCache.put(hashKey, pointcuts);
         }

@@ -22,7 +22,6 @@ public class ConstructorAdviceTest extends TestCase {
     public void testCallAroundAdvice() {
         s_logCall = "";
         TestAroundAdvice test = new TestAroundAdvice(1L, new Object(), new String[]{});
-        System.out.println("s_logCall = " + s_logCall);
         assertEquals("beforeCall init afterCall ", s_logCall);
         assertNotNull(test);
         assertTrue(test instanceof TestAroundAdvice);

@@ -100,7 +100,6 @@ public class AroundAdviceExecutor implements AdviceExecutor {
                 return invokeTargetMethod(joinPoint);
             }
         }
-java.lang.System.out.println("m_adviceIndexes.length = " + m_adviceIndexes.length);
         Object result = null;
         if (m_currentAdviceIndex == m_adviceIndexes.length - 1) {
             m_currentAdviceIndex = -1;

@@ -164,8 +164,8 @@ public class JoinPointManager {
                                                 final Object[] parameters,
                                                 final Object targetInstance,
                                                 final int joinPointType,
-                                                final String methodSignature)
-            throws Throwable {
+                                                final String methodSignature) throws Throwable {
+
         ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(methodHash);
 
         if (threadLocal == null) {
@@ -250,8 +250,7 @@ public class JoinPointManager {
                                            final Object targetInstance,
                                            final Class declaringClass,
                                            final int joinPointType,
-                                           final String methodSignature)
-            throws Throwable {
+                                           final String methodSignature) throws Throwable {
 
         ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(methodHash);
 
@@ -323,8 +322,7 @@ public class JoinPointManager {
                                         final Object[] fieldValue,
                                         final Object targetInstance,
                                         final Class declaringClass,
-                                        final String fieldSignature)
-            throws Throwable {
+                                        final String fieldSignature) throws Throwable {
 
         ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(fieldHash);
 
@@ -384,8 +382,7 @@ public class JoinPointManager {
     public Object proceedWithGetJoinPoint(final int fieldHash,
                                           final Object targetInstance,
                                           final Class declaringClass,
-                                          final String fieldSignature)
-            throws Throwable {
+                                          final String fieldSignature) throws Throwable {
 
         ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(fieldHash);
 
@@ -452,8 +449,7 @@ public class JoinPointManager {
     public void proceedWithCatchClauseJoinPoint(final int catchClauseHash,
                                                 final Object exceptionInstance,
                                                 final Object targetInstance,
-                                                final String handlerSignature)
-            throws Throwable {
+                                                final String handlerSignature) throws Throwable {
 
         ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(catchClauseHash);
 

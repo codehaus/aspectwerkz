@@ -20,6 +20,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.DeploymentModel;
@@ -285,10 +286,16 @@ public class PointcutManager {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (memberMetaData == null) throw new IllegalArgumentException("member meta-data can not be null");
 
+//        System.out.println("classMetaData.getName() = " + classMetaData.getName());
+//        System.out.println("((ConstructorMetaData)memberMetaData).getName() = " + ((ConstructorMetaData)memberMetaData).getName());
+
         List pointcutList = new ArrayList();
         for (Iterator it = m_executionPointcuts.iterator(); it.hasNext();) {
             ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
-            if (pointcut.getExpression().match(classMetaData, memberMetaData)) {
+            Expression expression = pointcut.getExpression();
+//            System.out.println("expression. = " + expression);
+            if (expression.match(classMetaData, memberMetaData)) {
+//                System.out.println("    MATCH");
                 pointcutList.add(pointcut);
             }
         }
