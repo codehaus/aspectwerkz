@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
@@ -144,8 +145,15 @@ public class StartupManager {
             Constructor constructor = klass.getConstructor(new Class[]{CrossCuttingInfo.class});
             return (AspectContainer)constructor.newInstance(new Object[]{crossCuttingInfo});
         }
+        catch (InvocationTargetException e) {
+            throw new DefinitionException(e.getTargetException().toString());
+        }
         catch (NoSuchMethodException e) {
-            throw new DefinitionException("aspect container does not have a valid constructor [" + ASPECT_CONTAINER_IMPLEMENTATION_CLASS + "] (one that takes a CrossCuttingInfo instance as its only parameter)");
+            throw new DefinitionException(
+                    "aspect container does not have a valid constructor [" + ASPECT_CONTAINER_IMPLEMENTATION_CLASS +
+                    "] (one that takes a CrossCuttingInfo instance as its only parameter): " +
+                    e.toString()
+            );
         }
         catch (Exception e) {
             StringBuffer cause = new StringBuffer();
