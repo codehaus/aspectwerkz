@@ -104,7 +104,13 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
         int hash = AsmHelper.calculateConstructorHash(desc);
         ConstructorInfo constructorInfo = m_calleeClassInfo.getConstructor(hash);
         if (constructorInfo == null) {
-            throw new Error("constructor info metadata structure could not be build for <init> " + desc);
+            System.err.println(
+                    "AW::WARNING " +
+                    "metadata structure could not be build for constructor ["
+                    + m_calleeClassInfo.getName().replace('/', '.')
+                    + ".<init>: " + desc + ']'
+            );
+            return cv.visitMethod(access, name, desc, exceptions, attrs);
         }
 
         ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, constructorInfo, constructorInfo);

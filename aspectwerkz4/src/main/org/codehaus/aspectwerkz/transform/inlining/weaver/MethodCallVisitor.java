@@ -13,6 +13,7 @@ import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.CodeAdapter;
 import org.objectweb.asm.Label;
+import org.objectweb.asm.Type;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
@@ -145,22 +146,11 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
             m_callerMethodDesc = callerMethodDesc;
 
             if (INIT_METHOD_NAME.equals(callerMethodName)) {
-                m_callerMemberInfo =
-                m_callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(m_callerMethodDesc));
+                int hash = AsmHelper.calculateConstructorHash(m_callerMethodDesc);
+                m_callerMemberInfo = m_callerClassInfo.getConstructor(hash);
             } else {
-                m_callerMemberInfo =
-                m_callerClassInfo.getMethod(AsmHelper.calculateMethodHash(m_callerMethodName, m_callerMethodDesc));
-            }
-
-            if (m_callerMemberInfo == null) {
-                throw new Error(
-                        "caller method info metadata structure could not be build for method: "
-                        + callerClassName
-                        + '.'
-                        + callerMethodName
-                        + ':'
-                        + callerMethodDesc
-                );
+                int hash = AsmHelper.calculateMethodHash(m_callerMethodName, m_callerMethodDesc);
+                m_callerMemberInfo = m_callerClassInfo.getMethod(hash);
             }
         }
 
@@ -186,15 +176,24 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
                                     String calleeClassName,
                                     final String calleeMethodName,
                                     final String calleeMethodDesc) {
+
+            if (m_callerMemberInfo == null) {
+                System.err.println(
+                        "AW::WARNING " +
+                        "metadata structure could not be build for method ["
+                        + m_callerClassInfo.getName().replace('/', '.')
+                        + '.' + m_callerMethodName + ':' + m_callerMethodDesc + ']'
+                );
+                super.visitMethodInsn(opcode, calleeClassName, calleeMethodName, calleeMethodDesc);
+                return;
+            }
+
             if (INIT_METHOD_NAME.equals(calleeMethodName) ||
                 CLINIT_METHOD_NAME.equals(calleeMethodName) ||
                 calleeMethodName.startsWith(ASPECTWERKZ_PREFIX) ||
                 calleeClassName.endsWith(AbstractJoinPointCompiler.JOIN_POINT_CLASS_SUFFIX) ||
                 calleeClassName.startsWith(ASPECTWERKZ_PACKAGE_NAME) ||
-
-                // FIXME make generic fix by invoking all AspectModels (same problem in other visitors as well)
-                calleeClassName.startsWith("org/aopalliance/")) {
-
+                calleeClassName.startsWith("org/aopalliance/")) { // FIXME make generic fix by invoking all AspectModels (same problem in other visitors as well)
                 super.visitMethodInsn(opcode, calleeClassName, calleeMethodName, calleeMethodDesc);
                 return;
             }
@@ -209,35 +208,19 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
             }
 
             int joinPointHash = AsmHelper.calculateMethodHash(calleeMethodName, calleeMethodDesc);
-            ClassInfo classInfo = AsmClassInfo.getClassInfo(calleeClassName.replace('/', '.'), m_loader);
+
+            ClassInfo classInfo = AsmClassInfo.getClassInfo(calleeClassName, m_loader);
             MethodInfo calleeMethodInfo = classInfo.getMethod(joinPointHash);
+
             if (calleeMethodInfo == null) {
-                // lookup in the class hierarchy
-                ClassInfo superClassInfo = classInfo.getSuperclass();
-                while (superClassInfo != null) {
-                    calleeMethodInfo = superClassInfo.getMethod(joinPointHash);
-                    if (calleeMethodInfo == null) {
-                        // go up in the hierarchy
-                        superClassInfo = superClassInfo.getSuperclass();
-                    } else {
-                        break;
-                    }
-                }
-                if (calleeMethodInfo == null) {
-                    System.err.println("AW::WARNING - " +
-                            "callee method info metadata structure could not be build for method ["
-                            + calleeClassName.replace('/', '.')
-                            + '.'
-                            + calleeMethodName
-                            + ':'
-                            + calleeMethodDesc
-                            + "] when parsing method ["
-                            + m_callerClassInfo.getName()
-                            + '.'
-                            + m_callerMethodName
-                            + "(..)]"
-                    );
-                }
+                System.err.println(
+                        "AW::WARNING " +
+                        "metadata structure could not be build for method ["
+                        + classInfo.getName().replace('/', '.')
+                        + '.' + calleeMethodName + ':' + calleeMethodDesc
+                        + "] when parsing method ["
+                        + m_callerClassInfo.getName() + '.' + m_callerMethodName + "(..)]"
+                );
                 // bail out
                 super.visitMethodInsn(opcode, calleeClassName, calleeMethodName, calleeMethodDesc);
                 return;

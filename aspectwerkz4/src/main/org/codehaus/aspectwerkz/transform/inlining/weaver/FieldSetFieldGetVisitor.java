@@ -137,21 +137,18 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
             m_callerMethodDesc = callerMethodDesc;
 
             if (INIT_METHOD_NAME.equals(m_callerMethodName)) {
-                m_callerMemberInfo =
-                m_callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(m_callerMethodDesc));
+                int hash = AsmHelper.calculateConstructorHash(m_callerMethodDesc);
+                m_callerMemberInfo = m_callerClassInfo.getConstructor(hash);
             } else {
-                m_callerMemberInfo =
-                m_callerClassInfo.getMethod(AsmHelper.calculateMethodHash(m_callerMethodName, m_callerMethodDesc));
+                int hash = AsmHelper.calculateMethodHash(m_callerMethodName, m_callerMethodDesc);
+                m_callerMemberInfo = m_callerClassInfo.getMethod(hash);
             }
-
             if (m_callerMemberInfo == null) {
-                throw new Error(
-                        "caller method info metadata structure could not be build for method: "
-                        + callerClassName
-                        + '.'
-                        + callerMethodName
-                        + ':'
-                        + callerMethodDesc
+                System.err.println(
+                        "AW::WARNING " +
+                        "metadata structure could not be build for method ["
+                        + m_callerClassInfo.getName().replace('/', '.')
+                        + '.' + m_callerMethodName + ':' + m_callerMethodDesc + ']'
                 );
             }
         }
@@ -191,7 +188,7 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
 
             final Type fieldType = Type.getType(fieldDesc);
             final int joinPointHash = AsmHelper.calculateFieldHash(fieldName, fieldDesc);
-            final ClassInfo classInfo = AsmClassInfo.getClassInfo(className.replace('/', '.'), m_loader);
+            final ClassInfo classInfo = AsmClassInfo.getClassInfo(className, m_loader);
             final FieldInfo fieldInfo = getFieldInfo(classInfo, className, fieldName, fieldDesc, joinPointHash);
 
             if (opcode == PUTFIELD || opcode == PUTSTATIC) {
@@ -221,6 +218,11 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                                        final String fieldDesc,
                                        int joinPointHash,
                                        final Type fieldType) {
+            if (m_callerMemberInfo == null) {
+                super.visitFieldInsn(opcode, className, fieldName, fieldDesc);
+                return;
+            }
+
             ExpressionContext ctx = new ExpressionContext(PointcutType.GET, fieldInfo, m_callerMemberInfo);
 
             if (fieldFilter(m_ctx.getDefinitions(), ctx, fieldInfo)) {
@@ -299,6 +301,11 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                                              final String fieldName,
                                              final String fieldDesc,
                                              final int joinPointHash) {
+            if (m_callerMemberInfo == null) {
+                super.visitFieldInsn(opcode, className, fieldName, fieldDesc);
+                return;
+            }
+
             ExpressionContext ctx = new ExpressionContext(PointcutType.SET, fieldInfo, m_callerMemberInfo);
 
             if (fieldFilter(m_ctx.getDefinitions(), ctx, fieldInfo)) {

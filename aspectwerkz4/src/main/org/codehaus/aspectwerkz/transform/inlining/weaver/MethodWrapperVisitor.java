@@ -105,10 +105,11 @@ public class MethodWrapperVisitor extends ClassAdapter implements Transformation
         int hash = AsmHelper.calculateMethodHash(name, desc);
         MethodInfo methodInfo = m_classInfo.getMethod(hash);
         if (methodInfo == null) {
-            throw new Error(
-                    "method info metadata structure could not be build for method: " +
-                    m_declaringTypeName + '.' +
-                    name + ':' + desc
+            System.err.println(
+                    "AW::WARNING " +
+                    "metadata structure could not be build for method ["
+                    + m_classInfo.getName().replace('/', '.')
+                    + '.' + name + ':' + desc + ']'
             );
         }
 

@@ -11,6 +11,7 @@ package test;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class CallerSideTestHelper {
+
     public CallerSideTestHelper() {
     }
 

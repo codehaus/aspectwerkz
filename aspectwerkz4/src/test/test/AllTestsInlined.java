@@ -12,8 +12,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * Copied from AllTest, kept only relevant test (using the weaver), and commented the test that fail for now.
- * <p/>
  * This tests can be run without online / offline or other post compilation mode. Used to test
  * standalone component of AspectWerkz.
  *
@@ -62,14 +60,14 @@ public class AllTestsInlined extends TestCase {
         suite.addTestSuite(test.mixin.perinstance.IntroductionTest.class);
         suite.addTestSuite(test.mixin.perclass.IntroductionTest.class);
         suite.addTestSuite(test.adviseonintroducedinterface.Test.class);
-
-        // NOT YET COMPLETED
-//        suite.addTestSuite(test.handler.HandlerTest.class);
-//        suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal
         suite.addTestSuite(test.advisetostringbug.Test.class);//mixin
         suite.addTestSuite(test.implementsbug.ImplementsTest.class);
         suite.addTestSuite(test.inheritedmixinbug.Target.class);
         suite.addTestSuite(test.interfacesubtypebug.InterfaceSubtypeBug.class);
+
+        // NOT YET COMPLETED
+//        suite.addTestSuite(test.handler.HandlerTest.class);
+//        suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal
 //        suite.addTestSuite(CFlowTest.class);
 //        suite.addTestSuite(ComplexCFlowTest.class);
 //        suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);

@@ -73,16 +73,16 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
      * @param loader
      * @return the constructor info
      */
-    public static MethodInfo getConstructorInfo(final String constructorDesc,
-                                                final byte[] bytecode,
-                                                final ClassLoader loader) {
+    public static ConstructorInfo getConstructorInfo(final String constructorDesc,
+                                                     final byte[] bytecode,
+                                                     final ClassLoader loader) {
         String className = AsmClassInfo.retrieveClassNameFromBytecode(bytecode);
         AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(className);
         if (classInfo == null) {
             classInfo = AsmClassInfo.getClassInfo(bytecode, loader);
         }
-        return classInfo.getMethod(AsmHelper.calculateConstructorHash(constructorDesc));
+        return classInfo.getConstructor(AsmHelper.calculateConstructorHash(constructorDesc));
     }
 
     /**
@@ -142,11 +142,15 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
                 ClassReader cr = null;
                 try {
                     in = ((ClassLoader) m_loaderRef.get()).getResourceAsStream(
-                                m_declaringTypeName.replace('.', '/') + ".class"
+                            m_declaringTypeName.replace('.', '/') + ".class"
                     );
                     cr = new ClassReader(in);
                 } finally {
-                    try { in.close();} catch(Exception e) {;}
+                    try {
+                        in.close();
+                    } catch (Exception e) {
+                        ;
+                    }
                 }
                 List annotations = new ArrayList();
                 cr.accept(
