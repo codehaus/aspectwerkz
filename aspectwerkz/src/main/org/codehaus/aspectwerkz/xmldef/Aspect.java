@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.regexp.MethodPattern;
  * defined by this aspect.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Aspect.java,v 1.9 2003-07-19 20:36:15 jboner Exp $
+ * @version $Id: Aspect.java,v 1.10 2003-07-22 14:03:17 jboner Exp $
  */
 public class Aspect {
 
@@ -224,7 +224,7 @@ public class Aspect {
      *
      * @param introduction the name of the introduction to add
      */
-    public void addIntroduction(final String introduction) {
+    public final void addIntroduction(final String introduction) {
         synchronized (m_introductions) {
             final String[] tmp = new String[m_introductions.length + 1];
             System.arraycopy(m_introductions, 0, tmp, 0, m_introductions.length);
@@ -239,7 +239,7 @@ public class Aspect {
      *
      * @param introductions the introductions to add
      */
-    public void addIntroductions(final String[] introductions) {
+    public final void addIntroductions(final String[] introductions) {
         synchronized (m_introductions) {
             final String[] clone = new String[introductions.length];
             System.arraycopy(introductions, 0, clone, 0, introductions.length);
@@ -317,7 +317,7 @@ public class Aspect {
      *
      * @param fieldPointcut the field pointcut to add
      */
-    public void addGetFieldPointcut(final FieldPointcut fieldPointcut) {
+    public final void addGetFieldPointcut(final FieldPointcut fieldPointcut) {
         synchronized (m_getFieldPointcuts) {
             m_getFieldPointcuts.put(
                     fieldPointcut.getExpression(),
@@ -373,7 +373,7 @@ public class Aspect {
      *
      * @param callerSidePointcut the caller side pointcut to add
      */
-    public void addCallerSidePointcut(final CallerSidePointcut callerSidePointcut) {
+    public final void addCallerSidePointcut(final CallerSidePointcut callerSidePointcut) {
         synchronized (m_callerSidePointcuts) {
             m_callerSidePointcuts.put(
                     callerSidePointcut.getExpression(),
@@ -386,7 +386,7 @@ public class Aspect {
      *
      * @param callerSidePointcuts the caller side pointcuts to add
      */
-    public void addCallerSidePointcuts(final CallerSidePointcut[] callerSidePointcuts) {
+    public final void addCallerSidePointcuts(final CallerSidePointcut[] callerSidePointcuts) {
         synchronized (m_callerSidePointcuts) {
             for (int i = 0; i < callerSidePointcuts.length; i++) {
                 m_callerSidePointcuts.put(

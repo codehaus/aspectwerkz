@@ -12,7 +12,7 @@ import org.codehaus.aspectwerkz.regexp.FieldPattern;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldPatternTest.java,v 1.4 2003-06-17 15:19:42 jboner Exp $
+ * @version $Id: FieldPatternTest.java,v 1.5 2003-07-22 14:03:18 jboner Exp $
  */
 public class FieldPatternTest extends TestCase {
 
@@ -56,6 +56,14 @@ public class FieldPatternTest extends TestCase {
         assertFalse(fieldPattern.matchFieldName("m_"));
     }
 
+    public void testMatchFieldName6() {
+        FieldPattern fieldPattern = Pattern.compileFieldPattern("int MyMethod");
+
+        assertFalse(fieldPattern.matchFieldName(""));
+        assertTrue(fieldPattern.matchFieldName("MyMethod"));
+        assertFalse(fieldPattern.matchFieldName("mymethod"));
+    }
+
     public void testMatchFieldType1() {
         FieldPattern fieldPattern = Pattern.compileFieldPattern("int m_field");
 
@@ -95,6 +103,33 @@ public class FieldPatternTest extends TestCase {
         assertFalse(fieldPattern.matchFieldType("java.util.List"));
         assertTrue(fieldPattern.matchFieldType("java.lang.StringBuffer"));
         assertTrue(fieldPattern.matchFieldType("java.lang.String"));
+    }
+
+    public void testMatchFieldType6() {
+        FieldPattern fieldPattern = Pattern.compileFieldPattern("java.lang.String[] m_field");
+
+        assertFalse(fieldPattern.matchFieldType(""));
+        assertFalse(fieldPattern.matchFieldType("java.util.List[]"));
+        assertFalse(fieldPattern.matchFieldType("java.lang.StringBuffer[]"));
+        assertTrue(fieldPattern.matchFieldType("java.lang.String[]"));
+    }
+
+    public void testMatchFieldType7() {
+        FieldPattern fieldPattern = Pattern.compileFieldPattern("java.lang.String m_field");
+
+        assertFalse(fieldPattern.matchFieldType(""));
+        assertTrue(fieldPattern.matchFieldType("java.lang.String"));
+        assertFalse(fieldPattern.matchFieldType("java.lang.String[]"));
+        assertFalse(fieldPattern.matchFieldType("java.lang.String[][]"));
+    }
+
+    public void testMatchFieldType8() {
+        FieldPattern fieldPattern = Pattern.compileFieldPattern("java.lang.String[][] m_field");
+
+        assertFalse(fieldPattern.matchFieldType(""));
+        assertFalse(fieldPattern.matchFieldType("java.lang.String[]"));
+        assertTrue(fieldPattern.matchFieldType("java.lang.String[][]"));
+        assertFalse(fieldPattern.matchFieldType("java.lang.String[][][]"));
     }
 
     public static void main(String[] args) {

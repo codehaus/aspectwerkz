@@ -33,7 +33,6 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
-import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
 
 /**
  * Implements the pointcut concept for method access.
@@ -42,7 +41,7 @@ import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
  * Stores the advices for the specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodPointcut.java,v 1.8 2003-07-19 20:36:16 jboner Exp $
+ * @version $Id: MethodPointcut.java,v 1.9 2003-07-22 14:03:18 jboner Exp $
  */
 public class MethodPointcut extends AbstractPointcut {
 
@@ -70,7 +69,7 @@ public class MethodPointcut extends AbstractPointcut {
      *
      * @param pointcut the pointcut definition
      */
-    public void addPointcutPattern(final PointcutDefinition pointcut) {
+    public void addPointcutDef(final PointcutDefinition pointcut) {
         m_pointcutPatterns.put(pointcut.getName(),
                 new PointcutPatternTuple(
                         pointcut.getRegexpClassPattern(),
@@ -108,6 +107,7 @@ public class MethodPointcut extends AbstractPointcut {
 
     /**
      * Tries to finds a match at some superclass in the hierarchy.
+     * Recursive.
      *
      * @param jexlContext the Jexl context
      * @param name the name of the pointcut to evaluate
@@ -148,6 +148,7 @@ public class MethodPointcut extends AbstractPointcut {
 
     /**
      * Tries to finds a match at some interface in the hierarchy.
+     * Recursive.
      *
      * @param jexlContext the Jexl context
      * @param name the name of the pointcut to evaluate

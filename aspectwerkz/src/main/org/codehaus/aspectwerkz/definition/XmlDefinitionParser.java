@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Parses the XML definition file using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParser.java,v 1.13 2003-07-19 20:36:15 jboner Exp $
+ * @version $Id: XmlDefinitionParser.java,v 1.14 2003-07-22 14:03:17 jboner Exp $
  */
 public class XmlDefinitionParser {
 
@@ -449,9 +449,13 @@ public class XmlDefinitionParser {
                     // a method/field/throws/callerside pattern
                     final String pattern = nestedAdviceElement.attributeValue("pattern");
                     try {
-                        if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.METHOD) ||
-                                pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) {
+                        if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.METHOD)) {
                             createMethodPattern(pattern, pointcutDef, packageName);
+                        }
+                        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) {
+                            // make a 'match all caller side classes' pattern out of the regular method pattern
+                            String callerSidePattern = "*->" + pattern;
+                            createCallerSidePattern(callerSidePattern, pointcutDef, packageName);
                         }
                         else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.GET_FIELD) ||
                                 pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
@@ -631,7 +635,7 @@ public class XmlDefinitionParser {
             adviceWeavingRule.addCallerSidePointcutPattern(pointcutDef);
         }
         else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) {
-            adviceWeavingRule.addMethodPointcutPattern(pointcutDef);
+            adviceWeavingRule.addCallerSidePointcutPattern(pointcutDef);
         }
     }
 

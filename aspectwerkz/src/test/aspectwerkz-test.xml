@@ -397,10 +397,7 @@
     </aspect>
 
     <aspect name="PointcutExpressionTest">
-        <pointcut-def name="expressionTestMethods" type="method" pattern="* test.PointcutExpressionTest.*(..)"/>
         <pointcut-def name="generic" type="method" pattern="* test.PointcutExpressionTest.*(..)"/>
-        <pointcut-def name="testMethods" type="method" pattern="* test.PointcutExpressionTest.test*(..)"/>
-        <pointcut-def name="logMethod" type="method" pattern="* test.PointcutExpressionTest.log*(..)"/>
         <pointcut-def name="A" type="method" pattern="* test.PointcutExpressionTest.A()"/>
         <pointcut-def name="B" type="method" pattern="* test.PointcutExpressionTest.B()"/>
         <pointcut-def name="C" type="method" pattern="* test.PointcutExpressionTest.C()"/>
@@ -415,10 +412,8 @@
         <pointcut-def name="L" type="method" pattern="* test.PointcutExpressionTest.L()"/>
         <pointcut-def name="M" type="method" pattern="* test.PointcutExpressionTest.M()"/>
         <pointcut-def name="N" type="method" pattern="* test.PointcutExpressionTest.N()"/>
+        <pointcut-def name="O" type="method" pattern="* test.PointcutExpressionTest.O()"/>
 
-        <advice pointcut="!A AND !testMethods AND !logMethod AND expressionTestMethods">
-            <advice-ref name="methodAdvice7"/>
-        </advice>
         <advice pointcut="B OR C">
             <advice-ref name="methodAdvice2"/>
         </advice>
@@ -435,6 +430,10 @@
         </advice>
 
         <advice pointcut="!K AND !(L OR M) AND N">
+            <advice-ref name="methodAdvice2"/>
+        </advice>
+
+        <advice pointcut="O">
             <advice-ref name="methodAdvice2"/>
         </advice>
 
