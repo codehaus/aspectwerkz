@@ -54,8 +54,8 @@ public class Target {
     public java.lang.String[] toLog2(java.lang.String[] arg) {
         System.out.println("Target.toLog2()");
         new Target().toLog3();
-        throw new RuntimeException();
-//        return null;
+//        throw new RuntimeException();
+        return null;
     }
 
     /**
@@ -67,10 +67,13 @@ public class Target {
     }
 
     public static void main(String[] args) {
-        run();
-        Deployer.undeploy(LoggingAspect.class);
-//        Deployer.deploy(LoggingAspect.class, new Deployer.PreparedPointcut("prepared", "within(examples.logging.*)"));
-        run();
+        final int index = 1;
+        for (int i = 0; i < index; i++) {
+            run();
+            Deployer.undeploy(LoggingAspect.class);
+            run();
+//            Deployer.deploy(LoggingAspect.class);
+        }
     }
 
     private static void run() {
