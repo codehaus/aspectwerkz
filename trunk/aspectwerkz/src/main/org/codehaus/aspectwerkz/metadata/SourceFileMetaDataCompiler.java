@@ -53,7 +53,7 @@ import org.codehaus.aspectwerkz.advice.CFlowAdvice;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: SourceFileMetaDataCompiler.java,v 1.8 2003-07-08 11:43:35 jboner Exp $
+ * @version $Id: SourceFileMetaDataCompiler.java,v 1.9 2003-07-09 11:33:00 jboner Exp $
  */
 public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
@@ -106,6 +106,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
         final WeaveModel weaveModel = weave(uuid, definition);
         compileIntroductionMetaData(weaveModel, qdoxParser);
+
         saveWeaveModelToFile(metaDataDir, weaveModel);
     }
 
@@ -148,6 +149,43 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             weaveThrowsPointcutAttributes(definition, className, qdoxParser);
             weaveCallerSidePointcutAttributes(definition, className, qdoxParser);
         }
+
+        // TODO: consider removal
+        // definition.addHasMetaDataMixinForAllIntroductions();
+    }
+
+    /**
+     * Parses a class, retrieves, wrappes up and returns it's meta-data.
+     *
+     * @param qdoxParser the QDox parser
+     * @param classToParse the name of the class to compile
+     * @return the meta-data for the class
+     */
+    public static ClassMetaData compileClassMetaData(final QDoxParser qdoxParser,
+                                                     final String classToParse) {
+        if (!qdoxParser.parse(classToParse)) {
+            return null;
+        }
+
+        final JavaMethod[] methods = qdoxParser.getJavaMethods();
+        final JavaField[] fields = qdoxParser.getJavaFields();
+
+        final List methodList = new ArrayList(methods.length);
+        for (int i = 0; i < methods.length; i++) {
+            methodList.add(QDoxMetaDataMaker.createMethodMetaData(methods[i]));
+        }
+
+        final List fieldList = new ArrayList(fields.length);
+        for (int i = 0; i < fields.length; i++) {
+            fieldList.add(QDoxMetaDataMaker.createFieldMetaData(fields[i]));
+        }
+
+        final ClassMetaData classMetaData = new ClassMetaData();
+        classMetaData.setName(classToParse);
+        classMetaData.setMethods(methodList);
+        classMetaData.setFields(fieldList);
+
+        return classMetaData;
     }
 
     /**
@@ -729,44 +767,17 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             for (Iterator it1 = parsedClasses.iterator(); it1.hasNext();) {
                 final String className = (String)it1.next();
                 if (introduction.equals(className)) {
-                    model.addIntroductionMetaData(parseClass(qdoxParser, className));
+                    model.addIntroductionMetaData(compileClassMetaData(qdoxParser, className));
                 }
             }
         }
-    }
 
-    /**
-     * Parses a class, retrieves, wrappes up and returns it's meta-data.
-     *
-     * @param qdoxParser the QDox parser
-     * @param classToParse the name of the class to compile
-     * @return the meta-data for the class
-     */
-    private static ClassMetaData parseClass(final QDoxParser qdoxParser,
-                                            final String classToParse) {
-        if (!qdoxParser.parse(classToParse)) {
-            return null;
-        }
-
-        final JavaMethod[] methods = qdoxParser.getJavaMethods();
-        final JavaField[] fields = qdoxParser.getJavaFields();
-
-        final List methodList = new ArrayList(methods.length);
-        for (int i = 0; i < methods.length; i++) {
-            methodList.add(QDoxMetaDataMaker.createMethodMetaData(methods[i]));
-        }
-
-        final List fieldList = new ArrayList(fields.length);
-        for (int i = 0; i < fields.length; i++) {
-            fieldList.add(QDoxMetaDataMaker.createFieldMetaData(fields[i]));
-        }
-
-        final ClassMetaData classMetaData = new ClassMetaData();
-        classMetaData.setName(classToParse);
-        classMetaData.setMethods(methodList);
-        classMetaData.setFields(fieldList);
-
-        return classMetaData;
+        // TODO: consider removal
+        // compile and add the class meta-data for the HasMetaData system mixin
+        // ClassMetaData classMetaData = ClassFileMetaDataCompiler.compileClassMetaData(
+        //        Thread.currentThread().getContextClassLoader(),
+        //        HasMetaData.IMPLEMENTATION_CLASS);
+        // model.addIntroductionMetaData(classMetaData);
     }
 
     /**

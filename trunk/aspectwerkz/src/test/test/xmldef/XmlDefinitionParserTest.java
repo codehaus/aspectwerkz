@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParserTest.java,v 1.4 2003-07-08 11:43:35 jboner Exp $
+ * @version $Id: XmlDefinitionParserTest.java,v 1.5 2003-07-09 11:33:00 jboner Exp $
  */
 public class XmlDefinitionParserTest extends TestCase {
 
@@ -24,8 +24,7 @@ public class XmlDefinitionParserTest extends TestCase {
 
     public void testIntroductionTag() {
         try {
-            AspectWerkzDefinition aspectwerkz =
-                   XmlDefinitionParser.parse(m_input);
+            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parse(m_input);
             Iterator it = aspectwerkz.getIntroductionDefinitions().iterator();
             IntroductionDefinition introduction2 = (IntroductionDefinition)it.next();
             assertEquals("mixin", introduction2.getName());
@@ -33,10 +32,6 @@ public class XmlDefinitionParserTest extends TestCase {
             assertEquals("mixins.MixinImpl", introduction2.getImplementation());
             assertEquals("perInstance", introduction2.getDeploymentModel());
             assertEquals("attribute", introduction2.getAttribute());
-            IntroductionDefinition introduction1 = (IntroductionDefinition)it.next();
-            assertEquals("loggable", introduction1.getName());
-            assertEquals("logging.Loggable", introduction1.getInterface());
-            assertEquals("loggable", introduction1.getAttribute());
         }
         catch (Exception e) {
             System.out.println("e = " + e);

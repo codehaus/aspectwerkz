@@ -55,7 +55,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * Stores and indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkz.java,v 1.11 2003-07-09 05:21:28 jboner Exp $
+ * @version $Id: AspectWerkz.java,v 1.12 2003-07-09 11:33:00 jboner Exp $
  */
 public final class AspectWerkz {
 
@@ -324,7 +324,8 @@ public final class AspectWerkz {
             if (m_introductions.length == 0) {
                 m_introductions = new Introduction[nrOfIntroductions];
             }
-            m_introductions[m_definition.getIntroductionIndex(name) - 1] = introduction;
+            int index = m_definition.getIntroductionIndex(name) - 1;
+            m_introductions[index] = introduction;
         }
     }
 
@@ -731,7 +732,7 @@ public final class AspectWerkz {
         try {
             advice = m_advices[index - 1];
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             initialize();
             try {
                 advice = m_advices[index - 1];
@@ -754,7 +755,7 @@ public final class AspectWerkz {
         try {
             advice = m_advices[m_adviceIndexes.get(name) - 1];
         }
-        catch (Exception e1) {
+        catch (Throwable e1) {
             initialize();
             try {
                 advice = m_advices[m_adviceIndexes.get(name) - 1];
@@ -800,7 +801,7 @@ public final class AspectWerkz {
         try {
             introduction = m_introductions[index - 1];
         }
-        catch (Exception e1) {
+        catch (Throwable e1) {
             initialize();
             try {
                 introduction = m_introductions[index - 1];
@@ -825,7 +826,7 @@ public final class AspectWerkz {
         try {
             introduction = m_introductions[m_definition.getIntroductionIndex(name) - 1];
         }
-        catch (Exception e1) {
+        catch (Throwable e1) {
             initialize();
             try {
                 introduction = m_introductions[m_definition.getIntroductionIndex(name) - 1];
@@ -856,7 +857,17 @@ public final class AspectWerkz {
             }
             method = ((Method[])m_methods.get(klass))[index];
         }
-        catch (Exception e1) {
+        catch (Throwable e1) {
+//            System.out.println("======= getMethod(..) =======");
+//            System.out.println("class = " + klass);
+//            System.out.println("index = " + index);
+//            Method[] methods = ((Method[])m_methods.get(klass));
+//            for (int it = 0; it < methods.length; it++) {
+//                Method m = methods[it];
+//                System.out.println("method = " + m.getName());
+//            }
+//            System.out.println("ERROR = " + e1);
+
             initialize();
             try {
                 method = ((Method[])m_methods.get(klass))[index];

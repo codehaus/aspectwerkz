@@ -50,7 +50,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.13 2003-07-09 05:21:28 jboner Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.14 2003-07-09 11:33:00 jboner Exp $
  */
 public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -128,13 +128,11 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
             int introductionIndex = 0;
             List methodMetaDataList = null;
             try {
-                introductionIndex = m_weaveModel.
-                        getIntroductionIndex(introductionName);
-                methodMetaDataList = m_weaveModel.
-                        getIntroductionMethodsMetaData(introductionName);
+                introductionIndex = m_weaveModel.getIntroductionIndex(introductionName);
+                methodMetaDataList = m_weaveModel.getIntroductionMethodsMetaData(introductionName);
             }
             catch (Exception e) {
-                throw new DefinitionException("trying to weave introduction with null or emtpy string as name to class " + cg.getClassName() + ": definition file is not consistent");
+                throw new DefinitionException("trying to weave introduction with null or empty string as name to class " + cg.getClassName() + ": definition file is not consistent");
             }
 
             if (methodMetaDataList == null) {
@@ -143,16 +141,22 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
 
             for (Iterator it2 = methodMetaDataList.iterator(); it2.hasNext();) {
                 MethodMetaData methodMetaData = (MethodMetaData)it2.next();
-                // remove the getUuid, ___hidden$getMetaData and setMetaData methods
-                if (methodMetaData.getName().equals(
-                        TransformationUtil.GET_UUID_METHOD) ||
-                        methodMetaData.getName().equals(
-                                TransformationUtil.GET_META_DATA_METHOD) ||
-                        methodMetaData.getName().equals(
-                                TransformationUtil.SET_META_DATA_METHOD)) {
-                    methodMetaDataList.remove(methodMetaData);
+
+                // remove the ___AW_getUuid, ___AW_getMetaData, ___AW_addMetaData and class$ methods
+                // as well as the added proxy methods before sorting the method list
+                    if (methodMetaData.getName().equals(
+                            TransformationUtil.GET_UUID_METHOD) ||
+                            methodMetaData.getName().equals(
+                                    TransformationUtil.GET_META_DATA_METHOD) ||
+                            methodMetaData.getName().equals(
+                                    TransformationUtil.SET_META_DATA_METHOD) ||
+                            methodMetaData.getName().equals(
+                                    TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
+                            methodMetaData.getName().equals(
+                                    TransformationUtil.CLASS_LOOKUP_METHOD)) {
+                        methodMetaDataList.remove(methodMetaData);
+                    }
                 }
-            }
             // sort the list so that we can enshure that the indexes are in synch
             // see AbstractIntroductionContainerStrategy#AbstractIntroductionContainerStrategy
             Collections.sort(methodMetaDataList, MethodComparator.

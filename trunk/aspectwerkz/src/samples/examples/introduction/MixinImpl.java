@@ -18,24 +18,14 @@
  */
 package examples.introduction;
 
+import org.codehaus.aspectwerkz.introduction.HasMetaData;
+
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MixinImpl.java,v 1.3 2003-07-03 13:10:50 jboner Exp $
+ * @version $Id: MixinImpl.java,v 1.4 2003-07-09 11:33:00 jboner Exp $
  */
 public class MixinImpl implements Mixin {
-
-//    private Dummy dummy;
-
     public String sayHello() {
         return "Hello World!";
     }
-
-//    public void setDummy(Dummy dummy) {
-//        System.out.println("MixinImpl.setDummy");
-//        this.dummy = dummy;
-//    }
-//
-//    public Dummy getDummy() {
-//        return this.dummy;
-//    }
 }

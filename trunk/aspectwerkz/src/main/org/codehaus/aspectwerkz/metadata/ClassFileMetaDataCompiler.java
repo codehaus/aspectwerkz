@@ -1,15 +1,15 @@
 /*
- * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it A/or
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR and PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -44,7 +44,7 @@ import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 
 /**
- * Parses a given jar file or class dir A compiles meta-data for all the
+ * Parses a given jar file or class dir and compiles meta-data for all the
  * introduced <code>Introduction</code>s.
  * <p/>
  * Can be called from the command line.
@@ -53,12 +53,12 @@ import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ClassFileMetaDataCompiler.java,v 1.4 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: ClassFileMetaDataCompiler.java,v 1.5 2003-07-09 11:33:00 jboner Exp $
  */
 public class ClassFileMetaDataCompiler extends MetaDataCompiler {
 
     /**
-     * Parses a given jar/zip file or class dir, compiles A stores meta-data for
+     * Parses a given jar/zip file or class dir, compiles and stores meta-data for
      * all methods for all the introduced <code>Introduction</code>s as XML files
      * in a directory specified.
      *
@@ -73,7 +73,7 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
     }
 
     /**
-     * Parses a given jar/zip file or class dir, compiles A stores meta-data for
+     * Parses a given jar/zip file or class dir, compiles and stores meta-data for
      * all methods for all the introduced <code>Introduction</code>s as XML files
      * in a directory specified.
      *
@@ -91,12 +91,49 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
         if (metaDataDir == null) throw new IllegalArgumentException("metaDataDir can not be null");
 
         createMetaDataDir(metaDataDir);
-        final AspectWerkzDefinition definition =
-                AspectWerkzDefinition.getDefinition(definitionFile);
+        final AspectWerkzDefinition definition = AspectWerkzDefinition.getDefinition(definitionFile);
 
         final WeaveModel weaveModel = weave(uuid, definition);
         compileIntroductionMetaData(weaveModel, classPath);
         saveWeaveModelToFile(metaDataDir, weaveModel);
+    }
+
+    /**
+     * Parses a class, retrieves, wrappes up and returns it's meta-data.
+     *
+     * @param loader the class loader loading the class repository
+     * @param classToParse the name of the class to compile
+     * @return the meta-data for the class
+     */
+    public static ClassMetaData compileClassMetaData(final ClassLoader loader,
+                                                     final String classToParse) {
+        final Class klass;
+        try {
+            klass = loader.loadClass(classToParse);
+        }
+        catch (ClassNotFoundException e) {
+            throw new RuntimeException(classToParse + " could not be be found on classpath");
+        }
+
+        final Method[] methods = klass.getDeclaredMethods();
+        final Field[] fields = klass.getDeclaredFields();
+
+        final List methodList = new ArrayList(methods.length);
+        for (int i = 0; i < methods.length; i++) {
+            methodList.add(ReflectionMetaDataMaker.createMethodMetaData(methods[i]));
+        }
+
+        final List fieldList = new ArrayList(fields.length);
+        for (int i = 0; i < fields.length; i++) {
+            fieldList.add(ReflectionMetaDataMaker.createFieldMetaData(fields[i]));
+        }
+
+        final ClassMetaData classMetaData = new ClassMetaData();
+        classMetaData.setName(classToParse);
+        classMetaData.setMethods(methodList);
+        classMetaData.setFields(fieldList);
+
+        return classMetaData;
     }
 
     /**
@@ -109,8 +146,7 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
     private static void compileIntroductionMetaData(final WeaveModel model,
                                                     final String classPath) {
         ClassLoader loader = getClassLoader(classPath);
-        Collection introductions =
-                model.getDefinition().getIntroductionDefinitions();
+        Collection introductions = model.getDefinition().getIntroductionDefinitions();
 
         Set classSet = getClassSet(classPath);
         for (Iterator it1 = classSet.iterator(); it1.hasNext();) {
@@ -118,20 +154,25 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
             final String className = (String)it1.next();
             for (Iterator it2 = introductions.iterator(); it2.hasNext();) {
 
-                final String introduction =
-                        ((IntroductionDefinition)it2.next()).
-                        getImplementation();
+                final String introduction = ((IntroductionDefinition)it2.next()).getImplementation();
 
                 if (introduction == null) {
                     continue; // interface introduction
                 }
 
                 if (introduction.equals(className)) {
-                    model.addIntroductionMetaData(
-                            parseClass(loader, className, classPath));
+                    ClassMetaData classMetaData = compileClassMetaData(loader, className);
+                    model.addIntroductionMetaData(classMetaData);
                 }
             }
         }
+
+        // TODO: consider removal
+        // compile and add the class meta-data for the HasMetaData system mixin
+        // ClassMetaData classMetaData = compileClassMetaData(
+        //        Thread.currentThread().getContextClassLoader(),
+        //        HasMetaData.IMPLEMENTATION_CLASS);
+        // model.addIntroductionMetaData(classMetaData);
     }
 
     /**
@@ -172,7 +213,7 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
     }
 
     /**
-     * Visits all files recursively A collects the class names.
+     * Visits all files recursively and collects the class names.
      *
      * @param rootDir the root dir
      * @param file the file
@@ -221,46 +262,6 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
             throw new RuntimeException("class repository " + classPath + " does not exist");
         }
         return loader;
-    }
-
-    /**
-     * Parses a class, retrieves, wrappes up A returns it's meta-data.
-     *
-     * @param loader the class loader loading the class repository
-     * @param classToParse the name of the class to compile
-     * @param classPath the path to the class dir or jar file
-     * @return the meta-data for the class
-     */
-    private static ClassMetaData parseClass(final ClassLoader loader,
-                                            final String classToParse,
-                                            final String classPath) {
-        final Class klass;
-        try {
-            klass = loader.loadClass(classToParse);
-        }
-        catch (ClassNotFoundException e) {
-            throw new RuntimeException(classToParse + " could not be found in class repository specified: " + classPath);
-        }
-
-        final Method[] methods = klass.getDeclaredMethods();
-        final Field[] fields = klass.getDeclaredFields();
-
-        final List methodList = new ArrayList(methods.length);
-        for (int i = 0; i < methods.length; i++) {
-            methodList.add(ReflectionMetaDataMaker.createMethodMetaData(methods[i]));
-        }
-
-        final List fieldList = new ArrayList(fields.length);
-        for (int i = 0; i < fields.length; i++) {
-           fieldList.add(ReflectionMetaDataMaker.createFieldMetaData(fields[i]));
-        }
-
-        final ClassMetaData classMetaData = new ClassMetaData();
-        classMetaData.setName(classToParse);
-        classMetaData.setMethods(methodList);
-        classMetaData.setFields(fieldList);
-
-        return classMetaData;
     }
 
     /**

@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.13 2003-07-08 16:44:17 jboner Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.14 2003-07-09 11:33:00 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -311,8 +311,7 @@ public class AspectWerkzDefinition implements Serializable {
         if (!m_introductionMap.containsKey(introductionName)) {
             return null;
         }
-        return ((IntroductionDefinition)m_introductionMap.
-                get(introductionName)).getInterface();
+        return ((IntroductionDefinition)m_introductionMap.get(introductionName)).getInterface();
     }
 
     /**
@@ -326,8 +325,7 @@ public class AspectWerkzDefinition implements Serializable {
         if (!m_introductionMap.containsKey(introductionName)) {
             return null;
         }
-        return ((IntroductionDefinition)m_introductionMap.
-                get(introductionName)).getImplementation();
+        return ((IntroductionDefinition)m_introductionMap.get(introductionName)).getImplementation();
     }
 
     /**
@@ -656,5 +654,34 @@ public class AspectWerkzDefinition implements Serializable {
         }
         return introductionNames;
     }
+
+    /**
+     * Adds the HasMetaData mixin to all the introductions.
+     * @todo consider removal
+     */
+//    public void addHasMetaDataMixinForAllIntroductions() {
+//
+//        if (!hasIntroduction(HasMetaData.NAME)) {
+//            IntroductionDefinition introDef = new IntroductionDefinition();
+//            introDef.setName(HasMetaData.NAME);
+//            introDef.setInterface(HasMetaData.INTERFACE_CLASS);
+//            introDef.setImplementation(HasMetaData.IMPLEMENTATION_CLASS);
+//            introDef.setDeploymentModel(HasMetaData.DEPLOYMENT_MODEL);
+//            introDef.setAttribute(HasMetaData.NAME);
+//            addIntroduction(introDef);
+//        }
+//
+//        AspectDefinition aspectDef = new AspectDefinition();
+//        aspectDef.setName(HasMetaData.NAME);
+//        for (Iterator it = getIntroductionDefinitions().iterator(); it.hasNext();) {
+//            IntroductionWeavingRule weavingRule = new IntroductionWeavingRule();
+//            String classPattern = ((IntroductionDefinition)it.next()).getImplementation();
+//            if (classPattern == null) continue; // interface introduction => skip
+//            weavingRule.setClassPattern(classPattern);
+//            weavingRule.addIntroductionRef(HasMetaData.NAME);
+//            aspectDef.addIntroductionWeavingRule(weavingRule);
+//        }
+//        addAspect(aspectDef);
+//    }
 }
 

@@ -13,10 +13,6 @@
             <item name="IRC" href="irc://irc.codehaus.org/aspectwerkz"/>
             <item name="grubbel" href="http://blogs.codehaus.org/people/jboner/"/>
             <item name="Codehaus" href="http://codehaus.org"/>
-<!--            <item name="BCEL" href="http://jakarta.apache.org/bcel/"/>-->
-<!--            <item name="JMangler" href="http://javalab.cs.uni-bonn.de/research/jmangler/"/>-->
-<!--            <item name="Prevayler" href="http://www.prevayler.org/"/>-->
-<!--            <item name="QDox" href="http://qdox.codehaus.org/"/>-->
             <item name="Create an Issue" href="http://jira.codehaus.org/secure/CreateIssue.jspa"/>
         </links>
 
@@ -30,6 +26,7 @@
         <menu name="Documentation">
             <item name="Documentation" href="/documentation.html"/>
             <item name="Examples" href="/examples.html"/>
+            <item name="JavaDoc" href="/apidocs/index.html"/>
             <item name="FAQ" href="/faq.html"/>
         </menu>
 

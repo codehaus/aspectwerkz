@@ -46,7 +46,7 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.8 2003-07-08 12:59:08 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.9 2003-07-09 11:33:00 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -415,8 +415,7 @@ public class WeaveModel implements Serializable {
 
         List methodMetaDataList = null;
         try {
-            methodMetaDataList = ((ClassMetaData)m_introductionMetaData.
-                    get(implName)).getMethods();
+            methodMetaDataList = ((ClassMetaData)m_introductionMetaData.get(implName)).getMethods();
         }
         catch (NullPointerException e) {
             StringBuffer cause = new StringBuffer();

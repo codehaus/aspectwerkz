@@ -5,10 +5,10 @@
     <!-- ============================================= -->
     <!--  Introductions                                -->
     <!-- ============================================= -->
-    <introduction-def name="mixin"
-        interface="examples.introduction.Mixin"
-        implementation="examples.introduction.MixinImpl"
-        deployment-model="perJVM"/>
+<!--    <introduction-def name="mixin"-->
+<!--        interface="examples.introduction.Mixin"-->
+<!--        implementation="examples.introduction.MixinImpl"-->
+<!--        deployment-model="perJVM"/>-->
 
     <!-- ============================================= -->
     <!--  Advices                                      -->
@@ -66,10 +66,10 @@
         </advice>
     </aspect>
 
-    <aspect name="Introduction">
-        <introduction class="examples.introduction.Target">
-            <introduction-ref name="mixin"/>
-        </introduction>
-    </aspect>
+<!--    <aspect name="Introduction">-->
+<!--        <introduction class="examples.introduction.Target">-->
+<!--            <introduction-ref name="mixin"/>-->
+<!--        </introduction>-->
+<!--    </aspect>-->
 
 </aspectwerkz>
