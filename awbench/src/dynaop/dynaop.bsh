@@ -1,5 +1,10 @@
 interceptor(
    awbench.method.IExecution.class,
+   signature("void.*around_\\(\\)"),
+   new awbench.dynaop.MethodExecutionAroundAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
    signature("void.*aroundSJP\\(\\)"),
    new awbench.dynaop.MethodExecutionAroundSJPAdvice()
 );
@@ -11,6 +16,11 @@ interceptor(
 interceptor(
    awbench.method.IExecution.class,
    signature("void.*before\\(\\)"),
+   new awbench.dynaop.MethodExecutionBeforeAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
+   signature("void.*beforeAfter\\(\\)"),
    new awbench.dynaop.MethodExecutionBeforeAdvice()
 );
 interceptor(

@@ -113,17 +113,19 @@ public class MethodExecutionAspect {
     }
 
     /** @Around  execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(int)) && args(i) */
-    public void aroundStackedWithArgAndTarget_1(JoinPoint jp, int i) {
+    public Object aroundStackedWithArgAndTarget_1(JoinPoint jp, int i) throws Throwable {
         int j = i;
         Execution u = (Execution)jp.getTarget();
         Run.ADVICE_HIT++;
+        return jp.proceed();
     }
 
     /** @Around  execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(int)) && args(i) */
-    public void aroundStackedWithArgAndTarget_2(JoinPoint jp, int i) {
+    public Object aroundStackedWithArgAndTarget_2(JoinPoint jp, int i) throws Throwable {
         int j = i;
         Execution u = (Execution)jp.getTarget();
         Run.ADVICE_HIT++;
+        return jp.proceed();
     }
 
 }

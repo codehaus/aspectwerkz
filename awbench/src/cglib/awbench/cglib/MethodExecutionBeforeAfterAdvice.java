@@ -10,30 +10,24 @@ package awbench.cglib;
 import java.lang.reflect.Method;
 
 import awbench.Run;
-import awbench.method.Execution;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class MethodExecutionGetTargetAndArgsAroundAdvice implements MethodInterceptor {
+public class MethodExecutionBeforeAfterAdvice implements MethodInterceptor {
 
-    MethodExecutionGetTargetAndArgsAroundAdvice2 m_nextAdvice;
+    private MethodExecutionAfterAdvice m_afterAdvice;
 
-    public MethodExecutionGetTargetAndArgsAroundAdvice(MethodExecutionGetTargetAndArgsAroundAdvice2 nextAdvice) {
-        m_nextAdvice = nextAdvice;
+    public MethodExecutionBeforeAfterAdvice(MethodExecutionAfterAdvice afterAdvice) {
+        m_afterAdvice = afterAdvice;
     }
 
     public Object intercept(Object target, Method m, Object[] args, MethodProxy proxy) throws Throwable {
         Run.ADVICE_HIT++;
-        int i = ((Integer) args[0]).intValue();
-        Execution execution = (Execution) target;
-
-        // fake an Advice chain
-        // CGlib does not supports it
-        Object res = m_nextAdvice.intercept(target, m, args, proxy);
-        // DO NOT PASS TO SUPER INVOKE - see MethodExecutionGetTargetAndArgsAroundAdvice2 
-        return res;
+        Object result = proxy.invokeSuper(target, args);
+        m_afterAdvice.intercept(target, m, args, proxy);
+        return result;
     }
 }

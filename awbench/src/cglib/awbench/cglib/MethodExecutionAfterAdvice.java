@@ -18,8 +18,9 @@ import net.sf.cglib.proxy.MethodProxy;
  */
 public class MethodExecutionAfterAdvice implements MethodInterceptor {
     public Object intercept(Object target, Method m, Object[] args, MethodProxy proxy) throws Throwable {
-        Object result = proxy.invokeSuper(target, args);
+        // DO NOT PASS ON - See BeforeAdvice that emulates a chain
+        //Object result = proxy.invokeSuper(target, args);
         Run.ADVICE_HIT++;
-        return result;
+        return null;
     }
 }
