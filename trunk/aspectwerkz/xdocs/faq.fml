@@ -86,16 +86,10 @@
                     <!-- faq.fml does not handle correctly &lt; chars in CDATA with maven (1b10) -->
                     <source>
 &lt;!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD 0.8.1//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd"&gt;
+    "-//AspectWerkz//DTD 0.9//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_9.dtd"&gt;
                     </source>
-                    The 0.8 and 0.8.1 DTD are the same so you can also use
-                    <source>
-&lt;!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD 0.8//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8.dtd"&gt;
-                    </source>
-                    The DTD for the latest release is also referenced with
+                    The DTD for the latest release is also always referenced with
                     <source>
 &lt;!DOCTYPE aspectwerkz PUBLIC
     "-//AspectWerkz//DTD//EN"
@@ -106,8 +100,27 @@
         </faq>
     </part>
 
-    <part id="0.8 migration">
-        <title>0.8 migration</title>
+    <part id="migration">
+        <title>Migration</title>
+        <faq id="migration/0.9">
+            <question>
+                What is the migration effort to upgrade a 0.8.x application to a 0.9 ?
+            </question>
+            <answer>
+                <p>
+                    The DTD has been made more strict and some deprecated elements or attributes have been removed.
+                    By referencing the DTD when you edit your XML definition files from within any IDE you will have basic color syntax highlighting.
+                </p>
+                <p>
+                    The list of DTD elements is mainly related to <code>system</code> element, <code>*-def</code> and <code>*-ref</code> style within
+                    <code>bind-*</code> elements, and <code>advice=...</code> replaced by <code>class=</code>.
+                    See the DTD itself for a more detailled list.
+                </p>
+                <p>
+                    The 0.8 Aspect model is now called <a href="core_concepts.html#Model 1 - XML centric">Model 1 - XML centric</a> and basically core classes
+                    have been moved to <code>org.codehaus.aspectwerkz.xmldef.</code> package (except JoinPoint and related).
+                </p>
+        </faq>
         <faq id="migration/changes">
             <question>
                 What should I change in my project running on 0.7.4 to make it run on 0.8 and later ?
@@ -166,9 +179,18 @@
             </question>
             <answer>
                 AspectWerkz supports all java environment thru offline mode. With online mode, AspectWerkz hooks at the class loader level.
-                Since the IBM JRE bundles a specific <code>java.lang.ClassLoader</code>, a work is in progress to fully support it (planned for 0.9).
+                AspectWerkz provides a transparent mechanim that support the IBM JRE which bundles a specific <code>java.lang.ClassLoader</code>.
             </answer>
         </faq>
+        <faq id="other/bea">
+            <question>
+                Does AspectWerkz support BEA JRockit ?
+            </question>
+            <answer>
+                AspectWerkz supports BEA JRockit thru a dedicated module wich relies on low level BEA API.
+            </answer>
+        </faq>
+
     </part>
 
 </faqs>
