@@ -35,15 +35,14 @@ import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberMethodJoinPoint.java,v 1.9 2003-07-08 16:44:17 jboner Exp $
+ * @version $Id: MemberMethodJoinPoint.java,v 1.10 2003-07-09 11:55:27 jboner Exp $
  */
 public class MemberMethodJoinPoint extends MethodJoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
-    private static final long serialVersionUID = 1963482423844166453L;
+    private static final long serialVersionUID = 6627213463917646395L;
 
     /**
      * A reference to the target instance.

@@ -32,7 +32,7 @@ import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
  * A method etc. Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticFieldSetJoinPoint.java,v 1.7 2003-07-08 16:50:55 jboner Exp $
+ * @version $Id: StaticFieldSetJoinPoint.java,v 1.8 2003-07-09 11:55:27 jboner Exp $
  */
 public class StaticFieldSetJoinPoint extends FieldJoinPoint {
 
@@ -43,9 +43,8 @@ public class StaticFieldSetJoinPoint extends FieldJoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
-    private static final long serialVersionUID = 2125704800175502202L;
+    private static final long serialVersionUID = -5478570438032624169L;
 
     /**
      * Creates a new StaticFieldSetJoinPoint object.

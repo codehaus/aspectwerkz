@@ -33,7 +33,7 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
  * invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldJoinPoint.java,v 1.8 2003-07-08 16:50:55 jboner Exp $
+ * @version $Id: FieldJoinPoint.java,v 1.9 2003-07-09 11:55:27 jboner Exp $
  */
 public abstract class FieldJoinPoint implements JoinPoint {
 
@@ -44,9 +44,8 @@ public abstract class FieldJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
-    private static final long serialVersionUID = 6188620044093181600L;
+    private static final long serialVersionUID = -8388074970260062323L;
 
     /**
      * The signature for the field.

@@ -46,15 +46,14 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.9 2003-07-09 11:33:00 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.10 2003-07-09 11:55:27 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
     /**
      * Serial version UID.
-     * @todo recalculate
      */
-    private static final long serialVersionUID = -2072601774035191615L;;
+    private static final long serialVersionUID = -8233428252400214017L;
 
     /**
      * The path to the definition file.
@@ -520,6 +519,7 @@ public class WeaveModel implements Serializable {
     /**
      * Checks if a class A field has a <tt>ConstructorPointcut</tt>.
      *
+     * @todo implement method
      * @param className the name or the class
      * @param methodMetaData the meta-data for the constructor
      * @return boolean
@@ -528,8 +528,6 @@ public class WeaveModel implements Serializable {
                                           final MethodMetaData methodMetaData) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("constructor meta-data can not be null");
-
-        // TODO: implement
         return true;
     }
 
