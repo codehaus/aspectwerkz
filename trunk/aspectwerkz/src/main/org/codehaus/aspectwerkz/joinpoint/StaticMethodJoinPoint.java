@@ -73,7 +73,6 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
         // check if the one of the pointcuts is marked as non-reentrant
         for (int j = 0; j < m_pointcuts.length; j++) {
             if (m_pointcuts[j].isNonReentrant()) {
-                System.out.println("is non-reentrant");
                 m_isNonReentrant = true;
                 break;
             }

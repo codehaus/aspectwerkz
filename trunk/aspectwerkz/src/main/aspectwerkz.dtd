@@ -64,7 +64,7 @@ Attributes:
 	(Deprecated:advice, use class)(Still supported)
 	deployment-model: advice life cycle context, defaults to perJVM
 	(Deprecated: deploymentModel)
-	attribute: ??
+	attribute:
 To specify other advice param, use nested element advice-def/param
 ******************************************************************************************************************************-->
 <!-- @todo : class REQUIRED, remove advice -->
@@ -135,25 +135,28 @@ Attributes:
 	extends CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
-pointcut-def and pointcut ???? one will be deprecated soon
+pointcut-def and pointcut - one will be deprecated soon
 *********************************************************************************************************************************
 Attributes:
 	name
 	type
 	pattern
-Deprecated:	 ??? one will be deprecated soon
+    non-reentrant: set to "true" to disable reentrant calls
+Deprecated:	one will be deprecated soon
 ******************************************************************************************************************************-->
 <!ELEMENT pointcut-def EMPTY>
 <!ATTLIST pointcut-def
 	name CDATA #REQUIRED
 	type (method | getField | setField | throws | callerSide | cflow) #REQUIRED
 	pattern CDATA #REQUIRED
+    non-reentrant CDATA #IMPLIED
 >
 <!ELEMENT pointcut EMPTY>
 <!ATTLIST pointcut
 	name CDATA #REQUIRED
 	type (method | getField | setField | throws | callerSide | cflow) #REQUIRED
 	pattern CDATA #REQUIRED
+    non-reentrant CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 introduction-ref
