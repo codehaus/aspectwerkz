@@ -20,6 +20,9 @@ import org.codehaus.aspectwerkz.AdviceInfo;
  */
 public class AdviceInfoContainer {
 
+    /**
+     * Null AdviceInfoContainer instance
+     */
     public static final AdviceInfoContainer NULL;
 
     static {

@@ -145,11 +145,6 @@ public interface TransformationConstants {
     public static final String META_DATA_FIELD_NAME = "META_DATA";
     public static final String STATIC_JOIN_POINT_INSTANCE_FIELD_NAME = "STATIC_JOIN_POINT";
     public static final String ASPECT_FIELD_PREFIX = "ASPECT_";
-//    public static final String AROUND_ADVICE_FIELD_PREFIX = "AROUND_";
-//    public static final String BEFORE_ADVICE_FIELD_PREFIX = "BEFORE_";
-//    public static final String AFTER_FINALLY_ADVICE_FIELD_PREFIX = "AFTER_FINALLY_";
-//    public static final String AFTER_RETURNING_ADVICE_FIELD_PREFIX = "AFTER_RETURNING_";
-//    public static final String AFTER_THROWING_ADVICE_FIELD_PREFIX = "AFTER_THROWING_";
     public static final String STACK_FRAME_FIELD_NAME = "STACK_FRAME_COUNTER";
     public static final String CALLEE_INSTANCE_FIELD_NAME = "CALLEE";
     public static final String CALLER_INSTANCE_FIELD_NAME = "CALLER";
