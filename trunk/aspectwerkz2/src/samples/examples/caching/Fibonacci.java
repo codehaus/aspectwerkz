@@ -41,10 +41,10 @@ public class Fibonacci {
 
     public static void main(String[] args) {
 //        System.out.println("Target.main");
-//        Object[] aspects = SystemLoader.getSystem("samples").getAspectManager().getAspects();
+//        Object[] aspects = SystemLoader.getSystem("samples").getAspectManager().getAspectContainers();
 //        System.out.println("aspects.length = " + aspects.length);
 //        for (int i = 0; i < aspects.length; i++) {
-//            CrossCuttingInfo info = aspects[i].getCrossCuttingInfo();
+//            CrossCuttingInfo info = aspects[i].getCrossCuttingInfos();
 //            AspectDefinition aspectDefinition = info.getAspectDefinition();
 //            System.out.println("aspectDefinition.getClassName() = " + aspectDefinition.getClassName());
 //            List advice = aspectDefinition.getAllAdvices();

@@ -234,7 +234,6 @@ public class DocumentParser {
 
             Class aspectClass = loadAspectClass(loader, aspectClassName);
 
-            System.out.println("aspectClassName = " + aspectClassName);
             parsePointcutElements(aspect, aspectDef);//needed to support undefined named pointcut in Attributes AW-152
             s_attributeParser.parse(aspectClass, aspectDef, definition);
 

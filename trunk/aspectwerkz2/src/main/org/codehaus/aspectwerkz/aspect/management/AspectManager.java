@@ -254,6 +254,14 @@ public final class AspectManager {
         return m_aspectRegistry.getAspectContainer(name);
     }
 
+    /**
+     * Returns an array with all the aspect containers.
+     *
+     * @return the aspect containers
+     */
+    public AspectContainer[] getAspectContainers() {
+        return m_aspectRegistry.getAspectContainers();
+    }
 
     /**
      * Returns the aspect for a specific name, deployed as perJVM.
@@ -263,6 +271,21 @@ public final class AspectManager {
      */
     public Object getCrossCuttingInfo(final String name) {
         return m_aspectRegistry.getCrossCuttingInfo(name);
+    }
+
+    /**
+     * Returns an array with all the cross-cutting infos.
+     *
+     * @return the cross-cutting infos
+     */
+    public CrossCuttingInfo[] getCrossCuttingInfos() {
+        AspectContainer[] aspectContainers = m_aspectRegistry.getAspectContainers();
+        CrossCuttingInfo[] infos = new CrossCuttingInfo[aspectContainers.length];
+        for (int i = 0; i < aspectContainers.length; i++) {
+            AspectContainer aspectContainer = aspectContainers[i];
+            infos[i] = aspectContainer.getCrossCuttingInfo();
+        }
+        return infos;
     }
 
    /**
@@ -322,15 +345,6 @@ public final class AspectManager {
      */
     public Collection getPointcutManagers() {
         return m_aspectRegistry.getPointcutManagers();
-    }
-
-    /**
-     * Returns an array with all the aspects.
-     *
-     * @return the aspects
-     */
-    public Object[] getAspects() {
-        return m_aspectRegistry.getAspectContainers();
     }
 
     /**
