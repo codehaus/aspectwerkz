@@ -47,6 +47,7 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
  * Advises caller side method invocations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransformerComponent {
 
@@ -701,8 +702,6 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
             return true;
         }
         String className = cg.getClassName();
-//        if ( ! className.equalsIgnoreCase("test.xmldef.cflowtest"))
-//            return true;
         if (m_definition.inExcludePackage(className)) {
             return true;
         }

@@ -26,6 +26,7 @@ import org.codehaus.aspectwerkz.definition.expression.ExpressionTemplate;
  * Parses the xmldef XML definition file using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class DocumentParser {
 
@@ -278,7 +279,6 @@ public class DocumentParser {
                 }
             }
 
-            //ALEX CFLOW//
             parsePointcutElements(aspect, aspectDef, packageName);
             parseControllerElements(aspect, aspectDef);
             parseBindIntroductionElements(aspect, aspectDef, packageName);
@@ -472,6 +472,7 @@ public class DocumentParser {
                                 ));
                             }
                             else if (value.equalsIgnoreCase(CFLOW)) {
+                                //TODO is this needed ??
                                 type = PointcutType.CFLOW;
                                 String expression = nestedAdviceElement.attributeValue("pattern");
                                 pointcutDef.setExpression(PatternFactory.createMethodPattern(
@@ -617,10 +618,10 @@ public class DocumentParser {
                         final String name = attribute.getName().trim();
                         final String value = attribute.getValue().trim();
                         if (name.equals("cflow")) {
-                            bindAdviceRule.setCflow(
+                            bindAdviceRule.setCflowExpression(
                                     Expression.createCflowExpression(
                                         aspectDef.getName(),
-                                        aspectDef.getPointcutDef(value).getExpression(),//ALEX CFLOW
+                                        aspectDef.getPointcutDef(value).getExpression(),
                                         packageName,
                                         value)
                             );

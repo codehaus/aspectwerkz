@@ -15,11 +15,13 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Registers the join point as the start of a control flow (cflow) in the AspectWerkz system.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class CFlowPreAdvice extends PreAdvice {
 
@@ -44,7 +46,6 @@ public class CFlowPreAdvice extends PreAdvice {
      * Registers the join point as the start of a control flow (cflow) in the system.
      *
      * @param joinPoint the join point
-     * @return the result from the invocation
      * @throws Throwable the exception from the invocation
      */
     public void execute(final JoinPoint joinPoint) throws Throwable {
@@ -76,14 +77,19 @@ public class CFlowPreAdvice extends PreAdvice {
                 joinPoint.getCalleeMethodReturnType());
     }
 
+    /**
+     * Creates meta-data for the class.
+     * Note: we use a contextual class loader to access the Class object
+     *
+     * @return the created class meta-data
+     */
     private static ClassMetaData createClassMetaData(final CallerSideJoinPoint joinPoint) {
-        try {return ReflectionMetaDataMaker.createClassMetaData(
+        try {
+            return ReflectionMetaDataMaker.createClassMetaData(
                 Class.forName(joinPoint.getCalleeClassName())
-        );
+            );
         } catch (ClassNotFoundException nfe) {
-            //TODO BAD
-            nfe.printStackTrace();
-            return null;
+            throw new WrappedRuntimeException(nfe);
         }
     }
 

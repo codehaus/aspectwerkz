@@ -33,6 +33,7 @@ import org.codehaus.aspectwerkz.xmldef.advice.CFlowPreAdvice;
  * Implementation of the AspectWerkz interface for the xmldef definition model.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
 
@@ -89,16 +90,14 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     private final Set m_excludePackages = new HashSet();
 
     /**
-     * Creates a new instance, creates and sets the system aspect.
+     * Creates a new instance, creates and sets the system aspect and the cflow advices
      */
     public AspectWerkzDefinitionImpl() {
         AspectDefinition systemAspect = new AspectDefinition();
         systemAspect.setName(SYSTEM_ASPECT);
 
-        AdviceDefinition adviceDef = CFlowPostAdvice.getDefinition();
-        addAdvice(adviceDef);
         addAdvice(CFlowPreAdvice.getDefinition());
-        //registerAdvice(uuid, adviceDef);
+        addAdvice(CFlowPostAdvice.getDefinition());
 
         synchronized (m_aspectMap) {
             m_aspectMap.put(SYSTEM_ASPECT, systemAspect);
@@ -820,34 +819,38 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     /**
      * Checks if a class is invoking a method that is picked out by a call pointcut.
      *
-     * @TODO: implement, now it filters nothing
-     *
      * @param classMetaData the class meta-data
      * @return boolean
      */
     public boolean hasCallPointcut(final ClassMetaData classMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-//        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-//            AspectDefinition aspectDef = (AspectDefinition)it.next();
-//
-//            Collection pointcuts = aspectDef.getPointcutDefs();
-//            for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
-//                PointcutDefinition pointcutDefinition = (PointcutDefinition)it2.next();
-//                if ((pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE) ||
-//                        pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) &&
-//                        pointcutDefinition.getRegexpCallerClassPattern().matches(classMetaData.getName())) {
-//                    return true;
-//                }
-//            }
-//
-//        }
-//        return false;
 
-        return true;
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            if (aspectDef.isAbstract()) {
+                continue;
+            }
+            List bindAdviceRules = aspectDef.getBindAdviceRules();
+            for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                BindAdviceRule rule = (BindAdviceRule)it2.next();
+                Expression expression = rule.getExpression();
+                if (expression.getType().equals(PointcutType.CALL) &&
+                        expression.match(classMetaData)) {
+                    return true;
+                }
+                Expression cflowExpression = rule.getCflowExpression();
+                if (cflowExpression != null &&
+                        cflowExpression.match(classMetaData)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
      * Checks if a method is a picked out by a call pointcut.
+     * Cflow are turned in CALL pointcut as well.
      *
      * @param classMetaData the class meta-data
      * @param methodMetaData the name or the method
@@ -871,7 +874,9 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
                         && expression.match(classMetaData, methodMetaData)) {
                     return true;
                 }
-                if (rule.getCflow()!=null && rule.getCflow().match(classMetaData, methodMetaData)) {
+                Expression cflowExpression = rule.getCflowExpression();
+                if (cflowExpression != null
+                        && cflowExpression.match(classMetaData, methodMetaData)) {
                     return true;
                 }
 

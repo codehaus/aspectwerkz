@@ -127,17 +127,24 @@ public interface System {
      */
     List getThrowsPointcuts(ClassMetaData classMetaData, MethodMetaData methodMetaData);
 
-    /**
-     * Returns a list with the cflow pointcuts that affects the join point with the
-     * class name and the method name specified.
-     *
-     * @param className the name of the class for the join point
-     * @param methodMetaData the meta-data for the method for the join point
-     * @return a list with the cflow pointcuts
-     */
-    List getCFlowPointcuts(String className, MethodMetaData methodMetaData);
+//    /**    ALEX RM
+//     * Returns a list with the cflow pointcuts that affects the join point with the
+//     * class name and the method name specified.
+//     *
+//     * @param className the name of the class for the join point
+//     * @param methodMetaData the meta-data for the method for the join point
+//     * @return a list with the cflow pointcuts
+//     */
+//    List getCFlowPointcuts(String className, MethodMetaData methodMetaData);
 
-    List getCFlowExpressions(ClassMetaData className, MethodMetaData methodMetaData);
+    /**
+     * Returns all the cflow call expression for the given metadata (callee side)
+     *
+     * @param classMetaData the name of the class
+     * @param methodMetaData the meta-data for the method
+     * @return the pointcuts
+     */
+    List getCFlowExpressions(ClassMetaData classMetaData, MethodMetaData methodMetaData);
 
     /**
      * Returns the index for a specific name to advice mapping.
@@ -194,12 +201,19 @@ public interface System {
      */
     void exitingControlFlow(ClassNameMethodMetaDataTuple metaData);
 
+//    /** ALEX RM
+//     * Checks if we are in the control flow of a specific cflow pointcut.
+//     *
+//     * @param patternTuple the compiled tuple with the class pattern and the method pattern of the cflow pointcut
+//     * @return boolean
+//     */
+//    boolean isInControlFlowOf(CompiledPatternTuple patternTuple);
+
     /**
      * Checks if we are in the control flow of a specific cflow pointcut.
      *
-     * @param patternTuple the compiled tuple with the class pattern and the method pattern of the cflow pointcut
+     * @param cflowExpression the compiled tuple with the class pattern and the method pattern of the cflow pointcut
      * @return boolean
      */
-    boolean isInControlFlowOf(CompiledPatternTuple patternTuple);
     boolean isInControlFlowOf(Expression cflowExpression);
 }

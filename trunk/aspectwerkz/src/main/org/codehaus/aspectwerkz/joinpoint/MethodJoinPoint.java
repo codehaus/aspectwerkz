@@ -105,7 +105,7 @@ public abstract class MethodJoinPoint extends AbstractJoinPoint {
     /**
      * The cflow pointcuts that this join point needs to be part of to execute its advices.
      */
-    protected List m_cflowPointcuts;
+    protected List m_cflowExpressions;
 
     /**
      * The controller object that controls the execution of advices for the join point.
@@ -171,20 +171,20 @@ public abstract class MethodJoinPoint extends AbstractJoinPoint {
     }
 
     /**
-     * Returns the cflow pointcuts.
+     * Returns the cflow expressions.
      *
-     * @return the cflow pointcuts
+     * @return the cflow expressions
      */
-    public List getCFlowPointcuts() {
-        return m_cflowPointcuts;
+    public List getCFlowExpressions() {
+        return m_cflowExpressions;
     }
 
     /**
-     * Sets the cflow pointcuts (overwrites the old ones)
-     * @param pointcuts the cflow pointcuts
+     * Sets the cflow expressions (overwrites the old ones)
+     * @param expressions the cflow expressions
      */
-    public void setCFlowPointcuts(final List pointcuts) {
-        m_cflowPointcuts = pointcuts;
+    public void setCFlowExpressions(final List expressions) {
+        m_cflowExpressions = expressions;
     }
 
     /**

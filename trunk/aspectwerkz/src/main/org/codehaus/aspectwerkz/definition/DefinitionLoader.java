@@ -84,7 +84,6 @@ public class DefinitionLoader {
             definitions = loadDefinitionsFromFile(false);
         }
         return definitions;
-
     }
 
     /**

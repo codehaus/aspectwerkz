@@ -760,9 +760,9 @@ public final class AttribDefSystem implements System {
     public List getCFlowExpressions(final ClassMetaData classMetaData,
                                   final MethodMetaData methodMetaData) {
         //TODO
-        return null;
+        return new ArrayList();
     }
-    /**
+    /** ALEX RM
      * Returns a list with the cflow pointcuts that affects the join point with the
      * class name and the method name specified.
      *
@@ -776,24 +776,25 @@ public final class AttribDefSystem implements System {
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
         initialize();
 
-        Integer hashKey = Util.calculateHash(className, methodMetaData);
-
-        // if cached; return the cached list
-        if (m_cflowPointcutCache.containsKey(hashKey)) {
-            return (List)m_cflowPointcutCache.get(hashKey);
-        }
-
-        List pointcuts = new ArrayList();
-        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
-            AspectMetaData aspect = (AspectMetaData)it.next();
-            pointcuts.addAll(aspect.getCFlowPointcuts(className, methodMetaData));
-        }
-
-        synchronized (m_cflowPointcutCache) {
-            m_cflowPointcutCache.put(hashKey, pointcuts);
-        }
-
-        return pointcuts;
+        return null;
+//        Integer hashKey = Util.calculateHash(className, methodMetaData);
+//
+//        // if cached; return the cached list
+//        if (m_cflowPointcutCache.containsKey(hashKey)) {
+//            return (List)m_cflowPointcutCache.get(hashKey);
+//        }
+//
+//        List pointcuts = new ArrayList();
+//        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
+//            AspectMetaData aspect = (AspectMetaData)it.next();
+//            pointcuts.addAll(aspect.getCFlowPointcuts(className, methodMetaData));
+//        }
+//
+//        synchronized (m_cflowPointcutCache) {
+//            m_cflowPointcutCache.put(hashKey, pointcuts);
+//        }
+//
+//        return pointcuts;
     }
 
     /**

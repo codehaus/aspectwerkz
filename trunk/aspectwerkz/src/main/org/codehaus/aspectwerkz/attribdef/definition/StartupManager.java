@@ -422,6 +422,61 @@ public class StartupManager {
     private static void registerCFlowPointcuts(final String uuid,
                                                final AspectWerkzDefinitionImpl definition) {
         // get all aspects definitions
+        for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
+            AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
+            AspectMetaData aspect = SystemLoader.getSystem(uuid).
+                    getAspectMetaData(aspectDefinition.getName());
+
+            // get all bind-advice rules defined in this aspect
+            List advices = aspectDefinition.getAllAdvices();
+//            for (Iterator it2 = advices.iterator(); it2.hasNext();) {
+//                AdviceDefinition advideDef = (AdviceDefinition)it2.next();
+//                aspect.getCallPointcut()
+//
+//
+//                Expression expression = bindAdviceRule.getExpression();
+//                Expression cflowExpression = bindAdviceRule.getCflowExpression();
+//                if ( cflowExpression == null ) {
+//                    continue;
+//                }
+//                // get the referenced cflow poincut definition
+//                PointcutDefinition cflowPointcutDef =
+//                        aspectDefinition.getPointcutDef(cflowExpression.getName());
+//
+//                // create call pointcut
+//                CallPointcut pointcut = new CallPointcut(uuid, cflowExpression);
+//
+//                // register the cflow advices in the system (if they does not already exist)
+//                //TODO: [alex] clean this - works as well when commented.
+//                if (!SystemLoader.getSystem(uuid).hasAspect(CFlowPreAdvice.NAME)) {
+//                    AdviceDefinition adviceDef = CFlowPreAdvice.getDefinition();
+//                    // add the advice to the aspectwerkz definition
+//                    definition.addAdvice(adviceDef);
+//                    // add the advice to the aspectwerkz system
+//                    registerAdvice(uuid, adviceDef);
+//                }
+//                if (!SystemLoader.getSystem(uuid).hasAspect(CFlowPostAdvice.NAME)) {
+//                    AdviceDefinition adviceDef = CFlowPostAdvice.getDefinition();
+//                    // add the advice to the aspectwerkz definition
+//                    definition.addAdvice(adviceDef);
+//                    // add the advice to the aspectwerkz system
+//                    registerAdvice(uuid, adviceDef);
+//                }
+//
+//                // add the pointcut definition to the method pointcut
+//                pointcut.addPointcutDef(cflowPointcutDef);
+//                // add references to the cflow advices to the cflow pointcut
+//                pointcut.addBeforeAdvice(CFlowPreAdvice.NAME);
+//                pointcut.addAfterAdvice(CFlowPostAdvice.NAME);
+//                // add the method pointcut
+//                aspect.addCallPointcut(pointcut);
+//
+//                aspect.addMethodToCflowExpressionMap(expression, cflowExpression);
+//            }
+//        }
+
+
+        // get all aspects definitions
 //        for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
 //            AspectDefinition aspectDef = (AspectDefinition)it1.next();
 //            AspectMetaData aspectMetaData = SystemLoader.getSystem(uuid).
@@ -529,7 +584,7 @@ public class StartupManager {
 //                throw new WrappedRuntimeException(e);
 //            }
 //        }
-    }
+    }}
 
     /**
      * Registers the throws pointcuts.

@@ -29,6 +29,7 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
  * Manages pointcuts and introductions defined by this aspect.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AspectMetaData {
 
@@ -227,25 +228,31 @@ public class AspectMetaData {
         }
     }
 
-    /**
-     * Adds a new method pattern to the method->cflow-method map.
-     *
-     * @param patternTuple the method pointcut definition
-     * @param cflowPatternTuple the cflow pointcut definition
-     */
-    public void addMethodToCFlowMethodMap(final CompiledPatternTuple patternTuple,
-                                          final CompiledPatternTuple cflowPatternTuple) {
-        List cflowPatterns = (List)m_methodToCFlowMethodsMap.get(patternTuple);
-        if (cflowPatterns != null) {
-            cflowPatterns.add(cflowPatternTuple);
-        }
-        else {
-            cflowPatterns = new ArrayList();
-            cflowPatterns.add(cflowPatternTuple);
-            m_methodToCFlowMethodsMap.put(patternTuple, cflowPatterns);
-        }
-    }
+//    /** ALEX RM
+//     * Adds a new method pattern to the method->cflow-method map.
+//     *
+//     * @param patternTuple the method pointcut definition
+//     * @param cflowPatternTuple the cflow pointcut definition
+//     */
+//    public void addMethodToCFlowMethodMap(final CompiledPatternTuple patternTuple,
+//                                          final CompiledPatternTuple cflowPatternTuple) {
+//        List cflowPatterns = (List)m_methodToCFlowMethodsMap.get(patternTuple);
+//        if (cflowPatterns != null) {
+//            cflowPatterns.add(cflowPatternTuple);
+//        }
+//        else {
+//            cflowPatterns = new ArrayList();
+//            cflowPatterns.add(cflowPatternTuple);
+//            m_methodToCFlowMethodsMap.put(patternTuple, cflowPatterns);
+//        }
+//    }
 
+    /**
+     * Adds a Execution expression to execution expr.->cflow call expr. map.
+     *
+     * @param expression the execution expression
+     * @param cflowExpression the cflow call expression
+     */
     public void addMethodToCflowExpressionMap(Expression expression, Expression cflowExpression) {
         List cflowPatterns = (List)m_methodToCFlowMethodsMap.get(expression);
         if (cflowPatterns != null) {
@@ -257,7 +264,6 @@ public class AspectMetaData {
             m_methodToCFlowMethodsMap.put(expression, cflowPatterns);
         }
     }
-
 
     /**
      * Returns the introductions for the open class.
@@ -458,51 +464,51 @@ public class AspectMetaData {
         return pointcutList;
     }
 
-    /**
-     * Returns the cflow pointcut for a specific uuid and expression.
-     *
-     * @param uuid the uuid
-     * @param expression the expression
-     * @return the method pointcut
-     */
-    public GetPointcut getCFlowPointcut(final String uuid, final String expression) {
-        throw new UnsupportedOperationException("not implemented yet");
-    }
+//    /**
+//     * Returns the cflow pointcut for a specific uuid and expression.
+//     *
+//     * @param uuid the uuid
+//     * @param expression the expression
+//     * @return the method pointcut
+//     */
+//    public GetPointcut getCFlowPointcut(final String uuid, final String expression) {
+//        throw new UnsupportedOperationException("not implemented yet");
+//    }
+
+//    /** ALEX RM
+//     * Returns all the pointcuts for the cflow join point specified.
+//     *
+//     * @param className the name of the class
+//     * @param methodMetaData the meta-data for the method
+//     * @return the pointcuts
+//     */
+//    public List getCFlowPointcuts(final String className,
+//                                  final MethodMetaData methodMetaData) {
+//        if (className == null) throw new IllegalArgumentException("class name can not be null");
+//        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+//
+//        List pointcutList = new ArrayList();
+//        for (Iterator it = m_methodToCFlowMethodsMap.entrySet().iterator(); it.hasNext();) {
+//            Map.Entry entry = (Map.Entry)it.next();
+//            CompiledPatternTuple methodPatternTuple = (CompiledPatternTuple)entry.getKey();
+//            if (methodPatternTuple.getClassPattern().matches(className) &&
+//                    ((MethodPattern)methodPatternTuple.getPattern()).matches(methodMetaData)) {
+//                pointcutList.addAll((List)entry.getValue());
+//            }
+//        }
+//        return pointcutList;
+//    }
 
     /**
-     * Returns all the pointcuts for the cflow join point specified.
+     * Returns all the cflow call expression for the given metadata (callee side)
      *
-     * @param className the name of the class
-     * @param methodMetaData the meta-data for the method
-     * @return the pointcuts
-     */
-    public List getCFlowPointcuts(final String className,
-                                  final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-
-        List pointcutList = new ArrayList();
-        for (Iterator it = m_methodToCFlowMethodsMap.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry)it.next();
-            CompiledPatternTuple methodPatternTuple = (CompiledPatternTuple)entry.getKey();
-            if (methodPatternTuple.getClassPattern().matches(className) &&
-                    ((MethodPattern)methodPatternTuple.getPattern()).matches(methodMetaData)) {
-                pointcutList.addAll((List)entry.getValue());
-            }
-        }
-        return pointcutList;
-    }
-
-    /**
-     * Returns all the pointcuts for the cflow join point specified.
-     *
-     * @param className the name of the class
+     * @param classMetaData the name of the class
      * @param methodMetaData the meta-data for the method
      * @return the pointcuts
      */
     public List getCFlowExpressions(final ClassMetaData classMetaData,
                                   final MethodMetaData methodMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         List pointcutList = new ArrayList();

@@ -14,7 +14,9 @@ import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.util.List;
 import java.util.Iterator;
@@ -107,11 +109,27 @@ public class CFlowSystemAspect extends Aspect {
      *
      * @return the created method meta-data
      */
-    private static MethodMetaData createMetaData(final CallerSideJoinPoint joinPoint) {
+    private static MethodMetaData createMethodMetaData(final CallerSideJoinPoint joinPoint) {
         return ReflectionMetaDataMaker.createMethodMetaData(
                 joinPoint.getCalleeMethodName(),
                 joinPoint.getCalleeMethodParameterTypes(),
                 joinPoint.getCalleeMethodReturnType());
+    }
+
+    /**
+     * Creates meta-data for the class.
+     * Note: we use a contextual class loader to access the Class object
+     *
+     * @return the created class meta-data
+     */
+    private static ClassMetaData createClassMetaData(final CallerSideJoinPoint joinPoint) {
+        try {
+            return ReflectionMetaDataMaker.createClassMetaData(
+                Class.forName(joinPoint.getCalleeClassName())
+            );
+        } catch (ClassNotFoundException nfe) {
+            throw new WrappedRuntimeException(nfe);
+        }
     }
 
     /**
@@ -124,6 +142,6 @@ public class CFlowSystemAspect extends Aspect {
      */
     private ClassNameMethodMetaDataTuple getMetaData(final JoinPoint joinPoint) {
         CallerSideJoinPoint jp = ((CallerSideJoinPoint)joinPoint);
-        return new ClassNameMethodMetaDataTuple(jp.getCalleeClassName(), createMetaData(jp));
+        return new ClassNameMethodMetaDataTuple(createClassMetaData(jp), createMethodMetaData(jp));
     }
 }

@@ -59,6 +59,7 @@ import org.codehaus.aspectwerkz.System;
  * <p/>Stores and indexes the introduced methods.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public final class XmlDefSystem implements System {
 
@@ -296,7 +297,7 @@ public final class XmlDefSystem implements System {
         m_controlFlowLog.set(cflowSet);
     }
 
-    /**
+    /** ALEX RM
      * Checks if we are in the control flow of a specific cflow pointcut.
      *
      * @param patternTuple the compiled tuple with the class pattern and the method pattern of the cflow pointcut
@@ -321,6 +322,12 @@ public final class XmlDefSystem implements System {
         return false;
     }
 
+    /**
+     * Checks if we are in the control flow of a specific cflow expression.
+     *
+     * @param cflowExpression the call expression of the cflow pointcut
+     * @return boolean
+     */
     public boolean isInControlFlowOf(final Expression cflowExpression) {
         if (cflowExpression == null) throw new IllegalArgumentException("cflowExpression can not be null");
 
@@ -338,7 +345,6 @@ public final class XmlDefSystem implements System {
         }
         return false;
     }
-
 
     /**
      * Creates and registers new advice at runtime.
@@ -602,43 +608,51 @@ public final class XmlDefSystem implements System {
         return pointcuts;
     }
 
+//    /** ALEX RM
+//     * Returns a list with the cflow pointcuts that affects the join point with the
+//     * class name and the method name specified.
+//     *
+//     * @param className the name of the class for the join point
+//     * @param methodMetaData the meta-data for the method for the join point
+//     * @return a list with the cflow pointcuts
+//     */
+//    public List getCFlowPointcuts(final String className,
+//                                  final MethodMetaData methodMetaData) {
+//        if (className == null) throw new IllegalArgumentException("class name can not be null");
+//        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+//        initialize();
+//
+//        Integer hashKey = Util.calculateHash(className, methodMetaData);
+//
+//        // if cached; return the cached list
+//        if (m_cflowPointcutCache.containsKey(hashKey)) {
+//            return (List)m_cflowPointcutCache.get(hashKey);
+//        }
+//
+//        List pointcuts = new ArrayList();
+//        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
+//            AspectMetaData aspect = (AspectMetaData)it.next();
+//            pointcuts.addAll(aspect.getCFlowPointcuts(className, methodMetaData));
+//        }
+//
+//        synchronized (m_cflowPointcutCache) {
+//            m_cflowPointcutCache.put(hashKey, pointcuts);
+//        }
+//
+//        return pointcuts;
+//    }
+
     /**
-     * Returns a list with the cflow pointcuts that affects the join point with the
+     * Returns a list with the cflow call expressions that affects the join point with the
      * class name and the method name specified.
      *
-     * @param className the name of the class for the join point
+     * @param classMetaData the class meta-data for the join point
      * @param methodMetaData the meta-data for the method for the join point
      * @return a list with the cflow pointcuts
      */
-    public List getCFlowPointcuts(final String className,
-                                  final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-        initialize();
-
-        Integer hashKey = Util.calculateHash(className, methodMetaData);
-
-        // if cached; return the cached list
-        if (m_cflowPointcutCache.containsKey(hashKey)) {
-            return (List)m_cflowPointcutCache.get(hashKey);
-        }
-
-        List pointcuts = new ArrayList();
-        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
-            AspectMetaData aspect = (AspectMetaData)it.next();
-            pointcuts.addAll(aspect.getCFlowPointcuts(className, methodMetaData));
-        }
-
-        synchronized (m_cflowPointcutCache) {
-            m_cflowPointcutCache.put(hashKey, pointcuts);
-        }
-
-        return pointcuts;
-    }
-
     public List getCFlowExpressions(final ClassMetaData classMetaData,
                                   final MethodMetaData methodMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
         initialize();
 
