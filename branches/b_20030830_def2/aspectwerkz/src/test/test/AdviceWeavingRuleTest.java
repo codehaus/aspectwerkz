@@ -8,7 +8,7 @@
 package test;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
+import org.codehaus.aspectwerkz.definition.version1.AdviceWeavingRule;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -17,34 +17,34 @@ public class AdviceWeavingRuleTest extends TestCase {
 
     public void testGetPointcutRefs() {
         try {
-            AdviceWeavingRule rule = new AdviceWeavingRule();
+            org.codehaus.aspectwerkz.definition.version1.AdviceWeavingRule rule = new org.codehaus.aspectwerkz.definition.version1.AdviceWeavingRule();
             rule.setExpression("AA && BB");
             assertEquals("AA", (String)rule.getPointcutRefs().get(0));
             assertEquals("BB", (String)rule.getPointcutRefs().get(1));
 
-            rule = new AdviceWeavingRule();
+            rule = new org.codehaus.aspectwerkz.definition.version1.AdviceWeavingRule();
             rule.setExpression("!AA && !BB");
             assertEquals("AA", (String)rule.getPointcutRefs().get(0));
             assertEquals("BB", (String)rule.getPointcutRefs().get(1));
 
-            rule = new AdviceWeavingRule();
+            rule = new org.codehaus.aspectwerkz.definition.version1.AdviceWeavingRule();
             rule.setExpression("((((!AA))) && ((BB)))");
             assertEquals("AA", (String)rule.getPointcutRefs().get(0));
             assertEquals("BB", (String)rule.getPointcutRefs().get(1));
 
-            rule = new AdviceWeavingRule();
+            rule = new org.codehaus.aspectwerkz.definition.version1.AdviceWeavingRule();
             rule.setExpression("(((((AA))) && ((BB))) || !!DD)");
             assertEquals("AA", (String)rule.getPointcutRefs().get(0));
             assertEquals("BB", (String)rule.getPointcutRefs().get(1));
             assertEquals("DD", (String)rule.getPointcutRefs().get(2));
 
-            rule = new AdviceWeavingRule();
+            rule = new org.codehaus.aspectwerkz.definition.version1.AdviceWeavingRule();
             rule.setExpression("((AA || BB) && CC)");
             assertEquals("AA", (String)rule.getPointcutRefs().get(0));
             assertEquals("BB", (String)rule.getPointcutRefs().get(1));
             assertEquals("CC", (String)rule.getPointcutRefs().get(2));
 
-            rule = new AdviceWeavingRule();
+            rule = new org.codehaus.aspectwerkz.definition.version1.AdviceWeavingRule();
             rule.setExpression("!(((AA && !BB) && CC) && DD)");
             assertEquals("AA", (String)rule.getPointcutRefs().get(0));
             assertEquals("BB", (String)rule.getPointcutRefs().get(1));

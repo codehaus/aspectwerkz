@@ -9,8 +9,11 @@ package org.codehaus.aspectwerkz.joinpoint.control;
 
 import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
+import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.IndexTuple;
 
 import java.util.Iterator;
+import java.lang.reflect.Method;
 
 /**
  * Default controller following a linear execution model (adapted from MethodJoinPoint.proceed()).
@@ -82,10 +85,12 @@ public class DefaultJoinPointController extends AbstractJoinPointController {
             try {
                 m_currentAdviceIndex++;
 
-                result = joinPoint.getSystem().getAdvice(
-                        joinPoint.getPointcuts()[m_currentPointcutIndex].
-                        getAdviceIndex(m_currentAdviceIndex)).
-                        doExecute(joinPoint);
+                MethodPointcut methodPointcut = joinPoint.getPointcuts()[m_currentPointcutIndex];
+                IndexTuple index = methodPointcut.getAdviceIndex(m_currentAdviceIndex);
+                int aspectIndex = index.getAspectIndex();
+                int methodIndex = index.getMethodIndex();
+                result = joinPoint.getSystem().getAspect(aspectIndex).
+                        invokeAdvice(methodIndex, joinPoint);
 
                 m_currentAdviceIndex--;
             }

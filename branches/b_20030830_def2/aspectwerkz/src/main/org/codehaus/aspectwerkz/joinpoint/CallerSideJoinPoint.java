@@ -17,6 +17,7 @@ import java.io.ObjectInputStream;
 import org.apache.bcel.generic.Type;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
@@ -121,12 +122,12 @@ public class CallerSideJoinPoint implements JoinPoint {
     /**
      * The pre advices applied to the join point.
      */
-    protected int[] m_preAdvices = new int[0];
+    protected IndexTuple[] m_preAdvices = new IndexTuple[0];
 
     /**
      * The post advices applied to the join point.
      */
-    protected int[] m_postAdvices = new int[0];
+    protected IndexTuple[] m_postAdvices = new IndexTuple[0];
 
     /**
      * Marks the join point as initialized.
@@ -221,7 +222,7 @@ public class CallerSideJoinPoint implements JoinPoint {
         }
         for (int i = 0, j = m_preAdvices.length; i < j; i++) {
             try {
-                m_system.getAdvice(m_preAdvices[i]).doExecute(this);
+//                m_system.getAspect(m_preAdvices[i]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
@@ -238,7 +239,7 @@ public class CallerSideJoinPoint implements JoinPoint {
         }
         for (int i = m_postAdvices.length - 1; i >= 0; i--) {
             try {
-                m_system.getAdvice(m_postAdvices[i]).doExecute(this);
+//                m_system.getAspect(m_postAdvices[i]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
@@ -462,26 +463,26 @@ public class CallerSideJoinPoint implements JoinPoint {
                 for (Iterator it = pointcuts.iterator(); it.hasNext();) {
                     CallerSidePointcut callerSidePointcut = (CallerSidePointcut)it.next();
 
-                    int[] preAdviceIndexes = callerSidePointcut.getPreAdviceIndexes();
+                    IndexTuple[] preAdviceIndexes = callerSidePointcut.getPreAdviceIndexes();
                     for (int j = 0; j < preAdviceIndexes.length; j++) {
-                        preAdvices.add(new Integer(preAdviceIndexes[j]));
+                        preAdvices.add(preAdviceIndexes[j]);
                     }
 
-                    int[] postAdviceIndexes = callerSidePointcut.getPostAdviceIndexes();
+                    IndexTuple[] postAdviceIndexes = callerSidePointcut.getPostAdviceIndexes();
                     for (int j = 0; j < postAdviceIndexes.length; j++) {
-                        postAdvices.add(new Integer(postAdviceIndexes[j]));
+                        postAdvices.add(postAdviceIndexes[j]);
                     }
                 }
 
-                m_preAdvices = new int[preAdvices.size()];
+                m_preAdvices = new IndexTuple[preAdvices.size()];
                 int i = 0;
                 for (Iterator it = preAdvices.iterator(); it.hasNext(); i++) {
-                    m_preAdvices[i] = ((Integer)it.next()).intValue();
+                    m_preAdvices[i] = (IndexTuple)it.next();
                 }
-                m_postAdvices = new int[postAdvices.size()];
+                m_postAdvices = new IndexTuple[postAdvices.size()];
                 i = 0;
                 for (Iterator it = postAdvices.iterator(); it.hasNext(); i++) {
-                    m_postAdvices[i] = ((Integer)it.next()).intValue();
+                    m_postAdvices[i] = (IndexTuple)it.next();
                 }
 
                 m_initialized = true;
@@ -540,8 +541,8 @@ public class CallerSideJoinPoint implements JoinPoint {
         m_calleeMethodParameterTypeNames = (String[])fields.get("m_calleeMethodParameterTypeNames", null);
         m_calleeMethodReturnType = (Class)fields.get("m_calleeMethodReturnType", null);
         m_calleeMethodReturnTypeName = (String)fields.get("m_calleeMethodReturnTypeName", null);
-        m_preAdvices = (int[])fields.get("m_preAdvices", null);
-        m_postAdvices = (int[])fields.get("m_postAdvices", null);
+        m_preAdvices = (IndexTuple[])fields.get("m_preAdvices", null);
+        m_postAdvices = (IndexTuple[])fields.get("m_postAdvices", null);
         m_classMetaData = (ClassMetaData)fields.get("m_classMetaData", null);
         m_methodMetaData = (MethodMetaData)fields.get("m_fieldMetaData", null);
         m_initialized = fields.get("m_initialized", false);

@@ -12,6 +12,7 @@ import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Type;
+import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
@@ -59,12 +60,12 @@ public abstract class FieldJoinPoint implements JoinPoint {
     /**
      * The pre advices applied to the join point.
      */
-    protected int[] m_preAdvices = new int[0];
+    protected IndexTuple[] m_preAdvices = new IndexTuple[0];
 
     /**
      * The post advices applied to the join point.
      */
-    protected int[] m_postAdvices = new int[0];
+    protected IndexTuple[] m_postAdvices = new IndexTuple[0];
 
     /**
      * Marks the join point as initialized.
@@ -144,7 +145,7 @@ public abstract class FieldJoinPoint implements JoinPoint {
         }
         for (int i = 0, j = m_preAdvices.length; i < j; i++) {
             try {
-                m_system.getAdvice(m_preAdvices[i]).doExecute(this);
+//                m_system.getAspect(m_preAdvices[i]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
@@ -161,7 +162,7 @@ public abstract class FieldJoinPoint implements JoinPoint {
         }
         for (int i = m_postAdvices.length - 1; i >= 0; i--) {
             try {
-                m_system.getAdvice(m_postAdvices[i]).doExecute(this);
+//                m_system.getAspect(m_postAdvices[i]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
@@ -289,8 +290,8 @@ public abstract class FieldJoinPoint implements JoinPoint {
         m_typeName = (String)fields.get("m_typeName", null);
         m_fieldName = (String)fields.get("m_fieldName", null);
         m_fieldType = (Type)fields.get("m_fieldType", null);
-        m_preAdvices = (int[])fields.get("m_preAdvices", null);
-        m_postAdvices = (int[])fields.get("m_postAdvices", null);
+        m_preAdvices = (IndexTuple[])fields.get("m_preAdvices", null);
+        m_postAdvices = (IndexTuple[])fields.get("m_postAdvices", null);
         m_classMetaData = (ClassMetaData)fields.get("m_classMetaData", null);
         m_fieldMetaData = (FieldMetaData)fields.get("m_fieldMetaData", null);
         m_initialized = fields.get("m_initialized", false);

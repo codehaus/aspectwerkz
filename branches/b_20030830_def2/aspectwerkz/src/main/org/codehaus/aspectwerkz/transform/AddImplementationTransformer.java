@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -31,7 +32,10 @@ import org.apache.bcel.Constants;
 import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
@@ -63,12 +67,17 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
     /**
      * Adds introductions to a class.
      *
+     * @TODO: handle both definition types (ver1 and ver2)
+     *
      * @param context the transformation context
      * @param klass the class
      */
     public void transformInterface(final Context context, final Klass klass) {
+
         final ClassGen cg = klass.getClassGen();
-        if (classFilter(cg)) {
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+
+        if (classFilter(cg, classMetaData)) {
             return;
         }
         if (m_transformed.contains(cg.getClassName())) {
@@ -76,9 +85,10 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
         }
         m_transformed.add(cg.getClassName());
 
-        final ConstantPoolGen cpg = cg.getConstantPool();
-        final InstructionFactory factory = new InstructionFactory(cg);
-        addIntroductions(context, cg, cpg, factory);
+        ConstantPoolGen cpg = cg.getConstantPool();
+        InstructionFactory factory = new InstructionFactory(cg);
+
+        addIntroductionsDef2(context, classMetaData, cg, cpg, factory);
     }
 
     /**
@@ -89,12 +99,14 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
      * @param cpg the constant pool gen
      * @param factory the instruction objectfactory
      */
-    private void addIntroductions(final Context context,
-                                  final ClassGen cg,
-                                  final ConstantPoolGen cpg,
-                                  final InstructionFactory factory) {
+    private void addIntroductionsDef1(final Context context,
+                                      final ClassGen cg,
+                                      final ConstantPoolGen cpg,
+                                      final InstructionFactory factory) {
 
-        for (Iterator it = m_definition.getIntroductionNames(cg.getClassName()).iterator(); it.hasNext();) {
+        List introductionNames = m_definition.getIntroductionNamesForClass(cg.getClassName());
+
+        for (Iterator it = introductionNames.iterator(); it.hasNext();) {
 
             String introductionName = (String)it.next();
             String introductionImplName = m_definition.getIntroductionImplName(introductionName);
@@ -106,7 +118,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
             int introductionIndex = 0;
             List methodMetaDataList = Collections.synchronizedList(new ArrayList());
             try {
-                introductionIndex = m_definition.getIntroductionIndex(introductionName);
+                introductionIndex = m_definition.getAspectIndexByName(introductionName);
 
                 // get the method meta-data for the class
                 boolean match = false;
@@ -117,6 +129,23 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                     for (Iterator it3 = metaDataSet.iterator(); it3.hasNext();) {
                         ClassMetaData classMetaData = (ClassMetaData)it3.next();
                         if (classMetaData.getName().equals(introductionImplName)) {
+
+                            m_definition.getIntroductionNamesForClass(cg.getClassName());
+
+                            Collection aspectDefs = m_definition.getAdviceDefinitions();
+                            for (Iterator it4 = aspectDefs.iterator(); it4.hasNext();) {
+                                AspectDefinition aspectDef = (AspectDefinition)it4.next();
+                                List introDefs = aspectDef.getIntroductions();
+                                for (Iterator it5 = introDefs.iterator(); it5.hasNext();) {
+                                    IntroductionDefinition introDef = (IntroductionDefinition)it5.next();
+                                    String introducedMethodName = introDef.getMethod().getName();
+                                    asdf // TODO: implement .....
+                                }
+
+                            }
+
+                            // TODO: filter all non-introduced methods (on the aspects in def2)
+                            // TODO: for def1 grab all methods
                             methodMetaDataList = classMetaData.getMethods();
                             match = true;
                             break;
@@ -143,34 +172,36 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
 
                 // remove the ___AW_getUuid, ___AW_getMetaData, ___AW_addMetaData and class$ methods
                 // as well as some other methods before sorting the method list
-                if (!(
-                        methodMetaData.getName().equals("equals") ||
-                        methodMetaData.getName().equals("hashCode") ||
-                        methodMetaData.getName().equals("getClass") ||
-                        methodMetaData.getName().equals("toString") ||
-                        methodMetaData.getName().equals("wait") ||
-                        methodMetaData.getName().equals("notify") ||
-                        methodMetaData.getName().equals("notifyAll") ||
-                        methodMetaData.getName().equals(
+                if (
+                        !methodMetaData.getName().equals("equals") ||
+                        !methodMetaData.getName().equals("hashCode") ||
+                        !methodMetaData.getName().equals("getClass") ||
+                        !methodMetaData.getName().equals("toString") ||
+                        !methodMetaData.getName().equals("wait") ||
+                        !methodMetaData.getName().equals("notify") ||
+                        !methodMetaData.getName().equals("notifyAll") ||
+                        !methodMetaData.getName().startsWith(
                                 TransformationUtil.GET_UUID_METHOD) ||
-                        methodMetaData.getName().equals(
+                        !methodMetaData.getName().startsWith(
                                 TransformationUtil.GET_UUID_METHOD) ||
-                        methodMetaData.getName().equals(
+                        !methodMetaData.getName().startsWith(
                                 TransformationUtil.GET_META_DATA_METHOD) ||
-                        methodMetaData.getName().equals(
+                        !methodMetaData.getName().startsWith(
                                 TransformationUtil.SET_META_DATA_METHOD) ||
-                        methodMetaData.getName().equals(
+                        !methodMetaData.getName().startsWith(
                                 TransformationUtil.CLASS_LOOKUP_METHOD) ||
-                        methodMetaData.getName().startsWith(
-                                TransformationUtil.ORIGINAL_METHOD_PREFIX))) {
+                        !methodMetaData.getName().startsWith(
+                                TransformationUtil.ORIGINAL_METHOD_PREFIX)) {
                     methodMetaDataListFiltered.add(methodMetaData);
                 }
             }
 
             // sort the list so that we can enshure that the indexes are in synch
             // see AbstractIntroductionContainerStrategy#AbstractIntroductionContainerStrategy
-            Collections.sort(methodMetaDataListFiltered, MethodComparator.
-                    getInstance(MethodComparator.METHOD_META_DATA));
+            Collections.sort(
+                    methodMetaDataListFiltered,
+                    MethodComparator.getInstance(MethodComparator.METHOD_META_DATA)
+            );
 
             int methodIndex = -1; // start with -1 since the method array is 0 indexed
             for (Iterator it2 = methodMetaDataListFiltered.iterator(); it2.hasNext();) {
@@ -185,6 +216,75 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                         introductionIndex,
                         methodIndex,
                         m_definition.getUuid());
+            }
+        }
+    }
+
+    /**
+     * Adds introductions to the class.
+     *
+     * @param context the transformation context
+     * @param classMetaData the class meta-data
+     * @param cg the class gen
+     * @param cpg the constant pool gen
+     * @param factory the instruction objectfactory
+     */
+    private void addIntroductionsDef2(final Context context,
+                                      final ClassMetaData classMetaData,
+                                      final ClassGen cg,
+                                      final ConstantPoolGen cpg,
+                                      final InstructionFactory factory) {
+
+        Map metaDataRepository = context.getMetaDataRepository();
+        List introductionDefs = m_definition.getIntroductionDefinitionsForClass(classMetaData);
+
+        for (Iterator it = introductionDefs.iterator(); it.hasNext();) {
+            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
+
+            try {
+
+                // get the method meta-data for the introduced method
+                boolean match = false;
+                for (Iterator it2 = metaDataRepository.values().iterator(); it2.hasNext();) {
+                    if (match) break;
+                    Set metaDataSet = (Set)it2.next();
+
+                    for (Iterator it3 = metaDataSet.iterator(); it3.hasNext();) {
+                        // get the meta-data for the aspect
+                        ClassMetaData aspectMetaData = (ClassMetaData)it3.next();
+
+                        if (aspectMetaData.getName().equals(introDef.getAspectClassName())) {
+                            List methods = aspectMetaData.getMethods();
+                            for (Iterator it4 = methods.iterator(); it4.hasNext();) {
+                                MethodMetaData methodMetaData = (MethodMetaData)it4.next();
+
+                                // try to find the meta-data for the introduced method
+                                if (methodMetaData.getName().equals(introDef.getMethod().getName()) &&
+                                        !(methodMetaData.getReturnType() == null ||
+                                        methodMetaData.getName().equals("<init>"))) {
+                                }
+                                else {
+                                    continue;
+                                }
+
+                                int aspectIndex = m_definition.getAspectIndexByName(introDef.getAspectClassName());
+                                int methodIndex = introDef.getMethodIndex();
+
+                                createProxyMethod(
+                                        cg, cpg, factory,
+                                        methodMetaData,
+                                        aspectIndex,
+                                        methodIndex,
+                                        m_definition.getUuid()
+                                );
+
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e) {
+                throw new DefinitionException("can not weave introduction for [" + cg.getClassName() + "]: definition is not valid");
             }
         }
     }
@@ -527,14 +627,15 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
      * Filters the classes to be transformed.
      *
      * @param cg the class to filter
+     * @param classMetaData the class meta-data
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg) {
+    private boolean classFilter(final ClassGen cg, final ClassMetaData classMetaData) {
         if (cg.isInterface()) {
             return true;
         }
         if (m_definition.inTransformationScope(cg.getClassName()) &&
-                m_definition.hasIntroductions(cg.getClassName())) {
+                m_definition.hasIntroductions(classMetaData)) {
             return false;
         }
         return true;
@@ -561,5 +662,5 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
     public String verboseMessage() {
         return this.getClass().getName();
     }
-    ///CLOVER:ON
+///CLOVER:ON
 }

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.security.MessageDigest;
 
 import org.apache.bcel.Constants;
@@ -27,6 +28,7 @@ import org.apache.bcel.generic.ClassGen;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.MethodComparator;
 
 /**
  * Contains constants and utility method used by the transformers.
@@ -500,5 +502,41 @@ public final class TransformationUtil {
         if (!cg.containsField(field)) {
             cg.addField(field);
         }
+    }
+
+    /**
+     * Creates a sorted method list.
+     *
+     * @TODO: handle inherited methods
+     *
+     * @param klass the class with the methods
+     * @return the sorted method list
+     */
+    public static List createSortedMethodList(final Class klass) {
+        if (klass == null) throw new IllegalArgumentException("class to sort method on can not be null");
+        java.lang.reflect.Method[] methods = klass.getDeclaredMethods();
+        List methodList = new ArrayList(methods.length);
+        for (int i = 0; i < methods.length; i++) {
+            java.lang.reflect.Method method = methods[i];
+            if (!method.getName().equals("equals") ||
+                    !method.getName().equals("hashCode") ||
+                    !method.getName().equals("getClass") ||
+                    !method.getName().equals("toString") ||
+                    !method.getName().equals("wait") ||
+                    !method.getName().equals("notify") ||
+                    !method.getName().equals("notifyAll") ||
+                    !method.getName().startsWith(CLASS_LOOKUP_METHOD) &&
+                    !method.getName().startsWith(GET_UUID_METHOD) &&
+                    !method.getName().startsWith(GET_META_DATA_METHOD) &&
+                    !method.getName().startsWith(SET_META_DATA_METHOD) &&
+                    !method.getName().startsWith(ORIGINAL_METHOD_PREFIX)) {
+                methodList.add(method);
+            }
+        }
+        Collections.sort(
+                methodList,
+                MethodComparator.getInstance(MethodComparator.NORMAL_METHOD)
+        );
+        return methodList;
     }
 }

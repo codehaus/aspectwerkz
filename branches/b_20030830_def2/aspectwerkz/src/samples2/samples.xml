@@ -2,10 +2,10 @@
     "-//AspectWerkz//DTD 0.8//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8.dtd">
 
-<aspectwerkz id="samples2">
+<aspectwerkz id="samples">
 
     <package name="examples">
-        <use-aspect class="aspecttest.MyAspect"/>
+        <use-aspect class="logging.LoggingAspect"/>
     </package>
 
 </aspectwerkz>

@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
+import org.codehaus.aspectwerkz.IndexTuple;
 
 /**
  * Matches well defined point of execution in the program where a field is set.
@@ -81,26 +82,26 @@ public class StaticFieldSetJoinPoint extends FieldJoinPoint {
                 for (Iterator it = pointcuts.iterator(); it.hasNext();) {
                     FieldPointcut fieldPointcut = (FieldPointcut)it.next();
 
-                    int[] preAdviceIndexes = fieldPointcut.getPreAdviceIndexes();
+                    IndexTuple[] preAdviceIndexes = fieldPointcut.getPreAdviceIndexes();
                     for (int j = 0; j < preAdviceIndexes.length; j++) {
-                        preAdvices.add(new Integer(preAdviceIndexes[j]));
+                        preAdvices.add(preAdviceIndexes[j]);
                     }
 
-                    int[] postAdviceIndexes = fieldPointcut.getPostAdviceIndexes();
+                    IndexTuple[] postAdviceIndexes = fieldPointcut.getPostAdviceIndexes();
                     for (int j = 0; j < postAdviceIndexes.length; j++) {
-                        postAdvices.add(new Integer(postAdviceIndexes[j]));
+                        postAdvices.add(postAdviceIndexes[j]);
                     }
                 }
 
-                m_preAdvices = new int[preAdvices.size()];
+                m_preAdvices = new IndexTuple[preAdvices.size()];
                 int i = 0;
                 for (Iterator it = preAdvices.iterator(); it.hasNext(); i++) {
-                    m_preAdvices[i] = ((Integer)it.next()).intValue();
+                    m_preAdvices[i] = (IndexTuple)it.next();
                 }
-                m_postAdvices = new int[postAdvices.size()];
+                m_postAdvices = new IndexTuple[postAdvices.size()];
                 i = 0;
                 for (Iterator it = postAdvices.iterator(); it.hasNext(); i++) {
-                    m_postAdvices[i] = ((Integer)it.next()).intValue();
+                    m_postAdvices[i] = (IndexTuple)it.next();
                 }
 
                 m_initialized = true;

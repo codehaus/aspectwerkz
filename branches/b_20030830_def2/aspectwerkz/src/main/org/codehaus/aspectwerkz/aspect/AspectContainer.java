@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz;
+package org.codehaus.aspectwerkz.aspect;
 
 import java.lang.reflect.Method;
 
@@ -20,35 +20,40 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 public interface AspectContainer {
 
     /**
-     * Returns the advice per JVM basis.
+     * Invokes the advice method on a per JVM basis.
      *
-     * @param joinPoint the joint point
-     * @return the advice
+     * @param methodIndex the method index
+     * @param joinPoint the join point
+     * @return the result from the method invocation
      */
-    Object getPerJvmAdvice(JoinPoint joinPoint);
+    Object invokeAdvicePerJvm(int methodIndex, JoinPoint joinPoint);
 
     /**
-     * Returns the advice per class basis.
+     * Invokes the advice method on a per class basis.
      *
-     * @param joinPoint the joint point
-     * @return the advice
+     * @param methodIndex the method index
+     * @param joinPoint the join point
+     * @return the result from the method invocation
      */
-    Object getPerClassAdvice(JoinPoint joinPoint);
+    Object invokeAdvicePerClass(int methodIndex, JoinPoint joinPoint);
 
     /**
-     * Returns the advice per instance basis.
+     * Invokes the advice method on a per instance basis.
      *
-     * @param joinPoint the joint point
-     * @return the advice
+     * @param methodIndex the method index
+     * @param joinPoint the join point
+     * @return the result from the method invocation
      */
-    Object getPerInstanceAdvice(JoinPoint joinPoint);
+    Object invokeAdvicePerInstance(int methodIndex, JoinPoint joinPoint);
 
     /**
-     * Returns the advice for the current thread.
+     * Invokes the advice method on a per thread basis.
      *
-     * @return the advice
+     * @param methodIndex the method index
+     * @param joinPoint the join point
+     * @return the result from the method invocation
      */
-    Object getPerThreadAdvice();
+    Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint);
 
     /**
      * Invokes the method on a per JVM basis.
@@ -95,13 +100,6 @@ public interface AspectContainer {
      * @return the method
      */
     Method getMethod(int index);
-
-    /**
-     * Returns all the methods for this introduction.
-     *
-     * @return the methods
-     */
-    Method[] getMethods();
 
     /**
      * Swaps the current introduction implementation.

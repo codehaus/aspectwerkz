@@ -71,6 +71,8 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      */
     public void transformCode(final Context context, final Klass klass) {
 
+        m_definition.initialize(context.getLoader());
+
         final ClassGen cg = klass.getClassGen();
         ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
 

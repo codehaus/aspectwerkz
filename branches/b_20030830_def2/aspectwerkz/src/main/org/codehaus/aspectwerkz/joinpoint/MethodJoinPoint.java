@@ -18,7 +18,7 @@ import java.util.WeakHashMap;
 import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
-import org.codehaus.aspectwerkz.Aspect;
+import org.codehaus.aspectwerkz.aspect.AspectMetaData;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.joinpoint.control.JoinPointController;
 import org.codehaus.aspectwerkz.joinpoint.control.ControllerFactory;
@@ -406,9 +406,9 @@ public abstract class MethodJoinPoint implements JoinPoint {
         }
 
         boolean hasThrowsPointcut = false;
-        Collection aspects = m_system.getAspects();
+        Collection aspects = m_system.getAspectsMetaData();
         for (Iterator it = aspects.iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+            AspectMetaData aspect = (AspectMetaData)it.next();
             if (aspect.hasThrowsPointcut(
                     m_classMetaData,
                     m_methodMetaData,

@@ -9,12 +9,11 @@ package org.codehaus.aspectwerkz.joinpoint;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
@@ -52,7 +51,7 @@ public class ThrowsJoinPoint implements JoinPoint {
     /**
      * The advice indexes.
      */
-    protected int[] m_adviceIndexes = new int[0];
+    protected IndexTuple[] m_adviceIndexes = new IndexTuple[0];
 
     /**
      * The index of the current advice.
@@ -120,7 +119,7 @@ public class ThrowsJoinPoint implements JoinPoint {
         m_currentAdviceIndex++;
         if (m_currentAdviceIndex != m_adviceIndexes.length) {
             try {
-                m_system.getAdvice(m_adviceIndexes[m_currentAdviceIndex]).doExecute(this);
+//                m_system.getAspect(m_adviceIndexes[m_currentAdviceIndex]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 StringBuffer cause = new StringBuffer();
@@ -219,7 +218,7 @@ public class ThrowsJoinPoint implements JoinPoint {
      */
     // Works for JDK 1.4.x only
 //    public String getClassNameForThrow() {
-//        return m_exception.getStackTrace()[0].getClassName();
+//        return m_exception.getStackTrace()[0].getAspectClassName();
 //    }
 
     /**
@@ -287,6 +286,8 @@ public class ThrowsJoinPoint implements JoinPoint {
 
     /**
      * Loads the advices for this pointcut.
+     *
+     * @TODO: think over how to implement
      */
     protected void loadAdvices() {
         synchronized (m_adviceIndexes) {
@@ -295,19 +296,19 @@ public class ThrowsJoinPoint implements JoinPoint {
             // get all the throws pointcuts for this class
             List pointcuts = m_system.getThrowsPointcuts(m_classMetaData, m_methodMetaData);
 
-            for (Iterator it = pointcuts.iterator(); it.hasNext();) {
-                ThrowsPointcut throwsPointcut = (ThrowsPointcut)it.next();
-                int[] advices = throwsPointcut.getAdviceIndexes();
-                for (int j = 0; j < advices.length; j++) {
-                    adviceIndexes.add(new Integer(advices[j]));
-                }
-            }
-
-            m_adviceIndexes = new int[adviceIndexes.size()];
-            int i = 0;
-            for (Iterator it = adviceIndexes.iterator(); it.hasNext(); i++) {
-                m_adviceIndexes[i] = ((Integer)it.next()).intValue();
-            }
+//            for (Iterator it = pointcuts.iterator(); it.hasNext();) {
+//                ThrowsPointcut throwsPointcut = (ThrowsPointcut)it.next();
+//                IndexTuple[] advices = throwsPointcut.getAdviceIndexes();
+//                for (int j = 0; j < advices.length; j++) {
+//                    adviceIndexes.add(new Integer(advices[j]));
+//                }
+//            }
+//
+//            m_adviceIndexes = new IndexTuple[adviceIndexes.size()];
+//            int i = 0;
+//            for (Iterator it = adviceIndexes.iterator(); it.hasNext(); i++) {
+//                m_adviceIndexes[i] = ((Integer)it.next()).intValue();
+//            }
         }
     }
 
@@ -330,7 +331,7 @@ public class ThrowsJoinPoint implements JoinPoint {
     protected ThrowsJoinPoint deepCopy() {
         final ThrowsJoinPoint clone = new ThrowsJoinPoint(m_uuid, m_methodJoinPoint, m_exception);
         clone.m_currentAdviceIndex = m_currentAdviceIndex;
-        clone.m_adviceIndexes = new int[m_adviceIndexes.length];
+        clone.m_adviceIndexes = new IndexTuple[m_adviceIndexes.length];
         System.arraycopy(m_adviceIndexes, 0, clone.m_adviceIndexes, 0, m_adviceIndexes.length);
         return clone;
     }
@@ -349,7 +350,7 @@ public class ThrowsJoinPoint implements JoinPoint {
         m_methodMetaData = (MethodMetaData)fields.get("m_fieldMetaData", null);
         m_methodJoinPoint = (MethodJoinPoint)fields.get("m_methodJoinPoint", null);
         m_exception = (Throwable)fields.get("m_exception", null);
-        m_adviceIndexes = (int[])fields.get("m_adviceIndexes", null);
+        m_adviceIndexes = (IndexTuple[])fields.get("m_adviceIndexes", null);
         m_system = AspectWerkz.getSystem(m_uuid);
         m_system.initialize();
     }

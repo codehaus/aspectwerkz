@@ -63,16 +63,6 @@ public class AdviceWeavingRule implements WeavingRule {
     private transient Expression m_jexlCFlowExpr;
 
     /**
-     * The advices references.
-     */
-    private List m_adviceRefs = new ArrayList();
-
-    /**
-     * The advice stack references.
-     */
-    private List m_adviceStackRefs = new ArrayList();
-
-    /**
      * The pointcut definition references.
      */
     private List m_pointcutRefs = null;
@@ -170,42 +160,6 @@ public class AdviceWeavingRule implements WeavingRule {
             m_pointcutRefs.add(pointcutRef);
         }
         return m_pointcutRefs;
-    }
-
-    /**
-     * Returns a list with all the advice references.
-     *
-     * @return the advice references
-     */
-    public List getAdviceRefs() {
-        return m_adviceRefs;
-    }
-
-    /**
-     * Adds a new advice reference.
-     *
-     * @param adviceRef the advice reference
-     */
-    public void addAdviceRef(final String adviceRef) {
-        m_adviceRefs.add(adviceRef);
-    }
-
-    /**
-     * Returns a list with all the advice stack references.
-     *
-     * @return the advice stack references
-     */
-    public List getAdviceStackRefs() {
-        return m_adviceStackRefs;
-    }
-
-    /**
-     * Adds a new advice stack reference.
-     *
-     * @param adviceStackRef the advice stack reference
-     */
-    public void addAdviceStackRef(final String adviceStackRef) {
-        m_adviceStackRefs.add(adviceStackRef);
     }
 
     /**
@@ -820,8 +774,6 @@ public class AdviceWeavingRule implements WeavingRule {
 
         m_expression = (String)fields.get("m_expression", null);
         m_cflowExpression = (String)fields.get("m_cflowExpression", null);
-        m_adviceRefs = (List)fields.get("m_adviceRefs", null);
-        m_adviceStackRefs = (List)fields.get("m_adviceStackRefs", null);
         m_pointcutRefs = (List)fields.get("m_pointcutRefs", null);
         m_methodPointcutPatterns = (Map)fields.get("m_methodPointcutPatterns", null);
         m_setFieldPointcutPatterns = (Map)fields.get("m_setFieldPointcutPatterns", null);

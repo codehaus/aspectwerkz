@@ -7,31 +7,33 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import java.util.Set;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Hashtable;
 import java.util.ArrayList;
 import java.util.WeakHashMap;
-import java.util.HashSet;
 import java.util.Enumeration;
+import java.util.Collection;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.dom4j.Document;
+
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
+import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
-import org.dom4j.Document;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
 /**
- * AspectWerkzPreProcessor is the entry poinbt of the AspectWerkz layer 2
+ * AspectWerkzPreProcessor is the entry point of the AspectWerkz layer 2
  *
  * It implements the ClassPreProcessor interface defined in layer 1.<br/>
  * Issued from JMangler, the transformer stack is hardcoded here - need refactoring.<br/>
@@ -119,12 +121,12 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         m_metaDataRepository = new WeakHashMap();
         m_definitionRepository = new WeakHashMap();
         m_stack = new ArrayList();
-        m_stack.add(new AddSerialVersionUidTransformer());
-        m_stack.add(new AddInterfaceTransformer());
-        m_stack.add(new AddImplementationTransformer());
-        m_stack.add(new AdviseMemberFieldTransformer());
-        m_stack.add(new AdviseStaticFieldTransformer());
-        m_stack.add(new AdviseCallerSideMethodTransformer());
+//        m_stack.add(new AddSerialVersionUidTransformer());
+//        m_stack.add(new AddInterfaceTransformer());
+//        m_stack.add(new AddImplementationTransformer());
+//        m_stack.add(new AdviseMemberFieldTransformer());
+//        m_stack.add(new AdviseStaticFieldTransformer());
+//        m_stack.add(new AdviseCallerSideMethodTransformer());
         m_stack.add(new AdviseMemberMethodTransformer());
         m_stack.add(new AdviseStaticMethodTransformer());
 //        m_stack.add(new AddMetaDataTransformer());
@@ -148,8 +150,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         buildMixinMetaDataRepository(loader);
         loadAndMergeXmlDefinitions(loader);
 
-        if (VERBOSE)
+        if (VERBOSE) {
             log(loader + ":" + className + " ["+Thread.currentThread().getName()+"]");
+        }
         // prepare BCEL ClassGen
         Klass klass = null;
         try {
@@ -223,8 +226,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         if (DUMP_AFTER) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
-                    klass.getClassGen().getJavaClass().
-                            dump("_dump/" + (DUMP_BEFORE?"after/":"") + className.replace('.', '/') + ".class");
+                    klass.getClassGen().getJavaClass().dump("_dump/" +
+                            (DUMP_BEFORE?"after/":"") +
+                            className.replace('.', '/') + ".class");
                 }
                 catch (Exception e) {
                     System.err.println("failed to dump " + className);
@@ -239,16 +243,19 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
     /**
      * Logs a message.
      *
+     * @TODO: remove, just for integration proto
+     *
      * @param msg the message to log
      */
     public static void log(final String msg) {
-        //@todo remove this - just for integration proto
         if (VERBOSE) System.out.println(msg);
     }
 
     /**
      * Loads all the mixins loadable by the current classloader and creates and stores
      * meta-data for them.
+     *
+     * @TODO: handle both definitions (ver1 and ver2)
      *
      * @param loader the current class loader
      */
@@ -260,8 +267,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         m_metaDataRepository.put(loader, repository); // add the loader here already to prevent recursive calls
 
         AspectWerkzDefinition def = AspectWerkzDefinition.getDefinitionForTransformation();
-        for (Iterator it = def.getIntroductionDefinitions().iterator(); it.hasNext();) {
-            String className = ((IntroductionDefinition)it.next()).getImplementation();
+        Collection introDefs = def.getIntroductionDefinitions();
+        for (Iterator it = introDefs.iterator(); it.hasNext();) {
+            String className = ((IntroductionDefinition)it.next()).getAspectClassName();
             if (className != null) {
                 try {
                     Class mixin = loader.loadClass(className);
@@ -280,6 +288,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * <p/>
      * It searches the JAR/WAR/EAR for a 'META-INF/aspectwerkz.xml' file as well as the file
      * 'aspectwerkz.xml' on the classpath and the definition specified using the JVM option.
+     *
+     * @TODO: handle both definitions (ver1 and ver2)
+     * @TODO: how to handle initialize on the definition? not needed in ver1.
      *
      * @param loader the current class loader
      */
@@ -331,7 +342,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             }
 
             // create a new definition based on the merged definition documents
-            AspectWerkzDefinition.createDefinition(document);
+            AspectWerkzDefinition.createDefinition(document).initialize(loader);
         }
         catch (Exception e) {
             ;// ignore

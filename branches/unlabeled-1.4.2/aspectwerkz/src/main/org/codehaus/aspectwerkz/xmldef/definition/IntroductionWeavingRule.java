@@ -9,9 +9,20 @@ package org.codehaus.aspectwerkz.definition;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
+import java.io.ObjectInputStream;
 
-import org.codehaus.aspectwerkz.regexp.ClassPattern;
-import org.codehaus.aspectwerkz.regexp.Pattern;
+import org.apache.commons.jexl.Expression;
+import org.apache.commons.jexl.ExpressionFactory;
+
+import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.pointcut.ClassPointcut;
 
 /**
  * Handles the introduction weaving rule definition.
@@ -20,53 +31,144 @@ import org.codehaus.aspectwerkz.regexp.Pattern;
  */
 public class IntroductionWeavingRule implements WeavingRule {
 
-    private String m_classPattern;
-    private ClassPattern m_regexpClassPattern;
-    private final List m_introductionRefs = new ArrayList();
+    /**
+     * The pointcut expression.
+     */
+    private String m_expression;
 
     /**
-     * Returns the class pattern.
-     *
-     * @return the class pattern
+     * The Jexl expression.
      */
-    public String getClassPattern() {
-        return m_classPattern;
+    private transient Expression m_jexlExpr;
+
+    /**
+     * The pointcut definition references.
+     */
+    private List m_pointcutRefs = null;
+
+    /**
+     * The class pointcut definitions referenced in the m_expression.
+     * Mapped to the name of the pointcut definition.
+     */
+    private Map m_classPointcutPatterns = new HashMap();
+
+    /**
+     * Returns the expression.
+     *
+     * @return the expression
+     */
+    public String getExpression() {
+        return m_expression;
     }
 
     /**
-     * Sets the class pattern
+     * Sets the expression. Substitutes all "AND" to "&&" and all "OR" to "||".
      *
-     * @param classPattern the class pattern
+     * @param expression the expression
      */
-    public void setClassPattern(final String classPattern) {
-        m_classPattern = classPattern;
-        m_regexpClassPattern = Pattern.compileClassPattern(classPattern);
+    public void setExpression(final String expression) {
+        String tmp = Strings.replaceSubString(expression, " AND ", " && ");
+        tmp = Strings.replaceSubString(tmp, " and ", " && ");
+        tmp = Strings.replaceSubString(tmp, " OR ", " || ");
+        tmp = Strings.replaceSubString(tmp, " or ", " || ");
+        m_expression = tmp;
+        createJexlExpressions();
     }
 
     /**
-     * Returns the class pattern as a pre-compiled pattern.
+     * Returns a list with the pointcut references.
      *
-     * @return the class pattern
+     * @return the pointcut references
      */
-    public ClassPattern getRegexpClassPattern() {
-        return m_regexpClassPattern;
+    public List getPointcutRefs() {
+        if (m_pointcutRefs != null) {
+            return m_pointcutRefs;
+        }
+        String expression = Strings.replaceSubString(m_expression, "&&", "");
+        expression = Strings.replaceSubString(expression, "||", "");
+        expression = Strings.replaceSubString(expression, "!", "");
+        expression = Strings.replaceSubString(expression, "(", "");
+        expression = Strings.replaceSubString(expression, ")", "");
+
+        m_pointcutRefs = new ArrayList();
+        StringTokenizer tokenizer = new StringTokenizer(expression, " ");
+        while (tokenizer.hasMoreTokens()) {
+            String pointcutRef = tokenizer.nextToken();
+            m_pointcutRefs.add(pointcutRef);
+        }
+        return m_pointcutRefs;
     }
 
     /**
-     * Returns a list with all the introduction references.
+     * Adds a new class pointcut pattern.
      *
-     * @return the introduction references
+     * @param pointcut the pointcut definition
      */
-    public List getIntroductionRefs() {
-        return m_introductionRefs;
+    public void addClassPointcutPattern(final PointcutDefinition pointcut) {
+        m_classPointcutPatterns.put(pointcut.getName(),
+                new PointcutPatternTuple(
+                        pointcut.getRegexpClassPattern(),
+                        pointcut.getRegexpPattern(),
+                        pointcut.isHierarchical()));
     }
 
     /**
-     * Adds a new introduction reference.
+     * Checks if the pointcut matches a certain join point.
+     * Only checks for a class match to allow early filtering.
      *
-     * @param introductionRef the introduction reference
+     * @param classMetaData the class meta-data
+     * @return boolean
      */
-    public void addIntroductionRef(final String introductionRef) {
-        m_introductionRefs.add(introductionRef);
+    public boolean matchClassPointcut(final ClassMetaData classMetaData) {
+        try {
+            for (Iterator it = m_classPointcutPatterns.entrySet().iterator(); it.hasNext();) {
+                Map.Entry entry = (Map.Entry)it.next();
+                String name = (String)entry.getKey();
+                PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
+                // try to find a match somewhere in the class hierarchy
+                // (interface or super class)
+                if (pointcutPattern.isHierarchical()) {
+                    if (ClassPointcut.matchClassPointcutSuperClasses(
+                            name, classMetaData, pointcutPattern)) {
+                        return true;
+                    }
+                }
+                // match the single class only
+                else if (pointcutPattern.getClassPattern().matches(classMetaData.getName())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    /**
+     * Creates the Jexl expressions.
+     */
+    private void createJexlExpressions() {
+        try {
+            m_jexlExpr = ExpressionFactory.createExpression(m_expression);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("could not create jexl expression from: " + m_expression);
+        }
+    }
+
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws Exception in case of failure
+     */
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
+        m_expression = (String)fields.get("m_expression", null);
+        m_pointcutRefs = (List)fields.get("m_pointcutRefs", null);
+        m_classPointcutPatterns = (Map)fields.get("m_classPointcutPatterns", null);
+        createJexlExpressions();
     }
 }
+

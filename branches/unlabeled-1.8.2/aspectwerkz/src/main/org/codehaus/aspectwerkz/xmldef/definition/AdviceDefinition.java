@@ -7,23 +7,103 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.io.Serializable;
-import java.util.Map;
-import java.util.HashMap;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
+import org.codehaus.aspectwerkz.util.Strings;
 
 /**
- * Holds the advice definition.
+ * Holds the meta-data for the advices.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AdviceDefinition implements Serializable {
+public class AdviceDefinition {
 
+    /**
+     * The name of the advice.
+     */
     private String m_name;
-    private String m_adviceClassName;
+
+    /**
+     * The aspect class name.
+     */
+    private final String m_aspectClassName;
+
+    /**
+     * The aspect name.
+     */
+    private final String m_aspectName;
+
+    /**
+     * The pointcut for the advice.
+     */
+    private final String m_pointcut;
+
+    /**
+     * The method for the advice.
+     */
+    private final Method m_method;
+
+    /**
+     * Index for the method for this advice.
+     */
+    private final int m_methodIndex;
+
+    /**
+     * The deployment model.
+     */
     private String m_deploymentModel;
-    private String m_isPersistent;
+
+    /**
+     * The attribute for the advice.
+     */
     private String m_attribute = "";
-    private Map m_parameters = new HashMap();
+
+    /**
+     * The pointcut definition references.
+     */
+    private List m_pointcutRefs = null;
+
+    /**
+     * The advice weaving rule.
+     */
+    private AdviceWeavingRule m_weavingRule;
+
+    /**
+     * Creates a new advice meta-data instance.
+     *
+     * @param name the name of the pointcut
+     * @param aspectName the name of the aspect
+     * @param aspectClassName the class name of the aspect
+     * @param pointcut the pointcut
+     * @param method the method
+     * @param methodIndex the method index
+     * @param deploymentModel the deployment model
+     */
+    public AdviceDefinition(final String name,
+                            final String aspectName,
+                            final String aspectClassName,
+                            final String pointcut,
+                            final Method method,
+                            final int methodIndex,
+                            final String deploymentModel) {
+        if (name == null) throw new IllegalArgumentException("name can not be null");
+        if (aspectName == null) throw new IllegalArgumentException("aspect name can not be null");
+        if (aspectClassName == null) throw new IllegalArgumentException("class name can not be null");
+        if (pointcut == null) throw new IllegalArgumentException("pointcut can not be null");
+        if (method == null) throw new IllegalArgumentException("method can not be null");
+        if (methodIndex < 0) throw new IllegalArgumentException("method index is not valid");
+        if (deploymentModel == null) throw new IllegalArgumentException("deployment model can not be null");
+        m_name = name;
+        m_aspectName = aspectName;
+        m_aspectClassName = aspectClassName;
+        m_pointcut = pointcut;
+        m_method = method;
+        m_methodIndex = methodIndex;
+        m_deploymentModel = deploymentModel;
+    }
 
     /**
      * Returns the name of the advice.
@@ -44,21 +124,48 @@ public class AdviceDefinition implements Serializable {
     }
 
     /**
-     * Returns the class name of the advice.
+     * Returns the class name.
      *
-     * @return the class name of the advice
+     * @return the class name
      */
-    public String getAdviceClassName() {
-        return m_adviceClassName;
+    public String getAspectClassName() {
+        return m_aspectClassName;
     }
 
     /**
-     * Sets the class name of the advice.
+     * Returns the aspect name.
      *
-     * @param adviceClassName the class name of the advice
+     * @return the aspect name
      */
-    public void setAdviceClassName(final String adviceClassName) {
-        m_adviceClassName = adviceClassName.trim();
+    public String getAspectName() {
+        return m_aspectName;
+    }
+
+    /**
+     * Returns the pointcut.
+     *
+     * @return the pointcut
+     */
+    public String getPointcut() {
+        return m_pointcut;
+    }
+
+    /**
+     * Returns the method.
+     *
+     * @return the method
+     */
+    public Method getMethod() {
+        return m_method;
+    }
+
+    /**
+     * Returns the method index for the introduction method.
+     *
+     * @return the method index
+     */
+    public int getMethodIndex() {
+        return m_methodIndex;
     }
 
     /**
@@ -80,24 +187,6 @@ public class AdviceDefinition implements Serializable {
     }
 
     /**
-     * Gets the persistent attribute.
-     *
-     * @return the persistent attribute
-     */
-    public String getIsPersistent() {
-        return m_isPersistent;
-    }
-
-    /**
-     * Sets the persistent attribute.
-     *
-     * @param isPersistent the persistent attribute
-     */
-    public void setIsPersistent(final String isPersistent) {
-        m_isPersistent = isPersistent;
-    }
-
-    /**
      * Returns the attribute.
      *
      * @return the attribute
@@ -116,37 +205,44 @@ public class AdviceDefinition implements Serializable {
     }
 
     /**
-     * Checks if the introduction is persistent.
+     * Returns a list with the pointcut references.
      *
-     * @return true if introduction is persistent
+     * @return the pointcut references
      */
-    public boolean isPersistent() {
-        if (m_isPersistent != null &&
-                (m_isPersistent.equalsIgnoreCase("true") ||
-                m_isPersistent.equalsIgnoreCase("yes"))) {
-            return true;
+    public List getPointcutRefs() {
+        if (m_pointcutRefs != null) {
+            return m_pointcutRefs;
         }
-        else {
-            return false;
+        String expression = Strings.replaceSubString(m_pointcut, "&&", "");
+        expression = Strings.replaceSubString(expression, "||", "");
+        expression = Strings.replaceSubString(expression, "!", "");
+        expression = Strings.replaceSubString(expression, "(", "");
+        expression = Strings.replaceSubString(expression, ")", "");
+
+        m_pointcutRefs = new ArrayList();
+        StringTokenizer tokenizer = new StringTokenizer(expression, " ");
+        while (tokenizer.hasMoreTokens()) {
+            String pointcutRef = tokenizer.nextToken();
+            m_pointcutRefs.add(pointcutRef);
         }
+        return m_pointcutRefs;
     }
 
     /**
-     * Adds a new parameter to the advice.
+     * Returns the weaving rule.
      *
-     * @param name the name of the parameter
-     * @param value the value for the parameter
+     * @return the weaving rule
      */
-    public void addParameter(final String name, final String value) {
-        m_parameters.put(name, value);
+    public AdviceWeavingRule getWeavingRule() {
+        return m_weavingRule;
     }
 
     /**
-     * Returns the parameters as a Map.
+     * Sets the weaving rule.
      *
-     * @return the parameters
+     * @param weavingRule the weaving rule
      */
-    public Map getParameters() {
-        return m_parameters;
+    public void setWeavingRule(final AdviceWeavingRule weavingRule) {
+        m_weavingRule = weavingRule;
     }
 }
