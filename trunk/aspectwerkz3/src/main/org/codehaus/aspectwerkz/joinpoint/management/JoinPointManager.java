@@ -16,6 +16,7 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
@@ -31,6 +32,7 @@ import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
+import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.objectweb.asm.Type;
 
 import java.util.List;
@@ -402,7 +404,7 @@ public class JoinPointManager {
                                 expressionContext
                         );
 
-                        setMethodArgumentIndexes(adviceDefinition.getExpressionInfo(), expressionContext, info);
+                        setMethodArgumentIndexes(adviceDefinition.getExpressionInfo(), expressionContext, info, loader);
 
                         if (AdviceType.BEFORE.equals(adviceDefinition.getType())) {
                             beforeAdvices.add(info);
@@ -459,15 +461,20 @@ public class JoinPointManager {
     }
 
     /**
-     * Sets the method argument indexes.
+     * Sets the advice argument indexes map.
+     * <p/>
+     * Each advice arg is mapped to wether a system entity like StaticJoinPoint, Rtti, this, target etc thru a specific index
+     * (see AdviceInfo), or to one of the advised member arguments (thru args(..) binding).
      *
      * @param expressionInfo
      * @param ctx
      * @param adviceInfo
+     * @param loader
      */
     private static void setMethodArgumentIndexes(final ExpressionInfo expressionInfo,
                                                  final ExpressionContext ctx,
-                                                 final AdviceInfo adviceInfo) {
+                                                 final AdviceInfo adviceInfo,
+                                                 final ClassLoader loader) {
 
         // grab the parameters names
         String[] adviceArgNames = getParameterNames(adviceInfo.getName());
@@ -491,6 +498,8 @@ public class JoinPointManager {
                     adviceToTargetArgs[k] = AdviceInfo.TARGET_ARG;
                 } else if (isThis(adviceArgName, ctx)) {
                     adviceToTargetArgs[k] = AdviceInfo.THIS_ARG;
+                } else if (isRtti(adviceInfo.getMethodParameterTypes()[k], loader)) {
+                    adviceToTargetArgs[k] = AdviceInfo.RTTI_ARG;
                 } else {
                     throw new Error(
                             "Unbound advice parameter at index " + k +
@@ -538,4 +547,12 @@ public class JoinPointManager {
     private static boolean isThis(String adviceArgName, ExpressionContext ctx) {
         return adviceArgName.equals(ctx.m_thisBoundedName);
     }
+
+    private static boolean isRtti(Type type, final ClassLoader loader) {
+        //TODO support subclassing ? impacts some in ExpressionInfo which is not classloader aware
+        return Type.getType(Rtti.class).getDescriptor().equals(type.getDescriptor());
+//        return ClassInfoHelper.instanceOf(AsmClassInfo.getClassInfo(type.getClassName().replace('/','.'), loader),
+//                                          Rtti.class.getName().replace('/','.'));
+    }
+
 }

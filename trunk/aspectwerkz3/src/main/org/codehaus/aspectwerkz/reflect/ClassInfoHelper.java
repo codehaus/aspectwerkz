@@ -27,11 +27,11 @@ public class ClassInfoHelper {
      * Checks if a class has a certain class as super class or interface, somewhere up in the class hierarchy.
      *
      * @param classInfo the meta-data for the class to parse
-     * @param className the name of the super class or interface
+     * @param superclassName the name of the super class or interface
      * @return true if we have a parse else false
      */
-    public static boolean instanceOf(final ClassInfo classInfo, final String className) {
-        return implementsInterface(classInfo, className) || extendsSuperClass(classInfo, className);
+    public static boolean instanceOf(final ClassInfo classInfo, final String superclassName) {
+        return implementsInterface(classInfo, superclassName) || extendsSuperClass(classInfo, superclassName);
     }
 
     /**
