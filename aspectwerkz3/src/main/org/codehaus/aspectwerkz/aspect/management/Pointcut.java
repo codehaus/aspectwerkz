@@ -578,7 +578,7 @@ public class Pointcut implements Serializable {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_expressionInfo = (ExpressionInfo)fields.get("m_expression", null);
+        m_expressionInfo = (ExpressionInfo)fields.get("m_annotation", null);
         m_aroundAdviceNames = (String[])fields.get("m_aroundAdviceNames", null);
         m_aroundAdviceIndexes = (IndexTuple[])fields.get("m_aroundAdviceIndexes", null);
         m_beforeAdviceNames = (String[])fields.get("m_beforeAdviceNames", null);

@@ -18,7 +18,7 @@ import org.codehaus.aspectwerkz.CrossCuttingInfo;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  *
- * @Aspect perInstance NAME
+ * @Aspect perInstance name=NAME
  */
 public class CachingAspect {
 

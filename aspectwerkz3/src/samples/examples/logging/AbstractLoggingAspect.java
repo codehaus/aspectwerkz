@@ -11,8 +11,6 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
-import java.io.*;
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

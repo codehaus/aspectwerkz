@@ -235,7 +235,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTMethodPattern node, Object data) {
-        if (data instanceof MethodInfo) { // TODO: is this safe check needed?
+        if (data instanceof MethodInfo) {
             MethodInfo methodInfo = (MethodInfo)data;
             if (node.getMethodNamePattern().matches(methodInfo.getName())
                 && ClassInfoHelper.matchType(node.getDeclaringTypePattern(), methodInfo.getDeclaringType())
@@ -249,7 +249,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTConstructorPattern node, Object data) {
-        if (data instanceof ConstructorInfo) { // TODO: is this safe check needed?
+        if (data instanceof ConstructorInfo) {
             ConstructorInfo constructorMetaData = (ConstructorInfo)data;
             if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), constructorMetaData.getDeclaringType())
                 && visitAttributes(node, constructorMetaData) && visitModifiers(node, constructorMetaData)
@@ -261,7 +261,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTFieldPattern node, Object data) {
-        if (data instanceof FieldInfo) { // TODO: is this safe check needed?
+        if (data instanceof FieldInfo) { 
             FieldInfo fieldInfo = (FieldInfo)data;
             if (node.getFieldNamePattern().matches(fieldInfo.getName())
                 && ClassInfoHelper.matchType(node.getDeclaringTypePattern(), fieldInfo.getDeclaringType())
@@ -283,8 +283,8 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTAttribute node, Object data) {
-        List attributes = (List)data;
-        for (Iterator it = attributes.iterator(); it.hasNext();) {
+        List annotations = (List)data;
+        for (Iterator it = annotations.iterator(); it.hasNext();) {
             AnnotationInfo annotation = (AnnotationInfo)it.next();
             if (annotation.getName().equals(node.getName())) {
                 return Boolean.TRUE;

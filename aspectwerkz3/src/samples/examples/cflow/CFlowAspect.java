@@ -12,7 +12,6 @@ import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @Aspect
  */
 public class CFlowAspect {
 

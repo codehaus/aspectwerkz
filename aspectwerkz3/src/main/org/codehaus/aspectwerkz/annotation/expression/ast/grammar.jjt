@@ -1,0 +1,217 @@
+/**************************************************************************************
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the LGPL license      *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
+
+/**
+ * JJTree grammar for annotation expressions.
+ *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ */
+
+options {
+    MULTI=true;
+    VISITOR=true;
+    NODE_DEFAULT_VOID=true;
+    NODE_PACKAGE="org.codehaus.aspectwerkz.annotation.expression.ast";
+    NODE_USES_PARSER=false;
+}
+
+PARSER_BEGIN(ExpressionParser)
+/**************************************************************************************
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the LGPL license      *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
+package org.codehaus.aspectwerkz.annotation.expression.ast;
+
+import java.lang.reflect.Modifier;
+import java.io.Reader;
+import java.io.StringReader;
+
+/**
+ *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ */
+public class ExpressionParser {
+
+    public ASTRoot parse(String expression) throws ParseException {
+        return parse(new StringReader(expression));
+    }
+
+    public ASTRoot parse(Reader reader) throws ParseException {
+        ReInit(reader);
+        return Root();
+    }
+}
+PARSER_END(ExpressionParser)
+
+//------------------ Global lexical scope ------------------
+
+SKIP : /* WHITE SPACE */
+{
+    " "
+|
+    "\t"
+}
+TOKEN :
+{
+    < DIGIT :  ["0"-"9"] >
+|
+    < DOT : "." >
+|
+    < BOOLEAN : "true" | "false" | "TRUE" | "FALSE" >
+|
+    < STRING : "\"" (<CHAR_LETTER>)* "\"" >
+|
+    < CHAR : "'" <CHAR_LETTER> "'"  >
+|
+    < NEWLINE : "\n" >
+|
+    < LEFT_PARENTHEZIS : "(" >
+|
+    < RIGHT_PARENTHEZIS : ")" >
+|
+    < LEFT_BRACKET : "{" >
+|
+    < RIGHT_BRACKET : "}" >
+|
+    < COMMA : "," >
+|
+    < EQUALS : "=" >
+|
+    < AT : "@" >
+|
+    < CHAR_LETTER : (~["\n","\r", "'","\\", "\""]) >
+|
+    < ANNOTATION : <AT> <JAVA_NAME> >
+|
+    < IDENTIFIER: <JAVA_NAME> (<DOT> <JAVA_NAME>)* >
+|
+    < JAVA_NAME: (<JAVA_LETTER>)+ >
+|
+    < #JAVA_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
+}
+
+/**
+ * Entry point.
+ */
+ASTRoot Root() #Root : {}
+{
+    Annotation() (<EOF> | "\r\n" | "\n")
+    { return jjtThis; }
+}
+
+/**
+ * Annotation.
+ */
+void Annotation() #Annotation : {}
+{
+    <ANNOTATION> "(" (LOOKAHEAD(2) (KeyValuePair()) | LOOKAHEAD(2) (Value()) )* ")"
+}
+
+/**
+ * KeyValuePair.
+ */
+void KeyValuePair() #KeyValuePair :
+{
+    Token key, value;
+}
+{
+    key=<IDENTIFIER>
+    {
+        jjtThis.setKey(key.image);
+    }
+    "="
+    Value()
+}
+
+/**
+ * Value.
+ *
+ * @TODO: nested annotations
+ */
+void Value() : {}
+{
+//    Annotation()
+//    |
+    Char()
+    |
+    String()
+    |
+    Array()
+    |
+    Identifier()
+    |
+    Boolean()
+}
+
+/**
+ * Identifier.
+ */
+void Identifier() #Identifier :
+{
+    Token value;
+}
+{
+    value=<IDENTIFIER>
+    {
+        jjtThis.setValue(value.image);
+    }
+}
+
+/**
+ * Boolean.
+ */
+void Boolean() #Boolean :
+{
+    Token value;
+}
+{
+    value=<BOOLEAN>
+    {
+        jjtThis.setValue(value.image);
+    }
+}
+
+/**
+ * Char.
+ */
+void Char() #Char :
+{
+    Token value;
+}
+{
+    value=<CHAR>
+    {
+        jjtThis.setValue(value.image);
+    }
+}
+
+/**
+ * String.
+ */
+void String() #String :
+{
+    Token value;
+}
+{
+    value=<STRING>
+    {
+        jjtThis.setValue(value.image);
+    }
+}
+
+/**
+ * Array.
+ */
+void Array() #Array : {}
+{
+    "{" [Value() (LOOKAHEAD(2) "," Value())* [","]] "}"
+}
+

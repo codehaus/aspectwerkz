@@ -15,12 +15,12 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.Mixin;
-import org.codehaus.aspectwerkz.annotation.AnnotationParser;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.util.Util;
 import java.lang.reflect.Field;
@@ -58,9 +58,10 @@ public final class AspectManager {
     private final AspectRegistry m_aspectRegistry;
 
     /**
-     * The attribute parser to parse the definitions for the hot deployed aspects.
+     * The annotation parser to parse the definitions for the hot deployed aspects.
      */
-    private AnnotationParser m_attributeParser = new AspectAnnotationParser();
+//    private AspectAttributeParser m_annotationParser = new AspectAttributeParser();
+    private AspectAnnotationParser m_annotationParser = new AspectAnnotationParser();
 
     /**
      * Cache for the pointcuts.
@@ -151,7 +152,7 @@ public final class AspectManager {
         aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelAsString(deploymentModel));
 
         // parse the class attributes and create a definition
-        m_attributeParser.parse(aspectClass, aspectDef, m_definition);
+        m_annotationParser.parse(aspectClass, aspectDef, m_definition);
         m_definition.addAspect(aspectDef);
         CrossCuttingInfo crossCuttingInfo = new CrossCuttingInfo(null, aspectClass, aspectDef.getName(),
                                                                  deploymentModel, aspectDef, new HashMap());

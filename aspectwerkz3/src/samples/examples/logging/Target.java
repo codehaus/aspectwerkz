@@ -13,12 +13,14 @@ package examples.logging;
 public class Target {
 
     /**
-     * @@log
+     * log level=1  f=5.8F iconstant=org.codehaus.aspectwerkz.DeploymentModel.PER_CLASS
+     * @log
      */
     private int m_counter1;
 
     /**
-     * @@log
+     * log level=1 iconstant=org.codehaus.aspectwerkz.DeploymentModel.PER_THREAD
+     * @log
      */
     private int m_counter2;
 
@@ -31,21 +33,24 @@ public class Target {
     }
 
     /**
-     * @@log
+     * log level=0 sconstant=org.codehaus.aspectwerkz.transform.TransformationUtil.ASPECTWERKZ_PREFIX
+     * @log
      */
     public static void toLog1() {
         new Target().toLog2("parameter");
     }
 
     /**
-     * @@log
+     * log level=3 sarr={"Hello","World"}
+     * @log
      */
     protected void toLog2(java.lang.String arg) {
         new Target().toLog3();
     }
 
     /**
-     * @@log
+     * log level=4 darr={4.5D,8.98665D,0.00000342}
+     * @log
      */
     private String toLog3() {
         return "result";
