@@ -16,12 +16,12 @@ interceptor(
 interceptor(
    awbench.method.IExecution.class,
    signature("void.*beforeJP\\(\\)"),
-   new awbench.dynaop.MethodExecutionBeforeAdvice()
+   new awbench.dynaop.MethodExecutionBeforeJPAdvice()
 );
 interceptor(
    awbench.method.IExecution.class,
    signature("void.*beforeSJP\\(\\)"),
-   new awbench.dynaop.MethodExecutionBeforeAdvice()
+   new awbench.dynaop.MethodExecutionBeforeSJPAdvice()
 );
 interceptor(
    awbench.method.IExecution.class,

@@ -14,7 +14,7 @@ import awbench.Run;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MethodExecutionAroundAdvice implements Interceptor {
+public class MethodExecutionBeforeSJPAdvice implements Interceptor {
     public Object intercept(Invocation invocation) throws Throwable {
         Run.ADVICE_HIT++;
         return invocation.proceed();
