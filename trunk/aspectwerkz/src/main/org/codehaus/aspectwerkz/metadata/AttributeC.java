@@ -161,8 +161,8 @@ public class AttributeC {
         Document document = DocumentHelper.createDocument();
         document.addDocType(
                 "aspectwerkz",
-                "-//AspectWerkz//DTD 0.8//EN",
-                "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8.dtd"
+                "-//AspectWerkz//DTD 0.8.1//EN",
+                "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd"
         );
 
         Element root = document.addElement("aspectwerkz");

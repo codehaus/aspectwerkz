@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -34,9 +36,13 @@ import org.xml.sax.InputSource;
 public class XmlDefinitionParser {
 
     /**
-     * The current DTD public id. The matching dtd will be searched as a resource.
+     * The supported DTD public id. The matching dtd will be searched as a resource.
      */
-    private final static String DTD_PUBLIC_ID = "-//AspectWerkz//DTD 0.8//EN";
+    private final static Map DTD_PUBLIC_IDS = new HashMap();
+    static {
+        DTD_PUBLIC_IDS.put("-//AspectWerkz//DTD 0.8//EN", "/aspectwerkz.dtd");
+        DTD_PUBLIC_IDS.put("-//AspectWerkz//DTD 0.8.1//EN", "/aspectwerkz.dtd");
+    }
 
     /**
      * The timestamp, holding the last time that the definition was parsed.
@@ -229,8 +235,8 @@ public class XmlDefinitionParser {
     private static void setEntityResolver(final SAXReader reader) {
         EntityResolver resolver = new EntityResolver() {
             public InputSource resolveEntity(String publicId, String systemId) {
-                if (publicId.equals(DTD_PUBLIC_ID)) {
-                    InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
+                if (DTD_PUBLIC_IDS.containsKey(publicId)) {
+                    InputStream in = getClass().getResourceAsStream((String)DTD_PUBLIC_IDS.get(publicId));
                     return new InputSource(in);
                 }
                 return null;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--*****************************************************************************************************************************
-	AspectWerkz DTD 0.8
+	AspectWerkz DTD 0.8 / 0.8.1
 
 This DTD is provided as is. Some elements might have been deprecated since 0.7.4  (see comments)
 
@@ -16,6 +16,11 @@ To use this DTD, start your defintion file with
 	<!DOCTYPE aspectwerkz PUBLIC
 	    "-//AspectWerkz//DTD 0.8//EN"
 	    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8.dtd">
+You can also use 0.8.1 (the DTD did not changed between 0.8 and 0.8.1)
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 0.8.1//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd">
+
 To not use this DTD, start your definition file with
 	<?xml version="1.0"?>
 
