@@ -49,18 +49,17 @@
             <p>
                 Here are some simple examples to get you going. All examples
                 together with ready to execute tests are to be found in the
-                source distribution under <code>src/samples</code>. They are
+                source distribution under <code>src/samples/examples/xmldef</code>. They are
                 all defined using the same definition file;
-                <code>samples.xml</code>
+                <code>samples-xmldef.xml</code>
             </p>
             <p>
-                If you are using <code>Introductions</code> and/or <code>Runtime
-                Attributes</code> then you have to compile a weave model for your
-                code before running it. This weave model is then read in when the
-                system starts up. You can compile the weave model with one of the
-                meta-data compilers. See the
-                <a href="/documentation.html#Weave model compilation">Weave model compilation</a>
-                section. This is done automatically in these examples.
+                If you are using <code>Doclet style
+                </code> instead or in complement of the XML definition then you have to process the source
+                files to generate or merge the XML definition file before running it.
+                You can generate or merge the XML definition file from doclets in source files with the
+                provided utility <code>AttributeC</code>. See the
+                TODO section. This is done automatically in these examples.
             </p>
         </section>
 
@@ -457,9 +456,9 @@ public class Target {
     <pointcut-def name="step1" type="cflow" pattern="* Target.step1()"/>
     <pointcut-def name="step2" type="method" pattern="* Target.step2()"/>
 
-    <advice cflow="step1" pointcut="step2">
+    <bind-advice cflow="step1" pointcut="step2">
         <advice-ref name="my_advice"/>
-    </advice>
+    </bind-advice>
 </aspect>
 ]]></source>
             </p>
@@ -471,10 +470,11 @@ public class Target {
             </p>
 <source><![CDATA[
 <!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD 0.8.1//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd">
+    "-//AspectWerkz//DTD 0.9//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_9.dtd">
 
-<aspectwerkz id="examples">
+<aspectwerkz>
+<system id="examples">
 
     <!-- ============================================= -->
     <!--  Introductions                                -->
@@ -488,19 +488,19 @@ public class Target {
     <!--  Advices                                      -->
     <!-- ============================================= -->
     <advice-def name="cache"
-                advice="examples.caching.CachingAdvice"
+                class="examples.caching.CachingAdvice"
                 deployment-model="perJVM"/>
 
     <advice-def name="invocationCounter"
-                advice="examples.caching.InvocationCounterAdvice"
+                class="examples.caching.InvocationCounterAdvice"
                 deployment-model="perJVM"/>
 
     <advice-def name="asynchronous"
-                advice="examples.asynchronous.AsynchronousAdvice"
+                class="examples.asynchronous.AsynchronousAdvice"
                 deployment-model="perJVM"/>
 
     <advice-def name="synchronize"
-                advice="examples.synchronization.SynchronizationAdvice"
+                class="examples.synchronization.SynchronizationAdvice"
                 deployment-model="perJVM"/>
 
     <!-- ============================================= -->
@@ -548,6 +548,7 @@ public class Target {
         </bind-introduction>
     </aspect>
 
+</system>
 </aspectwerkz>
 ]]></source>
         </section>
@@ -559,10 +560,10 @@ public class Target {
                 for POJOs.
             </p>
             <p>
-                Read more about it on <a href="http://blogs.codehaus.org/people/jboner/archives/000010.html">my weblog</a>.
+                Read more about it on <a href="http://blogs.codehaus.org/people/jboner/archives/000010.html">Jonas' weblog</a>.
             </p>
             <p>
-                Run the example with: <code>maven aspectwerkz:samples:transparentpersistence</code>
+                Run the example with: <code>maven aspectwerkz:xmldef:samples:transparentpersistence</code>
             </p>
         </section>
     </body>
