@@ -80,35 +80,36 @@ public class AspectC {
             String className = classNames[i];
 
             AttributeEnhancer enhancer = new BcelAttributeEnhancer(); // TODO: use factory
-            enhancer.initialize(className, classPath);
+            if (enhancer.initialize(className, classPath)) {
 
-            if (qdoxParser.parse(className)) {
-                JavaClass javaClass = qdoxParser.getJavaClass();
-                boolean isAspect = parseAspect(javaClass, enhancer);
+                if (qdoxParser.parse(className)) {
+                    JavaClass javaClass = qdoxParser.getJavaClass();
+                    boolean isAspect = parseAspect(javaClass, enhancer);
 
-                if (isAspect) {
-                    JavaField[] javaFields = javaClass.getFields();
-                    for (int j = 0; j < javaFields.length; j++) {
-                        JavaField javaField = javaFields[j];
-                        parseExecutionPointcut(javaField, enhancer);
-                        parseCallPointcut(javaField, enhancer);
-                        parseClassPointcut(javaField, enhancer);
-                        parseSetPointcut(javaField, enhancer);
-                        parseGetPointcut(javaField, enhancer);
-                        parseThrowsPointcut(javaField, enhancer);
-                        parseCFlowPointcut(javaField, enhancer);
-                        parseImplementsPointcut(javaField, enhancer);
+                    if (isAspect) {
+                        JavaField[] javaFields = javaClass.getFields();
+                        for (int j = 0; j < javaFields.length; j++) {
+                            JavaField javaField = javaFields[j];
+                            parseExecutionPointcut(javaField, enhancer);
+                            parseCallPointcut(javaField, enhancer);
+                            parseClassPointcut(javaField, enhancer);
+                            parseSetPointcut(javaField, enhancer);
+                            parseGetPointcut(javaField, enhancer);
+                            parseThrowsPointcut(javaField, enhancer);
+                            parseCFlowPointcut(javaField, enhancer);
+                            parseImplementsPointcut(javaField, enhancer);
+                        }
+
+                        JavaMethod[] javaMethods = javaClass.getMethods();
+                        for (int j = 0; j < javaMethods.length; j++) {
+                            JavaMethod javaMethod = javaMethods[j];
+                            parseAroundAdvice(javaMethod, enhancer);
+                            parseBeforeAdvice(javaMethod, enhancer);
+                            parseAfterAdvice(javaMethod, enhancer);
+                            parseIntroduction(javaMethod, enhancer);
+                        }
+                        enhancer.write(destDir);
                     }
-
-                    JavaMethod[] javaMethods = javaClass.getMethods();
-                    for (int j = 0; j < javaMethods.length; j++) {
-                        JavaMethod javaMethod = javaMethods[j];
-                        parseAroundAdvice(javaMethod, enhancer);
-                        parseBeforeAdvice(javaMethod, enhancer);
-                        parseAfterAdvice(javaMethod, enhancer);
-                        parseIntroduction(javaMethod, enhancer);
-                    }
-                    enhancer.write(destDir);
                 }
             }
         }

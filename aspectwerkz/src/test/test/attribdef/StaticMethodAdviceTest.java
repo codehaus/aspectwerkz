@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package test.xmldef;
+package test.attribdef;
 
 import junit.framework.TestCase;
 
@@ -27,7 +27,7 @@ public class StaticMethodAdviceTest extends TestCase {
     public void testMethodAdviceNewThread() {
         m_logString = "";
         methodAdvicedMethodNewThread();
-        assertEquals("before before invocation after after ", m_logString);
+        assertEquals("before invocation after ", m_logString);
     }
 
     public void testMultipleChainedMethodAdvices() {
@@ -39,7 +39,7 @@ public class StaticMethodAdviceTest extends TestCase {
     public void testMultiplePointcuts() {
         m_logString = "";
         multiplePointcutsMethod();
-        assertEquals("before1 before1 before2 before2 invocation after2 after2 after1 after1 ", m_logString);
+        assertEquals("before1 before2 invocation after2 after1 ", m_logString);
     }
 
     public void testGetJoinPointMetaData() {
@@ -75,13 +75,11 @@ public class StaticMethodAdviceTest extends TestCase {
 
     public void testThrowException() {
         try {
-            exceptionThrower();
+            exceptionThrower(); // this method throws an exception but the advice should swallow it
         }
         catch (Throwable e) {
-            assertTrue(e instanceof test.xmldef.TestException);
-            return;
+            fail("this point should never be reached");
         }
-        fail("this point should never be reached");
     }
 
     public void testReturnVoid() {

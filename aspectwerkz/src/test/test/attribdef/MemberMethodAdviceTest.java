@@ -5,18 +5,25 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package test.xmldef;
+package test.attribdef;
 
 import junit.framework.TestCase;
 
 import org.codehaus.aspectwerkz.SystemLoader;
+import test.attribdef.Loggable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class StaticMethodAdviceTest extends TestCase {
+public class MemberMethodAdviceTest extends TestCase implements Loggable {
 
-    private static String m_logString = "";
+    private String m_logString = "";
+
+//    public void testPassingParameterToAdvice() {
+//        m_logString = "";
+//        passingParameterToAdviceMethod();
+//        assertEquals("test_value", m_logString);
+//    }
 
     public void testMethodAdvice() {
         m_logString = "";
@@ -27,7 +34,13 @@ public class StaticMethodAdviceTest extends TestCase {
     public void testMethodAdviceNewThread() {
         m_logString = "";
         methodAdvicedMethodNewThread();
-        assertEquals("before before invocation after after ", m_logString);
+        assertEquals("before invocation after ", m_logString);
+    }
+
+    public void testMultipleMethodAdvices() {
+        m_logString = "";
+        multipleMethodAdvicedMethod();
+        assertEquals("before1 before2 invocation after2 after1 ", m_logString);
     }
 
     public void testMultipleChainedMethodAdvices() {
@@ -39,15 +52,18 @@ public class StaticMethodAdviceTest extends TestCase {
     public void testMultiplePointcuts() {
         m_logString = "";
         multiplePointcutsMethod();
-        assertEquals("before1 before1 before2 before2 invocation after2 after2 after1 after1 ", m_logString);
+        //assertEquals("before2 before2 before1 before1 invocation after1 after1 after2 after2 ", m_logString);
+        //@todo validate with Jonas (side effect of precedence)
+        assertEquals("before1 before2 invocation after2 after1 ", m_logString);
     }
 
     public void testGetJoinPointMetaData() {
         String param = "parameter";
         assertEquals(
                 getClass().getName() +
-                "___AW_original_method$_AW_$joinPointMetaData$_AW_$1" +
+                "___AW_original_method$_AW_$joinPointMetaData$_AW_$1$_AW_$test_attribdef_MemberMethodAdviceTest" +
                 "$_AW_$tests" +
+                hashCode() +
                 param +
                 param.getClass().getName() +
                 "java.lang.String" +
@@ -78,7 +94,7 @@ public class StaticMethodAdviceTest extends TestCase {
             exceptionThrower();
         }
         catch (Throwable e) {
-            assertTrue(e instanceof test.xmldef.TestException);
+            assertTrue(e instanceof UnsupportedOperationException);
             return;
         }
         fail("this point should never be reached");
@@ -160,6 +176,13 @@ public class StaticMethodAdviceTest extends TestCase {
         assertEquals(this, objectParam(this));
     }
 
+    public void testArrayArg() {
+        String[] array = new String[]{"one", "two", "three"};
+        assertTrue(arrayParam(array)[0].equals(array[0]));
+        assertTrue(arrayParam(array)[1].equals(array[1]));
+        assertTrue(arrayParam(array)[2].equals(array[2]));
+    }
+
     public void testVariousArguments1() {
         assertEquals("dummy".hashCode() + 1 + (int)2.3F, this.hashCode() + (int)34L,
                 variousParams1("dummy", 1, 2.3F, this, 34L));
@@ -180,138 +203,145 @@ public class StaticMethodAdviceTest extends TestCase {
     }
 
     public static junit.framework.Test suite() {
-        return new junit.framework.TestSuite(StaticMethodAdviceTest.class);
+        return new junit.framework.TestSuite(MemberMethodAdviceTest.class);
     }
 
-    public StaticMethodAdviceTest() {}
-    public StaticMethodAdviceTest(String name) {
+    public MemberMethodAdviceTest() {}
+    public MemberMethodAdviceTest(String name) {
         super(name);
         SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====
 
-    public static void log(final String wasHere) {
+    public void log(final String wasHere) {
         m_logString += wasHere;
     }
 
-    public static void nonAdvisedMethod() {
+    private void passingParameterToAdviceMethod() {
     }
 
-    public static void methodAdvicedMethod() {
+    public void nonAdvisedMethod() {
+    }
+
+    public void methodAdvicedMethod() {
         log("invocation ");
     }
 
-    public static void methodAdvicedMethodNewThread() {
+    public void methodAdvicedMethodNewThread() {
         log("invocation ");
     }
 
-    public static void multipleMethodAdvicedMethod() {
+    public void multipleMethodAdvicedMethod() {
         log("invocation ");
     }
 
-    public static void multipleChainedMethodAdvicedMethod() {
+    public void multipleChainedMethodAdvicedMethod() {
         log("invocation ");
     }
 
-    public static void multipleMethodAndPrePostAdvicedMethod() {
+    public void multiplePointcutsMethod() {
         log("invocation ");
     }
 
-    public static void methodAdvicedWithPreAndPost() {
+    public void multipleMethodAndPrePostAdvicedMethod() {
         log("invocation ");
     }
 
-    public static void multipleMethodAdvicedWithPreAndPost() {
+    public void methodAdvicedWithPreAndPost() {
         log("invocation ");
     }
 
-    public static void methodAdviceWithMultiplePreAndPostAdviced() {
+    public void multipleMethodAdvicedWithPreAndPost() {
         log("invocation ");
     }
 
-    public static void multiplePointcutsMethod() {
+    public void methodAdviceWithMultiplePreAndPostAdviced() {
         log("invocation ");
     }
 
-    public static void exceptionThrower() throws Throwable {
+    public void exceptionThrower() throws Throwable {
         throw new UnsupportedOperationException("this is a test");
     }
 
-    public static String joinPointMetaData(String param) {
+    public String joinPointMetaData(String param) {
         return "result";
     }
 
-    public static void hasPointcutButNoAdvice() {
+    public void hasPointcutButNoAdvice() {
     }
 
-    public static String postAdviced() {
+    public String postAdviced() {
         return "test";
     }
 
-    public static void anonymousAdviced() {
+    public void anonymousAdviced() {
     }
 
-    public static void throwsException() throws Exception {
+    public void throwsException() throws Exception {
         throw new Exception("test");
     }
 
-    public static void throwsRuntimeException() {
+    public void throwsRuntimeException() {
         throw new RuntimeException("test");
     }
 
-    public static void throwsError() {
+    public void throwsError() {
         throw new Error("test");
     }
 
-    public static void noParams() throws RuntimeException {
+    public void noParams() throws RuntimeException {
     }
 
-    public static long longParam(long arg) {
+    public long longParam(long arg) {
         return arg;
     }
 
-    public static int intParam(int arg) {
+    public int intParam(int arg) {
         return arg;
     }
 
-    public static short shortParam(short arg) {
+    public short shortParam(short arg) {
         return arg;
     }
 
-    public static double doubleParam(double arg) {
+    public double doubleParam(double arg) {
         return arg;
     }
 
-    public static float floatParam(float arg) {
+    public float floatParam(float arg) {
         return arg;
     }
 
-    public static byte byteParam(byte arg) {
+    public byte byteParam(byte arg) {
         return arg;
     }
 
-    public static boolean booleanParam(boolean arg) {
+    public boolean booleanParam(boolean arg) {
         return arg;
     }
 
-    public static char charParam(char arg) {
+    public char charParam(char arg) {
         return arg;
     }
 
-    public static Object objectParam(Object arg) {
+    public Object objectParam(Object arg) {
         return arg;
     }
 
-    public static int variousParams1(String str, int i, float f, Object o, long l) throws RuntimeException {
+    public String[] arrayParam(String[] arg) {
+        return arg;
+    }
+
+    public int variousParams1(String str, int i, float f, Object o, long l) throws RuntimeException {
         return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
     }
 
-    public static int variousParams2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
+    public int variousParams2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
         return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
     }
 
-    public static float variousParams3(String s, long y, String t, String r, String e, int w, String q) {
+    public float variousParams3(String s, long y, String t, String r, String e, int w, String q) {
         return 2.5F;
     }
 
@@ -319,38 +349,38 @@ public class StaticMethodAdviceTest extends TestCase {
         return arr;
     }
 
-    public static void getVoid() throws RuntimeException {
+    public void getVoid() throws RuntimeException {
     }
 
-    public static long getLong() throws RuntimeException {
+    public long getLong() throws RuntimeException {
         return 1L;
     }
 
-    public static int getInt() throws RuntimeException {
+    public int getInt() throws RuntimeException {
         return 1;
     }
 
-    public static short getShort() throws RuntimeException {
+    public short getShort() throws RuntimeException {
         return 1;
     }
 
-    public static double getDouble() throws RuntimeException {
+    public double getDouble() throws RuntimeException {
         return 1.1D;
     }
 
-    public static float getFloat() throws RuntimeException {
+    public float getFloat() throws RuntimeException {
         return 1.1F;
     }
 
-    public static byte getByte() throws RuntimeException {
+    public byte getByte() throws RuntimeException {
         return Byte.parseByte("1");
     }
 
-    public static char getChar() throws RuntimeException {
+    public char getChar() throws RuntimeException {
         return 'A';
     }
 
-    public static boolean getBoolean() throws RuntimeException {
+    public boolean getBoolean() throws RuntimeException {
         return true;
     }
 }

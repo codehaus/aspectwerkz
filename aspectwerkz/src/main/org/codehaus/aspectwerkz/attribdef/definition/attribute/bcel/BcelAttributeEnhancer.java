@@ -66,14 +66,17 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
      *
      * @param className the class name
      * @param classPath the class path
+     * @return true if the class was succefully loaded, false otherwise
      */
-    public void initialize(final String className, final String classPath) {
+    public boolean initialize(final String className, final String classPath) {
         try {
             URL[] urls = new URL[]{new File(classPath).toURL()};
             URLClassLoader loader = new URLClassLoader(urls);
 
             String classFileName = className.replace('.', '/') + ".class";
             InputStream classAsStream = loader.getResourceAsStream(classFileName);
+
+            if (classAsStream == null) return false;
             ClassParser classParser = new ClassParser(classAsStream, className);
             m_javaClass = classParser.parse();
 
@@ -83,6 +86,7 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
+        return true;
     }
 
     /**

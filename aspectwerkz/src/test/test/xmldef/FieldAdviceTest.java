@@ -9,7 +9,6 @@ package test.xmldef;
 
 import junit.framework.TestCase;
 
-import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
 import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
