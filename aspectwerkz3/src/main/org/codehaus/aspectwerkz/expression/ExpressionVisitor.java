@@ -57,6 +57,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTThis;
 
 /**
  * The expression visitor.
+ * If a runtime residual is required (target => instance of check sometimes), Undeterministic matching is used.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
@@ -94,12 +95,23 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     /**
      * Matches the expression context.
+     * If undetermined, assume true.
+     * Do not use for poincut reference - see matchUndeterministic
      *
      * @param context
      * @return
      */
     public boolean match(final ExpressionContext context) {
-        return ((Boolean) visit(m_root, context)).booleanValue();
+        Boolean match = ((Boolean) visit(m_root, context));
+        // undeterministic is assumed to be "true" at this stage
+        // since it won't be composed anymore with a NOT (unless
+        // thru pointcut reference ie a new visitor)
+        return (match != null) ? match.booleanValue() : true;
+    }
+
+    protected Boolean matchUndeterministic(final ExpressionContext context) {
+        Boolean match = ((Boolean) visit(m_root, context));
+        return match;
     }
 
     // ============ Boot strap =============
@@ -117,39 +129,32 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     // ============ Logical operators =============
     public Object visit(ASTOr node, Object data) {
-        int nrOfChildren = node.jjtGetNumChildren();
-        for (int i = 0; i < nrOfChildren; i++) {
-            Boolean match = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
-            if (match.equals(Boolean.TRUE)) {
-                return Boolean.TRUE;
-            }
+        // the AND and OR can have more than 2 nodes [see jjt grammar]
+        Boolean matchL = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+        Boolean matchR = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+        Boolean intermediate = Undeterministic.or(matchL, matchR);
+        for (int i = 2; i < node.jjtGetNumChildren(); i++) {
+            Boolean matchNext = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
+            intermediate = Undeterministic.or(intermediate, matchNext);
         }
-        return Boolean.FALSE;
+        return intermediate;
     }
 
     public Object visit(ASTAnd node, Object data) {
-        int nrOfChildren = node.jjtGetNumChildren();
-        for (int i = 0; i < nrOfChildren; i++) {
-            Boolean match = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
-            if (match.equals(Boolean.FALSE)) {
-                return Boolean.FALSE;
-            }
+        // the AND and OR can have more than 2 nodes [see jjt grammar]
+        Boolean matchL = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+        Boolean matchR = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+        Boolean intermediate = Undeterministic.and(matchL, matchR);
+        for (int i = 2; i < node.jjtGetNumChildren(); i++) {
+            Boolean matchNext = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
+            intermediate = Undeterministic.and(intermediate, matchNext);
         }
-        return Boolean.TRUE;
+        return intermediate;
     }
 
     public Object visit(ASTNot node, Object data) {
-        Node child = node.jjtGetChild(0);
-        Boolean match = (Boolean) child.jjtAccept(this, data);
-        if (child instanceof ASTCflow || child instanceof ASTCflowBelow) {
-            return match;
-        } else {
-            if (match.equals(Boolean.TRUE)) {
-                return Boolean.FALSE;
-            } else {
-                return Boolean.TRUE;
-            }
-        }
+        Boolean match = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+        return Undeterministic.not(match);
     }
 
     // ============ Pointcut types =============
@@ -157,7 +162,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         ExpressionVisitor expression = namespace.getExpression(node.getName());
-        return new Boolean(expression.match(context));
+        return expression.matchUndeterministic(context);
     }
 
     public Object visit(ASTExecution node, Object data) {
@@ -285,20 +290,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTTarget node, Object data) {
-        //FIXME - if context has Execution PC (=> this = target)
-        //we should assume Within info is same as reflection info
-        //Then. If declaring type is an interface, and identifier is NOT [we cannot check that ?]
-        //then we need a runtime check with instance of => should return TRUE
-        // what if used with NOT this(..) ? => should still return TRUE...
-        // if used thru a pc ref ?? how can we know we have a NOT pcRef and pcRef = this(..) ?
-
-        // FIXME if ctx is CALL, then if ctx is an INTERFACE CALL (? can we know that from reflection info ?)
-        // do a match, if no match (probably because node.identifier is not an interface)
-        // then do a runtime check => return "NULL"
-
-        //((MemberInfo)info).getDeclaringType().isInterface()
-
-
         ExpressionContext context = (ExpressionContext) data;
         ReflectionInfo info = context.getReflectionInfo();
 
@@ -307,23 +298,33 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 //            // target(..) does not match for constructors
 //            return Boolean.FALSE;
 //        }
+        ClassInfo declaringType = null;
         if (info instanceof MemberInfo) {
             // if method/field is static, target(..) is evaluated to false
             if (Modifier.isStatic(((MemberInfo) info).getModifiers())) {
                 return Boolean.FALSE;
             }
-            return Boolean.valueOf(
-                    ClassInfoHelper.instanceOf(
-                            ((MemberInfo) info).getDeclaringType(),
-                            node.getBoundedType(m_expressionInfo)
-                    )
-            );
+
+            declaringType = ((MemberInfo)info).getDeclaringType();
         } else if (info instanceof ClassInfo) {
-            return Boolean.valueOf(
-                    ClassInfoHelper.instanceOf((ClassInfo) info, node.getBoundedType(m_expressionInfo))
-            );
+            declaringType = (ClassInfo) info;
         }
-        return Boolean.FALSE;
+
+        String boundedTypeName = node.getBoundedType(m_expressionInfo);
+        // check if the context we match is an interface call, while the bounded type of target(..) is not an
+        // interface. In such a case we will need a runtime check
+        if (declaringType.isInterface()) {
+            // if we are a instanceof (subinterface) of the bounded type, then we don't need a runtime check
+            if (ClassInfoHelper.instanceOf(declaringType, boundedTypeName)) {
+                return Boolean.TRUE;
+            } else {
+                //System.out.println("*** RT check for "  + boundedTypeName + " when I am " + declaringType.getName());
+                // a runtime check with instance of will be required
+                return null;
+            }
+        } else {
+            return Boolean.valueOf(ClassInfoHelper.instanceOf(declaringType, boundedTypeName));
+        }
     }
 
     public Object visit(ASTThis node, Object data) {
@@ -353,11 +354,11 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTCflow node, Object data) {
-        return Boolean.TRUE;
+        return null;
     }
 
     public Object visit(ASTCflowBelow node, Object data) {
-        return Boolean.TRUE;
+        return null;
     }
 
     // ============ Patterns =============
@@ -902,5 +903,9 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         } else {
             return -1;
         }
+    }
+
+    public ASTRoot getASTRoot() {
+        return m_root;
     }
 }

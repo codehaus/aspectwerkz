@@ -9,6 +9,8 @@ package org.codehaus.aspectwerkz;
 
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.expression.ExpressionInfo;
+import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.objectweb.asm.Type;
 
 import java.io.Serializable;
@@ -84,6 +86,12 @@ public class AdviceInfo implements Serializable {
      */
     private AdviceType m_type;
 
+    private boolean m_targetWithRuntimeCheck;
+
+    private ExpressionInfo m_expressionInfo;
+
+    private ExpressionContext m_expressionContext;
+
     /**
      * Creates a new advice info.
      *
@@ -96,6 +104,9 @@ public class AdviceInfo implements Serializable {
      * @param type                  the advice type
      * @param specialArgumentType   the special arg type
      * @param adviceName            full qualified advice method name (aspectFQN/advice(call sig))
+     * @param targetWithRuntimeCheck true if a runtime check is needed based on target instance
+     * @param expressionInfo
+     * @param expressionContext
      */
     public AdviceInfo(final String aspectQualifiedName,
                       final String aspectClassName,
@@ -105,7 +116,10 @@ public class AdviceInfo implements Serializable {
                       final Type[] methodParameterTypes,
                       final AdviceType type,
                       final String specialArgumentType,
-                      final String adviceName) {
+                      final String adviceName,
+                      final boolean targetWithRuntimeCheck,
+                      final ExpressionInfo expressionInfo,
+                      final ExpressionContext expressionContext) {
         m_aspectQualifiedName = aspectQualifiedName;
         m_aspectClassName = aspectClassName;
         m_aspectDeploymentModel = aspectDeploymentModel;
@@ -115,6 +129,9 @@ public class AdviceInfo implements Serializable {
         m_type = type;
         m_specialArgumentType = AsmHelper.convertReflectDescToTypeDesc(specialArgumentType);
         m_name = adviceName;
+        m_targetWithRuntimeCheck = targetWithRuntimeCheck;
+        m_expressionInfo = expressionInfo;
+        m_expressionContext = expressionContext;
     }
 
     /**
@@ -214,6 +231,18 @@ public class AdviceInfo implements Serializable {
      */
     public AdviceType getType() {
         return m_type;
+    }
+
+    public boolean hasTargetWithRuntimeCheck() {
+        return m_targetWithRuntimeCheck;
+    }
+
+    public ExpressionInfo getExpressionInfo() {
+        return m_expressionInfo;
+    }
+
+    public ExpressionContext getExpressionContext() {
+        return m_expressionContext;
     }
 
     public String toString() {

@@ -84,10 +84,10 @@ public class TargetTest extends TestCase {
         // interface
         ITarget iTarget = new TargetI();
         s_log = "";
-        //iTarget.call();
+        iTarget.call();
         // this is both an interface, and an instance of TargetI
         // IS USING A RUNTIME CHECK with instanceof
-//        assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_log);
+        assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_log);
 
         // implementation of interface
         TargetI targetI = new TargetI();
