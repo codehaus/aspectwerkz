@@ -292,7 +292,7 @@ public class MethodExecutionTransformer implements Transformer {
      * @param cg         the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
+    public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }
@@ -320,7 +320,7 @@ public class MethodExecutionTransformer implements Transformer {
      * @param method
      * @return
      */
-    private int methodFilter(final List definitions, final ExpressionContext ctx, final CtMethod method) {
+    public static int methodFilter(final List definitions, final ExpressionContext ctx, final CtMethod method) {
         if (Modifier.isAbstract(method.getModifiers()) || Modifier.isNative(method.getModifiers())
             || method.getName().equals("<init>") || method.getName().equals("<clinit>")
             || method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)

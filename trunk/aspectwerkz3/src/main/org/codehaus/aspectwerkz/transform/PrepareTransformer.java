@@ -163,7 +163,7 @@ public class PrepareTransformer implements Transformer {
      * @param cg         the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition, final CtClass cg) {
+    public static boolean classFilter(final SystemDefinition definition, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }
@@ -186,7 +186,7 @@ public class PrepareTransformer implements Transformer {
      * @param method the method to filter
      * @return boolean
      */
-    private boolean methodFilter(final CtMethod method) {
+    public static boolean methodFilter(final CtMethod method) {
         if (Modifier.isAbstract(method.getModifiers()) || Modifier.isNative(method.getModifiers())
             || method.getName().equals("<init>") || method.getName().equals("<clinit>")
             || method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)

@@ -178,7 +178,8 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param ctClass    the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass ctClass) {
+    public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx,
+                                      final CtClass ctClass) {
         if (ctClass.isInterface()) {
             return true;
         }
@@ -202,7 +203,7 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param ctx        the context
      * @return boolean
      */
-    private boolean constructorFilter(final SystemDefinition definition, final ExpressionContext ctx) {
+    public static boolean constructorFilter(final SystemDefinition definition, final ExpressionContext ctx) {
         if (definition.hasPointcut(ctx)) {
             return false;
         } else {

@@ -135,7 +135,7 @@ public final class AddInterfaceTransformer implements Transformer {
      * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final CtClass cg, final ExpressionContext ctx, final SystemDefinition definition) {
+    public static boolean classFilter(final CtClass cg, final ExpressionContext ctx, final SystemDefinition definition) {
         if (cg.isInterface()) {
             return true;
         }

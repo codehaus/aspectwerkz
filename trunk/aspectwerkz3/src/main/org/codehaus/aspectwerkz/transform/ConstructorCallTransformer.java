@@ -206,7 +206,7 @@ public class ConstructorCallTransformer implements Transformer {
      * @param cg         the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
+    public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }
@@ -229,7 +229,7 @@ public class ConstructorCallTransformer implements Transformer {
      * @param method the method to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean methodFilterCaller(final CtBehavior method) {
+    public static boolean methodFilterCaller(final CtBehavior method) {
         if (Modifier.isNative(method.getModifiers()) || Modifier.isInterface(method.getModifiers())
             || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)
             || method.getName().equals(TransformationUtil.SET_META_DATA_METHOD)
@@ -247,7 +247,7 @@ public class ConstructorCallTransformer implements Transformer {
      * @param constructor the name of method to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean constructorFilter(final CtConstructor constructor) {
+    public static boolean constructorFilter(final CtConstructor constructor) {
         if (constructor.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return true;
         } else {
