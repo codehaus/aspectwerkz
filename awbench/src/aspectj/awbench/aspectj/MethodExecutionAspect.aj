@@ -91,7 +91,7 @@ public aspect MethodExecutionAspect {
     //TODO: add Rtti around
 
 	before(int i, Execution t) :
-	execution(* awbench.method.Execution.withArgsAndTarget(int)) && args(i) && target(t) {
+	execution(* awbench.method.Execution.beforeWithArgsAndTarget(int)) && args(i) && target(t) {
         int j = i;
         Execution u = t;
         Run.ADVICE_HIT++;

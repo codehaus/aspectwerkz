@@ -50,7 +50,7 @@
         <advice name="aroundJP" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
-    <bind pointcut="execution(* awbench.method.Execution->withArgsAndTarget(int))">
+    <bind pointcut="execution(* awbench.method.Execution->beforeWithArgsAndTarget(int))">
         <advice name="beforeWithArgsAndTarget" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 

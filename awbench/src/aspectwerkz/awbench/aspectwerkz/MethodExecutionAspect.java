@@ -101,7 +101,7 @@ public class MethodExecutionAspect {
         return jp.proceed();
     }
 
-    /** @Before  execution(* awbench.method.Execution.withArgsAndTarget(int)) && args(i) && target(t) */
+    /** @Before  execution(* awbench.method.Execution.beforeWithArgsAndTarget(int)) && args(i) && target(t) */
     public void beforeWithArgsAndTarget(int i, Execution t) {
         int j = i;
         Execution u = t;
