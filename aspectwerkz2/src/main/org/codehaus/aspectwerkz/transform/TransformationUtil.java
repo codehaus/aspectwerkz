@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.transform;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import javassist.CtMethod;
 import javassist.NotFoundException;
 import javassist.CtClass;
 import javassist.CtConstructor;
+import javassist.CtField;
 
 import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
@@ -73,6 +75,12 @@ public final class TransformationUtil {
     public static final String JOIN_POINT_MANAGER_CLASS = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager";
     public static final String JOIN_POINT_TYPE_METHOD_EXECUTION = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.METHOD_EXECUTION";
     public static final String JOIN_POINT_TYPE_METHOD_CALL = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.METHOD_CALL";
+    public static final String JOIN_POINT_TYPE_CONSTRUCTOR_EXECUTION = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.CONSTRUCTOR_EXECUTION";
+    public static final String JOIN_POINT_TYPE_CONSTRUCTOR_CALL = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.CONSTRUCTOR_CALL";
+    public static final String JOIN_POINT_TYPE_FIELD_SET = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.FIELD_SET";
+    public static final String JOIN_POINT_TYPE_FIELD_GET = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.FIELD_GET";
+    public static final String JOIN_POINT_TYPE_CATCH_CLAUSE = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.CATCH_CLAUSE";
+    public static final String JOIN_POINT_TYPE_STATIC_INITALIZATION = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.STATIC_INITALIZATION";
 
     public static final String SYSTEM_CLASS = "org.codehaus.aspectwerkz.System";
     public static final String SYSTEM_LOADER_CLASS = "org.codehaus.aspectwerkz.SystemLoader";
@@ -265,22 +273,6 @@ public final class TransformationUtil {
     }
 
     /**
-     * Calculate the hash for a constructor.
-     *
-     * @param constructor the constructor
-     * @return the hash
-     */
-    public static int calculateHash(final Constructor constructor) {
-        int hash = 17;
-        hash = 37 * hash + constructor.getName().hashCode();
-        for (int i = 0; i < constructor.getParameterTypes().length; i++) {
-            Class type = constructor.getParameterTypes()[i];
-            hash = 37 * hash + type.getName().hashCode();
-        }
-        return hash;
-    }
-
-    /**
      * Calculate the hash for a javassist method.
      *
      * @param method the method
@@ -292,6 +284,27 @@ public final class TransformationUtil {
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             CtClass type = method.getParameterTypes()[i];
             hash = 37 * hash + type.getName().hashCode();
+        }
+        return hash;
+    }
+
+    /**
+     * Calculate the hash for a constructor.
+     *
+     * @param constructor the constructor
+     * @return the hash
+     */
+    public static int calculateHash(final Constructor constructor) {
+        int hash = 17;
+        hash = 37 * hash + constructor.getName().hashCode();
+        for (int i = 0; i < constructor.getParameterTypes().length; i++) {
+            Class type = constructor.getParameterTypes()[i];
+            String name = type.getName();
+            int index = name.indexOf("[L");
+            if (index >= 0) {
+                name = name.substring(index + 2, name.length() - 1) + "[]";
+            }
+            hash = 37 * hash + name.hashCode();
         }
         return hash;
     }
@@ -309,6 +322,38 @@ public final class TransformationUtil {
             CtClass type = constructor.getParameterTypes()[i];
             hash = 37 * hash + type.getName().hashCode();
         }
+        return hash;
+    }
+
+    /**
+     * Calculate the hash for a field.
+     *
+     * @param field the field
+     * @return the hash
+     */
+    public static int calculateHash(final Field field) {
+        int hash = 17;
+        hash = 37 * hash + field.getName().hashCode();
+        Class type = field.getType();
+        String name = type.getName();
+        int index = name.indexOf("[L");
+        if (index >= 0) {
+            name = name.substring(index + 2, name.length() - 1) + "[]";
+        }
+        hash = 37 * hash + name.hashCode();
+        return hash;
+    }
+
+    /**
+     * Calculate the hash for a javassist field.
+     *
+     * @param field the field
+     * @return the hash
+     */
+    public static int calculateHash(final CtField field) throws NotFoundException {
+        int hash = 17;
+        hash = 37 * hash + field.getName().hashCode();
+        hash = 37 * hash + field.getType().getName().hashCode();
         return hash;
     }
 

@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 
 import gnu.trove.TLongObjectHashMap;
 import gnu.trove.TLongLongHashMap;
@@ -117,7 +116,7 @@ public class JoinPointManager {
      * <p/>
      * This method should be used by inserting a check in the wrapper/proxy method similar to this:
      * <pre>
-     *      if (___AW_joinPointManager.hasAdvices(joinPointHash)) {
+     *     if (___AW_joinPointManager.hasAdvices(joinPointHash)) {
      *          // execute the advice chain
      *     }
      *     else {
@@ -137,7 +136,12 @@ public class JoinPointManager {
      * target instance.
      * <p/>
      * Example of bytecode needed to be generated to invoke the method:
-     e
+     * <pre>
+     *        return ___AW_joinPointManager.proceedWithExecutionJoinPoint(
+     *            joinPointHash, new Object[]{parameter}, this,
+     *            JoinPointType.METHOD_EXECUTION, joinPointSignature
+     *       );
+     * </pre>
      *
      * @param methodHash
      * @param parameters
@@ -304,15 +308,17 @@ public class JoinPointManager {
      * @param fieldHash
      * @param fieldValue
      * @param targetInstance
+     * @param declaringClass
      * @param joinPointType
      * @param joinPointSignature
      * @throws Throwable
      */
-    public void proceedWithSetGetJoinPoint(final int fieldHash,
-                                           final Object fieldValue,
-                                           final Object targetInstance,
-                                           final int joinPointType,
-                                           final String joinPointSignature)
+    public void proceedWithSetJoinPoint(final int fieldHash,
+                                        final Object fieldValue,
+                                        final Object targetInstance,
+                                        final Class declaringClass,
+                                        final int joinPointType,
+                                        final String joinPointSignature)
             throws Throwable {
 
         // get the state for the join point
@@ -367,6 +373,87 @@ public class JoinPointManager {
         ((FieldJoinPoint)joinPoint).initialize(targetInstance, fieldValue);
 
         joinPoint.proceed();
+    }
+
+    /**
+     * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the
+     * target instance.
+     * <p/>
+     * Example of bytecode needed to be generated to invoke the method:
+     * <pre>
+     *        ___AW_joinPointManager.proceedWithSetGetJoinPoint(
+     *            joinPointHash, fieldValue, this,
+     *            JoinPointType.FIELD_SET, joinPointSignature
+     *       );
+     * </pre>
+     *
+     * @param fieldHash
+     * @param fieldValue
+     * @param targetInstance
+     * @param declaringClass
+     * @param joinPointType
+     * @param joinPointSignature
+     * @throws Throwable
+     */
+    public Object proceedWithGetJoinPoint(final int fieldHash,
+                                             final Object targetInstance,
+                                             final Class declaringClass,
+                                             final int joinPointType,
+                                             final String joinPointSignature)
+            throws Throwable {
+
+        // get the state for the join point
+        final long joinPointState = s_registry.getStateForJoinPoint(m_classHash, fieldHash);
+
+        if (joinPointState == JoinPointState.NOT_ADVISED) {
+            registerJoinPoint(
+                    joinPointType, fieldHash, joinPointSignature,
+                    m_targetClass, m_targetClassMetaData
+            );
+        }
+
+        JoinPoint joinPoint = null;
+        if (ENABLE_JIT_COMPILATION) {
+            joinPoint = handleJitCompilation(fieldHash, joinPointState);
+        }
+        if (joinPoint == null) {
+            // get the join point from the cache
+            joinPoint = (JoinPoint)m_joinPoints.get(fieldHash);
+
+            // if null or redefined -> create a new join point and cache it
+            if (joinPoint == null || joinPointState == JoinPointState.REDEFINED) {
+                m_invocations.put(fieldHash, 0L);
+                Map pointcutTypeToAdvicesMap = s_registry.getAdvicesForJoinPoint(m_classHash, fieldHash);
+
+                AdviceContainer[] adviceIndexes = null;
+                switch (joinPointType) {
+                    case JoinPointType.FIELD_SET:
+                        adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.SET);
+                        joinPoint = createFieldJoinPoint(
+                                fieldHash, joinPointSignature, joinPointType, m_targetClass, adviceIndexes
+                        );
+                        break;
+
+                    case JoinPointType.FIELD_GET:
+                        adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.GET);
+                        joinPoint = createFieldJoinPoint(
+                                fieldHash, joinPointSignature, joinPointType, m_targetClass, adviceIndexes
+                        );
+                        break;
+
+                    default:
+                        throw new RuntimeException("join point type not valid");
+                }
+
+                // create the join point
+                m_joinPoints.put(fieldHash, joinPoint);
+            }
+        }
+
+        // intialize the join point before each usage
+        ((FieldJoinPoint)joinPoint).initialize(targetInstance, null);
+
+        return joinPoint.proceed();
     }
 
     /**
@@ -677,7 +764,7 @@ public class JoinPointManager {
      * @return the advice executor
      */
     private AdviceExecutor createAfterAdviceExecutor(final AdviceContainer[] adviceIndexes,
-                                                      final List cflowExpressions) {
+                                                     final List cflowExpressions) {
         int i, j;
         List afterAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
