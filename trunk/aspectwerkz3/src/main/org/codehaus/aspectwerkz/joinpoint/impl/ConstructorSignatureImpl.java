@@ -23,15 +23,15 @@ import java.util.List;
 public class ConstructorSignatureImpl implements ConstructorSignature {
     private final Class m_declaringType;
 
-    private final ConstructorTuple m_constructorTuple;
+    private final Constructor m_constructor;
 
     /**
      * @param declaringType
-     * @param constructorTuple
+     * @param constructor
      */
-    public ConstructorSignatureImpl(final Class declaringType, final ConstructorTuple constructorTuple) {
+    public ConstructorSignatureImpl(final Class declaringType, final Constructor constructor) {
         m_declaringType = declaringType;
-        m_constructorTuple = constructorTuple;
+        m_constructor = constructor;
     }
 
     /**
@@ -40,7 +40,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return the constructor tuple
      */
     public ConstructorTuple getConstructorTuple() {
-        return m_constructorTuple;
+        return null;//m_constructorTuple;
     }
 
     /**
@@ -49,7 +49,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return the constructor
      */
     public Constructor getConstructor() {
-        return m_constructorTuple.getOriginalConstructor();
+        return m_constructor;//m_constructorTuple.getOriginalConstructor();
     }
 
     /**
@@ -71,7 +71,8 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return the mofifiers
      */
     public int getModifiers() {
-        return m_constructorTuple.getOriginalConstructor().getModifiers();
+        //return m_constructorTuple.getOriginalConstructor().getModifiers();
+        return m_constructor.getModifiers();
     }
 
     /**
@@ -80,7 +81,8 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return
      */
     public String getName() {
-        return m_constructorTuple.getName();
+        //return m_constructorTuple.getName();
+        return m_constructor.getName();
     }
 
     /**
@@ -89,7 +91,8 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return the exception types
      */
     public Class[] getExceptionTypes() {
-        return m_constructorTuple.getOriginalConstructor().getExceptionTypes();
+        //return m_constructorTuple.getOriginalConstructor().getExceptionTypes();
+        return m_constructor.getExceptionTypes();
     }
 
     /**
@@ -98,7 +101,8 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return the parameter types
      */
     public Class[] getParameterTypes() {
-        return m_constructorTuple.getOriginalConstructor().getParameterTypes();
+        //return m_constructorTuple.getOriginalConstructor().getParameterTypes();
+        return m_constructor.getParameterTypes();
     }
 
     /**
@@ -108,7 +112,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return the annotation or null
      */
     public Annotation getAnnotation(final String annotationName) {
-        return Annotations.getAnnotation(annotationName, m_constructorTuple.getWrapperConstructor());
+        return Annotations.getAnnotation(annotationName, m_constructor);//m_constructorTuple.getWrapperConstructor());
     }
 
     /**
@@ -118,7 +122,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return the annotations in a list (can be empty)
      */
     public List getAnnotations(final String annotationName) {
-        return Annotations.getAnnotations(annotationName, m_constructorTuple.getWrapperConstructor());        
+        return Annotations.getAnnotations(annotationName, m_constructor);//m_constructorTuple.getWrapperConstructor());
     }
 
     /**
@@ -128,7 +132,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return a list with the annotations
      */
     public List getAnnotationInfos() {
-        return Annotations.getAnnotationInfos(m_constructorTuple.getWrapperConstructor());
+        return Annotations.getAnnotationInfos(m_constructor);
     }
 
     /**
@@ -138,6 +142,6 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @TODO: implement toString to something meaningful
      */
     public String toString() {
-        return super.toString();
+        return m_constructor.toString();
     }
 }

@@ -38,10 +38,10 @@ public final class SignatureFactory {
         return new FieldSignatureImpl(field.getDeclaringClass(), field);
     }
 
-    public static final ConstructorSignatureImplInlined newConstructorSignature(final Class declaringClass,
+    public static final ConstructorSignatureImpl newConstructorSignature(final Class declaringClass,
                                                                                 final int joinPointHash) {
         Constructor constructor = AspectRegistry.getConstructor(declaringClass, joinPointHash);
-        return new ConstructorSignatureImplInlined(constructor.getDeclaringClass(), constructor);
+        return new ConstructorSignatureImpl(constructor.getDeclaringClass(), constructor);
     }
 
     public static final CatchClauseSignatureImpl newCatchClauseSignature(final Class declaringClass,
