@@ -202,8 +202,10 @@ public class JitCompiler {
                                              final AspectSystem system, final Object thisInstance,
                                              final Object targetInstance, final int hotswapCount) {
         //        try {
-        //            ClassWriter writer = JoinPointCompiler.compile(targetClass.getName(), joinPointHash, joinPointType, advice);
-        //             FileOutputStream os = new FileOutputStream("INLINED.class");
+        //         String fileName = targetClass.getName() + '$' + TransformationUtil.ASPECTWERKZ_PREFIX + joinPointType + '_' + joinPointHash + ".class";
+        //             System.out.println("fileName = " + fileName);
+        //             ClassWriter writer = JoinPointCompiler.compile(targetClass.getName(), joinPointHash, joinPointType, advice);
+        //             FileOutputStream os = new FileOutputStream(fileName.replace('-', '_'));
         //            os.write(writer.toByteArray());
         //            os.close();
         //        } catch (Throwable throwable) {

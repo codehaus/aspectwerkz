@@ -5,7 +5,6 @@ import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 
 public class ASTParameter extends SimpleNode {
     private TypePattern m_declaringClassPattern;
-    private boolean m_hierarchical = false;
 
     public ASTParameter(int id) {
         super(id);
@@ -20,19 +19,15 @@ public class ASTParameter extends SimpleNode {
     }
 
     public void setTypePattern(String pattern) {
-        m_declaringClassPattern = Pattern.compileTypePattern(pattern, false);
-    }
-
-    public void setHierarchical(boolean isHierarchical) {
-        m_hierarchical = isHierarchical;
-        m_declaringClassPattern.setHierarchical(true);
+        boolean hierarchical = false;
+        if (pattern.endsWith("+")) {
+            hierarchical = true;
+            pattern = pattern.substring(0, pattern.length() - 1);
+        }
+        m_declaringClassPattern = Pattern.compileTypePattern(pattern, hierarchical);
     }
 
     public TypePattern getDeclaringClassPattern() {
         return m_declaringClassPattern;
-    }
-
-    public boolean isHierarchical() {
-        return m_hierarchical;
     }
 }

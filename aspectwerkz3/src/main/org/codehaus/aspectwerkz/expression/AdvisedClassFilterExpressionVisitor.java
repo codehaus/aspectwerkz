@@ -277,7 +277,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     public Object visit(ASTParameter node, Object data) {
         ClassInfo parameterType = (ClassInfo)data;
-        if (node.getDeclaringClassPattern().matches(parameterType.getName())) {
+        if (ClassInfoHelper.matchType(node.getDeclaringClassPattern(), parameterType)) {
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;

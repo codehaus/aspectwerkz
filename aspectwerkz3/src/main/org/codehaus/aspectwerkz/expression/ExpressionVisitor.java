@@ -275,7 +275,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTParameter node, Object data) {
         ClassInfo parameterType = (ClassInfo)data;
-        if (node.getDeclaringClassPattern().matches(parameterType.getName())) {
+        if (ClassInfoHelper.matchType(node.getDeclaringClassPattern(), parameterType)) {
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;
@@ -370,7 +370,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             for (int i = 0; i < nrChildren; i++) {
                 Node child = node.jjtGetChild(i);
                 if (child instanceof ASTParameter) {
-                    parameterNodes.add(child); // store the parameter nodes
+                    parameterNodes.add(child);
                 }
             }
 
@@ -406,7 +406,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     /**
-     * Returns the string representation of the AST.
+     * Returns the string representation of the expression.
      *
      * @return
      */

@@ -26,13 +26,15 @@ set OFFLINE="false"
 IF "%1"=="-offline" set OFFLINE="true"
 
 IF "%OFFLINE%"==""false"" (
-    @rem -Daspectwerkz.transform.verbose=yes to turn on verbose mode
-    @rem -Daspectwerkz.transform.dump=package.foo.* to turn on dump in ./_dump of package.foo.* class
-    @rem    -Daspectwerkz.classloader.wait=10 to delay connection (launching VM)
+    @REM -Daspectwerkz.transform.verbose=yes to turn on verbose mode
+    @REM -Daspectwerkz.transform.dump=package.foo.* to turn on dump in ./_dump of package.foo.* class
+    @REM    -Daspectwerkz.classloader.wait=10 to delay connection (launching VM)
+
+    @REM -- Use for Sun HotSpot and IBM JRE --
     "%JAVA_COMMAND%" -cp "%JAVA_HOME%\lib\tools.jar;%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar" org.codehaus.aspectwerkz.hook.ProcessStarter -Xbootclasspath/p:"\"%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar\"" -cp "\"%CP%\"" -cp "\"%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%\"" -Daspectwerkz.home="\"%ASPECTWERKZ_HOME%\"" %*
     
-    @rem sample usage for JRockit
-    @rem "%JAVA_COMMAND%" -Dmanagement -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\target\extensions.jar;%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\junit-3.8.1.jar;%ASPECTWERKZ_HOME%\lib\managementserver.jar" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
+    @REM -- Use for BEA JRockit --
+    @REM "%JAVA_COMMAND%" -Dmanagement -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\target\extensions.jar;%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\junit-3.8.1.jar;%ASPECTWERKZ_HOME%\lib\managementserver.jar" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
 
     @exit /B %ERRORLEVEL%
 ) ELSE (
