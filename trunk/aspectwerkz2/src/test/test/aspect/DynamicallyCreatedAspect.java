@@ -27,7 +27,7 @@ public class DynamicallyCreatedAspect extends Aspect {
     // ============ Advices ============
 
     /**
-     * @Around pc1 name=newAdvice
+     * @Around pc1
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("beforeNew ");

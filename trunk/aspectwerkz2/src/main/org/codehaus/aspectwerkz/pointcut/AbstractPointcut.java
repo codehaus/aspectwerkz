@@ -93,8 +93,8 @@ public abstract class AbstractPointcut {
                 // update the indexes
                 m_indexes = new IndexTuple[m_names.length];
                 for (int i = 0, j = m_names.length; i < j; i++) {
-                    m_indexes[i] = SystemLoader.getSystem(m_uuid).getAspectManager().
-                            getAdviceIndexFor(m_names[i]);
+                    m_indexes[i] = SystemLoader.getSystem(m_uuid).
+                            getAspectManager().getAdviceIndexFor(m_names[i]);
                 }
             }
         }

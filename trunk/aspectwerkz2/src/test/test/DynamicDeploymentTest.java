@@ -17,9 +17,10 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.NameIndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.System;
 
 /**
+ * @TODO: this test is deprecated - need a better way of handling dynamic stuff
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class DynamicDeploymentTest extends TestCase implements Loggable {
@@ -42,7 +43,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         ExecutionPointcut pointcut = SystemLoader.getSystem("tests").
                 getAspectManager().
                 getAspectMetaData(ASPECT_NAME).
-                getExecutionPointcut("pc1");
+                getExecutionPointcut("pc1 || pc2 || pc3");
 
         // get the advices
         List advices = pointcut.getAdviceIndexTuples();
@@ -73,14 +74,14 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
                 getAspectMetaData(ASPECT_NAME).
                 getExecutionPointcuts(m_classMetaData, methodMetaData).get(0);
 
-        methodPointcut.addAdvice("advice2");
+        methodPointcut.addAdvice("test.aspect.DynamicDeploymentTestAspect.advice2");
 
         m_logString = "";
         addAdviceTestMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
 
         // remove it for other tests
-        methodPointcut.removeAdvice("advice2");
+        methodPointcut.removeAdvice("test.aspect.DynamicDeploymentTestAspect.advice2");
     }
 
     public void testRemoveAdviceAtRuntime() {
@@ -159,7 +160,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
                     get(0);
 
             // add the new advice to the pointcut
-            methodPointcut.addAdvice("newAdvice");
+            methodPointcut.addAdvice("test.aspects.DynamicallyCreatedAspect.advice1");
 
             // check that it is executed
             m_logString = "";
@@ -167,7 +168,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             assertEquals("before2 beforeNew invocation afterNew after2 ", m_logString);
 
             //remove it for other tests
-            methodPointcut.removeAdvice("newAdvice");
+            methodPointcut.removeAdvice("test.aspects.DynamicallyCreatedAspect.advice1");
         }
         catch (Exception e) {
             e.printStackTrace();
