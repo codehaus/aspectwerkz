@@ -24,6 +24,11 @@ public class ClassMetaData implements MetaData, Serializable {
     private String m_name;
 
     /**
+     * The class modifiers.
+     */
+    private int m_modifiers;
+
+    /**
      * A list with the <code>MethodMetaData</code> instances.
      */
     private List m_methods = new ArrayList();
@@ -59,6 +64,33 @@ public class ClassMetaData implements MetaData, Serializable {
      */
     public void setName(final String name) {
         m_name = name;
+    }
+
+    /**
+     * Returns the class modifiers.
+     *
+     * @return the class modifiers
+     */
+    public int getModifiers() {
+        return m_modifiers;
+    }
+
+    /**
+     * Sets the class modifiers.
+     *
+     * @param modifiers the class modifiers
+     */
+    public void setModifiers(int modifiers) {
+        m_modifiers = modifiers;
+    }
+
+    /**
+     * Returns a list with all the methods meta-data even the inherited methods.
+     *
+     * @return the methods meta-data for all the methods
+     */
+    public List getAllMethods() {
+        return collectAllMethods(this, new ArrayList());
     }
 
     /**
@@ -131,6 +163,18 @@ public class ClassMetaData implements MetaData, Serializable {
      */
     public void setSuperClass(final ClassMetaData superClass) {
         m_superClass = superClass;
+    }
+
+    /**
+     * Collects all the methods visible by the class in the class hierarchy.
+     * Recursive.
+     *
+     * @return a list with all the methods
+     */
+    private List collectAllMethods(final ClassMetaData klass, final List methodList) {
+        if (klass == null) return methodList;
+        methodList.addAll(klass.getMethods());
+        return collectAllMethods(klass.getSuperClass(), methodList);
     }
 }
 
