@@ -134,8 +134,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             }
         }
         // needed for JRockit (as well as all in all TFs)
-        final String className = name.replace('/', '.');
+        final String className = (name!=null)?name.replace('/', '.'):null;
 
+        // will filter null named classes
         if (filter(className) || !m_initialized) {
             return bytecode;
         }
