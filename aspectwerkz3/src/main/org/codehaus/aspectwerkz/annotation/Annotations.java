@@ -19,7 +19,6 @@ import java.util.List;
  * Utility class for annotation retrieval.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
- * @TODO: support for constructor annotations
  */
 public final class Annotations {
     /**

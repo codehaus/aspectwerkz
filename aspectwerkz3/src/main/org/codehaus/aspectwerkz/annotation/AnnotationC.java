@@ -34,29 +34,17 @@ import java.util.Properties;
  */
 public class AnnotationC {
     public static final String ANNOTATION_ASPECT = "Aspect";
-
     public static final String ANNOTATION_AROUND = "Around";
-
     public static final String ANNOTATION_BEFORE = "Before";
-
     public static final String ANNOTATION_AFTER = "After";
-
     public static final String ANNOTATION_EXPRESSION = "Expression";
-
     public static final String ANNOTATION_IMPLEMENTS = "Implements";
-
     public static final String ANNOTATION_INTRODUCE = "Introduce";
-
     private static final String COMMAND_LINE_OPTION_DASH = "-";
-
     private static final String COMMAND_LINE_OPTION_VERBOSE = "-verbose";
-
     private static final String COMMAND_LINE_OPTION_CUSTOM = "-custom";
-
     private static final String COMMAND_LINE_OPTION_SRC = "-src";
-
     private static final String COMMAND_LINE_OPTION_CLASSES = "-classes";
-
     private static final String COMMAND_LINE_OPTION_DEST = "-dest";
 
     static final String[] SYSTEM_ANNOTATIONS = new String[] {
@@ -152,6 +140,7 @@ public class AnnotationC {
         final String classPath,
         final String sourcePath,
         final String destDir) {
+
         logInfo("compiling annotations...");
         logInfo("note: if no output is seen, then nothing is compiled");
 

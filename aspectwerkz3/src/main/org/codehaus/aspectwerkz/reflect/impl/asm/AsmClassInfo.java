@@ -17,6 +17,7 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
@@ -157,7 +158,7 @@ public class AsmClassInfo implements ClassInfo {
     };
 
     /**
-     * Creates a new ClassInfo instance. TODO switch access back to private
+     * Creates a new ClassInfo instance.
      *
      * @param bytecode
      * @param loader
@@ -578,7 +579,7 @@ public class AsmClassInfo implements ClassInfo {
                     + loader
                     + "]"
             ).printStackTrace();
-            return new ClassInfo.NullClassInfo();//FIXME for stub etc, should we have a Null pattern ?
+            return new ClassInfo.NullClassInfo();
         }
         ClassInfo componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader);
         if (dimension <= 1) {
@@ -623,6 +624,8 @@ public class AsmClassInfo implements ClassInfo {
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
     private class ClassInfoClassAdapter extends ClassAdapter {
+        private static final String CLINIT_METHOD_NAME = "<clinit>";
+        private static final String INIT_METHOD_NAME = "<init>";
 
         public ClassInfoClassAdapter(final ClassVisitor visitor) {
             super(visitor);
@@ -693,9 +696,9 @@ public class AsmClassInfo implements ClassInfo {
             struct.exceptions = exceptions;
             struct.attrs = attrs;
             int hash = AsmHelper.calculateMethodHash(name, desc);
-            if (name.equals("<clinit>")) {
+            if (name.equals(CLINIT_METHOD_NAME)) {
                 // skip <clinit>
-            } else if (name.equals("<init>")) {
+            } else if (name.equals(INIT_METHOD_NAME)) {
                 AsmConstructorInfo methodInfo = new AsmConstructorInfo(struct, m_name, (ClassLoader)m_loaderRef.get());
                 m_constructors.put(hash, methodInfo);
             } else {
@@ -712,7 +715,7 @@ public class AsmClassInfo implements ClassInfo {
                     CustomAttribute customAttribute = (CustomAttribute)attributes;
                     byte[] bytes = customAttribute.getBytes();
                     try {
-                        m_annotations.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                        m_annotations.add(new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
                     } catch (Exception e) {
                         System.err.println("WARNING: could not deserialize annotation due to: " + e.toString());
                     }
@@ -720,14 +723,14 @@ public class AsmClassInfo implements ClassInfo {
                 if (attrs instanceof RuntimeInvisibleAnnotations) {
                     for (Iterator it = ((RuntimeInvisibleAnnotations)attrs).annotations.iterator(); it.hasNext();) {
                         Annotation annotation = (Annotation)it.next();
-                        // FIXME annotation is null
+                        // FIXME build up annotation info
                         m_annotations.add(new AnnotationInfo(annotation.type, null));
                     }
                 }
                 if (attrs instanceof RuntimeVisibleAnnotations) {
                     for (Iterator it = ((RuntimeVisibleAnnotations)attrs).annotations.iterator(); it.hasNext();) {
                         Annotation annotation = (Annotation)it.next();
-                        // FIXME annotation is null
+                        // FIXME build up annotation info
                         m_annotations.add(new AnnotationInfo(annotation.type, null));
                     }
                 }
