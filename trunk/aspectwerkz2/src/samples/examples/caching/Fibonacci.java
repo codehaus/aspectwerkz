@@ -10,9 +10,7 @@ package examples.caching;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 
 /**
@@ -50,7 +48,7 @@ public class Fibonacci {
          * @Around execution(int *..Fibonacci.fib(int))
          */
         public Object cache(final JoinPoint joinPoint) throws Throwable {
-            MethodRtti rtti = (MethodRtti)joinPoint.getSignature();
+            MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
             Integer parameter = (Integer)rtti.getParameterValues()[0];
             Integer cachedValue = (Integer)m_cache.get(parameter);
             if (cachedValue == null) {

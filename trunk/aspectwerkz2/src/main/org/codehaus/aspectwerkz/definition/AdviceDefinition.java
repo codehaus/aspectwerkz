@@ -239,7 +239,7 @@ public class AdviceDefinition {
      *
      * @return the advice type
      */
-    private String getType() {
+    public String getType() {
         return m_type;
     }
 
