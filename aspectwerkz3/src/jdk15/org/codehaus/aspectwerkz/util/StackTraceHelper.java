@@ -7,6 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.util;
 
+
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Utility methods.
  * 
