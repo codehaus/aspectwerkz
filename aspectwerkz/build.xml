@@ -91,6 +91,8 @@
     <!-- compilation targets -->
     <!-- ============================================================== -->
     <target name="java:compile" depends="aspectwerkz:init">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.core.dir}"/>
         <javac destdir="${build.core.dir}" debug="off">
             <src path="${src.dir}/main"/>
             <classpath>
@@ -100,7 +102,7 @@
                 </fileset>
             </classpath>
         </javac>
-
+        <mkdir dir="${build.test.dir}"/>
         <javac destdir="${build.test.dir}" debug="off">
             <src path="${test.src.dir}"/>
             <classpath>
@@ -156,7 +158,7 @@
     <!--  offline transforms the tests -->
     <!-- =================================================== -->
     <target name="aspectwerkz:transform"
-        depends="aspectwerkz:init">
+        depends="aspectwerkz:init, aspectwerkz:compile">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-offline ${basedir}/src/samples/samples.xml -verbose -verify -cp ${extensions.classes} ${samples.classes} "/>
         </exec>
