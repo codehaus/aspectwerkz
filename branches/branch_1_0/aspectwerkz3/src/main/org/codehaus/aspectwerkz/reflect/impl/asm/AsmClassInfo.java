@@ -21,6 +21,7 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.transform.AsmHelper;
 import org.codehaus.aspectwerkz.transform.AsmHelper;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
@@ -383,7 +384,12 @@ public class AsmClassInfo implements ClassInfo {
                 m_annotations = EMPTY_LIST;
             } else {
                 try {
-                    ClassReader cr = new ClassReader(((ClassLoader)m_loaderRef.get()).getResourceAsStream(m_name.replace('.','/')+".class"));
+                    ClassReader cr = new ClassReader(
+                            ContextClassLoader.getResourceAsStream(
+                                    m_name.replace('.','/')+".class",
+                                    ((ClassLoader)m_loaderRef.get())
+                            )
+                    );
                     List annotations = new ArrayList();
                     cr.accept(
                             new AsmAnnotationHelper.ClassAnnotationExtractor(annotations, (ClassLoader)m_loaderRef.get()),

@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.AsmHelper;
 import org.codehaus.aspectwerkz.transform.AsmHelper;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.ClassReader;
 
@@ -154,7 +155,12 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
     public List getAnnotations() {
         if (m_annotations == null) {
             try {
-                ClassReader cr = new ClassReader(((ClassLoader)m_loaderRef.get()).getResourceAsStream(m_declaringTypeName.replace('.','/')+".class"));
+                ClassReader cr = new ClassReader(
+                        ContextClassLoader.getResourceAsStream(
+                                m_declaringTypeName.replace('.','/')+".class",
+                                (ClassLoader)m_loaderRef.get()
+                        )
+                );
                 List annotations = new ArrayList();
                 cr.accept(
                         new AsmAnnotationHelper.MethodAnnotationExtractor(annotations, m_member.name, m_member.desc, (ClassLoader)m_loaderRef.get()),

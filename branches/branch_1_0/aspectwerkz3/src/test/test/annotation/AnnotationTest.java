@@ -9,6 +9,10 @@ package test.annotation;
 
 import junit.framework.TestCase;
 
+import java.lang.reflect.Method;
+
+import org.codehaus.aspectwerkz.annotation.Annotations;
+
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -155,4 +159,15 @@ public class AnnotationTest extends TestCase {
     void packagePrivateMethod() {
         log("invocation ");
     }
+
+    public void testBootstrapCLClassAnnotation() throws Throwable {
+        Method concat = String.class.getMethod("concat", new Class[]{String.class});
+        try {
+            Annotations.getAnnotation("foo", String.class);
+            Annotations.getAnnotation("foo", concat);
+        } catch (Throwable t) {
+            fail(t.toString());
+        }
+    }
+
 }

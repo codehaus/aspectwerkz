@@ -13,7 +13,7 @@
                 <p>
                 Disclaimer: Java 1.5 annotation support is
                     <b>not</b> implemented in the
-                    <code>1.0</code> release.
+                    <code>1.x</code> release.
                 </p>
                 <p>
                 What is implemented is an API that will make the migration minimal and will allow both
