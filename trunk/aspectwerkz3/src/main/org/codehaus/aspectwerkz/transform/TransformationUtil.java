@@ -8,8 +8,11 @@
 package org.codehaus.aspectwerkz.transform;
 
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -457,5 +460,43 @@ public final class TransformationUtil {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Creates a member info instance based on the signature etc.
+     *
+     * @TODO: check if we have a constructor and not a method
+     *
+     * @param targetClass
+     * @param withinMethodName
+     * @param withinMethodSignature
+     * @return a member info instance
+     */
+    public static MemberInfo createMemberInfo(final Class targetClass, final String withinMethodName,
+                                              final String withinMethodSignature) {
+        MemberInfo withinMemberInfo = null;
+        String[] withinMethodParameterNames = DescriptorUtil.getParameters(withinMethodSignature);
+        Method[] targetMethods = targetClass.getDeclaredMethods();
+        for (int i = 0; i < targetMethods.length; i++) {
+            Method method = targetMethods[i];
+            Class[] parameterTypes = method.getParameterTypes();
+            if (method.getName().equals(withinMethodName)
+                && (withinMethodParameterNames.length == parameterTypes.length)) {
+                boolean match = true;
+                for (int j = 0; j < parameterTypes.length; j++) {
+                    String withinMethodParameterName = JavassistHelper
+                                                       .convertJavassistTypeSignatureToReflectTypeSignature(withinMethodParameterNames[i]);
+                    if (!parameterTypes[j].getName().equals(withinMethodParameterName)) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) {
+                    withinMemberInfo = JavaMethodInfo.getMethodInfo(method);
+                    break;
+                }
+            }
+        }
+        return withinMemberInfo;
     }
 }

@@ -92,7 +92,6 @@ public class MethodExecutionTransformer implements Transformer {
         for (Iterator i = sorteMethodTuples.iterator(); i.hasNext();) {
             MethodSequenceTuple tuple = (MethodSequenceTuple)i.next();
 
-            //System.out.println("tuple = " + tuple);
             if (tuple.getStatus() != STATUS_HASPOINTCUT) {
                 continue;
             }
@@ -226,7 +225,7 @@ public class MethodExecutionTransformer implements Transformer {
             body.append(JavassistHelper.getDefaultPrimitiveValue(originalMethod.getReturnType()));
             body.append("; }");
         }
-        CtMethod method = null;
+        CtMethod method;
         if (Modifier.isStatic(originalMethod.getModifiers())) {
             method = JavassistHelper.makeStatic(originalMethod.getReturnType(), originalMethod.getName(),
                                                 originalMethod.getParameterTypes(), originalMethod.getExceptionTypes(),

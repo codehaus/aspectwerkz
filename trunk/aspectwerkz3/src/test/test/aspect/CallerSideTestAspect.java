@@ -30,7 +30,7 @@ public class CallerSideTestAspect {
 
     /**
      * @Expression call(String test.CallerSideTestHelper.invokeMemberMethodPrePost()) &&
-     * within(test.CallerSideAdviceTest)
+     * withincode(* test.CallerSideAdviceTest.test*(..))
      */
     Pointcut pc3;
 
@@ -46,7 +46,7 @@ public class CallerSideTestAspect {
 
     /**
      * @Expression call(String test.CallerSideTestHelper.invokeStaticMethodPrePost()) &&
-     * within(test.CallerSideAdviceTest)
+     * withincode(* test.CallerSideAdviceTest.test*(..))
      */
     Pointcut pc6;
 
@@ -56,7 +56,8 @@ public class CallerSideTestAspect {
     Pointcut pc7;
 
     /**
-     * @Expression call(* test.CallerSideTestHelper.invokeStaticMethodAround*()) && within(test.CallerSideAdviceTest)
+     * @Expression call(* test.CallerSideTestHelper.invokeStaticMethodAround*()) &&
+     * withincode(* test.CallerSideAdviceTest.test*(..))
      */
     Pointcut pc8;
 

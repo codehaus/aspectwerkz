@@ -62,9 +62,7 @@ public class DescriptorUtil {
         _paramTypeMap.put("int", "I");
         _paramTypeMap.put("long", "J");
 
-        //todo: make generic...look for 'dots' of package.  that algorithm
-        //doesn't handle packageless (default package) classes though..
-        //        _paramTypeMap.put("object reference","L<classname>")
+        //todo: make generic...look for 'dots' of package.  that algorithm doesn't handle packageless (default package) classes though..
         _paramTypeMap.put("java.lang.Object", "Ljava/lang/Object;");
         _paramTypeMap.put("short", "S");
         _paramTypeMap.put("boolean", "Z");
@@ -76,8 +74,6 @@ public class DescriptorUtil {
 
     /**
      * Converts from the Java/Javadoc method signature the JVM spec format.
-     * <p/>
-     * TODO This class is poorly implemented and the code base no longer depends on it.  Think about removing it.
      *
      * @param javadocSig        method signature as returned via Javadoc API.
      * @param javadocReturnType return type as returned via Javadoc API.

@@ -19,7 +19,7 @@ public class ConstructorTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression call(test.constructor.TestAroundAdvice.new(..)) && within(test.constructor.*)
+     * @Expression call(test.constructor.TestAroundAdvice.new(..)) && withincode(* test.constructor.*.*(..))
      */
     Pointcut call1;
 
@@ -34,12 +34,12 @@ public class ConstructorTestAspect {
     Pointcut call3;
 
     /**
-     * @Expression call(test.constructor.TestBeforeAfterAdvice.new(String[])) && within(test.constructor.*)
+     * @Expression call(test.constructor.TestBeforeAfterAdvice.new(String[])) && withincode(* test.constructor.*.*(..))
      */
     Pointcut call4;
 
     /**
-     * @Expression call(test.constructor.TestReturnFalseType.new()) && within(test.constructor.*)
+     * @Expression call(test.constructor.TestReturnFalseType.new()) && withincode(* test.constructor.*.*(..))
      */
     Pointcut call5;
 
