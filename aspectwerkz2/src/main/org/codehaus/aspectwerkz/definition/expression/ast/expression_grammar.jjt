@@ -197,7 +197,7 @@ TOKEN : /* IDENTIFIERS */
 	|
   	< #DIGIT: [ "0"-"9"] >
   	|
-	< #ANONYMOUS_TYPE: "call" | "execution" | "get" | "set" | "class" | "handler" >
+	< #ANONYMOUS_TYPE: "call" | "execution" | "get" | "set" | "class" | "cflow" | "handler" >
 	|
 	< #ANONYMOUS_PATTERN: <WORDS> ("(" (<WORDS>)? ")")? >
 	|

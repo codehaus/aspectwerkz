@@ -27,6 +27,7 @@ import org.codehaus.aspectwerkz.definition.expression.visitor.CflowIdentifierLoo
 import org.codehaus.aspectwerkz.definition.expression.visitor.CflowExtractVisitor;
 import org.codehaus.aspectwerkz.definition.expression.visitor.CflowExpressionContext;
 import org.codehaus.aspectwerkz.definition.expression.visitor.CflowEvaluateVisitor;
+import org.codehaus.aspectwerkz.definition.expression.visitor.EarlyEvaluateVisitor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
@@ -37,11 +38,6 @@ import org.codehaus.aspectwerkz.metadata.MemberMetaData;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class ExpressionExpression extends Expression {
-
-    /**
-     * Map with the references to the pointcuts referenced in the expression.
-     */
-    protected final Map m_expressionRefs = new HashMap();
 
     /**
      * Map with the references to the pointcuts referenced in the IN or NOT IN parts of expression
@@ -64,9 +60,14 @@ public class ExpressionExpression extends Expression {
     private static ExpressionParserVisitor CFLOWIDENTIFIER_VISITOR = new CflowIdentifierLookupVisitor();
 
     /**
-     * Expression evaluation, ignores IN and NOT IN
+     * Expression evaluation, ignores Cflow
      */
     private static ExpressionParserVisitor EVALUATE_VISITOR = new EvaluateVisitor();
+
+    /**
+     * Expression early evaluation, ignores Cflow
+     */
+    private static ExpressionParserVisitor EARLY_EVALUATE_VISITOR = new EarlyEvaluateVisitor();
 
     private static ExpressionParserVisitor CFLOWEXTRACT_VISITOR = new CflowExtractVisitor();
 
@@ -112,7 +113,6 @@ public class ExpressionExpression extends Expression {
         }
         m_types.addAll(types);
 
-        initializeLeafExpressionMapFromAST();
         initializeCflowExpressionMapFromAST();
     }
 
@@ -145,24 +145,6 @@ public class ExpressionExpression extends Expression {
     }
 
     /**
-     * Identifier lookup
-     */
-    private void initializeLeafExpressionMapFromAST() {
-        //TODO ALEX do we really need name->expr mapping ?
-        // ..and not only name list
-        //TODO ALEX: NOTE: "false AND subNodeMap" NODES should be ignored
-        // ..but can be complex due to (NOT true) AND subNodeMap syntax style
-
-        List leafNames = new ArrayList();
-        root.jjtAccept(IDENTIFIER_VISITOR, leafNames);
-        String leafName = null;
-        for (Iterator i = leafNames.iterator(); i.hasNext();) {
-            leafName = (String)i.next();
-            m_expressionRefs.put(leafName, m_namespace.getExpression(leafName));
-        }
-    }
-
-    /**
      * Cflow identifier lookup
      */
     private void initializeCflowExpressionMapFromAST() {
@@ -175,9 +157,11 @@ public class ExpressionExpression extends Expression {
             m_cflowExpressionRefs.put(cflowName, m_namespace.getExpression(cflowName));
         }
         for (Iterator i = context.getAnonymous().iterator(); i.hasNext();) {
+            CflowExpression anonymousCflow = (CflowExpression)i.next();
+            m_cflowExpressionRefs.put(anonymousCflow.getName(), anonymousCflow);
             // TODO name is used in StartupManager, see getCflowExpressions
             // and will not accept anonymous expr or autonamed ones
-            throw new RuntimeException("anonymous cflow cannot be registered");
+            //throw new RuntimeException("anonymous cflow cannot be registered");
             //m_cflowExpressionRefs.put("", (CflowExpression)i.next());
         }
 //        if (m_cflowExpressionRefs.size() > 1) {
@@ -193,13 +177,8 @@ public class ExpressionExpression extends Expression {
      * @return
      */
     public boolean match(final ClassMetaData classMetaData, PointcutType assumedType) {
-        for (Iterator it = m_expressionRefs.values().iterator(); it.hasNext();) {
-            Expression expression = (Expression)it.next();
-            if (expression.match(classMetaData, assumedType)) {
-                return true;
-            }
-        }
-        return false;
+        ExpressionContext ctx = new ExpressionContext(assumedType, m_namespace, classMetaData, null, null);
+        return ((Boolean)root.jjtAccept(EARLY_EVALUATE_VISITOR, ctx)).booleanValue();
     }
 
     /**

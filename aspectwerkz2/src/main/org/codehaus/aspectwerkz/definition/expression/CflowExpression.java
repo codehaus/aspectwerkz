@@ -90,4 +90,11 @@ public class CflowExpression extends LeafExpression {
             final String pointcutName) {
         super(namespace, expression, packageNamespace, pointcutName, PointcutType.CFLOW);
     }
+
+    /**
+     * Allow to name anonymous cflow so that they can be bounded individualy on system cflow advice
+     */
+    public void setName() {
+        m_name = "__cflow__"+this.hashCode();
+    }
 }
