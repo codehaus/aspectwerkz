@@ -194,9 +194,9 @@ TOKEN : /* POINTCUTS */
 |
     < #METHOD_ATTRIBUTE_EXACT_IDENTIFIER: (<METHOD_JAVA_NAME_LETTER>)+ >
 |
-    < PARAMETER_START: "(" >
+    < METHOD_PARAMETER_START: "(" >
 |
-    < PARAMETER_END: ")" > : DEFAULT
+    < METHOD_PARAMETER_END: ")" > : DEFAULT
 |
     < #METHOD_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
 }
@@ -330,22 +330,37 @@ void NotExpression() : {}
  */
 void Pointcut() : {}
 {
-    LOOKAHEAD(4) Call() |
-    LOOKAHEAD(4) Execution() |
-    LOOKAHEAD(4) Set() |
-    LOOKAHEAD(4) Get() |
-    LOOKAHEAD(4) Handler() |
-    LOOKAHEAD(4) Within() |
-    LOOKAHEAD(4) WithinCode() |
-    LOOKAHEAD(4) StaticInitialization() |
-    LOOKAHEAD(4) Cflow() |
-    LOOKAHEAD(4) CflowBelow() |
-    LOOKAHEAD(4) Args() |
-    LOOKAHEAD(4) HasMethod() |
-    LOOKAHEAD(4) HasField() |
-    LOOKAHEAD(4) Target() |
-    LOOKAHEAD(4) This() |
-    LOOKAHEAD(4) PointcutReference()
+    	Call() 
+    |
+		Execution()
+	|
+		WithinCode()
+	|
+		HasMethod()
+	|
+		Set()
+	|
+		Get()
+	|
+		HasField()
+	|
+		Within()
+	|
+	  	Handler()
+	|
+		Args()
+	|
+		Target()
+	|
+		This()
+	|
+		Cflow()
+	|
+		CflowBelow()
+	|
+		StaticInitialization() 
+	|
+        PointcutReference()
 }
 
 /**
@@ -368,7 +383,21 @@ void PointcutReference() #PointcutReference :
  */
 void Execution() #Execution : {}
 {
-    <EXECUTION> (LOOKAHEAD(4) MethodPattern() | ConstructorPattern()) ")"
+    <EXECUTION> 
+    (LOOKAHEAD(2) MethodAttribute())*
+
+    (
+    	<METHOD_PARAMETER_END>
+    |
+    	(	
+    		LOOKAHEAD(4) ConstructorPattern()
+    	|
+    		MethodPattern()
+		)?
+		
+		")"
+    )
+
 }
 
 /**
@@ -376,7 +405,20 @@ void Execution() #Execution : {}
  */
 void Call() #Call : {}
 {
-    <CALL> (LOOKAHEAD(4) MethodPattern() | ConstructorPattern()) ")"
+    <CALL> 
+    (LOOKAHEAD(2) MethodAttribute())*
+    
+    (
+    	<METHOD_PARAMETER_END>
+    |
+    	(	
+    		LOOKAHEAD(4) ConstructorPattern()
+    	|
+    		MethodPattern()
+		)?
+		
+		")"
+    )
 }
 
 /**
@@ -384,7 +426,14 @@ void Call() #Call : {}
  */
 void Set() #Set : {}
 {
-    <SET> FieldPattern() <FIELD_POINTCUT_END>
+    <SET> 
+    (LOOKAHEAD(2) FieldAttribute())*
+    
+    (
+    	FieldPattern()
+    )?
+    
+    <FIELD_POINTCUT_END>
 }
 
 /**
@@ -392,7 +441,14 @@ void Set() #Set : {}
  */
 void Get() #Get : {}
 {
-    <GET> FieldPattern() <FIELD_POINTCUT_END>
+    <GET> 
+    (LOOKAHEAD(2) FieldAttribute())*
+    
+    (
+    	FieldPattern()
+    )?
+    
+    <FIELD_POINTCUT_END>
 }
 
 /**
@@ -408,7 +464,12 @@ void Handler() #Handler : {}
  */
 void Within() #Within : {}
 {
-    <WITHIN> ClassPattern() <CLASS_POINTCUT_END>
+    <WITHIN> 
+    (LOOKAHEAD(2) ClassAttribute())*
+    (
+    	ClassPattern()
+    )?
+    <CLASS_POINTCUT_END>
 }
 
 /**
@@ -416,7 +477,21 @@ void Within() #Within : {}
  */
 void WithinCode() #WithinCode : {}
 {
-   <WITHIN_CODE> (LOOKAHEAD(4) MethodPattern() | ConstructorPattern()) ")"
+	<WITHIN_CODE>
+    (LOOKAHEAD(2) MethodAttribute())*
+    
+    (
+    	<METHOD_PARAMETER_END>
+    |
+    	(	
+    		LOOKAHEAD(4) ConstructorPattern()
+    	|
+    		MethodPattern()
+		)?
+		
+		")"
+    )
+   
 }
 
 /**
@@ -459,7 +534,21 @@ void Args() #Args : {}
  */
 void HasMethod() #HasMethod : {}
 {
-   <HAS_METHOD> MethodPattern() ")"
+	<HAS_METHOD>
+	
+    (LOOKAHEAD(2) MethodAttribute())*
+    
+    (
+    	<METHOD_PARAMETER_END>
+    |
+    	(	
+    		LOOKAHEAD(4) ConstructorPattern()
+    	|
+    		MethodPattern()
+		)?
+		
+		")"
+    )
 }
 
 /**
@@ -467,7 +556,12 @@ void HasMethod() #HasMethod : {}
  */
 void HasField() #HasField : {}
 {
-   <HAS_FIELD> FieldPattern() <FIELD_POINTCUT_END>
+   <HAS_FIELD> 
+   (LOOKAHEAD(2) FieldAttribute())*
+   (
+   		FieldPattern()
+	)?
+	<FIELD_POINTCUT_END>
 }
 
 /**
@@ -512,7 +606,6 @@ void ClassPattern() #ClassPattern :
     Token pattern;
 }
 {
-    (LOOKAHEAD(2) ClassAttribute())*
     (ClassModifier())*
     (pattern=<CLASS_PATTERN> | pattern=<EAGER_WILDCARD>)
     {
@@ -537,7 +630,6 @@ void MethodPattern() #MethodPattern :
     Token returnType, name;
 }
 {
-    (LOOKAHEAD(2) MethodAttribute())*
     (MethodModifier())*
     (returnType=<METHOD_CLASS_PATTERN> | returnType=<METHOD_ARRAY_CLASS_PATTERN>)
     {
@@ -562,7 +654,6 @@ void ConstructorPattern() #ConstructorPattern :
     Token name;
 }
 {
-    (LOOKAHEAD(2) MethodAttribute())*
     (ConstructorModifier())*
     name=<METHOD_CLASS_PATTERN>
     {
@@ -586,7 +677,6 @@ void FieldPattern() #FieldPattern :
     Token type, name;
 }
 {
-    (LOOKAHEAD(2) FieldAttribute())*
     (FieldModifier())*
     (type=<FIELD_CLASS_PATTERN> | type=<FIELD_ARRAY_CLASS_PATTERN>)
     {
@@ -603,7 +693,7 @@ void FieldPattern() #FieldPattern :
  */
 void Parameters() : {}
 {
-    <PARAMETER_START> [Parameter() (<COMMA> Parameter())*] <PARAMETER_END>
+    <METHOD_PARAMETER_START> [Parameter() (<COMMA> Parameter())*] <METHOD_PARAMETER_END>
 }
 
 /**

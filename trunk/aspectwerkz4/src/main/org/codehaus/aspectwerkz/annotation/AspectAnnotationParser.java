@@ -190,8 +190,7 @@ public class AspectAnnotationParser {
                 parseBeforeAttributes(method, aspectName, aspectClassName, aspectDef);
                 parseAfterAttributes(method, aspectName, aspectClassName, aspectDef);
             } catch (DefinitionException e) {
-                //TODO HISPANO FIXME - fake the error for now
-                // System.err.println("AW::WARNING - unable to register advice: " + e.toString());
+                System.err.println("AW::WARNING - unable to register advice: " + e.toString());
                 // TODO AV - better handling of reg issue (f.e. skip the whole aspect, in DocumentParser, based on DefinitionE
             }
         }

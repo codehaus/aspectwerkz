@@ -265,39 +265,58 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
  * Pointcut.
  */
   static final public void Pointcut() throws ParseException {
-    if (jj_2_3(4)) {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case CALL:
       Call();
-    } else if (jj_2_4(4)) {
+      break;
+    case EXECUTION:
       Execution();
-    } else if (jj_2_5(4)) {
-      Set();
-    } else if (jj_2_6(4)) {
-      Get();
-    } else if (jj_2_7(4)) {
-      Handler();
-    } else if (jj_2_8(4)) {
-      Within();
-    } else if (jj_2_9(4)) {
+      break;
+    case WITHIN_CODE:
       WithinCode();
-    } else if (jj_2_10(4)) {
-      StaticInitialization();
-    } else if (jj_2_11(4)) {
-      Cflow();
-    } else if (jj_2_12(4)) {
-      CflowBelow();
-    } else if (jj_2_13(4)) {
-      Args();
-    } else if (jj_2_14(4)) {
+      break;
+    case HAS_METHOD:
       HasMethod();
-    } else if (jj_2_15(4)) {
+      break;
+    case SET:
+      Set();
+      break;
+    case GET:
+      Get();
+      break;
+    case HAS_FIELD:
       HasField();
-    } else if (jj_2_16(4)) {
+      break;
+    case WITHIN:
+      Within();
+      break;
+    case HANDLER:
+      Handler();
+      break;
+    case ARGS:
+      Args();
+      break;
+    case TARGET:
       Target();
-    } else if (jj_2_17(4)) {
+      break;
+    case THIS:
       This();
-    } else if (jj_2_18(4)) {
+      break;
+    case CFLOW:
+      Cflow();
+      break;
+    case CFLOW_BELOW:
+      CflowBelow();
+      break;
+    case STATIC_INITIALIZATION:
+      StaticInitialization();
+      break;
+    case POINTCUT_REFERENCE_WITH_ARGS:
+    case POINTCUT_REFERENCE:
       PointcutReference();
-    } else {
+      break;
+    default:
+      jj_la1[1] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -320,7 +339,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         name = jj_consume_token(POINTCUT_REFERENCE);
         break;
       default:
-        jj_la1[1] = jj_gen;
+        jj_la1[2] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -335,7 +354,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         jj_consume_token(ARGS_END);
         break;
       default:
-        jj_la1[2] = jj_gen;
+        jj_la1[3] = jj_gen;
         ;
       }
     } catch (Throwable jjte000) {
@@ -369,26 +388,78 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(EXECUTION);
-      if (jj_2_19(4)) {
-        MethodPattern();
-      } else {
+      label_3:
+      while (true) {
+        if (jj_2_3(2)) {
+          ;
+        } else {
+          break label_3;
+        }
+        MethodAttribute();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case METHOD_PARAMETER_END:
+        jj_consume_token(METHOD_PARAMETER_END);
+        break;
+      case METHOD_PUBLIC:
+      case METHOD_PROTECTED:
+      case METHOD_PRIVATE:
+      case METHOD_STATIC:
+      case METHOD_ABSTRACT:
+      case METHOD_FINAL:
+      case METHOD_NATIVE:
+      case METHOD_SYNCHRONIZED:
+      case METHOD_NOT:
+      case METHOD_CLASS_PATTERN:
+      case METHOD_ARRAY_CLASS_PATTERN:
+      case 86:
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case METHOD_PUBLIC:
         case METHOD_PROTECTED:
         case METHOD_PRIVATE:
+        case METHOD_STATIC:
+        case METHOD_ABSTRACT:
+        case METHOD_FINAL:
+        case METHOD_NATIVE:
         case METHOD_SYNCHRONIZED:
         case METHOD_NOT:
-        case METHOD_ANNOTATION:
         case METHOD_CLASS_PATTERN:
-          ConstructorPattern();
+        case METHOD_ARRAY_CLASS_PATTERN:
+          if (jj_2_4(4)) {
+            ConstructorPattern();
+          } else {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case METHOD_PUBLIC:
+            case METHOD_PROTECTED:
+            case METHOD_PRIVATE:
+            case METHOD_STATIC:
+            case METHOD_ABSTRACT:
+            case METHOD_FINAL:
+            case METHOD_NATIVE:
+            case METHOD_SYNCHRONIZED:
+            case METHOD_NOT:
+            case METHOD_CLASS_PATTERN:
+            case METHOD_ARRAY_CLASS_PATTERN:
+              MethodPattern();
+              break;
+            default:
+              jj_la1[4] = jj_gen;
+              jj_consume_token(-1);
+              throw new ParseException();
+            }
+          }
           break;
         default:
-          jj_la1[3] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
+          jj_la1[5] = jj_gen;
+          ;
         }
+        jj_consume_token(86);
+        break;
+      default:
+        jj_la1[6] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      jj_consume_token(86);
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -420,26 +491,78 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(CALL);
-      if (jj_2_20(4)) {
-        MethodPattern();
-      } else {
+      label_4:
+      while (true) {
+        if (jj_2_5(2)) {
+          ;
+        } else {
+          break label_4;
+        }
+        MethodAttribute();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case METHOD_PARAMETER_END:
+        jj_consume_token(METHOD_PARAMETER_END);
+        break;
+      case METHOD_PUBLIC:
+      case METHOD_PROTECTED:
+      case METHOD_PRIVATE:
+      case METHOD_STATIC:
+      case METHOD_ABSTRACT:
+      case METHOD_FINAL:
+      case METHOD_NATIVE:
+      case METHOD_SYNCHRONIZED:
+      case METHOD_NOT:
+      case METHOD_CLASS_PATTERN:
+      case METHOD_ARRAY_CLASS_PATTERN:
+      case 86:
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case METHOD_PUBLIC:
         case METHOD_PROTECTED:
         case METHOD_PRIVATE:
+        case METHOD_STATIC:
+        case METHOD_ABSTRACT:
+        case METHOD_FINAL:
+        case METHOD_NATIVE:
         case METHOD_SYNCHRONIZED:
         case METHOD_NOT:
-        case METHOD_ANNOTATION:
         case METHOD_CLASS_PATTERN:
-          ConstructorPattern();
+        case METHOD_ARRAY_CLASS_PATTERN:
+          if (jj_2_6(4)) {
+            ConstructorPattern();
+          } else {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case METHOD_PUBLIC:
+            case METHOD_PROTECTED:
+            case METHOD_PRIVATE:
+            case METHOD_STATIC:
+            case METHOD_ABSTRACT:
+            case METHOD_FINAL:
+            case METHOD_NATIVE:
+            case METHOD_SYNCHRONIZED:
+            case METHOD_NOT:
+            case METHOD_CLASS_PATTERN:
+            case METHOD_ARRAY_CLASS_PATTERN:
+              MethodPattern();
+              break;
+            default:
+              jj_la1[7] = jj_gen;
+              jj_consume_token(-1);
+              throw new ParseException();
+            }
+          }
           break;
         default:
-          jj_la1[4] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
+          jj_la1[8] = jj_gen;
+          ;
         }
+        jj_consume_token(86);
+        break;
+      default:
+        jj_la1[9] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      jj_consume_token(86);
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -471,7 +594,32 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(SET);
-      FieldPattern();
+      label_5:
+      while (true) {
+        if (jj_2_7(2)) {
+          ;
+        } else {
+          break label_5;
+        }
+        FieldAttribute();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case FIELD_PRIVATE:
+      case FIELD_PROTECTED:
+      case FIELD_PUBLIC:
+      case FIELD_STATIC:
+      case FIELD_ABSTRACT:
+      case FIELD_FINAL:
+      case FIELD_TRANSIENT:
+      case FIELD_NOT:
+      case FIELD_CLASS_PATTERN:
+      case FIELD_ARRAY_CLASS_PATTERN:
+        FieldPattern();
+        break;
+      default:
+        jj_la1[10] = jj_gen;
+        ;
+      }
       jj_consume_token(FIELD_POINTCUT_END);
     } catch (Throwable jjte000) {
       if (jjtc000) {
@@ -504,7 +652,32 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(GET);
-      FieldPattern();
+      label_6:
+      while (true) {
+        if (jj_2_8(2)) {
+          ;
+        } else {
+          break label_6;
+        }
+        FieldAttribute();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case FIELD_PRIVATE:
+      case FIELD_PROTECTED:
+      case FIELD_PUBLIC:
+      case FIELD_STATIC:
+      case FIELD_ABSTRACT:
+      case FIELD_FINAL:
+      case FIELD_TRANSIENT:
+      case FIELD_NOT:
+      case FIELD_CLASS_PATTERN:
+      case FIELD_ARRAY_CLASS_PATTERN:
+        FieldPattern();
+        break;
+      default:
+        jj_la1[11] = jj_gen;
+        ;
+      }
       jj_consume_token(FIELD_POINTCUT_END);
     } catch (Throwable jjte000) {
       if (jjtc000) {
@@ -570,7 +743,31 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(WITHIN);
-      ClassPattern();
+      label_7:
+      while (true) {
+        if (jj_2_9(2)) {
+          ;
+        } else {
+          break label_7;
+        }
+        ClassAttribute();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case EAGER_WILDCARD:
+      case CLASS_PRIVATE:
+      case CLASS_PROTECTED:
+      case CLASS_PUBLIC:
+      case CLASS_STATIC:
+      case CLASS_ABSTRACT:
+      case CLASS_FINAL:
+      case CLASS_NOT:
+      case CLASS_PATTERN:
+        ClassPattern();
+        break;
+      default:
+        jj_la1[12] = jj_gen;
+        ;
+      }
       jj_consume_token(CLASS_POINTCUT_END);
     } catch (Throwable jjte000) {
       if (jjtc000) {
@@ -603,44 +800,96 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(WITHIN_CODE);
-      if (jj_2_21(4)) {
-        MethodPattern();
-      } else {
+      label_8:
+      while (true) {
+        if (jj_2_10(2)) {
+          ;
+        } else {
+          break label_8;
+        }
+        MethodAttribute();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case METHOD_PARAMETER_END:
+        jj_consume_token(METHOD_PARAMETER_END);
+        break;
+      case METHOD_PUBLIC:
+      case METHOD_PROTECTED:
+      case METHOD_PRIVATE:
+      case METHOD_STATIC:
+      case METHOD_ABSTRACT:
+      case METHOD_FINAL:
+      case METHOD_NATIVE:
+      case METHOD_SYNCHRONIZED:
+      case METHOD_NOT:
+      case METHOD_CLASS_PATTERN:
+      case METHOD_ARRAY_CLASS_PATTERN:
+      case 86:
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case METHOD_PUBLIC:
         case METHOD_PROTECTED:
         case METHOD_PRIVATE:
+        case METHOD_STATIC:
+        case METHOD_ABSTRACT:
+        case METHOD_FINAL:
+        case METHOD_NATIVE:
         case METHOD_SYNCHRONIZED:
         case METHOD_NOT:
-        case METHOD_ANNOTATION:
         case METHOD_CLASS_PATTERN:
-          ConstructorPattern();
+        case METHOD_ARRAY_CLASS_PATTERN:
+          if (jj_2_11(4)) {
+            ConstructorPattern();
+          } else {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case METHOD_PUBLIC:
+            case METHOD_PROTECTED:
+            case METHOD_PRIVATE:
+            case METHOD_STATIC:
+            case METHOD_ABSTRACT:
+            case METHOD_FINAL:
+            case METHOD_NATIVE:
+            case METHOD_SYNCHRONIZED:
+            case METHOD_NOT:
+            case METHOD_CLASS_PATTERN:
+            case METHOD_ARRAY_CLASS_PATTERN:
+              MethodPattern();
+              break;
+            default:
+              jj_la1[13] = jj_gen;
+              jj_consume_token(-1);
+              throw new ParseException();
+            }
+          }
           break;
         default:
-          jj_la1[5] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
+          jj_la1[14] = jj_gen;
+          ;
         }
+        jj_consume_token(86);
+        break;
+      default:
+        jj_la1[15] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      jj_consume_token(86);
     } catch (Throwable jjte000) {
-     if (jjtc000) {
-       jjtree.clearNodeScope(jjtn000);
-       jjtc000 = false;
-     } else {
-       jjtree.popNode();
-     }
-     if (jjte000 instanceof RuntimeException) {
-       {if (true) throw (RuntimeException)jjte000;}
-     }
-     if (jjte000 instanceof ParseException) {
-       {if (true) throw (ParseException)jjte000;}
-     }
-     {if (true) throw (Error)jjte000;}
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            {if (true) throw (RuntimeException)jjte000;}
+          }
+          if (jjte000 instanceof ParseException) {
+            {if (true) throw (ParseException)jjte000;}
+          }
+          {if (true) throw (Error)jjte000;}
     } finally {
-     if (jjtc000) {
-       jjtree.closeNodeScope(jjtn000, true);
-     }
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
     }
   }
 
@@ -752,7 +1001,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      if (jj_2_22(2)) {
+      if (jj_2_12(2)) {
         jj_consume_token(ARGS);
         jj_consume_token(ARGS_END);
       } else {
@@ -763,7 +1012,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
           jj_consume_token(ARGS_END);
           break;
         default:
-          jj_la1[6] = jj_gen;
+          jj_la1[16] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -799,26 +1048,96 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(HAS_METHOD);
-      MethodPattern();
-      jj_consume_token(86);
+      label_9:
+      while (true) {
+        if (jj_2_13(2)) {
+          ;
+        } else {
+          break label_9;
+        }
+        MethodAttribute();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case METHOD_PARAMETER_END:
+        jj_consume_token(METHOD_PARAMETER_END);
+        break;
+      case METHOD_PUBLIC:
+      case METHOD_PROTECTED:
+      case METHOD_PRIVATE:
+      case METHOD_STATIC:
+      case METHOD_ABSTRACT:
+      case METHOD_FINAL:
+      case METHOD_NATIVE:
+      case METHOD_SYNCHRONIZED:
+      case METHOD_NOT:
+      case METHOD_CLASS_PATTERN:
+      case METHOD_ARRAY_CLASS_PATTERN:
+      case 86:
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case METHOD_PUBLIC:
+        case METHOD_PROTECTED:
+        case METHOD_PRIVATE:
+        case METHOD_STATIC:
+        case METHOD_ABSTRACT:
+        case METHOD_FINAL:
+        case METHOD_NATIVE:
+        case METHOD_SYNCHRONIZED:
+        case METHOD_NOT:
+        case METHOD_CLASS_PATTERN:
+        case METHOD_ARRAY_CLASS_PATTERN:
+          if (jj_2_14(4)) {
+            ConstructorPattern();
+          } else {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case METHOD_PUBLIC:
+            case METHOD_PROTECTED:
+            case METHOD_PRIVATE:
+            case METHOD_STATIC:
+            case METHOD_ABSTRACT:
+            case METHOD_FINAL:
+            case METHOD_NATIVE:
+            case METHOD_SYNCHRONIZED:
+            case METHOD_NOT:
+            case METHOD_CLASS_PATTERN:
+            case METHOD_ARRAY_CLASS_PATTERN:
+              MethodPattern();
+              break;
+            default:
+              jj_la1[17] = jj_gen;
+              jj_consume_token(-1);
+              throw new ParseException();
+            }
+          }
+          break;
+        default:
+          jj_la1[18] = jj_gen;
+          ;
+        }
+        jj_consume_token(86);
+        break;
+      default:
+        jj_la1[19] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
     } catch (Throwable jjte000) {
-     if (jjtc000) {
-       jjtree.clearNodeScope(jjtn000);
-       jjtc000 = false;
-     } else {
-       jjtree.popNode();
-     }
-     if (jjte000 instanceof RuntimeException) {
-       {if (true) throw (RuntimeException)jjte000;}
-     }
-     if (jjte000 instanceof ParseException) {
-       {if (true) throw (ParseException)jjte000;}
-     }
-     {if (true) throw (Error)jjte000;}
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            {if (true) throw (RuntimeException)jjte000;}
+          }
+          if (jjte000 instanceof ParseException) {
+            {if (true) throw (ParseException)jjte000;}
+          }
+          {if (true) throw (Error)jjte000;}
     } finally {
-     if (jjtc000) {
-       jjtree.closeNodeScope(jjtn000, true);
-     }
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
     }
   }
 
@@ -832,7 +1151,32 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(HAS_FIELD);
-      FieldPattern();
+      label_10:
+      while (true) {
+        if (jj_2_15(2)) {
+          ;
+        } else {
+          break label_10;
+        }
+        FieldAttribute();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case FIELD_PRIVATE:
+      case FIELD_PROTECTED:
+      case FIELD_PUBLIC:
+      case FIELD_STATIC:
+      case FIELD_ABSTRACT:
+      case FIELD_FINAL:
+      case FIELD_TRANSIENT:
+      case FIELD_NOT:
+      case FIELD_CLASS_PATTERN:
+      case FIELD_ARRAY_CLASS_PATTERN:
+        FieldPattern();
+        break;
+      default:
+        jj_la1[20] = jj_gen;
+        ;
+      }
       jj_consume_token(FIELD_POINTCUT_END);
     } catch (Throwable jjte000) {
      if (jjtc000) {
@@ -906,16 +1250,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);Token pattern;
     try {
-      label_3:
-      while (true) {
-        if (jj_2_23(2)) {
-          ;
-        } else {
-          break label_3;
-        }
-        ClassAttribute();
-      }
-      label_4:
+      label_11:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case CLASS_PRIVATE:
@@ -928,8 +1263,8 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
           ;
           break;
         default:
-          jj_la1[7] = jj_gen;
-          break label_4;
+          jj_la1[21] = jj_gen;
+          break label_11;
         }
         ClassModifier();
       }
@@ -941,7 +1276,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         pattern = jj_consume_token(EAGER_WILDCARD);
         break;
       default:
-        jj_la1[8] = jj_gen;
+        jj_la1[22] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -982,16 +1317,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);Token returnType, name;
     try {
-      label_5:
-      while (true) {
-        if (jj_2_24(2)) {
-          ;
-        } else {
-          break label_5;
-        }
-        MethodAttribute();
-      }
-      label_6:
+      label_12:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case METHOD_PUBLIC:
@@ -1006,8 +1332,8 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
           ;
           break;
         default:
-          jj_la1[9] = jj_gen;
-          break label_6;
+          jj_la1[23] = jj_gen;
+          break label_12;
         }
         MethodModifier();
       }
@@ -1019,7 +1345,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         returnType = jj_consume_token(METHOD_ARRAY_CLASS_PATTERN);
         break;
       default:
-        jj_la1[10] = jj_gen;
+        jj_la1[24] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1061,16 +1387,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);Token name;
     try {
-      label_7:
-      while (true) {
-        if (jj_2_25(2)) {
-          ;
-        } else {
-          break label_7;
-        }
-        MethodAttribute();
-      }
-      label_8:
+      label_13:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case METHOD_PUBLIC:
@@ -1081,8 +1398,8 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
           ;
           break;
         default:
-          jj_la1[11] = jj_gen;
-          break label_8;
+          jj_la1[25] = jj_gen;
+          break label_13;
         }
         ConstructorModifier();
       }
@@ -1126,16 +1443,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);Token type, name;
     try {
-      label_9:
-      while (true) {
-        if (jj_2_26(2)) {
-          ;
-        } else {
-          break label_9;
-        }
-        FieldAttribute();
-      }
-      label_10:
+      label_14:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case FIELD_PRIVATE:
@@ -1149,8 +1457,8 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
           ;
           break;
         default:
-          jj_la1[12] = jj_gen;
-          break label_10;
+          jj_la1[26] = jj_gen;
+          break label_14;
         }
         FieldModifier();
       }
@@ -1162,7 +1470,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         type = jj_consume_token(FIELD_ARRAY_CLASS_PATTERN);
         break;
       default:
-        jj_la1[13] = jj_gen;
+        jj_la1[27] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1196,31 +1504,31 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
  * Parameters.
  */
   static final public void Parameters() throws ParseException {
-    jj_consume_token(PARAMETER_START);
+    jj_consume_token(METHOD_PARAMETER_START);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case EAGER_WILDCARD:
     case METHOD_CLASS_PATTERN:
     case METHOD_ARRAY_CLASS_PATTERN:
       Parameter();
-      label_11:
+      label_15:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case COMMA:
           ;
           break;
         default:
-          jj_la1[14] = jj_gen;
-          break label_11;
+          jj_la1[28] = jj_gen;
+          break label_15;
         }
         jj_consume_token(COMMA);
         Parameter();
       }
       break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[29] = jj_gen;
       ;
     }
-    jj_consume_token(PARAMETER_END);
+    jj_consume_token(METHOD_PARAMETER_END);
   }
 
 /**
@@ -1243,7 +1551,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         parameter = jj_consume_token(EAGER_WILDCARD);
         break;
       default:
-        jj_la1[16] = jj_gen;
+        jj_la1[30] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1268,15 +1576,15 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       ArgParameter();
       break;
     default:
-      jj_la1[17] = jj_gen;
+      jj_la1[31] = jj_gen;
       ;
     }
-    label_12:
+    label_16:
     while (true) {
-      if (jj_2_27(2)) {
+      if (jj_2_16(2)) {
         ;
       } else {
-        break label_12;
+        break label_16;
       }
       jj_consume_token(COMMA);
       ArgsParameters();
@@ -1303,7 +1611,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         t = jj_consume_token(EAGER_WILDCARD);
         break;
       default:
-        jj_la1[18] = jj_gen;
+        jj_la1[32] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1326,15 +1634,15 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);Token annotation;
     try {
-      label_13:
+      label_17:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case CLASS_NOT:
           ;
           break;
         default:
-          jj_la1[19] = jj_gen;
-          break label_13;
+          jj_la1[33] = jj_gen;
+          break label_17;
         }
         jj_consume_token(CLASS_NOT);
             jjtn000.toggleNot();
@@ -1359,15 +1667,15 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);Token annotation;
     try {
-      label_14:
+      label_18:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case METHOD_NOT:
           ;
           break;
         default:
-          jj_la1[20] = jj_gen;
-          break label_14;
+          jj_la1[34] = jj_gen;
+          break label_18;
         }
         jj_consume_token(METHOD_NOT);
             jjtn000.toggleNot();
@@ -1392,15 +1700,15 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);Token annotation;
     try {
-      label_15:
+      label_19:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case FIELD_NOT:
           ;
           break;
         default:
-          jj_la1[21] = jj_gen;
-          break label_15;
+          jj_la1[35] = jj_gen;
+          break label_19;
         }
         jj_consume_token(FIELD_NOT);
             jjtn000.toggleNot();
@@ -1425,15 +1733,15 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      label_16:
+      label_20:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case CLASS_NOT:
           ;
           break;
         default:
-          jj_la1[22] = jj_gen;
-          break label_16;
+          jj_la1[36] = jj_gen;
+          break label_20;
         }
         jj_consume_token(CLASS_NOT);
         jjtn000.toggleNot();
@@ -1476,7 +1784,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         jjtn000.setModifier(Modifier.FINAL);
         break;
       default:
-        jj_la1[23] = jj_gen;
+        jj_la1[37] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1496,15 +1804,15 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      label_17:
+      label_21:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case METHOD_NOT:
           ;
           break;
         default:
-          jj_la1[24] = jj_gen;
-          break label_17;
+          jj_la1[38] = jj_gen;
+          break label_21;
         }
         jj_consume_token(METHOD_NOT);
         jjtn000.toggleNot();
@@ -1559,7 +1867,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         jjtn000.setModifier(Modifier.SYNCHRONIZED);
         break;
       default:
-        jj_la1[25] = jj_gen;
+        jj_la1[39] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1579,15 +1887,15 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      label_18:
+      label_22:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case METHOD_NOT:
           ;
           break;
         default:
-          jj_la1[26] = jj_gen;
-          break label_18;
+          jj_la1[40] = jj_gen;
+          break label_22;
         }
         jj_consume_token(METHOD_NOT);
         jjtn000.toggleNot();
@@ -1618,7 +1926,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         jjtn000.setModifier(Modifier.SYNCHRONIZED);
         break;
       default:
-        jj_la1[27] = jj_gen;
+        jj_la1[41] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1638,15 +1946,15 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      label_19:
+      label_23:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case FIELD_NOT:
           ;
           break;
         default:
-          jj_la1[28] = jj_gen;
-          break label_19;
+          jj_la1[42] = jj_gen;
+          break label_23;
         }
         jj_consume_token(FIELD_NOT);
         jjtn000.toggleNot();
@@ -1695,7 +2003,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         jjtn000.setModifier(Modifier.TRANSIENT);
         break;
       default:
-        jj_la1[29] = jj_gen;
+        jj_la1[43] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1818,763 +2126,193 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     finally { jj_save(15, xla); }
   }
 
-  static final private boolean jj_2_17(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_17(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(16, xla); }
-  }
-
-  static final private boolean jj_2_18(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_18(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(17, xla); }
-  }
-
-  static final private boolean jj_2_19(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_19(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(18, xla); }
-  }
-
-  static final private boolean jj_2_20(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_20(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(19, xla); }
-  }
-
-  static final private boolean jj_2_21(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_21(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(20, xla); }
-  }
-
-  static final private boolean jj_2_22(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_22(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(21, xla); }
-  }
-
-  static final private boolean jj_2_23(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_23(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(22, xla); }
-  }
-
-  static final private boolean jj_2_24(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_24(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(23, xla); }
-  }
-
-  static final private boolean jj_2_25(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_25(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(24, xla); }
-  }
-
-  static final private boolean jj_2_26(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_26(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(25, xla); }
-  }
-
-  static final private boolean jj_2_27(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_27(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(26, xla); }
-  }
-
-  static final private boolean jj_3_26() {
-    if (jj_3R_41()) return true;
+  static final private boolean jj_3R_35() {
+    if (jj_scan_token(FIELD_NOT)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_46() {
+  static final private boolean jj_3R_28() {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3_26()) { jj_scanpos = xsp; break; }
+      if (jj_3R_35()) { jj_scanpos = xsp; break; }
     }
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_62()) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_scan_token(69)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(70)) return true;
-    }
-    if (jj_scan_token(FIELD_CLASS_PATTERN)) return true;
+    if (jj_scan_token(FIELD_ANNOTATION)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_78() {
-    if (jj_scan_token(METHOD_FINAL)) return true;
+  static final private boolean jj_3_3() {
+    if (jj_3R_26()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_25() {
-    if (jj_scan_token(GET)) return true;
-    if (jj_3R_46()) return true;
-    if (jj_scan_token(FIELD_POINTCUT_END)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_77() {
-    if (jj_scan_token(METHOD_ABSTRACT)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_24() {
-    if (jj_scan_token(SET)) return true;
-    if (jj_3R_46()) return true;
-    if (jj_scan_token(FIELD_POINTCUT_END)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_20() {
-    if (jj_3R_38()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_76() {
-    if (jj_scan_token(METHOD_STATIC)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_19() {
-    if (jj_3R_38()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_75() {
-    if (jj_scan_token(METHOD_PRIVATE)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_22() {
-    if (jj_scan_token(CALL)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_20()) {
-    jj_scanpos = xsp;
-    if (jj_3R_44()) return true;
-    }
-    return false;
-  }
-
-  static final private boolean jj_3R_74() {
-    if (jj_scan_token(METHOD_PROTECTED)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_69() {
-    if (jj_3R_82()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_25() {
-    if (jj_3R_40()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_61() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_25()) { jj_scanpos = xsp; break; }
-    }
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_69()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(METHOD_CLASS_PATTERN)) return true;
-    if (jj_3R_53()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_73() {
-    if (jj_scan_token(METHOD_PUBLIC)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_23() {
+  static final private boolean jj_3R_70() {
     if (jj_scan_token(EXECUTION)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_19()) {
-    jj_scanpos = xsp;
-    if (jj_3R_45()) return true;
-    }
     return false;
   }
 
-  static final private boolean jj_3R_72() {
+  static final private boolean jj_3R_79() {
+    if (jj_scan_token(TARGET)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_32() {
     if (jj_scan_token(METHOD_NOT)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_64() {
+  static final private boolean jj_3R_26() {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_72()) { jj_scanpos = xsp; break; }
+      if (jj_3R_32()) { jj_scanpos = xsp; break; }
     }
-    xsp = jj_scanpos;
-    if (jj_3R_73()) {
-    jj_scanpos = xsp;
-    if (jj_3R_74()) {
-    jj_scanpos = xsp;
-    if (jj_3R_75()) {
-    jj_scanpos = xsp;
-    if (jj_3R_76()) {
-    jj_scanpos = xsp;
-    if (jj_3R_77()) {
-    jj_scanpos = xsp;
-    if (jj_3R_78()) {
-    jj_scanpos = xsp;
-    if (jj_3R_79()) {
-    jj_scanpos = xsp;
-    if (jj_3R_80()) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    }
+    if (jj_scan_token(METHOD_ANNOTATION)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_51() {
-    if (jj_3R_42()) return true;
-    if (jj_scan_token(ARGS_END)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_37() {
+  static final private boolean jj_3R_84() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(27)) {
     jj_scanpos = xsp;
     if (jj_scan_token(28)) return true;
     }
-    xsp = jj_scanpos;
-    if (jj_3R_51()) jj_scanpos = xsp;
-    return false;
-  }
-
-  static final private boolean jj_3R_60() {
-    if (jj_3R_68()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_97() {
-    if (jj_scan_token(CLASS_FINAL)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_52() {
-    if (jj_3R_64()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_24() {
-    if (jj_3R_40()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_96() {
-    if (jj_scan_token(CLASS_ABSTRACT)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_38() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_24()) { jj_scanpos = xsp; break; }
-    }
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_52()) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_scan_token(53)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(54)) return true;
-    }
-    if (jj_scan_token(METHOD_CLASS_PATTERN)) return true;
-    if (jj_3R_53()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_18() {
-    if (jj_3R_37()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_17() {
-    if (jj_3R_36()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_16() {
-    if (jj_3R_35()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_15() {
-    if (jj_3R_34()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_95() {
-    if (jj_scan_token(CLASS_STATIC)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_14() {
-    if (jj_3R_33()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_13() {
-    if (jj_3R_32()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_12() {
-    if (jj_3R_31()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_11() {
-    if (jj_3R_30()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_10() {
-    if (jj_3R_29()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_94() {
-    if (jj_scan_token(CLASS_PRIVATE)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_9() {
-    if (jj_3R_28()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_8() {
-    if (jj_3R_27()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_7() {
-    if (jj_3R_26()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_6() {
-    if (jj_3R_25()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_5() {
-    if (jj_3R_24()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_93() {
-    if (jj_scan_token(CLASS_PROTECTED)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_4() {
-    if (jj_3R_23()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_68() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_3()) {
-    jj_scanpos = xsp;
-    if (jj_3_4()) {
-    jj_scanpos = xsp;
-    if (jj_3_5()) {
-    jj_scanpos = xsp;
-    if (jj_3_6()) {
-    jj_scanpos = xsp;
-    if (jj_3_7()) {
-    jj_scanpos = xsp;
-    if (jj_3_8()) {
-    jj_scanpos = xsp;
-    if (jj_3_9()) {
-    jj_scanpos = xsp;
-    if (jj_3_10()) {
-    jj_scanpos = xsp;
-    if (jj_3_11()) {
-    jj_scanpos = xsp;
-    if (jj_3_12()) {
-    jj_scanpos = xsp;
-    if (jj_3_13()) {
-    jj_scanpos = xsp;
-    if (jj_3_14()) {
-    jj_scanpos = xsp;
-    if (jj_3_15()) {
-    jj_scanpos = xsp;
-    if (jj_3_16()) {
-    jj_scanpos = xsp;
-    if (jj_3_17()) {
-    jj_scanpos = xsp;
-    if (jj_3_18()) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  static final private boolean jj_3_3() {
-    if (jj_3R_22()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_59() {
-    if (jj_scan_token(85)) return true;
-    if (jj_3R_49()) return true;
-    if (jj_scan_token(86)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_92() {
-    if (jj_scan_token(CLASS_PUBLIC)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_2() {
-    if (jj_scan_token(OR)) return true;
-    if (jj_3R_21()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_63() {
-    if (jj_3R_71()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_91() {
-    if (jj_scan_token(CLASS_NOT)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_23() {
-    if (jj_3R_39()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_71() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_91()) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_3R_92()) {
-    jj_scanpos = xsp;
-    if (jj_3R_93()) {
-    jj_scanpos = xsp;
-    if (jj_3R_94()) {
-    jj_scanpos = xsp;
-    if (jj_3R_95()) {
-    jj_scanpos = xsp;
-    if (jj_3R_96()) {
-    jj_scanpos = xsp;
-    if (jj_3R_97()) return true;
-    }
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  static final private boolean jj_3R_47() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_23()) { jj_scanpos = xsp; break; }
-    }
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_63()) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_scan_token(37)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(7)) return true;
-    }
     return false;
   }
 
   static final private boolean jj_3R_67() {
-    if (jj_scan_token(NOT)) return true;
-    if (jj_3R_43()) return true;
+    if (jj_3R_83()) return true;
     return false;
   }
 
-  static final private boolean jj_3_1() {
-    if (jj_scan_token(AND)) return true;
-    if (jj_3R_20()) return true;
+  static final private boolean jj_3R_66() {
+    if (jj_3R_82()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_43() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_58()) {
-    jj_scanpos = xsp;
-    if (jj_3R_59()) {
-    jj_scanpos = xsp;
-    if (jj_3R_60()) return true;
-    }
-    }
+  static final private boolean jj_3R_65() {
+    if (jj_3R_81()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_58() {
-    if (jj_3R_67()) return true;
+  static final private boolean jj_3_15() {
+    if (jj_3R_28()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_56() {
-    if (jj_scan_token(FIELD_NOT)) return true;
+  static final private boolean jj_3R_64() {
+    if (jj_3R_80()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_41() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_56()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(FIELD_ANNOTATION)) return true;
+  static final private boolean jj_3R_68() {
+    if (jj_3R_84()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_20() {
-    if (jj_3R_43()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_2()) { jj_scanpos = xsp; break; }
-    }
+  static final private boolean jj_3R_75() {
+    if (jj_scan_token(HAS_FIELD)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3_14() {
+    if (jj_3R_27()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_63() {
+    if (jj_3R_79()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_62() {
+    if (jj_3R_78()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_61() {
+    if (jj_3R_77()) return true;
     return false;
   }
 
   static final private boolean jj_3R_36() {
-    if (jj_scan_token(THIS)) return true;
-    if (jj_scan_token(CLASS_PATTERN)) return true;
-    if (jj_scan_token(CLASS_POINTCUT_END)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_21() {
-    if (jj_3R_20()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_1()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  static final private boolean jj_3R_90() {
-    if (jj_scan_token(FIELD_TRANSIENT)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_35() {
-    if (jj_scan_token(TARGET)) return true;
-    if (jj_scan_token(CLASS_PATTERN)) return true;
-    if (jj_scan_token(CLASS_POINTCUT_END)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_55() {
-    if (jj_scan_token(METHOD_NOT)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_89() {
-    if (jj_scan_token(FIELD_FINAL)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_40() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_55()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(METHOD_ANNOTATION)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_49() {
-    if (jj_3R_21()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_88() {
-    if (jj_scan_token(FIELD_ABSTRACT)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_87() {
-    if (jj_scan_token(FIELD_STATIC)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_34() {
-    if (jj_scan_token(HAS_FIELD)) return true;
-    if (jj_3R_46()) return true;
-    if (jj_scan_token(FIELD_POINTCUT_END)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_86() {
-    if (jj_scan_token(FIELD_PRIVATE)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_48() {
-    if (jj_3R_61()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_54() {
     if (jj_scan_token(CLASS_NOT)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_33() {
-    if (jj_scan_token(HAS_METHOD)) return true;
-    if (jj_3R_38()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_39() {
+  static final private boolean jj_3R_29() {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_54()) { jj_scanpos = xsp; break; }
+      if (jj_3R_36()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(CLASS_ATTRIBUTE)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_85() {
-    if (jj_scan_token(FIELD_PROTECTED)) return true;
+  static final private boolean jj_3R_60() {
+    if (jj_3R_76()) return true;
     return false;
   }
 
-  static final private boolean jj_3_27() {
+  static final private boolean jj_3R_59() {
+    if (jj_3R_75()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_40() {
+    if (jj_3R_45()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_58() {
+    if (jj_3R_74()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3_16() {
     if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_42()) return true;
+    if (jj_3R_30()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_84() {
-    if (jj_scan_token(FIELD_PUBLIC)) return true;
+  static final private boolean jj_3R_57() {
+    if (jj_3R_73()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_50() {
-    if (jj_scan_token(ARGS)) return true;
-    if (jj_3R_42()) return true;
-    if (jj_scan_token(ARGS_END)) return true;
+  static final private boolean jj_3R_52() {
+    if (jj_scan_token(COMMA)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_83() {
-    if (jj_scan_token(FIELD_NOT)) return true;
+  static final private boolean jj_3R_56() {
+    if (jj_3R_72()) return true;
     return false;
   }
 
-  static final private boolean jj_3_22() {
-    if (jj_scan_token(ARGS)) return true;
-    if (jj_scan_token(ARGS_END)) return true;
+  static final private boolean jj_3R_72() {
+    if (jj_scan_token(HAS_METHOD)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_32() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_22()) {
-    jj_scanpos = xsp;
-    if (jj_3R_50()) return true;
-    }
+  static final private boolean jj_3R_55() {
+    if (jj_3R_71()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_70() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_83()) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_3R_84()) {
-    jj_scanpos = xsp;
-    if (jj_3R_85()) {
-    jj_scanpos = xsp;
-    if (jj_3R_86()) {
-    jj_scanpos = xsp;
-    if (jj_3R_87()) {
-    jj_scanpos = xsp;
-    if (jj_3R_88()) {
-    jj_scanpos = xsp;
-    if (jj_3R_89()) {
-    jj_scanpos = xsp;
-    if (jj_3R_90()) return true;
-    }
-    }
-    }
-    }
-    }
-    }
+  static final private boolean jj_3_13() {
+    if (jj_3R_26()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_66() {
+  static final private boolean jj_3R_54() {
+    if (jj_3R_70()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_43() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(81)) {
@@ -2587,69 +2325,142 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
-  static final private boolean jj_3R_31() {
-    if (jj_scan_token(CFLOW_BELOW)) return true;
-    if (jj_3R_49()) return true;
-    if (jj_scan_token(86)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_102() {
-    if (jj_scan_token(METHOD_SYNCHRONIZED)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_57() {
-    if (jj_3R_66()) return true;
-    return false;
-  }
-
   static final private boolean jj_3R_42() {
+    if (jj_3R_51()) return true;
     Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_57()) jj_scanpos = xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3_27()) { jj_scanpos = xsp; break; }
+      if (jj_3R_52()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
 
-  static final private boolean jj_3R_65() {
-    if (jj_3R_81()) return true;
+  static final private boolean jj_3R_85() {
+    if (jj_scan_token(ARGS)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_45() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_53()) {
+    jj_scanpos = xsp;
+    if (jj_3R_54()) {
+    jj_scanpos = xsp;
+    if (jj_3R_55()) {
+    jj_scanpos = xsp;
+    if (jj_3R_56()) {
+    jj_scanpos = xsp;
+    if (jj_3R_57()) {
+    jj_scanpos = xsp;
+    if (jj_3R_58()) {
+    jj_scanpos = xsp;
+    if (jj_3R_59()) {
+    jj_scanpos = xsp;
+    if (jj_3R_60()) {
+    jj_scanpos = xsp;
+    if (jj_3R_61()) {
+    jj_scanpos = xsp;
+    if (jj_3R_62()) {
+    jj_scanpos = xsp;
+    if (jj_3R_63()) {
+    jj_scanpos = xsp;
+    if (jj_3R_64()) {
+    jj_scanpos = xsp;
+    if (jj_3R_65()) {
+    jj_scanpos = xsp;
+    if (jj_3R_66()) {
+    jj_scanpos = xsp;
+    if (jj_3R_67()) {
+    jj_scanpos = xsp;
+    if (jj_3R_68()) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  static final private boolean jj_3R_53() {
+    if (jj_3R_69()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_37() {
+    if (jj_3R_43()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_50() {
+    if (jj_scan_token(METHOD_SYNCHRONIZED)) return true;
     return false;
   }
 
   static final private boolean jj_3R_30() {
-    if (jj_scan_token(CFLOW)) return true;
-    if (jj_3R_49()) return true;
-    if (jj_scan_token(86)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_37()) jj_scanpos = xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_16()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
-  static final private boolean jj_3R_101() {
+  static final private boolean jj_3_12() {
+    if (jj_scan_token(ARGS)) return true;
+    if (jj_scan_token(ARGS_END)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_78() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_12()) {
+    jj_scanpos = xsp;
+    if (jj_3R_85()) return true;
+    }
+    return false;
+  }
+
+  static final private boolean jj_3R_39() {
+    if (jj_scan_token(85)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_49() {
     if (jj_scan_token(METHOD_PRIVATE)) return true;
     return false;
   }
 
-  static final private boolean jj_3_21() {
-    if (jj_3R_38()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_100() {
+  static final private boolean jj_3R_48() {
     if (jj_scan_token(METHOD_PROTECTED)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_29() {
-    if (jj_scan_token(STATIC_INITIALIZATION)) return true;
-    if (jj_3R_47()) return true;
-    if (jj_scan_token(CLASS_POINTCUT_END)) return true;
+  static final private boolean jj_3R_82() {
+    if (jj_scan_token(CFLOW_BELOW)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_81() {
+  static final private boolean jj_3_2() {
+    if (jj_scan_token(OR)) return true;
+    if (jj_3R_25()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_51() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(53)) {
@@ -2662,92 +2473,182 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     return false;
   }
 
-  static final private boolean jj_3R_99() {
+  static final private boolean jj_3R_44() {
+    if (jj_scan_token(NOT)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_47() {
     if (jj_scan_token(METHOD_PUBLIC)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_98() {
+  static final private boolean jj_3R_81() {
+    if (jj_scan_token(CFLOW)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_46() {
     if (jj_scan_token(METHOD_NOT)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_82() {
+  static final private boolean jj_3R_41() {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_98()) { jj_scanpos = xsp; break; }
+      if (jj_3R_46()) { jj_scanpos = xsp; break; }
     }
     xsp = jj_scanpos;
-    if (jj_3R_99()) {
+    if (jj_3R_47()) {
     jj_scanpos = xsp;
-    if (jj_3R_100()) {
+    if (jj_3R_48()) {
     jj_scanpos = xsp;
-    if (jj_3R_101()) {
+    if (jj_3R_49()) {
     jj_scanpos = xsp;
-    if (jj_3R_102()) return true;
+    if (jj_3R_50()) return true;
     }
     }
     }
     return false;
   }
 
-  static final private boolean jj_3R_28() {
+  static final private boolean jj_3_1() {
+    if (jj_scan_token(AND)) return true;
+    if (jj_3R_24()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_38() {
+    if (jj_3R_44()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_31() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_38()) {
+    jj_scanpos = xsp;
+    if (jj_3R_39()) {
+    jj_scanpos = xsp;
+    if (jj_3R_40()) return true;
+    }
+    }
+    return false;
+  }
+
+  static final private boolean jj_3R_34() {
+    if (jj_scan_token(METHOD_PARAMETER_START)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_42()) jj_scanpos = xsp;
+    if (jj_scan_token(METHOD_PARAMETER_END)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_83() {
+    if (jj_scan_token(STATIC_INITIALIZATION)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3_11() {
+    if (jj_3R_27()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_24() {
+    if (jj_3R_31()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_25() {
+    if (jj_3R_24()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_71() {
     if (jj_scan_token(WITHIN_CODE)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_21()) {
-    jj_scanpos = xsp;
-    if (jj_3R_48()) return true;
-    }
     return false;
   }
 
-  static final private boolean jj_3R_44() {
-    if (jj_3R_61()) return true;
+  static final private boolean jj_3_10() {
+    if (jj_3R_26()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_45() {
-    if (jj_3R_61()) return true;
+  static final private boolean jj_3_9() {
+    if (jj_3R_29()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_53() {
-    if (jj_scan_token(PARAMETER_START)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_65()) jj_scanpos = xsp;
-    if (jj_scan_token(PARAMETER_END)) return true;
+  static final private boolean jj_3R_76() {
+    if (jj_scan_token(WITHIN)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_33() {
+    if (jj_3R_41()) return true;
     return false;
   }
 
   static final private boolean jj_3R_27() {
-    if (jj_scan_token(WITHIN)) return true;
-    if (jj_3R_47()) return true;
-    if (jj_scan_token(CLASS_POINTCUT_END)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_33()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(METHOD_CLASS_PATTERN)) return true;
+    if (jj_3R_34()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_77() {
+    if (jj_scan_token(HANDLER)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3_8() {
+    if (jj_3R_28()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_74() {
+    if (jj_scan_token(GET)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3_7() {
+    if (jj_3R_28()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_73() {
+    if (jj_scan_token(SET)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3_6() {
+    if (jj_3R_27()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3_5() {
+    if (jj_3R_26()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_69() {
+    if (jj_scan_token(CALL)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3_4() {
+    if (jj_3R_27()) return true;
     return false;
   }
 
   static final private boolean jj_3R_80() {
-    if (jj_scan_token(METHOD_SYNCHRONIZED)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_26() {
-    if (jj_scan_token(HANDLER)) return true;
-    if (jj_3R_47()) return true;
-    if (jj_scan_token(CLASS_POINTCUT_END)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_79() {
-    if (jj_scan_token(METHOD_NATIVE)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_62() {
-    if (jj_3R_70()) return true;
+    if (jj_scan_token(THIS)) return true;
     return false;
   }
 
@@ -2761,7 +2662,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   static public boolean lookingAhead = false;
   static private boolean jj_semLA;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[30];
+  static final private int[] jj_la1 = new int[44];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -2771,15 +2672,15 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       jj_la1_2();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x1efffc00,0x18000000,0x88,0x0,0x0,0x0,0x200000,0xe0000000,0x80,0x0,0x0,0x0,0x0,0x0,0x8,0x80,0x80,0x80,0x80,0x0,0x0,0x0,0x0,0xe0000000,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_0 = new int[] {0x1efffc00,0x1efff800,0x18000000,0x88,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xe0000080,0x0,0x0,0x0,0x200000,0x0,0x0,0x0,0x0,0xe0000000,0x80,0x0,0x0,0x0,0x0,0x0,0x8,0x80,0x80,0x80,0x80,0x0,0x0,0x0,0x0,0xe0000000,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x2e1c00,0x2e1c00,0x2e1c00,0x0,0xf,0x20,0x7fc00,0x600000,0x61c00,0xf8000000,0x0,0x0,0x600000,0x600000,0x0,0x0,0x8,0x40000,0x0,0x8,0x7,0x40000,0x3fc00,0x40000,0x21c00,0x0,0xf8000000,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x67fc00,0x67fc00,0x267fc00,0x67fc00,0x67fc00,0x267fc00,0xf8000000,0xf8000000,0x2f,0x67fc00,0x67fc00,0x267fc00,0x0,0x67fc00,0x67fc00,0x267fc00,0xf8000000,0xf,0x20,0x7fc00,0x600000,0x61c00,0xf8000000,0x0,0x0,0x600000,0x600000,0x0,0x0,0x8,0x40000,0x0,0x8,0x7,0x40000,0x3fc00,0x40000,0x21c00,0x0,0xf8000000,};
    }
    private static void jj_la1_2() {
-      jj_la1_2 = new int[] {0x200000,0x0,0x160000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7,0x60,0x0,0x0,0x0,0x60000,0x60000,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x3,};
+      jj_la1_2 = new int[] {0x200000,0x0,0x0,0x160000,0x0,0x0,0x400000,0x0,0x0,0x400000,0x67,0x67,0x0,0x0,0x0,0x400000,0x0,0x0,0x0,0x400000,0x67,0x0,0x0,0x0,0x0,0x0,0x7,0x60,0x0,0x0,0x0,0x60000,0x60000,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x3,};
    }
-  static final private JJCalls[] jj_2_rtns = new JJCalls[27];
+  static final private JJCalls[] jj_2_rtns = new JJCalls[16];
   static private boolean jj_rescan = false;
   static private int jj_gc = 0;
 
@@ -2796,7 +2697,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 44; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2807,7 +2708,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 44; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2824,7 +2725,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 44; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2835,7 +2736,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 44; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2851,7 +2752,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 44; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2861,7 +2762,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 44; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2980,7 +2881,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 30; i++) {
+    for (int i = 0; i < 44; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -3020,7 +2921,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
 
   static final private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 27; i++) {
+    for (int i = 0; i < 16; i++) {
       JJCalls p = jj_2_rtns[i];
       do {
         if (p.gen > jj_gen) {
@@ -3042,17 +2943,6 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
             case 13: jj_3_14(); break;
             case 14: jj_3_15(); break;
             case 15: jj_3_16(); break;
-            case 16: jj_3_17(); break;
-            case 17: jj_3_18(); break;
-            case 18: jj_3_19(); break;
-            case 19: jj_3_20(); break;
-            case 20: jj_3_21(); break;
-            case 21: jj_3_22(); break;
-            case 22: jj_3_23(); break;
-            case 23: jj_3_24(); break;
-            case 24: jj_3_25(); break;
-            case 25: jj_3_26(); break;
-            case 26: jj_3_27(); break;
           }
         }
         p = p.next;

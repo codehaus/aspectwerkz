@@ -7,8 +7,8 @@
  **************************************************************************************/
 package examples.async;
 
-import examples.async.AsyncAspect.Async;
-import examples.async.AsyncAspect.Service;
+import is.Async;
+import is.Service;
 
 @Service
 public class Math {
@@ -22,7 +22,7 @@ public class Math {
         );
     }
 
-    //@Async
+    @Async(timeout = 2)
     public void subtract(int a, int b) {
         System.out.printf(
                 "[ %s ] %d - %d = %d\n",

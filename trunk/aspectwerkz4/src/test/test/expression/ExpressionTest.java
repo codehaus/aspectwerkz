@@ -1396,7 +1396,7 @@ public class ExpressionTest extends TestCase {
         );
 
         //DIGME all hanlder stuff there
-        assertFalse(
+        assertTrue(
                 new ExpressionInfo("handler(java.lang.Exception) && within(test.expression.Target)", NAMESPACE)
                 .getAdvisedClassFilterExpression()
                 .match(new ExpressionContext(PointcutType.WITHIN, s_declaringType, null))
@@ -2020,14 +2020,14 @@ public class ExpressionTest extends TestCase {
                         NAMESPACE
                 ).getExpression().match(new ExpressionContext(PointcutType.CALL, klass, string))
         );
-        // will match at the AdvisedClassFilterExpression level
-        assertTrue(
+        // will not match at the AdvisedClassFilterExpression level
+        assertFalse(
                 new ExpressionInfo(
                         "hasmethod(* getClass())",
                         NAMESPACE
                 ).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass))
         );
-        // but not at the Expression level
+        // and not at the Expression level
         assertFalse(
                 new ExpressionInfo(
                         "hasmethod(* getClass())",
@@ -2041,8 +2041,8 @@ public class ExpressionTest extends TestCase {
                         NAMESPACE
                 ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass))
         );
-        // even a fake method will match, since we extend java.lang.Object, for the AdvisedClassFilterExpression level
-        assertTrue(
+        // not even a fake method will match
+        assertFalse(
                 new ExpressionInfo(
                         "hasmethod(* java.lang.Object+.DOESNOTEXIST())",
                         NAMESPACE
@@ -2072,14 +2072,14 @@ public class ExpressionTest extends TestCase {
                         NAMESPACE
                 ).getExpression().match(new ExpressionContext(PointcutType.CALL, klass, string))
         );
-        // will match at the AdvisedClassFilterExpression level
-        assertTrue(
+        // will not match here
+        assertFalse(
                 new ExpressionInfo(
                         "hasfield(* value)",
                         NAMESPACE
                 ).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass))
         );
-        // but not at the Expression level
+        // and not at the Expression level
         assertFalse(
                 new ExpressionInfo(
                         "hasfield(* value)",

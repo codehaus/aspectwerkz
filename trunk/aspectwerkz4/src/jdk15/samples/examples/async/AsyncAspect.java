@@ -13,28 +13,32 @@ import org.codehaus.aspectwerkz.annotation.*;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import java.lang.annotation.ElementType;
+import java.lang.reflect.Method;
+
+import is.Async;
 
 public class AsyncAspect {
 
     private Executor m_threadPool = Executors.newCachedThreadPool();
 
-    @Around
-    @Execution(Async.class)
-    @Within(Service.class)
+    @Around("execution(@is.Async) && within(@is.Service)")
     public Object async(final JoinPoint jp) throws Throwable {
         m_threadPool.execute(
                 new Runnable() {
                     public void run() {
                         try {
                             // proceed in a new thread
-                            //System.out.println("forked - timeout = " + ((MethodSignature)jp.getSignature()).getMethod().getAnnotation(Async.class).timeout());
+
+                            // AOP code
+                            Method currentMethod = ((MethodSignature)jp.getSignature()).getMethod();
+
+                            // plain Java code
+                            Async theCurrentAnnotation = currentMethod.getAnnotation(Async.class);
+                            //System.out.println("AsyncAspect.run - timeout = " + theCurrentAnnotation.timeout());
+
                             jp.proceed();
-                        } catch (Throwable e) {
-                            throw new RuntimeException(e);
+                        } catch (Throwable t) {
+                            t.printStackTrace();
                         }
                     }
                 }
@@ -42,14 +46,5 @@ public class AsyncAspect {
         return null;
     }
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    public static @interface Async {
-        int timeout() default 0;
-    }
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    public static @interface Service {
-    }
 }
