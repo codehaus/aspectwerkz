@@ -215,7 +215,7 @@ public class PointcutManager {
      * Returns all the pointcuts for the join point specified.
      *
      * @param ctx the expression context
-     * @return the pointcuts that match
+     * @return the pointcuts that parse
      */
     public List getPointcuts(final ExpressionContext ctx) {
         if (ctx == null) {
@@ -235,7 +235,7 @@ public class PointcutManager {
      * Returns all the cflow pointcuts for the join point specified.
      *
      * @param ctx the expression context
-     * @return the pointcuts that match
+     * @return the pointcuts that parse
      */
     public List getCflowPointcuts(final ExpressionContext ctx) {
         if (ctx == null) {

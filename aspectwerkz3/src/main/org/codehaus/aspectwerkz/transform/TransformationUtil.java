@@ -182,9 +182,9 @@ public final class TransformationUtil {
     /**
      * Checks if a class has a certain class as super class, somewhere up in the class hierarchy.
      *
-     * @param classInfo the meta-data for the class to match
+     * @param classInfo the meta-data for the class to parse
      * @param className the name of the super class
-     * @return true if we have a match else false
+     * @return true if we have a parse else false
      */
     public static boolean extendsSuperClass(final ClassInfo classInfo, final String className) {
         if ((classInfo == null) || (className == null)) {
@@ -203,7 +203,7 @@ public final class TransformationUtil {
      *
      * @param classInfo
      * @param interfaceName
-     * @return true if we have a match else false
+     * @return true if we have a parse else false
      */
     public static boolean implementsInterface(final ClassInfo classInfo, final String interfaceName) {
         if ((classInfo == null) || (interfaceName == null)) {

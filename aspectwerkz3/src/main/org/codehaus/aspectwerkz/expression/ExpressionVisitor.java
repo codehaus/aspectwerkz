@@ -465,7 +465,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             }
 
             // if number of nodes is greater than the number of parameter types -> bail out
-            // unless there is one single node with the eager wildcard pattern '..' -> match
+            // unless there is one single node with the eager wildcard pattern '..' -> parse
             if (parameterNodes.size() > parameterTypes.length) {
                 if (parameterNodes.size() == 1) {
                     ASTParameter param = (ASTParameter)parameterNodes.get(0);
@@ -489,7 +489,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                     return false;
                 }
             }
-        } else if (parameterTypes.length != 0) { // no nodes but parameters to match
+        } else if (parameterTypes.length != 0) { // no nodes but parameters to parse
             return false;
         }
         return true;

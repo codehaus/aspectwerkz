@@ -627,15 +627,15 @@ public class ExpressionTest extends TestCase {
     }
 
     //    public void testFieldModifiers4() throws Exception {
-    //        assertTrue(new ExpressionInfo("set(!private int test.expression.Target.modifier2)", NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.SET,
+    //        assertTrue(new ExpressionInfo("set(!private int test.expression.Target.modifier2)", NAMESPACE).getExpression().parse(new ExpressionContext(PointcutType.SET,
     //                                                                                                                                          modifier2,
     //                                                                                                                                          null)));
     //        assertFalse(new ExpressionInfo("set(!public int test.expression.Target.modifier2)", NAMESPACE).getExpression()
-    //                                                                                                     .match(new ExpressionContext(PointcutType.SET,
+    //                                                                                                     .parse(new ExpressionContext(PointcutType.SET,
     //                                                                                                                                  modifier2,
     //                                                                                                                                  null)));
     //        assertFalse(new ExpressionInfo("set(public !static int test.expression.Target.modifier2)", NAMESPACE).getExpression()
-    //                                                                                                     .match(new ExpressionContext(PointcutType.SET,
+    //                                                                                                     .parse(new ExpressionContext(PointcutType.SET,
     //                                                                                                                                  modifier2,
     //                                                                                                                                  null)));
     //    }
@@ -806,7 +806,7 @@ public class ExpressionTest extends TestCase {
 
         //        assertFalse(
         //                new ExpressionInfo( "within(abstract test.expression.Target)", NAMESPACE).
-        //                getExpression().match(new ExpressionContext( PointcutType.HANDLER, klass, klass))
+        //                getExpression().parse(new ExpressionContext( PointcutType.HANDLER, klass, klass))
         //
         //        );
     }

@@ -16,8 +16,8 @@ import org.apache.xmlbeans.impl.jam.mutable.MAnnotatedElement;
 import org.apache.xmlbeans.impl.jam.mutable.MAnnotation;
 import org.apache.xmlbeans.impl.jam.provider.JamServiceContext;
 import org.codehaus.aspectwerkz.annotation.expression.DumpVisitor;
-import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
 import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
 import org.codehaus.aspectwerkz.util.Strings;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -29,7 +29,6 @@ import java.util.Properties;
  */
 public class CustomJavadocTagParser extends JavadocTagParser {
     private JamServiceContext m_ctx;
-    private AnnotationParser m_parser;
 
     public void init(JamServiceContext ctx) {
         super.init(ctx);
@@ -40,7 +39,6 @@ public class CustomJavadocTagParser extends JavadocTagParser {
             throw new IllegalStateException("CustomJavadocTagParser.init(JamServiceContext) called twice");
         }
         m_ctx = ctx;
-        m_parser = new AnnotationParser(System.in); // can be only one
     }
 
     /**
@@ -51,18 +49,7 @@ public class CustomJavadocTagParser extends JavadocTagParser {
      */
     public void parse(MAnnotatedElement target, Tag tag) {
         MAnnotation[] anns = createAnnotations(target, tag);
-        String tagText = tag.text();
-        tagText = Strings.removeFormattingCharacters(tagText);
-        String annotation = null;
-
-        //        try {
-        //            annotation = tag.name() + "(\"" + tagText + "\")";
-        ////            annotation = tag.name() + '(' + tagText + ')';
-        //            System.out.println("annotation = " + annotation);
-        //            DumpVisitor.dumpAST(m_parser.parse(annotation));
-        //        } catch (ParseException e) {
-        //            System.err.println("could not parse annotation: " + annotation);
-        //        }
+        String tagText = Strings.removeFormattingCharacters(tag.text());
         if (tagText == null) {
             return;
         }
@@ -70,6 +57,17 @@ public class CustomJavadocTagParser extends JavadocTagParser {
         if (tagText.length() == 0) {
             return;
         }
+
+        /*
+                StringBuffer annotation = new StringBuffer();
+                annotation.append(tag.name());
+                annotation.append('(');
+                annotation.append(tagText);
+                annotation.append(')');
+                for (int i = 0; i < anns.length; i++) {
+                    anns[i].setSimpleValue(JAnnotation.SINGLE_VALUE_NAME, annotation.toString(), getStringType());
+                }
+        */
 
         // first: grab the simple value (if there is one)
         tagText = Strings.removeFormattingCharacters(tagText);

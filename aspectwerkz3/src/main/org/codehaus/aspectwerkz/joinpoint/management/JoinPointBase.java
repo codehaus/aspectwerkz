@@ -408,7 +408,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     /**
      * Checks if the join point is in the correct control flow.
      *
-     * @return true if we have a match
+     * @return true if we have a parse
      */
     public boolean isInCflow() {
         if (m_checkCflow) {

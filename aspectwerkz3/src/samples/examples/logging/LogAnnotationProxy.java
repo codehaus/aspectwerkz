@@ -20,7 +20,7 @@ public class LogAnnotationProxy extends TypedAnnotationProxy {
     public static final int WARNING = 2;
 
     private int m_level;
-    private float m_f;
+    private float m_flt;
     private int m_iConstant;
     private String m_sConstant;
     private double[] m_darr;
@@ -35,13 +35,13 @@ public class LogAnnotationProxy extends TypedAnnotationProxy {
         m_level = value;
     }
 
-    public float f() {
-        return m_f;
+    public float flt() {
+        return m_flt;
     }
 
-    public void setf(float aFloat) {
+    public void setflt(float aFloat) {
         System.out.println("aFloat = " + aFloat);
-        m_f = aFloat;
+        m_flt = aFloat;
     }
 
     public int iconstant() {

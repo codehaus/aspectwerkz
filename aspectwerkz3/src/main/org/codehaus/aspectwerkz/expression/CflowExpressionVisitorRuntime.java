@@ -24,9 +24,9 @@ import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
 /**
  * The Cflow expression visitor used at runtime.
  * <p/>
- * This visitor does a match on a compsosite context, based on the gathered cflow related context AND the joinpoint context.
+ * This visitor does a parse on a compsosite context, based on the gathered cflow related context AND the joinpoint context.
  * <p/>
- * This allow to match complex cflow expression like "(pc1 AND cf1 AND cf3) OR (pc2 AND cf2)".
+ * This allow to parse complex cflow expression like "(pc1 AND cf1 AND cf3) OR (pc2 AND cf2)".
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -47,7 +47,7 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
      *
      * @param contexts the cflow gathered contexts
      * @param jpContext the joinpoint context
-     * @return  true if match
+     * @return  true if parse
      */
     public boolean matchCflowStack(final Object[] contexts, final ExpressionContext jpContext) {
         CompositeContext compositeContext = new CompositeContext();
@@ -145,7 +145,7 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
      * Matches the cflow information stack.
      *
      * @param compositeContext the composite context
-     * @return  true if match
+     * @return  true if parse
      */
     private boolean matchCflowStack(final CompositeContext compositeContext) {
         return ((Boolean)visit(m_root, compositeContext)).booleanValue();
