@@ -16,7 +16,6 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.expression.QDoxParser;
 import org.codehaus.aspectwerkz.reflect.TypeConverter;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
-import org.codehaus.aspectwerkz.util.Base64;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
@@ -24,8 +23,6 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
-import org.objectweb.asm.attrs.Annotation;
-import org.objectweb.asm.attrs.AnnotationElementValue;
 import org.objectweb.asm.attrs.Attributes;
 
 import java.io.ByteArrayOutputStream;

@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.annotation.instrumentation.asm;
 
 import org.objectweb.asm.attrs.Annotation;
-import org.objectweb.asm.attrs.AnnotationElementValue;
 import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
 import org.objectweb.asm.Attribute;
 import org.codehaus.aspectwerkz.util.Base64;
@@ -40,8 +39,7 @@ public class CustomAttributeHelper {
      * @return
      */
     public static AnnotationInfo extractCustomAnnotation(final Annotation annotation) {
-        AnnotationElementValue annotationElementValue = (AnnotationElementValue) ((Object[])annotation.elementValues.get(0))[1];
-        byte[] bytes = Base64.decode((String)annotationElementValue.getValue());
+        byte[] bytes = Base64.decode((String)((Object[])annotation.elementValues.get(0))[1]);
         return extractCustomAnnotation(bytes);
     }
 
@@ -72,7 +70,7 @@ public class CustomAttributeHelper {
     public static Annotation createCustomAnnotation(final byte[] bytes) {
         Annotation annotation = new Annotation();
         annotation.type = CustomAttribute.TYPE;
-        annotation.add(VALUE, new AnnotationElementValue(Base64.encodeBytes(bytes)));
+        annotation.add(VALUE, Base64.encodeBytes(bytes));
         return annotation;
     }
 
