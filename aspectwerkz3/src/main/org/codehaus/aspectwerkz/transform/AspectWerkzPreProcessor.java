@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfoRepository;
+import org.codehaus.aspectwerkz.transform.delegation.DelegationWeavingStrategy;
 import org.codehaus.aspectwerkz.util.Util;
 
 import java.util.ArrayList;

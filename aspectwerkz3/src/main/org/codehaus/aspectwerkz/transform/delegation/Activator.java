@@ -5,31 +5,23 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transform;
+package org.codehaus.aspectwerkz.transform.delegation;
 
-import java.util.Hashtable;
+import org.codehaus.aspectwerkz.transform.Context;
+import org.codehaus.aspectwerkz.transform.Klass;
 
 /**
- * 
+ * Activator alters bytecode at runtime
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class InliningWeavingStrategy implements WeavingStrategy {
-   
+public interface Activator {
     /**
-     * Initializes the transformer stack.
+     * Transforms bytecode at runtime
      *
-     * @param params not used
-     */
-    public void initialize(final Hashtable params) {
-        
-    }
-
-    /**
-     * @param className
-     * @param klass
      * @param context
+     * @param klass
+     * @throws Exception
      */
-    public void transform(final String className, final Klass klass, final Context context) {
-    }
+    public abstract void activate(final Context context, final Klass klass) throws Exception;
 }
