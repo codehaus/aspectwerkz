@@ -393,25 +393,6 @@
         </exec>
     </target>
 
-    <!-- compile the attributes into the codebase -->
-    <target name="aspectwerkz:compile:attributes"
-        depends="aspectwerkz:compile">
-        <attrib4jCompiler sourcepath="${src.dir}/samples2"
-            sourceclasspath="${target.dir}/samples2-classes${pathseparator}${lib.dir}/aspectwerkz-${version}.jar"
-            destdir="${target.dir}/enhanced"
-            attributepackages="org.codehaus.aspectwerkz.definition.attribute"
-            attributeclasspath="${lib.dir}/aspectwerkz-${version}.jar">
-            <fileset dir="${src.dir}/samples2"/>
-            <classpath>
-                <pathelement location="${lib.dir}/aspectwerkz-${version}.jar"/>
-                <pathelement location="${lib.dir}/attrib4j-0.8.8.jar"/>
-                <pathelement location="${lib.dir}/bcel.jar"/>
-            </classpath>
-        </attrib4jCompiler>
-    </target>
-
-    <!-- include the custom task -->
-    <taskdef name="attrib4jCompiler" classname="attrib4j.ant.Attrib4jTask" classpathref="project.class.path"/>
 
 </project>
 
