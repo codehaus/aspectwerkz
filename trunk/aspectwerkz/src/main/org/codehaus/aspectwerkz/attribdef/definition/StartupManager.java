@@ -190,8 +190,7 @@ public class StartupManager {
                 deploymentModel = DeploymentModel.PER_JVM;
             }
             else {
-                deploymentModel = DeploymentModel.
-                        getDeploymentModelAsInt(aspectDef.getDeploymentModel());
+                deploymentModel = DeploymentModel.getDeploymentModelAsInt(aspectDef.getDeploymentModel());
             }
 
             // set the parameters
@@ -219,7 +218,9 @@ public class StartupManager {
             }
 
             // register the aspect in the system
-            AspectMetaData aspectMetaData = new AspectMetaData(uuid, aspectDef.getName());
+            AspectMetaData aspectMetaData = new AspectMetaData(
+                    uuid, aspectDef.getName(), deploymentModel
+            );
 
             ((AttribDefSystem)SystemLoader.getSystem(uuid)).register(aspect, aspectMetaData);
         }

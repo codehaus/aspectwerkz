@@ -73,18 +73,14 @@ public class AspectMetaData {
     protected final String m_name;
 
     /**
+     * The deployment model for the aspect.
+     */
+    protected final int m_deploymentModel;
+
+    /**
      * The UUID for the AspectWerkz system.
      */
     protected final String m_uuid;
-
-    /**
-     * Creates a new aspect.
-     *
-     * @param name the name of the aspect
-     */
-    public AspectMetaData(final String name) {
-        this(System.DEFAULT_SYSTEM, name);
-    }
 
     /**
      * Creates a new aspect.
@@ -93,10 +89,23 @@ public class AspectMetaData {
      * @param name the name of the aspect
      */
     public AspectMetaData(final String uuid, final String name) {
+        this(uuid, name, DeploymentModel.PER_JVM);
+    }
+
+    /**
+     * Creates a new aspect.
+     *
+     * @param uuid the UUID for the AspectWerkz system
+     * @param name the name of the aspect
+     * @param deploymentModel the deployment model for the aspect
+     */
+    public AspectMetaData(final String uuid, final String name, final int deploymentModel) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (name == null) throw new IllegalArgumentException("name can not be null");
+        if (deploymentModel < 0) throw new IllegalArgumentException(deploymentModel + " is not a valid deployement model type");
         m_uuid = uuid;
         m_name = name;
+        m_deploymentModel = deploymentModel;
     }
 
     /**
@@ -106,6 +115,24 @@ public class AspectMetaData {
      */
     public String getName() {
         return m_name;
+    }
+
+    /**
+     * Returns the deployment model for the aspect.
+     *
+     * @return the deployment model
+     */
+    public int getDeploymentModel() {
+        return m_deploymentModel;
+    }
+
+    /**
+     * Returns the deployment model for the aspect.
+     *
+     * @return the deployment model
+     */
+    public String getDeploymentModelAsString() {
+        return DeploymentModel.getDeploymentModelAsString(m_deploymentModel);
     }
 
     /**

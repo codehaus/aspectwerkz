@@ -285,15 +285,16 @@ public final class AttribDefSystem implements System {
      * @param name the name of the aspect
      * @param className the class name of the aspect
      * @param deploymentModel the deployment model for the aspect
+     *        (constants in the DeploymemtModel class, e.g. f.e. DeploymentModel.PER_JVM)
      * @param loader an optional class loader (if null it uses the context classloader)
      */
     public void createAspect(final String name,
                              final String className,
-                             final String deploymentModel,
+                             final int deploymentModel,
                              final ClassLoader loader) {
         if (name == null) throw new IllegalArgumentException("aspect name can not be null");
         if (className == null) throw new IllegalArgumentException("class name can not be null");
-        if (deploymentModel == null) throw new IllegalArgumentException("deployment model can not be null");
+        if (deploymentModel < 0 || deploymentModel > 3) throw new IllegalArgumentException(deploymentModel + " is not a valid deployment model type");
 
         Aspect prototype = null;
         Class aspectClass = null;
@@ -320,14 +321,14 @@ public final class AttribDefSystem implements System {
         AspectDefinition aspectDef = m_attributeParser.parse(aspectClass);
         m_definition.addAspect(aspectDef);
 
-        prototype.___AW_setDeploymentModel(DeploymentModel.getDeploymentModelAsInt(deploymentModel));
+        prototype.___AW_setDeploymentModel(deploymentModel);
         prototype.___AW_setName(name);
         prototype.___AW_setAspectClass(prototype.getClass());
         prototype.___AW_setContainer(StartupManager.createAspectContainer(prototype));
         prototype.___AW_setAspectDef(aspectDef);
 
         // register the aspect
-        register(prototype, new AspectMetaData(m_uuid, name));
+        register(prototype, new AspectMetaData(m_uuid, name, deploymentModel));
     }
 
     /**

@@ -20,6 +20,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -28,12 +29,13 @@ public class AspectWerkzTest extends TestCase {
 
     public void testSetDeploymentModelForAdvice() {
         assertEquals(DeploymentModel.PER_JVM, ((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("methodAdvice1").getDeploymentModel());
-         ((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("methodAdvice1").setDeploymentModel(DeploymentModel.PER_CLASS);
-        assertEquals(DeploymentModel.PER_CLASS,  ((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("methodAdvice1").getDeploymentModel());
+        ((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("methodAdvice1").setDeploymentModel(DeploymentModel.PER_CLASS);
+        assertEquals(DeploymentModel.PER_CLASS, ((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("methodAdvice1").getDeploymentModel());
     }
 
     public void testRegisterAspect() {
-         ((XmlDefSystem)SystemLoader.getSystem("tests")).register(new AspectMetaData(getClass().getName()));
+        ((XmlDefSystem)SystemLoader.getSystem("tests")).
+                register(new AspectMetaData(getClass().getName(), "perJVM"));
         Collection aspects = SystemLoader.getSystem("tests").getAspectsMetaData();
         for (Iterator it = aspects.iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
@@ -49,8 +51,8 @@ public class AspectWerkzTest extends TestCase {
             public void execute(final JoinPoint joinPoint) {
             }
         };
-         ((XmlDefSystem)SystemLoader.getSystem("tests")).register("testRegisterAdvice", advice);
-        assertNotNull( ((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("testRegisterAdvice"));
+        ((XmlDefSystem)SystemLoader.getSystem("tests")).register("testRegisterAdvice", advice);
+        assertNotNull(((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("testRegisterAdvice"));
     }
 
     public void testFindAdviceByIndex() {
@@ -58,9 +60,9 @@ public class AspectWerkzTest extends TestCase {
             public void execute(final JoinPoint joinPoint) {
             }
         };
-         ((XmlDefSystem)SystemLoader.getSystem("tests")).register("testFindAdviceByIndex", advice);
+        ((XmlDefSystem)SystemLoader.getSystem("tests")).register("testFindAdviceByIndex", advice);
         IndexTuple index = SystemLoader.getSystem("tests").getAdviceIndexFor("testFindAdviceByIndex");
-        assertEquals(((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("testFindAdviceByIndex"),  ((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice(index));
+        assertEquals(((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("testFindAdviceByIndex"), ((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice(index));
     }
 
     public static void main(String[] args) {

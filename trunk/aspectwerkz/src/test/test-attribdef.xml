@@ -1,6 +1,7 @@
 <!DOCTYPE aspectwerkz PUBLIC
     "-//AspectWerkz//DTD//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+
 <aspectwerkz>
     <system id="tests">
         <package name="test.attribdef.aspect">
