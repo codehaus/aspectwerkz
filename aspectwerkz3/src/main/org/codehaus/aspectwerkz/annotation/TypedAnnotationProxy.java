@@ -56,6 +56,7 @@ public abstract class TypedAnnotationProxy implements Annotation, Serializable {
         if (value == null) {
             throw new IllegalArgumentException("value can not be null");
         }
+        System.out.println("value: " + value);
         try {
             AnnotationVisitor.parse(this, s_parser.parse(value));
         } catch (ParseException e) {

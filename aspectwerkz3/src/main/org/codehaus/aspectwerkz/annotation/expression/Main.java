@@ -29,7 +29,9 @@ public class Main {
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(flt=-33.345f)"));
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(dbl=33.345d)"));
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(dbl=-33.345d)"));
+        AnnotationVisitor.parse(annotation, parser.parse("@Annotation(key=true)"));
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(\"value\")"));
+        AnnotationVisitor.parse(annotation, parser.parse("@Annotation(\"value's\")"));
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(key=true)"));
         AnnotationVisitor.parse(
                 annotation,

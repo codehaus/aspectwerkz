@@ -68,7 +68,6 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         MethodInfo methodInfo = getMethodInfo(valueName);
         Object typedValue = node.jjtGetChild(0).jjtAccept(this, methodInfo);
 
-        //m_annotationProxy.addTypedAnnotationValue(typedValue.getClass(), valueName, stringValue); // TODO: is this method call needed for JAM?
         invokeSetterMethod(methodInfo, typedValue, valueName);
         return null;
     }
@@ -113,6 +112,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     }
 
     public Object visit(ASTString node, Object data) {
+        System.out.println("string " + node.getValue());
         return node.getValue();
     }
 

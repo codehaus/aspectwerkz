@@ -80,7 +80,7 @@ TOKEN :
 | < COMMA : "," >
 | < EQUALS : "=" >
 | < AT : "@" >
-| < CHAR_LETTER : (~["\n","\r", "'","\\", "\""]) >
+| < CHAR_LETTER : (~["\n","\r", "\\", "\""]) >
 | < ANNOTATION : <AT> <JAVA_NAME> >
 | < JAVA_TYPE: <JAVA_NAME> (<DOT> <JAVA_NAME>)* >
 | < JAVA_NAME: (<JAVA_LETTER>)+ >
