@@ -341,8 +341,8 @@ public class JoinPointManager {
         final CompilationInfo.Model compilationModel = new CompilationInfo.Model(emittedJoinPoint, adviceContainer);
 
         final Class clazz = JoinPointFactory.newJoinPoint(compilationModel, calleeClass.getClassLoader());
-        final CompilationInfo compilationInfo = new CompilationInfo(compilationModel);
-        JoinPointFactory.addCompilationInfo(clazz, compilationInfo);
+
+        JoinPointFactory.addCompilationInfo(clazz, new CompilationInfo(compilationModel));
     }
 
     /**
@@ -394,7 +394,7 @@ public class JoinPointManager {
 
                         // create a lightweight representation of the bounded advices to pass to the compiler
                         final MethodInfo adviceMethodInfo = adviceDefinition.getMethodInfo();
-                        AdviceInfo info = new AdviceInfo(
+                        final AdviceInfo adviceInfo = new AdviceInfo(
                                 aspectDefinition.getQualifiedName(),
                                 aspectDefinition.getClassName(),
                                 DeploymentModel.getDeploymentModelAsInt(aspectDefinition.getDeploymentModel()),
@@ -409,34 +409,34 @@ public class JoinPointManager {
                                 expressionContext
                         );
 
-                        setMethodArgumentIndexes(expressionInfo, expressionContext, info, loader);
+                        setMethodArgumentIndexes(expressionInfo, expressionContext, adviceInfo, loader);
 
                         if (AdviceType.BEFORE.equals(adviceDefinition.getType())) {
-                            beforeAdvices.add(info);
+                            beforeAdvices.add(adviceInfo);
                         } else if (AdviceType.AROUND.equals(adviceDefinition.getType())) {
-                            aroundAdvices.add(info);
+                            aroundAdvices.add(adviceInfo);
                         } else if (AdviceType.AFTER_FINALLY.equals(adviceDefinition.getType())) {
-                            afterFinallyAdvices.add(info);
+                            afterFinallyAdvices.add(adviceInfo);
                         } else if (AdviceType.AFTER_RETURNING.equals(adviceDefinition.getType())) {
-                            afterReturningAdvices.add(info);
+                            afterReturningAdvices.add(adviceInfo);
                         } else if (AdviceType.AFTER_THROWING.equals(adviceDefinition.getType())) {
-                            afterThrowingAdvices.add(info);
+                            afterThrowingAdvices.add(adviceInfo);
                         } else if (AdviceType.AFTER.equals(adviceDefinition.getType())) {
-                            afterReturningAdvices.add(info);//special case for "after only"
+                            afterReturningAdvices.add(adviceInfo);//special case for "after only"
                         }
                     }
                 }
             }
         }
 
-        final AdviceInfoContainer adviceInfo = new AdviceInfoContainer(
+        final AdviceInfoContainer adviceInfoContainer = new AdviceInfoContainer(
                 aroundAdvices,
                 beforeAdvices,
                 afterFinallyAdvices,
                 afterReturningAdvices,
                 afterThrowingAdvices
         );
-        return adviceInfo;
+        return adviceInfoContainer;
     }
 
     /**
