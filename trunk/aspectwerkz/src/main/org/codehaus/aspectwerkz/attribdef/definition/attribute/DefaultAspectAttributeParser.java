@@ -24,6 +24,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 /**
  * Extracts the aspects attributes from the class files and creates a meta-data representation of them.
@@ -252,7 +253,8 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
             }
         }
         if (aspectAttr == null) {
-            throw new DefinitionException("aspect [" + klass.getName() + "] is not properly defined. (Is the aspect compiled with AspectC?)");
+            // fall back on using the class name as aspect name and let the deployment model be perJVM
+            aspectAttr = new AspectAttribute(klass.getName(), DeploymentModel.PER_JVM);
         }
         return aspectAttr;
     }
@@ -290,6 +292,4 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
             }
         }
     }
-
-
 }
