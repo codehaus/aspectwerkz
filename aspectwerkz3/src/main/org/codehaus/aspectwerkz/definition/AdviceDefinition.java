@@ -96,9 +96,9 @@ public class AdviceDefinition {
         if (aspectClassName == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
-        if (expressionInfo == null) {
-            throw new IllegalArgumentException("expressionInfo can not be null");
-        }
+//        if (expressionInfo == null) {
+//            throw new IllegalArgumentException("expressionInfo can not be null");
+//        }
         if (methodInfo == null) {
             throw new IllegalArgumentException("methodInfo can not be null");
         }
@@ -144,6 +144,8 @@ public class AdviceDefinition {
 
     /**
      * Returns the expression.
+     * <p/>
+     * TODO should return NULL object if null
      *
      * @return the expression
      */

@@ -26,6 +26,7 @@ import java.util.Map;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AspectDefinition {
+
     /**
      * The name of the aspect (nickname).
      */

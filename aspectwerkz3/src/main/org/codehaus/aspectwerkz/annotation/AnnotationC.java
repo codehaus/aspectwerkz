@@ -319,10 +319,8 @@ public class AnnotationC {
                 ExpressionAnnotationProxy expressionProxy = (ExpressionAnnotationProxy) expressionAnnotation;
                 AnnotationC.registerCallParameters(expressionProxy, method);
                 enhancer.insertMethodAttribute(
-                        method, new AnnotationInfo(
-                                ANNOTATION_EXPRESSION,
-                                expressionProxy
-                        )
+                        method,
+                        new AnnotationInfo(ANNOTATION_EXPRESSION, expressionProxy)
                 );
                 logInfo(
                         "    pointcut [" + AnnotationC.getShortCallSignature(method) + " :: "
@@ -337,10 +335,8 @@ public class AnnotationC {
                 AroundAnnotationProxy aroundProxy = (AroundAnnotationProxy) aroundAnnotation;
                 AnnotationC.registerCallParameters(aroundProxy, method);
                 enhancer.insertMethodAttribute(
-                        method, new AnnotationInfo(
-                                ANNOTATION_AROUND,
-                                aroundProxy
-                        )
+                        method,
+                        new AnnotationInfo(ANNOTATION_AROUND, aroundProxy)
                 );
                 logInfo(
                         "    around advice [" + AnnotationC.getShortCallSignature(method) + " :: "
@@ -355,10 +351,8 @@ public class AnnotationC {
                 BeforeAnnotationProxy beforeProxy = (BeforeAnnotationProxy) beforeAnnotation;
                 AnnotationC.registerCallParameters(beforeProxy, method);
                 enhancer.insertMethodAttribute(
-                        method, new AnnotationInfo(
-                                ANNOTATION_BEFORE,
-                                beforeProxy
-                        )
+                        method,
+                        new AnnotationInfo(ANNOTATION_BEFORE, beforeProxy)
                 );
                 logInfo(
                         "    before [" + AnnotationC.getShortCallSignature(method) + " :: "
@@ -373,10 +367,8 @@ public class AnnotationC {
                 AfterAnnotationProxy afterProxy = (AfterAnnotationProxy) afterAnnotation;
                 AnnotationC.registerCallParameters(afterProxy, method);
                 enhancer.insertMethodAttribute(
-                        method, new AnnotationInfo(
-                                ANNOTATION_AFTER,
-                                afterProxy
-                        )
+                        method,
+                        new AnnotationInfo(ANNOTATION_AFTER, afterProxy)
                 );
                 logInfo(
                         "    after advice [" + AnnotationC.getShortCallSignature(method) + " :: "
@@ -391,10 +383,8 @@ public class AnnotationC {
                 Annotation customAnnotation = customAnnotations[i];
                 if (customAnnotation != null) {
                     enhancer.insertMethodAttribute(
-                            method, new AnnotationInfo(
-                                    annotationName,
-                                    customAnnotation
-                            )
+                            method,
+                            new AnnotationInfo(annotationName, customAnnotation)
                     );
                     logInfo(
                             "    custom method annotation [" + annotationName + " @ "
@@ -490,10 +480,8 @@ public class AnnotationC {
             if (expressionAnnotation != null) {
                 ExpressionAnnotationProxy expressionProxy = (ExpressionAnnotationProxy) expressionAnnotation;
                 enhancer.insertFieldAttribute(
-                        field, new AnnotationInfo(
-                                ANNOTATION_EXPRESSION,
-                                expressionProxy
-                        )
+                        field,
+                        new AnnotationInfo(ANNOTATION_EXPRESSION, expressionProxy)
                 );
                 logInfo(
                         "    pointcut [" + field.getName() + " :: " + expressionProxy.expression()
@@ -507,10 +495,8 @@ public class AnnotationC {
             if (implementsAnnotation != null) {
                 ImplementsAnnotationProxy implementsProxy = (ImplementsAnnotationProxy) implementsAnnotation;
                 enhancer.insertFieldAttribute(
-                        field, new AnnotationInfo(
-                                ANNOTATION_IMPLEMENTS,
-                                implementsProxy
-                        )
+                        field,
+                        new AnnotationInfo(ANNOTATION_IMPLEMENTS, implementsProxy)
                 );
                 logInfo(
                         "    interface introduction [" + field.getName() + " :: "
@@ -525,10 +511,8 @@ public class AnnotationC {
                 Annotation customAnnotation = customAnnotations[i];
                 if (customAnnotation != null) {
                     enhancer.insertFieldAttribute(
-                            field, new AnnotationInfo(
-                                    annotationName,
-                                    customAnnotation
-                            )
+                            field,
+                            new AnnotationInfo(annotationName, customAnnotation)
                     );
                     logInfo(
                             "    custom field annotation [" + annotationName + " @ "

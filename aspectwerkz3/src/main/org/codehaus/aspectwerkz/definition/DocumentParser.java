@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
@@ -44,7 +45,7 @@ public class DocumentParser {
         final List aspectClassNames = new ArrayList();
         for (Iterator it1 = document.getRootElement().elementIterator("system"); it1.hasNext();) {
             Element system = (Element) it1.next();
-            final String packageName = getBasePackage(system);
+            final String basePackage = getBasePackage(system);
             for (Iterator it11 = system.elementIterator("aspect"); it11.hasNext();) {
                 String className = null;
                 Element aspect = (Element) it11.next();
@@ -56,12 +57,11 @@ public class DocumentParser {
                         className = value;
                     }
                 }
-                String aspectClassName = packageName + className;
-                aspectClassNames.add(aspectClassName);
+                aspectClassNames.add(basePackage + className);
             }
             for (Iterator it11 = system.elementIterator("package"); it11.hasNext();) {
                 final Element packageElement = ((Element) it11.next());
-                final String packageName1 = getPackage(packageElement);
+                final String packageName = getPackage(packageElement);
                 for (Iterator it12 = packageElement.elementIterator("aspect"); it12.hasNext();) {
                     String className = null;
                     Element aspect = (Element) it12.next();
@@ -73,11 +73,13 @@ public class DocumentParser {
                             className = value;
                         }
                     }
-                    String aspectClassName = packageName1 + className;
-                    aspectClassNames.add(aspectClassName);
+                    aspectClassNames.add(packageName + className);
                 }
             }
         }
+        aspectClassNames.add(Virtual.class.getName());
+        ;
+
         return aspectClassNames;
     }
 
@@ -130,6 +132,9 @@ public class DocumentParser {
         }
         final SystemDefinition definition = new SystemDefinition(uuid);
 
+        // add the virtual aspect
+        addVirtualAspect(definition);
+
         // parse the global pointcuts
         List globalPointcuts = parseGlobalPointcuts(systemElement);
 
@@ -143,6 +148,10 @@ public class DocumentParser {
 
         // parse with package elements
         parsePackageElements(loader, systemElement, definition, basePackage, globalPointcuts);
+
+        // add all prepared pointcuts to the virtual advice
+        DefinitionParserHelper.attachPreparedPointcutsToVirtualAdvice(definition);
+
         return definition;
     }
 
@@ -211,6 +220,7 @@ public class DocumentParser {
                                             final SystemDefinition definition,
                                             final String packageName,
                                             final List globalPointcuts) {
+
         for (Iterator it1 = systemElement.elementIterator("aspect"); it1.hasNext();) {
             String aspectName = null;
             String className = null;
@@ -293,8 +303,37 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the aspectElement parameters. <p/>TODO: should perhaps move the parameters to the aspect def instead of
-     * the system def
+     * Adds a virtual system aspect to the definition. Needed to do various tricks.
+     *
+     * @param definition
+     */
+    private static void addVirtualAspect(final SystemDefinition definition) {
+        final Class clazz = Virtual.class;
+        final String aspectName = clazz.getName();
+        final AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectName, definition);
+        try {
+            MethodInfo methodInfo = JavaMethodInfo.getMethodInfo(clazz.getDeclaredMethod("virtual", new Class[]{}));
+            aspectDef.addBeforeAdviceDefinition(
+                    new AdviceDefinition(
+                            methodInfo.getName(),
+                            AdviceType.BEFORE,
+                            null,
+                            aspectName,
+                            aspectName,
+                            null,
+                            methodInfo,
+                            aspectDef
+                    )
+            );
+        } catch (NoSuchMethodException e) {
+            throw new Error("virtual aspect [" + aspectName + "] does not have expected method: " + e.toString());
+        }
+        definition.addAspect(aspectDef);
+    }
+
+    /**
+     * Parses the aspectElement parameters.
+     * <p/>TODO: should perhaps move the parameters to the aspect def instead of the system def
      *
      * @param aspectElement the aspect element
      * @param def           the system definition
@@ -307,8 +346,9 @@ public class DocumentParser {
             Element parameterElement = (Element) it2.next();
             if (parameterElement.getName().trim().equals("param")) {
                 def.addParameter(
-                        aspectDef.getName(), parameterElement.attributeValue("name"), parameterElement
-                                                                                      .attributeValue("value")
+                        aspectDef.getName(),
+                        parameterElement.attributeValue("name"),
+                        parameterElement.attributeValue("value")
                 );
             }
         }
@@ -773,9 +813,9 @@ public class DocumentParser {
         if (method.getParameterTypes().length * 2 != signatureElements.length - 1) {
             // we still match if method has "JoinPoint" has sole parameter
             // and adviceSignature has none
-            if (signatureElements.length == 1
-                && method.getParameterTypes().length == 1
-                && method.getParameterTypes()[0].getName().equals(TransformationConstants.JOIN_POINT_JAVA_CLASS_NAME)) {
+            if (signatureElements.length == 1 &&
+                method.getParameterTypes().length == 1 &&
+                method.getParameterTypes()[0].getName().equals(TransformationConstants.JOIN_POINT_JAVA_CLASS_NAME)) {
                 return true;
             } else {
                 return false;

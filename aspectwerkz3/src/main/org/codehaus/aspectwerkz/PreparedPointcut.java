@@ -5,32 +5,12 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package examples.logging;
-
-import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.PreparedPointcut;
+package org.codehaus.aspectwerkz;
 
 /**
+ * Represents the prepared pointcut construct.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class LoggingAspect extends AbstractLoggingAspect {
-
-    // ============ Pointcuts ============
-
-    /**
-     * @Expression execution(* examples.logging.Target.toLog*(..))
-     */
-    Pointcut methodsToLog() {
-        return null;
-    };
-
-    /**
-     * @Expression execution(* examples.logging.Target.dummy(..))
-     */
-    PreparedPointcut prepareDummy1;
-
-    /**
-     * @Expression execution(* examples.logging.Target.du*(..))
-     */
-    PreparedPointcut prepareDummy2;
+public final class PreparedPointcut {
 }

@@ -7,30 +7,14 @@
  **************************************************************************************/
 package examples.logging;
 
-import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.PreparedPointcut;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class LoggingAspect extends AbstractLoggingAspect {
-
-    // ============ Pointcuts ============
-
+public class PreparePointcuts {
     /**
      * @Expression execution(* examples.logging.Target.toLog*(..))
      */
-    Pointcut methodsToLog() {
-        return null;
-    };
-
-    /**
-     * @Expression execution(* examples.logging.Target.dummy(..))
-     */
-    PreparedPointcut prepareDummy1;
-
-    /**
-     * @Expression execution(* examples.logging.Target.du*(..))
-     */
-    PreparedPointcut prepareDummy2;
+    PreparedPointcut prepareMethodsToLog;
 }

@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.annotation;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
+import org.codehaus.aspectwerkz.definition.Virtual;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
@@ -17,7 +18,9 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
+import org.codehaus.aspectwerkz.PreparedPointcut;
 
 import java.util.Iterator;
 import java.util.List;
@@ -48,7 +51,7 @@ public class AspectAnnotationParser {
     /**
      * Parse the attributes and create and return a meta-data representation of them.
      *
-     * @param classInfo     the class to extract attributes from
+     * @param classInfo the class to extract attributes from
      * @param aspectDef the aspect definition
      * @param loader
      */
@@ -59,7 +62,7 @@ public class AspectAnnotationParser {
     /**
      * Parse the attributes and create and return a meta-data representation of them.
      *
-     * @param classInfo     the class to extract attributes from
+     * @param classInfo the class to extract attributes from
      * @param aspectDef the aspect definition
      * @param loader
      */
@@ -91,7 +94,7 @@ public class AspectAnnotationParser {
     /**
      * Parses the field attributes and creates a meta-data representation of them.
      *
-     * @param classInfo     the class to extract attributes from
+     * @param classInfo the class to extract attributes from
      * @param aspectDef the aspect definition
      */
     private void parseFieldAttributes(final ClassInfo classInfo, final AspectDefinition aspectDef) {
@@ -111,11 +114,19 @@ public class AspectAnnotationParser {
                     continue;
                 }
                 if (AnnotationC.ANNOTATION_EXPRESSION.equals(annotationInfo.getName())) {
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                            field.getName(),
-                            ((ExpressionAnnotationProxy) annotationInfo.getAnnotation()).expression(),
-                            aspectDef
-                    );
+                    if (field.getType().getName().equals(PreparedPointcut.class.getName())) {
+                        DefinitionParserHelper.createAndAddPreparedPointcutDef(
+                                field.getName(),
+                                ((ExpressionAnnotationProxy) annotationInfo.getAnnotation()).expression(),
+                                aspectDef.getSystemDefinition()
+                        );
+                    } else {
+                        DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
+                                field.getName(),
+                                ((ExpressionAnnotationProxy) annotationInfo.getAnnotation()).expression(),
+                                aspectDef
+                        );
+                    }
                 } else if (AnnotationC.ANNOTATION_IMPLEMENTS.equals(annotationInfo.getName())) {
                     DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
                             ((ImplementsAnnotationProxy) annotationInfo.getAnnotation()).expression(),
@@ -134,7 +145,7 @@ public class AspectAnnotationParser {
     /**
      * Parses the method attributes and creates a meta-data representation of them.
      *
-     * @param classInfo           the class
+     * @param classInfo       the class
      * @param aspectClassName the aspect class name
      * @param aspectName      the aspect name
      * @param aspectDef       the aspect definition
@@ -310,7 +321,7 @@ public class AspectAnnotationParser {
     /**
      * Looks for "@Introduce IntroduceAttribute" defined at aspect inner class level
      *
-     * @param classInfo     of aspect
+     * @param classInfo of aspect
      * @param aspectDef
      * @param loader
      */
