@@ -5,7 +5,7 @@
 
     <name>AspectWerkz</name>
     <id>aspectwerkz</id>
-    <currentVersion>0.6.6</currentVersion>
+    <currentVersion>0.7</currentVersion>
 
     <organization>
         <name>Jonas Bon&#233;r</name>
@@ -19,7 +19,7 @@
     </shortDescription>
 
     <description>
-        A high performant, lightweight, dynamic AOP/AOSD framework for Java.
+        A high performant, lightweight and dynamic AOP/AOSD framework for Java.
     </description>
 
     <url>http://aspectwerkz.codehaus.org/</url>
@@ -92,7 +92,7 @@
         </dependency>
         <dependency>
             <id>jmangler-core</id>
-            <version>3.0.1</version>
+            <version>3.0.2</version>
         </dependency>
         <dependency>
             <id>trove</id>

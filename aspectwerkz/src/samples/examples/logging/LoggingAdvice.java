@@ -29,7 +29,7 @@ import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
  * by the pointcuts mapped to this advice.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: LoggingAdvice.java,v 1.9 2003-07-08 16:44:17 jboner Exp $
+ * @version $Id: LoggingAdvice.java,v 1.10 2003-07-08 18:49:46 jboner Exp $
  *
  * @aspectwerkz.advice-def name=log
  *                         deployment-model=perJVM
@@ -40,16 +40,28 @@ import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
  */
 public class LoggingAdvice extends AroundAdvice {
 
+    private int m_level = 0;
+
     public LoggingAdvice() {
         super();
     }
 
     public Object execute(final JoinPoint joinPoint) throws Throwable {
-        System.out.println("param to advice = " + getParameter("param"));
+//        System.out.println("param to advice = " + getParameter("param"));
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
+        indent();
         System.out.println("--> " + jp.getTargetClass().getName() + "::" + jp.getMethodName());
+        m_level++;
         final Object result = joinPoint.proceed();
+        m_level--;
+        indent();
         System.out.println("<-- " + jp.getTargetClass().getName() + "::" + jp.getMethodName());
         return result;
+    }
+
+    private void indent() {
+        for (int i = 0; i < m_level; i++) {
+            System.out.print("  ");
+        }
     }
 }

@@ -11,16 +11,16 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 0.6.5.
+                    The latest official release is 0.7.
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.6.5.zip?download">0.6.5 in zip format.</a>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.zip?download">0.7 in zip format.</a>
                         </li>
                         <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.6.5.tar.gz?download">0.6.5 in tar.gz format.</a>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.tar.gz?download">0.7 in tar.gz format.</a>
                         </li>
                         <br/>
                         <li>
@@ -35,10 +35,13 @@
 
             <section name="Release notes">
 
-                <subsection name="New features and changes in release 0.6.5">
+                <subsection name="New features and changes in release 0.7">
                     <ul>
                         <li>
                             cflow (control flow) pointcuts.
+                        </li>
+                        <li>
+                            Performance improvement for advices by a factor of two.
                         </li>
                         <li>
                             Many bugfixes introduced by the new pointcut model implementation.
@@ -54,6 +57,9 @@
                         </li>
                         <li>
                             Documentation and examples have been updated.
+                        </li>
+                        <li>
+                            Uses new version of JMangler (3.0.2) which is released under LGPL.
                         </li>
                     </ul>
                 </subsection>
