@@ -33,12 +33,14 @@ import org.codehaus.aspectwerkz.advice.Advice;
 import org.codehaus.aspectwerkz.advice.AbstractAdvice;
 import org.codehaus.aspectwerkz.introduction.Introduction;
 import org.codehaus.aspectwerkz.definition.DefinitionManager;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MetaData;
+import org.codehaus.aspectwerkz.metadata.WeaveModel;
 
 /**
  * Manages the aspects in the AspectWerkz system.<br/>
@@ -48,7 +50,7 @@ import org.codehaus.aspectwerkz.metadata.MetaData;
  * Stores and indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkz.java,v 1.4 2003-06-17 16:07:54 jboner Exp $
+ * @version $Id: AspectWerkz.java,v 1.5 2003-06-19 17:45:23 jboner Exp $
  */
 public final class AspectWerkz {
 
@@ -116,19 +118,12 @@ public final class AspectWerkz {
     /**
      * Holds the indexes for the advices.
      */
-    private final TObjectIntHashMap m_adviceIndexes =
-            new TObjectIntHashMap();
+    private final TObjectIntHashMap m_adviceIndexes = new TObjectIntHashMap();
 
     /**
      * Holds references to all the the introductions in the system.
      */
     private Introduction[] m_introductions = new Introduction[0];
-
-    /**
-     * Holds the indexes for the introductions.
-     */
-    private final TObjectIntHashMap m_introductionIndexes =
-            new TObjectIntHashMap();
 
     /**
      * Marks the system as initialized.
@@ -139,6 +134,11 @@ public final class AspectWerkz {
      * The UUID for the system.
      */
     private final String m_uuid;
+
+    /**
+     * The definition.
+     */
+    private AspectWerkzDefinition m_definition ;
 
     /**
      * Returns the AspectWerkz system, no system UUID is needed to be specified.
@@ -221,6 +221,7 @@ public final class AspectWerkz {
      */
     public AspectWerkz(final String uuid) {
         m_uuid = uuid;
+        m_definition = WeaveModel.getDefinition(m_uuid);
     }
 
     /**
@@ -261,6 +262,8 @@ public final class AspectWerkz {
 
     /**
      * Registers an introduction and maps it to a name.
+     * At the moment it is not possible to add new introductions at runtime (don't know
+     * if it makes sense).
      *
      * @param name the name to map the introduction to
      * @param introduction the introduction to register
@@ -268,19 +271,11 @@ public final class AspectWerkz {
     public void register(final String name,
                          final Introduction introduction) {
         synchronized (m_introductions) {
-            synchronized (m_introductionIndexes) {
-
-                final int index = m_introductions.length + 1;
-                m_introductionIndexes.put(name, index);
-
-                Introduction[] tmp = new Introduction[m_introductions.length + 1];
-                System.arraycopy(m_introductions, 0, tmp, 0, m_introductions.length);
-
-                tmp[m_introductions.length] = introduction;
-
-                m_introductions = new Introduction[m_introductions.length + 1];
-                System.arraycopy(tmp, 0, m_introductions, 0, tmp.length);
+            int nrOfIntroductions = m_definition.getIntroductionIndexes().size();
+            if (m_introductions.length == 0) {
+                m_introductions = new Introduction[nrOfIntroductions];
             }
+            m_introductions[m_definition.getIntroductionIndex(name) - 1] = introduction;
         }
     }
 
@@ -638,8 +633,8 @@ public final class AspectWerkz {
      * @param name the name of the introduction
      * @return the index of the introduction
      */
-    public int getIntroductionIndexFor(final String name) {
-        final int index = m_introductionIndexes.get(name);
+    public int getIntroductionIndex(final String name) {
+        final int index = m_definition.getIntroductionIndex(name);
         if (index == 0) throw new DefinitionException("introduction " + name + " is not properly defined");
         return index;
     }
@@ -651,11 +646,12 @@ public final class AspectWerkz {
      * @return the introduction
      */
     public Introduction getIntroduction(final int index) {
+
         Introduction introduction;
         try {
             introduction = m_introductions[index - 1];
         }
-        catch (ArrayIndexOutOfBoundsException e1) {
+        catch (Exception e1) {
             initialize();
             try {
                 introduction = m_introductions[index - 1];
@@ -676,12 +672,12 @@ public final class AspectWerkz {
     public Introduction getIntroduction(final String name) {
         Introduction introduction;
         try {
-            introduction = m_introductions[m_introductionIndexes.get(name) - 1];
+            introduction = m_introductions[m_definition.getIntroductionIndex(name) - 1];
         }
         catch (ArrayIndexOutOfBoundsException e1) {
             initialize();
             try {
-                introduction = m_introductions[m_introductionIndexes.get(name) - 1];
+                introduction = m_introductions[m_definition.getIntroductionIndex(name) - 1];
             }
             catch (ArrayIndexOutOfBoundsException e2) {
                 throw new DefinitionException("no introduction with name " + name);
@@ -743,7 +739,7 @@ public final class AspectWerkz {
     public synchronized void initialize() {
         if (m_initialized) return;
         m_initialized = true;
-        DefinitionManager.loadDefinition(m_uuid);
+        DefinitionManager.initializeSystem(m_uuid);
     }
 
     /**

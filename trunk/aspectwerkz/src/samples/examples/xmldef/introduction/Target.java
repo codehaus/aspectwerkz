@@ -20,12 +20,28 @@ package examples.introduction;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Target.java,v 1.1 2003-06-17 16:47:08 jboner Exp $
+ * @version $Id: Target.java,v 1.2 2003-06-19 17:45:23 jboner Exp $
  *
  * @introduction mixin
  */
 public class Target {
+//    public Target(Dummy dummy) {
+//        ((Mixin)this).setDummy(dummy);
+//    }
+//
     public static void main(String[] args) {
+//        try {
+//            picocontainer.PicoContainer pico = new picocontainer.PicoContainerImpl.Default();
+//            pico.registerComponent(examples.introduction.Dummy.class);
+//            pico.registerComponent(examples.introduction.Target.class);
+//            pico.start();
+//            Mixin target = (Mixin)pico.getComponent(Target.class);
+//            System.out.println("target.getDummy() = " + target.getDummy());
+//        }
+//        catch (Exception e) {
+//            System.out.println("ERROR: " + e);
+//        }
+//
         Target target = new Target();
         System.out.println("The mixin says: " + ((Mixin)target).sayHello());
     }

@@ -20,7 +20,7 @@ package examples.introduction;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Mixin.java,v 1.1 2003-06-17 16:47:08 jboner Exp $
+ * @version $Id: Mixin.java,v 1.2 2003-06-19 17:45:23 jboner Exp $
  *
  * @introduction-def name=mixin
  *                   implementation=examples.introduction.MixinImpl
@@ -29,4 +29,7 @@ package examples.introduction;
  */
 public interface Mixin {
     String sayHello();
+
+//    void setDummy(Dummy dummy);
+//    public Dummy getDummy();
 }

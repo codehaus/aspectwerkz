@@ -52,11 +52,11 @@
             </p>
             <p>
                 If you are using <code>Introductions</code> and/or <code>Runtime
-                Attributes</code> then you have to compile meta-data for your
-                code before running it. This meta-data is then read in when the
-                system starts up. You can compile the meta-data with one of the
+                Attributes</code> then you have to compile a weave model for your
+                code before running it. This weave model is then read in when the
+                system starts up. You can compile the weave model with one of the
                 meta-data compilers. See the
-                <a href="/documentation.html#Meta-data compilation">Meta-data compilation</a>
+                <a href="/documentation.html#Weave model compilation">Weave model compilation</a>
                 section. This is done automatically in these examples.
             </p>
         </section>
@@ -71,7 +71,7 @@
                 To run the example type: <code>maven aspectwerkz:samples:caching</code>
             </p>
 <source><![CDATA[
-public class CachingAdvice extends MethodAdvice {
+public class CachingAdvice extends AroundAdvice {
 
     private Map m_cache = new StaticBucketMap(1000);
 
@@ -118,7 +118,7 @@ public class CachingAdvice extends MethodAdvice {
                 <code>maven aspectwerkz:samples:asynchronous</code>
             </p>
 <source><![CDATA[
-public class AsynchronousAdvice extends MethodAdvice {
+public class AsynchronousAdvice extends AroundAdvice {
 
     private PooledExecutor m_threadPool = ... // initalize the thread pool
 
@@ -156,7 +156,7 @@ public class AsynchronousAdvice extends MethodAdvice {
                 <code>maven aspectwerkz:samples:synchronization</code>
             </p>
 <source><![CDATA[
-public class SynchronizationAdvice extends MethodAdvice {
+public class SynchronizationAdvice extends AroundAdvice {
 
     private Mutex m_mutex = new Mutex();
     // if a counting semaphore is needed use:
@@ -188,7 +188,7 @@ public class SynchronizationAdvice extends MethodAdvice {
                 <code>maven aspectwerkz:samples:logging</code>
             </p>
 <source><![CDATA[
-public class LoggingAdvice extends MethodAdvice {
+public class LoggingAdvice extends AroundAdvice {
 
     private static Log s_log = ... // initialize logger
 
@@ -206,46 +206,28 @@ public class LoggingAdvice extends MethodAdvice {
 }]]></source>
         </section>
 
-        <section name="Persistence + Introductions">
+        <section name="Introductions and Mixins">
             <p>
-                This example shows both how an <code>Introduction</code> is
-                implemented as well as demonstrating the persistence facilities
-                of <code>AspectWerkz</code>.
+                This example shows both how an Mixin/Introduction is
+                implemented.
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:samples:persistence</code><br/>
-                The example will increment the counters by one and you can see
-                that they are getting persisted by executing the example again.
+                <code>maven aspectwerkz:samples:introduction</code><br/>
             </p>
             <p>
-                First we have an <b>extremely</b> simple <code>Introduction</code>
-                doing nothing more than providing us with a counter. Second we have
-                a <code>MethodAdvice</code> that only counts the number of times
-                it is invoked (code not shown here). These counters are only
-                here to demonstrate that the introduction and the advice will be
-                transparently persisted when their fields become "dirty".
-            </p>
-            <p>
-                <b>The Introduction</b><br/>
+                <b>The Mixin/Introduction</b><br/>
                 Note: if you add more than one <code>Introduction</code> to a class
                 then <b>you</b> have to make shure that the names of the methods
-                does not collide.
+                do not collide.
 <source><![CDATA[
-public interface Counter1 extends Serializable {
-    int getCounter1();
-    void increment1();
+public interface Mixin {
+    String sayHello();
 }
 
-public class CounterImpl1 implements Counter1 {
-    private int m_counter = 0;
-
-    public int getCounter1() {
-        return m_counter;
-    }
-
-    public void increment1() {
-        m_counter++;
+public class MixinImpl implements Mixin {
+    public String sayHello() {
+        return "Hello World!";
     }
 }]]></source>
                 As you can see neither the interface nor the implementation class
@@ -253,7 +235,7 @@ public class CounterImpl1 implements Counter1 {
             </p>
             <p>
                 Second you have to define your <code>Introduction</code> in the
-                <a href="#XML definition file: Persistence + Introductions example">XML definition file</a>.
+                <a href="#XML definition file for the examples">XML definition file</a>.
             </p>
              <p>
                 Now you will be able to invoke your <code>Introduction</code>
@@ -261,8 +243,7 @@ public class CounterImpl1 implements Counter1 {
 <source><![CDATA[
 public class Target {
     ...
-    ((Counter1)this).increment1();
-    int counter = ((Counter1)this).getCounter1());
+    System.out.println("The mixin says: " + ((Mixin)this).sayHello());
     ...
 }]]></source>
             </p>
@@ -301,7 +282,7 @@ public class InvocationCounterAdvice extends PreAdvice {
             </p>
             <p>
                 This <code>advice</code> is then defined as usual (see the
-                <a href="#XML definition file: Advice examples">XML definition</a>
+                <a href="#XML definition file for the examples">XML definition</a>
                 section), but the syntax for adding
                 it to the <code>Pointcut</code> is slightly different:
             </p>
