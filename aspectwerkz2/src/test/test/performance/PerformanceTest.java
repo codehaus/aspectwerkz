@@ -11,12 +11,19 @@ import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
+ * A so far VERY limited bench.
+ * <p/>
+ * Only tests the overhead of one around advice and one introduced method.
+ *
+ * @TODO: extends this test case to be more interesting or replace with a real bench
+ * @TODO: should add some more around advice, since JIT really shines when we have advice chains
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class PerformanceTest extends TestCase {
 
     private boolean m_printInfo = true;
-    private int m_numberOfInvocations = 100000000;
+    private int m_numberOfInvocations = 10000000;
 
     public void testNonAdvisedMethodPerformance() {
         long startTime = System.currentTimeMillis();
