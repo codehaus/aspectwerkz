@@ -35,13 +35,13 @@ public aspect MethodExecutionAspect {
     }
 
     before(int i) :
-    execution(* awbench.method.Execution.withPrimitiveArgs(int)) && args(i) {
+    execution(* awbench.method.Execution.beforeWithPrimitiveArgs(int)) && args(i) {
         int j = i;
         Run.ADVICE_HIT++;
     }
 
     before(Integer i) :
-    execution(* awbench.method.Execution.withWrappedArgs(java.lang.Integer)) && args(i) {
+    execution(* awbench.method.Execution.beforeWithWrappedArgs(java.lang.Integer)) && args(i) {
         Integer j = i;
         Run.ADVICE_HIT++;
 	}

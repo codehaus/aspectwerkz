@@ -17,11 +17,11 @@
         <advice name="beforeJP" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
-    <bind pointcut="execution(* awbench.method.Execution->withPrimitiveArgs(int))">
+    <bind pointcut="execution(* awbench.method.Execution->beforeWithPrimitiveArgs(int))">
         <advice name="beforeWithPrimitiveArgs" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
-    <bind pointcut="execution(* awbench.method.Execution->withWrappedArgs(java.lang.Integer))">
+    <bind pointcut="execution(* awbench.method.Execution->beforeWithWrappedArgs(java.lang.Integer))">
         <advice name="beforeWithWrappedArgs" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 

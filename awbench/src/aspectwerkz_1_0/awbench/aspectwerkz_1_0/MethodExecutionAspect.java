@@ -37,13 +37,13 @@ public class MethodExecutionAspect {
         Run.ADVICE_HIT++;
     }
 
-    /** @Before execution(* awbench.method.Execution.withPrimitiveArgs(int)) && args(i) */
+    /** @Before execution(* awbench.method.Execution.beforeWithPrimitiveArgs(int)) && args(i) */
     public void beforeWithPrimitiveArgs(JoinPoint jp, int i) {
         int j = i;
         Run.ADVICE_HIT++;
     }
 
-    /** @Before execution(* awbench.method.Execution.withWrappedArgs(java.lang.Integer)) && args(i) */
+    /** @Before execution(* awbench.method.Execution.beforeWithWrappedArgs(java.lang.Integer)) && args(i) */
     public void beforeWithWrappedArgs(JoinPoint jp, Integer i) {
         Rtti rtti = jp.getRtti();
         Integer j = i;

@@ -295,4 +295,27 @@
         </java>
     </target>
 
+    <target name="run:all" depends="init">
+        <antcall target="clean"/>
+        <antcall target="run"/>
+        <antcall target="clean"/>
+        <antcall target="run:aw"/>
+        <antcall target="clean"/>
+        <antcall target="run:aw_1_0"/>
+        <antcall target="clean"/>
+        <antcall target="run:aj"/>
+        <antcall target="clean"/>
+        <antcall target="run:jboss"/>
+        <antcall target="clean"/>
+        <antcall target="run:spring"/>
+        <antcall target="clean"/>
+        <antcall target="run:cglib"/>
+        <antcall target="clean"/>
+        <antcall target="run:ext:aopalliance"/>
+        <antcall target="clean"/>
+        <antcall target="run:ext:spring"/>
+        <antcall target="clean"/>
+        <antcall target="run:ext:aspectj"/>
+    </target>
+
 </project>
