@@ -23,7 +23,7 @@ public class FibonacciCacheAspect extends Aspect {
     private HashMap m_cache = new HashMap();
 
     /**
-     * @Execution int *..Fibonacci.fib(int)
+     * @Expression execution(int *..Fibonacci.fib(int))
      */
     Pointcut fibs;
 
