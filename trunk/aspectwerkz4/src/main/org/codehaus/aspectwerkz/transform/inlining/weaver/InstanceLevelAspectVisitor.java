@@ -24,11 +24,13 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.DeploymentScope;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.perx.PerObjectHelper;
 
 /**
  * Adds an instance level aspect management to the target class.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class InstanceLevelAspectVisitor extends ClassAdapter implements TransformationConstants {
 
@@ -93,6 +95,9 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
 
         // add the getAspect(..) method
         addGetAspectMethod(name);
+        
+        // add the hasAspect(...) method
+        addHasAspectMethod(name);
     }
 
     /**
@@ -220,6 +225,36 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
         m_isAdvised = true;
     }
 
+    private void addHasAspectMethod(String mapFieldName) {
+        CodeVisitor cv = super.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC,
+                                           HAS_INSTANCE_LEVEL_ASPECT_METHOD_NAME,
+                                           HAS_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE,
+                                           null, 
+                                           null
+        );
+        
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitFieldInsn(GETFIELD,
+                          mapFieldName,
+                          INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
+                          INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
+        );
+        cv.visitVarInsn(ALOAD, 1);
+        cv.visitMethodInsn(INVOKEINTERFACE, MAP_CLASS_NAME, GET_METHOD_NAME, GET_METHOD_SIGNATURE);
+        
+        Label ifNullLabel = new Label();
+        cv.visitJumpInsn(IFNULL, ifNullLabel);
+        cv.visitInsn(ICONST_1);
+        cv.visitInsn(IRETURN);
+        cv.visitLabel(ifNullLabel);
+        cv.visitInsn(ICONST_0);
+        cv.visitInsn(IRETURN);
+        cv.visitMaxs(0, 0);
+        
+        m_ctx.markAsAdvised();
+        m_isAdvised = true;
+    }
+    
     /**
      * Filters the classes to be transformed.
      *
@@ -252,9 +287,26 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                 if (expressionInfo == null) {
                     continue;
                 }
-                if (adviceDef.getAspectDefinition().getDeploymentModel().equals(DeploymentModel.PER_INSTANCE)
-                    && expressionInfo.getAdvisedClassFilterExpression().match(ctx)) {
+                DeploymentModel deploymentModel = adviceDef.getDeploymentModel();
+                
+                if (DeploymentModel.PER_INSTANCE.equals(deploymentModel)
+                    || DeploymentModel.PER_THIS.equals(deploymentModel)) {
+                    
+                    if (expressionInfo.getAdvisedClassFilterExpression().match(ctx)) {
+                        return false;
+                    }
+                }
+                
+                if (DeploymentModel.PER_TARGET.equals(deploymentModel)) {
+                    ExpressionInfo perTargetExpression = PerObjectHelper.getExpressionInfo(
+                            deploymentModel,
+                            adviceDef.getAspectDefinition().getQualifiedName(),
+                            classInfo.getClassLoader()
+                    );
+                    
+                    if (perTargetExpression.getAdvisedClassFilterExpression().match(ctx)) {
                     return false;
+                    }
                 }
             }
 

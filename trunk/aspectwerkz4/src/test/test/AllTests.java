@@ -15,13 +15,14 @@ import test.expression.ExpressionParserTest;
 import test.expression.AnnotationExpressionTest;
 import test.expression.AdvisedClassFilterExpressionTest;
 import test.enclosingsjp.EnclosingSJPTest;
-import test.fieldsetbug.FieldSetTest;
 import test.staticinitialization.StaticInitializationTest;
 import test.staticinitialization.StaticInitializationExpressionTest;
 import test.withincode.WithincodeClinitTest;
 import test.customproceed.aw438.ArrayInCustomProceedTest;
 import test.withinstaticref.WithinStaticRefTest;
 import test.reflection.ClassInfoHelperTest;
+import test.fieldsetbug.FieldSetTest;
+import test.perx.AssociationScopeTest;
 
 /**
  * This tests can be run without online / offline or other post compilation mode. Used to test
@@ -96,9 +97,9 @@ public class AllTests extends TestCase {
         suite.addTestSuite(FieldSetTest.class);
         suite.addTestSuite(ArrayInCustomProceedTest.class);
         suite.addTestSuite(WithinStaticRefTest.class);
-
         suite.addTestSuite(ClassInfoTest.class);
         suite.addTestSuite(ClassInfoHelperTest.class);
+        suite.addTestSuite(AssociationScopeTest.class);
 
         // AW-361, should not throw an NPE
         SystemDefinitionContainer.getDefinitionsFor(null);
