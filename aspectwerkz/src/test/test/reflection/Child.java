@@ -7,6 +7,8 @@
  **************************************************************************************/
 package test.reflection;
 
+import java.lang.reflect.Method;
+
 public class Child extends Super {
 
     public int incr(int value) {
@@ -20,6 +22,16 @@ public class Child extends Super {
 
     public int do$1(int i) {
         return i;
+    }
+
+    public int reflectionCallIncr(int value) {
+        try {
+            Method m = this.getClass().getMethod("incr", new Class[]{int.class});
+            Integer res = (Integer) m.invoke(this, new Object[]{new Integer(value)});
+            return res.intValue();
+        } catch (Throwable t) {
+            return -1000;
+        }
     }
 
 }
