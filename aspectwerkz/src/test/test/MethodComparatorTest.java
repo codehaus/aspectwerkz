@@ -8,6 +8,7 @@
 package test;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Array;
 
 import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.SystemLoader;
@@ -25,6 +26,7 @@ public class MethodComparatorTest extends TestCase {
         Method method3 = null;
         Method method4 = null;
         Method method5 = null;
+        Method method6 = null;
         try {
             method1 = this.getClass().getMethod("__generated$_AW_$method1", new Class[]{});
             method11 = this.getClass().getMethod("__generated$_AW_$method1$x", new Class[]{});
@@ -32,6 +34,7 @@ public class MethodComparatorTest extends TestCase {
             method3 = this.getClass().getMethod("__generated$_AW_$method2", new Class[]{});
             method4 = this.getClass().getMethod("__generated$_AW_$method2", new Class[]{int.class});
             method5 = this.getClass().getMethod("__generated$_AW_$method2", new Class[]{String.class});
+            method6 = this.getClass().getMethod("__generated$_AW_$method2", new Class[]{Array.newInstance(String.class, 1).getClass()});
         }
         catch (Exception e) {
             throw new RuntimeException("exception unexpected: " + e);
@@ -48,7 +51,9 @@ public class MethodComparatorTest extends TestCase {
         assertTrue(0 < MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(method3, method2));
         assertTrue(0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(method2, method3));
         assertTrue(0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(method4, method5));
-        assertTrue(0 < MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(method5, method4));
+        // AW-104 test
+        assertTrue(0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(method5, method6));
+
     }
 
     public static void main(String[] args) {
@@ -76,4 +81,8 @@ public class MethodComparatorTest extends TestCase {
 
     public void __generated$_AW_$method2(String i) {
     }
+
+    public void __generated$_AW_$method2(String[] i) {
+    }
+
 }
