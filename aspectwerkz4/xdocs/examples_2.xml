@@ -255,7 +255,8 @@ public abstract class AbstractIntroductionAspect {
 public class IntroductionAspect extends AbstractIntroductionAspect {
 
     /**
-     * @Introduce within(examples.introduction.Target) deploymentModel=perInstance
+     * @Mixin(expression="within(examples.introduction.Target)",
+     *        deploymentModel="perInstance")
      */
     public static class MyConcreteImpl extends MyImpl {
 
