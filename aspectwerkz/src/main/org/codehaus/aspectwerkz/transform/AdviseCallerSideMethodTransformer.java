@@ -58,7 +58,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * Advises caller side method invocations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.10.2.3 2003-07-22 16:20:10 avasseur Exp $
+ * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.10.2.4 2003-07-23 12:37:32 avasseur Exp $
  */
 public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
@@ -169,7 +169,10 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                         // create the class meta-data
                         ClassMetaData calleeSideClassMetaData;
                         try {
-                            JavaClass klass = Repository.getRepository().loadClass(calleeClassName);
+                            //@todo alex
+                            JavaClass klass = (new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet())).loadClass(calleeClassName);
+                            klass.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
+                            //JavaClass klass = Repository.getRepository().loadClass(calleeClassName);
                             calleeSideClassMetaData = BcelMetaDataMaker.createClassMetaData(klass);
                         }
                         catch (ClassNotFoundException e) {
@@ -694,7 +697,11 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         if (!m_weaveModel.inTransformationScope(cg.getClassName())) {
             return true;
         }
-        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+        //@todo alex
+        JavaClass alex = cg.getJavaClass();
+        alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
+        //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
         if (m_weaveModel.hasCallerSidePointcut(classMetaData)) {
             return false;
         }
