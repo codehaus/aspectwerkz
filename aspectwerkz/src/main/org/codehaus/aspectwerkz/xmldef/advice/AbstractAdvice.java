@@ -42,7 +42,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * @see aspectwerkz.DeploymentModel
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractAdvice.java,v 1.6 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AbstractAdvice.java,v 1.7 2003-07-08 11:43:35 jboner Exp $
  */
 public abstract class AbstractAdvice implements Advice {
 
@@ -303,13 +303,8 @@ public abstract class AbstractAdvice implements Advice {
         m_name = (String)fields.get("m_name", null);
         m_adviceClass = (Class)fields.get("m_adviceClass", null);
         m_parameters = (Map)fields.get("m_parameters", null);
-
-        m_memoryType = (ContainerType)fields.get(
-                "m_memoryType", ContainerType.TRANSIENT);
-
-        m_deploymentModel = fields.get(
-                "m_deploymentModel", DeploymentModel.PER_JVM);
-
+        m_memoryType = (ContainerType)fields.get("m_memoryType", ContainerType.TRANSIENT);
+        m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
         m_container = DefinitionManager.createAdviceContainer(this);
     }
 }

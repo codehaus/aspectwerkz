@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it A/or
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -33,17 +33,13 @@ import gnu.trove.TObjectIntHashMap;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.regexp.MethodPattern;
-import org.codehaus.aspectwerkz.regexp.FieldPattern;
-import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
-import org.codehaus.aspectwerkz.regexp.ThrowsPattern;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 
 /**
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.10 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.11 2003-07-08 11:43:35 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -107,6 +103,8 @@ public class AspectWerkzDefinition implements Serializable {
      */
     private final String m_uuid = "default";
 
+    private List m_adviceWeavingRules = null;
+
     /**
      * Returns the definition.
      * <p/>
@@ -154,7 +152,7 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
-     * Creates a new instance, creates A sets the system aspect.
+     * Creates a new instance, creates and sets the system aspect.
      */
     public AspectWerkzDefinition() {
         AspectDefinition systemAspect = new AspectDefinition();
@@ -215,8 +213,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @param adviceStackName the advice stack name
      * @return the definition
      */
-    public AdviceStackDefinition getAdviceStackDefinition(
-            final String adviceStackName) {
+    public AdviceStackDefinition getAdviceStackDefinition(final String adviceStackName) {
         return (AdviceStackDefinition)m_adviceStackMap.get(adviceStackName);
     }
 
@@ -457,7 +454,6 @@ public class AspectWerkzDefinition implements Serializable {
      */
     public boolean isAdvised(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
-
         return true;
     }
 
@@ -495,14 +491,14 @@ public class AspectWerkzDefinition implements Serializable {
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDefinition = (AspectDefinition)it.next();
-            Collection pointcuts = aspectDefinition.getPointcuts();
-            for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
-                PointcutDefinition pointcutDefinition = (PointcutDefinition)it2.next();
-                if ((pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.METHOD) ||
-                        pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) &&
-                        pointcutDefinition.getRegexpClassPattern().matches(className) &&
-                        ((MethodPattern)pointcutDefinition.getRegexpPattern()).matches(methodMetaData)) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            if (aspectDef.isAbstract()) {
+                continue;
+            }
+            List weavingRules = aspectDef.getAdviceWeavingRules();
+            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
+                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                if (weavingRule.matchMethodPointcut(className, methodMetaData)) {
                     return true;
                 }
             }
@@ -511,7 +507,7 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
-     * Checks if a class A method has a <tt>ThrowsPointcut</tt>.
+     * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
      *
      * @param className the name or the class
      * @param methodMetaData the name or the method
@@ -523,14 +519,14 @@ public class AspectWerkzDefinition implements Serializable {
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDefinition = (AspectDefinition)it.next();
-            Collection pointcuts = aspectDefinition.getPointcuts();
-            for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
-                PointcutDefinition pointcutDefinition = (PointcutDefinition)it2.next();
-                if (pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.THROWS) &&
-                        pointcutDefinition.getRegexpClassPattern().matches(className) &&
-                        ((ThrowsPattern)pointcutDefinition.getRegexpPattern()).
-                        matches(methodMetaData)) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            if (aspectDef.isAbstract()) {
+                continue;
+            }
+            List weavingRules = aspectDef.getAdviceWeavingRules();
+            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
+                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                if (weavingRule.matchThrowsPointcut(className, methodMetaData)) {
                     return true;
                 }
             }
@@ -539,7 +535,7 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
-     * Checks if a class A field has a <tt>GetFieldPointcut</tt>.
+     * Checks if a class and field has a <tt>GetFieldPointcut</tt>.
      *
      * @param className the name or the class
      * @param fieldMetaData the name or the field
@@ -551,13 +547,14 @@ public class AspectWerkzDefinition implements Serializable {
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDefinition = (AspectDefinition)it.next();
-            Collection pointcuts = aspectDefinition.getPointcuts();
-            for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
-                PointcutDefinition pointcutDefinition = (PointcutDefinition)it2.next();
-                if (pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.GET_FIELD) &&
-                        pointcutDefinition.getRegexpClassPattern().matches(className) &&
-                        ((FieldPattern)pointcutDefinition.getRegexpPattern()).matches(fieldMetaData)) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            if (aspectDef.isAbstract()) {
+                continue;
+            }
+            List weavingRules = aspectDef.getAdviceWeavingRules();
+            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
+                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                if (weavingRule.matchGetFieldPointcut(className, fieldMetaData)) {
                     return true;
                 }
             }
@@ -566,7 +563,7 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
-     * Checks if a class A field has a <tt>SetFieldPointcut</tt>.
+     * Checks if a class and field has a <tt>SetFieldPointcut</tt>.
      *
      * @param className the name or the class
      * @param fieldMetaData the name or the field
@@ -578,14 +575,14 @@ public class AspectWerkzDefinition implements Serializable {
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDefinition = (AspectDefinition)it.next();
-            Collection pointcuts = aspectDefinition.getPointcuts();
-            for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
-                PointcutDefinition pointcutDefinition = (PointcutDefinition)it2.next();
-                if (pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.SET_FIELD) &&
-                        pointcutDefinition.getRegexpClassPattern().matches(className) &&
-                        ((FieldPattern)pointcutDefinition.getRegexpPattern()).
-                        matches(fieldMetaData)) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            if (aspectDef.isAbstract()) {
+                continue;
+            }
+            List weavingRules = aspectDef.getAdviceWeavingRules();
+            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
+                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                if (weavingRule.matchSetFieldPointcut(className, fieldMetaData)) {
                     return true;
                 }
             }
@@ -604,7 +601,7 @@ public class AspectWerkzDefinition implements Serializable {
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it.next();
-            Collection pointcuts = aspectDefinition.getPointcuts();
+            Collection pointcuts = aspectDefinition.getPointcutDefs();
             for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
                 PointcutDefinition pointcutDefinition = (PointcutDefinition)it2.next();
                 if (pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE) &&
@@ -629,13 +626,14 @@ public class AspectWerkzDefinition implements Serializable {
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDefinition = (AspectDefinition)it.next();
-            Collection pointcuts = aspectDefinition.getPointcuts();
-            for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
-                PointcutDefinition pointcutDefinition = (PointcutDefinition)it2.next();
-                if (pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE) &&
-                        ((CallerSidePattern)pointcutDefinition.
-                        getRegexpPattern()).matches(className, methodMetaData)) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            if (aspectDef.isAbstract()) {
+                continue;
+            }
+            List weavingRules = aspectDef.getAdviceWeavingRules();
+            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
+                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                if (weavingRule.matchCallerSidePointcut(className, methodMetaData)) {
                     return true;
                 }
             }

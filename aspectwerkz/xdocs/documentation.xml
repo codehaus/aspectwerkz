@@ -143,6 +143,10 @@
                     abstract method <code>Object execute(final JoinPoint jp)</code>.
                 </p>
                 <p>
+                    An <code>AroundAdvice</code> can <b>not</b> be used with caller side
+                    and field pointcuts.
+                </p>
+                <p>
                     Here is a simple example of an <code>AroundAdvice</code>.
                     (For more examples see the
                     <a href="/examples.html">Examples section</a>.)
@@ -178,6 +182,10 @@ public class MyAroundAdvice extends AroundAdvice {
                     the join point (that it has been applied to) has been is reached.
                 </p>
                 <p>
+                    A <code>PreAdvice</code> can currently <b>not</b> be used with
+                    method pointcuts.
+                </p>
+                <p>
                     Here is a simple example of a <code>PreAdvice</code> advice.
                     It is in the method <code>execute</code> that you can implement
                     your logic. The <code>JoinPoint</code> object that is
@@ -204,6 +212,10 @@ public class MyPreAdvice extends PreAdvice {
                     the abstract method <code>void execute(final JoinPoint jp)</code>.
                     The <code>PreAdvice</code> class is being executed before
                     the join point (that it has been applied to) has been is reached.
+                </p>
+                <p>
+                    A <code>PostAdvice</code> can currently <b>not</b> be used with
+                    method pointcuts.
                 </p>
                 <p>
                     Here is a simple example of a <code>PostAdvice</code> advice.
@@ -417,23 +429,29 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                         <li>
                             <code>MethodPointcut</code> - picks out join points
                             defining method execution.
+                            Valid advice for this pointcut is <code>AroundAdvice</code>.
                         </li><br/>
                         <li>
                             <code>FieldPointcut</code> - picks out join points
                             defining field access or modification.
+                            Valid advices for this pointcut are <code>PreAdvice</code>
+                            and <code>PostAdvice</code>.
                         </li><br/>
                         <li>
                             <code>ThrowsPointcut</code> - picks out join points
-                            definining where an exception is thrown out of a
-                            method.
+                            definining where an exception is thrown out of a method.
+                            Valid advice for this pointcut is <code>ThrowsAdvice</code>.
                         </li><br/>
                         <li>
                             <code>CallerSidePointcut</code> - picks out join points
                             defining method invocation on the caller side.
+                            Valid advices for this pointcut are <code>PreAdvice</code>
+                            and <code>PostAdvice</code>.
                         </li><br/>
                         <li>
                             <code>CFlowPointcut</code> - picks out join points
-                            defining a control flow (cflow).
+                            defining a control flow (cflow). This pointcut can only
+                            be used on conjunction with other pointcuts.
                         </li>
                     </ul>
                 </p>

@@ -18,6 +18,8 @@
  */
 package org.codehaus.aspectwerkz.regexp;
 
+import java.io.Serializable;
+
 import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 
@@ -26,9 +28,9 @@ import org.codehaus.aspectwerkz.regexp.ClassPattern;
  * pattern for a specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: PointcutPatternTuple.java,v 1.2 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: PointcutPatternTuple.java,v 1.3 2003-07-08 11:43:35 jboner Exp $
  */
-public class PointcutPatternTuple {
+public class PointcutPatternTuple implements Serializable {
 
     /**
      * The class pattern.
@@ -46,8 +48,7 @@ public class PointcutPatternTuple {
      * @param classPattern the class pattern
      * @param pattern the pattern
      */
-    public PointcutPatternTuple(final ClassPattern classPattern,
-                           final Pattern pattern) {
+    public PointcutPatternTuple(final ClassPattern classPattern, final Pattern pattern) {
         m_classPattern = classPattern;
         m_pattern = pattern;
     }

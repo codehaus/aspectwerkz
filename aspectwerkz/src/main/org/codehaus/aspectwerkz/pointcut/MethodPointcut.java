@@ -23,8 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
-import org.apache.commons.jexl.Expression;
-import org.apache.commons.jexl.ExpressionFactory;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -40,7 +38,7 @@ import org.codehaus.aspectwerkz.definition.PointcutDefinition;
  * Stores the advices for the specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodPointcut.java,v 1.6 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: MethodPointcut.java,v 1.7 2003-07-08 11:43:35 jboner Exp $
  */
 public class MethodPointcut extends AbstractPointcut {
 
@@ -59,8 +57,7 @@ public class MethodPointcut extends AbstractPointcut {
      * @param uuid the UUID for the AspectWerkz system
      * @param expression the expression of the pointcut
      */
-    public MethodPointcut(final String uuid,
-                          final String expression) {
+    public MethodPointcut(final String uuid, final String expression) {
         super(uuid, expression);
     }
 
@@ -83,8 +80,7 @@ public class MethodPointcut extends AbstractPointcut {
      * @param methodMetaData the meta-data for the method
      * @return boolean
      */
-    public boolean matches(final String className,
-                           final MethodMetaData methodMetaData) {
+    public boolean matches(final String className, final MethodMetaData methodMetaData) {
         JexlContext jexlContext = JexlHelper.createContext();
 
         for (Iterator it = m_pointcutPatterns.entrySet().iterator(); it.hasNext();) {
@@ -101,10 +97,11 @@ public class MethodPointcut extends AbstractPointcut {
             }
         }
         try {
+            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
 
-            Expression e = ExpressionFactory.createExpression(m_expression);
-            Boolean result = (Boolean)e.evaluate(jexlContext);
-
+            if (result == null) {
+                return false;
+            }
             if (result.booleanValue()) {
                 return true;
             }

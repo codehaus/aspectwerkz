@@ -23,6 +23,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.io.ObjectInputStream;
+
+import org.apache.commons.jexl.Expression;
+import org.apache.commons.jexl.ExpressionFactory;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
@@ -34,20 +38,25 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
  * Stores the advices for the specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractPointcut.java,v 1.9 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AbstractPointcut.java,v 1.10 2003-07-08 11:43:35 jboner Exp $
  */
 public abstract class AbstractPointcut implements Pointcut {
 
     /**
      * The expression for the pointcut.
      */
-    protected final String m_expression;
+    protected String m_expression;
+
+    /**
+     * The Jexl expression.
+     */
+    protected transient Expression m_jexlExpr;
 
     /**
      * The pointcut definitions referenced in the m_expression.
      * Mapped to the name of the pointcut definition.
      */
-    protected final Map m_pointcutPatterns = new HashMap();
+    protected Map m_pointcutPatterns = new HashMap();
 
     /**
      * The names of the advices.
@@ -62,12 +71,7 @@ public abstract class AbstractPointcut implements Pointcut {
     /**
      * The UUID for the AspectWerkz system.
      */
-    protected final String m_uuid;
-
-    /**
-     * The pointcut controller.
-     */
-//    protected PointcutController m_controller;
+    protected String m_uuid;
 
     /**
      * Creates a new pointcut.
@@ -81,6 +85,12 @@ public abstract class AbstractPointcut implements Pointcut {
         if (pattern == null || pattern.trim().length() == 0) throw new IllegalArgumentException("pattern of pointcut can not be null or an empty string");
         m_uuid = uuid;
         m_expression = pattern;
+        try {
+            m_jexlExpr = ExpressionFactory.createExpression(m_expression);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("could not create jexl expression from: " + m_expression);
+        }
     }
 
     /**
@@ -283,20 +293,26 @@ public abstract class AbstractPointcut implements Pointcut {
     }
 
     /**
-     * Sets the pointcut controller.
+     * Provides custom deserialization.
      *
-     * @param controller the pointcut controller
+     * @param stream the object input stream containing the serialized object
+     * @throws java.lang.Exception in case of failure
      */
-//    public void setController(final PointcutController controller) {
-//        m_controller = controller;
-//    }
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
 
-    /**
-     * Returns the pointcut controller.
-     *
-     * @return the pointcut controller
-     */
-//    public PointcutController getController() {
-//        return m_controller;
-//    }
+        m_expression = (String)fields.get("m_expression", null);
+        m_pointcutPatterns = (Map)fields.get("m_pointcutPatterns", null);
+        m_names = (String[])fields.get("m_names", null);
+        m_indexes = (int[])fields.get("m_indexes", null);
+        m_uuid = (String)fields.get("m_uuid", null);
+
+        try {
+            m_jexlExpr = ExpressionFactory.createExpression(m_expression);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("could not create jexl expression from: " + m_expression);
+        }
+    }
 }
+
