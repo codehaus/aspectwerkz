@@ -27,6 +27,11 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
     private ClassInfo m_type = null;
 
     /**
+     * The signature of the field.
+     */
+    private String m_signature;
+
+    /**
      * Creates a new field java instance.
      *
      * @param field
@@ -34,6 +39,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
      */
     JavaFieldInfo(final Field field, final JavaClassInfo declaringType) {
         super(field, declaringType);
+        m_signature = ReflectHelper.getFieldSignature(field);
     }
 
     /**
@@ -50,6 +56,15 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
         }
         return classInfo.getField(ReflectHelper.calculateHash(field));
+    }
+
+    /**
+     * Returns the signature for the element.
+     *
+     * @return the signature for the element
+     */
+    public String getSignature() {
+        return m_signature;
     }
 
     /**

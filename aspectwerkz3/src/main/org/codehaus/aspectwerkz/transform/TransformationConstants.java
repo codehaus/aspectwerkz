@@ -34,6 +34,7 @@ public interface TransformationConstants {
     public static final String ASPECTWERKZ_PACKAGE_NAME = "org/codehaus/aspectwerkz";
 
     // internal fields
+    public static final String SERIAL_VERSION_UID_FIELD_NAME = "serialVersionUID";
     public static final String CROSS_CUTTING_INFO_CLASS_FIELD = ASPECTWERKZ_PREFIX + "crossCuttingInfo";
     public static final String JOIN_POINT_MANAGER_FIELD = ASPECTWERKZ_PREFIX + "joinPointManager";
     public static final String ASPECT_MANAGER_FIELD = ASPECTWERKZ_PREFIX + "aspectManager";
@@ -211,7 +212,7 @@ public interface TransformationConstants {
     public static final String IS_IN_CFLOW_METOD_NAME = "isInCflow";
     public static final String IS_IN_CFLOW_METOD_SIGNATURE = "()Z";
     public static final String STATIC_JOIN_POINT_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/StaticJoinPoint";
-    public static final String STATIC_JOIN_POINT_JAVA_CLASS_NAME = "org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint";    
+    public static final String STATIC_JOIN_POINT_JAVA_CLASS_NAME = "org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint";
     public static final String JOIN_POINT_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/JoinPoint";
     public static final String JOIN_POINT_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;";
     public static final String JOIN_POINT_JAVA_CLASS_NAME = "org.codehaus.aspectwerkz.joinpoint.JoinPoint";

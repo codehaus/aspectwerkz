@@ -60,6 +60,11 @@ public class AnnotationC {
     };
 
     /**
+     * Src dir separator.
+     */
+    private static final String FILE_SEPARATOR = ",";
+
+    /**
      * The annotations properties file define by the user.
      */
     public static final Properties ANNOTATION_DEFINITION = new Properties();
@@ -78,7 +83,6 @@ public class AnnotationC {
      * The custom annotations.
      */
     private static Map s_customAnnotations = new HashMap();
-    private static final String FILE_SEPARATOR = ",";
 
     /**
      * Runs the compiler from the command line.

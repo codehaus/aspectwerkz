@@ -71,6 +71,15 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
     }
 
     /**
+     * Returns the signature for the element.
+     *
+     * @return the signature for the element
+     */
+    public String getSignature() {
+        return AsmHelper.getFieldDescriptor(this);
+    }
+
+    /**
      * Returns the type.
      *
      * @return the type

@@ -61,6 +61,13 @@ public interface ClassInfo extends ReflectionInfo {
     FieldInfo[] getFields();
 
     /**
+     * Checks if the class has a static initalizer.
+     *
+     * @return
+     */
+    boolean hasStaticInitializer();
+
+    /**
      * Returns the interfaces.
      *
      * @return the interfaces
@@ -126,6 +133,10 @@ public interface ClassInfo extends ReflectionInfo {
 
         public FieldInfo[] getFields() {
             return new FieldInfo[0];  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public boolean hasStaticInitializer() {
+            return false;
         }
 
         public ClassInfo[] getInterfaces() {
