@@ -147,7 +147,7 @@ public class PointcutManager {
             synchronized (m_cflowPointcuts) {
                 m_pointcuts.add(pointcut);
                 if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                    m_cflowPointcuts.add(new Pointcut(pointcut.getAspectManager(), pointcut.getExpressionInfo()));
+                    m_cflowPointcuts.add(pointcut.deepCopy());
                 }
             }
         }
@@ -171,7 +171,7 @@ public class PointcutManager {
     public Pointcut getPointcut(final String expression) {
         for (Iterator it = m_pointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut) it.next();
-            if (pointcut.getExpressionInfo().getExpressionAsString().equals(expression)) {
+            if (pointcut.getExpressionInfo().toString().equals(expression)) {
                 return pointcut;
             }
         }
@@ -187,7 +187,7 @@ public class PointcutManager {
     public Pointcut getCflowPointcut(final String expression) {
         for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut) it.next();
-            if (pointcut.getExpressionInfo().getExpressionAsString().equals(expression)) {
+            if (pointcut.getExpressionInfo().toString().equals(expression)) {
                 return pointcut;
             }
         }

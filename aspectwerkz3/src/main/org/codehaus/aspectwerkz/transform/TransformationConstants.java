@@ -86,7 +86,7 @@ public interface TransformationConstants {
     public static final String MIXIN_CLASS = "org.codehaus.aspectwerkz.Mixin";
     public static final String THREAD_LOCAL_CLASS = "org.codehaus.aspectwerkz.util.SerializableThreadLocal";
     public static final String WEAK_REFERENCE_CLASS = "java.lang.ref.WeakReference";
-    public static final String CROSS_CUTTING_INFO_CLASS = "org.codehaus.aspectwerkz.CrossCuttingInfo";
+    public static final String CROSS_CUTTING_INFO_CLASS = "org.codehaus.aspectwerkz.AspectContext";
 
     // java types and signatures
     public static final String SHORT_CLASS_NAME = "java/lang/Short";

@@ -77,9 +77,9 @@ public class HotSwapTarget {
         System.out.println("\n\n\n");
 
         // lets add a system
-        SystemLoader.deploySystemDefinitions(HotSwapTarget.class.getClassLoader(), XmlParser
-                .parseNoCache(HotSwapTarget.class.getClassLoader(), (new File(
-                    "src/samples/hotdeployed.xml")).toURL()), true);
+//        SystemLoader.deploySystemDefinitions(HotSwapTarget.class.getClassLoader(), XmlParser
+//                .parseNoCache(HotSwapTarget.class.getClassLoader(), (new File(
+//                    "src/samples/hotdeployed.xml")).toURL()), true);
 
         // add new pointcuts
         //JavaLoggingAspect.addPointcutForLoggingAdvice("execution(*

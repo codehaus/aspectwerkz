@@ -1,6 +1,6 @@
 package examples.introduction;
 
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.AspectContext;
 
 import java.io.Serializable;
 
@@ -22,7 +22,7 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
         /**
          * The cross-cutting info.
          */
-        private final CrossCuttingInfo m_info;
+        private final AspectContext m_info;
 
         /**
          * We are interested in cross-cutting info, therefore we have added a constructor that takes
@@ -30,7 +30,7 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
          * 
          * @param info the cross-cutting info
          */
-        public MyConcreteImpl(final CrossCuttingInfo info) {
+        public MyConcreteImpl(final AspectContext info) {
             m_info = info;
             System.out.println("--Accessing mixin target instance from the mixin <init>...");
             sayHello2();

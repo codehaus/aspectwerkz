@@ -18,12 +18,12 @@ import org.codehaus.aspectwerkz.AdviceInfo;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class AdviceIndexInfo {
-    private final AdviceInfo[] m_aroundAdvices;
-    private final AdviceInfo[] m_beforeAdvices;
-    private final AdviceInfo[] m_afterFinallyAdvices;
-    private final AdviceInfo[] m_afterReturningAdvices;
-    private final AdviceInfo[] m_afterThrowingAdvices;
+public class AdviceInfoStruct {
+    private final List m_aroundAdvices;
+    private final List m_beforeAdvices;
+    private final List m_afterFinallyAdvices;
+    private final List m_afterReturningAdvices;
+    private final List m_afterThrowingAdvices;
 
     /**
      * Creates a new info instance.
@@ -34,11 +34,12 @@ public class AdviceIndexInfo {
      * @param afterReturningAdvices
      * @param afterThrowingAdvices
      */
-    public AdviceIndexInfo(final AdviceInfo[] aroundAdvices,
-                           final AdviceInfo[] beforeAdvices,
-                           final AdviceInfo[] afterFinallyAdvices,
-                           final AdviceInfo[] afterReturningAdvices,
-                           final AdviceInfo[] afterThrowingAdvices) {
+    public AdviceInfoStruct(
+            final List aroundAdvices,
+            final List beforeAdvices,
+            final List afterFinallyAdvices,
+            final List afterReturningAdvices,
+            final List afterThrowingAdvices) {
         m_aroundAdvices = aroundAdvices;
         m_beforeAdvices = beforeAdvices;
         m_afterFinallyAdvices = afterFinallyAdvices;
@@ -46,47 +47,42 @@ public class AdviceIndexInfo {
         m_afterThrowingAdvices = afterThrowingAdvices;
     }
 
-    public AdviceInfo[] getAroundAdvices() {
+    public List getAroundAdvices() {
         return m_aroundAdvices;
     }
 
-    public AdviceInfo[] getBeforeAdvices() {
+    public List getBeforeAdvices() {
         return m_beforeAdvices;
     }
 
-    public AdviceInfo[] getAfterFinallyAdvices() {
+    public List getAfterFinallyAdvices() {
         return m_afterFinallyAdvices;
     }
 
-    public AdviceInfo[] getAfterReturningAdvices() {
+    public List getAfterReturningAdvices() {
         return m_afterReturningAdvices;
     }
 
-    public AdviceInfo[] getAfterThrowingAdvices() {
+    public List getAfterThrowingAdvices() {
         return m_afterThrowingAdvices;
     }
 
     /**
      * Extracts the around advices.
      *
-     * @param adviceIndexes
+     * @param adviceInfoStructs
      * @return
      */
-    public final static AdviceInfo[] extractAroundAdvices(final AdviceIndexInfo[] adviceIndexes) {
+    public final static AdviceInfo[] extractAroundAdvices(final AdviceInfoStruct[] adviceInfoStructs) {
         int i;
-        int j;
         List aroundAdviceList = new ArrayList();
-        for (i = 0; i < adviceIndexes.length; i++) {
-            AdviceIndexInfo adviceIndex = adviceIndexes[i];
-            AdviceInfo[] indexTuples = adviceIndex.getAroundAdvices();
-            for (j = 0; j < indexTuples.length; j++) {
-                aroundAdviceList.add(indexTuples[j]);
-            }
+        for (i = 0; i < adviceInfoStructs.length; i++) {
+            aroundAdviceList.add(adviceInfoStructs[i].getAroundAdvices());
         }
         AdviceInfo[] aroundAdvices = new AdviceInfo[aroundAdviceList.size()];
         i = 0;
         for (Iterator it = aroundAdviceList.iterator(); it.hasNext(); i++) {
-            aroundAdvices[i] = (AdviceInfo) it.next();
+            aroundAdvices[i] = (AdviceInfo)it.next();
         }
         return aroundAdvices;
     }
@@ -94,24 +90,19 @@ public class AdviceIndexInfo {
     /**
      * Extracts the before advices.
      *
-     * @param adviceIndexes
+     * @param adviceInfoStructs
      * @return
      */
-    public final static AdviceInfo[] extractBeforeAdvices(final AdviceIndexInfo[] adviceIndexes) {
+    public final static AdviceInfo[] extractBeforeAdvices(final AdviceInfoStruct[] adviceInfoStructs) {
         int i;
-        int j;
         List beforeAdviceList = new ArrayList();
-        for (i = 0; i < adviceIndexes.length; i++) {
-            AdviceIndexInfo adviceIndex = adviceIndexes[i];
-            AdviceInfo[] indexTuples = adviceIndex.getBeforeAdvices();
-            for (j = 0; j < indexTuples.length; j++) {
-                beforeAdviceList.add(indexTuples[j]);
-            }
+        for (i = 0; i < adviceInfoStructs.length; i++) {
+            beforeAdviceList.add(adviceInfoStructs[i].getBeforeAdvices());
         }
         AdviceInfo[] beforeAdvices = new AdviceInfo[beforeAdviceList.size()];
         i = 0;
         for (Iterator it = beforeAdviceList.iterator(); it.hasNext(); i++) {
-            beforeAdvices[i] = (AdviceInfo) it.next();
+            beforeAdvices[i] = (AdviceInfo)it.next();
         }
         return beforeAdvices;
     }
@@ -119,24 +110,19 @@ public class AdviceIndexInfo {
     /**
      * Extracts the after finally advices.
      *
-     * @param adviceIndexes
+     * @param adviceInfoStructs
      * @return
      */
-    public final static AdviceInfo[] extractAfterFinallyAdvices(final AdviceIndexInfo[] adviceIndexes) {
+    public final static AdviceInfo[] extractAfterFinallyAdvices(final AdviceInfoStruct[] adviceInfoStructs) {
         int i;
-        int j;
         List afterAdviceList = new ArrayList();
-        for (i = 0; i < adviceIndexes.length; i++) {
-            AdviceIndexInfo adviceIndex = adviceIndexes[i];
-            AdviceInfo[] indexTuples = adviceIndex.getAfterFinallyAdvices();
-            for (j = 0; j < indexTuples.length; j++) {
-                afterAdviceList.add(indexTuples[j]);
-            }
+        for (i = 0; i < adviceInfoStructs.length; i++) {
+            afterAdviceList.add(adviceInfoStructs[i].getAfterFinallyAdvices());
         }
         AdviceInfo[] afterAdvices = new AdviceInfo[afterAdviceList.size()];
         i = 0;
         for (Iterator it = afterAdviceList.iterator(); it.hasNext(); i++) {
-            afterAdvices[i] = (AdviceInfo) it.next();
+            afterAdvices[i] = (AdviceInfo)it.next();
         }
         return afterAdvices;
     }
@@ -144,24 +130,19 @@ public class AdviceIndexInfo {
     /**
      * Extracts the after returning advices.
      *
-     * @param adviceIndexes
+     * @param adviceInfoStructs
      * @return
      */
-    public final static AdviceInfo[] extractAfterReturningAdvices(final AdviceIndexInfo[] adviceIndexes) {
+    public final static AdviceInfo[] extractAfterReturningAdvices(final AdviceInfoStruct[] adviceInfoStructs) {
         int i;
-        int j;
         List afterAdviceList = new ArrayList();
-        for (i = 0; i < adviceIndexes.length; i++) {
-            AdviceIndexInfo adviceIndex = adviceIndexes[i];
-            AdviceInfo[] indexTuples = adviceIndex.getAfterReturningAdvices();
-            for (j = 0; j < indexTuples.length; j++) {
-                afterAdviceList.add(indexTuples[j]);
-            }
+        for (i = 0; i < adviceInfoStructs.length; i++) {
+            afterAdviceList.add(adviceInfoStructs[i].getAfterReturningAdvices());
         }
         AdviceInfo[] afterAdvices = new AdviceInfo[afterAdviceList.size()];
         i = 0;
         for (Iterator it = afterAdviceList.iterator(); it.hasNext(); i++) {
-            afterAdvices[i] = (AdviceInfo) it.next();
+            afterAdvices[i] = (AdviceInfo)it.next();
         }
         return afterAdvices;
     }
@@ -169,24 +150,19 @@ public class AdviceIndexInfo {
     /**
      * Extracts the after throwing advices.
      *
-     * @param adviceIndexes
+     * @param adviceInfoStructs
      * @return
      */
-    public final static AdviceInfo[] extractAfterThrowingAdvices(final AdviceIndexInfo[] adviceIndexes) {
+    public final static AdviceInfo[] extractAfterThrowingAdvices(final AdviceInfoStruct[] adviceInfoStructs) {
         int i;
-        int j;
         List afterAdviceList = new ArrayList();
-        for (i = 0; i < adviceIndexes.length; i++) {
-            AdviceIndexInfo adviceIndex = adviceIndexes[i];
-            AdviceInfo[] indexTuples = adviceIndex.getAfterThrowingAdvices();
-            for (j = 0; j < indexTuples.length; j++) {
-                afterAdviceList.add(indexTuples[j]);
-            }
+        for (i = 0; i < adviceInfoStructs.length; i++) {
+            afterAdviceList.add(adviceInfoStructs[i].getAfterThrowingAdvices());
         }
         AdviceInfo[] afterAdvices = new AdviceInfo[afterAdviceList.size()];
         i = 0;
         for (Iterator it = afterAdviceList.iterator(); it.hasNext(); i++) {
-            afterAdvices[i] = (AdviceInfo) it.next();
+            afterAdvices[i] = (AdviceInfo)it.next();
         }
         return afterAdvices;
     }

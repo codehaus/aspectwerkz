@@ -13,7 +13,7 @@ import java.util.Map;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.AspectContext;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -24,7 +24,7 @@ public class CachingAspect {
     /**
      * The cross-cutting info.
      */
-    private final CrossCuttingInfo m_info;
+    private final AspectContext m_info;
 
     /**
      * The cache.
@@ -37,7 +37,7 @@ public class CachingAspect {
      * 
      * @param info the cross-cutting info
      */
-    public CachingAspect(final CrossCuttingInfo info) {
+    public CachingAspect(final AspectContext info) {
         m_info = info;
     }
 

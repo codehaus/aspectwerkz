@@ -9,12 +9,20 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.transform.inlining.JoinPointCompiler;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
-import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.AdviceInfo;
+import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.aspect.management.Pointcut;
+import org.codehaus.aspectwerkz.aspect.management.Aspects;
 import org.codehaus.aspectwerkz.expression.PointcutType;
+import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Manages the join point compilation, loading and instantiation for the target classes.
@@ -41,18 +49,19 @@ public class JoinPointManager {
      * @param joinPointHash
      * @param joinPointClassName
      */
-    public static void loadJoinPoint(final int joinPointType,
-                                     final Class callerClass,
-                                     final String callerMethodName,
-                                     final String callerMethodDesc,
-                                     final int callerMethodModifiers,
-                                     final String calleeClassName,
-                                     final String calleeMemberName,
-                                     final String calleeMemberDesc,
-                                     final int calleeMemberModifiers,
-                                     final int joinPointSequence,
-                                     final int joinPointHash,
-                                     final String joinPointClassName) {
+    public static void loadJoinPoint(
+            final int joinPointType,
+            final Class callerClass,
+            final String callerMethodName,
+            final String callerMethodDesc,
+            final int callerMethodModifiers,
+            final String calleeClassName,
+            final String calleeMemberName,
+            final String calleeMemberDesc,
+            final int calleeMemberModifiers,
+            final int joinPointSequence,
+            final int joinPointHash,
+            final String joinPointClassName) {
 
         Class calleeClass = null;
         try {
@@ -71,6 +80,9 @@ public class JoinPointManager {
         // this can occurs if user packaged its JIT classes, or if we are using multiweaving
         boolean generateJoinPoint = false;
         try {
+            if (calleeClass == null) {
+                throw new RuntimeException("callee class [" + calleeClassName + "] is NULL");
+            }
             calleeClass.getClassLoader().loadClass(joinPointClassName.replace('/', '.'));
         } catch (ClassNotFoundException e) {
             generateJoinPoint = true;
@@ -79,8 +91,10 @@ public class JoinPointManager {
             return;
         }
 
-        AspectSystem system = SystemLoader.getSystem(calleeClass.getClassLoader());
-        system.initialize();
+
+        // FIXME XXX use one 
+        Aspects.initialize();
+        SystemLoader.getSystem(calleeClass.getClassLoader()).initialize();
 
         ClassInfo calleeClassInfo = JavaClassInfo.getClassInfo(calleeClass);
         ReflectionInfo reflectionInfo = null;
@@ -103,7 +117,6 @@ public class JoinPointManager {
                         joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
-                        system,
                         calleeClassInfo
                 );
                 break;
@@ -125,7 +138,6 @@ public class JoinPointManager {
                         joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
-                        system,
                         calleeClassInfo
                 );
                 break;
@@ -146,7 +158,6 @@ public class JoinPointManager {
                         joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
-                        system,
                         calleeClassInfo
                 );
                 break;
@@ -168,7 +179,6 @@ public class JoinPointManager {
                         joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
-                        system,
                         calleeClassInfo
                 );
                 break;
@@ -190,7 +200,6 @@ public class JoinPointManager {
                         joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
-                        system,
                         calleeClassInfo
                 );
                 break;
@@ -212,7 +221,6 @@ public class JoinPointManager {
                         joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
-                        system,
                         calleeClassInfo
                 );
                 break;
@@ -235,7 +243,6 @@ public class JoinPointManager {
                         joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
-                        system,
                         calleeClassInfo
                 );
                 break;
@@ -264,25 +271,24 @@ public class JoinPointManager {
      * @param joinPointSequence
      * @param joinPointHash
      * @param reflectionInfo
-     * @param system
      * @param thisClassInfo
      */
-    private static void doLoadJoinPoint(final String joinPointClassName,
-                                        final int joinPointType,
-                                        final PointcutType pointcutType,
-                                        final Class callerClass,
-                                        final String callerMethodName,
-                                        final String callerMethodDesc,
-                                        final int callerMethodModifiers,
-                                        final Class calleeClass,
-                                        final String calleeMemberName,
-                                        final String calleeMemberDesc,
-                                        final int calleeMemberModifiers,
-                                        final int joinPointSequence,
-                                        final int joinPointHash,
-                                        final ReflectionInfo reflectionInfo,
-                                        final AspectSystem system,
-                                        final ClassInfo thisClassInfo) {
+    private static void doLoadJoinPoint(
+            final String joinPointClassName,
+            final int joinPointType,
+            final PointcutType pointcutType,
+            final Class callerClass,
+            final String callerMethodName,
+            final String callerMethodDesc,
+            final int callerMethodModifiers,
+            final Class calleeClass,
+            final String calleeMemberName,
+            final String calleeMemberDesc,
+            final int calleeMemberModifiers,
+            final int joinPointSequence,
+            final int joinPointHash,
+            final ReflectionInfo reflectionInfo,
+            final ClassInfo thisClassInfo) {
 
         ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(callerClass);
         ReflectionInfo withinInfo = null;
@@ -298,9 +304,7 @@ public class JoinPointManager {
                 );
         }
 
-        JoinPointMetaData metaData = JoinPointMetaData.getJoinPointMetaData(
-                pointcutType, system, reflectionInfo, withinInfo
-        );
+        AdviceInfoStruct[] adviceInfos = getAdviceInfosForJoinPoint(pointcutType, reflectionInfo, withinInfo);
 
         Class clazz = JoinPointCompiler.loadJoinPoint(
                 joinPointClassName,
@@ -317,9 +321,146 @@ public class JoinPointManager {
                 calleeMemberDesc,
                 calleeMemberModifiers,
 
-                metaData.adviceIndexes,
+                adviceInfos,
                 calleeClass.getClassLoader(),
                 joinPointSequence
         );
+    }
+
+    /**
+     * Retrieves the join point metadata.
+     *
+     * @param type
+     * @param reflectInfo
+     * @param withinInfo
+     */
+    public static AdviceInfoStruct[] getAdviceInfosForJoinPoint(
+            final PointcutType type,
+            final ReflectionInfo reflectInfo,
+            final ReflectionInfo withinInfo) {
+
+        List adviceIndexInfoList = new ArrayList();
+        List cflowExpressionList = new ArrayList();
+        Pointcut cflowPointcut = null;
+
+        // FIXME XXX handle cflow
+
+        ExpressionContext exprCtx = new ExpressionContext(type, reflectInfo, withinInfo);
+
+        final List pointcuts = Aspects.getPointcuts(exprCtx);
+
+        // get all matching pointcuts from all managers
+        for (Iterator it = pointcuts.iterator(); it.hasNext();) {
+            Pointcut pointcut = (Pointcut)it.next();
+
+            List aroundAdviceInfos = pointcut.getAroundAdviceInfos();
+            List beforeAdviceInfos = pointcut.getBeforeAdviceInfos();
+            List afterFinallyAdviceInfos = pointcut.getAfterFinallyAdviceInfos();
+            List afterReturningAdviceInfos = pointcut.getAfterReturningAdviceInfos();
+            List afterThrowingAdviceInfos = pointcut.getAfterThrowingAdviceInfos();
+
+            AdviceInfoStruct adviceInfoStruct = new AdviceInfoStruct(
+                    aroundAdviceInfos,
+                    beforeAdviceInfos,
+                    afterFinallyAdviceInfos,
+                    afterReturningAdviceInfos,
+                    afterThrowingAdviceInfos
+            );
+
+            // compute target args to advice args mapping, it is a property of each *advice*
+
+            // refresh the arg index map
+            pointcut.getExpressionInfo().getArgsIndexMapper().match(exprCtx);
+
+            //TODO can we do cache, can we do in another visitor
+            //TODO skip map when no args()
+
+            for (Iterator adviceInfos = aroundAdviceInfos.iterator(); adviceInfos.hasNext();) {
+                AdviceInfo adviceInfo = (AdviceInfo)adviceInfos.next();
+                setMethodArgumentIndexes(pointcut, exprCtx, adviceInfo);
+            }
+            for (Iterator adviceInfos = beforeAdviceInfos.iterator(); adviceInfos.hasNext();) {
+                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo)adviceInfos.next());
+            }
+            for (Iterator adviceInfos = afterFinallyAdviceInfos.iterator(); adviceInfos.hasNext();) {
+                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo)adviceInfos.next());
+            }
+            for (Iterator adviceInfos = afterReturningAdviceInfos.iterator(); adviceInfos.hasNext();) {
+                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo)adviceInfos.next());
+            }
+            for (Iterator adviceInfos = afterThrowingAdviceInfos.iterator(); adviceInfos.hasNext();) {
+                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo)adviceInfos.next());
+            }
+
+            adviceIndexInfoList.add(adviceInfoStruct);
+
+            // collect the cflow expressions for the matching pointcuts (if they have one)
+            if (pointcut.getExpressionInfo().hasCflowPointcut()) {
+                cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpressionRuntime());
+            }
+        }
+
+        // turn the lists into arrays for performance reasons
+        AdviceInfoStruct[] adviceIndexInfo = new AdviceInfoStruct[adviceIndexInfoList.size()];
+        int i = 0;
+        for (Iterator iterator = adviceIndexInfoList.iterator(); iterator.hasNext(); i++) {
+            adviceIndexInfo[i] = (AdviceInfoStruct)iterator.next();
+        }
+        return adviceIndexInfo;
+    }
+
+    /**
+     * Get the parameter names from a "method declaration" signature like pc(type a, type2 b) => 0:a, 1:b
+     *
+     * @param expression
+     * @return the parameter names
+     */
+    public static String[] getParameterNames(final String expression) {
+        int paren = expression.indexOf('(');
+        List paramNames = new ArrayList();
+        if (paren > 0) {
+            String params = expression.substring(paren + 1, expression.lastIndexOf(')')).trim();
+            String[] javaParameters = Strings.splitString(params, ",");
+            for (int i = 0; i < javaParameters.length; i++) {
+                String javaParameter = Strings.replaceSubString(javaParameters[i], "  ", " ").trim();
+                String[] paramInfo = Strings.splitString(javaParameter, " ");
+                paramNames.add(paramInfo[1]);
+            }
+        }
+        String[] paramNamesArray = new String[paramNames.size()];
+        int index = 0;
+        for (Iterator it = paramNames.iterator(); it.hasNext(); index++) {
+            paramNamesArray[index] = (String)it.next();
+        }
+        return paramNamesArray;
+    }
+
+    /**
+     * Sets the method argument indexes.
+     *
+     * @param pointcut
+     * @param ctx
+     * @param adviceInfo
+     */
+    private static void setMethodArgumentIndexes(
+            final Pointcut pointcut,
+            final ExpressionContext ctx,
+            final AdviceInfo adviceInfo) {
+
+        // grab the parameters names
+        String[] adviceArgNames = getParameterNames(adviceInfo.getName());
+
+        // map them from the ctx info
+        int[] adviceToTargetArgs = new int[adviceArgNames.length];
+        for (int k = 0; k < adviceArgNames.length; k++) {
+            String adviceArgName = adviceArgNames[k];
+            int exprArgIndex = pointcut.getExpressionInfo().getArgumentIndex(adviceArgName);
+            if (exprArgIndex >= 0 && ctx.m_exprIndexToTargetIndex.containsKey(exprArgIndex)) {
+                adviceToTargetArgs[k] = ctx.m_exprIndexToTargetIndex.get(exprArgIndex);
+            } else {
+                adviceToTargetArgs[k] = -1;
+            }
+        }
+        adviceInfo.setMethodToArgIndexes(adviceToTargetArgs);
     }
 }

@@ -97,7 +97,7 @@ public class JavaLoggingAspect {
                 .getFullQualifiedName());
         namespace.addExpressionInfo(pointcutName, expressionInfo);
         AdviceDefinition newDef = null;
-        for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
+        for (Iterator arounds = aspectDef.getAroundAdviceDefinitions().iterator(); arounds.hasNext();) {
             AdviceDefinition around = (AdviceDefinition) arounds.next();
             if (around.getName().equals(aspectName + ".logMethod")) {
                 // copy the logMethod advice
@@ -106,10 +106,10 @@ public class JavaLoggingAspect {
                 break;
             }
         }
-        aspectDef.addAroundAdvice(newDef);
+        aspectDef.addAroundAdviceDefinition(newDef);
 
         //TODO: experimental API
-        StartupManager.reinitializeSystem(HotSwapTarget.class.getClassLoader(), sysDef);
+//        StartupManager.reinitializeSystem(HotSwapTarget.class.getClassLoader(), sysDef);
         System.out.println("sysDef = " + sysDef.getClass().getClassLoader());
 
         /*
@@ -136,9 +136,9 @@ public class JavaLoggingAspect {
                 .getClassLoader(), "hotdeployed");
         AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
         List removedAdviceDefs = new ArrayList();
-        for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
+        for (Iterator arounds = aspectDef.getAroundAdviceDefinitions().iterator(); arounds.hasNext();) {
             AdviceDefinition around = (AdviceDefinition) arounds.next();
-            if (pointcutName.equals(around.getExpressionInfo().getExpressionAsString())) {
+            if (pointcutName.equals(around.getExpressionInfo().toString())) {
                 System.out.println("<removing> " + around.getName() + " at " + pointcutName);
                 removedAdviceDefs.add(around);
             } else {
@@ -146,7 +146,7 @@ public class JavaLoggingAspect {
             }
         }
         for (Iterator arounds = removedAdviceDefs.iterator(); arounds.hasNext();) {
-            aspectDef.removeAroundAdvice((AdviceDefinition) arounds.next());
+            aspectDef.removeAroundAdviceDefinition((AdviceDefinition) arounds.next());
         }
         //TODO remove from PointcutManager as well for mem safety ?
     }

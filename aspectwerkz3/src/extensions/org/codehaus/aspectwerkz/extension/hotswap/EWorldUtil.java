@@ -67,7 +67,7 @@ public class EWorldUtil {
         //
         //        AdviceDefinition newDef = null;
         //        boolean found = false;
-        //        for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
+        //        for (Iterator arounds = aspectDef.getAroundAdviceDefinitions().iterator(); arounds.hasNext();) {
         //            AdviceDefinition around = (AdviceDefinition)arounds.next();
         //            if (around.getName().equals(aspectName + "." + adviceName)) {
         //                // copy the logMethod advice
@@ -116,7 +116,7 @@ public class EWorldUtil {
         //
         //        List removedAdviceDefs = new ArrayList();
         //        boolean found = false;
-        //        for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
+        //        for (Iterator arounds = aspectDef.getAroundAdviceDefinitions().iterator(); arounds.hasNext();) {
         //            AdviceDefinition around = (AdviceDefinition)arounds.next();
         //            if (around.getName().equals(aspectName + "." + adviceName)) {
         //                found = true;
@@ -208,11 +208,11 @@ public class EWorldUtil {
                 AspectDefinition aspectDef = (AspectDefinition) aspectDefs.next();
                 out.print("[Aspect] " + aspectDef.getName());
                 out.println("");
-                for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
+                for (Iterator arounds = aspectDef.getAroundAdviceDefinitions().iterator(); arounds.hasNext();) {
                     AdviceDefinition around = (AdviceDefinition) arounds.next();
                     out.print("  [AroundAdvice] " + around.getName());
                     out.print("  ");
-                    out.print(around.getExpressionInfo().getExpressionAsString());
+                    out.print(around.getExpressionInfo().toString());
                     out.println("");
                 }
                 out.println("\n-");

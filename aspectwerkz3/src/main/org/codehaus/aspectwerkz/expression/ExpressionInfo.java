@@ -96,15 +96,6 @@ public class ExpressionInfo {
     }
 
     /**
-     * Returns the expression as string.
-     *
-     * @return the expression as string
-     */
-    public String getExpressionAsString() {
-        return m_expression.toString();
-    }
-
-    /**
      * Returns the regular expression.
      *
      * @return the regular expression
@@ -183,16 +174,17 @@ public class ExpressionInfo {
      */
     public boolean hasCflowPointcut() {
         if (!m_hasCflowPointcutKnown) {
-            String expression = null;
             try {
-                expression = getExpressionAsString();
-                m_hasCflowPointcut =
-                new CflowPointcutFinderVisitor(expression, m_expression.m_namespace, s_parser.parse(expression)).hasCflowPointcut();
+                m_hasCflowPointcut = new CflowPointcutFinderVisitor(
+                        toString(),
+                        m_expression.m_namespace,
+                        s_parser.parse(toString())
+                ).hasCflowPointcut();
                 m_hasCflowPointcutKnown = true;
             } catch (Throwable e) {
                 // should not happen since the m_expression had been accepted
                 throw new DefinitionException(
-                        "expression is not well-formed [" + expression + "]: " + e.getMessage(), e
+                        "expression is not well-formed [" + toString() + "]: " + e.getMessage(), e
                 );
             }
         }
@@ -219,17 +211,17 @@ public class ExpressionInfo {
     public void addArgument(final String name, final String className) {
         //AW-241
         // Note: we do not check the signature and we ignore JoinPoint parameters types
-        String expression = getExpressionAsString();
+        String expression = toString();
         // fast check if we have a parenthesis
         if (expression.indexOf('(') > 0) {
             // fast check if the given argument (that appears in the advice signature) is part of the pointcut expression
             if (!(FQN_JOIN_POINT_CLASS.equals(className) ||
                   FQN_STATIC_JOIN_POINT_CLASS.equals(className) ||
                   JOINPOINT.equals(className))) {
-                if (getExpressionAsString().indexOf(name) < 0) {
+                if (toString().indexOf(name) < 0) {
                     throw new DefinitionException(
                             "Pointcut is missing a parameter that has been encountered in the Advice: '"
-                            + getExpressionAsString() + "' - '" + name + "' of type '" + className +
+                            + toString() + "' - '" + name + "' of type '" + className +
                             "' missing in '" +
                             getExpression().m_namespace +
                             "'"
@@ -238,13 +230,13 @@ public class ExpressionInfo {
                     // lazily populate the possible argument list
                     if (m_possibleArguments == null) {
                         m_possibleArguments = new ArrayList();
-                        new ExpressionValidateVisitor(getExpressionAsString(), getNamespace(), getExpression().m_root)
+                        new ExpressionValidateVisitor(toString(), getNamespace(), getExpression().m_root)
                                 .populate(m_possibleArguments);
                     }
                     if (!m_possibleArguments.contains(name)) {
                         throw new DefinitionException(
                                 "Pointcut is missing a parameter that has been encountered in the Advice: '"
-                                + getExpressionAsString() + "' - '" + name + "' of type '" +
+                                + toString() + "' - '" + name + "' of type '" +
                                 className +
                                 "' missing in '" +
                                 getExpression().m_namespace +

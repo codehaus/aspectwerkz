@@ -67,7 +67,7 @@
                     <br/>
                     <li>
                         a constructor that takes a
-                        <code>org.codehaus.aspectwerkz.CrossCuttingInfo</code> instance
+                        <code>org.codehaus.aspectwerkz.AspectContext</code> instance
                         as its only parameter - this is needed if you want to retrieve information about the runtime
                         system, access paramaters defined at deployment time, access meta-data etc.
                         See
@@ -318,7 +318,7 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
                 To access the
                 <code>CrossCuttingInfo</code> in a specific aspect or mixin you have define a
                 constructor that takes one
-                <code>org.codehaus.aspectwerkz.CrossCuttingInfo</code> as its only
+                <code>org.codehaus.aspectwerkz.AspectContext</code> as its only
                 parameter. The system will then take care of passing in a
                 <code>CrossCuttingInfo </code> instance
                 when the aspect of mixin is instantiated. This instance you can then use as you wish, store it in
@@ -381,7 +381,7 @@ Class getMixinTargetClass(String mixinName, Object mixinImpl)
                     <br/>
                     <li>
                         a constructor that takes a
-                        <code>org.codehaus.aspectwerkz.CrossCuttingInfo</code> instance
+                        <code>org.codehaus.aspectwerkz.AspectContext</code> instance
                         as its only parameter - this is needed if you want to retrieve information about the runtime
                         system, access paramaters defined at deployment time, access meta-data etc.
                         See
