@@ -139,6 +139,10 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                 continue; // interface introduction
             }
 
+            //@todo Jonas validate alex fix
+            // the iterator is on a list and the loop body does list.remove
+            // which is forbidden
+            List methodMetaDataListFiltered = new ArrayList();
             for (Iterator it2 = methodMetaDataList.iterator(); it2.hasNext();) {
                 MethodMetaData methodMetaData = (MethodMetaData)it2.next();
 
@@ -164,16 +168,21 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                                 TransformationUtil.CLASS_LOOKUP_METHOD) ||
                         methodMetaData.getName().startsWith(
                                 TransformationUtil.ORIGINAL_METHOD_PREFIX)) {
-                    methodMetaDataList.remove(methodMetaData);
+                    ;
+                    //@todo jonas validate alex fix
+                    //methodMetaDataList.remove(methodMetaData);
+                } else {
+                    methodMetaDataListFiltered.add(methodMetaData);
                 }
             }
+
             // sort the list so that we can enshure that the indexes are in synch
             // see AbstractIntroductionContainerStrategy#AbstractIntroductionContainerStrategy
-            Collections.sort(methodMetaDataList, MethodComparator.
+            Collections.sort(methodMetaDataListFiltered, MethodComparator.
                     getInstance(MethodComparator.METHOD_META_DATA));
 
             int methodIndex = -1; // start with -1 since the method array is 0 indexed
-            for (Iterator it2 = methodMetaDataList.iterator(); it2.hasNext();) {
+            for (Iterator it2 = methodMetaDataListFiltered.iterator(); it2.hasNext();) {
                 MethodMetaData methodMetaData = (MethodMetaData)it2.next();
                 if (methodMetaData.getReturnType() == null) {
                     continue; // constructor => skip
