@@ -5,11 +5,11 @@
         <title>Dynamic AOP</title>
     </properties>
     <body>
-        <section name="Note for 2.0 RC1">
+        <section name="Note for 2.0.x">
             <p>
                 Dynamic AOP requires AspectWerkz native library in
                 <code>PATH</code> to be able
-                to work.
+                to work when you are not using Java 5. <b>This is not needed when running Java 5 and the -javaagent startup option.</b>
             </p>
             <p>
                 This means that to  make use of the any dynamic feature, such as runtime deployment

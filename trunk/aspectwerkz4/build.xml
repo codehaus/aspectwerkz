@@ -45,13 +45,13 @@
     <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="${basedir}/lib/jarjar-0.3.jar"/>
 
     <target name="cleandist" depends="clean, dist"/>
-    
+
     <!-- =================================================== -->
     <!--  initializes parameters  -->
     <!-- =================================================== -->
     <target name="init">
         <property name="name" value="aspectwerkz"/>
-        <property name="version" value="2.0.RC2-snapshot"/>
+        <property name="version" value="2.0.RC2"/>
         <property name="basedir" value="."/>
         <property name="src.dir" value="${basedir}/src"/>
         <property name="test.src.dir" value="${basedir}/src/test"/>
@@ -249,7 +249,7 @@
     <!-- ============================================================== -->
     <!-- create distribution -->
     <!-- ============================================================== -->
-    <target name="dist" depends="compile:all">
+    <target name="dist" depends="compile, compile:test, compile:jdk15, compile:extensions"><!-- not samples since Java 1.4 -->
         <copy file="${src.dir}/main/aspectwerkz2.dtd" todir="${main.classes}"/>
 
         <!-- we embed jarjar version of ASM in it as well in case the aspectwerkz-core jar is not used -->
@@ -416,7 +416,7 @@
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.RC2-snapshot.jar -Daspectwerkz.transform.verbose=false  -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/jdk15/test/aop.xml"/>
+            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.RC2.jar -Daspectwerkz.transform.verbose=false  -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/jdk15/test/aop.xml"/>
         </java>
     </target>
 
@@ -632,7 +632,7 @@
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.RC2-snapshot.jar  -Daspectwerkz.definition.file=src/jdk15/samples/examples/callback/aop.xml -Daspectwerkz.transform.verbose=false"/>
+            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.RC2.jar  -Daspectwerkz.definition.file=src/jdk15/samples/examples/callback/aop.xml -Daspectwerkz.transform.verbose=false"/>
         </java>
     </target>
 
