@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.codehaus.aspectwerkz.MethodComparator;
-import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 
 /**
  * Helper class with utility methods for working with the java.lang.reflect.* package.
