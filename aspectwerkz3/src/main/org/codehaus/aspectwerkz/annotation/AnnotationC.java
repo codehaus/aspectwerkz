@@ -199,7 +199,7 @@ public class AnnotationC {
             destDirToUse = classpath[0];
         }
 
-        final AnnotationManager manager = new AnnotationManager();
+        final AnnotationManager manager = new AnnotationManager(s_loader);
 
         logInfo("parsing source dirs:");
         for (int i = 0; i < srcDirs.length; i++) {
