@@ -38,8 +38,6 @@ public class ArgAspect {
      * @Before pc1(ai, as)
      */
     public void before1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
-        MethodSignature sig = (MethodSignature)joinPoint.getSignature();
-        Annotation a = sig.getAnnotation("Annotation");
         indent();
         m_level++;
         System.out.println(" ==> before1: " + ai + ", " + as);
@@ -105,21 +103,21 @@ public class ArgAspect {
     }
 
     /**
-     * @Expression call(* ..ArgLoggingTarget.toLog*(..)) && args(int, s, i)
+     * @Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(int, s, i)
      */
     Pointcut pc1(int i, String s) {
         return null;
     }
 
     /**
-     * @Expression call(* ..ArgLoggingTarget.toLog*(..)) && args(int, sarr)
+     * @Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(int, sarr)
      */
     Pointcut pc2(String[] sarr) {
         return null;
     }
     
     /**
-     * @Expression call(* ..ArgLoggingTarget.toLog*(..))
+     * @Expression execution(* ..ArgLoggingTarget.toLog*(..))
      */
     Pointcut pc3() {
         return null;
