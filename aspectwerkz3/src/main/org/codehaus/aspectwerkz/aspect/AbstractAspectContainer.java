@@ -208,7 +208,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      */
     private Object invokeAdvicePerInstance(final int adviceIndex, final JoinPoint joinPoint) throws Throwable {
         Object result = null;
-        Object targetInstance = joinPoint.getTargetInstance();
+        Object targetInstance = joinPoint.getTarget();
         if (targetInstance == null) { // can be null if f.e. an aspect has deployment model
                                       // perInstance and has caller
             // side pointcuts defined

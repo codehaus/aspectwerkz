@@ -297,7 +297,7 @@ public class JoinPointManager {
         }
 
         // set the RTTI
-        joinPoint.setTargetInstance(targetInstance);
+        joinPoint.setTarget(targetInstance);
         if (parameters != null) {
             ((CodeRtti) joinPoint.getRtti()).setParameterValues(parameters);
         }
@@ -433,7 +433,7 @@ public class JoinPointManager {
                 joinPointInfo.state = JoinPointState.HAS_ADVICES;
             }
         }
-        joinPoint.setTargetInstance(thisInstance);
+        joinPoint.setTarget(thisInstance);
         if (parameters != null) {
             ((CodeRtti) joinPoint.getRtti()).setParameterValues(parameters);
         }
@@ -536,7 +536,7 @@ public class JoinPointManager {
         }
 
         // intialize the join point before each usage
-        joinPoint.setTargetInstance(targetInstance);
+        joinPoint.setTarget(targetInstance);
         if (fieldValue[0] != null) {
             ((FieldRtti) joinPoint.getRtti()).setFieldValue(fieldValue[0]); // array due to sucky
                                                                             // javassist field
@@ -639,7 +639,7 @@ public class JoinPointManager {
         }
 
         // intialize the join point before each usage
-        joinPoint.setTargetInstance(targetInstance);
+        joinPoint.setTarget(targetInstance);
         enterCflow(joinPointInfo);
         try {
             return joinPoint.proceed();
@@ -738,7 +738,7 @@ public class JoinPointManager {
         }
 
         // intialize the join point before each usage
-        joinPoint.setTargetInstance(targetInstance);
+        joinPoint.setTarget(targetInstance);
         ((CatchClauseRtti) joinPoint.getRtti()).setParameterValue(exceptionInstance);
         enterCflow(joinPointInfo);
         try {

@@ -48,9 +48,9 @@ public class DynamicDeploymentTestAspect {
      * @Around pc1 || pc2 || pc3
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable) joinPoint.getTarget()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable) joinPoint.getTarget()).log("after1 ");
         return result;
     }
 
@@ -58,9 +58,9 @@ public class DynamicDeploymentTestAspect {
      * @Around pc1 || pc2 || pc4
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before2 ");
+        ((Loggable) joinPoint.getTarget()).log("before2 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after2 ");
+        ((Loggable) joinPoint.getTarget()).log("after2 ");
         return result;
     }
 }

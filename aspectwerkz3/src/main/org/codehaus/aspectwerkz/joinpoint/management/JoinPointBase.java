@@ -192,7 +192,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         MethodRttiImpl rtti = (MethodRttiImpl) joinPoint.getRtti();
         Method targetMethod = signature.getMethodTuple().getOriginalMethod();
         Object[] parameterValues = rtti.getParameterValues();
-        Object targetInstance = joinPoint.getTargetInstance();
+        Object targetInstance = joinPoint.getTarget();
         try {
             return targetMethod.invoke(targetInstance, parameterValues);
         } catch (InvocationTargetException e) {
@@ -212,7 +212,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         MethodRttiImpl rtti = (MethodRttiImpl) joinPoint.getRtti();
         Method targetMethod = signature.getMethodTuple().getWrapperMethod();
         Object[] parameterValues = rtti.getParameterValues();
-        Object targetInstance = joinPoint.getTargetInstance();
+        Object targetInstance = joinPoint.getTarget();
         try {
             return targetMethod.invoke(targetInstance, parameterValues);
         } catch (InvocationTargetException e) {
@@ -290,7 +290,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         FieldRttiImpl rtti = (FieldRttiImpl) joinPoint.getRtti();
         Field targetField = signature.getField();
         Object fieldValue = rtti.getFieldValue();
-        Object targetInstance = joinPoint.getTargetInstance();
+        Object targetInstance = joinPoint.getTarget();
         targetField.set(targetInstance, fieldValue);
     }
 
@@ -304,7 +304,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     public static Object getTargetField(final JoinPoint joinPoint) throws Throwable {
         FieldSignature signature = (FieldSignature) joinPoint.getSignature();
         Field targetField = signature.getField();
-        Object targetInstance = joinPoint.getTargetInstance();
+        Object targetInstance = joinPoint.getTarget();
         return targetField.get(targetInstance);
     }
 
@@ -402,7 +402,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * 
      * @return the target instance
      */
-    public Object getTargetInstance() {
+    public Object getTarget() {
         return m_targetInstanceRef.get();
     }
 
@@ -429,7 +429,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * 
      * @param targetInstance the target instance
      */
-    public void setTargetInstance(final Object targetInstance) {
+    public void setTarget(final Object targetInstance) {
         m_targetInstanceRef = new WeakReference(targetInstance);
     }
 

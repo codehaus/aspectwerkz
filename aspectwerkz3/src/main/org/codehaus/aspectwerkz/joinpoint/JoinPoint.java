@@ -69,12 +69,12 @@ public interface JoinPoint {
     Rtti getRtti();
 
     /**
-     * Returns the target instance or 'this'. If the join point is executing in a static context it
+     * Returns the target instance. If the join point is executing in a static context it
      * returns null.
      * 
      * @return the target instance
      */
-    Object getTargetInstance();
+    Object getTarget();
 
     /**
      * Sets the target instance.
@@ -82,7 +82,7 @@ public interface JoinPoint {
      * @param targetInstance the target instance
      * @TODO: this method is bad for the API, dangerous
      */
-    void setTargetInstance(Object targetInstance);
+    void setTarget(Object targetInstance);
 
     /**
      * Returns the target class.

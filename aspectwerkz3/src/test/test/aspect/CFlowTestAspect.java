@@ -49,9 +49,9 @@ public class CFlowTestAspect {
      * @Around pc2 AND pc1
      */
     public Object execute(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-before ");
+        ((Loggable) joinPoint.getTarget()).log("advice-before ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-after ");
+        ((Loggable) joinPoint.getTarget()).log("advice-after ");
         return result;
     }
 
@@ -59,9 +59,9 @@ public class CFlowTestAspect {
      * @Around pc2_B AND pc1_B AND pc1_A
      */
     public Object execute2(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-before2 ");
+        ((Loggable) joinPoint.getTarget()).log("advice-before2 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-after2 ");
+        ((Loggable) joinPoint.getTarget()).log("advice-after2 ");
         return result;
     }
 
@@ -70,9 +70,9 @@ public class CFlowTestAspect {
      *         test.CFlowTest.step1Anonymous()) AND within(test.CFlowTest))
      */
     public Object executeAnonymous(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-beforeAnonymous ");
+        ((Loggable) joinPoint.getTarget()).log("advice-beforeAnonymous ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-afterAnonymous ");
+        ((Loggable) joinPoint.getTarget()).log("advice-afterAnonymous ");
         return result;
     }
 
@@ -81,9 +81,9 @@ public class CFlowTestAspect {
      *         within(test.CFlowTest))
      */
     public Object executeC(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-beforeC ");
+        ((Loggable) joinPoint.getTarget()).log("advice-beforeC ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-afterC ");
+        ((Loggable) joinPoint.getTarget()).log("advice-afterC ");
         return result;
     }
 }

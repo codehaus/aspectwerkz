@@ -13,7 +13,7 @@ import java.util.Map;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 
-public class InlinedJoinPoint extends InlinedJoinPointBase {//implements JoinPoint {
+public class InlinedJoinPoint extends InlinedJoinPointBase {
 
     private static final Signature SIGNATURE;
 

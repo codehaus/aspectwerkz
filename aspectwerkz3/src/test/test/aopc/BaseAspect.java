@@ -14,9 +14,9 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  */
 public class BaseAspect {
     public Object logAround(JoinPoint jp) throws Throwable {
-        ((Callable) jp.getTargetInstance()).log("beforeAround ");
+        ((Callable) jp.getTarget()).log("beforeAround ");
         Object result = jp.proceed();
-        ((Callable) jp.getTargetInstance()).log("afterAround ");
+        ((Callable) jp.getTarget()).log("afterAround ");
         return result;
     }
 }

@@ -29,9 +29,9 @@ public class DynamicallyCreatedAspect {
      * @Around pc1
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("beforeNew ");
+        ((Loggable) joinPoint.getTarget()).log("beforeNew ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("afterNew ");
+        ((Loggable) joinPoint.getTarget()).log("afterNew ");
         return result;
     }
 }
