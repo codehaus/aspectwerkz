@@ -29,6 +29,9 @@ import org.codehaus.aspectwerkz.attribdef.definition.attribute.ThrowsAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.CFlowAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.bcel.BcelAttributeEnhancer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Compiles attributes for the aspects. Can be called from the command line.
  *
@@ -50,13 +53,25 @@ public class AspectC {
     public static final String ATTR_INTRODUCE = "Introduce";
     public static final String ATTR_IMPLEMENTS = "Implements";
 
+    /** verbose log */
+    private boolean verbose = false;
+
+    /**
+     * Set verbose mode
+     *
+     * @param verbose
+     */
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
     /**
      * Compiles attributes for the aspects.
      *
      * @param sourcePath the path to the sources to compile attributes for
      * @param classPath the path to the compiled classes matching the source files
      */
-    public static void compile(final String sourcePath, final String classPath) {
+    public void compile(final String sourcePath, final String classPath) {
         compile(sourcePath, classPath, classPath);
     }
 
@@ -67,7 +82,7 @@ public class AspectC {
      * @param classPath the path to the compiled classes matching the source files
      * @param destDir the path where to write the compiled aspects
      */
-    public static void compile(final String sourcePath,
+    public void compile(final String sourcePath,
                                final String classPath,
                                final String destDir) {
         if (sourcePath == null) throw new IllegalArgumentException("source path can not be null");
@@ -121,7 +136,7 @@ public class AspectC {
      * @param javaClass the java class
      * @param enhancer the attribute enhancer
      */
-    private static boolean parseAspect(final JavaClass javaClass,
+    private boolean parseAspect(final JavaClass javaClass,
                                        final AttributeEnhancer enhancer) {
         DocletTag aspectTag = javaClass.getTagByName(ATTR_ASPECT);
         if (aspectTag != null) {
@@ -150,7 +165,7 @@ public class AspectC {
      * @param javaField the java field
      * @param enhancer the attribute enhancer
      */
-    private static void parseExecutionPointcut(final JavaField javaField,
+    private void parseExecutionPointcut(final JavaField javaField,
                                                final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_EXECUTION);
         if (pointcutTag == null) return;
@@ -168,7 +183,7 @@ public class AspectC {
      * @param javaField the java field
      * @param enhancer the attribute enhancer
      */
-    private static void parseCallPointcut(final JavaField javaField,
+    private void parseCallPointcut(final JavaField javaField,
                                           final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_CALL);
         if (pointcutTag == null) return;
@@ -186,7 +201,7 @@ public class AspectC {
      * @param javaField the java field
      * @param enhancer the attribute enhancer
      */
-    private static void parseClassPointcut(final JavaField javaField,
+    private void parseClassPointcut(final JavaField javaField,
                                            final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_CLASS);
         if (pointcutTag == null) return;
@@ -204,7 +219,7 @@ public class AspectC {
      * @param javaField the java field
      * @param enhancer the attribute enhancer
      */
-    private static void parseSetPointcut(final JavaField javaField,
+    private void parseSetPointcut(final JavaField javaField,
                                          final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_SET);
         if (pointcutTag == null) return;
@@ -222,7 +237,7 @@ public class AspectC {
      * @param javaField the java field
      * @param enhancer the attribute enhancer
      */
-    private static void parseGetPointcut(final JavaField javaField,
+    private void parseGetPointcut(final JavaField javaField,
                                          final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_GET);
         if (pointcutTag == null) return;
@@ -240,7 +255,7 @@ public class AspectC {
      * @param javaField the java field
      * @param enhancer the attribute enhancer
      */
-    private static void parseThrowsPointcut(final JavaField javaField,
+    private void parseThrowsPointcut(final JavaField javaField,
                                             final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_THROWS);
         if (pointcutTag == null) return;
@@ -258,7 +273,7 @@ public class AspectC {
      * @param javaField the java field
      * @param enhancer the attribute enhancer
      */
-    private static void parseCFlowPointcut(final JavaField javaField,
+    private void parseCFlowPointcut(final JavaField javaField,
                                            final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_CFLOW);
         if (pointcutTag == null) return;
@@ -276,7 +291,7 @@ public class AspectC {
      * @param javaField the java field
      * @param enhancer the attribute enhancer
      */
-    private static void parseImplementsPointcut(final JavaField javaField,
+    private void parseImplementsPointcut(final JavaField javaField,
                                                 final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_IMPLEMENTS);
         if (pointcutTag == null) return;
@@ -294,7 +309,7 @@ public class AspectC {
      * @param javaMethod the java method
      * @param enhancer the attribute enhancer
      */
-    private static void parseAroundAdvice(final JavaMethod javaMethod,
+    private void parseAroundAdvice(final JavaMethod javaMethod,
                                           final AttributeEnhancer enhancer) {
         DocletTag[] aroundAdviceTags = javaMethod.getTagsByName(ATTR_AROUND);
         for (int i = 0; i < aroundAdviceTags.length; i++) {
@@ -323,7 +338,7 @@ public class AspectC {
      * @param javaMethod the java method
      * @param enhancer the attribute enhancer
      */
-    private static void parseBeforeAdvice(final JavaMethod javaMethod,
+    private void parseBeforeAdvice(final JavaMethod javaMethod,
                                           final AttributeEnhancer enhancer) {
         DocletTag[] beforeAdviceTags = javaMethod.getTagsByName(ATTR_BEFORE);
         for (int i = 0; i < beforeAdviceTags.length; i++) {
@@ -352,7 +367,7 @@ public class AspectC {
      * @param javaMethod the java method
      * @param enhancer the attribute enhancer
      */
-    private static void parseAfterAdvice(final JavaMethod javaMethod,
+    private void parseAfterAdvice(final JavaMethod javaMethod,
                                          final AttributeEnhancer enhancer) {
         DocletTag[] afterAdviceTags = javaMethod.getTagsByName(ATTR_AFTER);
         for (int i = 0; i < afterAdviceTags.length; i++) {
@@ -381,7 +396,7 @@ public class AspectC {
      * @param javaMethod the java method
      * @param enhancer the attribute enhancer
      */
-    private static void parseMethodIntroduction(final JavaMethod javaMethod,
+    private void parseMethodIntroduction(final JavaMethod javaMethod,
                                                 final AttributeEnhancer enhancer) {
         DocletTag[] introductionTags = javaMethod.getTagsByName(ATTR_INTRODUCE);
         for (int i = 0; i < introductionTags.length; i++) {
@@ -402,8 +417,9 @@ public class AspectC {
      *
      * @param message the message to log
      */
-    private static void log(final String message) {
-        System.out.println("AspectC::INFO - " + message);
+    private void log(final String message) {
+        if (verbose)
+            System.out.println("AspectC::INFO - " + message);
     }
 
     /**
@@ -414,19 +430,36 @@ public class AspectC {
     public static void main(String[] args) {
         if (args.length < 2) {
             System.out.println("AspectWerkz (c) 2002-2003 The AspectWerkz Team");
-            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.attribdef.definition.AspectC <path to src dir> <path to classes dir> <path to destination dir>");
+            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.attribdef.definition.AspectC [-verbose] <path to src dir> <path to classes dir> [<path to destination dir>]");
             System.out.println("       <path to destination dir> is optional, if omitted the compiled aspects will be written to the initial directory");
+            System.out.println("       use -verbose to activate verbose logging");
             System.exit(0);
         }
-        System.out.println("compiling aspects...");
-        if (args.length == 2) {
-            AspectC.compile(args[0], args[1]);
-            System.out.println("compiled aspects written to " + args[1]);
+
+        // analyse arguments and options
+        List arguments = new ArrayList();
+        List options = new ArrayList();
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].startsWith("-")) {
+                options.add(args[i]);
+            }
+            else {
+                arguments.add(args[i]);
+            }
+        }
+
+        AspectC compiler = new AspectC();
+        compiler.setVerbose(options.contains("-verbose"));
+
+        compiler.log("compiling aspects...");
+        if (arguments.size() == 2) {
+            compiler.compile((String)arguments.get(0), (String)arguments.get(1));
+            compiler.log("compiled aspects written to " + (String)arguments.get(1));
         }
         else {
-            AspectC.compile(args[0], args[1], args[2]);
-            System.out.println("compiled aspects written to " + args[2]);
+            compiler.compile((String)arguments.get(0), (String)arguments.get(1), (String)arguments.get(2));
+            compiler.log("compiled aspects written to " + (String)arguments.get(2));
         }
-        System.out.println("compilation successful");
+        compiler.log("compilation successful");
     }
 }
