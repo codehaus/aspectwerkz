@@ -233,6 +233,8 @@ public class JoinPointManager {
 
             case JoinPointType.HANDLER:
                 reflectionInfo = calleeClassInfo;
+                // special case for handler - callee is not 'this' but the exception instance, so need 'caller'
+                ClassInfo thisClassInfo = JavaClassInfo.getClassInfo(callerClass);
                 doLoadJoinPoint(
                         joinPointClassName,
                         JoinPointType.HANDLER,
@@ -247,7 +249,7 @@ public class JoinPointManager {
                         calleeMemberModifiers,
                         joinPointHash,
                         reflectionInfo,
-                        calleeClassInfo
+                        thisClassInfo
                 );
                 break;
 

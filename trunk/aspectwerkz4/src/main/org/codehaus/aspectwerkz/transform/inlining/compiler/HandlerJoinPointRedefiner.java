@@ -59,5 +59,4 @@ public class HandlerJoinPointRedefiner extends HandlerJoinPointCompiler {
     protected void createInlinedInvokeMethod() {
         createInvokeMethod();
     }
-
 }

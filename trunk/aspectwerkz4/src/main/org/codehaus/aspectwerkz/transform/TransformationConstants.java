@@ -111,7 +111,7 @@ public interface TransformationConstants extends Constants {
     public static final String META_DATA_FIELD_NAME = "META_DATA";
     public static final String ASPECT_FIELD_PREFIX = "ASPECT_";
     public static final String STACK_FRAME_COUNTER_FIELD_NAME = "STACK_FRAME_COUNTER";
-    public static final String INTERCEPTOR_INDEX_FIELD_NAME = "DELEGATOR_INDEX";
+    public static final String INTERCEPTOR_INDEX_FIELD_NAME = "INTERCEPTOR_INDEX";
     public static final String CALLEE_INSTANCE_FIELD_NAME = "CALLEE";
     public static final String CALLER_INSTANCE_FIELD_NAME = "CALLER";
     public static final String ARGUMENT_FIELD = "ARGUMENT_";
@@ -146,7 +146,7 @@ public interface TransformationConstants extends Constants {
     public static final String ASPECTS_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/Aspects";
     public static final String ASPECT_OF_METHOD_NAME = "aspectOf";
     public static final String ASPECT_OF_PER_JVM_METHOD_SIGNATURE = "(Ljava/lang/ClassLoader;Ljava/lang/String;)Ljava/lang/Object;";
-    public static final String GETCLASSLOADER_METHOD_NAME = "getClassLoader";    
+    public static final String GETCLASSLOADER_METHOD_NAME = "getClassLoader";
     public static final String ASPECT_OF_PER_CLASS_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;";
     public static final String ASPECT_OF_PER_INSTANCE_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;";
     public static final String GET_CFLOW_STACK_METHOD_NAME = "getCflowStack";

@@ -6,8 +6,8 @@
         <advisable pointcut-type="call" expression="within(test.intercept.call.Callee)"/>
         <advisable pointcut-type="set" expression="within(test.intercept.set.InterceptTest)"/>
         <advisable pointcut-type="get" expression="within(test.intercept.get.InterceptTest)"/>
-        <advisable pointcut-type="call|execution|set|get|handler" expression="within(test.aspect.MemberMethodTestAspect)"/>
-        <advisable pointcut-type="call|execution|set|get|handler" expression="within(test.aspect.StaticMethodTestAspect)"/>
+        <advisable pointcut-type="call|execution|set|get" expression="within(test.aspect.MemberMethodTestAspect)"/>
+        <advisable pointcut-type="call|execution|set|get" expression="within(test.aspect.StaticMethodTestAspect)"/>
         <pointcut name="handler">
             handler(test.handler.HandlerTestBeforeException)
             AND
@@ -43,9 +43,9 @@
         <aspect class="test.handler.HandlerTestAspect">
             <advice bind-to="handler" type="before" name="before(JoinPoint)"/>
             <advice type="before" name="before2(StaticJoinPoint)"
-                    bind-to="handler(test.handler.HandlerTestBeforeException) AND withincode(* test.handler.*.testBeforeAdvice2(..))"/>
+                bind-to="handler(test.handler.HandlerTestBeforeException) AND withincode(* test.handler.*.testBeforeAdvice2(..))"/>
             <advice type="before" name="before3(JoinPoint jp, test.handler.HandlerTestBeforeException e)"
-                    bind-to="handler(test.handler.HandlerTestBeforeException) AND withincode(* test.handler.*.testBeforeAdvice3(..)) AND args(e)"/>
+                bind-to="handler(test.handler.HandlerTestBeforeException) AND withincode(* test.handler.*.testBeforeAdvice3(..)) AND args(e)"/>
         </aspect>
         <aspect class="test.proceedinnewthread.TestAspect">
             <advice bind-to="execution(void test.proceedinnewthread.ProceedTest.adviseMe*(..))" type="around" name="advice1"/>

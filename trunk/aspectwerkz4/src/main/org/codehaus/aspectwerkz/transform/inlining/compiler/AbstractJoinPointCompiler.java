@@ -647,7 +647,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             );
 
             // update the argument fields in the join point instance
-            int argStackIndex = 1;
+            int argStackIndex = 1; // first arg is at index 1
             for (int i = 0; i < m_fieldNames.length; i++) {
                 String fieldName = m_fieldNames[i];
                 cv.visitVarInsn(ALOAD, 0);
@@ -657,7 +657,12 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             }
 
             cv.visitVarInsn(ALOAD, 0);
-            cv.visitMethodInsn(INVOKESPECIAL, m_joinPointClassName, PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE);
+            cv.visitMethodInsn(
+                    INVOKESPECIAL,
+                    m_joinPointClassName,
+                    PROCEED_METHOD_NAME,
+                    PROCEED_METHOD_SIGNATURE
+            );
 
             cv.visitInsn(ARETURN);
             cv.visitMaxs(0, 0);
@@ -742,13 +747,10 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * @param cv
      */
     protected boolean createAndInitializeAspectField(final AspectInfo aspectInfo, final CodeVisitor cv) {
-        final String aspectClassName = aspectInfo.getAspectClassName().replace('.', '/');
-        final String aspectClassSignature = L + aspectClassName + SEMICOLON;
-
         if (aspectInfo.getAspectDefinition().isAspectWerkzAspect()) {
             // AW aspect
             // create the field to host the aspect and retrieve the aspect to set it to the field
-            createAspectReferenceField(m_cw, aspectInfo, m_joinPointClassName);
+            createAspectReferenceField(m_cw, aspectInfo);
             createAspectInstantiation(cv, aspectInfo, m_joinPointClassName);
         } else {
             // non-AW aspect
@@ -766,11 +768,9 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      *
      * @param cw
      * @param aspectInfo
-     * @param joinPointClassName
      */
     public static void createAspectReferenceField(final ClassWriter cw,
-                                                  final AspectInfo aspectInfo,
-                                                  final String joinPointClassName) {
+                                                  final AspectInfo aspectInfo) {
         String aspectClassSignature = aspectInfo.getAspectClassSignature();
 
         // create a field depending on the aspect deployment model
@@ -943,7 +943,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         for (int i = 0; i < m_aspectInfos.length; i++) {
             AspectInfo aspectInfo = m_aspectInfos[i];
             if (aspectInfo.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
-                //aspectField = (<TYPE>)((HasInstanceLocalAspect)target).aw$getAspect(className, qualifiedName)
+                // gen code: aspectField = (<TYPE>)((HasInstanceLocalAspect)target).aw$getAspect(className, qualifiedName)
                 loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
                 if (calleeIndex >= 0) {
                     cv.visitVarInsn(ALOAD, calleeIndex);
@@ -2050,11 +2050,83 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, STACK_FRAME_COUNTER_FIELD_NAME, I);
 
         if (m_isTargetAdvisable) {
-            // set stack frame index
+            // set interceptor index
             cv.visitVarInsn(ALOAD, joinPointCloneIndex);
             cv.visitVarInsn(ALOAD, 0);
             cv.visitFieldInsn(GETFIELD, m_joinPointClassName, INTERCEPTOR_INDEX_FIELD_NAME, I);
             cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, INTERCEPTOR_INDEX_FIELD_NAME, I);
+
+            // set array length fields
+            cv.visitVarInsn(ALOAD, joinPointCloneIndex);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, NR_OF_BEFORE_INTERCEPTORS_FIELD_NAME, I);
+            cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, NR_OF_BEFORE_INTERCEPTORS_FIELD_NAME, I);
+            cv.visitVarInsn(ALOAD, joinPointCloneIndex);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, NR_OF_AROUND_INTERCEPTORS_FIELD_NAME, I);
+            cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, NR_OF_AROUND_INTERCEPTORS_FIELD_NAME, I);
+            cv.visitVarInsn(ALOAD, joinPointCloneIndex);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, NR_OF_AFTER_INTERCEPTORS_FIELD_NAME, I);
+            cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, NR_OF_AFTER_INTERCEPTORS_FIELD_NAME, I);
+            cv.visitVarInsn(ALOAD, joinPointCloneIndex);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, NR_OF_AFTER_RETURNING_INTERCEPTORS_FIELD_NAME, I);
+            cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, NR_OF_AFTER_RETURNING_INTERCEPTORS_FIELD_NAME, I);
+            cv.visitVarInsn(ALOAD, joinPointCloneIndex);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, NR_OF_AFTER_THROWING_INTERCEPTORS_FIELD_NAME, I);
+            cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, NR_OF_AFTER_THROWING_INTERCEPTORS_FIELD_NAME, I);
+
+            // set arrays
+            cv.visitVarInsn(ALOAD, joinPointCloneIndex);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitFieldInsn(
+                    GETFIELD, m_joinPointClassName, BEFORE_INTERCEPTORS_FIELD_NAME,
+                    BEFORE_ADVICE_ARRAY_CLASS_SIGNATURE
+            );
+            cv.visitFieldInsn(
+                    PUTFIELD, m_joinPointClassName, BEFORE_INTERCEPTORS_FIELD_NAME,
+                    BEFORE_ADVICE_ARRAY_CLASS_SIGNATURE
+            );
+            cv.visitVarInsn(ALOAD, joinPointCloneIndex);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitFieldInsn(
+                    GETFIELD, m_joinPointClassName, AROUND_INTERCEPTORS_FIELD_NAME,
+                    AROUND_ADVICE_ARRAY_CLASS_SIGNATURE
+            );
+            cv.visitFieldInsn(
+                    PUTFIELD, m_joinPointClassName, AROUND_INTERCEPTORS_FIELD_NAME,
+                    AROUND_ADVICE_ARRAY_CLASS_SIGNATURE
+            );
+            cv.visitVarInsn(ALOAD, joinPointCloneIndex);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitFieldInsn(
+                    GETFIELD, m_joinPointClassName, AFTER_INTERCEPTORS_FIELD_NAME, AFTER_ADVICE_ARRAY_CLASS_SIGNATURE
+            );
+            cv.visitFieldInsn(
+                    PUTFIELD, m_joinPointClassName, AFTER_INTERCEPTORS_FIELD_NAME, AFTER_ADVICE_ARRAY_CLASS_SIGNATURE
+            );
+            cv.visitVarInsn(ALOAD, joinPointCloneIndex);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitFieldInsn(
+                    GETFIELD, m_joinPointClassName, AFTER_RETURNING_INTERCEPTORS_FIELD_NAME,
+                    AFTER_RETURNING_ADVICE_ARRAY_CLASS_SIGNATURE
+            );
+            cv.visitFieldInsn(
+                    PUTFIELD, m_joinPointClassName, AFTER_RETURNING_INTERCEPTORS_FIELD_NAME,
+                    AFTER_RETURNING_ADVICE_ARRAY_CLASS_SIGNATURE
+            );
+            cv.visitVarInsn(ALOAD, joinPointCloneIndex);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitFieldInsn(
+                    GETFIELD, m_joinPointClassName, AFTER_THROWING_INTERCEPTORS_FIELD_NAME,
+                    AFTER_THROWING_ADVICE_ARRAY_CLASS_SIGNATURE
+            );
+            cv.visitFieldInsn(
+                    PUTFIELD, m_joinPointClassName, AFTER_THROWING_INTERCEPTORS_FIELD_NAME,
+                    AFTER_THROWING_ADVICE_ARRAY_CLASS_SIGNATURE
+            );
         }
 
         // set callee

@@ -68,28 +68,36 @@ public class AdvisableImpl implements Advisable {
     }
 
     /**
-     * @param memberPattern
+     * @param pattern
      * @param advice
      */
-    public void aw$addAdvice(final String memberPattern, final Advice advice) {
+    public void aw$addAdvice(final String pattern, final Advice advice) {
         ClassInfo classInfo = JavaClassInfo.getClassInfo(m_targetInstance.getClass());
-        if (memberPattern.endsWith(")")) {
-            addAdviceToMethods(memberPattern, advice, classInfo.getMethods());
+        boolean hasParenthesis = pattern.indexOf('(') > -1;
+        boolean hasSpace = pattern.indexOf(' ') > -1;
+        if (hasParenthesis) {
+            addAdviceToMethods(pattern, advice, classInfo.getMethods());
+        } else if (hasSpace) {
+            addAdviceToFields(pattern, advice, classInfo.getFields());
         } else {
-            addAdviceToFields(memberPattern, advice, classInfo.getFields());
+            addAdviceToCatchHandlers(pattern, advice);
         }
     }
 
     /**
-     * @param memberPattern
+     * @param pattern
      * @param adviceClass
      */
-    public void aw$removeAdvice(final String memberPattern, final Class adviceClass) {
+    public void aw$removeAdvice(final String pattern, final Class adviceClass) {
         ClassInfo classInfo = JavaClassInfo.getClassInfo(m_targetInstance.getClass());
-        if (memberPattern.endsWith(")")) {
-            removeAdviceFromMethods(memberPattern, adviceClass, classInfo.getMethods());
+        boolean hasParenthesis = pattern.indexOf('(') > -1;
+        boolean hasSpace = pattern.indexOf(' ') > -1;
+        if (hasParenthesis) {
+            removeAdviceFromMethods(pattern, adviceClass, classInfo.getMethods());
+        } else if (hasSpace) {
+            removeAdviceFromFields(pattern, adviceClass, classInfo.getFields());
         } else {
-            removeAdviceFromFields(memberPattern, adviceClass, classInfo.getFields());
+            removeAdviceFromCatchHandlers(pattern, adviceClass);
         }
     }
 
@@ -211,6 +219,15 @@ public class AdvisableImpl implements Advisable {
     }
 
     /**
+     * @param typeName
+     * @param advice
+     */
+    private void addAdviceToCatchHandlers(final String typeName, final Advice advice) {
+        int joinPointHash = AsmHelper.calculateClassHash('L' + typeName.replace('.', '/') + ';');
+        addBeforeAdvice(advice, joinPointHash);
+    }
+
+    /**
      * @param methodPattern
      * @param adviceClass
      * @param methods
@@ -260,6 +277,15 @@ public class AdvisableImpl implements Advisable {
                 removeAfterThrowingAdvice(adviceClass, joinPointHash);
             }
         }
+    }
+
+    /**
+     * @param typeName
+     * @param adviceClass
+     */
+    private void removeAdviceFromCatchHandlers(final String typeName, final Class adviceClass) {
+        int joinPointHash = AsmHelper.calculateClassHash('L' + typeName.replace('.', '/') + ';');
+        removeBeforeAdvice(adviceClass, joinPointHash);
     }
 
     /**
