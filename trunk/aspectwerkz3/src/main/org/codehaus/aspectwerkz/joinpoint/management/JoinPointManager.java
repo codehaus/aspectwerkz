@@ -454,7 +454,12 @@ public class JoinPointManager {
             for (int i = 0; i < javaParameters.length; i++) {
                 String javaParameter = Strings.replaceSubString(javaParameters[i], "  ", " ").trim();
                 String[] paramInfo = Strings.splitString(javaParameter, " ");
-                paramNames.add(paramInfo[1]);
+                // handles XML def where name is optional
+                if (paramInfo.length == 2) {
+                    paramNames.add(paramInfo[1]);
+                } else {
+                    paramNames.add("anonymous_"+i);
+                }
             }
         }
         String[] paramNamesArray = new String[paramNames.size()];
