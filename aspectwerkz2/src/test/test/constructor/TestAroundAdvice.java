@@ -14,5 +14,7 @@ public class TestAroundAdvice {
     public TestAroundAdvice(long l, Object o, String[] arr) {
         ConstructorAdviceTest.logCall("init ");
         ConstructorAdviceTest.logExecution("init ");
+//        System.out.println(this);
+//        (new Exception()).printStackTrace();
     }
 }

@@ -23,7 +23,7 @@ import org.codehaus.aspectwerkz.SystemLoader;
 public class PerformanceTest extends TestCase {
 
     private boolean m_printInfo = true;
-    private int m_numberOfInvocations = 10000000;
+    private int m_numberOfInvocations = 1000000;
 
     public void testNonAdvisedMethodPerformance() {
         long startTime = System.currentTimeMillis();

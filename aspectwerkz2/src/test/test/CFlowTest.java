@@ -30,7 +30,6 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
     public void testCallWithinCFlow_B() {
         m_logString = "";
         step1_B();//will have cflow and will call step2_B() but is NOT in step1_A cflow
-        System.out.println(m_logString);
         assertEquals("step1_B step2_B ", m_logString);
     }
 

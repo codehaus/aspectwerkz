@@ -12,6 +12,8 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.Modifier;
 import javassist.NotFoundException;
+import javassist.CtNewMethod;
+import javassist.bytecode.CodeAttribute;
 
 /**
  * Helper for Javassist
@@ -163,4 +165,128 @@ public class JavassistHelper {
         }
         return typeName;
     }
+
+    /**
+     * Checks if a method is marked as an empty wrapper (runtime weaving)
+     *
+     * @param method
+     * @return true if empty wrapper
+     */
+    public static boolean isAnnotatedEmpty(CtMethod method) {
+        byte[] emptyBytes = method.getAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE);
+        return (emptyBytes != null && emptyBytes[0] == TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY);
+    }
+
+    /**
+     * Checks if a method is marked as a non empty wrapper (runtime unweaving)
+     *
+     * @param method
+     * @return true if non empty wrapper
+     */
+    public static boolean isAnnotatedNotEmpty(CtMethod method) {
+        byte[] emptyBytes = method.getAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE);
+        return (emptyBytes == null || emptyBytes[0] == TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY);
+    }
+
+    /**
+     * Sets a method as beeing an empty wrapper
+     *
+     * @param method
+     */
+    public static void setAnnotatedEmpty(CtMethod method) {
+        method.setAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE,
+                            new byte[]{TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY});
+    }
+
+    /**
+     * Sets a method as beeing a non empty wrapper
+     *
+     * @param method
+     */
+    public static void setAnnotatedNotEmpty(CtMethod method) {
+        method.setAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE,
+                            new byte[]{TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY});
+    }
+
+    /**
+     * Creates an empty wrapper method to allow HotSwap without schema change
+     *
+     * TODO refactor PrepareTransformer
+     * CAUTION: does not check the wrapped method already exists while
+     * PrepareTransformer version does
+     *
+     * @param ctClass        the ClassGen
+     * @param originalMethod the current method
+     * @param methodSequence the method hash
+     * @return the wrapper method
+     */
+    public static CtMethod createEmptyWrapperMethod(
+            final CtClass ctClass,
+            final CtMethod originalMethod,
+            final int methodSequence)
+            throws NotFoundException, CannotCompileException {
+
+        String wrapperMethodName = TransformationUtil.getPrefixedMethodName(
+                originalMethod, methodSequence, ctClass.getName()
+        );
+
+        // determine the method access flags (should always be set to protected)
+        int accessFlags = originalMethod.getModifiers();
+        if ((accessFlags & Modifier.PROTECTED) == 0) {
+            // set the protected flag
+            accessFlags |= Modifier.PROTECTED;
+        }
+        if ((accessFlags & Modifier.PRIVATE) != 0) {
+            // clear the private flag
+            accessFlags &= ~Modifier.PRIVATE;
+        }
+        if ((accessFlags & Modifier.PUBLIC) != 0) {
+            // clear the public flag
+            accessFlags &= ~Modifier.PUBLIC;
+        }
+
+        // add an empty body
+        StringBuffer body = new StringBuffer();
+        if (originalMethod.getReturnType() == CtClass.voidType) {
+            // special handling for void return type leads to cleaner bytecode generation with Javassist
+            body.append("{}");
+        }
+        else if (!originalMethod.getReturnType().isPrimitive()) {
+            body.append("{ return null;}");
+        }
+        else {
+            body.append("{ return ");
+            body.append(JavassistHelper.getDefaultPrimitiveValue(originalMethod.getReturnType()));
+            body.append("; }");
+        }
+
+        CtMethod method = null;
+        if (Modifier.isStatic(originalMethod.getModifiers())) {
+            method = JavassistHelper.makeStatic(
+                    originalMethod.getReturnType(),
+                    wrapperMethodName,
+                    originalMethod.getParameterTypes(),
+                    originalMethod.getExceptionTypes(),
+                    body.toString(),
+                    ctClass
+            );
+        }
+        else {
+            method = CtNewMethod.make(
+                    originalMethod.getReturnType(),
+                    wrapperMethodName,
+                    originalMethod.getParameterTypes(),
+                    originalMethod.getExceptionTypes(),
+                    body.toString(),
+                    ctClass
+            );
+            method.setModifiers(accessFlags);
+        }
+
+        // add a method level attribute so that we remember it is an empty method
+        JavassistHelper.setAnnotatedEmpty(method);
+
+        return method;
+    }
+
 }

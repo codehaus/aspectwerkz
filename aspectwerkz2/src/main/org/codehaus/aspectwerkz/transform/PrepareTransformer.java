@@ -186,10 +186,7 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
         }
 
         // add a method level attribute so that we remember it is an empty method
-        method.setAttribute(
-                TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE,
-                TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE
-        );
+        JavassistHelper.setAnnotatedEmpty(method);
 
         return method;
     }
