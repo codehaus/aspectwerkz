@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.codehaus.aspectwerkz.ide.eclipse.feature"
+      label="org.codehaus.aspectwerkz.ide.eclipse.feature"
+      version="2.0.3"
+      provider-name="AspectWerkz, BEA Systems">
+
+   <install-handler/>
+
+   <description url="http://aspectwerkz.codehaus.org">
+      AspectWerkz AOP Eclipse Plugin
+- Embedded Java 1.4 Annotation compiler
+- Embedded weaving
+- Cross-cutting view through markers on weaved classes
+- Launch configuration for load time weaving
+   </description>
+
+   <copyright url="http://aspectwerkz.codehaus.org">
+      Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.
+http://aspectwerkz.codehaus.org
+
+The software in this package is published under the terms of
+the LGPL license a copy of which has been included with this
+distribution in the license.txt file.
+   </copyright>
+
+   <license url="http://aspectwerkz.codehaus.org">
+      Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.
+http://aspectwerkz.codehaus.org
+The software in this package is published under the terms of
+the LGPL license a copy of which has been included with this
+distribution in the license.txt file.
+   </license>
+
+   <url>
+      <update label="AspectWerkz Eclipse Plugin Update site" url="http://aspectwerkz.codehaus.org/downloads/eclipse"/>
+      <discovery label="AspectWerkz Eclipse Plugin Update site" url="http://aspectwerkz.codehaus.org/downloads/eclipse"/>
+   </url>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.intro"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.jdt"/>
+      <import plugin="org.eclipse.jdt.ui"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.eclipse.jdt.debug"/>
+      <import plugin="org.eclipse.jdt.debug.ui"/>
+      <import plugin="org.eclipse.debug.ui"/>
+      <import plugin="org.eclipse.jdt.launching"/>
+   </requires>
+
+   <plugin
+         id="org.codehaus.aspectwerkz.ide.eclipse.core"
+         download-size="0"
+         install-size="0"
+         version="2.0.3"/>
+
+</feature>

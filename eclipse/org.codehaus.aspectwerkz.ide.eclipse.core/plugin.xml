@@ -3,7 +3,7 @@
 <plugin
    id="org.codehaus.aspectwerkz.ide.eclipse.core"
    name="AspectWerkz Core Plug-in"
-   version="2.0.1"
+   version="2.0.3"
    provider-name="AspectWerkz"
    class="org.codehaus.aspectwerkz.ide.eclipse.core.AwCorePlugin">
 
@@ -114,8 +114,8 @@
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
-            objectClass="org.eclipse.core.resources.IProject"
             adaptable="true"
+            objectClass="org.eclipse.core.resources.IProject"
             id="actions.ToggleProjectNatureActionDelegateContribution">
          <visibility>
             <and>
@@ -139,8 +139,8 @@
          </action>
       </objectContribution>
       <objectContribution
-            objectClass="org.eclipse.core.resources.IProject"
             adaptable="true"
+            objectClass="org.eclipse.core.resources.IProject"
             id="actions.ToggleProjectNatureActionDelegateContribution">
          <visibility>
             <objectState
@@ -201,8 +201,12 @@
          id="joinpoint"
          name="Join point"
          point="org.eclipse.core.resources.markers">
-      <super type="org.eclipse.core.resources.textmarker"/>
-      <persistent value="false"/>
+      <super
+            type="org.eclipse.core.resources.textmarker">
+      </super>
+      <persistent
+            value="false">
+      </persistent>
    </extension>
    <extension
          name="Join point image provider"
@@ -210,15 +214,15 @@
       <imageprovider
             markertype="org.codehaus.aspectwerkz.ide.eclipse.core.joinpoint"
             icon="icons/advice.gif"
-            id="org.codehaus.aspectwerkz.ide.eclipse.core.joinpoint.imageprovider"/>
+            id="org.codehaus.aspectwerkz.ide.eclipse.core.joinpoint.imageprovider">
+      </imageprovider>
    </extension>
-	<extension point="org.eclipse.ui.ide.markerResolution">
-	  <markerResolutionGenerator
-	    markerType="org.codehaus.aspectwerkz.ide.eclipse.core.joinpoint"
-	    class="org.codehaus.aspectwerkz.ide.eclipse.ui.JoinPointMarkerResolution">
-	  </markerResolutionGenerator>
-	</extension>
-
-   
+   <extension
+         point="org.eclipse.ui.ide.markerResolution">
+      <markerResolutionGenerator
+            markerType="org.codehaus.aspectwerkz.ide.eclipse.core.joinpoint"
+            class="org.codehaus.aspectwerkz.ide.eclipse.ui.JoinPointMarkerResolution">
+      </markerResolutionGenerator>
+   </extension>
 
 </plugin>
