@@ -118,6 +118,7 @@
     <!-- ============================================================== -->
     <target name="aspectwerkz:jar" depends="clean, aspectwerkz:compile">
         <mkdir dir="${dist.dir}"/>
+        <copy file="${src.dir}/main/aspectwerkz.dtd" todir="${build.core.dir}"/>
         <jar destfile="${build.dir}/aspectwerkz-${version}.jar">
             <fileset dir="${build.core.dir}">
                 <exclude name="**/aspectwerkz/hook/**/*"/>
