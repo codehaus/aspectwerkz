@@ -17,7 +17,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**
- * Compares Methods. To be used when sorting methods. Based on code by Bob Lee (crazybob@crazybob.org)
+ * Compares Methods. To be used when sorting methods. 
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -224,5 +224,4 @@ public final class MethodComparator implements java.util.Comparator {
     private MethodComparator(final int type) {
         m_type = type;
     }
-
 }
