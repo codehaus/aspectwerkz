@@ -39,6 +39,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.annotation.AnnotationTest.class);
         suite.addTestSuite(test.modifier.ModifierTest.class);
         suite.addTestSuite(test.CFlowTest.class);
+        suite.addTestSuite(test.ComplexCFlowTest.class);
         suite.addTestSuite(test.hierarchicalpattern.HierachicalPatternTest.class);
         suite.addTestSuite(test.abstractclass.AbstractClassTest.class);
         suite.addTestSuite(test.reflection.ReflectionTest.class);

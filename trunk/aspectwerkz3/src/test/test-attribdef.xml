@@ -40,6 +40,7 @@
             <pointcut name="autonamed_pointcut" expression="within(test.inheritedmixinbug.Target)"/>
             <introduce class="test.inheritedmixinbug.Baspect$Bimpl" bind-to="autonamed_pointcut" deployment-model="perInstance"/>
         </aspect>
+        <aspect class="test.ComplexCFlowTest$Aspect"/>
 
         <!-- The following tests different forms of precedence -->
         <!-- * advice order -->
