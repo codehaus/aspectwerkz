@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz;
 
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
+import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -62,8 +63,8 @@ public class AdviceInfo implements Serializable {
      * @param aspectIndex         the aspect index
      * @param methodIndex         the method index
      * @param aspectManager       the aspectManager
-     * @param type
-     * @param specialArgumentType
+     * @param type                the advice type
+     * @param specialArgumentType the special arg type
      */
     public AdviceInfo(final int aspectIndex,
                       final int methodIndex,
@@ -74,9 +75,7 @@ public class AdviceInfo implements Serializable {
         m_methodIndex = methodIndex;
         m_aspectManager = aspectManager;
         m_type = type;
-        if (specialArgumentType != null) {
-            m_specialArgumentType = specialArgumentType.replace('.', '/');
-        }
+        m_specialArgumentType = AsmHelper.convertReflectDescToTypeDesc(specialArgumentType);
     }
 
     /**
@@ -143,7 +142,7 @@ public class AdviceInfo implements Serializable {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer("IndexTuple[");
+        StringBuffer sb = new StringBuffer("AdviceInfo[");
         sb.append(m_type).append(',');
         sb.append(m_aspectManager).append(',');
         sb.append(m_aspectIndex).append(',');
