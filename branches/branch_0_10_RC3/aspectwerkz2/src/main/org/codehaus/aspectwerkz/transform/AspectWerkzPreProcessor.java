@@ -133,6 +133,13 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      */
     public byte[] preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
 
+        // filter out ExtClassLoader and BootClassLoader
+        if (!NOFILTER) {
+            if (loader == null || loader.getParent() == null) {
+                return bytecode;
+            }
+        }
+
         final String className = name.replace('/', '.'); // needed for JRockit (as well as all in all TFs)
 
         if (filter(className) || !m_initialized) {

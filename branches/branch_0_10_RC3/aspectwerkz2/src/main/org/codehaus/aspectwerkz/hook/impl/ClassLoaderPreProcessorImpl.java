@@ -44,15 +44,32 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
             ExprEditor defineClass0Pre = new ExprEditor() {
                 public void edit(MethodCall m) throws CannotCompileException {
                     if ("defineClass0".equals(m.getMethodName())) {
-                        //TODO check for IBM: THIS $1.. $5
-                        //TODO enhance this with a fake method preparation
-                        m.replace(
-                                '{'
-                                +
-                                "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
-                                + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);"
-                                + '}'
-                        );
+                        int argsCount = 5;
+                        // For SUN VM and JRockit, argCount = 5: name, byte[], int, int, ProtectionDomain
+                        // For IBM 1.3, argCount = 7: ... + Certificate + byte[] flatSource
+                        try {
+                            argsCount = m.getMethod().getParameterTypes().length;
+                        } catch (Throwable t) {
+                            new RuntimeException(t.toString());
+                        }
+                        if (argsCount == 5) {
+                            m.replace(
+                                    '{'
+                                    +
+                                    "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
+                                    + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);"
+                                    + '}'
+                            );
+                        }
+                        else if (argsCount == 7) {
+                            m.replace(
+                                    '{'
+                                    +
+                                    "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $1, $2, $3, $4, $5);"
+                                    + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5, $6, $7);"
+                                    + '}'
+                            );
+                        }
                     }
                 }
             };
