@@ -56,7 +56,7 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
             //(ClassPreProcessor)ClassLoader.getSystemClassLoader().loadClass(clpp).newInstance();
             //s_preProcessor.initialize(null);
         } catch (Exception e) {
-            throw new WrappedRuntimeException(e);
+            throw new ExceptionInInitializerError("could not initialize jrockit preprocessor due to: " + e.toString());
         }
     }
 
