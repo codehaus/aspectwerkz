@@ -29,25 +29,21 @@ public class MethodExecutionAspect {
     public static int s_count = 0;
 
 
-    /** @Before execution(* awbench.method.Execution.before()) */
     public Object before(Invocation jp) throws Throwable {
         s_count++;
         return jp.invokeNext();
     }
 
-    /** @Before execution(* awbench.method.Execution.beforeSjp()) */
-    public Object beforeSjp(Invocation jp) throws Throwable {
+    public Object beforeSJP(Invocation jp) throws Throwable {
         s_count++;
         return jp.invokeNext();
     }
 
-    /** @Before execution(* awbench.method.Execution.beforeJp()) */
-    public Object beforeJp(Invocation jp) throws Throwable {
+    public Object beforeJP(Invocation jp) throws Throwable {
         s_count++;
         return jp.invokeNext();
     }
 
-    /** @Before execution(* awbench.method.Execution.withPrimitiveArgs(int)) && args(i) */
     // Note: advice cannot have args in JBoss AOP
     public Object beforeWithPrimitiveArgs(Invocation jp)/*, int i)*/ throws Throwable {
         int j = ((Integer)((MethodInvocation)jp).getArguments()[0]).intValue();
@@ -55,7 +51,6 @@ public class MethodExecutionAspect {
         return jp.invokeNext();
     }
 
-    /** @Before execution(* awbench.method.Execution.withWrappedArgs(java.lang.Integer)) && args(i) */
     // Note: advice cannot have args in JBoss AOP
     public Object beforeWithWrappedArgs(Invocation jp)/*, Integer i)*/ throws Throwable {
         Integer j = (Integer)((MethodInvocation)jp).getArguments()[0];
@@ -63,8 +58,6 @@ public class MethodExecutionAspect {
         return jp.invokeNext();
     }
 
-    /** @Before execution(* awbench.method.Execution.beforeAfter()) */
-    /** @After  execution(* awbench.method.Execution.beforeAfter()) */
     //JBossAOP does not have before after, so here we are using TWO advices since using one around advice
     //will not be the same (the after advice is not necessarily by the same developper and in the same aspect ...
     public Object beforeAfter_1(Invocation jp) throws Throwable {
@@ -77,13 +70,16 @@ public class MethodExecutionAspect {
         return o;
     }
 
-    /** @Around  execution(* awbench.method.Execution.aroundJp()) */
-    public Object aroundJp(Invocation jp) throws Throwable {
+    public Object aroundJP(Invocation jp) throws Throwable {
         s_count++;
         return jp.invokeNext();
     }
 
-    /** @Before  execution(* awbench.method.Execution.withArgsAndTarget(int)) && args(i) */
+    public Object aroundSJP(Invocation jp) throws Throwable {
+        s_count++;
+        return jp.invokeNext();
+    }
+
     // Note: advice cannot have args in JBoss AOP
     public Object beforeWithArgsAndTarget(Invocation jp)/*, int i)*/ throws Throwable {
         int j = ((Integer)((MethodInvocation)jp).getArguments()[0]).intValue();
@@ -91,5 +87,4 @@ public class MethodExecutionAspect {
         s_count++;
         return jp.invokeNext();
     }
-
 }

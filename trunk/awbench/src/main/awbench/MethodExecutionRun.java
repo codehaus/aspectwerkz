@@ -14,7 +14,6 @@ import awbench.method.Execution;
  */
 public class MethodExecutionRun {
 
-
     public static void main(String args[]) throws Throwable {
         // iteration
         if (args.length > 0) {
@@ -37,13 +36,13 @@ public class MethodExecutionRun {
 
         run = new Run("method execution, @Before, Static JP");
         for (int i = 0; i < run.iteration; i++) {
-            test.beforeSjp();
+            test.beforeSJP();
         }
         run.end();
 
         run = new Run("method execution, @Before, JP");
         for (int i = 0; i < run.iteration; i++) {
-            test.beforeJp();
+            test.beforeJP();
         }
         run.end();
 
@@ -73,17 +72,17 @@ public class MethodExecutionRun {
 
         run = new Run("method execution, @Around, JP");
         for (int i = 0; i < run.iteration; i++) {
-            test.aroundJp();
+            test.aroundJP();
         }
         run.end();
 
+        run = new Run("method execution, @Around, SJP");
+        for (int i = 0; i < run.iteration; i++) {
+            test.aroundSJP();
+        }
+        run.end();
 
         Run.report();
         Run.flush();
-
-
     }
-
-
-
 }

@@ -18,7 +18,7 @@ import java.util.Iterator;
  */
 class Run {
 
-    static int ITERATION = 20000000;
+    static int ITERATION = 2000000;
 
     public static List suite = new ArrayList();
 

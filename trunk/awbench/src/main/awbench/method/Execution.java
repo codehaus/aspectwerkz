@@ -21,11 +21,11 @@ public class Execution implements Measurement {
         m_count++;
     }
 
-    public void beforeSjp() {
+    public void beforeSJP() {
         m_count++;
     }
 
-    public void beforeJp() {
+    public void beforeJP() {
         m_count++;
     }
 
@@ -48,20 +48,25 @@ public class Execution implements Measurement {
         m_count++;
     }
 
-    public void aroundJp() {
+    public void aroundJP() {
+        m_count++;
+    }
+
+    public void aroundSJP() {
         m_count++;
     }
 
     public void warmup() {
         for (int i = 0; i < 1000; i++) {
             before();
-            beforeSjp();
-            beforeJp();
+            beforeSJP();
+            beforeJP();
             withPrimitiveArgs(Constants.CONST_0);
             withWrappedArgs(Constants.WRAPPED_0);
             withArgsAndTarget(Constants.CONST_0);
             beforeAfter();
-            aroundJp();
+            aroundJP();
+            aroundSJP();
         }
     }
 }
