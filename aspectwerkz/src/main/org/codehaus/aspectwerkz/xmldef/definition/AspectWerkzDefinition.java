@@ -32,7 +32,8 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.definition.AspectAttributeParser;
+import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
+import org.codehaus.aspectwerkz.definition.attribute.DefaultAspectAttributeParser;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 
 /**
@@ -101,7 +102,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @TODO: make customizable (-D..)
      * @TODO: use factory
      */
-    private final AspectAttributeParser m_attributeParser = new Attrib4jAspectAttributeParser();
+    private final AspectAttributeParser m_attributeParser = new DefaultAspectAttributeParser();
 
     /**
      * Marks the definition as initialized.
