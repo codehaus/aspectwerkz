@@ -3,7 +3,7 @@
 <!-- ============================================================== -->
 <!-- Ant build file for the AspectWerkz project -->
 <!-- ============================================================== -->
-<project name="AspectWerkz" default="dist" basedir=".">
+<project name="AspectWerkz" default="aspectwerkz:jar" basedir=".">
 
     <path id="project.class.path">
         <pathelement path="${java.class.path}"/>
@@ -14,38 +14,58 @@
         <pathelement location="${basedir}/src/samples"/>
     </path>
 
-    <target name="init">
-        <property name="project.name" value="aspectwerkz"/>
-        <property environment="env"/>
+    <path id="aspectwerkz.classpath">
+        <fileset dir="${basedir}/lib">
+            <include name="${basedir}/target/classes"/>
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+    <property name="aspectwerkz.classpath" refid="aspectwerkz.classpath"/>
 
+    <!-- =================================================== -->
+    <!--  initializes parameters  -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:init">
         <property name="name" value="aspectwerkz"/>
         <property name="version" value="0.7.4"/>
         <property name="basedir" value="."/>
-
-        <property name="src.dir" value="${basedir}/src/main"/>
+        <property name="src.dir" value="${basedir}/src"/>
         <property name="test.src.dir" value="${basedir}/src/test"/>
-
         <property name="build.dir" value="${basedir}/target"/>
         <property name="build.core.dir" value="${build.dir}/classes"/>
         <property name="build.test.dir" value="${build.dir}/test-classes"/>
         <property name="lib.dir" value="${basedir}/lib"/>
         <property name="dist.dir" value="${basedir}/dist"/>
         <property name="config.dir" value="${basedir}/config"/>
-
-        <property name="build.compiler.emacs" value="true"/>
-        <property name="build.compiler" value="javac"/>
-
+<!--        <property name="build.compiler.emacs" value="true"/>-->
+<!--        <property name="build.compiler" value="jikes"/>-->
         <property name="javac.debug" value="on"/>
         <property name="javac.deprecation" value="on"/>
         <property name="javac.optimize" value="on"/>
         <property name="javac.depend" value="off"/>
         <property name="javac.verbose" value="off"/>
 
+        <mkdir dir="${basedir}/_metaData"/>
+        <mkdir dir="${basedir}/_txLogs"/>
+        <mkdir dir="${dist.dir}"/>
+        <property name="pathseparator" value=";"/>
+        <property name="executableSuffix" value=".bat"/>
+        <property name="target.dir" value="${basedir}/target"/>
+        <property name="lib.dir" value="${basedir}/lib"/>
+        <property name="bin.dir" value="${basedir}/bin"/>
+        <property name="dist.dir" value="${basedir}/dist"/>
+        <property name="main.classes" value="${target.dir}/classes"/>
+        <property name="test.classes" value="${target.dir}/test-classes"/>
+        <property name="samples.classes" value="${target.dir}/samples-classes"/>
+        <property name="extensions.classes" value="${target.dir}/extensions-classes"/>
+        <property name="project.name" value="aspectwerkz"/>
+        <property environment="env"/>
     </target>
 
-    <target name="prepare" depends="init, copy"/>
-
-    <target name="clean" depends="init">
+    <!-- ============================================================== -->
+    <!-- clean -->
+    <!-- ============================================================== -->
+    <target name="clean" depends="aspectwerkz:init">
         <delete dir="${build.core.dir}"/>
         <delete dir="${build.test.dir}"/>
         <mkdir dir="${build.core.dir}"/>
@@ -53,15 +73,12 @@
         <mkdir dir="${dist.dir}"/>
     </target>
 
-    <target name="copy" depends="init"/>
-
     <!-- ============================================================== -->
     <!-- compilation targets -->
     <!-- ============================================================== -->
-
-    <target name="compile" depends="prepare">
+    <target name="aspectwerkz:compile" depends="aspectwerkz:init">
         <javac destdir="${build.core.dir}" debug="off">
-            <src path="${src.dir}"/>
+            <src path="${src.dir}/main"/>
             <classpath>
                 <pathelement path="${java.class.path}"/>
                 <fileset dir="${lib.dir}">
@@ -85,8 +102,7 @@
     <!-- ============================================================== -->
     <!-- create distribution -->
     <!-- ============================================================== -->
-
-    <target name="dist" depends="clean, compile">
+    <target name="aspectwerkz:jar" depends="clean, aspectwerkz:compile">
         <mkdir dir="${dist.dir}"/>
         <jar destfile="${build.dir}/aspectwerkz-${version}.jar">
             <fileset dir="${build.core.dir}"/>
@@ -107,113 +123,13 @@
         <!--        </jar>-->
     </target>
 
-    <!-- ============================================================== -->
-    <!-- meta data compilation targets -->
-    <!-- ============================================================== -->
-
-        <path id="aspectwerkz.classpath">
-            <fileset dir="${basedir}/lib">
-                <include name="${basedir}/target/classes"/>
-                <include name="*.jar"/>
-            </fileset>
-        </path>
-        <property name="aspectwerkz.classpath" refid="aspectwerkz.classpath"/>
-
-    <!--    <target name="compileMetaData" depends="init">-->
-    <!--        <compileSourceMetaData-->
-    <!--            definitionFile="${basedir}/src/samples/samples.xml"-->
-    <!--            sourceDir="${basedir}/src/samples"-->
-    <!--            metaDataDir="${basedir}/_metaData"/>-->
-    <!--        <compileSourceMetaData-->
-    <!--            definitionFile="${basedir}/src/test/aspectwerkz-test.xml"-->
-    <!--            sourceDir="${basedir}/src/test"-->
-    <!--            metaDataDir="${basedir}/_metaData"/>-->
-    <!--    </target>-->
-    <!---->
-    <!--    <target name="classMetaData" depends="init">-->
-    <!--        <compileClassMetaData-->
-    <!--            definitionFile="${basedir}/src/samples/samples.xml"-->
-    <!--            repository="${basedir}/target/samples-classes"-->
-    <!--            metaDataDir="${basedir}/_metaData"/>-->
-    <!--    </target>-->
-    <!---->
-    <!--    <target name="sourceMetaData" depends="init">-->
-    <!--        <compileSourceMetaData-->
-    <!--            definitionFile="${basedir}/src/samples/samples.xml"-->
-    <!--            sourceDir="${basedir}/src/samples"-->
-    <!--            metaDataDir="${basedir}/_metaData"/>-->
-    <!--    </target>-->
-
-    <!-- ============================================================== -->
-    <!-- task definitions -->
-    <!-- ============================================================== -->
-
-    <target name="offline" depends="init">
-        <offlineTransformation
-            aspectWerkzHome="${basedir}"
-            definitionFile="${basedir}/src/samples/samples.xml"
-            classesDir="${basedir}/target/samples-classes"
-            metaDataDir="${basedir}/_metaData"/>
-    </target>
-
-    <!-- ============================================================== -->
-    <!-- task definitions -->
-    <!-- ============================================================== -->
-
-    <taskdef name="compileSourceMetaData"
-        classname="org.codehaus.aspectwerkz.task.SourceFileMetaDataCompilerTask"
-        classpath="${aspectwerkz.classpath}"/>
-
-    <taskdef name="compileClassMetaData"
-        classname="org.codehaus.aspectwerkz.task.ClassFileMetaDataCompilerTask"
-        classpath="${aspectwerkz.classpath}"/>
-
-    <taskdef name="offlineTransformation"
-        classname="org.codehaus.aspectwerkz.task.OfflineTransformationTask"
-        classpath="${aspectwerkz.classpath}"/>
-
-
-    <!-- ============================================================== -->
-    <!-- stuff from maven below -->
-    <!-- ============================================================== -->
-
     <!-- =================================================== -->
-    <!--  initializes parameters  -->
-    <!-- =================================================== -->
-    <target name="aspectwerkz:init">
-        <mkdir dir="${basedir}/_metaData"/>
-        <mkdir dir="${basedir}/_txLogs"/>
-        <mkdir dir="${dist.dir}"/>
-        <property name="pathseparator" value=";"/>
-        <property name="executableSuffix" value=".bat"/>
-        <property name="target.dir" value="${basedir}/target"/>
-        <property name="lib.dir" value="${basedir}/lib"/>
-        <property name="bin.dir" value="${basedir}/bin"/>
-        <property name="dist.dir" value="${basedir}/dist"/>
-        <property name="main.classes" value="${target.dir}/classes"/>
-        <property name="test.classes" value="${target.dir}/test-classes"/>
-        <property name="samples.classes" value="${target.dir}/samples-classes"/>
-        <property name="extensions.classes" value="${target.dir}/extensions-classes"/>
-    </target>
-
-    <!-- =================================================== -->
-    <!--  transforms and runs tests -->
-    <!-- =================================================== -->
-    <target name="aspectwerkz:test"
-        depends="aspectwerkz:init, aspectwerkz:metadata:test">
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg value="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData test.AllTests"/>
-        </exec>
-        <delete dir="${basedir}/_metaData"/>
-    </target>
-
-    <!-- =================================================== -->
-    <!--  transforms the tests -->
+    <!--  offline transforms the tests -->
     <!-- =================================================== -->
     <target name="aspectwerkz:transform"
         depends="aspectwerkz:init">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg value="-offline ${samples.classes} ${basedir}/src/samples/samples.xml ${basedir}/_metaData"/>
+            <arg value="-offline ${samples.classes} ${basedir}/src/samples/samples.xml"/>
         </exec>
     </target>
 
@@ -270,60 +186,42 @@
     </target>
 
     <!-- =================================================== -->
-    <!--  runs the transparent persistence test -->
+    <!--  offline transforms and runs tests -->
     <!-- =================================================== -->
-    <target name="aspectwerkz:samples:transparentpersistence"
-        depends="aspectwerkz:init, aspectwerkz:metadata:samples:extensions">
-        <delete dir="${basedir}/_txLogs"/>
+    <target name="aspectwerkz:test"
+        depends="aspectwerkz:init, aspectwerkz:jar">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml -Daspectwerkz.definition.file=${basedir}/src/samples/extensions_samples.xml -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.transparentpersistence.Client"/>
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.AllTests"/>
         </exec>
-        <delete dir="${basedir}/_metaData"/>
-    </target>
-
-    <!-- =================================================== -->
-    <!--  runs the introduction test -->
-    <!-- =================================================== -->
-    <target name="aspectwerkz:samples:introduction"
-        depends="aspectwerkz:init, aspectwerkz:metadata:samples">
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${lib.dir}/picocontainer-1.0-SNAPSHOT.jar${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.introduction.Target"/>
-        </exec>
-        <delete dir="${basedir}/_metaData"/>
-    </target>
-
-    <!-- =================================================== -->
-    <!--  runs the caching test -->
-    <!-- =================================================== -->
-    <target name="aspectwerkz:samples:caching"
-        depends="aspectwerkz:init, aspectwerkz:metadata:samples">
-        <delete dir="${basedir}/_txLogs"/>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.caching.CacheTest"/>
-        </exec>
-        <delete dir="${basedir}/_metaData"/>
     </target>
 
     <!-- =================================================== -->
     <!--  runs the logging test -->
     <!-- =================================================== -->
     <target name="aspectwerkz:samples:logging"
-        depends="aspectwerkz:init, aspectwerkz:metadata:samples">
-        <delete dir="${basedir}/_txLogs"/>
+        depends="aspectwerkz:init, aspectwerkz:attributes:samples">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.logging.Target"/>
+            <arg line="-cp ${basedir}/src/samples${pathseparator}${dist.dir}/samples.jar examples.logging.Target"/>
         </exec>
-        <delete dir="${basedir}/_metaData"/>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the caching test -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:caching"
+        depends="aspectwerkz:init, aspectwerkz:attributes:samples">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.caching.CacheTest"/>
+        </exec>
     </target>
 
     <!-- =================================================== -->
     <!--  runs the asynchronous calls test -->
     <!-- =================================================== -->
     <target name="aspectwerkz:samples:asynchronous"
-        depends="aspectwerkz:init">
-        <delete dir="${basedir}/_txLogs"/>
+        depends="aspectwerkz:init, aspectwerkz:attributes:samples">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml examples.asynchronous.Target"/>
+            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.asynchronous.Target"/>
         </exec>
     </target>
 
@@ -331,41 +229,71 @@
     <!--  runs the synchronization test -->
     <!-- =================================================== -->
     <target name="aspectwerkz:samples:synchronization"
-        depends="aspectwerkz:init">
-        <delete dir="${basedir}/_txLogs"/>
+        depends="aspectwerkz:init, aspectwerkz:attributes:samples">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml examples.synchronization.Target"/>
+            <arg line="-cp ${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.synchronization.Target"/>
         </exec>
     </target>
 
     <!-- =================================================== -->
-    <!--  compiles meta-data for the tests -->
+    <!--  runs the cflow test -->
     <!-- =================================================== -->
-    <target name="aspectwerkz:metadata:test"
-        depends="aspectwerkz:init">
-        <exec executable="java">
-            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/jmangler-core.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/test/aspectwerkz-test.xml ${basedir}/src/test ${basedir}/_metaData tests"/>
+    <target name="aspectwerkz:samples:cflow"
+        depends="aspectwerkz:init, aspectwerkz:attributes:samples">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.cflow.Target"/>
         </exec>
     </target>
 
     <!-- =================================================== -->
-    <!--  compiles meta-data for the samples -->
+    <!--  runs the transparent persistence test -->
     <!-- =================================================== -->
-    <target name="aspectwerkz:metadata:samples"
+    <!--    <target name="aspectwerkz:samples:transparentpersistence"-->
+    <!--        depends="aspectwerkz:init, aspectwerkz:attributes:extensions">-->
+    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
+    <!--            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml examples.transparentpersistence.Client"/>-->
+    <!--        </exec>-->
+    <!--    </target>-->
+
+    <!-- =================================================== -->
+    <!--  runs the introduction test -->
+    <!-- =================================================== -->
+    <!--    <target name="aspectwerkz:samples:introduction"-->
+    <!--        depends="aspectwerkz:init, aspectwerkz:attributes:samples">-->
+    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
+    <!--            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.introduction.Target"/>-->
+    <!--        </exec>-->
+    <!--    </target>-->
+
+    <!-- =================================================== -->
+    <!--  compiles attributes for the samples, merges w/ the samples.xml -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:attributes:samples"
         depends="aspectwerkz:init">
         <exec executable="java">
-            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/jmangler-core.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/samples/samples.xml ${basedir}/src/samples ${basedir}/_metaData samples"/>
+            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.AttributeC ${basedir}/src/samples ${basedir}/src/samples/aspectwerkz.xml -m ${basedir}/src/samples/samples.xml -u samples"/>
         </exec>
     </target>
 
     <!-- =================================================== -->
-    <!--  compiles meta-data for the extension samples -->
+    <!--  compiles attributes for the samples, merges w/ the extension_samples.xml -->
     <!-- =================================================== -->
-    <target name="aspectwerkz:metadata:samples:extensions"
+    <target name="aspectwerkz:attributes:extensions"
         depends="aspectwerkz:init">
         <exec executable="java">
-            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/jmangler-core.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/samples/extensions_samples.xml ${basedir}/src/samples ${basedir}/_metaData extensions"/>
+            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.AttributeC ${basedir}/src/samples ${basedir}/src/samples/aspectwerkz.xml -m ${basedir}/src/samples/samples.xml -u samples"/>
         </exec>
+    </target>
+
+    <!-- ============================================================== -->
+    <!-- task definitions -->
+    <!-- ============================================================== -->
+    <target name="offline" depends="aspectwerkz:init">
+        <offlineTransformation
+            aspectWerkzHome="${basedir}"
+            definitionFile="${basedir}/src/samples/samples.xml"
+            classesDir="${basedir}/target/samples-classes"
+            metaDataDir="${basedir}/_metaData"/>
     </target>
 
 </project>

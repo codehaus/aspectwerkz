@@ -11,20 +11,31 @@
         <section name="Building from sources">
             <p>
                 Check out the <a href="/cvs.html">CVS repository</a> and build
-                it with <a href="http://maven.apache.org/">Maven</a>.
+                it with <a href="http://maven.apache.org/">Maven</a> or
+                <a href="http://ant.apache.org/">Ant</a>.
             </p>
             <p>
                 Useful goals:
                 <ul>
                     <li>
-                        build distribution: <code>maven aspectwerkz:jar</code> (or
-                        <code>ant dist</code> if you prefer Ant)
+                        build distribution:
+                        <p/>
+                        <code>maven aspectwerkz:jar</code> or
+                        <p/>
+                        <code>ant aspectwerkz:jar</code>.
                     </li><br/>
                     <li>
-                        run the tests: <code>maven aspectwerkz:test</code>
+                        run the tests:
+                        <p/>
+                        <code>maven aspectwerkz:test</code> or
+                        <p/>
+                        <code>ant aspectwerkz:test</code>
                     </li><br/>
                     <li>
-                        run examples: <code>maven aspectwerkz:samples:&lt;name_of_example&gt;</code>
+                        run examples:
+                        <p/>
+                        <code>maven aspectwerkz:samples:&lt;name_of_example&gt;</code> or
+                        <code>ant aspectwerkz:samples:&lt;name_of_example&gt;</code>
                     </li>
                 </ul>
             </p>

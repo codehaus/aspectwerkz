@@ -1,5 +1,4 @@
-<project default="aspectwerkz:site"
-    xmlns:m="maven" xmlns:jxr="jxr" xmlns:j="jelly:core" xmlns:u="jelly:util">
+<project default="aspectwerkz:site" xmlns:m="maven" xmlns:jxr="jxr" xmlns:j="jelly:core" xmlns:u="jelly:util">
 
     <!-- =================================================== -->
     <!--  set properties -->
@@ -196,7 +195,6 @@
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${src.dir}/samples${pathseparator}${dist.dir}/samples.jar examples.logging.Target"/>
         </exec>
-        <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.AllTests"/>
     </goal>
 
     <!-- =================================================== -->
@@ -252,7 +250,6 @@
     <!-- =================================================== -->
     <!--    <goal name="aspectwerkz:samples:transparentpersistence">-->
     <!--        <attainGoal name="aspectwerkz:init"/>-->
-    <!--        <delete dir="${basedir}/_txLogs"/>-->
     <!--        <attainGoal name="aspectwerkz:compile"/>-->
     <!--        <attainGoal name="aspectwerkz:attributes:extensions"/>-->
     <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="false">-->
