@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaFieldInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.transform.delegation.AsmHelper;
+import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Constants;
