@@ -9,28 +9,18 @@ package org.codehaus.aspectwerkz.attribdef.aspect;
 
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.attribdef.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Arrays;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Constructor;
-import java.io.Serializable;
-import java.io.ObjectInputStream;
 
 /**
  * Interface+Implementation Introduction
  *
  * This represents the inner class mixin based implementation in the system
  * todo: is serializable needed ? if so move all non serializable to a container
+ * todo: fix methods name ___AW - does it matters ?
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -48,37 +38,30 @@ public class Introduction implements Mixin {
 
     /**
      * Mixin implementation as aspect inner class
-     * Note: when swapped the impl is an autonomous class
+     * Note: when swapped the impl can be an autonomous class
      */
     private Class m_mixinImplClass;
 
     /**
      * Mixin implementation as aspect inner class
-     * Note: when swapped the impl is an autonomous class
+     * Note: when swapped the impl can be an autonomous class
      */
     private Object m_mixinImpl;
 
-    public void setContainer(DefaultIntroductionContainerStrategy m_container) {
-        this.m_container = m_container;
-    }
-
-    private DefaultIntroductionContainerStrategy m_container;
-
-    public Aspect getAspect() {
-        return m_aspect;
-    }
-
-    public IntroductionDefinition getIntroductionDefinition() {
-        return m_definition;
-    }
+    /**
+     * The container for the introduction
+     * (single per JVM)
+     */
+    private IntroductionContainer m_container;
 
     /**
      * Aspect in which this mixin is defined
+     * The deployment model of an introduction is the same as the aspect that defines it
      */
     private Aspect m_aspect;
 
     /**
-     * Defintion to which this mixin applies
+     * Defintion to which this mixin relates
      */
     private IntroductionDefinition m_definition;
 
@@ -107,6 +90,12 @@ public class Introduction implements Mixin {
         }
     }
 
+    /**
+     * Clone the prototype Introduction
+     * @param prototype introduction
+     * @param aspect related aspect (not prototype)
+     * @return new introduction instance
+     */
     public static Introduction newInstance(Introduction prototype, Aspect aspect) {
         Introduction clone = new Introduction(
                 prototype.m_name,
@@ -114,6 +103,28 @@ public class Introduction implements Mixin {
                 aspect,
                 prototype.m_definition);
         return clone;
+    }
+
+    /**
+     * Set the container
+     * @param m_container
+     */
+    public void setContainer(IntroductionContainer m_container) {
+        this.m_container = m_container;
+    }
+
+    /**
+     * @return aspect attached to this introduction
+     */
+    public Aspect getAspect() {
+        return m_aspect;
+    }
+
+    /**
+     * @return definition related to this introduction
+     */
+    public IntroductionDefinition getIntroductionDefinition() {
+        return m_definition;
     }
 
     /**
@@ -221,6 +232,11 @@ public class Introduction implements Mixin {
         }
     }
 
+    /**
+     * Swap implementation
+     * TODO called by container - should not be public
+     * @param newImplClass
+     */
     public void swapImplementation(Class newImplClass) {
         try {
             m_mixinImplClass = newImplClass;

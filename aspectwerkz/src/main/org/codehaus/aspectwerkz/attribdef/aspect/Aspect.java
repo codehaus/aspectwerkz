@@ -9,9 +9,6 @@ package org.codehaus.aspectwerkz.attribdef.aspect;
 
 import java.io.Serializable;
 import java.io.ObjectInputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.attribdef.definition.StartupManager;
@@ -19,14 +16,11 @@ import org.codehaus.aspectwerkz.attribdef.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.ContainerType;
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
  * Abstract base class that all Aspect implementations must extend.
- *
- * todo: check needs: the mixin inner class - aspect relationship does not exist here.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

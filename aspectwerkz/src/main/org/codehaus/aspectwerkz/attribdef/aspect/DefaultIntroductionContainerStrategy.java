@@ -9,20 +9,23 @@ package org.codehaus.aspectwerkz.attribdef.aspect;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.ContainerType;
 import org.codehaus.aspectwerkz.attribdef.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
-import java.util.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.util.WeakHashMap;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Iterator;
 
 /**
  * Container for Introductions
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class DefaultIntroductionContainerStrategy {
+public class DefaultIntroductionContainerStrategy implements IntroductionContainer {
 
     /**
      * Holds a reference to the sole per JVM introduction.
@@ -55,7 +58,7 @@ public class DefaultIntroductionContainerStrategy {
     protected Method[] m_methodRepository = new Method[0];
 
     /**
-     * Creates a new transient container strategy.
+     * Creates a new container strategy.
      *
      * @param prototype the advice prototype
      */
@@ -76,7 +79,7 @@ public class DefaultIntroductionContainerStrategy {
         Object result = null;
         try {
             if (m_perJvm == null) {
-                Aspect perJVMAspect = (Aspect) m_prototype.getAspect().___AW_getContainer().getPerJvmAspect();
+                Aspect perJVMAspect = m_prototype.getAspect().___AW_getContainer().getPerJvmAspect();
                 m_perJvm = Introduction.newInstance(m_prototype, perJVMAspect);
             }
             result = m_methodRepository[methodIndex].invoke(m_perJvm.___AW_getImplementation(), parameters);
@@ -106,7 +109,7 @@ public class DefaultIntroductionContainerStrategy {
         try {
             if (!m_perClass.containsKey(targetClass)) {
                 synchronized (m_perClass) {
-                    Aspect perClassAspect = (Aspect) m_prototype.getAspect().___AW_getContainer().getPerClassAspect(targetClass);
+                    Aspect perClassAspect = m_prototype.getAspect().___AW_getContainer().getPerClassAspect(targetClass);
                     Introduction perClassIntroduction = Introduction.newInstance(m_prototype, perClassAspect);
                     m_perClass.put(targetClass, perClassIntroduction);
                 }
@@ -140,7 +143,7 @@ public class DefaultIntroductionContainerStrategy {
         try {
             if (!m_perInstance.containsKey(targetInstance)) {
                 synchronized (m_perInstance) {
-                    Aspect perInstanceAspect = (Aspect) m_prototype.getAspect().___AW_getContainer().getPerInstanceAspect(targetInstance);
+                    Aspect perInstanceAspect = m_prototype.getAspect().___AW_getContainer().getPerInstanceAspect(targetInstance);
                     Introduction perInstanceIntroduction = Introduction.newInstance(m_prototype, perInstanceAspect);
                     m_perInstance.put(targetInstance, perInstanceIntroduction);
                 }
@@ -172,7 +175,7 @@ public class DefaultIntroductionContainerStrategy {
             final Thread currentThread = Thread.currentThread();
             if (!m_perThread.containsKey(currentThread)) {
                 synchronized (m_perThread) {
-                    Aspect perThread = (Aspect) m_prototype.getAspect().___AW_getContainer().getPerThreadAspect();
+                    Aspect perThread = m_prototype.getAspect().___AW_getContainer().getPerThreadAspect();
                     m_perThread.put(currentThread, Introduction.newInstance(m_prototype, perThread));
                 }
             }
@@ -201,6 +204,7 @@ public class DefaultIntroductionContainerStrategy {
         // check compatibility
         IntroductionDefinition def = m_prototype.getIntroductionDefinition();
         for (Iterator intfs = def.getInterfaceClassNames().iterator(); intfs.hasNext();) {
+            //todo findInterface does not work when A impl I and B extend A: B does not match I
             if ( ! findInterface(newImplementationClass, (String) intfs.next()) ) {
                 throw new DefinitionException("new implementation class is not compatible");
             }
@@ -250,28 +254,6 @@ public class DefaultIntroductionContainerStrategy {
         }
         return false;
     }
-
-
-
-//    /**
-//     * Returns the container type.
-//     *
-//     * @return the container type
-//     */
-//    public ContainerType getContainerType() {
-//        return ContainerType.TRANSIENT;
-//    }
-
-//    /**
-//     * Returns a specific method by the method index.
-//     *
-//     * @param index the method index
-//     * @return the method
-//     */
-//    public Method getMethod(final int index) {
-//        if (index < 0) throw new IllegalArgumentException("method index can not be less than 0");
-//        return m_methodRepository[index];
-//    }
 
     /**
      * Creates a method repository for the introduced methods.
