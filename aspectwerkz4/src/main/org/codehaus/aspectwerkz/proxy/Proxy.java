@@ -9,6 +9,8 @@ package org.codehaus.aspectwerkz.proxy;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.util.WeakHashMap;
+import java.util.Map;
 
 import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -27,16 +29,19 @@ public class Proxy {
 //    private static final RuntimePermission DEFINE_AW_PROXY_CLASS_IN_JAVA_PACKAGE_PERMISSION =
 //            new RuntimePermission("defineAWProxyClassInJavaPackage");
 
+    private static final Map PROXY_CLASS_CACHE = new WeakHashMap();
+
     /**
      * Creates a new proxy instance based for the class specified and instantiates it using its default no-argument
      * constructor.
      *
-     * @param clazz
+     * @param clazz    the target class to make a proxy for
+     * @param useCache true if a cached instance of the proxy classed should be used
      * @return the proxy instance
      */
-    public static Object newInstance(final Class clazz) {
+    public static Object newInstance(final Class clazz, final boolean useCache) {
         try {
-            Class proxyClass = getProxyClassFor(clazz);
+            Class proxyClass = getProxyClassFor(clazz, useCache);
             return proxyClass.newInstance();
         } catch (Throwable e) {
             e.printStackTrace();
@@ -48,14 +53,18 @@ public class Proxy {
      * Creates a new proxy instance for the class specified and instantiates it using the constructor matching
      * the argument type array specified.
      *
-     * @param clazz
-     * @param argumentTypes
-     * @param argumentValues
+     * @param clazz          the target class to make a proxy for
+     * @param argumentTypes  the argument types matching the signature of the constructor to use when instantiating the proxy
+     * @param argumentValues the argument values to use when instantiating the proxy
+     * @param useCache       true if a cached instance of the proxy classed should be used
      * @return the proxy instance
      */
-    public static Object newInstance(final Class clazz, final Class[] argumentTypes, final Object[] argumentValues) {
+    public static Object newInstance(final Class clazz,
+                                     final Class[] argumentTypes,
+                                     final Object[] argumentValues,
+                                     final boolean useCache) {
         try {
-            Class proxyClass = getProxyClassFor(clazz);
+            Class proxyClass = getProxyClassFor(clazz, useCache);
             return proxyClass.getDeclaredConstructor(argumentTypes).newInstance(argumentValues);
         } catch (Throwable e) {
             e.printStackTrace();
@@ -66,18 +75,42 @@ public class Proxy {
     /**
      * Compiles and returns a proxy class for the class specified.
      *
+     * @param clazz    the target class to make a proxy for
+     * @param useCache true if a cached instance of the proxy classed should be used
+     * @return the proxy class
+     */
+    public static Class getProxyClassFor(final Class clazz, final boolean useCache) {
+        if (!useCache) {
+            return getProxyClassFor(clazz);
+        } else {
+            synchronized (PROXY_CLASS_CACHE) {
+                Object cachedProxyClass = PROXY_CLASS_CACHE.get(clazz);
+                if (cachedProxyClass != null) {
+                    return (Class) cachedProxyClass;
+                }
+                Class proxyClass = getProxyClassFor(clazz);
+                PROXY_CLASS_CACHE.put(clazz, proxyClass);
+                return proxyClass;
+            }
+        }
+    }
+
+    /**
+     * Compiles and returns a proxy class for the class specified.
+     * No cache is used, but compiles a new one each invocation.
+     *
      * @param clazz
      * @return the proxy class
      */
-    public static Class getProxyClassFor(final Class clazz) {
-        // FIXME use cache? good or bad? if so then must be per CL
+    private static Class getProxyClassFor(final Class clazz) {
         ClassLoader loader = clazz.getClassLoader();
         String proxyClassName = getUniqueClassNameForProxy(clazz);
         byte[] bytes = ProxyCompiler.compileProxyFor(clazz, proxyClassName);
         byte[] transformedBytes = ClassPreProcessorHelper.defineClass0Pre(
                 loader, proxyClassName, bytes, 0, bytes.length, null
         );
-        return defineClass(loader, transformedBytes, proxyClassName);
+        Class proxyClass = defineClass(loader, transformedBytes, proxyClassName);
+        return proxyClass;
     }
 
     /**
@@ -98,7 +131,7 @@ public class Proxy {
      * @param name   the name of the class
      * @return the class
      */
-    public static Class defineClass(ClassLoader loader, final byte[] bytes, final String name) {
+    private static Class defineClass(ClassLoader loader, final byte[] bytes, final String name) {
         String className = name.replace('/', '.');
         try {
             if (loader == null) {
@@ -146,7 +179,7 @@ public class Proxy {
      * @param name   the name of the class
      * @return the class
      */
-    public static Class loadClass(ClassLoader loader, final String name) {
+    private static Class loadClass(ClassLoader loader, final String name) {
         String className = name.replace('/', '.');
         try {
             if (loader == null) {

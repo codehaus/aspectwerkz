@@ -20,8 +20,11 @@ public class TraceMe2 {
 
     public static void main(String[] args) {
         TraceMe2 traceMe2 = (TraceMe2) Proxy.newInstance(
-                TraceMe2.class, new Class[]{String.class}, new String[]{"foo"}
+                TraceMe2.class, new Class[]{String.class}, new String[]{"foo"}, true
         );
+        traceMe2.step1();
+
+        traceMe2 = (TraceMe2) Proxy.newInstance(TraceMe2.class, new Class[]{String.class}, new String[]{"foo"}, true);
         traceMe2.step1();
     }
 }

@@ -16,7 +16,7 @@ public class TraceMe1 {
     }
 
     public static void main(String[] args) {
-        TraceMe1 traceMe1 = (TraceMe1) Proxy.newInstance(TraceMe1.class);
+        TraceMe1 traceMe1 = (TraceMe1) Proxy.newInstance(TraceMe1.class, false);
         traceMe1.step1();
     }
 }
