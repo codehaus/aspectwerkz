@@ -12,6 +12,7 @@ import com.sun.jdi.VirtualMachine;
 import java.lang.reflect.Method;
 import java.io.File;
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 /**
  * ProcessStarter uses JPDA JDI api to start a VM with a runtime modified java.lang.ClassLoader, or transparently use a Xbootclasspath style (java 1.3 detected or forced)
@@ -137,7 +138,12 @@ public class ProcessStarter {
             }
             previous = args[i];
         }
-        String opt = optionsArgB.append(" -cp \"").append(cpOptionsArgB).append("\"").toString();
+        String opt = null;
+        if (System.getProperty("os.name", "").toLowerCase().indexOf("windows")>=0) {
+            opt = optionsArgB.append(" -cp \"").append(cpOptionsArgB).append("\"").toString();
+        } else {
+            opt = optionsArgB.append("-cp ").append(escapeWhiteSpace(cpOptionsArgB.toString())).toString();
+        }
         String main = mainArgB.toString();
         String clp = System.getProperty(CL_PRE_PROCESSOR_CLASSNAME_PROPERTY, "org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl");
 
@@ -238,6 +244,24 @@ public class ProcessStarter {
 
     public static void main(String args[]) {
         System.exit((new ProcessStarter()).run(args));
+    }
+
+    private static String escapeWhiteSpace(String s) {
+        if (s.indexOf(' ')>0) {
+            StringBuffer sb = new StringBuffer();
+            StringTokenizer st = new StringTokenizer(s, " ", true);
+            String current = null;
+            while (st.hasMoreTokens()) {
+                current = st.nextToken();
+                if (" ".equals(current))
+                    sb.append("\\ ");
+                else
+                    sb.append(current);
+            }
+            return sb.toString();
+        } else {
+            return s;
+        }
     }
 
 }
