@@ -59,8 +59,8 @@
 
                 <subsection name="New features and changes in release 1.0-beta1">
                     <p>
-                        The releases is shipped with a completely new pointcut grammar which is much more
-                        expressive and powerful.
+                        Amont many other things this release is shipped with a completely new pointcut grammar which is much more
+                        expressive and powerful, and rich annotation support for both typed and untyped annotations.
                         <ul>
                             <li>
                                 Support for deploying several <code>aop.xml</code> Aspect defintion/deployment files alongside deployed
@@ -68,11 +68,20 @@
                                 the classloader hierarchy.
                             </li>
                             <li>
+                                One single API to access both JavaDoc-style and Java 1.5 annotations, allows using them
+                                together seamlessly.
+                            </li>
+                            <li>
+                                Typed and untyped annotations for JavaDoc-style annotations.
+                                Supports the same parameters types as Java 1.5 annotations and has strongly
+                                typed compile time checking (using a new annotation compiler).
+                            </li>
+                            <li>
                                <code>within</code> and <code>withincode</code> pointcuts
                             </li>
                             <li>
                                 More expressive <code>cflow</code> pointcuts that can take any pointcut
-                                expression as "parameter" and can be used to build arbitrary expressions
+                                expression as "parameter" and can be used to build arbitrary nested expressions.
                             </li>
                             <li>
                                 Matching on annotations.
@@ -84,19 +93,34 @@
                                 Matching on subtypes for parameters and return values.
                             </li>
                             <li>
-                                System wide pointcuts.
+                                System wide pointcuts (in the XML deployment descriptor).
                             </li>
                             <li>
-                                Pointcut references (refer to pointcuts defined in other aspects).
+                                Pointcut references (refer to pointcuts defined in other aspects than the one you are using it in).
                             </li>
                             <li>
                                 JSR-163 JVMTI support for Java 1.5 class load time weaving with <code>-javaagent:</code>
                             </li>
                             <li>
-                                Documentation enhanced and refactored + introductory tutorials added
+                                JoinPoint class is now serializable.
                             </li>
                             <li>
-                                Many bug fixes.
+                                JoinPoint instances can be "resetted", to start over a complete advice chain (useful for failover etc.).
+                            </li>
+                            <li>
+                                Documentation enhanced and refactored.
+                            </li>
+                            <li>
+                                Introductory tutorials.
+                            </li>
+                            <li>
+                                Some bug fixes.
+                            </li>
+                            <li>
+                                Please note that there are changes to the way annotations (formerly call attributes)
+                                are complied and retrieved. F.e. <code>AspectC</code> has been replaced by <code>AnnontationC</code>
+                                and has slightly different options, so to compile the aspects use <code>AnnotationC</code>
+                                from now on.
                             </li>
                         </ul>
                     </p>

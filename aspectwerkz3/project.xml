@@ -48,8 +48,8 @@
         <version>
             <id>1.0-beta1</id>
             <name>1.0-beta1</name>
-            <tag>rel_1.0-beta1</tag>
-            <branch>branch_1.0-beta1</branch>
+            <tag>rel_1_0_beta1</tag>
+            <branch>branch_1_0_beta1</branch>
         </version>
     </versions>
 
@@ -166,7 +166,7 @@ Extensions:
         </dependency>
         <dependency>
             <id>jam</id>
-            <version>v2-20040617-JDK1.4</version>
+            <version>20040623-java13</version>
         </dependency>
 
         <!-- ============================================================== -->

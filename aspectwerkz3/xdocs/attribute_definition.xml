@@ -493,9 +493,9 @@ public class MyAspect {
                         <td>name [0:&lt;aspect class mame&gt;.&lt;method name&gt;</td>
                     </tr>
                     <tr>
-                        <td>@@&lt;name&gt;</td>
+                        <td>@&lt;name&gt;</td>
                         <td>any</td>
-                        <td>custom runtime accessible annotation</td>
+                        <td>custom annotation (typed or untyped)</td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -560,7 +560,7 @@ java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC
             </p>
             <p>
                 <code>AnnotationC</code> can also be used to handle custom annotations as described
-                <a href="annotations.html#Compiling Annotations - JavaDoc style annotations">here</a>.
+                <a href="annotations.html#Compiling Annotations">here</a>.
             </p>
         </section>
         <section name="XML deployment descriptor">

@@ -16,12 +16,13 @@
                     <code>1.0-beta1</code> release.
                 </p>
                 <p>
-                But what we have is an API that will make the migration minimal and will allow both
-                annotation schemes to co-exist seamlessly.
+                Java 1.5 support will be implemented for the
+                    <code>1.0-beta2</code> release, so stay tuned.
                 </p>
                 <p>
-                We will have it implemented for the
-                    <code>1.0-beta2</code> release, so stay tuned.
+                What is implemented is an API that will make the migration minimal and will allow both
+                annotation schemes (JavaDoc-style and Java 1.5 annotations) to co-exist seamlessly.
+                    We also have support for typed and untyped annotations.
                 </p>
             </blockquote>
             <p>
@@ -47,7 +48,6 @@
                 </ol>
             </p>
         </section>
-
         <section name="Matching on Annotations">
             <p>
                 <code>AspectWerkz</code> supports matching on annotations. This means that you can
@@ -58,7 +58,8 @@
                 The matching will work equally good with JavaDoc-style annotations or a Java 1.5 annotations.
             </p>
             <p>
-                For example if you have annotated a method using the <code>@Asynchronous</code>
+                For example if you have annotated a method using the
+                <code>@Asynchronous</code>
                 annotation:
                 <source><![CDATA[
 @Asynchronous(timeout=60)
@@ -69,7 +70,8 @@ public Object someMethod() {
             </p>
             <p>
                 You can then pick out this method (and all other methods that are annotated with
-                the <code>@Asynchronous</code> annotation like this:
+                the
+                <code>@Asynchronous</code> annotation like this:
                 <source><![CDATA[
 call(@Asynchronous * *..*.*(..))
                 ]]></source>
@@ -83,7 +85,6 @@ execution(@Asynchronous * *..*.*(..))
                 <a href="definition_issues.html#Join_point_selection_pattern_language">Join point selection pattern language section</a>
             </p>
         </section>
-
         <section name="Typed Annotations">
             <p>
                 To be make the migration phase from JavaDoc-style to Java 1.5 annotations as smooth
@@ -110,6 +111,9 @@ execution(@Asynchronous * *..*.*(..))
      ...
  }
                 ]]></source>
+                (Note that you need to have a
+                <i>space</i> between the annotation name and its initialization.
+                This little quirk might be addressed in the future.)
             </p>
             <p>
                Which can be written like this using Java 1.5 annotations
@@ -193,7 +197,9 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                          -
                             <br/>
                             <code>usecache=true failover=false</code>
-                            (<code>TRUE</code> and <code>FALSE</code> works a well)
+                            (
+                            <code>TRUE</code> and
+                            <code>FALSE</code> works a well)
                         </li>
                         <br/>
                         <li>
@@ -208,11 +214,12 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                         -
                             <br/>
                             <code>stringArr={"Hello", " ", "World", "!"}</code>
+                            <br/>
                             <code>floatArr={46.34F, 836.45F}</code>
                         </li>
                         <br/>
                         <li>
-                        references to static fields
+                        references to the values of static fields
                         -
                             <br/>
                             <code>name=org.foo.Bar.PUBLIC_CONSTANT</code>
@@ -221,13 +228,15 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                         <li>
                         types
                          -
-                        <br/>
-                        TO BE IMPLEMENTED
+                            <br/>
+                            <code>type=java.lang.String.class</code>
+                            <br/>
+                            <code>primitives={long.class, int.class, short.class, ...}</code>
                         </li>
                         <br/>
                         <li>
                         nested annotations -
-                         <br/>
+                            <br/>
                          TO BE IMPLEMENTED
                         </li>
                     </ul>
@@ -244,6 +253,9 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                 This maps to the Java 1.5
                     <i>simple value</i> idea.
                 </p>
+                <p>
+                    This behaviour is very similar to the untyped kind of annotations.
+                </p>
             </subsection>
         </section>
         <section name="Untyped Annotations">
@@ -257,24 +269,25 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                 if you write an annotation like this:
                 <source><![CDATA[
 /**
- * @WeaklyTyped this is
- *              one single
- *              value
+ * @UntypedAnnotation this is
+ *                    one single
+ *                    value
  */
                 ]]></source>
                 the value of this annotation will be:
                 <code>this is one single value</code> and the type
                 will be
-                <code>java.lang.String</code>.
+                <code>java.lang.String</code>. If you have <i>key:valule</i> pairs then you will have to
+                parse them yourself, sine everything is treated as one single string.
             </p>
             <p>
                 All untyped annotations will be wrapped in an instance of
                 <code>org.codehaus.aspectwerkz.annotation.UntypedAnnotationProxy</code> which has
                 to be used when retrieving the annotations at runtime. For example:
-               <source><![CDATA[
+                <source><![CDATA[
 UntypedAnnotationProxy proxy = ...
 String value = proxy.value();
-                ]]></source>
+                 ]]></source>
             </p>
             <p>
                 The untyped annotations still needs to be compiled, since they need to be put into the
@@ -376,8 +389,9 @@ Annotation annotation = Annotations.getAnnotation("ReadOnly", field);
             </p>
             <p>
                 All these methods returns a list with all
-                <code>AnnotationProxyBase</code> instances with
-                the specific name. For Java 1.5 annotations this list will always be of size 0-1.
+                <code>Annotation</code> instances with
+                the specific name. For Java 1.5 annotations this list will always be of size 0-1 while
+                JavaDoc-style annotations can be declared multiple times per member/class.
                 <source><![CDATA[
 List annotations = Annotations.getAnnotations("Session", klass);
 List annotations = Annotations.getAnnotations("Transaction", method);
@@ -404,7 +418,8 @@ List annotationInfos = Annotations.getAnnotationInfos(field);
         </section>
         <section name="Introducing Annotations">
             <p>
-                TODO - not yet implemented
+                TODO - not yet implemented (targetted for
+                <code>1.0-beta2</code>)
             </p>
         </section>
     </body>
