@@ -7,12 +7,12 @@
 package test;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.definition.regexp.Pattern;
-import org.codehaus.aspectwerkz.definition.regexp.FieldPattern;
+import org.codehaus.aspectwerkz.regexp.Pattern;
+import org.codehaus.aspectwerkz.regexp.FieldPattern;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldPatternTest.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: FieldPatternTest.java,v 1.4 2003-06-17 15:19:42 jboner Exp $
  */
 public class FieldPatternTest extends TestCase {
 

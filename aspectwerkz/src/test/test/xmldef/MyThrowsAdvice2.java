@@ -8,7 +8,7 @@ import org.codehaus.aspectwerkz.joinpoint.ThrowsJoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MyThrowsAdvice2.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: MyThrowsAdvice2.java,v 1.3 2003-06-17 15:19:42 jboner Exp $
  */
 public class MyThrowsAdvice2 extends ThrowsAdvice {
     public MyThrowsAdvice2() {
@@ -31,7 +31,7 @@ public class MyThrowsAdvice2 extends ThrowsAdvice {
         final Object[] methodParameters = jp.getMethodParameters();
         final Class methodReturnType = jp.getMethodReturnType();
         final Object originalObject = jp.getTargetObject();
-        final String originalObjectClassName = jp.getTargetObjectsClassName();
+        final String originalObjectClassName = jp.getTargetClass().getName();
         throw new test.TestException(
                 exception +
                 message +

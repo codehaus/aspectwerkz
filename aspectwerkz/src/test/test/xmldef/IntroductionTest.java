@@ -3,10 +3,11 @@ package test;
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Identifiable;
+import org.codehaus.aspectwerkz.introduction.Introduction;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: IntroductionTest.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: IntroductionTest.java,v 1.3 2003-06-17 15:19:42 jboner Exp $
  */
 public class IntroductionTest extends TestCase implements Identifiable {
 

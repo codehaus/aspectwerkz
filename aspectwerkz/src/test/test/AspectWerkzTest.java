@@ -1,5 +1,8 @@
 package test;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import junit.framework.TestCase;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
@@ -12,7 +15,7 @@ import org.codehaus.aspectwerkz.advice.PreAdvice;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzTest.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: AspectWerkzTest.java,v 1.3 2003-06-17 15:19:42 jboner Exp $
  */
 public class AspectWerkzTest extends TestCase {
 
@@ -24,7 +27,14 @@ public class AspectWerkzTest extends TestCase {
 
     public void testRegisterAspect() {
         AspectWerkz.getSystem("tests").register(new Aspect(getClass().getName()));
-        assertEquals(getClass().getName(), ((Aspect)AspectWerkz.getSystem("tests").getAspects(getClass().getName()).get(0)).getPattern());
+        Collection aspects = AspectWerkz.getSystem("tests").getAspects();
+        for (Iterator it = aspects.iterator(); it.hasNext();) {
+            Aspect aspect = (Aspect)it.next();
+            if (aspect.getName().equals(getClass().getName())) {
+                return;
+            }
+        }
+        fail();
     }
 
     public void testRegisterAdvice() {
