@@ -84,7 +84,7 @@ public class IntroductionContainer {
      * @param parameters  the parameters for the invocation
      * @return the result from the method invocation
      */
-    public Object invokeIntroductionPerJvm(final int methodIndex, final Object[] parameters) {
+    public Object invokeIntroductionPerJvm(final int methodIndex, final Object[] parameters) throws Throwable {
         Object result = null;
         try {
             if (m_perJvm == null) {
@@ -99,7 +99,7 @@ public class IntroductionContainer {
                         "WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'"
                 );
             }
-            throw new WrappedRuntimeException(e.getTargetException());
+            throw e.getTargetException();
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -118,7 +118,7 @@ public class IntroductionContainer {
     public Object invokeIntroductionPerClass(
             final Object targetInstance,
             final int methodIndex,
-            final Object[] parameters) {
+            final Object[] parameters) throws Throwable  {
         final Class targetClass = targetInstance.getClass();
         Object result = null;
         try {
@@ -143,7 +143,7 @@ public class IntroductionContainer {
                         "WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'"
                 );
             }
-            throw new WrappedRuntimeException(e.getTargetException());
+            throw e.getTargetException();
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -162,7 +162,7 @@ public class IntroductionContainer {
     public Object invokeIntroductionPerInstance(
             final Object targetInstance,
             final int methodIndex,
-            final Object[] parameters) {
+            final Object[] parameters) throws Throwable {
         Object result = null;
         try {
             if (!m_perInstance.containsKey(targetInstance)) {
@@ -186,7 +186,7 @@ public class IntroductionContainer {
                         "WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'"
                 );
             }
-            throw new WrappedRuntimeException(e.getTargetException());
+            throw e.getTargetException();
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -201,7 +201,7 @@ public class IntroductionContainer {
      * @param parameters  the parameters for the invocation
      * @return the result from the method invocation
      */
-    public Object invokeIntroductionPerThread(final int methodIndex, final Object[] parameters) {
+    public Object invokeIntroductionPerThread(final int methodIndex, final Object[] parameters) throws Throwable {
         Object result;
         try {
             final Thread currentThread = Thread.currentThread();
@@ -225,7 +225,7 @@ public class IntroductionContainer {
                         "WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'"
                 );
             }
-            throw new WrappedRuntimeException(e.getTargetException());
+            throw e.getTargetException();
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);

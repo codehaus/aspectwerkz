@@ -34,6 +34,10 @@ import org.codehaus.aspectwerkz.util.SequencedHashMap;
  */
 public class SystemDefinition {
 
+    // 0.10 final handler pointcut turned off due to lack of "within" expression support
+    public static final boolean HANDLER_POINTCUT_ON = "true".equalsIgnoreCase(
+                                                      System.getProperty("aspectwerkz.handler.pointcut", "false"));
+
     public static final String PER_JVM = "perJVM";
     public static final String PER_CLASS = "perClass";
     public static final String PER_INSTANCE = "perInstance";
@@ -654,8 +658,7 @@ public class SystemDefinition {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
-        return true;
-//        return false;//TODO AVAOSD: FIX FOR AOSD
+        return HANDLER_POINTCUT_ON;//TODO FIX WHEN NEW GRAMMAR
     }
 
     /**

@@ -135,6 +135,29 @@ public class IntroductionTest extends WeavedTestCase {
         );
     }
 
+    public void testThrowException() {
+        try {
+            ((Introductions)m_toBeIntroduced).exceptionThrower();
+        }
+        catch (Throwable e) {
+            assertTrue(e instanceof UnsupportedOperationException);
+            return;
+        }
+        fail("this point should never be reached");
+    }
+
+    public void testThrowExceptionChecked() {
+        try {
+            ((Introductions)m_toBeIntroduced).exceptionThrowerChecked();
+        }
+        catch (Throwable e) {
+            assertTrue(e instanceof Introductions.CheckedException);
+            return;
+        }
+        fail("this point should never be reached");
+    }
+
+
     public void testReplaceImplementation() {
         assertEquals(
                 "test.aspect.IntroductionTestAspect$MyImpl",
@@ -210,4 +233,5 @@ public class IntroductionTest extends WeavedTestCase {
     public String ___AW_getUuid() {
         return "ZZZZZZZZZZZZZZZZZZZZZZZZZZ";
     }
+
 }

@@ -235,7 +235,7 @@ public class Introduction implements Mixin {
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
-    public Object invokeMixin(final int methodIndex, final Object callingObject) {
+    public Object invokeMixin(final int methodIndex, final Object callingObject) throws Throwable {
         return invokeMixin(methodIndex, EMPTY_OBJECT_ARRAY, callingObject);
     }
 
@@ -247,38 +247,34 @@ public class Introduction implements Mixin {
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
-    public Object invokeMixin(final int methodIndex, final Object[] parameters, final Object callingObject) {
-        try {
-            Object result = null;
-            switch (m_deploymentModel) {
+    public Object invokeMixin(final int methodIndex, final Object[] parameters, final Object callingObject)
+    throws Throwable{
+        Object result = null;
+        switch (m_deploymentModel) {
 
-                case DeploymentModel.PER_JVM:
-                    result = m_container.invokeIntroductionPerJvm(methodIndex, parameters);
-                    break;
+            case DeploymentModel.PER_JVM:
+                result = m_container.invokeIntroductionPerJvm(methodIndex, parameters);
+                break;
 
-                case DeploymentModel.PER_CLASS:
-                    result = m_container.invokeIntroductionPerClass(callingObject, methodIndex, parameters);
-                    break;
+            case DeploymentModel.PER_CLASS:
+                result = m_container.invokeIntroductionPerClass(callingObject, methodIndex, parameters);
+                break;
 
-                case DeploymentModel.PER_INSTANCE:
-                    result = m_container.invokeIntroductionPerInstance(callingObject, methodIndex, parameters);
-                    break;
+            case DeploymentModel.PER_INSTANCE:
+                result = m_container.invokeIntroductionPerInstance(callingObject, methodIndex, parameters);
+                break;
 
-                case DeploymentModel.PER_THREAD:
-                    result = m_container.invokeIntroductionPerThread(methodIndex, parameters);
-                    break;
+            case DeploymentModel.PER_THREAD:
+                result = m_container.invokeIntroductionPerThread(methodIndex, parameters);
+                break;
 
-                default:
-                    throw new RuntimeException(
-                            "invalid deployment model: " +
-                            m_crossCuttingInfo.getDeploymentModel()
-                    );
-            }
-            return result;
+            default:
+                throw new RuntimeException(
+                        "invalid deployment model: " +
+                        m_crossCuttingInfo.getDeploymentModel()
+                );
         }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
+        return result;
     }
 
     /**
