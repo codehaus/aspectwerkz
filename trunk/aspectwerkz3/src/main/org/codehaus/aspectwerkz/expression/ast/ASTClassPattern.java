@@ -3,10 +3,10 @@ package org.codehaus.aspectwerkz.expression.ast;
 
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
+import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 
 public class ASTClassPattern extends SimpleNode {
-    private TypePattern m_declaringClassPattern;
-    private boolean m_hierarchical = false;
+    private TypePattern m_typePattern;
 
     public ASTClassPattern(int id) {
         super(id);
@@ -21,19 +21,18 @@ public class ASTClassPattern extends SimpleNode {
     }
 
     public void setTypePattern(String pattern) {
-        m_declaringClassPattern = Pattern.compileTypePattern(pattern, false);
+        if (pattern.endsWith("+")) {
+            pattern = pattern.substring(0, pattern.length() - 1);
+            m_typePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.MATCH_ON_ALL_METHODS);
+        } else if (pattern.endsWith("#")) {
+            pattern = pattern.substring(0, pattern.length() - 1);
+            m_typePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS);
+        } else {
+            m_typePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.NOT_HIERARCHICAL);
+        }
     }
 
-    public void setHierarchical(boolean isHierarchical) {
-        m_hierarchical = isHierarchical;
-        m_declaringClassPattern.setHierarchical(true);
-    }
-
-    public TypePattern getDeclaringClassPattern() {
-        return m_declaringClassPattern;
-    }
-
-    boolean isHierarchical() {
-        return m_hierarchical;
+    public TypePattern getTypePattern() {
+        return m_typePattern;
     }
 }

@@ -127,11 +127,9 @@ TOKEN : /* POINTCUTS */
 |
     < #CLASS_IDENTIFIER: (<CLASS_JAVA_NAME_LETTER> | <EAGER_WILDCARD> | <WILDCARD>)+ >
 |
-    < #CLASS_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "0"-"9"] >
+    < #CLASS_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
 |
     < CLASS_POINTCUT_END: ")" > : DEFAULT
-|
-    < CLASS_HIERARCHICAL: "+" >
 }
 
 //------------------ Lexical scope for methods ------------------
@@ -174,7 +172,7 @@ TOKEN : /* POINTCUTS */
 |
     < PARAMETER_END: ")" > : DEFAULT
 |
-    < #METHOD_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "0"-"9"] >
+    < #METHOD_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
 }
 
 //------------------ Lexical scope for fields ------------------
@@ -209,7 +207,7 @@ TOKEN : /* POINTCUTS */
 |
     < FIELD_ARRAY_CLASS_PATTERN: <FIELD_CLASS_PATTERN> (<ARRAY>)+ >
 |
-    < #FIELD_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "0"-"9"] >
+    < #FIELD_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
 |
     < FIELD_POINTCUT_END: ")" > : DEFAULT
 }
@@ -228,13 +226,11 @@ TOKEN : /* POINTCUTS */
 |
     < PARAMETER_CLASS_PATTERN: <PARAMETER_IDENTIFIER> (<DOT> <PARAMETER_IDENTIFIER>)* >
 |
-    < PARAMETER_HIERARCHICAL: "+" >
-|
     < PARAMETER_ARRAY_CLASS_PATTERN: <PARAMETER_CLASS_PATTERN> (<ARRAY>)+ >
 |
     < PARAMETER_ANNOTATION: "@" <PARAMETER_IDENTIFIER> >
 |
-    < #PARAMETER_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "0"-"9"] >
+    < #PARAMETER_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
 }
 
 //------------------ Bootstrap ------------------
@@ -812,15 +808,15 @@ void ClassPattern()               :
 /*@egen*/
     (ClassAttribute())*
     (ClassModifier())*
-    pattern=<CLASS_PATTERN>
+    pattern=<CLASS_PATTERN>/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
     {
         jjtn000.setTypePattern(pattern.image);
-    }
-    (<CLASS_HIERARCHICAL>
-    {
-        jjtn000.setHierarchical(true);
-    }
-    )*/*@bgen(jjtree)*/
+    }/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -841,6 +837,11 @@ void ClassPattern()               :
       }
     }
 /*@egen*/
+//    (<CLASS_HIERARCHICAL>
+//    {
+//        jjtThis.setHierarchical(true);
+//    }
+//    )*
 }
 
 /**

@@ -212,7 +212,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     // ============ Patterns =============
     public Object visit(ASTClassPattern node, Object data) {
         ClassInfo classInfo = (ClassInfo)data;
-        TypePattern typePattern = node.getDeclaringClassPattern();
+        TypePattern typePattern = node.getTypePattern();
         if (ClassInfoHelper.matchType(typePattern, classInfo)) {
             return Boolean.TRUE;
         } else {
