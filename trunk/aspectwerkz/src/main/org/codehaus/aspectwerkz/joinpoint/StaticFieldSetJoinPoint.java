@@ -32,7 +32,6 @@ import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
  * A method etc. Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticFieldSetJoinPoint.java,v 1.9 2003-07-19 20:36:16 jboner Exp $
  */
 public class StaticFieldSetJoinPoint extends FieldJoinPoint {
 

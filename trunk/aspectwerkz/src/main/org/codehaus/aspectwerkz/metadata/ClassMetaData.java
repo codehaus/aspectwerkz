@@ -26,7 +26,6 @@ import java.io.Serializable;
  * Holds meta-data for a class.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ClassMetaData.java,v 1.4 2003-07-19 20:36:16 jboner Exp $
  */
 public class ClassMetaData implements MetaData, Serializable {
 

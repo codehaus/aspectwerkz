@@ -53,7 +53,6 @@ import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ClassFileMetaDataCompiler.java,v 1.6 2003-07-19 20:36:16 jboner Exp $
  */
 public class ClassFileMetaDataCompiler extends MetaDataCompiler {
 

@@ -45,9 +45,6 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Field;
 
-import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
-import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
-
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
@@ -57,9 +54,8 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticFieldTransformer.java,v 1.15 2003-07-22 19:38:54 jboner Exp $
  */
-public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
+public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
@@ -91,7 +87,7 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
      *
      * @param cs the class set.
      */
-    public void transformCode(final UnextendableClassSet cs) {
+    public void transformCode(final AspectWerkzUnextendableClassSet cs) {
 
         Iterator iterator = cs.getIteratorForTransformableClasses();
         while (iterator.hasNext()) {
@@ -100,7 +96,11 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
                 continue;
             }
 
-            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+            //@todo alex
+            org.apache.bcel.classfile.JavaClass alex = cg.getJavaClass();
+            alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
+            //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
 
             Method[] methods = cg.getMethods();
 

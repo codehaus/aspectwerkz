@@ -56,7 +56,6 @@ import org.codehaus.aspectwerkz.util.Strings;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: SourceFileMetaDataCompiler.java,v 1.12 2003-07-22 14:03:17 jboner Exp $
  */
 public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 

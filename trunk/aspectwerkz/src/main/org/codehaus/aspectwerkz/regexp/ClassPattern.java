@@ -35,7 +35,6 @@ import org.codehaus.aspectwerkz.util.Strings;
  * </pre>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ClassPattern.java,v 1.6 2003-07-22 14:03:18 jboner Exp $
  */
 public class ClassPattern extends Pattern {
 

@@ -52,7 +52,6 @@ import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
  * Handles the advice weaving rule definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviceWeavingRule.java,v 1.8 2003-07-22 14:03:17 jboner Exp $
  */
 public class AdviceWeavingRule implements WeavingRule {
 

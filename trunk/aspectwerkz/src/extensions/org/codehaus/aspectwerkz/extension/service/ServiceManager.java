@@ -36,7 +36,6 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * Manages all the services in the system.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ServiceManager.java,v 1.5 2003-07-22 14:03:17 jboner Exp $
  */
 public class ServiceManager {
 

@@ -42,7 +42,6 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * @see aspectwerkz.DeploymentModel
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractAdvice.java,v 1.8 2003-07-22 14:03:17 jboner Exp $
  */
 public abstract class AbstractAdvice implements Advice {
 

@@ -34,7 +34,6 @@ import com.thoughtworks.qdox.model.JavaClass;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
- * @version $Id: QDoxMetaDataMaker.java,v 1.3 2003-07-19 20:36:16 jboner Exp $
  */
 public class QDoxMetaDataMaker extends MetaDataMaker{
 

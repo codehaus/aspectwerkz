@@ -7,7 +7,6 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AllTests.java,v 1.9 2003-07-19 20:36:17 jboner Exp $
  */
 public class AllTests extends TestCase {
 

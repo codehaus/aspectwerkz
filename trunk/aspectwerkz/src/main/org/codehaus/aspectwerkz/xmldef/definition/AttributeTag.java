@@ -22,7 +22,6 @@ package org.codehaus.aspectwerkz.definition;
  * Holds the attribute tag definitions.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AttributeTag.java,v 1.4 2003-07-14 15:02:48 jboner Exp $
  */
 public class AttributeTag {
 

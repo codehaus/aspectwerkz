@@ -44,9 +44,6 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Field;
 
-import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
-import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
-
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
@@ -56,9 +53,8 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * Transforms static methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticMethodTransformer.java,v 1.17 2003-07-22 14:03:18 jboner Exp $
  */
-public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
+public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
@@ -91,7 +87,7 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
      *
      * @param cs the class set.
      */
-    public void transformCode(final UnextendableClassSet cs) {
+    public void transformCode(final AspectWerkzUnextendableClassSet cs) {
         final Iterator iterator = cs.getIteratorForTransformableClasses();
         while (iterator.hasNext()) {
             final ClassGen cg = (ClassGen)iterator.next();
@@ -100,7 +96,11 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
                 continue;
             }
 
-            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+            //@todo alex
+            org.apache.bcel.classfile.JavaClass alex = cg.getJavaClass();
+            alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
+            //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
 
             final InstructionFactory factory = new InstructionFactory(cg);
             final ConstantPoolGen cpg = cg.getConstantPool();

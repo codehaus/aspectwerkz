@@ -33,7 +33,7 @@ import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
  * Registers the join point as the start of a control flow (cflow) in the AspectWerkz system.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CFlowPreAdvice.java,v 1.1 2003-07-22 14:14:21 jboner Exp $
+ * @version $Id: CFlowPreAdvice.java,v 1.2 2003-07-23 14:20:30 avasseur Exp $
  */
 public class CFlowPreAdvice extends PreAdvice {
 

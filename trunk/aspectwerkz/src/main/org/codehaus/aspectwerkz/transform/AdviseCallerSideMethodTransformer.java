@@ -48,9 +48,6 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
-import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
-import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
-
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
@@ -61,9 +58,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * Advises caller side method invocations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.12 2003-07-22 14:03:18 jboner Exp $
  */
-public class AdviseCallerSideMethodTransformer implements CodeTransformerComponent {
+public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
@@ -93,7 +89,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
      *
      * @param cs the class set.
      */
-    public void transformCode(final UnextendableClassSet cs) {
+    public void transformCode(final AspectWerkzUnextendableClassSet cs) {
 
         final Iterator iterator = cs.getIteratorForTransformableClasses();
         while (iterator.hasNext()) {
@@ -172,7 +168,10 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                         // create the class meta-data
                         ClassMetaData calleeSideClassMetaData;
                         try {
-                            JavaClass klass = Repository.getRepository().loadClass(calleeClassName);
+                            //@todo alex
+                            JavaClass klass = (new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet())).loadClass(calleeClassName);
+                            klass.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
+                            //JavaClass klass = Repository.getRepository().loadClass(calleeClassName);
                             calleeSideClassMetaData = BcelMetaDataMaker.createClassMetaData(klass);
                         }
                         catch (ClassNotFoundException e) {
@@ -697,7 +696,11 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
         if (!m_weaveModel.inTransformationScope(cg.getClassName())) {
             return true;
         }
-        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+        //@todo alex
+        JavaClass alex = cg.getJavaClass();
+        alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
+        //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
         if (m_weaveModel.hasCallerSidePointcut(classMetaData)) {
             return false;
         }

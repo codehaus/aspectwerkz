@@ -42,7 +42,6 @@ import org.codehaus.aspectwerkz.util.Strings;
  * </pre>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodPattern.java,v 1.8 2003-07-22 14:03:18 jboner Exp $
  */
 public class MethodPattern extends Pattern {
 

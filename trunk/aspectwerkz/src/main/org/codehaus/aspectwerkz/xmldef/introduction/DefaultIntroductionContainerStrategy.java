@@ -36,7 +36,6 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Implements the default introduction container strategy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefaultIntroductionContainerStrategy.java,v 1.7 2003-07-19 20:36:15 jboner Exp $
  */
 public class DefaultIntroductionContainerStrategy implements IntroductionContainer {
 

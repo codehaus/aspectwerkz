@@ -13,7 +13,6 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DynamicDeploymentTest.java,v 1.5 2003-07-19 20:36:17 jboner Exp $
  */
 public class DynamicDeploymentTest extends TestCase implements Loggable {
 

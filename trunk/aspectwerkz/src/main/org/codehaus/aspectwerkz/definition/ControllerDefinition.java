@@ -44,7 +44,6 @@ import org.codehaus.aspectwerkz.util.Strings;
  * Holds the controller definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ControllerDefinition.java,v 1.2 2003-07-19 20:36:15 jboner Exp $
  */
 public class ControllerDefinition implements Serializable {
 

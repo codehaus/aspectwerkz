@@ -34,7 +34,6 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldJoinPoint.java,v 1.10 2003-07-19 20:36:16 jboner Exp $
  */
 public abstract class FieldJoinPoint implements JoinPoint {
 

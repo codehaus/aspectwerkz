@@ -26,7 +26,6 @@ import java.util.HashMap;
  * Implements an abstract regular expression pattern matcher for AspectWerkz.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Pattern.java,v 1.5 2003-07-22 14:03:18 jboner Exp $
  */
 public abstract class Pattern implements Serializable {
 

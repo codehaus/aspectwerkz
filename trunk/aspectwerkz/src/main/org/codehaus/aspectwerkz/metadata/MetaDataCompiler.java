@@ -34,7 +34,6 @@ import org.codehaus.aspectwerkz.definition.DefinitionValidator;
  * Base class for the meta-data compilers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MetaDataCompiler.java,v 1.5 2003-07-19 20:36:16 jboner Exp $
  */
 public abstract class MetaDataCompiler {
 

@@ -6,7 +6,6 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticMethodAdviceTest.java,v 1.5 2003-07-19 20:36:17 jboner Exp $
  */
 public class StaticMethodAdviceTest extends TestCase {
 

@@ -45,9 +45,6 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 
-import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
-import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
-
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
@@ -57,9 +54,8 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberFieldTransformer.java,v 1.16 2003-07-22 14:03:18 jboner Exp $
  */
-public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
+public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
@@ -91,7 +87,7 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
      *
      * @param cs the class set.
      */
-    public void transformCode(final UnextendableClassSet cs) {
+    public void transformCode(final AspectWerkzUnextendableClassSet cs) {
 
         final Iterator iterator = cs.getIteratorForTransformableClasses();
         while (iterator.hasNext()) {
@@ -101,7 +97,11 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                 continue;
             }
 
-            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+            //@todo alex
+            org.apache.bcel.classfile.JavaClass alex = cg.getJavaClass();
+            alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
+            //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
 
             final Method[] methods = cg.getMethods();
 

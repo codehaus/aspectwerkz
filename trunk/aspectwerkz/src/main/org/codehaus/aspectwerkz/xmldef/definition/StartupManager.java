@@ -62,7 +62,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StartupManager.java,v 1.1 2003-07-22 14:14:21 jboner Exp $
+ * @version $Id: StartupManager.java,v 1.2 2003-07-23 14:20:30 avasseur Exp $
  */
 public class StartupManager {
 
