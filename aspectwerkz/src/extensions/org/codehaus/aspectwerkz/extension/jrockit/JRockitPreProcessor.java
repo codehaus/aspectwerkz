@@ -22,13 +22,11 @@ import java.io.File;
  * -Xbootclasspath/p option.
  *
  * The main difference with standard AspectWerkz online mode is that the ClassPreProcessor implementation
- * MUST resides in the bootstrap classpath - thus the whole AspectWerkz distribution and not only the hook part
- * MUST resides in the bootstrap classpath with all third party jars.
+ * and all third party jars CAN reside in the standard classpath.
  *
  * The command line tool will look like:
  * <code>"%JAVA_COMMAND%" -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\target\extensions.jar;%ASPECTWERKZ_HOME%\lib\bcel-patch.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -cp "%CP%;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -Daspectwerkz.transform.verbose=yes %*</code>
- * There can be some NoClassDefFoundError due to classpath limitation - as described in http://edocs.bea.com/wls/docs81/adminguide/winservice.html
- * This error appears eg for aspectwerkz:attribdef:test but not for aspectwerkz:xmldef:test
+ * Note: there can be some NoClassDefFoundError due to classpath limitation - as described in http://edocs.bea.com/wls/docs81/adminguide/winservice.html
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -41,7 +39,7 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
         try {
             // note: CLPP loaded by current thread classloader which is bootstrap classloader
             // caution: forcing loading thru Thread.setContextClassLoader() or ClassLoader.getSystemClassLoader()
-            // does not work : AW must be in bootclasspath
+            // does not work. We then do a filtering on the caller classloader - see preProcess(..)
             //preProcessor = (ClassPreProcessor) Class.forName(clpp).newInstance();
             preProcessor = (ClassPreProcessor) ClassLoader.getSystemClassLoader().loadClass(clpp).newInstance();
             preProcessor.initialize(null);
@@ -66,10 +64,11 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
      */
     public byte[] preProcess(ClassLoader caller, String name, byte[] bytecode) {
         //System.out.println(name + " [" + caller + "]");
-        if (caller == null || caller.getParent() == null)
+        if (caller == null || caller.getParent() == null) {
             return bytecode;
-        else
+        } else {
             return preProcessor.preProcess(name, bytecode, caller);
+        }
     }
 
     /**

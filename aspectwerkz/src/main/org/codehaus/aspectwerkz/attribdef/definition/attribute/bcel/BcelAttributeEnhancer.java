@@ -245,10 +245,10 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
             return getNearestInterfacesInHierarchy(innerClass);
         } catch (ClassNotFoundException e) {
             // should not be raised
-            throw new RuntimeException("could not mixin for mixin implicit interface: ClassNotFoundException : " + e.getMessage());
+            throw new RuntimeException("could not load mixin for mixin implicit interface: ClassNotFoundException : " + e.getMessage());
         } catch (NoClassDefFoundError er) {
             // raised if extends / implements dependancies not found
-            throw new RuntimeException("could not dependancy for mixin implicit interface: " + innerClassName+ " ClassNotFoundException for " + er.getMessage());
+            throw new RuntimeException("could not find dependency for mixin implicit interface: " + innerClassName+ " ClassNotFoundException for " + er.getMessage());
         }
     }
 
