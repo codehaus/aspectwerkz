@@ -91,7 +91,7 @@ public class BeforeAdviceExecutor implements AdviceExecutor {
      *
      * @return a deep copy of the intance
      */
-    public AdviceExecutor deepCopy() {
+    public AdviceExecutor newInstance() {
         return new BeforeAdviceExecutor(m_adviceIndexes, m_cflowExpressions, m_system);
     }
 }

@@ -52,5 +52,5 @@ public interface Signature {
      *
      * @return a deep copy of the signature
      */
-    Signature deepCopy();
+    Signature newInstance();
 }

@@ -136,6 +136,7 @@ public class JoinPointRegistry {
 
         TLongObjectHashMap joinPointHashToPointcutTypesMap = (TLongObjectHashMap)m_joinPointAdvicesMap.get(classHash);
         joinPointHashToPointcutTypesMap.put(joinPointHash, pointcutTypeToAdvicesMap);
+        AdviceContainer[] adviceContainers = null;
 
         switch (joinPointType) {
 
@@ -159,7 +160,7 @@ public class JoinPointRegistry {
 //                    pointcut.getAfterAdviceIndexes()
                     executionAdvices.add(advices);
                 }
-                AdviceContainer[] adviceContainers = new AdviceContainer[executionAdvices.size()];
+                adviceContainers = new AdviceContainer[executionAdvices.size()];
                 int i = 0;
                 for (Iterator iterator = executionAdvices.iterator(); iterator.hasNext(); i++) {
                     AdviceContainer adviceContainer = (AdviceContainer)iterator.next();
@@ -203,9 +204,6 @@ public class JoinPointRegistry {
 
             case JoinPointType.FIELD_SET:
                 // TODO: cache the metadata - map it to the field hash (see pointcut for caching)
-
-                joinPointHashToPointcutTypesMap.put(joinPointHash, pointcutTypeToAdvicesMap);
-
                 List setAdvices = new ArrayList();
                 List setPointcuts = system.getAspectManager().getSetPointcuts(
                         definedClassMetaData,
@@ -221,14 +219,17 @@ public class JoinPointRegistry {
                     );
                     setAdvices.add(advices);
                 }
-                pointcutTypeToAdvicesMap.put(PointcutType.SET, setAdvices);
+                adviceContainers = new AdviceContainer[setAdvices.size()];
+                i = 0;
+                for (Iterator iterator = setAdvices.iterator(); iterator.hasNext(); i++) {
+                    AdviceContainer adviceContainer = (AdviceContainer)iterator.next();
+                    adviceContainers[i] = adviceContainer;
+                }
+                pointcutTypeToAdvicesMap.put(PointcutType.SET, adviceContainers);
                 break;
 
             case JoinPointType.FIELD_GET:
-                // TODO: cache the metadata - map it to the field hash (see pointcut for caching)
-
-                joinPointHashToPointcutTypesMap.put(joinPointHash, pointcutTypeToAdvicesMap);
-
+                // TODO: cache the metadata - map it to the field hash (see pointcut for caching
                 List getAdvices = new ArrayList();
                 List getPointcuts = system.getAspectManager().getGetPointcuts(
                         definedClassMetaData,
@@ -244,7 +245,13 @@ public class JoinPointRegistry {
                     );
                     getAdvices.add(advices);
                 }
-                pointcutTypeToAdvicesMap.put(PointcutType.GET, getAdvices);
+                adviceContainers = new AdviceContainer[getAdvices.size()];
+                i = 0;
+                for (Iterator iterator = getAdvices.iterator(); iterator.hasNext(); i++) {
+                    AdviceContainer adviceContainer = (AdviceContainer)iterator.next();
+                    adviceContainers[i] = adviceContainer;
+                }
+                pointcutTypeToAdvicesMap.put(PointcutType.GET, adviceContainers);
                 break;
 
             case JoinPointType.CATCH_CLAUSE:

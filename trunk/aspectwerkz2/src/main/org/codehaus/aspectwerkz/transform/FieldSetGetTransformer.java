@@ -9,8 +9,6 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.util.List;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.HashSet;
 
 import javassist.CtClass;
 import javassist.Modifier;
@@ -18,16 +16,12 @@ import javassist.CannotCompileException;
 import javassist.CtBehavior;
 import javassist.NotFoundException;
 import javassist.CtField;
-import javassist.CtMethod;
 import javassist.expr.ExprEditor;
-import javassist.expr.MethodCall;
 import javassist.expr.FieldAccess;
 
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -72,8 +66,6 @@ public class FieldSetGetTransformer implements Transformer {
                 return;
             }
 
-            final Set fieldJoinPoints = new HashSet();
-
             ctClass.instrument(new ExprEditor() {
                 public void edit(FieldAccess fieldAccess) throws CannotCompileException {
                     try {
@@ -98,46 +90,30 @@ public class FieldSetGetTransformer implements Transformer {
                                 fieldAccess.getField()
                         );
 
-                        addCalleeMethodDeclaringClassField(ctClass, fieldAccess.getField());
-
                         if ((fieldAccess.isReader() && !getFieldFilter(definition, classMetaData, fieldMetaData)) ||
                                 !setFieldFilter(definition, classMetaData, fieldMetaData)) {
-/*
-      $0 	The object containing the field accessed by the expression. This is not equivalent to this.
-      this represents the object that the method including the expression is invoked on.
-      $0 is null if the field is static.
 
+                            // check the declaring class for the field is not the same as target class,
+                            // if that is the case then we have have class loaded and set in the ___AW_clazz already
+                            String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
+                            CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
+                            if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
+                                declaringClassFieldName = addFieldAccessDeclaringClassField(
+                                        declaringClass, fieldAccess.getField()
+                                );
+                            }
 
-      $1 	The value that would be stored in the field if the expression is write access.
-      Otherwise, $1 is not available.
-
-      $_ 	The resulting value of the field access if the expression is read access.
-      Otherwise, the value stored in $_ is discarded.
-
-      $r 	The type of the field if the expression is read access.
-      Otherwise, $r is void.
-
-      $class     	A java.lang.Class object representing the class declaring the field.
-      $type 	A java.lang.Class object representing the field type.
-      $proceed     	The name of a virtual method executing the original field access. .
-
-The other identifiers such as $w, $args and $$ are also available.
-
-If the expression is read access, a value must be assigned to $_ in the source text.
-The type of $_ is the type of the field.
-
-*/
                             StringBuffer body = new StringBuffer();
                             if (fieldAccess.isReader()) {
-                                body.append("$_ = ");
+                                body.append("$_ = ($r)");
                                 body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
                                 body.append('.');
-                                body.append("proceedWithGetJoinPoint");
+                                body.append(TransformationUtil.PROCEED_WITH_GET_JOIN_POINT_METHOD);
                             }
                             else {
                                 body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
                                 body.append('.');
-                                body.append("proceedWithSetJoinPoint");
+                                body.append(TransformationUtil.PROCEED_WITH_SET_JOIN_POINT_METHOD);
                             }
                             body.append('(');
                             body.append(TransformationUtil.calculateHash(fieldAccess.getField()));
@@ -145,31 +121,17 @@ The type of $_ is the type of the field.
                             if (fieldAccess.isWriter()) {
                                 body.append("$args,");
                             }
-                            if (Modifier.isStatic(where.getModifiers())) {
+                            if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
                                 body.append("(Object)null");
                             }
                             else {
                                 body.append("$0");
                             }
-                            body.append(",(Class)");
-                            body.append(
-                                    TransformationUtil.STATIC_CLASS_FIELD +
-                                    TransformationUtil.DELIMITER + "field" +
-                                    TransformationUtil.DELIMITER +
-                                    fieldAccess.getField().getDeclaringClass().getName().replace('.', '_')
-                            );
                             body.append(',');
-                            if (fieldAccess.isWriter()) {
-                                body.append(TransformationUtil.JOIN_POINT_TYPE_FIELD_SET);
-                            }
-                            else {
-                                body.append(TransformationUtil.JOIN_POINT_TYPE_FIELD_GET);
-                            }
+                            body.append(declaringClassFieldName);
                             body.append(",\"");
                             body.append(fieldSignature);
                             body.append("\");");
-
-                            System.out.println("body.toString() = " + body.toString());
 
                             fieldAccess.replace(body.toString());
                             context.markAsAdvised();
@@ -184,12 +146,13 @@ The type of $_ is the type of the field.
     }
 
     /**
-     * Creates a new static class field, for the declaring class of the callee method.
+     * Creates a new static class field, for the declaring class of the field that is accessed/modified.
      *
      * @param ctClass the class
      * @param ctField the field
+     * @return the name of the field
      */
-    private void addCalleeMethodDeclaringClassField(final CtClass ctClass, final CtField ctField)
+    private String addFieldAccessDeclaringClassField(final CtClass ctClass, final CtField ctField)
             throws NotFoundException, CannotCompileException {
 
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD +
@@ -216,6 +179,7 @@ The type of $_ is the type of the field.
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class.forName(\"" + ctField.getDeclaringClass().getName() + "\")");
         }
+        return fieldName;
     }
 
     /**
@@ -230,7 +194,7 @@ The type of $_ is the type of the field.
                                 final ClassMetaData classMetaData,
                                 final CtClass ctClass) {
         if (ctClass.isInterface() ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect")) {
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = ctClass.getName();

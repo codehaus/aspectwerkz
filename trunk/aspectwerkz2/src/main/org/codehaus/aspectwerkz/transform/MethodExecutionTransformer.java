@@ -239,7 +239,8 @@ public class MethodExecutionTransformer implements Transformer {
                                 final ClassMetaData classMetaData,
                                 final CtClass cg,
                                 final boolean isActivatePhase) {
-        if (cg.isInterface() || TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+        if (cg.isInterface() ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = cg.getName();

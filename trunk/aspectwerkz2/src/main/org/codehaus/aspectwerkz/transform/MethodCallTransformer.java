@@ -70,10 +70,17 @@ public class MethodCallTransformer implements Transformer {
             ctClass.instrument(new ExprEditor() {
                 public void edit(MethodCall methodCall) throws CannotCompileException {
                     try {
-                        final CtBehavior callerBehaviour = methodCall.where();
+                        CtBehavior where = null;
+                        try {
+                            where = methodCall.where();
+                        }
+                        catch (RuntimeException e) {
+                            // <clinit> access leads to a bug in Javassist
+                            where = ctClass.getClassInitializer();
+                        }
 
                         // filter caller methods
-                        if (methodFilterCaller(callerBehaviour)) {
+                        if (methodFilterCaller(where)) {
                             return;
                         }
 
@@ -116,28 +123,36 @@ public class MethodCallTransformer implements Transformer {
 //                            int callerMethodModifiers = callerBehaviour.getModifiers();
 
                             // add a class field for the declaring class
-                            addCalleeMethodDeclaringClassField(ctClass, methodCall.getMethod());
+//                            String declaringClassMethodName = addCalleeMethodDeclaringClassField(
+//                                    ctClass, methodCall.getMethod()
+//                            );
+
+                            // check the callee class is not the same as target class, if that is the case
+                            // then we have have class loaded and set in the ___AW_clazz already
+                            String declaringClassMethodName = TransformationUtil.STATIC_CLASS_FIELD;
+                            CtMethod method = methodCall.getMethod();
+                            CtClass declaringClass = method.getDeclaringClass();
+                            if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
+                                declaringClassMethodName = addCalleeMethodDeclaringClassField(
+                                        ctClass, method
+                                );
+                            }
 
                             // call the wrapper method instead of the callee method
                             StringBuffer body = new StringBuffer();
-                            body.append("{$_=($r)");
+                            body.append("{$_ = ($r)");
                             body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
                             body.append('.');
                             body.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
                             body.append('(');
                             body.append(TransformationUtil.calculateHash(methodCall.getMethod()));
-                            body.append(",$args,$0,(Class)");
-                            body.append(
-                                    TransformationUtil.STATIC_CLASS_FIELD +
-                                    TransformationUtil.DELIMITER + "method" +
-                                    TransformationUtil.DELIMITER +
-                                    methodCall.getMethod().getDeclaringClass().getName().replace('.', '_')
-                            );
+                            body.append(", $args, $0, (Class)");
+                            body.append(declaringClassMethodName);
                             body.append(',');
                             body.append(TransformationUtil.JOIN_POINT_TYPE_METHOD_CALL);
                             body.append(",\"");
                             body.append(methodCall.getMethod().getSignature());
-                            body.append("\");}");
+                            body.append("\"); }");
 
                             methodCall.replace(body.toString());
                             context.markAsAdvised();
@@ -157,8 +172,9 @@ public class MethodCallTransformer implements Transformer {
      *
      * @param ctClass the class
      * @param ctMethod the method
+     * @return the name of the field
      */
-    private void addCalleeMethodDeclaringClassField(final CtClass ctClass, final CtMethod ctMethod)
+    private String addCalleeMethodDeclaringClassField(final CtClass ctClass, final CtMethod ctMethod)
             throws NotFoundException, CannotCompileException {
 
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD +
@@ -185,6 +201,7 @@ public class MethodCallTransformer implements Transformer {
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class.forName(\"" + ctMethod.getDeclaringClass().getName() + "\")");
         }
+        return fieldName;
     }
 
     /**
@@ -198,7 +215,8 @@ public class MethodCallTransformer implements Transformer {
     private boolean classFilter(final SystemDefinition definition,
                                 final ClassMetaData classMetaData,
                                 final CtClass cg) {
-        if (cg.isInterface() || TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+        if (cg.isInterface() ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = cg.getName();
