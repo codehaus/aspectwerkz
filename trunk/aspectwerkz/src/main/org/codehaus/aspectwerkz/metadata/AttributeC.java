@@ -25,7 +25,6 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
 
-import org.codehaus.aspectwerkz.metadata.QDoxParser;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
@@ -40,6 +39,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.advice.CFlowPreAdvice;
 import org.codehaus.aspectwerkz.advice.CFlowPostAdvice;
+import org.codehaus.aspectwerkz.util.UuidGenerator;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**
@@ -93,7 +93,7 @@ public class AttributeC {
 
         validate(definition);
 
-        Document document = createDocument(definition);
+        Document document = createDocument(definition, uuid);
         writeDocumentToFile(document, fileName);
     }
 
@@ -141,13 +141,21 @@ public class AttributeC {
      * Creates a DOM documents out of the definition.
      *
      * @param definition the AspectWerkz definition
+     * @param uuid the UUID for the definition
      * @return the DOM document
      */
-    public static Document createDocument(final AspectWerkzDefinition definition) {
+    public static Document createDocument(final AspectWerkzDefinition definition,
+                                          final String uuid) {
         if (definition == null) throw new IllegalArgumentException("definition can not be null");
 
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("aspectwerkz");
+        if (uuid == null) {
+            root.addAttribute("id", UuidGenerator.generate(definition));
+        }
+        else {
+            root.addAttribute("id", uuid);
+        }
 
         handleIntroductionDefinitions(root, definition);
         handleAdviceDefinitions(root, definition);
