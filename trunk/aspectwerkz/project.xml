@@ -86,27 +86,27 @@
     <contributors>
         <contributor>
             <name>Tibor Varga</name>
-<!--            <id></id>-->
+            <!--            <id></id>-->
             <email>vta@medios.fi</email>
-<!--            <organization></organization>-->
+            <!--            <organization></organization>-->
             <roles>
                 <role>Developer</role>
             </roles>
         </contributor>
         <contributor>
             <name>Stefan Finkenzeller</name>
-<!--            <id></id>-->
+            <!--            <id></id>-->
             <email>stefan.finkenzeller@gmx.net</email>
-<!--            <organization></organization>-->
+            <!--            <organization></organization>-->
             <roles>
                 <role>Developer</role>
             </roles>
         </contributor>
         <contributor>
             <name>Carlos Villea</name>
-<!--            <id></id>-->
+            <!--            <id></id>-->
             <email>carlos@bluebox.com.br</email>
-<!--            <organization></organization>-->
+            <!--            <organization></organization>-->
             <roles>
                 <role>Developer</role>
             </roles>
@@ -185,10 +185,18 @@
     </build>
 
     <reports>
-        <report>maven-javadoc-plugin</report>
-        <report>maven-jxr-plugin</report>
-        <report>maven-tasklist-plugin</report>
+
+        <report>maven-license-plugin</report>
+<!--        <report>maven-faq-plugin</report>-->
+        <report>maven-checkstyle-plugin</report>
         <report>maven-jdepend-plugin</report>
+        <report>maven-pmd-plugin</report>
+<!--        <report>maven-simian-plugin</report>-->
+        <report>maven-changes-plugin</report>
+        <report>maven-statcvs-plugin</report>
+        <report>maven-jxr-plugin</report>
+        <report>maven-javadoc-plugin</report>
+        <report>maven-tasklist-plugin</report>
         <report>maven-changelog-plugin</report>
         <report>maven-file-activity-plugin</report>
         <report>maven-developer-activity-plugin</report>
