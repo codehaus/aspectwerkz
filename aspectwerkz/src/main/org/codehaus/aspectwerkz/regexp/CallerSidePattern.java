@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz.regexp;
 import java.util.StringTokenizer;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
@@ -67,9 +66,7 @@ public class CallerSidePattern extends Pattern {
      * @param pattern the method pattern
      */
     protected void parse(final String pattern) {
-        StringTokenizer tokenizer = new StringTokenizer(
-                m_pattern,
-                AspectWerkzDefinition.CALLER_SIDE_DELIMITER);
+        StringTokenizer tokenizer = new StringTokenizer(m_pattern, CALLER_SIDE_DELIMITER);
         try {
             m_classPattern = Pattern.compileClassPattern(tokenizer.nextToken());
             m_methodPattern = Pattern.compileMethodPattern(tokenizer.nextToken());

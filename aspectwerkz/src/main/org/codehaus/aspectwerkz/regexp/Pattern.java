@@ -18,6 +18,13 @@ import java.util.HashMap;
  */
 public abstract class Pattern implements Serializable {
 
+    public static final String PER_JVM = "perJVM";
+    public static final String PER_CLASS = "perClass";
+    public static final String PER_INSTANCE = "perInstance";
+    public static final String PER_THREAD = "perThread";
+    public static final String THROWS_DELIMITER = "#";
+    public static final String CALLER_SIDE_DELIMITER = "#";
+
     /**
      * Defines a single wildcard.
      */
