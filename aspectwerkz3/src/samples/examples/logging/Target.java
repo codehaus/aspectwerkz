@@ -47,9 +47,10 @@ public class Target {
     /**
      * log level=3 sarr={"Hello","World", "Jonas's car"}
      */
-    public void toLog2(java.lang.String[] arg) {
+    public java.lang.String[] toLog2(java.lang.String[] arg) {
         System.out.println("Target.toLog2()");
         new Target().toLog3();
+        return null;
     }
 
     /**
