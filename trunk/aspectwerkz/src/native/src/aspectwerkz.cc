@@ -74,7 +74,7 @@ void notifyEvent(JVMPI_Event *event) {
  */
 extern "C" { 
 JNIEXPORT jint JNICALL JVM_OnLoad(JavaVM *jvm, char *options, void *reserved) {
-	fprintf(stdout, "AspectWerkz> initializing .....\n", options);
+	fprintf(stdout, "AspectWerkz> initializing 0.9.RC1.....\n", options);
 
 	//*********************************************************************
 	// prepare the JVMPI
@@ -195,7 +195,18 @@ JNIEXPORT jint JNICALL JVM_OnLoad(JavaVM *jvm, char *options, void *reserved) {
 			jni->ExceptionDescribe();
 			return JNI_ERR;
 		}
-		jbyteArray newBytes = (jbyteArray) jni->CallStaticObjectMethod(clp, clpm, jni->NewStringUTF("org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl"));
+		
+		// handle custom ClassLoaderPreProcessor with -Daspectwerkz.classloader.clpreprocessor=<impl FQN>
+		jclass sysC = jni->FindClass("java/lang/System");
+		jmethodID sysM = jni->GetStaticMethodID(sysC, "getProperty", "(Ljava/lang/String;)Ljava/lang/String;");
+		jstring ppName = (jstring) jni->CallStaticObjectMethod(sysC, sysM, jni->NewStringUTF("aspectwerkz.classloader.clpreprocessor"));
+		jbyteArray newBytes;
+		if (ppName != NULL) {
+			fprintf(stdout, "AspectWerkz> using ClassLoaderPreProcessor %s\n", jni->GetStringUTFChars(ppName, JNI_FALSE));
+			newBytes = (jbyteArray) jni->CallStaticObjectMethod(clp, clpm, ppName);
+		} else {
+			newBytes = (jbyteArray) jni->CallStaticObjectMethod(clp, clpm, jni->NewStringUTF("org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl"));
+		}
 		target.class_bytes = jni->GetByteArrayElements(newBytes, JNI_FALSE);
 		target.class_byte_count = jni->GetArrayLength(newBytes);
 	}
