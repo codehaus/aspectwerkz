@@ -74,6 +74,7 @@
                         <code>perJVM</code> if not specified
                         <ul>
                             <li>
+                                <code>perJVM</code> - deploys the aspect as perJVM. 
                             </li>
                             <li>
                                 <code>perClass</code> - deploys the aspect as perClass.
