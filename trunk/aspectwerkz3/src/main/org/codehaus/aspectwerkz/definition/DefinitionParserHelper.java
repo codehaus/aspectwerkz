@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
+import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
@@ -166,7 +167,19 @@ public class DefinitionParserHelper {
                         Strings.replaceSubString(parameters[i].trim(), "  ", " "),
                         " "
                 );
-                expressionInfo.addArgument(parameterInfo[1], parameterInfo[0]);
+                // Note: for XML defined aspect, we support anonymous parameters like
+                // advice(JoinPoint, Rtti) as well as abbreviations, so we have to assign
+                // them a name here, as well as their real type
+                String paramName, paramType = null;
+                if (parameterInfo.length == 2) {
+                    paramName = parameterInfo[1];
+                    paramType = parameterInfo[0];
+                    //FIXME
+                } else {
+                    paramName = "anonymous_"+i;
+                    paramType = (String) Pattern.ABBREVIATIONS.get(parameterInfo[0]);
+                }
+                expressionInfo.addArgument(paramName, paramType);
             }
         }
 

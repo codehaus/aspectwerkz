@@ -31,9 +31,9 @@
         <aspect class="test.staticfield.TestAspect"/>
         <aspect class="test.superclassconstructor.TestAspect"/>
         <aspect class="test.constructor.ConstructorTestAspect"/>
-<!--        <aspect class="test.handler.HandlerTestAspect">-->
-<!--            <advice bind-to="handler" type="before" name="before"/>-->
-<!--        </aspect>-->
+        <aspect class="test.handler.HandlerTestAspect">
+            <advice bind-to="handler" type="before" name="before(JoinPoint, Rtti)"/>
+        </aspect>
         <aspect class="test.proceedinnewthread.TestAspect">
             <advice bind-to="execution(void test.proceedinnewthread.ProceedTest.adviseMe*(..))" type="around" name="advice1"/>
             <advice bind-to="execution(void test.proceedinnewthread.ProceedTest.adviseMe2(..)) || execution(void test.proceedinnewthread.ProceedTest.adviseMe3(..))" type="around" name="advice2"/>
@@ -165,12 +165,14 @@
 
     </system>
 
-<!--    <system id="polymorphic">-->
-<!--        <aspect class="test.polymorphic.PolymorphicTest$TestAspect">-->
-<!--            <pointcut name="in" expression="within(test.polymorphic..*)"/>-->
-<!--            <advice name="method1Advise" type="before" bind-to="in AND call(* test.polymorphic.*.methodTest())"/>-->
-<!--            <advice name="ctor1Advise" type="before" bind-to="execution(test.polymorphic.*.new(int))"/>-->
-<!--            <advice name="ctor2Advise" type="before" bind-to="in AND call(test.polymorphic.*.new(String))"/>-->
-<!--        </aspect>-->
-<!--    </system>-->
+    <!--    The advices below are using Rtti, so the name must reflect that (can use abbreviations)-->
+    <!--    and advice parameter name is optional if not used for a binding-->
+    <system id="polymorphic">
+        <aspect class="test.polymorphic.PolymorphicTest$TestAspect">
+            <pointcut name="in" expression="within(test.polymorphic..*)"/>
+            <advice name="method1Advise(JoinPoint, Rtti)" type="before" bind-to="in AND call(* test.polymorphic.*.methodTest())"/>
+            <advice name="ctor1Advise(JoinPoint, Rtti)" type="before" bind-to="execution(test.polymorphic.*.new(int))"/>
+            <advice name="ctor2Advise(JoinPoint foo, Rtti bar)" type="before" bind-to="in AND call(test.polymorphic.*.new(String))"/>
+        </aspect>
+    </system>
 </aspectwerkz>

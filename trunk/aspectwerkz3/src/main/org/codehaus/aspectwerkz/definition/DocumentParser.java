@@ -771,19 +771,11 @@ public class DocumentParser {
         }
         // check number of args
         if (method.getParameterTypes().length * 2 != signatureElements.length - 1) {
-            // we still match if method has JoinPoint has sole parameter
+            // we still match if method has "JoinPoint" has sole parameter
             // and adviceSignature has none
-            //TODO - evolve when support for custom JP
             if (signatureElements.length == 1
                 && method.getParameterTypes().length == 1
                 && method.getParameterTypes()[0].getName().equals(TransformationConstants.JOIN_POINT_JAVA_CLASS_NAME)) {
-                return true;
-            } else if (signatureElements.length == 1
-                       && method.getParameterTypes().length == 1
-                       &&
-                       method.getParameterTypes()[0].getName().equals(
-                               TransformationConstants.STATIC_JOIN_POINT_JAVA_CLASS_NAME
-                       )) {
                 return true;
             } else {
                 return false;
@@ -792,9 +784,8 @@ public class DocumentParser {
         int argIndex = 0;
         for (int i = 1; i < signatureElements.length; i++) {
             String paramType = signatureElements[i++];
-            String paramName = signatureElements[i];
             String methodParamType = method.getParameterTypes()[argIndex++].getName();
-            // handle shortcuts for java.lang.* and JoinPoint
+            // handle shortcuts for java.lang.* and JoinPoint, StaticJoinPoint and Rtti
             String paramTypeResolved = (String) Pattern.ABBREVIATIONS.get(paramType);
             if (methodParamType.equals(paramType) || methodParamType.equals(paramTypeResolved)) {
                 continue;
