@@ -230,15 +230,6 @@
         </exec>
     </goal>
 
-    <goal name="aspectwerkz:samples:bugtest">
-        <attainGoal name="aspectwerkz:init"/>
-        <delete dir="${basedir}/_txLogs"/>
-        <attainGoal name="aspectwerkz:compile"/>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${basedir}/src/samples/test.xml -Daspectwerkz.persistence.snapshot.thread=false Main"/>
-        </exec>
-    </goal>
-
     <!-- =================================================== -->
     <!--  downloads dependencies -->
     <!-- =================================================== -->
