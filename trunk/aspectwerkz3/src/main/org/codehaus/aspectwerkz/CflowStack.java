@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * TODO document
+ * Thread local stack for cflow.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
