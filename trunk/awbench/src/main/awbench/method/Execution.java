@@ -53,13 +53,15 @@ public class Execution implements Measurement {
     }
 
     public void warmup() {
-        before();
-        beforeSjp();
-        beforeJp();
-        withPrimitiveArgs(Constants.CONST_0);
-        withWrappedArgs(Constants.WRAPPED_0);
-        withArgsAndTarget(Constants.CONST_0);
-        beforeAfter();
-        aroundJp();
+        for (int i = 0; i < 1000; i++) {
+            before();
+            beforeSjp();
+            beforeJp();
+            withPrimitiveArgs(Constants.CONST_0);
+            withWrappedArgs(Constants.WRAPPED_0);
+            withArgsAndTarget(Constants.CONST_0);
+            beforeAfter();
+            aroundJp();
+        }
     }
 }
