@@ -52,7 +52,7 @@ public class AddImplementationTransformer implements Transformer {
             SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
-            ExpressionContext ctx = new ExpressionContext(PointcutType.ANY, classInfo, classInfo);
+            ExpressionContext ctx = new ExpressionContext(PointcutType.WITHIN, classInfo, classInfo);
             if (classFilter(ctClass, ctx, definition)) {
                 continue;
             }

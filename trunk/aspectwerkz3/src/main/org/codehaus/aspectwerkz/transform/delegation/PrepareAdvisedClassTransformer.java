@@ -39,7 +39,17 @@ public class PrepareAdvisedClassTransformer implements Transformer {
             SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classMetaData = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
-            if (classFilter(definition, new ExpressionContext(PointcutType.ANY, classMetaData, classMetaData), ctClass)) {
+
+            ExpressionContext[] ctxs = new ExpressionContext[]{
+                new ExpressionContext(PointcutType.EXECUTION, classMetaData, classMetaData),
+                new ExpressionContext(PointcutType.CALL, null, classMetaData),
+                new ExpressionContext(PointcutType.GET, classMetaData, classMetaData),
+                new ExpressionContext(PointcutType.SET, classMetaData, classMetaData),
+                new ExpressionContext(PointcutType.HANDLER, null, classMetaData),
+                new ExpressionContext(PointcutType.STATIC_INITIALIZATION, classMetaData, classMetaData),
+                new ExpressionContext(PointcutType.WITHIN, classMetaData, classMetaData)
+            };
+            if (classFilter(definition, ctxs, ctClass)) {
                 continue;
             }
             JavassistHelper.addStaticClassField(ctClass, context);
@@ -51,11 +61,11 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      * Filters the classes to be transformed.
      * 
      * @param definition the definition
-     * @param ctx expression context
+     * @param ctxs expression contexts
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
+    public static boolean classFilter(final SystemDefinition definition, final ExpressionContext[] ctxs, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }
@@ -69,7 +79,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
         if (definition.inPreparePackage(className)) {
             return false;
         }
-        if (definition.isAdvised(ctx)) {
+        if (definition.isAdvised(ctxs)) {
             return false;
         }
         return true;

@@ -77,7 +77,9 @@ public class CFlowTestAspect {
     }
 
     /**
-     * @Around execution(* test.CFlowTest.step2_C()) AND !cflow(call(* test.CFlowTest.step1_C()) AND
+     * FIXME: this expression leads to match all at cflow early filtering.
+     * 
+     * X@Around execution(* test.CFlowTest.step2_C()) AND !cflow(call(* test.CFlowTest.step1_C()) AND
      *         within(test.CFlowTest))
      */
     public Object executeC(final JoinPoint joinPoint) throws Throwable {

@@ -86,11 +86,10 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
      */
     public boolean match(final ExpressionContext context) {
         Boolean match = ((Boolean) visit(m_root, context));
-        if (match != null) {
-            return match.booleanValue();
-        } else {
-            return true;
-        }
+        // undeterministic is assumed to be "true" at this stage
+        // since it won't be composed anymore with a NOT (unless
+        // thru pointcut reference ie a new visitor)
+        return (match != null)?match.booleanValue():true;
     }
 
     // ============ Boot strap =============
@@ -124,40 +123,24 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     public Object visit(ASTOr node, Object data) {
         Boolean matchL = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
         Boolean matchR = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
-        if (matchL != null && matchR !=null) {
-            // regular OR
-            if (matchL.equals(Boolean.TRUE) || matchR.equals(Boolean.TRUE)) {
-                return Boolean.TRUE;
-            } else {
-                return Boolean.FALSE;
-            }
-        } else {
-            // one or both is/are undetermined
-            // OR cannot be resolved
-            return null;
+        Boolean intermediate = matchUndeterministicOr(matchL, matchR);
+        for (int i = 2; i < node.jjtGetNumChildren(); i++) {
+            Boolean matchNext = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
+            intermediate = matchUndeterministicOr(intermediate, matchNext);
         }
+        return intermediate;
     }
 
     public Object visit(ASTAnd node, Object data) {
+        // the AND and OR can have more than 2 nodes [see jjt grammar]
         Boolean matchL = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
         Boolean matchR = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
-        if (matchL != null && matchR !=null) {
-            // regular AND
-            if (matchL.equals(Boolean.TRUE) && matchR.equals(Boolean.TRUE)) {
-                return Boolean.TRUE;
-            } else {
-                return Boolean.FALSE;
-            }
-        } else if (matchL != null && matchL.equals(Boolean.FALSE)) {
-            // one is undetermined and the other is false, so result is false
-            return Boolean.FALSE;
-        } else if (matchR != null && matchR.equals(Boolean.FALSE)) {
-            // one is undetermined and the other is false, so result is false
-            return Boolean.FALSE;
-        } else {
-            // both are undetermined, or one is true and the other undetermined
-            return null;
+        Boolean intermediate = matchUnderterministicAnd(matchL, matchR);
+        for (int i = 2; i < node.jjtGetNumChildren(); i++) {
+            Boolean matchNext = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
+            intermediate = matchUnderterministicAnd(intermediate, matchNext);
         }
+        return intermediate;
 
 //        boolean hasCallOrHandlerPc = false;
 //        boolean hasWithinPc = false;
@@ -236,7 +219,8 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     public Object visit(ASTExecution node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        if (context.hasAnyPointcut() || context.hasExecutionPointcut()) {
+        // for execution evaluation, we always have the reflection info available
+        if (context.hasWithinPointcut() || context.hasExecutionPointcut()) {
             return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
         } else {
             return Boolean.FALSE;
@@ -245,8 +229,13 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     public Object visit(ASTCall node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        if (context.hasAnyPointcut() || context.hasCallPointcut()) {
-            return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        // for call evaluation, the reflection info may be null at the early matching phase
+        if (context.hasWithinPointcut() || context.hasCallPointcut()) {
+            if (context.hasReflectionInfo()) {
+                return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+            } else {
+                return null;
+            }
         } else {
             return Boolean.FALSE;
         }
@@ -254,8 +243,14 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     public Object visit(ASTSet node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        if (context.hasAnyPointcut() || context.hasSetPointcut()) {
-            return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        // for set evaluation, the reflection info may be null at the early matching phase
+        // when we will allow for field interception within non declaring class
+        if (context.hasWithinPointcut() || context.hasSetPointcut()) {
+            if (context.hasReflectionInfo()) {
+                return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+            } else {
+                return null;
+            }
         } else {
             return Boolean.FALSE;
         }
@@ -263,20 +258,27 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     public Object visit(ASTGet node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        if (context.hasAnyPointcut() || context.hasGetPointcut()) {
-            return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        // for get evaluation, the reflection info may be null at the early matching phase
+        // when we will allow for field interception within non declaring class
+        if (context.hasWithinPointcut() || context.hasGetPointcut()) {
+            if (context.hasReflectionInfo()) {
+                return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+            } else {
+                return null;
+            }
         } else {
             return Boolean.FALSE;
         }
     }
 
     public Object visit(ASTHandler node, Object data) {
+        //FIXME
         return Boolean.TRUE;
     }
 
     public Object visit(ASTStaticInitialization node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        if (context.hasAnyPointcut() || context.hasStaticInitializationPointcut()) {
+        if (context.hasWithinPointcut() || context.hasStaticInitializationPointcut()) {
             return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
         } else {
             return Boolean.FALSE;
@@ -314,12 +316,12 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     public Object visit(ASTHasMethod node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
     }
     
     public Object visit(ASTHasField node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
     }
  
     // ============ Patterns =============
@@ -430,5 +432,39 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         }
         return true;
     }
-  
+
+    private static Boolean matchUnderterministicAnd(Boolean lhs, Boolean rhs) {
+        if (lhs != null && rhs !=null) {
+            // regular AND
+            if (lhs.equals(Boolean.TRUE) && rhs.equals(Boolean.TRUE)) {
+                return Boolean.TRUE;
+            } else {
+                return Boolean.FALSE;
+            }
+        } else if (lhs != null && lhs.equals(Boolean.FALSE)) {
+            // one is undetermined and the other is false, so result is false
+            return Boolean.FALSE;
+        } else if (rhs != null && rhs.equals(Boolean.FALSE)) {
+            // one is undetermined and the other is false, so result is false
+            return Boolean.FALSE;
+        } else {
+            // both are undetermined, or one is true and the other undetermined
+            return null;
+        }
+    }
+
+    private static Boolean matchUndeterministicOr(Boolean lhs, Boolean rhs) {
+        if (lhs != null && rhs !=null) {
+            // regular OR
+            if (lhs.equals(Boolean.TRUE) || rhs.equals(Boolean.TRUE)) {
+                return Boolean.TRUE;
+            } else {
+                return Boolean.FALSE;
+            }
+        } else {
+            // one or both is/are undetermined
+            // OR cannot be resolved
+            return null;
+        }
+    }
 }

@@ -24,7 +24,8 @@ public class CallerSideAdviceTest extends TestCase {
         try {
             CallerSideTestHelper helper = new CallerSideTestHelper();
             helper.invokeMemberMethodAround("a", "b");
-            assertEquals("before after ", s_logString);
+            helper.invokeMemberMethodAround("a", "b", "c");
+            assertEquals("before after before after ", s_logString);
         } catch (Exception e) {
             e.printStackTrace();
             fail();
@@ -34,7 +35,7 @@ public class CallerSideAdviceTest extends TestCase {
         s_logString = "";
         try {
             CallerSideTestHelper helper = new CallerSideTestHelper();
-            helper.invokeMemberMethodAround("a", "b");
+            helper.invokeMemberMethodAround("a", "b", "c");
             assertEquals("before after ", s_logString);
         } catch (Exception e) {
             e.printStackTrace();

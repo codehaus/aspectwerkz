@@ -426,4 +426,8 @@ public class JavassistClassInfo implements ClassInfo {
             }
         }
     }
+
+    public String toString() {
+        return getName();
+    }
 }

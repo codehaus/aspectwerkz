@@ -88,7 +88,7 @@ public class JoinPointRegistry {
         joinPointMetaDataMap.put(PointcutType.GET, EMTPY_ARRAY_LIST);
         joinPointMetaDataMap.put(PointcutType.HANDLER, EMTPY_ARRAY_LIST);
         joinPointMetaDataMap.put(PointcutType.STATIC_INITIALIZATION, EMTPY_ARRAY_LIST);
-        joinPointMetaDataMap.put(PointcutType.ATTRIBUTE, EMTPY_ARRAY_LIST);
+//        joinPointMetaDataMap.put(PointcutType.ATTRIBUTE, EMTPY_ARRAY_LIST);
         ((TLongObjectHashMap) m_joinPointMetaDataMap.get(classHash)).put(joinPointHash, joinPointMetaDataMap);
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:

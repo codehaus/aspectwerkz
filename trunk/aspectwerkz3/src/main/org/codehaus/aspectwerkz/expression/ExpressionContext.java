@@ -17,8 +17,11 @@ import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
  * The expression context for AST evaluation.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class ExpressionContext {
+    public static final int NOTAVAILABLE_INFO = -1;
+
     public static final int METHOD_INFO = 0;
 
     public static final int CONSTRUCTOR_INFO = 1;
@@ -49,7 +52,7 @@ public class ExpressionContext {
      * Creates a new expression context.
      * 
      * @param pointcutType
-     * @param reflectionInfo
+     * @param reflectionInfo - can be null f.e. with early evaluation of CALL pointcut
      * @param withinReflectionInfo
      */
     public ExpressionContext(final PointcutType pointcutType,
@@ -57,9 +60,6 @@ public class ExpressionContext {
                              final ReflectionInfo withinReflectionInfo) {
         if (pointcutType == null) {
             throw new IllegalArgumentException("pointcut type can not be null");
-        }
-        if (reflectionInfo == null) {
-            throw new IllegalArgumentException("reflection info can not be null");
         }
         m_pointcutType = pointcutType;
         m_matchingReflectionInfo = reflectionInfo;
@@ -78,7 +78,7 @@ public class ExpressionContext {
         } else if (reflectionInfo instanceof ClassInfo) {
             m_reflectionInfoType = CLASS_INFO;
         } else {
-            throw new RuntimeException("unknown meta data type: " + reflectionInfo.toString());
+            m_reflectionInfoType = NOTAVAILABLE_INFO;// used for early eval on CALL
         }
     }
 
@@ -88,10 +88,6 @@ public class ExpressionContext {
 
     public ReflectionInfo getWithinReflectionInfo() {
         return m_withinReflectionInfo;
-    }
-
-    public boolean hasAnyPointcut() {
-        return m_pointcutType.equals(PointcutType.ANY);
     }
 
     public boolean hasExecutionPointcut() {
@@ -118,10 +114,10 @@ public class ExpressionContext {
         return m_pointcutType.equals(PointcutType.STATIC_INITIALIZATION);
     }
 
-    public boolean hasAttributePointcut() {
-        return m_pointcutType.equals(PointcutType.ATTRIBUTE);
+    public boolean hasWithinPointcut() {
+        return m_pointcutType.equals(PointcutType.WITHIN);
     }
-
+//
 //    public boolean hasHasMethodPointcut() {
 //        return m_pointcutType.equals(PointcutType.HAS_METHOD);
 //    }
@@ -148,6 +144,10 @@ public class ExpressionContext {
 
     public boolean hasClassInfo() {
         return m_reflectionInfoType == CLASS_INFO;
+    }
+
+    public boolean hasReflectionInfo() {
+        return m_reflectionInfoType != NOTAVAILABLE_INFO;
     }
 
     public void setInCflowSubAST(final boolean inCflowAST) {
@@ -213,5 +213,9 @@ public class ExpressionContext {
         result = (29 * result) + ((m_withinReflectionInfo != null) ? m_withinReflectionInfo.hashCode() : 0);
         result = (29 * result) + m_reflectionInfoType;
         return result;
+    }
+
+    public PointcutType getPointcutType() {
+        return m_pointcutType;
     }
 }

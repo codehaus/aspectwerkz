@@ -177,4 +177,8 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
         }
         return result;
     }
+
+    public String toString() {
+        return m_member.toString();
+    }
 }

@@ -84,8 +84,9 @@ public class DumpVisitor implements ExpressionParserVisitor {
     public Object visit(ASTOr node, Object data) {
         System.out.println(indentString() + node);
         ++indent;
-        data = node.jjtGetChild(0).jjtAccept(this, data);
-        data = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            data = node.jjtGetChild(i).jjtAccept(this, data);
+        }
         --indent;
         return data;
     }
@@ -93,8 +94,9 @@ public class DumpVisitor implements ExpressionParserVisitor {
     public Object visit(ASTAnd node, Object data) {
         System.out.println(indentString() + node);
         ++indent;
-        data = node.jjtGetChild(0).jjtAccept(this, data);
-        data = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            data = node.jjtGetChild(i).jjtAccept(this, data);
+        }
         --indent;
         return data;
     }

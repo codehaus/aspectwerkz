@@ -393,4 +393,8 @@ public class JavaClassInfo implements ClassInfo {
     public int hashCode() {
         return m_class.getName().toString().hashCode();
     }
+
+    public String toString() {
+        return getName();
+    }
 }
