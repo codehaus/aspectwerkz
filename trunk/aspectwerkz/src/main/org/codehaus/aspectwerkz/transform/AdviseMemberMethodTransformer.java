@@ -793,7 +793,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      */
     private String methodFilter(final ClassMetaData classMetaData, final Method method) {
         String uuid = null;
-        if (method.isAbstract() ||
+        if (method.isAbstract() || method.isNative() ||
                 method.getName().equals("<init>") ||
                 method.getName().equals("<clinit>") ||
                 method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
