@@ -113,7 +113,7 @@ public class SystemLoader {
                 if (isChildOfOrEqual(tuple.getClassLoader(), loader)) {
                     try {
                         System.out.println("hotswap = " + tuple.getClassName());
-                        HotSwapClient.hotswap(tuple.getClassLoader().loadClass(tuple.getClassName()));
+                        // TODO - HotSwap is in extensions // HotSwapClient.hotswap(tuple.getClassLoader().loadClass(tuple.getClassName()));
                     } catch (Throwable t) {
                         System.err.println("<WARN> " + t.getMessage());
                     }
