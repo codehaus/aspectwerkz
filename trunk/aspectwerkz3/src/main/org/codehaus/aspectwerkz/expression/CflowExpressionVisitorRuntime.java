@@ -7,22 +7,22 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression;
 
-import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
-import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
-import org.codehaus.aspectwerkz.expression.ast.ASTOr;
-import org.codehaus.aspectwerkz.expression.ast.ASTExecution;
-import org.codehaus.aspectwerkz.expression.ast.ASTCall;
-import org.codehaus.aspectwerkz.expression.ast.ASTSet;
-import org.codehaus.aspectwerkz.expression.ast.ASTGet;
 import org.codehaus.aspectwerkz.expression.ast.ASTAnd;
-import org.codehaus.aspectwerkz.expression.ast.ASTNot;
-import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
-import org.codehaus.aspectwerkz.expression.ast.ASTHandler;
-import org.codehaus.aspectwerkz.expression.ast.ASTWithin;
-import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
-import org.codehaus.aspectwerkz.expression.ast.ASTStaticInitialization;
+import org.codehaus.aspectwerkz.expression.ast.ASTCall;
 import org.codehaus.aspectwerkz.expression.ast.ASTCflow;
 import org.codehaus.aspectwerkz.expression.ast.ASTCflowBelow;
+import org.codehaus.aspectwerkz.expression.ast.ASTExecution;
+import org.codehaus.aspectwerkz.expression.ast.ASTGet;
+import org.codehaus.aspectwerkz.expression.ast.ASTHandler;
+import org.codehaus.aspectwerkz.expression.ast.ASTNot;
+import org.codehaus.aspectwerkz.expression.ast.ASTOr;
+import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
+import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
+import org.codehaus.aspectwerkz.expression.ast.ASTSet;
+import org.codehaus.aspectwerkz.expression.ast.ASTStaticInitialization;
+import org.codehaus.aspectwerkz.expression.ast.ASTWithin;
+import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
+import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
 
 /**
  * The Cflow expression visitor used at runtime
@@ -32,7 +32,6 @@ import org.codehaus.aspectwerkz.expression.ast.ASTCflowBelow;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
-
     /**
      * Creates a new cflow runtime visitor.
      *
@@ -194,7 +193,6 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
         }
     }
 
-
     // --- Pattern matching is delegated to regular ExpressionVisitor thru the compositeContext.localContext
 
     /**
@@ -208,8 +206,7 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
         public boolean inCflowSubExpression = false;
 
         public ExpressionContext getLocalContext() {
-            return (localContext==null)?expressionContext:localContext;
+            return (localContext == null) ? expressionContext : localContext;
         }
     }
-
 }

@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
-
 import java.util.List;
 
 /**

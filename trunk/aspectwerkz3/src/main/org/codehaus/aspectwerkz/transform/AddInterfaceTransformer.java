@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.transform;
 
 import org.codehaus.aspectwerkz.definition.InterfaceIntroductionDefinition;
+import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -60,28 +61,51 @@ public final class AddInterfaceTransformer implements Transformer {
     private void addInterfaceIntroductions(final SystemDefinition definition, final CtClass cg, final Context context,
                                            final ExpressionContext ctx) {
         boolean isClassAdvised = false;
-        List introDefs = definition.getInterfaceIntroductions(ctx);
-        for (Iterator it = introDefs.iterator(); it.hasNext();) {
+        List interfaceIntroDefs = definition.getInterfaceIntroductionDefinitions(ctx);
+        for (Iterator it = interfaceIntroDefs.iterator(); it.hasNext();) {
             InterfaceIntroductionDefinition introductionDef = (InterfaceIntroductionDefinition)it.next();
             List interfaceClassNames = introductionDef.getInterfaceClassNames();
-            for (Iterator iit = interfaceClassNames.iterator(); iit.hasNext();) {
-                String className = (String)iit.next();
-                if (implementsInterface(cg, className)) {
-                    continue;
-                }
-                if (className != null) {
-                    try {
-                        cg.addInterface(cg.getClassPool().get(className));
-                    } catch (NotFoundException e) {
-                        throw new WrappedRuntimeException(e);
-                    }
-                    isClassAdvised = true;
-                }
+            if (addInterfaces(interfaceClassNames, cg)) {
+                isClassAdvised = true;
+            }
+        }
+        List introDefs = definition.getIntroductionDefinitions(ctx);
+        for (Iterator it = introDefs.iterator(); it.hasNext();) {
+            IntroductionDefinition introductionDef = (IntroductionDefinition)it.next();
+            List interfaceClassNames = introductionDef.getInterfaceClassNames();
+            if (addInterfaces(interfaceClassNames, cg)) {
+                isClassAdvised = true;
             }
         }
         if (isClassAdvised) {
             context.markAsAdvised();
         }
+    }
+
+    /**
+     * Adds the interfaces to the to target class.
+     *
+     * @param interfaceClassNames
+     * @param cg
+     * @return
+     */
+    private boolean addInterfaces(final List interfaceClassNames, final CtClass cg) {
+        boolean isClassAdvised = false;
+        for (Iterator it = interfaceClassNames.iterator(); it.hasNext();) {
+            String className = (String)it.next();
+            if (implementsInterface(cg, className)) {
+                continue;
+            }
+            if (className != null) {
+                try {
+                    cg.addInterface(cg.getClassPool().get(className));
+                } catch (NotFoundException e) {
+                    throw new WrappedRuntimeException(e);
+                }
+                isClassAdvised = true;
+            }
+        }
+        return isClassAdvised;
     }
 
     /**

@@ -16,15 +16,14 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
+import org.codehaus.aspectwerkz.expression.CflowExpressionVisitorRuntime;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
-import org.codehaus.aspectwerkz.expression.CflowExpressionVisitorRuntime;
-import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointMetaData;
-
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
 import java.util.List;

@@ -98,7 +98,8 @@ public class SystemDefinition {
      */
     public SystemDefinition(String uuid) {
         setUuid(uuid);
-        AspectDefinition systemAspect = new AspectDefinition(CFlowSystemAspect.CLASS_NAME, CFlowSystemAspect.CLASS_NAME, m_uuid);
+        AspectDefinition systemAspect = new AspectDefinition(CFlowSystemAspect.CLASS_NAME,
+                                                             CFlowSystemAspect.CLASS_NAME, m_uuid);
         systemAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
         synchronized (m_aspectMap) {
             m_aspectMap.put(CFlowSystemAspect.CLASS_NAME, systemAspect);
@@ -236,7 +237,7 @@ public class SystemDefinition {
      * @param ctx the expression context
      * @return the names
      */
-    public List getInterfaceIntroductions(final ExpressionContext ctx) {
+    public List getInterfaceIntroductionDefinitions(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
@@ -256,7 +257,7 @@ public class SystemDefinition {
         }
 
         // add the implementation introductions
-        interfaceIntroductionDefs.addAll(getIntroductionDefinitions(ctx));
+        //        interfaceIntroductionDefs.addAll(getIntroductionDefinitions(ctx));
         return interfaceIntroductionDefs;
     }
 

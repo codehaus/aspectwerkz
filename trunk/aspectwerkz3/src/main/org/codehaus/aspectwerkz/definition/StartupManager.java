@@ -244,7 +244,7 @@ public class StartupManager {
                     AspectDefinition cflowAspectDef = new AspectDefinition(CFlowSystemAspect.NAME,
                                                                            CFlowSystemAspect.CLASS_NAME,
                                                                            aspectManager.getUuid());
-                    
+
                     PointcutDefinition pointcutDef = new PointcutDefinition(expressionInfo.getExpressionAsString());
                     cflowAspectDef.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
                     cflowAspectDef.addPointcut(pointcutDef);

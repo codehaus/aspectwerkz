@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression;
 
+import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.expression.ast.ASTAnd;
 import org.codehaus.aspectwerkz.expression.ast.ASTCflow;
 import org.codehaus.aspectwerkz.expression.ast.ASTCflowBelow;
@@ -17,8 +18,6 @@ import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Set;
-
-import gnu.trove.TIntObjectHashMap;
 
 /**
  * The Cflow visitor.
@@ -50,7 +49,6 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
     public boolean hasCflowPointcut() {
         return m_hasCflowPointcut;
     }
-
 
     /**
      * Matches the cflow epression
@@ -112,7 +110,8 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
         ExpressionContext context = (ExpressionContext)data;
         context.setInCflowSubAST(true);
         Boolean result = (Boolean)node.jjtGetChild(0).jjtAccept(this, context);
-        if (context.getCflowEvaluation()==false) context.setCflowEvaluation(result.booleanValue());
+        if (context.getCflowEvaluation() == false)
+            context.setCflowEvaluation(result.booleanValue());
         context.setHasBeenVisitingCflow(true);
         context.setInCflowSubAST(false);
         return Boolean.valueOf(context.getCflowEvaluation());
@@ -122,7 +121,8 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
         ExpressionContext context = (ExpressionContext)data;
         context.setInCflowSubAST(true);
         Boolean result = (Boolean)node.jjtGetChild(0).jjtAccept(this, context);
-        if (context.getCflowEvaluation()==false) context.setCflowEvaluation(result.booleanValue());
+        if (context.getCflowEvaluation() == false)
+            context.setCflowEvaluation(result.booleanValue());
         context.setHasBeenVisitingCflow(true);
         context.setInCflowSubAST(false);
         return Boolean.valueOf(context.getCflowEvaluation());

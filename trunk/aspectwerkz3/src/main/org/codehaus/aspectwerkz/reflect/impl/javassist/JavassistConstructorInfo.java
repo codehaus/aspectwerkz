@@ -98,11 +98,14 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
         if (!(o instanceof MethodInfo)) {
             return false;
         }
-        MethodInfo methodInfo = (MethodInfo)o;
-        if (!m_member.getName().toString().equals(methodInfo.getName().toString())) {
+        MethodInfo constructorInfo = (MethodInfo)o;
+        if (!m_declaringType.getName().toString().equals(constructorInfo.getDeclaringType().getName().toString())) {
             return false;
         }
-        ClassInfo[] parameterTypes = methodInfo.getParameterTypes();
+        if (!m_member.getName().toString().equals(constructorInfo.getName().toString())) {
+            return false;
+        }
+        ClassInfo[] parameterTypes = constructorInfo.getParameterTypes();
         if (m_parameterTypes.length != parameterTypes.length) {
             return false;
         }
@@ -116,6 +119,7 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
 
     public int hashCode() {
         int result = 29;
+        result = (29 * result) + m_declaringType.getName().toString().hashCode();
         result = (29 * result) + m_member.getName().toString().hashCode();
         if (m_parameterTypes == null) {
             getParameterTypes();

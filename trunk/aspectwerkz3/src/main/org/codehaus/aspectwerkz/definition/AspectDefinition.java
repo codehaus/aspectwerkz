@@ -23,7 +23,6 @@ import java.util.Map;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AspectDefinition {
-
     /**
      * The name of the aspect.
      */
@@ -272,25 +271,6 @@ public class AspectDefinition {
     public Collection getPointcuts() {
         return m_pointcutDefs;
     }
-
-    /**
-     * Returns a specific pointcut.
-     *
-     * @param pointcutName the pointcut name
-     * @return the pointcut definition
-     */
-
-    //    public PointcutDefinition getPointcutDef(final String pointcutName) {
-    //        for (Iterator it = m_pointcutDefs.iterator(); it.hasNext();) {
-    //            PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
-    //
-    //            if (pointcutDef.getName().equals(pointcutName)) {
-    //                return pointcutDef;
-    //            }
-    //        }
-    //
-    //        return null;
-    //    }
 
     /**
      * Adds a new parameter to the advice.

@@ -34,7 +34,8 @@ class CatchClauseJoinPoint extends JoinPointBase {
      * @param afterAdviceExecutor
      */
     public CatchClauseJoinPoint(final Class targetClass, final Signature signature, final Rtti rtti,
-                                final JoinPointMetaData joinPointMetaData, final AroundAdviceExecutor aroundAdviceExecutor,
+                                final JoinPointMetaData joinPointMetaData,
+                                final AroundAdviceExecutor aroundAdviceExecutor,
                                 final BeforeAdviceExecutor beforeAdviceExecutor,
                                 final AfterAdviceExecutor afterAdviceExecutor) {
         super(JoinPointType.HANDLER, targetClass, joinPointMetaData, aroundAdviceExecutor, beforeAdviceExecutor,

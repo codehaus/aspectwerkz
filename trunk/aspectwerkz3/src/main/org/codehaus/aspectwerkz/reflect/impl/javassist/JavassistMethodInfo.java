@@ -128,6 +128,9 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
             return false;
         }
         MethodInfo methodInfo = (MethodInfo)o;
+        if (!m_declaringType.getName().toString().equals(methodInfo.getDeclaringType().getName().toString())) {
+            return false;
+        }
         if (!m_member.getName().toString().equals(methodInfo.getName().toString())) {
             return false;
         }
@@ -145,6 +148,7 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
 
     public int hashCode() {
         int result = 29;
+        result = (29 * result) + m_declaringType.getName().toString().hashCode();
         result = (29 * result) + m_member.getName().toString().hashCode();
         if (m_parameterTypes == null) {
             getParameterTypes();
