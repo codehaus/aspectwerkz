@@ -21,10 +21,13 @@ package org.codehaus.aspectwerkz.joinpoint;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
-import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Aspect;
+import org.codehaus.aspectwerkz.Type;
+import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.definition.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
 
 /**
@@ -33,14 +36,14 @@ import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
  * and method etc. Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberFieldSetJoinPoint.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: MemberFieldSetJoinPoint.java,v 1.3 2003-06-09 08:24:49 jboner Exp $
  */
 public class MemberFieldSetJoinPoint extends FieldJoinPoint {
 
     /**
      * A reference to the target object.
      */
-    protected final Object m_targetObject;
+    protected Object m_targetObject;
 
     /**
      * The serial version uid for the class.
@@ -127,5 +130,16 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
                 m_initialized = true;
             }
         }
+    }
+
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws java.lang.Exception in case of failure
+     */
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
+        m_targetObject = fields.get("m_targetObject", null);
     }
 }

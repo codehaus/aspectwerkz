@@ -32,7 +32,7 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
  * Stores the advices for the specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractPointcut.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: AbstractPointcut.java,v 1.3 2003-06-09 08:24:49 jboner Exp $
  */
 public abstract class AbstractPointcut implements Pointcut {
 
@@ -62,11 +62,6 @@ public abstract class AbstractPointcut implements Pointcut {
     protected final String m_uuid;
 
     /**
-     * The AspectWerkz system for this pointcut.
-     */
-    protected final AspectWerkz m_system;
-
-    /**
      * Creates a new pointcut.
      *
      * @param uuid the UUID for the AspectWerkz system
@@ -88,7 +83,6 @@ public abstract class AbstractPointcut implements Pointcut {
                             final boolean isThreadSafe) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (name == null || name.trim().length() == 0) throw new IllegalArgumentException("name of pointcut can not be null or an empty string");
-        m_system = AspectWerkz.getSystem(uuid);
         m_uuid = uuid;
         m_name = name;
         m_isThreadSafe = isThreadSafe;
@@ -114,7 +108,8 @@ public abstract class AbstractPointcut implements Pointcut {
                 // update the indexes
                 m_indexes = new int[m_names.length];
                 for (int i = 0, j = m_names.length; i < j; i++) {
-                    m_indexes[i] = m_system.getAdviceIndexFor(m_names[i]);
+                    m_indexes[i] = AspectWerkz.getSystem(m_uuid).
+                            getAdviceIndexFor(m_names[i]);
                 }
             }
         }
@@ -144,7 +139,8 @@ public abstract class AbstractPointcut implements Pointcut {
 
                 m_indexes = new int[m_names.length];
                 for (int j = 0; j < m_names.length; j++) {
-                    m_indexes[j] = m_system.getAdviceIndexFor(m_names[j]);
+                    m_indexes[j] = AspectWerkz.getSystem(m_uuid).
+                            getAdviceIndexFor(m_names[j]);
                 }
             }
         }

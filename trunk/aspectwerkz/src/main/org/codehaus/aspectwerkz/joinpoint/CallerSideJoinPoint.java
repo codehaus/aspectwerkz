@@ -23,6 +23,7 @@ import java.util.StringTokenizer;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.io.ObjectInputStream;
 
 import org.apache.bcel.generic.Type;
 
@@ -41,14 +42,14 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * @todo if a parameter type or return type is an array => always returned as Object[] (fix bug in TransformationUtil.convertBcelTypeToClass(Type)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSideJoinPoint.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: CallerSideJoinPoint.java,v 1.5 2003-06-09 08:24:49 jboner Exp $
  */
 public class CallerSideJoinPoint implements JoinPoint {
 
     /**
      * The AspectWerkz system for this join point.
      */
-    private final AspectWerkz m_system;
+    private transient AspectWerkz m_system;
 
     /**
      * The serial version uid for the class.
@@ -59,7 +60,7 @@ public class CallerSideJoinPoint implements JoinPoint {
     /**
      * A reference to the caller class.
      */
-    protected final Class m_targetClass;
+    protected Class m_targetClass;
 
     /**
      * The caller method.
@@ -69,17 +70,17 @@ public class CallerSideJoinPoint implements JoinPoint {
     /**
      * The name of the callee method.
      */
-    protected final String m_calleeMethodName;
+    protected String m_calleeMethodName;
 
     /**
      * The name of the callee class.
      */
-    protected final String m_calleeClassName;
+    protected String m_calleeClassName;
 
     /**
      * The signature for the callee method.
      */
-    protected final String m_calleeMethodSignature;
+    protected String m_calleeMethodSignature;
 
     /**
      * The callee method parameter types.
@@ -104,12 +105,12 @@ public class CallerSideJoinPoint implements JoinPoint {
     /**
      * The name of the caller method.
      */
-    protected final String m_callerMethodName;
+    protected String m_callerMethodName;
 
     /**
      * The signature for the caller method.
      */
-    protected final String m_callerMethodSignature;
+    protected String m_callerMethodSignature;
 
     /**
      * The caller method parameter types.
@@ -154,7 +155,7 @@ public class CallerSideJoinPoint implements JoinPoint {
     /**
      * The UUID for the AspectWerkz system to use.
      */
-    protected final String m_uuid;
+    protected String m_uuid;
 
     /**
      * Creates a new CallerSideJoinPoint object.
@@ -544,5 +545,42 @@ public class CallerSideJoinPoint implements JoinPoint {
         cause.append(getCalleeMethodName());
         cause.append(" are not correctly mapped");
         return cause.toString();
+    }
+
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws java.lang.Exception in case of failure
+     */
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
+
+        m_uuid = (String)fields.get("m_uuid", null);
+        m_targetClass = (Class)fields.get("m_targetClass", null);
+
+        m_callerMethod = (Method)fields.get("m_callerMethod", null);
+        m_callerMethodName = (String)fields.get("m_callerMethodName", null);
+        m_callerMethodSignature = (String)fields.get("m_callerMethodSignature", null);
+        m_callerMethodParameterTypes = (Class[])fields.get("m_callerMethodParameterTypes", null);
+        m_callerMethodParameterTypeNames = (String[])fields.get("m_callerMethodParameterTypeNames", null);
+        m_callerMethodReturnType = (Class)fields.get("m_callerMethodReturnType", null);
+        m_callerMethodReturnTypeName = (String)fields.get("m_callerMethodReturnTypeName", null);
+
+        m_calleeMethodName = (String)fields.get("m_calleeMethodName", null);
+        m_calleeMethodSignature = (String)fields.get("m_calleeMethodSignature", null);
+        m_calleeClassName = (String)fields.get("m_calleeClassName", null);
+        m_calleeMethodParameterTypes = (Class[])fields.get("m_calleeMethodParameterTypes", null);
+        m_calleeMethodParameterTypeNames = (String[])fields.get("m_calleeMethodParameterTypeNames", null);
+        m_calleeMethodReturnType = (Class)fields.get("m_calleeMethodReturnType", null);
+        m_calleeMethodReturnTypeName = (String)fields.get("m_calleeMethodReturnTypeName", null);
+
+        m_preAdvices = (int[])fields.get("m_preAdvices", null);
+        m_postAdvices = (int[])fields.get("m_postAdvices", null);
+        m_metadata = (MethodMetaData)fields.get("m_metadata", null);
+        m_initialized = fields.get("m_initialized", false);
+
+        m_system = AspectWerkz.getSystem(m_uuid);
+        m_system.initialize();
     }
 }
