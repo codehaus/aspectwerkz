@@ -29,7 +29,7 @@ public class ArgLoggingTarget {
     }
 
     /**
-     * @Annotation
+     * @examples.annotation.Annotation
      */
     public int toLog_1(int typeMatch, String s, int i) {
         System.out.println("toLog_1");
