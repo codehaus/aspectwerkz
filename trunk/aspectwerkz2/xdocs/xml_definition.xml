@@ -118,12 +118,12 @@
                 Example of some <code>pointcut</code> definitions:
                     <source><![CDATA[
 <aspect ...>
-    <pointcut name="pc1" pattern="execution(* foo.Bar.method(..))"/>
-    <pointcut name="pc2" pattern="set(* foo.Bar.m_field)"/>
-    <pointcut name="pc3" pattern="get(* foo.Bar.m_field)"/>
-    <pointcut name="pc4" pattern="handler(java.lang.Exception)"/>
-    <pointcut name="pc5" pattern="call(foo.Caller->String foo.Callee.method())"/>
-    <pointcut name="pc6" pattern="cflow(* Transaction.begin(..))"/>
+    <pointcut name="pc1" expression="execution(* foo.Bar.method(..))"/>
+    <pointcut name="pc2" expression="set(* foo.Bar.m_field)"/>
+    <pointcut name="pc3" expression="get(* foo.Bar.m_field)"/>
+    <pointcut name="pc4" expression="handler(java.lang.Exception)"/>
+    <pointcut name="pc5" expression="call(foo.Caller->String foo.Callee.method())"/>
+    <pointcut name="pc6" expression="cflow(* Transaction.begin(..))"/>
     ...
 </aspect>
                     ]]></source>
@@ -284,10 +284,10 @@
                 <param name="timeout" value="10"/>
 
                 <pointcut name="callee"
-                          pattern="execution(int examples.caching.Pi.getPiDecimal(int))"/>
+                          expression="execution(int examples.caching.Pi.getPiDecimal(int))"/>
 
                 <pointcut name="caller"
-                          pattern="call(examples.caching.*->int examples.caching.Pi.getPiDecimal(int))"/>
+                          expression="call(examples.caching.*->int examples.caching.Pi.getPiDecimal(int))"/>
 
                 <advice name="invocationCounter"
                         type="before"
