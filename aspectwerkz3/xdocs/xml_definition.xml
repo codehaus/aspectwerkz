@@ -121,6 +121,8 @@
                     <li>
                         <code>expression</code> - specifies the expression for the pointcut. This is the
                         pattern that picks out the join points that should be included in the pointcut.
+                        This attribute is "optional". If not specified, the <code>&lt;pointcut&gt;</code> element <b>must</b>
+                        have the expression in its body.
                         <p>
                             See the
                             <a href="definition_issues.html#Join point selection pattern language">Join point selection pattern language</a>
@@ -149,6 +151,12 @@
     <pointcut name="pcArg1(String s)" expression="execution(* foo.Bar.method(..)) AND args(s, ..)"/>
     <pointcut name="pcArg1Same(String s)" expression="pc1 AND args(s, ..)"/>
     <pointcut name="pcArg1Other(com.Foo foo, String[] s)" expression="execution(* foo.Bar.method(..)) AND args(foo, int, .., s)"/>
+
+    <!-- use element body instead -->
+    <pointcut name="pcMultiLine">
+        execution(int com.Do.foo(..))
+        OR execution(int come.Done.bar(..))
+    </pointcut>
 </aspect>
                 ]]></source>
             </p>
@@ -407,6 +415,14 @@
             <source><![CDATA[
 <aspectwerkz>
     <system id="sample">
+
+        <pointcut name="systemWide" expression="execution(int com.Do.foo(..))"/>
+
+        <pointcut name="mutliLine">
+            call(int com.Do.foo(..))
+            AND within(com.ToDO)
+        </pointcut>
+
         <package name="examples">
 
             <aspect class="caching.CachingAspect" deployment-model="perInstance">
