@@ -13,6 +13,7 @@
 #include <jni.h>
 #include <jvmdi.h>
 #include <string.h>
+#include "org_codehaus_aspectwerkz_extension_hotswap_HotSwapClient.h"
 //#include <jvmdi.hpp>
 
 // global jvmpi interface pointer
@@ -224,6 +225,75 @@ JNIEXPORT jint JNICALL JVM_OnLoad(JavaVM *jvm, char *options, void *reserved) {
 	fflush(stderr);
 
 	return JNI_OK;
+}
+}
+
+
+/**
+ * In process HotSwap
+ */
+extern "C" {
+JNIEXPORT jint JNICALL Java_org_codehaus_aspectwerkz_extension_hotswap_HotSwapClient_hotswap(JNIEnv *env, jclass jclient, jstring jclassName, jclass joriginalClass, jbyteArray jnewBytes, jint jnewLength) {
+
+	//*********************************************************************
+	// debug - Java 2 C allocations
+	//const char *className = env->GetStringUTFChars(jclassName, 0);
+	//fprintf(stdout, "AspectWerkz> client called for %s\n", className);
+
+	//*********************************************************************
+	// prepare the JVMDI
+	JavaVM *jvm;
+	jint res = env->GetJavaVM(&jvm);
+	if (res < 0) {
+		fprintf(stderr, "AspectWerkz> JVM prepare failed [code %d %d]\n", res, JVMDI_ERROR_ACCESS_DENIED);
+		return JNI_ERR;
+	}	
+	
+	JVMDI_Interface_1 *jvmdi;
+	res = jvm->GetEnv((void**)&jvmdi, JVMDI_VERSION_1);
+	if (res < 0) {
+		fprintf(stderr, "AspectWerkz> JVMDI prepare failed [code %d %d]\n", res, JVMDI_ERROR_ACCESS_DENIED);
+		return JNI_ERR;
+	}
+	// debug - prints the JVMDI version
+	//jint version;
+	//jvmdiError err = jvmdi->GetVersionNumber(&version);
+	//fprintf(stderr, "JVMDI> %d\n", version);
+
+	// check for HotSwap capabilities without schema change
+	JVMDI_capabilities capabilities;
+	jvmdi->GetCapabilities(&capabilities);
+	if (capabilities.can_redefine_classes != 1) {
+		fprintf(stderr, "AspectWerkz> HotSwap not supported by JVM\n");
+		return JNI_ERR;
+	}
+	
+	//*********************************************************************
+	// prepare the HotSwap
+	JVMDI_class_definition target;
+	target.clazz = joriginalClass;
+	target.class_byte_count = jnewLength;
+	target.class_bytes = env->GetByteArrayElements(jnewBytes, JNI_FALSE);
+
+	//*********************************************************************
+	// do the HotSwap
+	jvmdiError err = jvmdi->RedefineClasses(1, &target);
+	if (err == JVMDI_ERROR_NONE) {
+		//fprintf(stdout, "AspectWerkz> ..... done.\n");
+	} else {
+		fprintf(stderr, "AspectWerkz> HotSwap failed [code %d]\n", err);
+		return JNI_ERR;
+	}
+	
+	//fflush(stdout);
+	fflush(stderr);
+
+	//*********************************************************************
+	// Java 2 C de-allocations - TODO mem leak on failure
+	//env->ReleaseStringUTFChars(jclassName, className);
+
+	return JNI_OK;
+
 }
 }
 
