@@ -254,7 +254,7 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                 <p>
                 You can also define just one single anonymous value for the annotation. This value will then
                 be set by the framework through the method called
-                    <code>void setValue(<type> value)</code>.
+                    <code>void setValue(&lt;type&gt; value)</code>.
                 So in order for this to work the parameter must be a
                     supported type (see previous section). Add the method to the proxy class.
                 This maps to the Java 1.5
