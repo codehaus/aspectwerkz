@@ -25,11 +25,13 @@ import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
+import org.objectweb.asm.Type;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collection;
+import java.lang.reflect.Method;
 
 /**
  * Manages the join point compilation, loading and instantiation for the target classes.
@@ -307,11 +309,14 @@ public class JoinPointManager {
                 if (TransformationConstants.INIT_METHOD_NAME.equals(callerMethodName)) {
                     withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(callerMethodDesc));
                 } else {
-                    withinInfo = callerClassInfo.getMethod(AsmHelper.calculateMethodHash(callerMethodName, callerMethodDesc));
+                    withinInfo =
+                    callerClassInfo.getMethod(AsmHelper.calculateMethodHash(callerMethodName, callerMethodDesc));
                 }
         }
 
-        AdviceInfoStruct adviceInfos = getAdviceInfosForJoinPoint(callerClass.getClassLoader(), pointcutType, reflectionInfo, withinInfo);
+        AdviceInfoStruct adviceInfos = getAdviceInfosForJoinPoint(
+                callerClass.getClassLoader(), pointcutType, reflectionInfo, withinInfo
+        );
 
         Class clazz = JoinPointCompiler.loadJoinPoint(
                 joinPointClassName,
@@ -342,9 +347,9 @@ public class JoinPointManager {
      * @param withinInfo
      */
     public static AdviceInfoStruct getAdviceInfosForJoinPoint(final ClassLoader loader,
-                                                                final PointcutType type,
-                                                                final ReflectionInfo reflectInfo,
-                                                                final ReflectionInfo withinInfo) {
+                                                              final PointcutType type,
+                                                              final ReflectionInfo reflectInfo,
+                                                              final ReflectionInfo withinInfo) {
 
         // FIXME XXX handle cflow
 
@@ -370,13 +375,22 @@ public class JoinPointManager {
                         adviceDefinition.getExpressionInfo().getArgsIndexMapper().match(exprCtx);
 
                         // create a lightweight representation of the bounded advices to pass to the compiler
-                        AdviceInfo info = new AdviceInfo(aspectDefinition.getQualifiedName(),
-                                                         aspectDefinition.getClassName(),
-                                                         DeploymentModel.getDeploymentModelAsInt(aspectDefinition.getDeploymentModel()),
-                                                         adviceDefinition.getMethod(),
-                                                         adviceDefinition.getType(),
-                                                         adviceDefinition.getSpecialArgumentType(),
-                                                         adviceDefinition.getName()
+                        final Method adviceMethod = adviceDefinition.getMethod();
+                        Class[] argumentTypes = adviceMethod.getParameterTypes();
+                        String[] argumentTypesAsStrings = new String[argumentTypes.length];
+                        for (int i = 0; i < argumentTypes.length; i++) {
+                            argumentTypesAsStrings[i] = argumentTypes[i].getName();
+                        }
+                        AdviceInfo info = new AdviceInfo(
+                                aspectDefinition.getQualifiedName(),
+                                aspectDefinition.getClassName(),
+                                DeploymentModel.getDeploymentModelAsInt(aspectDefinition.getDeploymentModel()),
+                                adviceMethod.getName(),
+                                Type.getMethodDescriptor(adviceMethod),
+                                argumentTypesAsStrings,
+                                adviceDefinition.getType(),
+                                adviceDefinition.getSpecialArgumentType(),
+                                adviceDefinition.getName()
                         );
 
                         setMethodArgumentIndexes(adviceDefinition.getExpressionInfo(), exprCtx, info);
