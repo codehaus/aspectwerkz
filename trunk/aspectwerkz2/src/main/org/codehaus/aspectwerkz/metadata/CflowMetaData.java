@@ -8,14 +8,12 @@
 package org.codehaus.aspectwerkz.metadata;
 
 /**
- * @TODO: RENAME to CflowMetaData\
- *
- * Holds a tuple that consists of the class meta-data A the meta-data for a specific method. 
+ * Holds a tuple that consists of the class meta-data A the meta-data for a specific method.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class ClassNameMethodMetaDataTuple {
+public class CflowMetaData {
 
     /**
      * The class name.
@@ -33,21 +31,17 @@ public class ClassNameMethodMetaDataTuple {
     private final MethodMetaData m_methodMetaData;
 
     /**
-     * Creates a new ClassNameMethodMetaDataTuple.
+     * Creates a new instance.
      *
      * @param className the class metaData
      * @param metaData  the method meta-data ALEX RM
      */
-    public ClassNameMethodMetaDataTuple(
-            final String className,
-            final MethodMetaData metaData) {
+    public CflowMetaData(final String className, final MethodMetaData metaData) {
         m_className = className;
         m_methodMetaData = metaData;
     }
 
-    public ClassNameMethodMetaDataTuple(
-            final ClassMetaData classMetaData,
-            final MethodMetaData metaData) {
+    public CflowMetaData(final ClassMetaData classMetaData, final MethodMetaData metaData) {
         m_className = classMetaData.getName();
         m_classMetaData = classMetaData;
         m_methodMetaData = metaData;
@@ -109,10 +103,10 @@ public class ClassNameMethodMetaDataTuple {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof ClassNameMethodMetaDataTuple)) {
+        if (!(o instanceof CflowMetaData)) {
             return false;
         }
-        final ClassNameMethodMetaDataTuple obj = (ClassNameMethodMetaDataTuple)o;
+        final CflowMetaData obj = (CflowMetaData)o;
         return areEqualsOrBothNull(obj.m_className, this.m_className)
                && areEqualsOrBothNull(obj.m_methodMetaData, this.m_methodMetaData);
     }
