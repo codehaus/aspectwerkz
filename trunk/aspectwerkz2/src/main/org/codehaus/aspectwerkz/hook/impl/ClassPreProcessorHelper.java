@@ -26,7 +26,7 @@ public class ClassPreProcessorHelper {
     /**
      * ClassPreProcessor used if aspectwerkz.classloader.preprocessor property is defined to full qualified class name
      */
-    public static ClassPreProcessor preProcessor;
+    private static ClassPreProcessor preProcessor;
 
     /**
      * true if preProcesor already initalized

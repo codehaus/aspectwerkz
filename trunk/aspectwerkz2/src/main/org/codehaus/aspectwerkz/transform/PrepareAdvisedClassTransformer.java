@@ -59,9 +59,11 @@ public class PrepareAdvisedClassTransformer implements Transformer {
 
             if ( ! MetaDataInspector.hasField(classMetaData, TransformationUtil.STATIC_CLASS_FIELD)) {
                 addStaticClassField(ctClass);
+                context.markAsAdvised();
             }
             if ( ! MetaDataInspector.hasField(classMetaData, TransformationUtil.JOIN_POINT_MANAGER_FIELD)) {
                 addJoinPointManagerField(ctClass, definition);
+                context.markAsAdvised();
             }
         }
     }

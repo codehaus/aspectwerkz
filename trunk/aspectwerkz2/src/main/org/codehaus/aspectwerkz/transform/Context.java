@@ -114,6 +114,9 @@ public class Context {
         m_prepared = true;
     }
 
+    public void resetAdvised() {
+        m_advised = false;
+    }
     /**
      * Checks if the class being transformed has beed advised.
      *

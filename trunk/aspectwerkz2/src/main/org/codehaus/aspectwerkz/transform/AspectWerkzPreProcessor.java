@@ -7,19 +7,19 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
-
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.metadata.MetaDataMaker;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Hashtable;
+import java.util.WeakHashMap;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * AspectWerkzPreProcessor is the entry point of the AspectWerkz layer 2.
@@ -82,7 +82,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     /**
-     * Bytecode cache.
+     * Bytecode cache for prepared class and runtime weaving.
+     * TODO: allow for other cache implementation (file, jms)
      */
     private static Map m_classByteCache = new HashMap();
 
@@ -142,7 +143,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     /**
-     * Transform bytecode going thru the interface transformation first.
+     * Transform bytecode according to the transformer stack
      *
      * @param className class name
      * @param bytecode  bytecode to transform
@@ -157,7 +158,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             log(loader.toString() + ':' + className + '[' + Thread.currentThread().getName() + ']');
         }
 
-        // prepare BCEL ClassGen
+        // prepare Klass wrapper
+        // TODO lightweight since BCEL not used anymore
         Klass klass = null;
         try {
             klass = new Klass(className, bytecode, loader);
@@ -173,8 +175,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (DUMP_BEFORE) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
-                    //TODO: dump before make CtClass frozen in Javassist
                     klass.getCtClass().getClassPool().writeFile(className, "_dump/before/");
+                    klass.getCtClass().defrost();
                 }
                 catch (Exception e) {
                     log("failed to dump " + className);
@@ -187,38 +189,32 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         final Context context = new Context(loader);
         context.setMetaDataRepository(m_metaDataRepository);
 
+        boolean advisedAtLeastOnce = false;
         for (Iterator it = m_stack.iterator(); it.hasNext();) {
             Object transformer = it.next();
 
-            // if VERBOSE keep a copy of initial bytecode before transfo
-            byte[] bytecodeBeforeLocalTransformation = null;
-            if (VERBOSE) {
-                bytecodeBeforeLocalTransformation = new byte[klass.getBytecode().length];
-                System.arraycopy(
-                        klass.getBytecode(), 0,
-                        bytecodeBeforeLocalTransformation, 0,
-                        klass.getBytecode().length
-                );
-            }
-
             if (transformer instanceof Transformer) {
                 Transformer tf = (Transformer)transformer;
+                context.resetAdvised();
                 try {
                     tf.transform(context, klass);
                 }
                 catch (Exception e) {
                     e.printStackTrace();
                 }
+                if (context.isAdvised()) {
+                    advisedAtLeastOnce = true;
+                }
 
                 // if VERBOSE confirm modification
-                if (VERBOSE && !java.util.Arrays.equals(klass.getBytecode(), bytecodeBeforeLocalTransformation)) {
-                    log(className + " <- " + transformer.getClass().getName());
+                if (VERBOSE && context.isAdvised()) {
+                    log(" " + className + " <- " + transformer.getClass().getName());
                 }
             }
         }
 
         // handle the serial ver uid only if class was advised
-        if (context.isAdvised()) {
+        if (advisedAtLeastOnce) {
             try {
                 m_addSerialVerUidTransformer.transform(context, klass);
             }
@@ -227,10 +223,10 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             }
         }
 
-        // handle the prepared Class cache
+        // handle the prepared Class cache for further runtime weaving
         if (context.isPrepared()) {
             ClassCacheTuple key = new ClassCacheTuple(loader, className);
-            System.out.println("cache prepared " + className);
+            log("cache prepared " + className);
             m_classByteCache.put(key, new ByteArray(klass.getBytecode()));
         }
 
@@ -283,132 +279,35 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 //    }
 
     /**
-     * TODO runtime weaving
+     * Runtime weaving of given Class according to the actual definition
      *
      * @param klazz
-     * @return
+     * @return new bytes for Class representation
      * @throws Throwable
      */
     public byte[] preProcessActivate(final Class klazz) throws Throwable {
         String className = klazz.getName();
         ClassLoader loader = klazz.getClassLoader();
+
+        // fetch class from prepared class cache
         ClassCacheTuple key = new ClassCacheTuple(klazz);
-        ByteArray bytesO = (ByteArray)m_classByteCache.get(key);
-        if (bytesO == null) {
+        ByteArray currentBytesArray = (ByteArray)m_classByteCache.get(key);
+        if (currentBytesArray == null) {
             log("CANNOT FIND CACHED " + className);
             throw new RuntimeException("CANNOT FIND CACHED " + className);
         }
 
-        // flush Metadata
+        // flush Metadata cache
+        // so that new weaving is aware of wrapper method existence
         MetaDataMaker.invalidateClassMetaData(klazz.getName());
-        // transform
-        //TODO : prepareAdviseclass and PrepareTF are useless here
-        //? reimpl thru Activator marker interface or assume
-        //correct checks in TF as required for multi weaving
-        byte[] newBytes = preProcess(klazz.getName(), bytesO.getBytes(), klazz.getClassLoader());
+
+        // transform as if multi weaving
+        byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz.getClassLoader());
 
         // update cache
-        //TODO: since marked as prepare and PrepareTF match, class is already updated
-        // as an obersver of the TF
-        System.out.println("cache update " + className);
+        log("cache update " + className);
         m_classByteCache.put(key, new ByteArray(newBytes));
 
-        if (true) return newBytes;
-
-        //TODO remove below ALEX
-
-        // create a new transformation context
-        final Context context = new Context(loader);
-        context.setMetaDataRepository(m_metaDataRepository);
-        //byte[] bytecode = context.getClassPool().get(className).toBytecode();
-        byte[] bytecode = bytesO.getBytes();
-
-        if (!m_initialized || (filter(className) && !NOFILTER)) {
-            return bytecode;
-        }
-
-        if (VERBOSE) {
-            log(loader.toString() + ':' + className + '[' + Thread.currentThread().getName() + ']');
-        }
-
-        // prepare BCEL ClassGen
-        Klass klass = null;
-        try {
-            klass = new Klass(className, bytecode, loader);
-        }
-        catch (Exception e) {
-            log("failed " + className);
-            e.printStackTrace();
-            return bytecode;
-        }
-
-        // dump before (not compliant with multiple CL weaving same class differently,
-        // since based on class FQN name)
-        if (DUMP_BEFORE) {
-            if (DUMP_PATTERN.matches(className)) {
-                try {
-                    klass.getCtClass().getClassPool().writeFile(className, "_dump2/before/");
-                }
-                catch (Exception e) {
-                    log("failed to dump " + className);
-                    e.printStackTrace();
-                }
-            }
-        }
-
-//        // rebuild from scratch if no bytecode cache
-//        for (Iterator it = m_stack.iterator(); it.hasNext();) {
-//            Object transformer = it.next();
-//            Transformer tf = (Transformer)transformer;
-//            try {
-//                tf.transform(context, klass);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-
-        for (Iterator it = m_stack.iterator(); it.hasNext();) {
-            Object transformer = it.next();
-            // if VERBOSE keep a copy of initial bytecode before transfo
-            byte[] bytecodeBeforeLocalTransformation = null;
-            if (VERBOSE) {
-                bytecodeBeforeLocalTransformation = new byte[klass.getBytecode().length];
-                System.arraycopy(
-                        klass.getBytecode(), 0,
-                        bytecodeBeforeLocalTransformation, 0,
-                        klass.getBytecode().length
-                );
-            }
-
-            if (transformer instanceof Activator) {
-                Activator tf = (Activator)transformer;
-                try {
-                    tf.activate(context, klass);
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                // if VERBOSE confirm modification
-                if (VERBOSE && !java.util.Arrays.equals(klass.getBytecode(), bytecodeBeforeLocalTransformation)) {
-                    log(className + " <- " + transformer.getClass().getName());
-                }
-            }
-        }
-
-        // dump after (not compliant with multiple CL weaving same class differently,
-        // since based on class FQN name)
-        if (DUMP_AFTER) {
-            if (DUMP_PATTERN.matches(className)) {
-                try {
-                    klass.getCtClass().getClassPool().writeFile(className, "_dump2/" + (DUMP_BEFORE ? "after/" : ""));
-                }
-                catch (Exception e) {
-                    log("failed to dump " + className);
-                    e.printStackTrace();
-                }
-            }
-        }
-        return klass.getBytecode();
+        return newBytes;
     }
 }
