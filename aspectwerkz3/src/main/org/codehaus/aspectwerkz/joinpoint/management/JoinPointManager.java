@@ -302,7 +302,7 @@ public class JoinPointManager {
 
         ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(callerClass);
         ReflectionInfo withinInfo = null;
-        // FIXME: refactor getMethod in INFO so that we can apply it on "<init>" and that it delegates to ctor
+        // FIXME: refactor getMethodInfo in INFO so that we can apply it on "<init>" and that it delegates to ctor
         // instead of checking things here.
         switch (joinPointType) {
             case JoinPointType.CONSTRUCTOR_EXECUTION:
@@ -384,14 +384,14 @@ public class JoinPointManager {
                         adviceDefinition.getExpressionInfo().getArgsIndexMapper().match(exprCtx);
 
                         // create a lightweight representation of the bounded advices to pass to the compiler
-                        final MethodInfo adviceMethod = adviceDefinition.getMethod();
+                        final MethodInfo adviceMethodInfo = adviceDefinition.getMethodInfo();
                         AdviceInfo info = new AdviceInfo(
                                 aspectDefinition.getQualifiedName(),
                                 aspectDefinition.getClassName(),
                                 DeploymentModel.getDeploymentModelAsInt(aspectDefinition.getDeploymentModel()),
-                                adviceMethod.getName(),
-                                AsmHelper.getMethodDescriptor(adviceMethod),
-                                AsmHelper.getArgumentTypes(adviceMethod),
+                                adviceMethodInfo.getName(),
+                                AsmHelper.getMethodDescriptor(adviceMethodInfo),
+                                AsmHelper.getArgumentTypes(adviceMethodInfo),
                                 adviceDefinition.getType(),
                                 adviceDefinition.getSpecialArgumentType(),
                                 adviceDefinition.getName()

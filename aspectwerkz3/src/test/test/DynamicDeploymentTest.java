@@ -59,7 +59,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 //        assertEquals("before1 invocation after1 ", m_logString);
 //        MethodInfo methodMetaData = null;
 //        try {
-//            methodMetaData = JavaMethodInfo.getMethodInfo(getClass().getMethod(
+//            methodMetaData = JavaMethodInfo.getMethodInfo(getClass().getMethodInfo(
 //                "addAdviceTestMethod",
 //                new Class[] {}));
 //        } catch (NoSuchMethodException e) {
@@ -84,7 +84,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 //        assertEquals("before1 before2 invocation after2 after1 ", m_logString);
 //        MethodInfo methodMetaData = null;
 //        try {
-//            methodMetaData = JavaMethodInfo.getMethodInfo(getClass().getMethod(
+//            methodMetaData = JavaMethodInfo.getMethodInfo(getClass().getMethodInfo(
 //                "removeAdviceTestMethod",
 //                new Class[] {}));
 //        } catch (NoSuchMethodException e) {
@@ -130,7 +130,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 //                    .getPointcutManager(NEW_ASPECT_NAME).getName());
 //            MethodInfo methodMetaData = null;
 //            try {
-//                methodMetaData = JavaMethodInfo.getMethodInfo(getClass().getMethod(
+//                methodMetaData = JavaMethodInfo.getMethodInfo(getClass().getMethodInfo(
 //                    "createAspectTestMethod",
 //                    new Class[] {}));
 //            } catch (NoSuchMethodException e) {
