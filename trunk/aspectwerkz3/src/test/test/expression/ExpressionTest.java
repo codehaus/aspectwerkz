@@ -672,7 +672,7 @@ public class ExpressionTest extends TestCase {
     }
 
     // ============ class attribute test =============
-    public void testClassAttribute() throws Exception {
+    public void testClassAttribute1() throws Exception {
         assertTrue(new ExpressionInfo("within(test.expression.Target)", NAMESPACE).getExpression().match(
             new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType)));
         assertTrue(new ExpressionInfo("within(@Serializable test.expression.Target)", NAMESPACE).getExpression().match(
@@ -681,6 +681,15 @@ public class ExpressionTest extends TestCase {
                 .getExpression().match(new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType)));
         assertFalse(new ExpressionInfo("within(@Serializable @Dummy test.expression.Target)", NAMESPACE)
                 .getExpression().match(new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType)));
+    }
+
+    // Tests: http://jira.codehaus.org/browse/AW-223
+    public void testClassAttribute2() throws Exception {
+        MethodInfo method = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers1", new Class[] {}));
+        assertTrue(new ExpressionInfo("execution(void test.expression.*.*(..)) AND within(@Serializable *..*)", NAMESPACE).getExpression().match(
+            new ExpressionContext(PointcutType.EXECUTION, method, s_declaringType)));
+        assertFalse(new ExpressionInfo("execution(void test.expression.*.*(..)) AND within(@FakeAnnotation *..*)", NAMESPACE).getExpression().match(
+            new ExpressionContext(PointcutType.EXECUTION, method, s_declaringType)));
     }
 
     // ============ pointcut type tests =============
