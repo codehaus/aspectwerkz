@@ -90,7 +90,7 @@
     <!-- ============================================================== -->
     <!-- compilation targets -->
     <!-- ============================================================== -->
-    <target name="aspectwerkz:compile" depends="aspectwerkz:init">
+    <target name="java:compile" depends="aspectwerkz:init">
         <javac destdir="${build.core.dir}" debug="off">
             <src path="${src.dir}/main"/>
             <classpath>
@@ -112,11 +112,16 @@
             </classpath>
         </javac>
     </target>
+    <target name="aspectwerkz:compile" depends="aspectwerkz:init, java:compile">
+        <antcall target="aspectwerkz:jar"/>
+        <antcall target="aspectwerkz:extensions:compile"/>
+        <antcall target="aspectwerkz:samples:compile"/>
+    </target>
 
     <!-- ============================================================== -->
     <!-- create distribution -->
     <!-- ============================================================== -->
-    <target name="aspectwerkz:jar" depends="clean, aspectwerkz:compile">
+    <target name="aspectwerkz:jar" depends="java:compile">
         <mkdir dir="${dist.dir}"/>
         <copy file="${src.dir}/main/aspectwerkz.dtd" todir="${build.core.dir}"/>
         <jar destfile="${build.dir}/aspectwerkz-${version}.jar">
