@@ -22,8 +22,6 @@ public final class DeploymentModel {
 
     public static final int PER_INSTANCE = 2;
 
-    public static final int PER_THREAD = 3;
-
     /**
      * Converts the deployment model from string to int type.
      *
@@ -37,8 +35,6 @@ public final class DeploymentModel {
             return PER_CLASS;
         } else if (type.equalsIgnoreCase(SystemDefinition.PER_INSTANCE)) {
             return PER_INSTANCE;
-        } else if (type.equalsIgnoreCase(SystemDefinition.PER_THREAD)) {
-            return PER_THREAD;
         } else {
             throw new RuntimeException("invalid deployment model: " + type);
         }
@@ -62,29 +58,9 @@ public final class DeploymentModel {
             case PER_INSTANCE:
                 deploymentModel = SystemDefinition.PER_INSTANCE;
                 break;
-            case PER_THREAD:
-                deploymentModel = SystemDefinition.PER_THREAD;
-                break;
             default:
                 throw new IllegalArgumentException("no such deployment model type");
         }
         return deploymentModel;
-    }
-
-    /**
-     * Check mixin deployment model is compatible with aspect' ones Supported models are: Mixin Aspect perJVM perJVM
-     * perClass perJVM,perClass perInstance perJVM,perClass,perInstance perThread perThread
-     *
-     * @param mixinModel
-     * @param aspectModel
-     * @return true if compatible
-     */
-    public static boolean isMixinDeploymentModelCompatible(int mixinModel, int aspectModel) {
-        //note: implementation depends on constant values
-        if (mixinModel == PER_THREAD) {
-            return (aspectModel == PER_THREAD);
-        } else {
-            return (mixinModel >= aspectModel);
-        }
     }
 }
