@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect.management;
 
-import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.DeploymentModelEnum;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class PointcutManager {
      * @param name the name of the aspect
      */
     public PointcutManager(final String name) {
-        this(name, DeploymentModel.PER_JVM);
+        this(name, DeploymentModelEnum.PER_JVM);
     }
 
     /**
@@ -97,7 +97,7 @@ public class PointcutManager {
      * @return the deployment model
      */
     public String getDeploymentModelAsString() {
-        return DeploymentModel.getDeploymentModelAsString(m_deploymentModel);
+        return DeploymentModelEnum.getDeploymentModelAsString(m_deploymentModel);
     }
 
     /**

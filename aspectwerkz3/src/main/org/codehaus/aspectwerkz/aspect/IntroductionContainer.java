@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.DeploymentModelEnum;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -308,7 +308,7 @@ public class IntroductionContainer {
      */
     public Object getTargetInstance(Object mixinImpl) {
         Object targetInstance = null;
-        if (m_prototype.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
+        if (m_prototype.getDeploymentModel() == DeploymentModelEnum.PER_INSTANCE) {
             for (Iterator i = m_perInstance.entrySet().iterator(); i.hasNext();) {
                 Map.Entry entry = (Map.Entry) i.next();
                 Object mixin = ((Introduction) entry.getValue()).getImplementation();
@@ -329,12 +329,12 @@ public class IntroductionContainer {
      */
     public Class getTargetClass(Object mixinImpl) {
         Class targetClass = null;
-        if (m_prototype.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
+        if (m_prototype.getDeploymentModel() == DeploymentModelEnum.PER_INSTANCE) {
             Object instance = getTargetInstance(mixinImpl);
             if (instance != null) {
                 targetClass = instance.getClass();
             }
-        } else if (m_prototype.getDeploymentModel() == DeploymentModel.PER_CLASS) {
+        } else if (m_prototype.getDeploymentModel() == DeploymentModelEnum.PER_CLASS) {
             for (Iterator i = m_perClass.entrySet().iterator(); i.hasNext();) {
                 Map.Entry entry = (Map.Entry) i.next();
                 Object mixin = ((Introduction) entry.getValue()).getImplementation();

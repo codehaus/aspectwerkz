@@ -8,7 +8,7 @@
 package test;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.DeploymentModelEnum;
 import org.codehaus.aspectwerkz.NameIndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
@@ -124,13 +124,13 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             SystemLoader.getSystem(this).getAspectManager("tests").createAspect(
                 NEW_ASPECT_NAME,
                 NEW_ASPECT_NAME,
-                DeploymentModel.PER_INSTANCE,
+                DeploymentModelEnum.PER_INSTANCE,
                 null);
 
             // test the some stuff for the aspect
             assertNotNull(SystemLoader.getSystem(this).getAspectManager("tests")
                     .getPointcutManager(NEW_ASPECT_NAME));
-            assertEquals(DeploymentModel.PER_INSTANCE, SystemLoader.getSystem(this)
+            assertEquals(DeploymentModelEnum.PER_INSTANCE, SystemLoader.getSystem(this)
                     .getAspectManager("tests").getPointcutManager(NEW_ASPECT_NAME)
                     .getDeploymentModel());
             assertEquals(NEW_ASPECT_NAME, SystemLoader.getSystem(this).getAspectManager("tests")

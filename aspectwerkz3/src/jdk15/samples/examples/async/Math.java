@@ -11,8 +11,6 @@ package examples.async;
 import examples.async.AsyncAspect.Async;
 import examples.async.AsyncAspect.Service;
 
-import java.lang.reflect.Method;
-
 import org.codehaus.aspectwerkz.annotation.Annotations;
 
 /**
