@@ -9,8 +9,8 @@
 
     <body>
         <links>
-            <item name="News" href="http://blogs.codehaus.org/projects/aspectwerkz/index.html"/>
             <item name="Wiki" href="http://docs.codehaus.org/display/AW/Home"/>
+            <item name="News" href="http://blogs.codehaus.org/projects/aspectwerkz/index.html"/>
             <item name="IRC" href="irc://irc.codehaus.org/aspectwerkz"/>
             <item name="Codehaus" href="http://codehaus.org"/>
             <item name="Create an Issue" href="http://jira.codehaus.org/secure/CreateIssue.jspa"/>
@@ -42,6 +42,7 @@
             <item name="Build &amp; Install" href="/build.html"/>
             <item name="CVS Access" href="/cvs.html"/>
             <item name="Tasks" href="/tasks.html"/>
+            <item name="Papers &amp; Talks" href="/papers_talks.html"/>
             <!--            <item name="Clover report" href="/clover/index.html"/>-->
         </menu>
     </body>
