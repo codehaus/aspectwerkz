@@ -75,6 +75,20 @@ public class Run {
         System.out.println("|             (JoinPoint, thisJoinPoint, MethodInvocation)");
         System.out.println("| Notes: SJP = statically compiled access to the contextual information");
         System.out.println("|             (StaticJoinPoint, thisJoinPointStaticPart - only available in AW and AJ");
+
+        csvReport();
+    }
+
+    public static void csvReport() {
+        for (Iterator iterator = suite.iterator(); iterator.hasNext();) {
+            Run run = (Run) iterator.next();
+            if (run.adviceHit <= 0) {
+                System.out.print("");
+            } else {
+                System.out.print(run.nanoPerIteration());
+            }
+            System.out.print(";");
+        }
     }
 
 }

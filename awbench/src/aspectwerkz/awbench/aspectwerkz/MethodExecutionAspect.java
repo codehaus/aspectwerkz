@@ -60,7 +60,7 @@ public class MethodExecutionAspect {
 
     /**
      * @AfterReturning(
-     *      type = "java.lang.String",
+     *      type = "returnValue",
      *      expression = "execution(* awbench.method.Execution.afterReturningString())"
      * )
      */
@@ -71,7 +71,7 @@ public class MethodExecutionAspect {
 
      /**
       * @AfterThrowing(
-      *      type = "java.lang.RuntimeException",
+      *      type = "rte",
       *      expression = "execution(* awbench.method.Execution.afterThrowingRTE())"
       * )
      */
@@ -83,7 +83,7 @@ public class MethodExecutionAspect {
     /** @Around  execution(* awbench.method.Execution.aroundJP()) */
     public Object aroundJP(JoinPoint jp) throws Throwable {
         Run.ADVICE_HIT++;
-        Rtti rtti = jp.getRtti();
+        Object target = jp.getTarget();//getRtti();
         return jp.proceed();
     }
 
