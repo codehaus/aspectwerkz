@@ -87,8 +87,6 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
     }
 
     /**
-     * TODO refactor some
-     * 
      * Adds mixin fields and methods to the target class.
      */
     private void addMixinMembers() {
@@ -102,78 +100,17 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                 if (m_mixinFields.containsKey(mixinImpl)) {
                     continue;
                 }
-                final String fieldName = MIXIN_FIELD_NAME + index;
-                MixinFieldInfo fieldInfo = new MixinFieldInfo();
-                fieldInfo.fieldName = fieldName;
+                final MixinFieldInfo fieldInfo = new MixinFieldInfo();
+                fieldInfo.fieldName = MIXIN_FIELD_NAME + index;
                 fieldInfo.mixinClassInfo = mixinImpl;
-                final String signature = mixinImpl.getSignature();
 
-                int modifiers = 0;
-                if (deploymentModel == DeploymentModel.PER_CLASS) {
-                    fieldInfo.isStatic = true;
-                    modifiers = ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC;
-                } else if (deploymentModel == DeploymentModel.PER_INSTANCE) {
-                    fieldInfo.isStatic = false;
-                    modifiers = ACC_PRIVATE + ACC_FINAL + ACC_SYNTHETIC;
-                } else {
-                    throw new DefinitionException(
-                            "deployment model [" + mixinDef.getDeploymentModel() +
-                            "] for mixin [" + mixinDef.getMixinImpl().getName() +
-                            "] is not supported"
-                    );
-
-                }
-                if (mixinDef.isTransient()) {
-                    modifiers += ACC_TRANSIENT;
-                }
-                cv.visitField(modifiers, fieldName, signature, null, null);
+                addMixinField(fieldInfo, deploymentModel, mixinDef);
 
                 m_mixinFields.put(mixinImpl, fieldInfo);
                 index++;
                 m_isAdvised = true;
 
-                for (Iterator it3 = mixinDef.getMethodsToIntroduce().iterator(); it3.hasNext();) {
-                    MethodInfo methodInfo = (MethodInfo) it3.next();
-                    final String methodName = methodInfo.getName();
-                    final String methodSignature = methodInfo.getSignature();
-
-                    if (m_addedMethods.contains(AlreadyAddedMethodVisitor.getMethodKey(methodName, methodSignature))) {
-                        continue;
-                    }
-
-                    CodeVisitor mv = cv.visitMethod(
-                            ACC_PUBLIC + ACC_FINAL + ACC_SYNTHETIC,
-                            methodName,
-                            methodSignature,
-                            null,
-                            null
-                    );
-                    if (fieldInfo.isStatic) {
-                        mv.visitFieldInsn(
-                                GETSTATIC,
-                                m_declaringTypeName,
-                                fieldInfo.fieldName,
-                                fieldInfo.mixinClassInfo.getSignature()
-                        );
-                    } else {
-                        mv.visitVarInsn(ALOAD, 0);
-                        mv.visitFieldInsn(
-                                GETFIELD,
-                                m_declaringTypeName,
-                                fieldInfo.fieldName,
-                                fieldInfo.mixinClassInfo.getSignature()
-                        );
-                    }
-                    AsmHelper.loadArgumentTypes(mv, Type.getArgumentTypes(methodSignature), false);
-                    mv.visitMethodInsn(
-                            INVOKEVIRTUAL,
-                            fieldInfo.mixinClassInfo.getName().replace('.', '/'),
-                            methodName,
-                            methodSignature
-                    );
-                    AsmHelper.addReturnStatement(mv, Type.getReturnType(methodSignature));
-                    mv.visitMaxs(0, 0);
-                }
+                addMixinMethods(fieldInfo, mixinDef);
             }
         }
     }
@@ -286,6 +223,89 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                 fieldInfo.fieldName,
                 fieldInfo.mixinClassInfo.getSignature()
         );
+    }
+
+    /**
+     * Adds the mixin field to the target class.
+     *
+     * @param fieldInfo
+     * @param deploymentModel
+     * @param mixinDef
+     */
+    private void addMixinField(final MixinFieldInfo fieldInfo,
+                               final int deploymentModel,
+                               final MixinDefinition mixinDef) {
+        final String signature = fieldInfo.mixinClassInfo.getSignature();
+        int modifiers = 0;
+        if (deploymentModel == DeploymentModel.PER_CLASS) {
+            fieldInfo.isStatic = true;
+            modifiers = ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC;
+        } else if (deploymentModel == DeploymentModel.PER_INSTANCE) {
+            fieldInfo.isStatic = false;
+            modifiers = ACC_PRIVATE + ACC_FINAL + ACC_SYNTHETIC;
+        } else {
+            throw new DefinitionException(
+                    "deployment model [" + mixinDef.getDeploymentModel() +
+                    "] for mixin [" + mixinDef.getMixinImpl().getName() +
+                    "] is not supported"
+            );
+
+        }
+        if (mixinDef.isTransient()) {
+            modifiers += ACC_TRANSIENT;
+        }
+        cv.visitField(modifiers, fieldInfo.fieldName, signature, null, null);
+    }
+
+    /**
+     * Adds the mixin methods to the target class.
+     *
+     * @param fieldInfo
+     * @param mixinDef
+     */
+    private void addMixinMethods(final MixinFieldInfo fieldInfo, final MixinDefinition mixinDef) {
+        for (Iterator it3 = mixinDef.getMethodsToIntroduce().iterator(); it3.hasNext();) {
+            MethodInfo methodInfo = (MethodInfo) it3.next();
+            final String methodName = methodInfo.getName();
+            final String methodSignature = methodInfo.getSignature();
+
+            if (m_addedMethods.contains(AlreadyAddedMethodVisitor.getMethodKey(methodName, methodSignature))) {
+                continue;
+            }
+
+            CodeVisitor mv = cv.visitMethod(
+                    ACC_PUBLIC + ACC_FINAL + ACC_SYNTHETIC,
+                    methodName,
+                    methodSignature,
+                    null,
+                    null
+            );
+            if (fieldInfo.isStatic) {
+                mv.visitFieldInsn(
+                        GETSTATIC,
+                        m_declaringTypeName,
+                        fieldInfo.fieldName,
+                        fieldInfo.mixinClassInfo.getSignature()
+                );
+            } else {
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitFieldInsn(
+                        GETFIELD,
+                        m_declaringTypeName,
+                        fieldInfo.fieldName,
+                        fieldInfo.mixinClassInfo.getSignature()
+                );
+            }
+            AsmHelper.loadArgumentTypes(mv, Type.getArgumentTypes(methodSignature), false);
+            mv.visitMethodInsn(
+                    INVOKEVIRTUAL,
+                    fieldInfo.mixinClassInfo.getName().replace('.', '/'),
+                    methodName,
+                    methodSignature
+            );
+            AsmHelper.addReturnStatement(mv, Type.getReturnType(methodSignature));
+            mv.visitMaxs(0, 0);
+        }
     }
 
     /**
