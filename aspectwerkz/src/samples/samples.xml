@@ -28,9 +28,9 @@
     <!--  Abstract aspects                             -->
     <!-- ============================================= -->
     <abstract-aspect name="AbstractSynchronization">
-        <advice pointcut="synchronized_calls">
+        <bind-advice pointcut="synchronized_calls">
             <advice-ref name="synchronize"/>
-        </advice>
+        </bind-advice>
     </abstract-aspect>
 
     <!-- ============================================= -->
@@ -43,20 +43,20 @@
     <aspect name="Caching">
         <pointcut-def name="callee" type="method" pattern="int examples.caching.Pi.getPiDecimal(int)"/>
         <pointcut-def name="caller" type="callerSide" pattern="examples.caching.*->int examples.caching.Pi.getPiDecimal(int)"/>
-        <advice pointcut="callee">
+        <bind-advice pointcut="callee">
             <advice-ref name="cache"/>
-        </advice>
-        <advice pointcut="caller">
+        </bind-advice>
+        <bind-advice pointcut="caller">
             <advice-ref name="invocationCounter"/>
-        </advice>
+        </bind-advice>
     </aspect>
 
     <aspect name="Asynchronous">
         <pointcut-def name="asynchronous_calls" type="method" pattern="* examples.asynchronous.Target.toRunAsynchronously()"/>
 
-        <advice pointcut="asynchronous_calls">
+        <bind-advice pointcut="asynchronous_calls">
             <advice-ref name="asynchronous"/>
-        </advice>
+        </bind-advice>
     </aspect>
 
 </aspectwerkz>

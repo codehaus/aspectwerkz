@@ -16,19 +16,19 @@
     </abstract-aspect>
 
     <aspect name="Logger" extends="Service">
-        <introduction class="services.*" introduction-ref="loggable"/>
-        <introduction class="services.*">
+        <bind-introduction class="services.*" introduction-ref="loggable"/>
+        <bind-introduction class="services.*">
             <introduction-ref name="loggable"/>
-        </introduction>
+        </bind-introduction>
 
         <pointcut name="start" type="method" pattern="* services.*.start(..)"/>
         <pointcut name="stop" type="method" pattern="* services.*.stop(..)"/>
 
-        <advice expression="start AND stop">
+        <bind-advice expression="start AND stop">
             <advice-ref name="logging"/>
-        </advice>
+        </bind-advice>
 
-        <advise expression="start OR stop" advice-ref="logging"/>
+        <bind-advice expression="start OR stop" advice-ref="logging"/>
 
     </aspect>
 

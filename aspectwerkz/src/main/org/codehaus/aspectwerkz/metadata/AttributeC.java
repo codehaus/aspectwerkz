@@ -126,14 +126,14 @@ public class AttributeC {
             if (!qdoxParser.parse(className)) {
                 continue;
             }
-            weaveCFlowPointcutAttributes(definition, className, qdoxParser);
-            weaveIntroductionAttributes(definition, className, qdoxParser);
-            weaveJoinPointControllerAttributes(definition, className, qdoxParser);
-            weaveMethodPointcutAttributes(definition, className, qdoxParser);
-            weaveSetFieldPointcutAttributes(definition, className, qdoxParser);
-            weaveGetFieldPointcutAttributes(definition, className, qdoxParser);
-            weaveThrowsPointcutAttributes(definition, className, qdoxParser);
-            weaveCallerSidePointcutAttributes(definition, className, qdoxParser);
+            parseCFlowPointcutAttributes(definition, className, qdoxParser);
+            parseIntroductionAttributes(definition, className, qdoxParser);
+            parseJoinPointControllerAttributes(definition, className, qdoxParser);
+            parseMethodPointcutAttributes(definition, className, qdoxParser);
+            parseSetFieldPointcutAttributes(definition, className, qdoxParser);
+            parseGetFieldPointcutAttributes(definition, className, qdoxParser);
+            parseThrowsPointcutAttributes(definition, className, qdoxParser);
+            parseCallerSidePointcutAttributes(definition, className, qdoxParser);
         }
     }
 
@@ -239,7 +239,7 @@ public class AttributeC {
         if (adviceDef == null) throw new IllegalArgumentException("advice definition can not be null");
         Element adviceDefElement = root.addElement("advice-def");
         adviceDefElement.addAttribute("name", adviceDef.getName());
-        adviceDefElement.addAttribute("advice", adviceDef.getAdviceClassName());
+        adviceDefElement.addAttribute("class", adviceDef.getAdviceClassName());
         String deploymentModel = adviceDef.getDeploymentModel();
         if (deploymentModel != null || deploymentModel.length() != 0) {
             adviceDefElement.addAttribute("deployment-model", deploymentModel);
@@ -291,6 +291,7 @@ public class AttributeC {
             aspectElement.addAttribute("name", aspectDef.getName());
 
             handlePointcutDefinitions(aspectElement, aspectDef);
+            handleControllerDefinitions(aspectElement, aspectDef);
             handleIntroductionWeavingRules(aspectElement, aspectDef);
             handleAdviceWeavingRules(aspectElement, aspectDef);
         }
@@ -381,6 +382,23 @@ public class AttributeC {
     }
 
     /**
+     * Handles the join point controllers.
+     *
+     * @param aspectElement the aspect element
+     * @param aspectDef the aspect definition
+     */
+    private static void handleControllerDefinitions(final Element aspectElement,
+                                                    final AspectDefinition aspectDef) {
+        for (Iterator it = aspectDef.getControllerDefs().iterator(); it.hasNext();) {
+            ControllerDefinition controllerDef = (ControllerDefinition)it.next();
+
+            Element weavingRuleElement = aspectElement.addElement("controller-def");
+            weavingRuleElement.addAttribute("pointcut", controllerDef.getExpression());
+            weavingRuleElement.addAttribute("class", controllerDef.getClassName());
+        }
+    }
+
+    /**
      * Handles the introduction weaving rules.
      *
      * @param aspectElement the aspect element
@@ -391,7 +409,7 @@ public class AttributeC {
         for (Iterator it = aspectDef.getIntroductionWeavingRules().iterator(); it.hasNext();) {
             IntroductionWeavingRule weavingRule = (IntroductionWeavingRule)it.next();
 
-            Element weavingRuleElement = aspectElement.addElement("introduction");
+            Element weavingRuleElement = aspectElement.addElement("bind-introduction");
             weavingRuleElement.addAttribute("class", weavingRule.getClassPattern());
 
             for (Iterator it2 = weavingRule.getIntroductionRefs().iterator(); it2.hasNext();) {
@@ -414,7 +432,7 @@ public class AttributeC {
         for (Iterator it = aspectDef.getAdviceWeavingRules().iterator(); it.hasNext();) {
             AdviceWeavingRule weavingRule = (AdviceWeavingRule)it.next();
 
-            Element weavingRuleElement = aspectElement.addElement("advice");
+            Element weavingRuleElement = aspectElement.addElement("bind-advice");
             weavingRuleElement.addAttribute("pointcut", weavingRule.getExpression());
 
             String cflowExpression = weavingRule.getCFlowExpression();
@@ -548,7 +566,7 @@ public class AttributeC {
      * @param className the name of the parsed class
      * @param qdoxParser the QDox parser
      */
-    private static void weaveIntroductionAttributes(
+    private static void parseIntroductionAttributes(
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
@@ -586,7 +604,7 @@ public class AttributeC {
      * @param className the name of the parsed class
      * @param qdoxParser the QDox parser
      */
-    private static void weaveJoinPointControllerAttributes(
+    private static void parseJoinPointControllerAttributes(
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
@@ -642,7 +660,7 @@ public class AttributeC {
      * @param className the name of the parsed class
      * @param qdoxParser the QDox parser
      */
-    private static void weaveMethodPointcutAttributes(
+    private static void parseMethodPointcutAttributes(
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
@@ -717,7 +735,7 @@ public class AttributeC {
      * @param className the name of the parsed class
      * @param qdoxParser the QDox parser
      */
-    private static void weaveSetFieldPointcutAttributes(
+    private static void parseSetFieldPointcutAttributes(
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
@@ -787,7 +805,7 @@ public class AttributeC {
      * @param className the name of the parsed class
      * @param qdoxParser the QDox parser
      */
-    private static void weaveGetFieldPointcutAttributes(
+    private static void parseGetFieldPointcutAttributes(
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
@@ -857,7 +875,7 @@ public class AttributeC {
      * @param className the name of the parsed class
      * @param qdoxParser the QDox parser
      */
-    private static void weaveThrowsPointcutAttributes(
+    private static void parseThrowsPointcutAttributes(
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
@@ -936,7 +954,7 @@ public class AttributeC {
      * @param className the name of the parsed class
      * @param qdoxParser the QDox parser
      */
-    private static void weaveCallerSidePointcutAttributes(
+    private static void parseCallerSidePointcutAttributes(
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
@@ -1013,7 +1031,7 @@ public class AttributeC {
      * @param className the name of the parsed class
      * @param qdoxParser the QDox parser
      */
-    private static void weaveCFlowPointcutAttributes(
+    private static void parseCFlowPointcutAttributes(
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
