@@ -78,6 +78,10 @@ public class DocumentParser {
         org.codehaus.aspectwerkz.definition.DocumentParser.parseExcludePackageElements(
                 systemElement, definition, basePackage
         );
+        // parse the prepare elements
+        org.codehaus.aspectwerkz.definition.DocumentParser.parsePrepareElements(
+                systemElement, definition, basePackage
+        );
 
         boolean hasDef = false;
         // parse without package elements

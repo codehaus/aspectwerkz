@@ -126,6 +126,51 @@ public class DocumentParser {
     }
 
     /**
+     * Parses the <tt>prepare</tt> elements.
+     *
+     * @param root the root element
+     * @param definition the definition object
+     * @param packageName the base package name
+     */
+    public static void parsePrepareElements(final Element root,
+                                            final AspectWerkzDefinition definition,
+                                            final String packageName) {
+        for (Iterator it1 = root.elementIterator("prepare"); it1.hasNext();) {
+            String preparePackage = "";
+            Element prepareElement = (Element)it1.next();
+            for (Iterator it2 = prepareElement.attributeIterator(); it2.hasNext();) {
+                Attribute attribute = (Attribute)it2.next();
+                if (attribute.getName().trim().equals("package")) {
+
+                    // handle base package
+                    if (packageName.endsWith(".*")) {
+                        preparePackage = packageName.substring(0, packageName.length() - 2);
+                    }
+                    else if (packageName.endsWith(".")) {
+                        preparePackage = packageName.substring(0, packageName.length() - 1);
+                    }
+
+                    // handle prepare package
+                    preparePackage = packageName + attribute.getValue().trim();
+                    if (preparePackage.endsWith(".*")) {
+                        preparePackage = preparePackage.substring(0, preparePackage.length() - 2);
+                    }
+                    else if (preparePackage.endsWith(".")) {
+                        preparePackage = preparePackage.substring(0, preparePackage.length() - 1);
+                    }
+                    break;
+                }
+                else {
+                    continue;
+                }
+            }
+            if (preparePackage.length() != 0) {
+                definition.addPreparePackage(preparePackage);
+            }
+        }
+    }
+
+    /**
      * Parses the <tt>system</tt> elements.
      *
      * @param root the root element

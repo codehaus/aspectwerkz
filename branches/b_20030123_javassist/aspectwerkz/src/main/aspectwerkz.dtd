@@ -40,6 +40,9 @@ Change from 0.8.1 to 0.9
     add "exclude" and "include" element in "system" element
     "system/transformation-scope" removed, use "include" and "exclude"
     add "param" for "use-aspect"
+
+change from 0.9 to DAW TDB
+    add prepare element
 ******************************************************************************************************************************-->
 
 
@@ -63,7 +66,7 @@ Notes:
     Due to package nesting, we cannot define an order here
 ******************************************************************************************************************************-->
 <!ELEMENT system (
-    (exclude | include)*,
+    (exclude | include | prepare)*,
     (introduction-def | advice-def | advices-def | abstract-aspect | aspect | use-aspect | package )*
 )>
 <!ATTLIST system
@@ -95,6 +98,19 @@ During weaving, a class is considered to be in the transformation scope with a c
 ******************************************************************************************************************************-->
 <!ELEMENT include EMPTY>
 <!ATTLIST include
+	package CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+prepare
+*********************************************************************************************************************************
+Declares one global package prefix. Any class in the scope will be prepared for join point redefinition
+Attributes:
+	package: package prefix
+Note: package does not support pattern, excepted ending ".*" like "foo.*", which is equivalent to "foo."
+During weaving, a class is considered to be in the transformation scope with a classFQN.startsWith( ) test.
+******************************************************************************************************************************-->
+<!ELEMENT prepare EMPTY>
+<!ATTLIST prepare
 	package CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************

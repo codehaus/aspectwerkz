@@ -146,6 +146,13 @@ public interface AspectWerkzDefinition extends Serializable {
     void addExcludePackage(String excludePackage);
 
     /**
+     * Adds a new prepare package.
+     *
+     * @param preparePackage the package to exclude
+     */
+    void addPreparePackage(String preparePackage);
+
+    /**
      * Checks if there exists an advice with the name specified.
      *
      * @param name the name of the advice
