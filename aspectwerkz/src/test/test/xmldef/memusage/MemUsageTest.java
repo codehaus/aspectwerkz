@@ -31,12 +31,15 @@ import org.apache.bcel.generic.*;
  *
  * If classCacheSet and instanceCacheSet are set, classes and instances cannot be GC.
  *
+ * It is possible to run offline mode on the dumped class in _temp as well to check the GC usage.
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class MemUsageTest extends TestCase {
 
     private final static int classKSize = 10;
     private final static int instanceKSize = 10;
+    private final static int helloMethodCount = 30;
     private final static boolean classCacheSet = true;
     private final static boolean instanceCacheSet = true;
 
@@ -100,21 +103,22 @@ public class MemUsageTest extends TestCase {
         cg.addMethod(method.getMethod());
         il.dispose();
 
-        // sayHello()
-        method = new MethodGen(Constants.ACC_PUBLIC, // access flags
-                                        Type.STRING,               // return type
-                                        new Type[]{},     // arg type
-                                        new String[]{}, // arg names
-                                        "sayHello", className,    // method, class
-                                        il, cp);
-
-        il.append(new PUSH(cp, "Hello"));
-        il.append(factory.createReturn(Type.STRING));
-        method.setInstructionList(il);
-        method.setMaxLocals();
-        method.setMaxStack();
-        cg.addMethod(method.getMethod());
-        il.dispose();
+        // sayHello<XX> 0..()
+        for (int i = 0; i < helloMethodCount; i++) {
+            method = new MethodGen(Constants.ACC_PUBLIC, // access flags
+                                            Type.STRING,               // return type
+                                            new Type[]{},     // arg type
+                                            new String[]{}, // arg names
+                                            "sayHello"+i, className,    // method, class
+                                            il, cp);
+            il.append(new PUSH(cp, "sayHello"+i));
+            il.append(factory.createReturn(Type.STRING));
+            method.setInstructionList(il);
+            method.setMaxLocals();
+            method.setMaxStack();
+            cg.addMethod(method.getMethod());
+            il.dispose();
+        }
 
         // dump
         try {
@@ -146,8 +150,44 @@ public class MemUsageTest extends TestCase {
             for (int j = 1; j <= instanceFactor; j++) {
                 instance = (Hello) klass.newInstance();
                 if (instanceCacheSet) instanceCache.add(instance);
-                assertEquals("before Hello after", instance.sayHello());
+                for (int k = 0; k < helloMethodCount; k++) {
+                    assertEquals("before sayHello"+k+" after", klass.getMethod("sayHello"+k, new Class[]{}).invoke(instance, new Object[]{}));
+                    ///*no aspect*/assertEquals("sayHello"+k, klass.getMethod("sayHello"+k, new Class[]{}).invoke(instance, new Object[]{}));
+                }
             }
+        }
+    }
+
+    private void continueCalls() {
+        if (!instanceCacheSet) return;
+        Hello instance = null;
+        while (true) {
+            for (int i = 0; i < instanceCache.size(); i++) {
+                instance = (Hello) instanceCache.get(i);
+                for (int k = 0; k < helloMethodCount; k++) {
+                    try {
+                        instance.getClass().getMethod("sayHello"+k, new Class[]{}).invoke(instance, new Object[]{});
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            try { Thread.sleep(200); System.out.print(".");} catch (Exception e) {;}
+        }
+    }
+
+    private void releaseCache() {
+        while ( ! instanceCache.isEmpty()) {
+            instanceCache.remove(0);
+        }
+        while ( ! classCache.isEmpty()) {
+            classCache.remove(0);
+        }
+    }
+
+    private void continueWaiting() {
+        while (true) {
+            try { Thread.sleep(200); System.out.print(".");} catch (Exception e) {;}
         }
     }
 
@@ -181,6 +221,8 @@ public class MemUsageTest extends TestCase {
         ClassLoader cl = new WeavingClassLoader(new URL[]{(new File("_temp")).toURL()}, ClassLoader.getSystemClassLoader());
         createClassFiles("_temp", "atest", classFactor);
         callClassesOneByOne(cl, "atest", classFactor, instanceFactor);
+        //continueCalls();
+        releaseCache(); continueWaiting();
     }
 
     //-- junit hooks --//
@@ -195,11 +237,11 @@ public class MemUsageTest extends TestCase {
         // 50 U + 50*10*U = 550 U
         // with no weaving
         // mem usage = 5.5M
-        //suite.addTest(new MemUsageTest("testClassCreation", 50, 10));
+        //suite.addTest(new MemUsageTest("testClassCreation", 10, 20));
 
         // with empty xml
         // mem usages = 7M
-        suite.addTest(new MemUsageTest("testClassWeaving", 50, 10));
+        suite.addTest(new MemUsageTest("testClassWeaving", 5, 5));
 
         return suite;
         //return new junit.framework.TestSuite(MemUsageTest.class, "testClassCreation");
