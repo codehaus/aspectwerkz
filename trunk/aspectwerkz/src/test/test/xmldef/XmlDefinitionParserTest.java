@@ -12,7 +12,6 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 
-import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.PointcutDefinition;
@@ -21,6 +20,7 @@ import org.codehaus.aspectwerkz.xmldef.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.AdviceWeavingRule;
 import org.codehaus.aspectwerkz.xmldef.definition.XmlDefinitionParser;
 import org.codehaus.aspectwerkz.metadata.AttributeC;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.dom4j.Document;
 
 /**

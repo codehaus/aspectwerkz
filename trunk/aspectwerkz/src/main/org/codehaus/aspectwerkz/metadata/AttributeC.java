@@ -26,7 +26,7 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
 
-import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinitionImpl;
 import org.codehaus.aspectwerkz.xmldef.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.IntroductionDefinition;
@@ -36,12 +36,14 @@ import org.codehaus.aspectwerkz.xmldef.definition.IntroductionWeavingRule;
 import org.codehaus.aspectwerkz.xmldef.definition.AdviceWeavingRule;
 import org.codehaus.aspectwerkz.xmldef.definition.ControllerDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.DefinitionValidator;
+import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
 import org.codehaus.aspectwerkz.xmldef.advice.CFlowPreAdvice;
 import org.codehaus.aspectwerkz.xmldef.advice.CFlowPostAdvice;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.util.UuidGenerator;
 import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Parses a given source tree and compiles "runtime attributes" (set as JavaDoc tags throughout
@@ -221,14 +223,14 @@ public class AttributeC {
         if (fileName != null) {
             File definitionFile = new File(fileName);
             if (definitionFile.exists()) {
-                definition = AspectWerkzDefinition.loadDefinitionAsFile(fileName);
+                definition = AbstractAspectWerkzDefinition.loadDefinitionAsFile(fileName);
             }
             else {
-                definition = new AspectWerkzDefinition();
+                definition = new AspectWerkzDefinitionImpl();
             }
         }
         else {
-            definition = new AspectWerkzDefinition();
+            definition = new AspectWerkzDefinitionImpl();
         }
         return definition;
     }
@@ -608,7 +610,7 @@ public class AttributeC {
             final QDoxParser qdoxParser) {
 
         AspectDefinition aspectDefinition = definition.getAspectDefinition(
-                AspectWerkzDefinition.SYSTEM_ASPECT);
+                AbstractAspectWerkzDefinition.SYSTEM_ASPECT);
 
         JavaClass javaClass = qdoxParser.getJavaClass();
         DocletTag[] introductionTags = javaClass.getTagsByName(AttributeTag.INTRODUCTION);
@@ -668,7 +670,7 @@ public class AttributeC {
                     pointcutDef.setClassPattern(className);
                     pointcutDef.setPattern(createMethodPattern(javaMethods[i]));
                     pointcutDef.setType(PointcutDefinition.METHOD);
-                    definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                    definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                             addPointcutDef(pointcutDef);
 
                     // create a new controller definition
@@ -676,7 +678,7 @@ public class AttributeC {
                     controllerDef.setClassName(attribute);
                     controllerDef.setExpression(expression);
 
-                    definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                    definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                             addControllerDef(controllerDef);
 
                     // add the pointcut pattern
@@ -733,7 +735,7 @@ public class AttributeC {
                         pointcutDef.setPattern(createMethodPattern(javaMethods[i]));
                         pointcutDef.setType(PointcutDefinition.METHOD);
                         pointcutDef.setNonReentrant(isNonReentrant);
-                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                        definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                                 addPointcutDef(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
@@ -752,7 +754,7 @@ public class AttributeC {
                             weavingRule.setExpression(expression);
                             weavingRule.setCFlowExpression(cflowRef);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             // add the pointcut pattern
@@ -803,7 +805,7 @@ public class AttributeC {
                         pointcutDef.setClassPattern(className);
                         pointcutDef.setPattern(createFieldPattern(javaFields[i]));
                         pointcutDef.setType(PointcutDefinition.SET_FIELD);
-                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                        definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                                 addPointcutDef(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
@@ -822,7 +824,7 @@ public class AttributeC {
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             // add the pointcut pattern
@@ -873,7 +875,7 @@ public class AttributeC {
                         pointcutDef.setClassPattern(className);
                         pointcutDef.setPattern(createFieldPattern(javaFields[i]));
                         pointcutDef.setType(PointcutDefinition.GET_FIELD);
-                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                        definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                                 addPointcutDef(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
@@ -892,7 +894,7 @@ public class AttributeC {
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             // add the pointcut pattern
@@ -952,7 +954,7 @@ public class AttributeC {
                         pointcutDef.setPattern(createThrowsPattern(
                                 exceptionClassPattern, javaMethods[i]));
                         pointcutDef.setType(PointcutDefinition.THROWS);
-                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                        definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                                 addPointcutDef(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
@@ -971,7 +973,7 @@ public class AttributeC {
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             // add the pointcut pattern
@@ -1028,7 +1030,7 @@ public class AttributeC {
                         pointcutDef.setClassPattern(callerClassPattern);
                         pointcutDef.setPattern(createCallerSidePattern(className, javaMethods[i]));
                         pointcutDef.setType(PointcutDefinition.CALLER_SIDE);
-                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                        definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                                 addPointcutDef(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
@@ -1048,7 +1050,7 @@ public class AttributeC {
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             // add the pointcut pattern
@@ -1099,7 +1101,7 @@ public class AttributeC {
                 pointcutDef.setPattern(callerSidePattern);
                 pointcutDef.setType(PointcutDefinition.CFLOW);
 
-                definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                         addPointcutDef(pointcutDef);
 
                 // create and add a new weaving rule def
@@ -1107,7 +1109,7 @@ public class AttributeC {
                 weavingRule.setExpression(name);
                 weavingRule.addAdviceRef(CFlowPreAdvice.NAME);
                 weavingRule.addAdviceRef(CFlowPostAdvice.NAME);
-                definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
                         addAdviceWeavingRule(weavingRule);
 
                 // add the pointcut pattern (a method patterns since the cflow pointcut
