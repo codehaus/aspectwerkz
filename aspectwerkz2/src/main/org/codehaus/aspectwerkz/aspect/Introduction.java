@@ -12,7 +12,7 @@ import java.lang.reflect.Constructor;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.Mixin;
-import org.codehaus.aspectwerkz.CrossCuttable;
+import org.codehaus.aspectwerkz.CrossCutting;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
@@ -54,7 +54,7 @@ public class Introduction implements Mixin {
     /**
      * Aspect in which this mixin is defined
      */
-    private CrossCuttable m_aspect;
+    private CrossCutting m_aspect;
 
     /**
      * Defintion to which this mixin relates
@@ -77,7 +77,7 @@ public class Introduction implements Mixin {
     public Introduction(
             final String name,
             final Class implClass,
-            final CrossCuttable aspect,
+            final CrossCutting aspect,
             final IntroductionDefinition definition) {
         m_name = name;
         m_aspect = aspect;
@@ -148,7 +148,7 @@ public class Introduction implements Mixin {
      * @param aspect    related aspect (not prototype)
      * @return new introduction instance
      */
-    public static Introduction newInstance(final Introduction prototype, final CrossCuttable aspect) {
+    public static Introduction newInstance(final Introduction prototype, final CrossCutting aspect) {
         return new Introduction(
                 prototype.m_name,
                 prototype.m_mixinImplClass,
@@ -169,7 +169,7 @@ public class Introduction implements Mixin {
     /**
      * @return aspect attached to this introduction
      */
-    public CrossCuttable getAspect() {
+    public CrossCutting getAspect() {
         return m_aspect;
     }
 

@@ -370,7 +370,7 @@ public class CrossCuttingInfo implements Serializable {
      *
      * @return the perJVM aspect
      */
-    public CrossCuttable getPerJvmAspect() {
+    public CrossCutting getPerJvmAspect() {
         return m_container.getPerJvmAspect();
     }
 
@@ -380,7 +380,7 @@ public class CrossCuttingInfo implements Serializable {
      * @param callingClass the calling class
      * @return the perClass aspect
      */
-    public CrossCuttable getPerClassAspect(final Class callingClass) {
+    public CrossCutting getPerClassAspect(final Class callingClass) {
         return m_container.getPerClassAspect(callingClass);
     }
 
@@ -390,7 +390,7 @@ public class CrossCuttingInfo implements Serializable {
      * @param callingInstance the calling instance
      * @return the perInstance aspect
      */
-    public CrossCuttable getPerInstanceAspect(final Object callingInstance) {
+    public CrossCutting getPerInstanceAspect(final Object callingInstance) {
         return m_container.getPerInstanceAspect(callingInstance);
     }
 
@@ -399,7 +399,7 @@ public class CrossCuttingInfo implements Serializable {
      *
      * @return the perThread aspect
      */
-    public CrossCuttable getPerThreadAspect() {
+    public CrossCutting getPerThreadAspect() {
         return m_container.getPerThreadAspect();
     }
 

@@ -19,7 +19,7 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.Mixin;
-import org.codehaus.aspectwerkz.CrossCuttable;
+import org.codehaus.aspectwerkz.CrossCutting;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
@@ -138,7 +138,7 @@ public final class AspectManager {
      * @param aspect         the aspect to register
      * @param aspectMetaData the aspect meta-data
      */
-    public void register(final CrossCuttable aspect, final PointcutManager aspectMetaData) {
+    public void register(final CrossCutting aspect, final PointcutManager aspectMetaData) {
         m_aspectRegistry.register(aspect, aspectMetaData);
     }
 
@@ -166,7 +166,7 @@ public final class AspectManager {
             throw new IllegalArgumentException(deploymentModel + " is not a valid deployment model type");
         }
 
-        CrossCuttable prototype = null;
+        CrossCutting prototype = null;
         Class aspectClass = null;
         try {
             if (loader == null) {
@@ -188,7 +188,7 @@ public final class AspectManager {
         }
 
         try {
-            prototype = (CrossCuttable)aspectClass.newInstance();
+            prototype = (CrossCutting)aspectClass.newInstance();
         }
         catch (Exception e) {
             StringBuffer msg = new StringBuffer();
@@ -226,7 +226,7 @@ public final class AspectManager {
      * @param index the index of the aspect
      * @return the aspect
      */
-    public CrossCuttable getAspect(final int index) {
+    public CrossCutting getAspect(final int index) {
         return m_aspectRegistry.getAspect(index);
     }
 
@@ -236,7 +236,7 @@ public final class AspectManager {
      * @param name the name of the aspect
      * @return the the aspect
      */
-    public CrossCuttable getAspect(final String name) {
+    public CrossCutting getAspect(final String name) {
         return m_aspectRegistry.getAspect(name);
     }
 
@@ -304,7 +304,7 @@ public final class AspectManager {
      *
      * @return the aspects
      */
-    public CrossCuttable[] getAspects() {
+    public CrossCutting[] getAspects() {
         return m_aspectRegistry.getAspects();
     }
 

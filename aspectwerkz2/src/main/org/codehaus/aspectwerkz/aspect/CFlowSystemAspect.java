@@ -28,7 +28,7 @@ import org.codehaus.aspectwerkz.System;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CFlowSystemAspect implements CrossCuttable {
+public class CFlowSystemAspect implements CrossCutting {
 
     /**
      * A unique name for the aspect.
@@ -95,7 +95,7 @@ public class CFlowSystemAspect implements CrossCuttable {
         PRE_ADVICE_INDEX = preIndex;
         POST_ADVICE_INDEX = postIndex;
     }
-    
+
     /**
      * Registers the join point as the start of a control flow (cflow) in the system.
      *
