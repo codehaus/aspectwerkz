@@ -184,7 +184,6 @@ public class AsmHelper {
             // TODO: what if we don't have rights to set this method to accessible on this specific CL? Load it in System CL?
             method.setAccessible(true);
             Object[] args = new Object[]{name, bytes, new Integer(0), new Integer(bytes.length)};
-
             Class clazz = (Class)method.invoke(loader, args);
             method.setAccessible(false);
 

@@ -260,7 +260,7 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the logging sample in offline mode -->
+    <!--  runs the introduction sample in offline mode -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:offlineintroduction">
         <attainGoal name="aspectwerkz:transform"/>

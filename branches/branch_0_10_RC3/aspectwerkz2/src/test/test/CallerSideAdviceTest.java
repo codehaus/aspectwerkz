@@ -30,6 +30,17 @@ public class CallerSideAdviceTest extends WeavedTestCase {
             e.printStackTrace();
             fail();
         }
+        // AW-163: same JIT JP reused
+        s_logString = "";
+        try {
+            CallerSideTestHelper helper = new CallerSideTestHelper();
+            helper.invokeMemberMethodAround("a", "b");
+            assertEquals("before after ", s_logString);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     public void testAroundAdvicedStaticMethod() {

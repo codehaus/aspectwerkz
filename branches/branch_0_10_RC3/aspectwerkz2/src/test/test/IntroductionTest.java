@@ -196,6 +196,8 @@ public class IntroductionTest extends WeavedTestCase {
     }
 
     public static junit.framework.Test suite() {
+        //TODO: on IBM JRE, test method order is changed, and thus mixin replacement is done first
+        // leading to some test failure.
         return new junit.framework.TestSuite(IntroductionTest.class);
     }
 

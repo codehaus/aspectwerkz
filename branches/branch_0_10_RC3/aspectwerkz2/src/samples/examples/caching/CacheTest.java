@@ -19,7 +19,11 @@ public class CacheTest {
         int methodInvocations = CacheStatistics.getNrOfMethodInvocationsFor("getPiDecimal", new Class[]{int.class});
         int cacheInvocations = CacheStatistics.getNrOfCacheInvocationsFor("getPiDecimal", new Class[]{int.class});
 
-        double hitRate = methodInvocations / cacheInvocations;
-        System.out.println("Hit rate: " + hitRate);
+        if (cacheInvocations > 0) {
+            double hitRate = methodInvocations / cacheInvocations;
+            System.out.println("Hit rate: " + hitRate);
+        } else {
+            System.out.println("Hit rate: unavailable");
+        }
     }
 }
