@@ -115,7 +115,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the invocation
      */
-    public Object invokeAdvice(final int methodIndex, final JoinPoint joinPoint) {
+    public Object invokeAdvice(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
         Object result = null;
         switch (m_infoPrototype.getDeploymentModel()) {
 
@@ -170,7 +170,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerJvm(final int methodIndex, final JoinPoint joinPoint) {
+    private Object invokeAdvicePerJvm(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
         Object result = null;
         try {
             createPerJvmAspect();
@@ -178,7 +178,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
             result = method.invoke(m_perJvm, new Object[]{joinPoint});
         }
         catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
+            throw e.getTargetException();
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -193,7 +193,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) {
+    private Object invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
         final Class targetClass = joinPoint.getTargetClass();
         Object result = null;
         try {
@@ -201,7 +201,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
             result = m_adviceRepository[methodIndex].invoke(m_perClass.get(targetClass), new Object[]{joinPoint});
         }
         catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
+            throw e.getTargetException();
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -216,7 +216,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerInstance(final int methodIndex, final JoinPoint joinPoint) {
+    private Object invokeAdvicePerInstance(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
         Object result = null;
         Object targetInstance = joinPoint.getTargetInstance();
 
@@ -229,7 +229,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
             m_adviceRepository[methodIndex].invoke(m_perInstance.get(targetInstance), new Object[]{joinPoint});
         }
         catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
+            throw e.getTargetException();
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -244,7 +244,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint) {
+    private Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
         Object result;
         try {
             final Thread currentThread = Thread.currentThread();
@@ -253,7 +253,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
             result = method.invoke(m_perThread.get(currentThread), new Object[]{joinPoint});
         }
         catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
+            throw e.getTargetException();
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
