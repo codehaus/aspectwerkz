@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.transform;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.util.Arrays;
@@ -99,6 +98,11 @@ public final class TransformationUtil {
     public static final ObjectType CALLER_SIDE_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint");
     public static final ObjectType CONSTRUCTOR_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.ConstructorJoinPoint");
     public static final ObjectType WEAK_REFERENCE_TYPE = new ObjectType("java.lang.ref.WeakReference");;
+
+    public static final int MEMBER_FIELD_GET_JOIN_POINT_TYPEJ = 1;
+    public static final int MEMBER_FIELD_SET_JOIN_POINT_TYPEJ = 2;
+    public static final int STATIC_FIELD_GET_JOIN_POINT_TYPEJ = 3;
+    public static final int STATIC_FIELD_SET_JOIN_POINT_TYPEJ = 4;
 
     /**
      * Converts String access types to BCEL access types.
