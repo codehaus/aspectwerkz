@@ -26,6 +26,8 @@ import org.codehaus.aspectwerkz.util.SequencedHashMap;
 /**
  * Manages pointcuts and introductions defined by this aspect.
  *
+ * @TODO: the getMethodPointcuts, getCallerSidePointcuts etc. (from xmldef) are used but not intiutive for users of attribdef. Better names for them would be getExecutionPointcuts and getCallPointcuts. How do we find a common denominator? Different AspectMetaData classes?
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AspectMetaData {
@@ -292,6 +294,24 @@ public class AspectMetaData {
     }
 
     /**
+     * Returns the method pointcut for a specific uuid and expression.
+     *
+     * @param uuid the uuid
+     * @param expression the expression
+     * @return the method pointcut
+     */
+    public MethodPointcut getMethodPointcut(final String uuid, final String expression) {
+        MethodPointcut pointcut = null;
+        for (Iterator it = m_methodPointcuts.iterator(); it.hasNext();) {
+            pointcut = (MethodPointcut)it.next();
+            if (m_uuid.equals(uuid) && pointcut.getExpression().equals(expression)) {
+                break;
+            }
+        }
+        return pointcut;
+    }
+
+    /**
      * Returns all the pointcuts for the method join point specified.
      *
      * @param classMetaData the meta-data for the class
@@ -311,6 +331,24 @@ public class AspectMetaData {
             }
         }
         return pointcutList;
+    }
+
+    /**
+     * Returns the get field pointcut for a specific uuid and expression.
+     *
+     * @param uuid the uuid
+     * @param expression the expression
+     * @return the method pointcut
+     */
+    public FieldPointcut getGetFieldPointcut(final String uuid, final String expression) {
+        FieldPointcut pointcut = null;
+        for (Iterator it = m_getFieldPointcuts.iterator(); it.hasNext();) {
+            pointcut = (FieldPointcut)it.next();
+            if (m_uuid.equals(uuid) && pointcut.getExpression().equals(expression)) {
+                break;
+            }
+        }
+        return pointcut;
     }
 
     /**
@@ -336,6 +374,24 @@ public class AspectMetaData {
     }
 
     /**
+     * Returns the set field pointcut for a specific uuid and expression.
+     *
+     * @param uuid the uuid
+     * @param expression the expression
+     * @return the method pointcut
+     */
+    public FieldPointcut getSetFieldPointcut(final String uuid, final String expression) {
+        FieldPointcut pointcut = null;
+        for (Iterator it = m_setFieldPointcuts.iterator(); it.hasNext();) {
+            pointcut = (FieldPointcut)it.next();
+            if (m_uuid.equals(uuid) && pointcut.getExpression().equals(expression)) {
+                break;
+            }
+        }
+        return pointcut;
+    }
+
+    /**
      * Returns all the pointcuts for the method join point specified.
      *
      * @param classMetaData the meta-data for the class
@@ -355,6 +411,24 @@ public class AspectMetaData {
             }
         }
         return pointcutList;
+    }
+
+    /**
+     * Returns the throws pointcut for a specific uuid and expression.
+     *
+     * @param uuid the uuid
+     * @param expression the expression
+     * @return the method pointcut
+     */
+    public ThrowsPointcut getThrowsPointcut(final String uuid, final String expression) {
+        ThrowsPointcut pointcut = null;
+        for (Iterator it = m_throwsPointcuts.iterator(); it.hasNext();) {
+            pointcut = (ThrowsPointcut)it.next();
+            if (m_uuid.equals(uuid) && pointcut.getExpression().equals(expression)) {
+                break;
+            }
+        }
+        return pointcut;
     }
 
     /**
@@ -380,6 +454,24 @@ public class AspectMetaData {
     }
 
     /**
+     * Returns the caller side pointcut for a specific uuid and expression.
+     *
+     * @param uuid the uuid
+     * @param expression the expression
+     * @return the method pointcut
+     */
+    public CallerSidePointcut getCallerSidePointcut(final String uuid, final String expression) {
+        CallerSidePointcut pointcut = null;
+        for (Iterator it = m_callerSidePointcuts.iterator(); it.hasNext();) {
+            pointcut = (CallerSidePointcut)it.next();
+            if (m_uuid.equals(uuid) && pointcut.getExpression().equals(expression)) {
+                break;
+            }
+        }
+        return pointcut;
+    }
+
+    /**
      * Returns all the pointcuts for the caller side join point specified.
      *
      * @param className the class name
@@ -399,6 +491,17 @@ public class AspectMetaData {
             }
         }
         return pointcutList;
+    }
+
+    /**
+     * Returns the cflow pointcut for a specific uuid and expression.
+     *
+     * @param uuid the uuid
+     * @param expression the expression
+     * @return the method pointcut
+     */
+    public FieldPointcut getCFlowPointcut(final String uuid, final String expression) {
+       throw new UnsupportedOperationException("not implemented yet");
     }
 
     /**
