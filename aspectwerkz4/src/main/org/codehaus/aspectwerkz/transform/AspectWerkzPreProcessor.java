@@ -48,6 +48,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
 
+    private final static String AW_TRANSFORM_DETAILS = "aspectwerkz.transform.details";
+
     private final static String AW_TRANSFORM_DUMP = "aspectwerkz.transform.dump";
 
     private final static TypePattern DUMP_PATTERN;
@@ -60,10 +62,14 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     public final static boolean VERBOSE;
 
+    public final static boolean DETAILS;
+
     static {
         // define the tracing and dump options
         String verbose = System.getProperty(AW_TRANSFORM_VERBOSE, null);
         VERBOSE = "yes".equalsIgnoreCase(verbose) || "true".equalsIgnoreCase(verbose);
+        String details = System.getProperty(AW_TRANSFORM_DETAILS, null);
+        DETAILS = "yes".equalsIgnoreCase(details) || "true".equalsIgnoreCase(details);
         String filter = System.getProperty(AW_TRANSFORM_FILTER, null);
         NOFILTER = "no".equalsIgnoreCase(filter) || "false".equalsIgnoreCase(filter);
         String dumpPattern = System.getProperty(AW_TRANSFORM_DUMP, null);

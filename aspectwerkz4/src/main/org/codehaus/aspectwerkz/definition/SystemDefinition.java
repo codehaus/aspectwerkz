@@ -423,9 +423,9 @@ public class SystemDefinition {
                 ExpressionVisitor expression = expressionInfo.getExpression();
 
                 if (expression.match(ctx)) {
-                    if (AspectWerkzPreProcessor.VERBOSE) {
+                    if (AspectWerkzPreProcessor.DETAILS) {
                         System.out.println(
-                                "[TRACE - match: " + expression.toString() + " @ "
+                                "[TRACE - match: " + expression + " @ "
                                 + aspectDef.getQualifiedName() + "/" +
                                 adviceDef.getName()
                         );
@@ -489,9 +489,9 @@ public class SystemDefinition {
                     }
                     if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) ||
                         expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx)) {
-                        if (AspectWerkzPreProcessor.VERBOSE) {
+                        if (AspectWerkzPreProcessor.DETAILS) {
                             System.out.println(
-                                    "[TRACE - earlymatch: " + expressionInfo.toString() + " @ "
+                                    "[TRACE - earlymatch: " + expressionInfo + " @ "
                                     + aspectDef.getQualifiedName() + "/" +
                                     adviceDef.getName()
                             );

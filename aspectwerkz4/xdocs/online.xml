@@ -402,6 +402,9 @@
                             <code>-Daspectwerkz.transform.verbose=true</code> (or =yes) turns on verbose mode
                         </li>
                         <li>
+                            <code>-Daspectwerkz.transform.details=true</code> (or =yes) turns on verbose mode for the matching of pointcuts
+                        </li>
+                        <li>
                             <code>-Daspectwerkz.transform.dump=...</code> will dump loaded class in
                             <code>./_dump/</code> directory.
                         If the value is
@@ -689,7 +692,8 @@ java -cp $CLASSPATH_1 org.codehaus.aspectwerkz.ProcessStarter ..
                 <p>
                     The regular
                     <code>AspectWerkz</code> weaver options
-                    <code>-Daspectwerkz.transform.verbose=true</code> and
+                    <code>-Daspectwerkz.transform.verbose=true</code>,
+                    <code>-Daspectwerkz.transform.details=true</code> and
                     <code>-Daspectwerkz.transform.dump=...</code>can be used.
                     Simply place them
                     <b>after ProcessStarter</b>.
@@ -829,7 +833,8 @@ java -Xdebug -Xrunaspectwerkz -Xbootclasspath/a:$BOOT_PATH ..
                 <p>
                 The regular
                     <code>AspectWerkz</code> weaver options
-                    <code>-Daspectwerkz.transform.verbose=true</code> and
+                    <code>-Daspectwerkz.transform.verbose=true</code>,
+                    <code>-Daspectwerkz.transform.details=true</code> and
                     <code>-Daspectwerkz.transform.dump=...</code>can be used.
                 </p>
             </subsection>

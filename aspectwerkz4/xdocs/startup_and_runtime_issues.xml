@@ -369,8 +369,8 @@ java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnE
 </target>
                     ]]></source>
                     <p/>
-                    There is also a native Maven plugin for this - you can read more about it
-                    <a href="TODO">here</a>.
+                    There is also an Ant task for this - you can read more about it
+                    <a href="#Ant_task_for_Offline_weaving">here</a>.
                 </p>
             </subsection>
             <subsection name="Packaging the post-compiled classes">

@@ -9,13 +9,16 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 1.0.RC3, which is likely to be the 1.0 final
+                    FIXME
+                </p>
+                <p>
+                    The latest official release is 1.0
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0.RC3.zip?download">1.0.RC3</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0.zip?download">1.0</a>
                         </li>
                         <br/>
                         <li>
@@ -37,6 +40,18 @@
                 </p>
             </subsection>
             <section name="Release notes">
+                <subsection name="New features and changes in release 1.0">
+                    <p>
+                        <ul>
+                            <li>AnnotationCTask to run AnnotaionC annotation compiler from Ant as a custom task
+                            (thanks to the_mindstorm(at)evolva(dot)ro)</li>
+                            <li>AspectWerkzCTask to run AspectWerkzC offline weaving from Ant as a custom task
+                            (thanks to the_mindstorm(at)evolva(dot)ro)</li>
+                            <li>Minor bug fix when using META-INF/aop.xml in J2EE environments</li>
+                            <li>Added verbosity on pointcut matchs with -Daspectwerkz.transform.details=true</li>
+                        </ul>
+                    </p>
+                </subsection>
                 <subsection name="New features and changes in release 1.0.RC3">
                     <p>
                         <ul>
@@ -47,11 +62,9 @@
                                 Bug fix in handler join point when Rtti is used.
                             </li>
                             <li>
-                                ASM jars are now remapped and embedded in aspectwerkz-
-                                <i>version</i>.jar so that it
+                                ASM jars are now remapped and embedded in aspectwerkz-<i>version</i>.jar so that it
                                 is possible to use AspectWerkz within projects having a dependancy on a specific
-                                ASM version (e.g. cglib, Hibernate, Spring, Geronimo, etc).
-                                <br/>
+                                ASM version (e.g. cglib, Hibernate, Spring, Geronimo, etc).<br/>
                                 The bin/aspectwerkz scripts are thus not referencing ASM anymore. ASM is only used
                                 if you need to recompile the project or when doing framework debugging.
                             </li>
@@ -80,8 +93,7 @@
                                 Upgraded to ASM 1.5.1
                             </li>
                             <li>
-                                Removed piccolo.jar from the
-                                <code>bin/</code> scripts since it is only required for Java 1.3 or JRockit (see FAQ, especially for use with WebLogic)
+                                Removed piccolo.jar from the <code>bin/</code> scripts since it is only required for Java 1.3 or JRockit (see FAQ, especially for use with WebLogic)
                             </li>
                             <li>
                                 Other bug fixes
@@ -93,16 +105,13 @@
                     <p>
                         <ul>
                             <li>
-                                Support for
-                                <b>args()</b> in the pointcut expressions. As a consequence, support for
+                                Support for <b>args()</b> in the pointcut expressions. As a consequence, support for
                                 direct access to arguments of advised method is possible and advices can have those
-                                parameters in their signature. See
-                                <a href="definition_issues.html#Pointcut_definition">docs</a>.
+                                parameters in their signature. See <a href="definition_issues.html#Pointcut_definition">docs</a>.
                             </li>
                             <li>
                                 <code>hasmethod</code> and
-                                <code>hasfield</code> pointcuts (contributed by
-                                <a href="http://today.java.net/pub/au/80">Michael Nascimento Santos</a>)
+                                <code>hasfield</code> pointcuts (contributed by <a href="http://today.java.net/pub/au/80">Michael Nascimento Santos</a>)
                             </li>
                             <li>
                                 J2SE 5 JVMTI (JSR-163) support updated for latest specification.
