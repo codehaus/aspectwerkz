@@ -19,7 +19,7 @@ public class MethodExecutionGetTargetAndArgsAroundAdvice2 implements Interceptor
     public Object intercept(Invocation invocation) throws Throwable {
         Run.ADVICE_HIT++;
         Object[] args = invocation.getArguments();
-        Object target = invocation.getProxy().getProxyContext().unwrap();
+        Object target = invocation.getProxy();
         int i = ((Integer) args[0]).intValue();
         Execution execution = (Execution) target;
         return invocation.proceed();

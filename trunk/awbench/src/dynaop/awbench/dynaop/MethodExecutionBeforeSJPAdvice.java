@@ -17,6 +17,7 @@ import awbench.Run;
 public class MethodExecutionBeforeSJPAdvice implements Interceptor {
     public Object intercept(Invocation invocation) throws Throwable {
         Run.ADVICE_HIT++;
+        Object m = invocation.getMethod();
         return invocation.proceed();
     }
 }

@@ -16,7 +16,7 @@ import awbench.Run;
  */
 public class MethodExecutionAroundJPAdvice implements Interceptor {
     public Object intercept(Invocation invocation) throws Throwable {
-        Object target = invocation.getProxy().getProxyContext().unwrap();
+        Object target = invocation.getProxy();
         Run.ADVICE_HIT++;
         return invocation.proceed();
     }

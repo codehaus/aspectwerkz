@@ -25,6 +25,10 @@
         <advice name="beforeWithWrappedArgs" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
+    <bind pointcut="execution(* awbench.method.Execution->beforeWithArgsAndTarget(int))">
+        <advice name="beforeWithArgsAndTarget" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
+
     <bind pointcut="execution(* awbench.method.Execution->beforeAfter())">
         <advice name="beforeAfter_1" aspect="awbench.jboss.MethodExecutionAspect"/>
         <advice name="beforeAfter_2" aspect="awbench.jboss.MethodExecutionAspect"/>
@@ -38,20 +42,12 @@
         <advice name="afterThrowing" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
-    <bind pointcut="execution(* awbench.method.Execution->around_())">
-        <advice name="around" aspect="awbench.jboss.MethodExecutionAspect"/>
-    </bind>
-
     <bind pointcut="execution(* awbench.method.Execution->aroundSJP())">
         <advice name="aroundSJP" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
     <bind pointcut="execution(* awbench.method.Execution->aroundJP())">
         <advice name="aroundJP" aspect="awbench.jboss.MethodExecutionAspect"/>
-    </bind>
-
-    <bind pointcut="execution(* awbench.method.Execution->beforeWithArgsAndTarget(int))">
-        <advice name="beforeWithArgsAndTarget" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
     <bind pointcut="execution(* awbench.method.Execution->aroundStackedWithArgAndTarget(int))">
