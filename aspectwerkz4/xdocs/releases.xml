@@ -1,0 +1,621 @@
+<?xml version="1.0"?>
+<document>
+    <properties>
+        <title>Releases</title>
+        <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
+        <author email="alex at gnilux dot com">alexandre vasseur</author>
+    </properties>
+    <body>
+        <section name="Official Builds">
+            <subsection name="Releases">
+                <p>
+                    The latest official release is 1.0.RC3, which is likely to be the 1.0 final
+                </p>
+                <p>
+                    Download:
+                    <ul>
+                        <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0.RC3.zip?download">1.0.RC3</a>
+                        </li>
+                        <br/>
+                        <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.10.zip?download">0.10</a>
+                        </li>
+                        <br/>
+                        <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.9.zip?download">0.9</a>
+                        </li>
+                        <br/>
+                        <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.1.zip?download">0.8.1</a>
+                        </li>
+                        <br/>
+                        <li>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/">Native HotSwap modules (for 0.8 and later).</a>
+                        </li>
+                    </ul>
+                </p>
+            </subsection>
+            <section name="Release notes">
+                <subsection name="New features and changes in release 1.0.RC3">
+                    <p>
+                        <ul>
+                            <li>
+                                Bug fix in Annotation matching when using offline mode weaving. Thanks to Allan Jones.
+                            </li>
+                            <li>
+                                Bug fix in handler join point when Rtti is used.
+                            </li>
+                            <li>
+                                ASM jars are now remapped and embedded in aspectwerkz-
+                                <i>version</i>.jar so that it
+                                is possible to use AspectWerkz within projects having a dependancy on a specific
+                                ASM version (e.g. cglib, Hibernate, Spring, Geronimo, etc).
+                                <br/>
+                                The bin/aspectwerkz scripts are thus not referencing ASM anymore. ASM is only used
+                                if you need to recompile the project or when doing framework debugging.
+                            </li>
+                            <li>
+                                New sample for annotation matching (ant samples:annotation, ant samples:offline:annotation)
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
+                <subsection name="New features and changes in release 1.0.RC2">
+                    <p>
+                        <ul>
+                            <li>
+                                Better support for complex custom annotations, less requirements when writing the annotation proxy.
+                            </li>
+                            <li>
+                                Fix in pointcut matching that lead to a slow weave time behavior in 1.0.RC1
+                            </li>
+                            <li>
+                                Fixed an issue when using the join point RTTI in multi threaded environments or in case of reentrancy
+                            </li>
+                            <li>
+                                Upgraded Javassist dependancy from 3.0beta to 3.0RC1
+                            </li>
+                            <li>
+                                Upgraded to ASM 1.5.1
+                            </li>
+                            <li>
+                                Removed piccolo.jar from the
+                                <code>bin/</code> scripts since it is only required for Java 1.3 or JRockit (see FAQ, especially for use with WebLogic)
+                            </li>
+                            <li>
+                                Other bug fixes
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
+                <subsection name="New features and changes in release 1.0.RC1">
+                    <p>
+                        <ul>
+                            <li>
+                                Support for
+                                <b>args()</b> in the pointcut expressions. As a consequence, support for
+                                direct access to arguments of advised method is possible and advices can have those
+                                parameters in their signature. See
+                                <a href="definition_issues.html#Pointcut_definition">docs</a>.
+                            </li>
+                            <li>
+                                <code>hasmethod</code> and
+                                <code>hasfield</code> pointcuts (contributed by
+                                <a href="http://today.java.net/pub/au/80">Michael Nascimento Santos</a>)
+                            </li>
+                            <li>
+                                J2SE 5 JVMTI (JSR-163) support updated for latest specification.
+                            </li>
+                            <li>
+                                bin/aspectwerkz command line tool now provides autodetection of BEA JRockit and J2SE 5.
+                            </li>
+                            <li>
+                                Support for pointcut expression defined in the XML body of the &lt;pointcut&gt; element.
+                            </li>
+                            <li>
+                                 Bug fixes.
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
+                <subsection name="New features and changes in release 1.0-beta2">
+                    <p>
+                        <ul>
+                            <li>
+						   		Many bug fixes.
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
+                <subsection name="New features and changes in release 1.0-beta1">
+                    <p>
+                        Amont many other things this release is shipped with a completely new pointcut grammar which is much more
+                        expressive and powerful, and rich annotation support for both typed and untyped annotations.
+                        <ul>
+                            <li>
+                                Support for deploying several
+                                <code>aop.xml</code> Aspect defintion/deployment files alongside deployed
+                                application (
+                                <code>WEB-INF/aop.xml</code>,
+                                <code>META-INF/aop.xml</code>) and have them following
+                                the classloader hierarchy.
+                            </li>
+                            <li>
+                                One single API to access both JavaDoc-style and Java 1.5 annotations, allows using them
+                                together seamlessly.
+                            </li>
+                            <li>
+                                Typed and untyped annotations for JavaDoc-style annotations.
+                                Supports the same parameters types as Java 1.5 annotations and has strongly
+                                typed compile time checking (using a new annotation compiler).
+                            </li>
+                            <li>
+                                <code>within</code> and
+                                <code>withincode</code> pointcuts
+                            </li>
+                            <li>
+                                More expressive
+                                <code>cflow</code> pointcuts that can take any pointcut
+                                expression as "parameter" and can be used to build arbitrary nested expressions.
+                            </li>
+                            <li>
+                                Matching on annotations.
+                            </li>
+                            <li>
+                                Matching on modifiers (including
+                                <code>!public</code> and
+                                <code>NOT static</code> etc.)
+                            </li>
+                            <li>
+                                Matching on subtypes for parameters and return values.
+                            </li>
+                            <li>
+                                System wide pointcuts (in the XML deployment descriptor).
+                            </li>
+                            <li>
+                                Pointcut references (refer to pointcuts defined in other aspects than the one you are using it in).
+                            </li>
+                            <li>
+                                JSR-163 JVMTI support for Java 1.5 class load time weaving with
+                                <code>-javaagent:</code>
+                            </li>
+                            <li>
+                                JoinPoint class is now serializable.
+                            </li>
+                            <li>
+                                JoinPoint instances can be "resetted", to start over a complete advice chain (useful for failover etc.).
+                            </li>
+                            <li>
+                                Documentation enhanced and refactored.
+                            </li>
+                            <li>
+                                Introductory tutorials.
+                            </li>
+                            <li>
+                                Some bug fixes.
+                            </li>
+                            <li>
+                                Please note that there are changes to the way annotations (formerly call attributes)
+                                are complied and retrieved. F.e.
+                                <code>AspectC</code> has been replaced by
+                                <code>AnnontationC</code>
+                                and has slightly different options, so to compile the aspects use
+                                <code>AnnotationC</code>
+                                from now on.
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
+                <subsection name="New features and changes in release 0.10">
+                    <p>
+                        This release is mainly a bug-fix release. Refer to release note of 0.10.RC2 and 0.10.RC1 for a list of new
+                        features as compared to 0.9.
+                        <ul>
+                            <li>
+                                A thread safe issue has been fixed in the join point execution model.
+                            </li>
+                            <li>
+                                IBM JRE support has been fixed.
+                            </li>
+                            <li>
+                                Unix/Linux comamnd line scripts has been fixed (was missing bcel.jar).
+                            </li>
+                            <li>
+                                Exception throwned by method of weaved classes are not wrapped anymore. Exception throwned
+                                by mixin implementation are not wrapped anymore.
+                            </li>
+                            <li>
+                                JIT
+                                <code>JoinPoint</code> compilation is now thread safe.
+                            </li>
+                            <li>
+                                <code>serialVersionUID</code> computation fixed.
+                            </li>
+                            <li>
+                                Due to a lack of
+                                <code>within</code> expression support in the pointcut grammar (addressed in 1.0), the handler pointcut
+                                are very expensive to match. Those are deactivated by default. If your system uses those handler pointcuts, you have to
+                                add the
+                                <code>-Daspectwerkz.handler.pointcut=true</code> JVM option when starting up your JVM.
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
+                <subsection name="New features and changes in release 0.10RC2">
+                    <p>
+                        In this release is mainly a bug-fix release, but we have added some new functionality
+                        (and changed some APIs) as well:
+                        <ul>
+                            <li>
+                                Aspects does not have to extend the
+                                <code>Aspect</code> base class anymore, but
+                                can be any Java class and extend anything they like.
+                            </li>
+                            <br/>
+                            <li>
+                                The
+                                <code>JoinPoint</code> class has these two methods:
+                                <ul>
+                                    <li>
+                                        <code>getSignature()</code> - which is used to retrieve the static signature
+                                        for the join point.
+                                    </li>
+                                    <li>
+                                        <code>getRtti()</code> - which is used to retrieve the RTTI (Runtime Type Information)
+                                        about the join point.
+                                    </li>
+                                </ul>
+                                Both these methods returns a base interface that could be used, but is usually best
+                                to cast to a more fine-grained and specific type.
+                            </li>
+                            <br/>
+                            <li>
+                                Retrieval of information about the system, adding and reading of parameters and metadata etc. is
+                                done through the
+                                <code>CrossCuttingInfo</code> class. An aspect or mixin that is
+                                interested in accessing this info should have a constructor that takes a
+                                <code>CrossCuttingInfo</code> instance as its only parameter.
+                                See the docs for details.
+                            </li>
+                            <br/>
+                            <li>
+                                Pluggable aspect container - The possibility to provide your own aspect container
+                                implementation is back.
+                                Useful if you need to control how your aspects are instantiated for example if you
+                                want that to be handled by an IoC container (Spring, PicoContainer etc.))
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
+                <subsection name="New features and changes in release 0.10RC1">
+                    <p>
+                        AspectWerkz has gone through a lot of changes, the whole core engine has
+                        for example been thrown out and replaced by a much more flexible and
+                        performant one.  The join point model is much more expressive and
+                        orthogonal we have also implemented a JIT compiler that is making
+                        AspectWerkz much more performant.  On top of that we have a new
+                        implementation of true runtime weaving, which allows you to redefine
+                        your aspect model including adding
+                        <b>new</b> pointcuts at runtime.
+                    </p>
+                    <p>
+                        We will not list all new features here, see the
+                        <a href="http://aspectwerkz.codehaus.org/">docs</a>
+                        for details. But the main new features are these:
+                    </p>
+                    <subsection name="Expressiveness and orthogonality">
+                        <p>
+                            We have improved the expressiveness and orthogonality a lot.
+                        </p>
+                        <p>
+                            AspectWerkz currently supports the following join points:
+                            <ul>
+                                <li>
+                                    method (static and member) execution
+                                </li>
+                                <li>
+                                    method (static and member) call
+                                </li>
+                                <li>
+                                    constructor execution
+                                </li>
+                                <li>
+                                    constructor call
+                                </li>
+                                <li>
+                                    field (static and member) modification
+                                </li>
+                                <li>
+                                    field (static and member) access
+                                </li>
+                                <li>
+                                    catch clauses
+                                </li>
+                                <li>
+                                    cflow
+                                </li>
+                            </ul>
+                        </p>
+                        <p>
+                            In the latest version we have reached a high level of orthogonality:
+                            <ul>
+                                <li>
+                                    All advice types (around, after and before) works with all poincut
+                                    designators (except for the handler pointcut which is only possible to
+                                    bind to the before advice).
+                                </li>
+                                <li>
+                                    You can compose new pointcuts by mixing any types of pointcuts.
+                                </li>
+                            </ul>
+                            The syntax has changed slightly, both in the XML and annotation definition. However not more than that the migration should be fairly easy. See the
+                            <a href="http://aspectwerkz.codehaus.org/">docs</a> for details on the new syntax.
+                        </p>
+                    </subsection>
+                    <subsection name="Performance improvements and JIT compilation">
+                        <p>
+                        We have implemented a JIT (Just-In-Time) compiler that detects advice chains that are often
+                        executed and generates a custom class on the fly that invokes the advice chain
+                        and the target join point statically.
+                        </p>
+                        <p>
+                        Here are some simple but interesting benchmarks comparing the latest distribution of
+                        AspectWerkz, JBoss and AspectJ:
+                        </p>
+                        <p>
+                            <b>The overhead of one around advice applied to a method call join point:</b>
+                            <table>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <td>AspectJ 1.1.1
+                                    </td>
+                                    <td>0.000018 ms/call
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>AspectWerkz 0.10 RC1
+                                    </td>
+                                    <td>0.000097 ms/call
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>JBoss AOP 1.0Beta
+                                    </td>
+                                    <td>0.000181 ms/call
+                                    </td>
+                                </tr>
+                            </table>
+                        </p>
+                    </subsection>
+                    <subsection name="Runtime weaving">
+                        <p>
+                        In addition to the capabilities to rearrange aspects and advices at existing
+                        join points and swapping mixin implementation
+                        at runtime, we provide a unique feature of adding new pointcuts at runtime
+                        without any prior knowledge.
+                        The implementation is based on Java HotSwap and thus requires a compliant
+                        JVM.
+                        </p>
+                        <p>
+                        A simple API allows to refine the aspect definition to add new pointcuts
+                        and then trigger the activation of it.  Prior to pointcuts addition,
+                        your programs are guaranteed to run without any overhead since the
+                        bytecode does not gets modified prior activation. Moreover the runtime
+                        weaving does not require to have a remote JVM to control the HotSwap
+                        API since we provide a dedicated in-process module.
+                        </p>
+                    </subsection>
+                </subsection>
+                <subsection name="New features and changes in release 0.9.x">
+                    <ul>
+                        <li>
+                            Online architecture for class load time weaving supports IBM JRE and BEA JRockit
+                        </li>
+                        <li>
+                            DTD has been refactored to support
+                            <code>system</code> element and deprecated syntax from 0.8.x has been removed
+                        </li>
+                        <li>
+                            New self-defined / self-contained Aspect model based on metadata / JSR-175 concepts.
+                            The new Aspect model coexists with the 0.former model and both will be maintained since they
+                            target different needs
+                        </li>
+                        <li>
+                            New pointcut algebra implementation
+                        </li>
+                        <li>
+                            Released under LGPL-style license
+                        </li>
+                        <li>
+                            Documentation reorganized for new Aspect model coverage
+                        </li>
+                        <li>
+                            Bug fix (refer to
+                            <a href="http://jira.codehaus.org/secure/BrowseProject.jspa?id=10105">Jira</a>)
+                        </li>
+                    </ul>
+                </subsection>
+                <subsection name="New features and changes in release 0.8.x">
+                    <ul>
+                        <li>
+                            JDK 1.3 compatible.
+                        </li>
+                        <li>
+                            New online architecture, with several options and java 1.3 support
+                            (not dependent on JMangler anymore).
+                        </li>
+                        <li>
+                            New annotations -> XML compiler (no more metaData dir and meta-data
+                            compilers)
+                        </li>
+                        <li>
+                            Offline compiler refactored. Now support rollback on error facility.
+                            (Note that the
+                            <code>bin/aspectwerkz -offline</code> must now
+                            be invocated with the definition file as first argument.)
+                        </li>
+                        <li>
+                            Documentation updated and reorganized.
+                        </li>
+                        <li>
+                            Released under a BSD-style license.
+                        </li>
+                        <li>
+                            Tested and verified to work for EJBs under WLS using both online
+                            and offline mode.
+                        </li>
+                        <li>
+                            Non-reentrancy configuration for join points.
+                        </li>
+                        <li>
+                            Definition validator.
+                        </li>
+                    </ul>
+                </subsection>
+                <subsection name="New features and changes in release 0.7.x">
+                    <ul>
+                        <li>
+                            Pluggable custom defined join point controller. The
+                            join point controller gives you complete control
+                            over your advices at runtime (at certain join
+                            points).
+                        </li>
+                        <li>
+                            Package namespaces and scopes in the XML definition.
+                        </li>
+                        <li>
+                            cflow (control flow) pointcuts.
+                        </li>
+                        <li>
+                            Performance improvement for advices by a factor of 2.
+                        </li>
+                        <li>
+                            Many, many bugfixes (introduced by the new pointcut model
+                            implementation in 0.6.x).
+                        </li>
+                        <li>
+                            The runtime annotations tags have changed. (They now have
+                            an aspectwerkz namespace and are using the same syntax as XDoclet.)
+                        </li>
+                        <li>
+                            The prefix
+                            <code>___AW_</code> is now used at all introduced methods and fields.
+                            Including the
+                            <code>Identifiable.getUuid</code> method which is renamed to
+                            <code>___AW_getUuid</code>
+                        </li>
+                        <li>
+                            Documentation and examples have been updated.
+                        </li>
+                        <li>
+                            Uses new version of JMangler (3.0.2) which is released under LGPL.
+                        </li>
+                    </ul>
+                </subsection>
+                <subsection name="New features and changes in release 0.6.x">
+                    <ul>
+                        <li>
+                            Completely new definition model. Aspects, advices,
+                            introductions and pointcuts are now completely orthogonal
+                            and the model now has the essence of the AspectJ model.
+                            See the documentation for details.
+                        </li>
+                        <li>
+                            Abstract aspects definitions as well as pointcut expressions
+                            (e.g.
+                            <code>((pc1 OR pc2) AND !pc3)</code> and similar).
+                        </li>
+                        <li>
+                            Multiple weave models.
+                        </li>
+                        <li>
+                            Multiple AspectWerkz system can run in the same JVM concurrently.
+                        </li>
+                        <li>
+                            setField and getField now works for get and set java.util.*
+                            collection fields (e.g. add/get/remove/size and so on).
+                        </li>
+                        <li>
+                            Advice and introduction container is now pluggable. I.e. the
+                            user can provide its own custom implementation (f.e. to enable
+                            persistence).
+                        </li>
+                        <li>
+                            The transparent persistence of advices and introductions have
+                            been moved to the sandbox.
+                        </li>
+                        <li>
+                            Many bug fixes.
+                        </li>
+                    </ul>
+                </subsection>
+                <subsection name="New features and changes in release 0.5.x">
+                    <ul>
+                        <li>
+                            Caller side pointcuts. I.e. the possibility to advise a
+                            method invocation (caller side) apart from method
+                            execution (callee side).
+                        </li>
+                        <li>
+                            Fine-grained pattern language for picking out pointcuts.
+                            It is now possible to pick out method pointcuts by method name,
+                            parameter types and return type as well as field pointcuts
+                            by field name and field type. All these support regular
+                            expressions.
+                        </li>
+                        <li>
+                            Runtime attributes for advices (method/field/throws).
+                            I.e. add meta-data to your methods/field/classes as
+                            JavaDoc tags which are picked up by the weaver and
+                            used as rule set when doing the transformations.
+                        </li>
+                        <li>
+                            Class selectors for aspects. I.e. pick out classes using
+                            regular expressions.
+                        </li>
+                        <li>
+                            Advising of static fields.
+                        </li>
+                        <li>
+                            Parameters to advices. The possibility to pass
+                            parameters to advices through the XML definition.
+                        </li>
+                        <li>
+                            Advice stacks. The possibility to define stacks/chains
+                            of advices that can be reused throughout the XML definition.
+                        </li>
+                        <li>
+                            MethodAdvice has been renamed to AroundAdvice and the
+                            FieldAdvices has been renamed to PreAdvice and PostAdvice.
+                        </li>
+                        <li>
+                            Creation and registration of new advices at runtime
+                            (in previous releases you could only add/remove/reorder
+                            existing advices).
+                        </li>
+                        <li>
+                            Ant task for offline post-processing.
+                        </li>
+                        <li>
+                            More flexible startup and definition handling process.
+                        </li>
+                        <li>
+                            Multiple pattern declarations for pointcuts.
+                        </li>
+                        <li>
+                            More documentation and examples.
+                        </li>
+                        <li>
+                            Many many bugfixes.
+                        </li>
+                    </ul>
+                </subsection>
+            </section>
+        </section>
+    </body>
+</document>
+
