@@ -102,12 +102,12 @@ public class MethodExecutionRun {
         enhancer.setCallbacks(new Callback[]{
             new MethodExecutionBeforeWithPrimitiveArgsAdvice(),
             new IgnoreInterceptor()});
-        enhancer.setCallbackFilter(new IgnoreAllBut("withPrimitiveArgs"));
+        enhancer.setCallbackFilter(new IgnoreAllBut("beforeWithPrimitiveArgs"));
         test = (IExecution) enhancer.create();
         test.warmup();
         run = new Run("method execution, before advice, args() access for primitive");
         for (int i = 0; i < Run.ITERATIONS; i++) {
-            test.withPrimitiveArgs(Constants.CONST_0);
+            test.beforeWithPrimitiveArgs(Constants.CONST_0);
         }
         run.end();
 
@@ -116,12 +116,12 @@ public class MethodExecutionRun {
         enhancer.setCallbacks(new Callback[]{
             new MethodExecutionBeforeWithWrappedArgsAdvice(),
             new IgnoreInterceptor()});
-        enhancer.setCallbackFilter(new IgnoreAllBut("withWrappedArgs"));
+        enhancer.setCallbackFilter(new IgnoreAllBut("beforeWithWrappedArgs"));
         test = (IExecution) enhancer.create();
         test.warmup();
         run = new Run("method execution, before advice, args() access for objects");
         for (int i = 0; i < Run.ITERATIONS; i++) {
-            test.withWrappedArgs(Constants.WRAPPED_0);
+            test.beforeWithWrappedArgs(Constants.WRAPPED_0);
         }
         run.end();
 
@@ -130,12 +130,12 @@ public class MethodExecutionRun {
         enhancer.setCallbacks(new Callback[]{
             new MethodExecutionBeforeWithArgsAndTargetAdvice(),
             new IgnoreInterceptor()});
-        enhancer.setCallbackFilter(new IgnoreAllBut("withArgsAndTarget"));
+        enhancer.setCallbackFilter(new IgnoreAllBut("beforeWithArgsAndTarget"));
         test = (IExecution) enhancer.create();
         test.warmup();
         run = new Run("method execution, before advice, args() and target() access");
         for (int i = 0; i < Run.ITERATIONS; i++) {
-            test.withArgsAndTarget(Constants.CONST_0);
+            test.beforeWithArgsAndTarget(Constants.CONST_0);
         }
         run.end();
 

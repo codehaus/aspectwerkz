@@ -16,12 +16,10 @@
 <!-- ============================================================== -->
 <project name="AspectWerkz Bench" default="run" basedir=".">
 
-    <!--    define the AspectWerkz classpath used to compile the project    -->
-    <!--    we exclude jarjar and alike, used only for build purpose        -->
     <path id="project.classpath">
-<!--        <pathelement path="${java.home}/../lib/tools.jar"/>-->
         <fileset dir="${basedir}/lib">
             <exclude name="aspectwerkz-1.0*"/>
+            <exclude name="aspectwerkz-core-1.0*"/>
             <include name="*.jar"/>
         </fileset>
         <!-- external classpath -->
@@ -32,6 +30,7 @@
     <path id="aspectwerkz_1_0.classpath">
         <fileset dir="${basedir}/lib">
             <exclude name="aspectwerkz-2.0*"/>
+            <exclude name="aspectwerkz-core-2.0*"/>
             <include name="*.jar"/>
         </fileset>
         <!-- external classpath -->
@@ -181,10 +180,10 @@
     </target>
 
     <target name="pre:aspectwerkz_1_0">
-        <awc_1_0 destdir="${d}/target" classpathref="project.classpath" srcdir="${d}/src/aspectwerkz_1_0"/>
+        <awc_1_0 destdir="${d}/target" classpathref="aspectwerkz_1_0.classpath" srcdir="${d}/src/aspectwerkz_1_0"/>
         <awweave_1_0 classpathref="aspectwerkz_1_0.classpath" targetdir="${d}/target"
-            verbose="false"
-            definition="${d}/src/aspectwerkz_1_0/META-INF/aop.xml"/>
+            definition="${d}/src/aspectwerkz_1_0/META-INF/aop.xml"
+            />
     </target>
 
     <target name="pre:jboss">
@@ -311,10 +310,16 @@
         </java>
     </target>
 
+    <target name="output">
+        <java classpathref="project.classpath" classname="awbench.Output" fork="true">
+            <arg line="awb.log"/>
+        </java>
+    </target>
+
     <target name="run:all" depends="init">
-        <antcall target="clean"/>
-        <antcall target="run"/>
-        <antcall target="clean"/>
+<!--        <antcall target="clean"/>-->
+<!--        <antcall target="run"/>-->
+        <antcall target="clean" />
         <antcall target="run:aw"/>
         <antcall target="clean"/>
         <antcall target="run:aw_1_0"/>
