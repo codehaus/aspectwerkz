@@ -115,6 +115,7 @@ public class EWorldUtil {
             ClassCacheTuple tuple = (ClassCacheTuple)it.next();
             if (tuple.getClassName().startsWith(classPattern)) {
                 try {
+                    System.out.println("hotswap " + tuple.getClassName());
                     HotSwapClient.hotswap(tuple.getClassLoader().loadClass(tuple.getClassName()));
                 } catch (Throwable t) {
                     System.err.println("Unable to hotswap " + tuple.getClassName() + ": " + t.getMessage());

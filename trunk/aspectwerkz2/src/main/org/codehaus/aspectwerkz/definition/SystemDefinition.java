@@ -364,6 +364,10 @@ public class SystemDefinition {
         }
     }
 
+    public Set getPreparePackages() {
+        return m_preparePackages;
+    }
+
     /**
      * Checks if there exists an advice with the name specified.
      *
