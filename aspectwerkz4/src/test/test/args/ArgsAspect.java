@@ -78,12 +78,12 @@ public class ArgsAspect {
     /**
      * @Before in_scope && execution(* withArray(..)) && args(l, s, matrix)
      */
-    public void withArray(JoinPoint joinPoint, long l, String s, int[] matrix) {
+    public void withArray(JoinPoint joinPoint, long l, String s, int[][] matrix) {
         String iis = "";
         for (int i = 0; i < matrix.length; i++) {
-            //for (int j = 0; j < matrix[i].length; j++) {
-                iis += ""+matrix[i]+"-";
-            //}
+            for (int j = 0; j < matrix[i].length; j++) {
+                iis += ""+matrix[i][j]+"-";
+            }
         }
         ((Loggable) joinPoint.getTarget()).log("before " + l + " " + s + " " + iis + " ");
     }
