@@ -375,7 +375,7 @@ public class SystemDefinitionContainer {
 
         //Note: Tomcat classLoader.toString is too verbose so we allow 120 chars.
         if ((loader != null) && (loader.toString().length() < 120)) {
-            dump.append(loader.toString());
+            dump.append(loader.toString()).append("@").append(loader.hashCode());
         } else if (loader != null) {
             dump.append(loader.getClass().getName()).append("@").append(loader.hashCode());
         } else {
