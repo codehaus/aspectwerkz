@@ -879,12 +879,4 @@ public class AsmClassInfo implements ClassInfo {
 
     }
 
-    private static class ClassInfoQuery {
-        public ClassInfoQuery(String className, boolean lazyAttributes) {
-            this.className = className;
-            this.lazyAttributes = lazyAttributes;
-        }
-        public String className;
-        public boolean lazyAttributes = true;
-    }
 }

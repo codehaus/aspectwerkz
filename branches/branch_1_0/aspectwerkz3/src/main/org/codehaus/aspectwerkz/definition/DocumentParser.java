@@ -92,10 +92,7 @@ public class DocumentParser {
         final Element root = document.getRootElement();
 
         // parse the transformation scopes
-        long s = System.currentTimeMillis();
-        List o = parseSystemElements(loader, root);
-        System.out.println("DocumentParser.parse " + (System.currentTimeMillis()-s));
-        return o;
+        return parseSystemElements(loader, root);
     }
 
     /**
