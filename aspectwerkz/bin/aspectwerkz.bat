@@ -3,8 +3,6 @@
 @REM AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
 @REM Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
 @REM
-@REM Script is based on the startup script for JMangler
-@REM
 @REM This library is free software; you can redistribute it and/or
 @REM modify it under the terms of the GNU Lesser General Public
 @REM License as published by the Free Software Foundation; either
@@ -23,7 +21,6 @@
 @ECHO OFF
 
 set ASPECTWERKZ_VERSION=0.7.1
-set TRANSFORMATION__ALGORITHM=jmangler-order.config
 
 IF "%1"=="" goto error
 IF "%ASPECTWERKZ_HOME%"=="" goto error_no_aw_home
@@ -39,13 +36,13 @@ set OFFLINE="false"
 IF "%1"=="-offline" set OFFLINE="true"
 
 IF "%OFFLINE%"==""false"" (
-    "%JAVA_COMMAND%" -cp "%ASPECTWERKZ_HOME%\lib\jmangler-core.jar;%JAVA_HOME%\lib\tools.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar" org.cs3.jmangler.hook.starter.CLSubstitutor -cp "%CP%" --jh "%ASPECTWERKZ_HOME%" --cf "%ASPECTWERKZ_HOME%\config\aspectwerkz.conf" --tcp "%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
+    "%JAVA_COMMAND%" -cp "%JAVA_HOME%\lib\tools.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar" org.codehaus.aspectwerkz.hook.ProcessStarter -Daspectwerkz.classloader.preprocessor=org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar" -cp "%CP%" -cp "%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
     @exit /B %ERRORLEVEL%
 ) ELSE (
     IF "%1"=="" goto error
     IF "%2"=="" goto error
     IF "%3"=="" goto error
-    "%JAVA_COMMAND%" -Daspectwerkz.definition.file="%3" -Daspectwerkz.metadata.dir="%4" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -Dorg.cs3.jmangler.initfile="%ASPECTWERKZ_HOME%\config\%TRANSFORMATION__ALGORITHM%" -cp "%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\jmangler-core.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar" org.cs3.jmangler.offline.starter.Main --cp "%2" --tcp "%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar" --cf "%ASPECTWERKZ_HOME%\config\aspectwerkz.conf"
+    "%JAVA_COMMAND%" -Daspectwerkz.definition.file="%3" -Daspectwerkz.metadata.dir="%4" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -cp "%ASPECTWERKZ_HOME%\lib\ant-1.5.2.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\bcel.jar" org.codehaus.aspectwerkz.compiler.AspectWerkzC -verbose org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor %2%
     @exit /B %ERRORLEVEL%
 )
 
