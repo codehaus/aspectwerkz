@@ -224,7 +224,6 @@ public class AsmHelper implements Constants, TransformationConstants {
             Object[] args = new Object[]{
                 className, bytes, new Integer(0), new Integer(bytes.length)
             };
-            System.out.println("-->AsmHelper.loadClass  " + className + " in "  + loader);
             Class clazz = (Class) method.invoke(loader, args);
 
             method.setAccessible(false);
