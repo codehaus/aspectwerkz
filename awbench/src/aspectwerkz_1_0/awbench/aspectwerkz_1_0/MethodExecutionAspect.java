@@ -62,7 +62,7 @@ public class MethodExecutionAspect {
     public Object afterReturning(JoinPoint jp) throws Throwable {
         String value = null;
         Object result = jp.proceed();
-        if (value instanceof String) {
+        if (result instanceof String) {
             value = (String)result;
             Run.ADVICE_HIT++;
         }
