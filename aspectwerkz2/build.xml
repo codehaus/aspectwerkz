@@ -124,6 +124,16 @@
         </javac>
     </target>
 
+    <!-- =================================================== -->
+    <!--  offline transformation of the samples -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:transform"
+        depends="clean, aspectwerkz:init, aspectwerkz:compile, aspectwerkz:samples:aspectc">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-offline ${basedir}/src/samples/samples-attribdef.xml -verbose -verify -cp ${extensions.classes} ${samples.classes}"/>
+        </exec>
+    </target>
+
     <!-- ============================================================== -->
     <!-- create distribution -->
     <!-- ============================================================== -->
@@ -186,8 +196,12 @@
                 </fileset>
             </classpath>
         </javac>
-        <jar jarfile="${target.dir}/samples.jar" basedir="${samples.classes}"/>
-        <copy tofile="${dist.dir}/samples.jar" file="${target.dir}/samples.jar" overwrite="true"/>
+        <!-- run AspectC on the samples Aspects -->
+        <exec executable="java">
+            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.3.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.definition.AspectC ${basedir}/src/samples -verbose ${samples.classes}"/>
+        </exec>
+        <jar jarfile="${target.dir}/aspectwerkz-samples.jar" basedir="${samples.classes}"/>
+        <copy tofile="${dist.dir}/aspectwerkz-samples.jar" file="${target.dir}/aspectwerkz-samples.jar" overwrite="true"/>
     </target>
 
     <!-- =================================================== -->
@@ -310,6 +324,38 @@
             <arg line="${input.args}"/>
         </java>
     </target>
+
+    <!-- =================================================== -->
+    <!--  runs the logging sample in offline mode -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:offlinelogging"
+        depends="aspectwerkz:transform">
+        <java classname="examples.logging.Target" fork="true">
+            <classpath>
+                <pathelement path="${java.home}/../lib/tools.jar"/>
+                <fileset dir="${lib.dir}" includes="*.jar"/>
+                <pathelement path="${main.classes}"/>
+                <pathelement path="${samples.classes}"/>
+            </classpath>
+            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml"/>
+        </java>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the introduction sample in offline mode -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:offlineintroduction"
+        depends="aspectwerkz:transform">
+        <java classname="examples.introduction.Target" fork="true">
+            <classpath>
+                <pathelement path="${java.home}/../lib/tools.jar"/>
+                <fileset dir="${lib.dir}" includes="*.jar"/>
+                <pathelement path="${main.classes}"/>
+                <pathelement path="${samples.classes}"/>
+            </classpath>
+            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml"/>
+        </java>
+     </target>
 
     <!-- =================================================== -->
     <!--  runs the logging test -->
