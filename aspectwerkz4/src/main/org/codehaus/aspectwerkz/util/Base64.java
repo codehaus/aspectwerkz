@@ -19,7 +19,7 @@ package org.codehaus.aspectwerkz.util;
  * automatically. Generally things are cleaner. You'll probably have to
  * change some method calls that you were making to support the new
  * options format (<tt>int</tt>s that you "OR" together).</li>
- * <li>v1.5.1 - Fixed bug when decompressing and decoding to a
+ * <li>v1.5.2 - Fixed bug when decompressing and decoding to a
  * byte[] using <tt>decode( String s, boolean gzipCompressed )</tt>.
  * Added the ability to "suspend" encoding in the Output Stream so
  * you can turn on and off the encoding if you need to embed base64
@@ -209,7 +209,7 @@ public class Base64 {
      * @param threeBytes  the array to convert
      * @param numSigBytes the number of significant bytes in your array
      * @return four byte array in Base64 notation.
-     * @since 1.5.1
+     * @since 1.5.2
      */
     private static byte[] encode3to4(byte[] b4, byte[] threeBytes, int numSigBytes) {
         encode3to4(threeBytes, 0, numSigBytes, b4, 0);
@@ -1364,7 +1364,7 @@ public class Base64 {
          * May be helpful if you need to embed a piece of
          * base640-encoded data in a stream.
          *
-         * @since 1.5.1
+         * @since 1.5.2
          */
         public void suspendEncoding() throws java.io.IOException {
             flushBase64();
@@ -1377,7 +1377,7 @@ public class Base64 {
          * May be helpful if you need to embed a piece of
          * base640-encoded data in a stream.
          *
-         * @since 1.5.1
+         * @since 1.5.2
          */
         public void resumeEncoding() {
             this.suspendEncoding = false;

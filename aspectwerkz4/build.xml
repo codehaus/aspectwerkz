@@ -228,7 +228,7 @@
     <!-- create distribution -->
     <!-- ============================================================== -->
     <target name="dist" depends="compile:all">
-        <copy file="${src.dir}/main/aspectwerkz.dtd" todir="${main.classes}"/>
+        <copy file="${src.dir}/main/aspectwerkz2.dtd" todir="${main.classes}"/>
 
         <!-- we embed jarjar version of ASM in it as well in case the aspectwerkz-core jar is not used -->
         <jarjar destfile="${build.dir}/aspectwerkz-${version}.jar" manifest="${lib.dir}/manifest.mf">

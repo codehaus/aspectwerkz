@@ -35,7 +35,7 @@ public class XmlParser {
     /**
      * The current DTD public id. The matching dtd will be searched as a resource.
      */
-    private final static String DTD_PUBLIC_ID = "-//AspectWerkz//DTD 1.0//EN";
+    private final static String DTD_PUBLIC_ID = "-//AspectWerkz//DTD 2.0//EN";
 
     /**
      * The DTD alias, for better user experience.
@@ -45,7 +45,7 @@ public class XmlParser {
     /**
      * A handler to the DTD stream so that we are only using one file descriptor
      */
-    private final static InputStream DTD_STREAM = XmlParser.class.getResourceAsStream("/aspectwerkz.dtd");
+    private final static InputStream DTD_STREAM = XmlParser.class.getResourceAsStream("/aspectwerkz2.dtd");
 
     /**
      * The timestamp, holding the last time that the definition was parsed.
