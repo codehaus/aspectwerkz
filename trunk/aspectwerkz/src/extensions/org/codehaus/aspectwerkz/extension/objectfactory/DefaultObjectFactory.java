@@ -23,13 +23,14 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.codehaus.aspectwerkz.extension.objectfactory.ObjectFactory;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 
 
 /**
  * A default implemetation of the ObjectFactory interface.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefaultObjectFactory.java,v 1.2 2003-06-09 07:04:12 jboner Exp $
+ * @version $Id: DefaultObjectFactory.java,v 1.3 2003-06-26 19:30:13 jboner Exp $
  */
 public class DefaultObjectFactory implements ObjectFactory {
 
@@ -58,12 +59,7 @@ public class DefaultObjectFactory implements ObjectFactory {
     public DefaultObjectFactory(final String classname)
             throws ClassNotFoundException {
         if (classname == null) throw new IllegalArgumentException("classname can not be null");
-
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        if (loader == null) {
-            loader = getClass().getClassLoader();
-        }
-        m_class = loader.loadClass(classname);
+        m_class = ContextClassLoader.loadClass(classname);
     }
 
     /**
