@@ -39,6 +39,8 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaFieldInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.transform.AsmHelper;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.transform.inline.JoinPointCompiler;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Constants;
@@ -53,6 +55,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.io.FileOutputStream;
 
 /**
  * Runtime (Just-In-Time/JIT) compiler.
@@ -201,21 +204,37 @@ public class JitCompiler {
      * @param hotswapCount
      * @return the JIT compiled join point
      */
-    public static JoinPoint compileJoinPoint(
-            final int joinPointHash, final int joinPointType,
-            final PointcutType pointcutType, final AdviceIndexInfo[] advice,
-            final Class declaringClass, final Class targetClass,
-            final AspectSystem system, final Object thisInstance,
-            final Object targetInstance, final int hotswapCount) {
-        //        try {
-        //            String fileName = targetClass.getName() + '$' + TransformationUtil.ASPECTWERKZ_PREFIX + joinPointType + '_' + joinPointHash + ".class";
-        //            ClassWriter writer = JoinPointCompiler.compile(targetClass.getName(), joinPointHash, joinPointType, advice);
-        //            FileOutputStream os = new FileOutputStream(fileName.replace('-', '_'));
-        //            os.write(writer.toByteArray());
-        //            os.close();
-        //        } catch (Throwable throwable) {
-        //            throwable.printStackTrace();
-        //        }
+    public static JoinPoint compileJoinPoint(final int joinPointHash, final int joinPointType,
+                                             final PointcutType pointcutType, final AdviceIndexInfo[] advice,
+                                             final Class declaringClass, final Class targetClass,
+                                             final AspectSystem system, final Object thisInstance,
+                                             final Object targetInstance, final int hotswapCount) {
+        try {
+            String fileName = targetClass.getName() + '$' +
+                              JoinPointCompiler.JOIN_POINT_CLASS_PREFIX +
+                              '_' + joinPointType + '_' + joinPointHash +
+                              ".class";
+            ClassWriter writer = JoinPointCompiler.compileJoinPoint(
+                joinPointType, joinPointHash, pointcutType, targetClass, declaringClass, targetInstance,
+                thisInstance, advice, system
+            );
+            FileOutputStream os = new FileOutputStream("_dump/jp/" + fileName.replace('-', '_'));
+            os.write(writer.toByteArray());
+            os.close();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        try {
+            String fileName = targetClass.getName() + '$' +
+                              JoinPointCompiler.JOIN_POINT_BASE_CLASS_PREFIX;
+            ClassWriter writer = JoinPointCompiler.compileJoinPointBase(targetClass);
+            FileOutputStream os = new FileOutputStream("_dump/jp/" + fileName.replace('-', '_'));
+            os.write(writer.toByteArray());
+            os.close();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+
         try {
             if (pointcutType.equals(PointcutType.HANDLER)) { // TODO: fix handler pointcuts
                 return null;
