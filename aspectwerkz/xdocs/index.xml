@@ -40,10 +40,8 @@
                 </p>
                 <p>
                     <code>AspectWerkz</code> is Free Software. The
-                    <a href="license.html">QPL-style</a> license allows the use of <code>AspectWerkz 0.9 RC1</code>
-                    in open source projects.<br/>
-                    The official <code>AspectWerkz 0.9</code> release will be licensed under a commercial project compatible license.<br/>
-                    If the QPL is not suitable for your needs, please contact us.
+                    <a href="license.html">LGPL-style</a> license allows the use of <code>AspectWerkz 0.9</code>
+                    in both commercial and open source projects.<br/>
                 </p>
 
             </subsection>
