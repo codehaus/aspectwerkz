@@ -87,6 +87,7 @@ public class EWorldUtil {
         for (Iterator arounds = removedAdviceDefs.iterator(); arounds.hasNext();) {
             aspectDef.removeAroundAdvice((AdviceDefinition)arounds.next());
         }
+        StartupManager.reinitializeSystem(ClassLoader.getSystemClassLoader(), sysDef);
     }
 
 
