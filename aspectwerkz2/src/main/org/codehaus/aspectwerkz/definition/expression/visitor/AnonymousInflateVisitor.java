@@ -48,14 +48,14 @@ public class AnonymousInflateVisitor implements ExpressionParserVisitor {
     public Object visit(OrNode node, Object data) {
         StringBuffer lhs = (StringBuffer)node.jjtGetChild(0).jjtAccept(this, data);
         StringBuffer  rhs = (StringBuffer)node.jjtGetChild(1).jjtAccept(this, data);
-        StringBuffer expr = new StringBuffer("").append(lhs.toString()).append(" OR ").append(rhs.toString()).append("");
+        StringBuffer expr = new StringBuffer("(").append(lhs.toString()).append(") OR (").append(rhs.toString()).append(")");
         return expr;
     }
 
     public Object visit(AndNode node, Object data) {
         StringBuffer lhs = (StringBuffer)node.jjtGetChild(0).jjtAccept(this, data);
         StringBuffer rhs = (StringBuffer)node.jjtGetChild(1).jjtAccept(this, data);
-        StringBuffer expr = new StringBuffer("").append(lhs.toString()).append(" AND ").append(rhs.toString()).append("");
+        StringBuffer expr = new StringBuffer("(").append(lhs.toString()).append(") AND (").append(rhs.toString()).append(")");
         return expr;
     }
 
