@@ -18,25 +18,55 @@
  */
 package org.codehaus.aspectwerkz.advice;
 
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.HashMap;
+
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.MemoryType;
+import org.codehaus.aspectwerkz.ContainerType;
 
 /**
- * Implements a transient version of the advice memory strategy.
+ * Implements the default advice container strategy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: TransientAdviceMemoryStrategy.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: DefaultAdviceContainerStrategy.java,v 1.1 2003-06-17 14:34:34 jboner Exp $
  */
-public class TransientAdviceMemoryStrategy extends AdviceMemoryStrategy {
+public class DefaultAdviceContainerStrategy implements AdviceContainer {
 
     /**
-     * Creates a new transient distribution strategy.
+     * Holds a reference to the sole per JVM advice.
+     */
+    protected Object m_perJvm;
+
+    /**
+     * Holds references to the per class advices.
+     */
+    protected final Map m_perClass = new HashMap();
+
+    /**
+     * Holds references to the per instance advices.
+     */
+    protected final Map m_perInstance = new WeakHashMap();
+
+    /**
+     * Holds references to the per thread advices.
+     */
+    protected final Map m_perThread = new WeakHashMap();
+
+    /**
+     * The advice prototype.
+     */
+    protected final AbstractAdvice m_prototype;
+
+    /**
+     * Creates a new transient container strategy.
      *
      * @param prototype the advice prototype
      */
-    public TransientAdviceMemoryStrategy(AbstractAdvice prototype) {
-        super(prototype);
+    public DefaultAdviceContainerStrategy(final AbstractAdvice prototype) {
+        if (prototype == null) throw new IllegalArgumentException("advice prototype can not be null");
+        m_prototype = prototype;
     }
 
     /**
@@ -105,11 +135,33 @@ public class TransientAdviceMemoryStrategy extends AdviceMemoryStrategy {
     }
 
     /**
-     * Returns the memory type.
+     * Returns the advice for the current thread.
      *
-     * @return the memory type
+     * @return the advice
      */
-    public MemoryType getMemoryType() {
-        return MemoryType.TRANSIENT;
+    public Object getPerThreadAdvice() {
+        final Thread currentThread = Thread.currentThread();
+        if (!m_perThread.containsKey(currentThread)) {
+            synchronized (m_perThread) {
+                try {
+                    m_perThread.put(
+                            currentThread,
+                            AbstractAdvice.newInstance(m_prototype));
+                }
+                catch (Exception e) {
+                    throw new WrappedRuntimeException(e);
+                }
+            }
+        }
+        return m_perThread.get(currentThread);
+    }
+
+    /**
+     * Returns the container type.
+     *
+     * @return the container type
+     */
+    public ContainerType getContainerType() {
+        return ContainerType.TRANSIENT;
     }
 }

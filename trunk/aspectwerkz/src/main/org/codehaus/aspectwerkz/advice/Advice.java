@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.MemoryType;
+import org.codehaus.aspectwerkz.ContainerType;
 
 /**
  * Implements the Advice concept.<br/>
@@ -30,7 +30,7 @@ import org.codehaus.aspectwerkz.MemoryType;
  * after or instead of specific points in the execution flow of the program.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Advice.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: Advice.java,v 1.3 2003-06-17 14:34:34 jboner Exp $
  */
 public interface Advice extends Serializable {
 
@@ -78,21 +78,21 @@ public interface Advice extends Serializable {
      *
      * @param memoryStrategy the memory strategy
      */
-    void setMemoryStrategy(final AdviceMemoryStrategy memoryStrategy);
+    void setContainer(final AdviceContainer memoryStrategy);
 
     /**
      * Returns the distribution strategy.
      *
      * @return the distribution strategy
      */
-    AdviceMemoryStrategy getMemoryStrategy();
+    AdviceContainer getContainer();
 
     /**
      * Returns the distribution type.
      *
      * @return the distribution type
      */
-    MemoryType getMemoryType();
+    ContainerType getMemoryType();
 
     /**
      * Sets the class for the advice.
