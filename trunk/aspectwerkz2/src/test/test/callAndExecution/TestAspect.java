@@ -19,19 +19,29 @@ public class TestAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     * @Call *..*->void test.callAndExecution.CallExecutionTest.method()
+     * @Call *..*->void test.callAndExecution.CallExecutionTest.privateMethod()
      */
-    Pointcut call;
+    Pointcut call1;
 
     /**
-     * @Execution void test.callAndExecution.CallExecutionTest.method()
+     * @Call *..*->void test.callAndExecution.CallExecutionTest.publicMethod()
      */
-    Pointcut execution;
+    Pointcut call2;
+
+    /**
+     * @Execution void test.callAndExecution.CallExecutionTest.privateMethod()
+     */
+    Pointcut execution1;
+
+    /**
+     * @Execution void test.callAndExecution.CallExecutionTest.publicMethod()
+     */
+    Pointcut execution2;
 
     // ============ Advices ============
 
     /**
-     * @Around call
+     * @Around call1 || call2
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         CallExecutionTest.log("call1 ");
@@ -41,7 +51,7 @@ public class TestAspect extends Aspect {
     }
 
     /**
-     * @Around execution
+     * @Around execution1 || execution2
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         CallExecutionTest.log("execution1 ");
