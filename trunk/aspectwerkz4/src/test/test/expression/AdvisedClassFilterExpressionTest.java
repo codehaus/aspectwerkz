@@ -1,6 +1,6 @@
 /*
- * $Id: AdvisedClassFilterExpressionTest.java,v 1.1 2004-12-17 15:52:10 avasseur Exp $
- * $Date: 2004-12-17 15:52:10 $
+ * $Id: AdvisedClassFilterExpressionTest.java,v 1.2 2004-12-20 13:14:21 avasseur Exp $
+ * $Date: 2004-12-20 13:14:21 $
  */
 package test.expression;
 
@@ -23,7 +23,7 @@ import junit.framework.TestSuite;
  * Test unit for AdvisedClassFilterExpressionVisitor
  * 
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 
@@ -31,7 +31,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
         try {
             setMeUp();
         } catch (Throwable t) {
-            throw new Error(t);
+            throw new Error(t.toString());
         }
     }
 

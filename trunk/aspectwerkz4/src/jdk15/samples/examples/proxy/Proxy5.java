@@ -21,6 +21,10 @@ public class Proxy5 {
 
     static @interface AspectMarker {}
 
+    public String getName() {
+       return "AWProxy";
+    }
+
     //@AspectMarker
     public void publicMethod() {
         System.out.println("publicMethod");
@@ -52,6 +56,7 @@ public class Proxy5 {
         System.out.println("\n**** Use with proxy - both regular weaving and proxy weaving occur");
         // make it advisable
         Proxy5 meP = (Proxy5) Proxy.newInstance(Proxy5.class, true, true);
+        System.out.println("I am : " + meP.getName());
         meP.publicMethod();
 
         System.out.println("\n**** Use with proxy - adding interceptor to publicMethod()");
