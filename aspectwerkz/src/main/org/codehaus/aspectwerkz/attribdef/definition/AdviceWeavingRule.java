@@ -107,6 +107,14 @@ public class AdviceWeavingRule implements WeavingRule {
      */
     private Map m_weavingRules = new HashMap();
 
+    //AA//
+    private AdviceWeavingRule() {}
+
+    //AA//
+    public AdviceWeavingRule(String expression) {
+        setExpression(expression);
+    }
+
     /**
      * Returns the expression.
      *
