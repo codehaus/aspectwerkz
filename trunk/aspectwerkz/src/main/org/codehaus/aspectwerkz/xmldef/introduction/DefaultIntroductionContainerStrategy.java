@@ -115,6 +115,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             if (m_perJvm == null) {
                 m_perJvm = m_implClass.newInstance();
             }
+            m_methods[methodIndex].setAccessible(true);
             result = m_methods[methodIndex].invoke(m_perJvm, parameters);
         }
         catch (InvocationTargetException e) {
@@ -145,6 +146,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                     m_perClass.put(callingClass, m_implClass.newInstance());
                 }
             }
+            m_methods[methodIndex].setAccessible(true);
             result = m_methods[methodIndex].invoke(m_perClass.get(callingClass), parameters);
         }
         catch (InvocationTargetException e) {
@@ -174,6 +176,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                     m_perInstance.put(callingObject, m_implClass.newInstance());
                 }
             }
+            m_methods[methodIndex].setAccessible(true);
             result = m_methods[methodIndex].invoke(m_perInstance.get(callingObject), parameters);
         }
         catch (InvocationTargetException e) {
@@ -202,6 +205,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                     m_perThread.put(currentThread, m_implClass.newInstance());
                 }
             }
+            m_methods[methodIndex].setAccessible(true);
             result = m_methods[methodIndex].invoke(m_perThread.get(currentThread), parameters);
         }
         catch (InvocationTargetException e) {

@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.metadata;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,12 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
             methodList.add(createMethodMetaData(method));
+        }
+        // get the constructors (<init> methods)
+        Constructor[] constructors = klass.getDeclaredConstructors();
+        for (int i = 0; i < constructors.length; i++) {
+            Constructor constructor = constructors[i];
+            methodList.add(createMethodMetaData(constructor));
         }
         classMetaData.setMethods(methodList);
 
@@ -139,6 +146,22 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
         data.setName(method.getName());
         data.setModifiers(method.getModifiers());
         data.setReturnType(TypeConverter.convertTypeToJava(method.getReturnType()));
+        data.setParameterTypes(TypeConverter.convertTypeToJava(method.getParameterTypes()));
+        data.setExceptionTypes(TypeConverter.convertTypeToJava(method.getExceptionTypes()));
+        return data;
+    }
+
+    /**
+     * Construct method meta-data from a Java <code>&lt;init&gt;</code> object.
+     *
+     * @param method is the <code>Constructor</code> object to extract details from.
+     * @return a <code>MethodMetaData</code> instance.
+     */
+    public static MethodMetaData createMethodMetaData(final Constructor method) {
+        MethodMetaData data = new MethodMetaData();
+        data.setName("<init>");
+        data.setModifiers(method.getModifiers());
+        data.setReturnType("void"); //bcel is using this return type for <init> methods
         data.setParameterTypes(TypeConverter.convertTypeToJava(method.getParameterTypes()));
         data.setExceptionTypes(TypeConverter.convertTypeToJava(method.getExceptionTypes()));
         return data;

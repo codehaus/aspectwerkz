@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.metadata;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.lang.reflect.Modifier;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.JavaClass;
@@ -157,6 +158,10 @@ public class BcelMetaDataMaker extends MetaDataMaker {
             exceptions = new String[0];
         }
         methodMetaData.setExceptionTypes(exceptions);
+
+        // set the modifier to public (needed for mixin impl)
+        methodMetaData.setModifiers(Modifier.PUBLIC);
+        //@todo is BCEL modifier the same as java modifier ?
 
         return methodMetaData;
     }
