@@ -80,6 +80,9 @@
 
         <aspect class="test.enclosingsjp.EnclosingStaticJoinPointAspect"/>
 
+        <aspect class="test.staticinitialization.StaticInitializationAspect" deployment-model="perClass" />
+        <aspect class="test.withincode.WithincodeStaticinitializationAspect" deployment-model="perClass" />
+
         <aspect class="test.args.ArgsAspect">
             <pointcut name="xml_matchAll"
                 expression="within(test.args.ArgsAdviceTest) AND execution(* matchAllXML(..)) AND args(String, String, long)"/>

@@ -63,8 +63,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
     protected static final String THIS_CLASS_FIELD_NAME	  = "THIS_CLASS";
 
     // FIXME define these two using VM option - if dump dir specified then dump
-    public static final boolean DUMP_JIT_CLASSES = false;
-    protected static final String DUMP_DIR = "_dump/jp";
+    public static final boolean DUMP_JIT_CLASSES = true;
+    protected static final String DUMP_DIR = "_dump";
 
     protected final String m_callerClassName;
     protected final String m_calleeClassName;
@@ -720,9 +720,14 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         Label catchLabel = new Label();
         cv.visitLabel(catchLabel);
         cv.visitVarInsn(ASTORE, 0);
+
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Throwable", "printStackTrace", "()V");
+
         cv.visitTypeInsn(NEW, RUNTIME_EXCEPTION_CLASS_NAME);
         cv.visitInsn(DUP);
-        cv.visitLdcInsn("could not load target class using Class.forName() in generated join point base class");
+        cv.visitLdcInsn("could not load target class using Class.forName() in generated join point base class "
+                        + m_joinPointClassName);
 
         cv.visitMethodInsn(
                 INVOKESPECIAL,

@@ -232,25 +232,33 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
         ExpressionContext context = (ExpressionContext) data;
         ReflectionInfo withinInfo = context.getWithinReflectionInfo();
 
-        Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
-        boolean checkPattern = !(patternNode instanceof ASTAttribute);
-
-        if (checkPattern) {
-            if (withinInfo instanceof MemberInfo) {
-                return patternNode.jjtAccept(this, withinInfo);
-            } else if (withinInfo instanceof ClassInfo) {
-                Boolean matchDeclaringType = (Boolean) patternNode.jjtAccept(this, withinInfo);
-                if (Boolean.FALSE.equals(matchDeclaringType)) {
-                    return Boolean.FALSE;
-                } else {
-                    // may be we match now but not later?
-                    return null;
-                }
+        if(node.isStaticInitializer()) {
+            if(null != withinInfo) {
+            	return node.jjtGetChild(0).jjtAccept(this, withinInfo);
             } else {
                 return null;
             }
         } else {
-            return null;
+	        Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
+	        boolean checkPattern = !(patternNode instanceof ASTAttribute);
+	
+	        if (checkPattern) {
+	            if (withinInfo instanceof MemberInfo) {
+	                return patternNode.jjtAccept(this, withinInfo);
+	            } else if (withinInfo instanceof ClassInfo) {
+	                Boolean matchDeclaringType = (Boolean) patternNode.jjtAccept(this, withinInfo);
+	                if (Boolean.FALSE.equals(matchDeclaringType)) {
+	                    return Boolean.FALSE;
+	                } else {
+	                    // may be we match now but not later?
+	                    return null;
+	                }
+	            } else {
+	                return null;
+	            }
+	        } else {
+	            return null;
+	        }
         }
     }
 
@@ -317,14 +325,20 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
     }
 
     // ============ Patterns =============
-    public Object visit(ASTClassPattern node, Object data) {
-        ClassInfo classInfo = (ClassInfo) data;
-        if (node.getTypePattern().matchType(classInfo) && visitAttributes(node, classInfo)) {
-            return Boolean.TRUE;
-        } else {
-            return Boolean.FALSE;
-        }
-    }
+//    public Object visit(ASTClassPattern node, Object data) {
+//        if(null == data) {
+//            return null;
+//        } else if( !(data instanceof ClassInfo) ) {
+//        	return Boolean.FALSE;
+//        }
+//
+//        ClassInfo classInfo = (ClassInfo) data;
+//        if (node.getTypePattern().matchType(classInfo) && visitAttributes(node, classInfo)) {
+//            return Boolean.TRUE;
+//        } else {
+//            return Boolean.FALSE;
+//        }
+//    }
 
     public Object visit(ASTMethodPattern node, Object data) {
         if (data instanceof ClassInfo) {

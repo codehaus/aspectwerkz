@@ -90,8 +90,7 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
                                    final String[] exceptions,
                                    final Attribute attrs) {
 
-        if (CLINIT_METHOD_NAME.equals(name) || //TODO - support withincode <clinit>
-            name.startsWith(WRAPPER_METHOD_PREFIX) ||
+        if (name.startsWith(WRAPPER_METHOD_PREFIX) ||
             Modifier.isNative(access) ||
             Modifier.isAbstract(access)) {
             return super.visitMethod(access, name, desc, exceptions, attrs);
@@ -146,7 +145,9 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
             m_callerMethodName = callerMethodName;
             m_callerMethodDesc = callerMethodDesc;
 
-            if (INIT_METHOD_NAME.equals(callerMethodName)) {
+            if (CLINIT_METHOD_NAME.equals(callerMethodName)) {
+                m_callerMemberInfo = m_callerClassInfo.staticInitializer();
+            } else if (INIT_METHOD_NAME.equals(callerMethodName)) {
                 int hash = AsmHelper.calculateConstructorHash(m_callerMethodDesc);
                 m_callerMemberInfo = m_callerClassInfo.getConstructor(hash);
             } else {

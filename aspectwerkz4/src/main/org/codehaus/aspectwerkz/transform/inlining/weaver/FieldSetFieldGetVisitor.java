@@ -82,9 +82,7 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                                    final String[] exceptions,
                                    final Attribute attrs) {
 
-        // TODO - support withincode <clinit> for static fields
-        if (CLINIT_METHOD_NAME.equals(name) ||
-            name.startsWith(WRAPPER_METHOD_PREFIX)) {
+        if (name.startsWith(WRAPPER_METHOD_PREFIX)) {
             return super.visitMethod(access, name, desc, exceptions, attrs);
         }
 
@@ -137,7 +135,9 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
             m_callerMethodName = callerMethodName;
             m_callerMethodDesc = callerMethodDesc;
 
-            if (INIT_METHOD_NAME.equals(m_callerMethodName)) {
+            if (CLINIT_METHOD_NAME.equals(m_callerMethodName)) {
+                m_callerMemberInfo = m_callerClassInfo.staticInitializer();
+            } else if (INIT_METHOD_NAME.equals(m_callerMethodName)) {
                 int hash = AsmHelper.calculateConstructorHash(m_callerMethodDesc);
                 m_callerMemberInfo = m_callerClassInfo.getConstructor(hash);
             } else {
@@ -288,16 +288,8 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                                 m_lastLabelForLineNumber
                         )
                 );
-
-//                // create a wrapper
-//                //TODO optimize for public field
-//                createFieldAccessWrapper(fieldInfo);
             }
         }
-
-//        private void createFieldAccessWrapper(FieldInfo fieldInfo) {
-//
-//        }
 
         /**
          * Handles field modification.

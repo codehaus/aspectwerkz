@@ -15,6 +15,9 @@ import test.expression.ExpressionParserTest;
 import test.expression.AnnotationExpressionTest;
 import test.expression.AdvisedClassFilterExpressionTest;
 import test.enclosingsjp.EnclosingSJPTest;
+import test.staticinitialization.StaticInitializationTest;
+import test.staticinitialization.StaticInitializationExpressionTest;
+import test.withincode.WithincodeClinitTest;
 
 /**
  * This tests can be run without online / offline or other post compilation mode. Used to test
@@ -81,6 +84,9 @@ public class AllTests extends TestCase {
         suite.addTestSuite(AnnotationExpressionTest.class);
         suite.addTestSuite(AdvisedClassFilterExpressionTest.class);
         suite.addTestSuite(EnclosingSJPTest.class);
+        suite.addTestSuite(StaticInitializationTest.class);
+        suite.addTestSuite(StaticInitializationExpressionTest.class);
+        suite.addTestSuite(WithincodeClinitTest.class);
 
         suite.addTestSuite(test.ClassInfoTest.class);
         // AW-361, should not throw an NPE

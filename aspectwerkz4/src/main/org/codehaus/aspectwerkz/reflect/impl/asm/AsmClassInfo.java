@@ -16,6 +16,8 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.StaticInitializationInfo;
+import org.codehaus.aspectwerkz.reflect.StaticInitializationInfoImpl;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
@@ -95,6 +97,11 @@ public class AsmClassInfo implements ClassInfo {
      * Flag for the static initializer method.
      */
     private boolean m_hasStaticInitializer = false;
+
+    /**
+     * Lazy instance that represents the static initializer if present, else null
+     */
+    private StaticInitializationInfo m_staticInitializer = null;
 
     /**
      * A list with the <code>ConstructorInfo</code> instances.
@@ -489,6 +496,18 @@ public class AsmClassInfo implements ClassInfo {
     public boolean hasStaticInitializer() {
         return m_hasStaticInitializer;
     }
+
+	/**
+     * Return the static initializer info or null if not present
+     * 
+	 * @see org.codehaus.aspectwerkz.reflect.ClassInfo#staticInitializer()
+	 */
+	public StaticInitializationInfo staticInitializer() {
+		if(hasStaticInitializer() && m_staticInitializer == null) {
+			m_staticInitializer = new StaticInitializationInfoImpl(this);
+		}
+		return m_staticInitializer;
+	}
 
     /**
      * Returns a constructor info by its hash.

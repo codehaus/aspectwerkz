@@ -90,7 +90,8 @@ public class ExpressionContext {
         if (withinReflectionInfo != null) {
             m_withinReflectionInfo = withinReflectionInfo;
         } else {
-            if (pointcutType.equals(PointcutType.EXECUTION)) {
+            if (PointcutType.EXECUTION.equals(pointcutType) 
+            		|| PointcutType.STATIC_INITIALIZATION.equals(pointcutType)) {
                 m_withinReflectionInfo = m_matchingReflectionInfo;
             } else {
                 m_withinReflectionInfo = null;

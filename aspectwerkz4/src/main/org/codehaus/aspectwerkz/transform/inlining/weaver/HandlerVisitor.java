@@ -89,7 +89,6 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
 
         /**
          * Visit method bodies
-         * TODO withincode(clinit) support
          *
          * @param access
          * @param callerMethodName
@@ -103,9 +102,7 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
                                        final String callerMethodDesc,
                                        final String[] exceptions,
                                        final Attribute attrs) {
-            // TODO - support withincode <clinit> for handler pc
-            if (CLINIT_METHOD_NAME.equals(callerMethodName) ||
-                callerMethodName.startsWith(WRAPPER_METHOD_PREFIX)) {
+            if (callerMethodName.startsWith(WRAPPER_METHOD_PREFIX)) {
                 return super.visitMethod(access, callerMethodName, callerMethodDesc, exceptions, attrs);
             }
 
@@ -115,7 +112,9 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
             }
 
             final MemberInfo callerMemberInfo;
-            if (INIT_METHOD_NAME.equals(callerMethodName)) {
+            if (CLINIT_METHOD_NAME.equals(callerMethodName)) {
+                callerMemberInfo = m_callerClassInfo.staticInitializer();
+            } else if (INIT_METHOD_NAME.equals(callerMethodName)) {
                 int hash = AsmHelper.calculateConstructorHash(callerMethodDesc);
                 callerMemberInfo = m_callerClassInfo.getConstructor(hash);
             } else {
@@ -178,8 +177,6 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
     //---- non lookahead visitor
 
     private final ContextImpl m_ctx;
-    private final ClassLoader m_loader;
-    private final ClassInfo m_callerClassInfo;
 
     /**
      * List of matching catch clause
@@ -198,18 +195,12 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
      * Creates a new instance.
      *
      * @param cv
-     * @param loader
-     * @param classInfo
      * @param ctx
      */
     public HandlerVisitor(final ClassVisitor cv,
-                          final ClassLoader loader,
-                          final ClassInfo classInfo,
                           final Context ctx,
                           final List catchLabels) {
         super(cv);
-        m_loader = loader;
-        m_callerClassInfo = classInfo;
         m_ctx = (ContextImpl) ctx;
         m_catchLabels = catchLabels;
     }
@@ -229,9 +220,7 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
                                    final String desc,
                                    final String[] exceptions,
                                    final Attribute attrs) {
-        // TODO - support withincode <clinit> for handler pc
-        if (CLINIT_METHOD_NAME.equals(name) ||
-            name.startsWith(WRAPPER_METHOD_PREFIX)) {
+        if (name.startsWith(WRAPPER_METHOD_PREFIX)) {
             return super.visitMethod(access, name, desc, exceptions, attrs);
         }
 

@@ -19,6 +19,19 @@ import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
 public final class TransformationUtil {
 
     /**
+     * Return the prefixed clinit method name
+     * TODO do we need classname here (already used in getPrefixed..)
+     * 
+     * @param className
+     * @return
+     */
+    public static String getPrefixedOriginalClinitName(final String className) {
+        return getPrefixedOriginalMethodName(
+                className.replace('.', '_').replace('/', '_') + TransformationConstants.DELIMITER + "clinit",
+                className);
+    }
+    
+    /**
      * Returns the prefixed method name.
      *
      * @param methodName the method name

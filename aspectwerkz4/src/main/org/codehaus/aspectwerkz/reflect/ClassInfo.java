@@ -82,6 +82,13 @@ public interface ClassInfo extends ReflectionInfo {
     boolean hasStaticInitializer();
 
     /**
+     * Returns the static initializer info of the current underlying class if any.
+     * 
+     * @return
+     */
+    StaticInitializationInfo staticInitializer();
+    
+    /**
      * Returns the interfaces.
      *
      * @return the interfaces
@@ -152,6 +159,13 @@ public interface ClassInfo extends ReflectionInfo {
         public boolean hasStaticInitializer() {
             return false;
         }
+
+		/**
+		 * @see org.codehaus.aspectwerkz.reflect.ClassInfo#staticInitializer()
+		 */
+		public StaticInitializationInfo staticInitializer() {
+			return null;
+		}
 
         public ClassInfo[] getInterfaces() {
             return new ClassInfo[0];  //To change body of implemented methods use File | Settings | File Templates.

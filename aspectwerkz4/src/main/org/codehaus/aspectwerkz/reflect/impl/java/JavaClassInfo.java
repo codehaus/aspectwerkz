@@ -15,6 +15,8 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
+import org.codehaus.aspectwerkz.reflect.StaticInitializationInfo;
+import org.codehaus.aspectwerkz.reflect.StaticInitializationInfoImpl;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 
@@ -99,6 +101,11 @@ public class JavaClassInfo implements ClassInfo {
      * The class info repository.
      */
     private final JavaClassInfoRepository m_classInfoRepository;
+
+    /**
+     * Lazy, the static initializer info or null if not present
+     */
+    private StaticInitializationInfo m_staticInitializer = null;
 
     /**
      * Creates a new class meta data instance.
@@ -198,6 +205,18 @@ public class JavaClassInfo implements ClassInfo {
         return classInfo.hasStaticInitializer();
     }
 
+	/**
+	 * Returns the static initializer info of the current underlying class if any.
+	 * 
+	 * @see org.codehaus.aspectwerkz.reflect.ClassInfo#staticInitializer()
+	 */
+	public StaticInitializationInfo staticInitializer() {
+		if(hasStaticInitializer() && m_staticInitializer == null) {
+			m_staticInitializer = new StaticInitializationInfoImpl(this);
+		}
+		return m_staticInitializer;
+	}
+	
     /**
      * Returns the signature for the element.
      *

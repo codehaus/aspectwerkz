@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.transform;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.aspectwerkz.joinpoint.impl.StaticInitializerSignatureImpl;
 import org.objectweb.asm.Constants;
 
 /**
@@ -30,7 +31,7 @@ public interface TransformationConstants extends Constants {
     public static final String PUTFIELD_WRAPPER_METHOD_PREFIX = "PUTFIELD" + DELIMITER;
     public static final String GETFIELD_WRAPPER_METHOD_PREFIX = "GETFIELD" + DELIMITER;
     public static final String JOIN_POINT_CLASS_SUFFIX = ASPECTWERKZ_PREFIX + "JoinPoint";
-
+    
     // internal fields
     public static final String SERIAL_VERSION_UID_FIELD_NAME = "serialVersionUID";
     public static final String TARGET_CLASS_FIELD_NAME = SYNTHETIC_MEMBER_PREFIX + "clazz";
@@ -42,6 +43,7 @@ public interface TransformationConstants extends Constants {
     // method and class names
     public static final String INIT_METHOD_NAME = "<init>";
     public static final String CLINIT_METHOD_NAME = "<clinit>";
+    public static final String CLINIT_METHOD_SIGNATURE = "()V";
     public static final String CLASS_LOADER_REFLECT_CLASS_NAME = "java.lang.ClassLoader";
     public static final String CLASS_LOADER_CLASS_NAME = "java/lang/ClassLoader";
     public static final String DEFINE_CLASS_METHOD_NAME = "defineClass";
@@ -226,6 +228,8 @@ public interface TransformationConstants extends Constants {
     public static final String SET_FIELD_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
     public static final String SET_RETURN_VALUE_METHOD_NAME = "setReturnValue";
     public static final String SET_RETURN_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
+    public static final String STATICINITIALIZATION_RTTI_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/StaticInitializationRttiImpl";
+    public static final String STATICINITIALIZATION_RTTI_IMPL_INIT_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/impl/StaticInitializerSignatureImpl;)V";
 
     public static final String HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME = "org/codehaus/aspectwerkz/aspect/management/HasInstanceLevelAspect";
     public static final String INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME = SYNTHETIC_MEMBER_PREFIX + "instanceLevelAspects";
@@ -265,4 +269,9 @@ public interface TransformationConstants extends Constants {
     public static final int MODIFIER_INVOKEINTERFACE = 0x10000000;
     public static final int INDEX_NOTAVAILABLE = -1;
 
+
+    public static final String STATICINITIALIZATION_SIGNATURE_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/StaticInitializerSignatureImpl";
+    public static final String STATICINITIALIZATION_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/StaticInitializerSignatureImpl;";
+    public static final String NEW_STATICINITIALIZATION_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/joinpoint/impl/StaticInitializerSignatureImpl;";
+    public static final String NEW_STATICINITIALIZATION_SIGNATURE_METHOD_NAME = "newStaticInitializationSignature";
 }

@@ -56,6 +56,7 @@ import org.objectweb.asm.Type;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
  */
 public class JoinPointManager {
     /**
@@ -118,6 +119,26 @@ public class JoinPointManager {
         ReflectionInfo reflectionInfo = null;
 
         switch (joinPointType) {
+        	case JoinPointType.STATIC_INITIALIZATION_INT:
+        		reflectionInfo = calleeClassInfo.staticInitializer();
+        		doLoadJoinPoint(
+        				joinPointClassName,
+        				JoinPointType.STATIC_INITIALIZATION_INT,
+        				PointcutType.STATIC_INITIALIZATION,
+        				callerClass,
+        				callerMethodName,
+        				callerMethodDesc,
+        				callerMethodModifiers,
+        				calleeClass,
+        				calleeMemberName, // <clinit>
+        				calleeMemberDesc,
+        				calleeMemberModifiers,
+        				joinPointHash,
+        				reflectionInfo,
+        				calleeClassInfo
+        		);
+        		break;
+        		
             case JoinPointType.METHOD_EXECUTION_INT:
                 reflectionInfo = calleeClassInfo.getMethod(joinPointHash);
                 doLoadJoinPoint(
@@ -256,11 +277,6 @@ public class JoinPointManager {
                         calleeClassInfo
                 );
                 break;
-
-            case JoinPointType.STATIC_INITALIZATION_INT:
-                throw new UnsupportedOperationException(
-                        "join point type handling is not implemented: " + joinPointType
-                );
         }
     }
 
@@ -312,28 +328,28 @@ public class JoinPointManager {
                 EmittedJoinPoint.NO_LINE_NUMBER
         );
 
-        ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(callerClass);
-        ReflectionInfo withinInfo = null;
-        JoinPointType  enclosingJPType = null;
-        
+        final ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(callerClass);
+        final ReflectionInfo withinInfo;// = null;
+
         // FIXME: refactor getMethodInfo in INFO so that we can apply it on "<init>" and that it delegates to ctor
         // instead of checking things here.
-        switch (joinPointType) {
-            case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
-                withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(callerMethodDesc));
-            	enclosingJPType = JoinPointType.CONSTRUCTOR_EXECUTION;
-                break;
-            default:
-                // TODO - support for withincode <clinit>
-                if (TransformationConstants.INIT_METHOD_NAME.equals(callerMethodName)) {
+//        switch (joinPointType) {
+//        	case JoinPointType.STATIC_INITIALIZATION_INT:
+//        	    withinInfo = callerClassInfo;
+//        	    break;
+//            case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
+//                withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(callerMethodDesc));
+//                break;
+//            default:
+            	if(TransformationConstants.CLINIT_METHOD_NAME.equals(callerMethodName)) {
+            		withinInfo = callerClassInfo.staticInitializer();
+            	} else if (TransformationConstants.INIT_METHOD_NAME.equals(callerMethodName)) {
                     withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(callerMethodDesc));
-                    enclosingJPType = JoinPointType.CONSTRUCTOR_EXECUTION;
                 } else {
                     withinInfo =
                     callerClassInfo.getMethod(AsmHelper.calculateMethodHash(callerMethodName, callerMethodDesc));
-                    enclosingJPType = JoinPointType.METHOD_EXECUTION;
                 }
-        }
+//        }
 
         final ExpressionContext ctx = new ExpressionContext(pointcutType, reflectionInfo, withinInfo);
         final AdviceInfoContainer adviceContainer = getAdviceInfoContainerForJoinPoint(
