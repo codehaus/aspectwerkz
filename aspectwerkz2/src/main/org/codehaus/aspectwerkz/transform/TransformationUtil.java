@@ -27,7 +27,6 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * Contains constants and utility method used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @TODO: remove the constants and methods that are not used when TF impl. is complete
  */
 public final class TransformationUtil {
 
@@ -284,7 +283,7 @@ public final class TransformationUtil {
      * @param klass the class
      * @return the hash
      */
-    public static int calculateHash(final Class klass) throws NotFoundException {
+    public static int calculateHash(final Class klass) {
         int hash = 17;
         Method[] methods = klass.getDeclaredMethods();
         for (int i = 0; i < methods.length; i++) {
@@ -335,12 +334,7 @@ public final class TransformationUtil {
         hash = 37 * hash + method.getName().hashCode();
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             Class type = method.getParameterTypes()[i];
-            String name = type.getName();
-            int index = name.indexOf("[L");
-            if (index >= 0) {
-                name = name.substring(index + 2, name.length() - 1) + "[]";
-            }
-            hash = 37 * hash + name.hashCode();
+            hash = 37 * hash + type.getName().hashCode();
         }
         return hash;
     }
@@ -356,7 +350,8 @@ public final class TransformationUtil {
         hash = 37 * hash + method.getName().hashCode();
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             CtClass type = method.getParameterTypes()[i];
-            hash = 37 * hash + type.getName().hashCode();
+            String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(type.getName());
+            hash = 37 * hash + name.hashCode();
         }
         return hash;
     }
@@ -372,12 +367,7 @@ public final class TransformationUtil {
         hash = 37 * hash + constructor.getName().hashCode();
         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
             Class type = constructor.getParameterTypes()[i];
-            String name = type.getName();
-            int index = name.indexOf("[L");
-            if (index >= 0) {
-                name = name.substring(index + 2, name.length() - 1) + "[]";
-            }
-            hash = 37 * hash + name.hashCode();
+            hash = 37 * hash + type.getName().hashCode();
         }
         return hash;
     }
@@ -393,7 +383,8 @@ public final class TransformationUtil {
         hash = 37 * hash + constructor.getName().hashCode();
         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
             CtClass type = constructor.getParameterTypes()[i];
-            hash = 37 * hash + type.getName().hashCode();
+            String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(type.getName());
+            hash = 37 * hash + name.hashCode();
         }
         return hash;
     }
@@ -408,12 +399,7 @@ public final class TransformationUtil {
         int hash = 17;
         hash = 37 * hash + field.getName().hashCode();
         Class type = field.getType();
-        String name = type.getName();
-        int index = name.indexOf("[L");
-        if (index >= 0) {
-            name = name.substring(index + 2, name.length() - 1) + "[]";
-        }
-        hash = 37 * hash + name.hashCode();
+        hash = 37 * hash + type.getName().hashCode();
         return hash;
     }
 
@@ -426,7 +412,8 @@ public final class TransformationUtil {
     public static int calculateHash(final CtField field) throws NotFoundException {
         int hash = 17;
         hash = 37 * hash + field.getName().hashCode();
-        hash = 37 * hash + field.getType().getName().hashCode();
+        String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(field.getType().getName());
+        hash = 37 * hash + name.hashCode();
         return hash;
     }
 

@@ -56,7 +56,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
         suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
 
-        // performance tests
+        // performance tests                       ,
         suite.addTestSuite(test.performance.PerformanceTest.class);
 
         // TODO: deprecated until a better hot deployment model has been implemented

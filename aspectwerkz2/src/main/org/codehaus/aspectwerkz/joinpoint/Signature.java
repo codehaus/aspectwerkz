@@ -39,11 +39,4 @@ public interface Signature {
      * @return
      */
     String getName();
-
-    /**
-     * Creates a deep copy of the signature.
-     *
-     * @return a deep copy of the signature
-     */
-    Signature newInstance();
 }

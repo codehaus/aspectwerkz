@@ -40,5 +40,5 @@ public interface MethodSignature extends CodeSignature {
      *
      * @param returnValue the return value
      */
-    void setReturnValue(Object returnValue);
+//    void setReturnValue(Object returnValue);
 }
