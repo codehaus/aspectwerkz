@@ -368,7 +368,7 @@ public class JavassistHelper {
                 int mods = field.getModifiers();
                 if (((mods & Modifier.PRIVATE) == 0) || ((mods & (Modifier.STATIC | Modifier.TRANSIENT)) == 0)) {
                     out.writeUTF(field.getName());
-                    out.writeInt(mods);
+                    out.writeInt(mods & filterFieldModifiers());
                     out.writeUTF(field.getFieldInfo2().getDescriptor());
                 }
             }
@@ -394,7 +394,7 @@ public class JavassistHelper {
                 int mods = constructor.getModifiers();
                 if ((mods & Modifier.PRIVATE) == 0) {
                     out.writeUTF("<init>");
-                    out.writeInt(mods);
+                    out.writeInt(mods & filterConstructorModifiers());
                     out.writeUTF(constructor.getMethodInfo2().getDescriptor().replace('/', '.'));
                 }
             }
@@ -417,7 +417,7 @@ public class JavassistHelper {
                 int mods = method.getModifiers();
                 if ((mods & Modifier.PRIVATE) == 0) {
                     out.writeUTF(method.getName());
-                    out.writeInt(mods);
+                    out.writeInt(mods & filterMethodModifiers());
                     out.writeUTF(method.getMethodInfo2().getDescriptor().replace('/', '.'));
                 }
             }
@@ -436,6 +436,21 @@ public class JavassistHelper {
         } catch (NoSuchAlgorithmException e) {
             throw new CannotCompileException(e);
         }
+    }
+
+    private static int filterFieldModifiers(){
+       return (Modifier.PUBLIC | Modifier.PRIVATE | Modifier.PROTECTED
+            | Modifier.STATIC | Modifier.FINAL | Modifier.TRANSIENT | Modifier.VOLATILE);
+    }
+
+    private static int filterConstructorModifiers(){
+       return (Modifier.PUBLIC | Modifier.PRIVATE | Modifier.PROTECTED);
+    }
+
+    private static int filterMethodModifiers(){
+       return (Modifier.PUBLIC | Modifier.PRIVATE | Modifier.PROTECTED
+            | Modifier.STATIC | Modifier.FINAL | Modifier.SYNCHRONIZED
+            | Modifier.NATIVE | Modifier.ABSTRACT | Modifier.STRICT);
     }
 
     private static String javaName(CtClass clazz) {

@@ -27,6 +27,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.ExceptionTest.class);
         suite.addTestSuite(test.MethodComparatorTest.class);
         suite.addTestSuite(test.StringsTest.class);
+        suite.addTestSuite(test.SerialVerUidTest.class);        
         suite.addTestSuite(test.expression.ExpressionTest.class);
         suite.addTestSuite(test.MemberMethodAdviceTest.class);
         suite.addTestSuite(test.StaticMethodAdviceTest.class);
