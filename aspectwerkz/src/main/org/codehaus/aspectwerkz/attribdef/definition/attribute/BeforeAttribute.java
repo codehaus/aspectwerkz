@@ -7,41 +7,20 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
-import java.io.Serializable;
-
 /**
  * Attribute for the Before Advice construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class BeforeAttribute implements Serializable {
-
-    /**
-     * @TODO: calculate serialVersionUID
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * The expression for the advice.
-     */
-    private final String m_expression;
+public class BeforeAttribute extends AbstractAdviceAttribute {
 
     /**
      * Create an Before attribute.
      *
+     * @param name the name of the advice
      * @param expression the expression for the advice
      */
-    public BeforeAttribute(final String expression) {
-        if (expression == null) throw new IllegalArgumentException("expression is not valid for before advice");
-        m_expression = expression;
-    }
-
-    /**
-     * Return the expression.
-     *
-     * @return the expression
-     */
-    public String getExpression() {
-        return m_expression;
+    public BeforeAttribute(final String name, final String expression) {
+        super(name, expression);
     }
 }
