@@ -34,12 +34,16 @@ public class JavaLoggingAspect extends Aspect {
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature)joinPoint.getSignature();
         indent();
-        System.out.println(joinPoint.getType()+"--> " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
+        System.out.println(
+                joinPoint.getType() + "--> " + joinPoint.getTargetClass().getName() + "::" + signature.getName()
+        );
         m_level++;
         final Object result = joinPoint.proceed();
         m_level--;
         indent();
-        System.out.println(joinPoint.getType()+"<-- " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
+        System.out.println(
+                joinPoint.getType() + "<-- " + joinPoint.getTargetClass().getName() + "::" + signature.getName()
+        );
         return result;
     }
 
@@ -62,13 +66,12 @@ public class JavaLoggingAspect extends Aspect {
             System.out.print("  ");
         }
     }
+
     /**
-     * A damned complicated API to
-     * - alter the def so that new weaving can be done
-     * - alter the internal aspect repr. so that runtime management can occur
-     *
-     * Note: seems to have a redundancy on the pointcut somewhere.
-     * CRAP
+     * A damned complicated API to - alter the def so that new weaving can be done - alter the internal aspect repr. so
+     * that runtime management can occur
+     * <p/>
+     * Note: seems to have a redundancy on the pointcut somewhere. CRAP
      *
      * @param pointcut
      * @param pointcutName
@@ -77,16 +80,16 @@ public class JavaLoggingAspect extends Aspect {
         final String aspectName = "examples.logging.JavaLoggingAspect";
         Expression pcExpression = ExpressionNamespace.getExpressionNamespace(aspectName)
                 .createExpression(
-                    pointcut,
-                    "",
-                    pointcutName
+                        pointcut,
+                        "",
+                        pointcutName
                 );
         SystemDefinition sysDef = DefinitionLoader.getDefinition(HotSwapTarget.class.getClassLoader(), "samples");
         AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
         AdviceDefinition newDef = null;
         for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
-            AdviceDefinition around = (AdviceDefinition) arounds.next();
-            if (around.getName().equals(aspectName+".logMethod")) {
+            AdviceDefinition around = (AdviceDefinition)arounds.next();
+            if (around.getName().equals(aspectName + ".logMethod")) {
                 // copy the logMethod advice
                 // note: we could add a totally new advice as well
                 newDef = around.copyAt(pcExpression);
@@ -110,9 +113,8 @@ public class JavaLoggingAspect extends Aspect {
     }
 
     /**
-     * A damned complicated API to
-     * - alter the def so that pc is removed
-     * - alter the internal aspect repr. so that pointcut struct is released (TODO)
+     * A damned complicated API to - alter the def so that pc is removed - alter the internal aspect repr. so that
+     * pointcut struct is released (TODO)
      *
      * @param pointcut
      * @param pointcutName
@@ -125,7 +127,7 @@ public class JavaLoggingAspect extends Aspect {
 
         List removedAdviceDefs = new ArrayList();
         for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
-            AdviceDefinition around = (AdviceDefinition) arounds.next();
+            AdviceDefinition around = (AdviceDefinition)arounds.next();
             if (pointcutName.equals(around.getExpression().getName())) {
                 System.out.println("<removing> " + around.getName());
                 removedAdviceDefs.add(around);

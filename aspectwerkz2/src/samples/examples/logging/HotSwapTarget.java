@@ -71,7 +71,7 @@ public class HotSwapTarget {
     private String toLog3() {
         System.out.println("    toLog3()");
         if (showStack) {
-            (new Exception("fake")).printStackTrace(System.out);
+            (new Exception("expected exception to show stack trace...")).printStackTrace(System.out);
         }
         return "result";
     }
@@ -100,6 +100,7 @@ public class HotSwapTarget {
         target.increment();
         target.getCounter();
         // show stack
+
 
         HotSwapTarget.toLog1WithStack();
         Thread.sleep(3000);
