@@ -44,7 +44,6 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformerComponent {
-    ///CLOVER:OFF
 
     /**
      * The definitions.
@@ -101,43 +100,72 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
             // build and sort the method lookup list
             final List methodLookupList = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
+                Method method = methods[i];
+
                 MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
-                if (methodFilter(definition, classMetaData, methodMetaData, methods[i]) == null) {
+                if (methodFilter(definition, classMetaData, methodMetaData, method)) {
                     continue;
                 }
                 methodLookupList.add(methods[i]);
+
+                // TODO: does not work, needs to be thought through more
+                // if advised swap add the prefixed one as well to enable second-round instrumentation
+//                String originalPrefixedName =
+//                        TransformationUtil.ORIGINAL_METHOD_PREFIX +
+//                        methods[i].getName();
+//                Method[] declaredMethods = cg.getMethods();
+//                for (int j = 0; j < declaredMethods.length; j++) {
+//                    Method declaredMethod = declaredMethods[j];
+//                    if (declaredMethod.getName().startsWith(originalPrefixedName)) {
+//                        methodLookupList.add(declaredMethod);
+//                    }
+//                }
             }
+
             Collections.sort(methodLookupList, BCELMethodComparator.getInstance());
 
             final Map methodSequences = new HashMap();
             final List newMethods = new ArrayList();
             Method clInitMethod = null;
+
             for (int i = 0; i < methods.length; i++) {
+                Method method = methods[i];
+                MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(method);
 
-                MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
-
-                String uuid = methodFilter(definition, classMetaData, methodMetaData, methods[i]);
-                if (!methods[i].isStatic() || uuid == null) {
+                if (methodFilter(definition, classMetaData, methodMetaData, method)
+                        || !method.isStatic() ) {
                     continue;
                 }
 
-                final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
+                // TODO: does not work, needs to be thought through more
+                // if advised swap the method to the prefixed one
+//                String originalPrefixedName =
+//                        TransformationUtil.ORIGINAL_METHOD_PREFIX +
+//                        methods[i].getName();
+//                Method[] declaredMethods = cg.getMethods();
+//                for (int j = 0; j < declaredMethods.length; j++) {
+//                    Method declaredMethod = declaredMethods[j];
+//                    if (declaredMethod.getName().startsWith(originalPrefixedName)) {
+//                        method = declaredMethod;
+//                    }
+//                }
+
+                final MethodGen mg = new MethodGen(method, cg.getClassName(), cpg);
 
                 // take care of identification of overloaded methods by
                 // inserting a sequence number
-                if (methodSequences.containsKey(methods[i].getName())) {
+                if (methodSequences.containsKey(method.getName())) {
                     int sequence = ((Integer)methodSequences.get(methods[i].getName())).intValue();
-                    methodSequences.remove(methods[i].getName());
+                    methodSequences.remove(method.getName());
                     sequence++;
-                    methodSequences.put(methods[i].getName(), new Integer(sequence));
+                    methodSequences.put(method.getName(), new Integer(sequence));
                 }
                 else {
-                    methodSequences.put(methods[i].getName(), new Integer(1));
+                    methodSequences.put(method.getName(), new Integer(1));
                 }
 
-                final int methodLookupId = methodLookupList.indexOf(methods[i]);
-                final int methodSequence =
-                        ((Integer)methodSequences.get(methods[i].getName())).intValue();
+                final int methodLookupId = methodLookupList.indexOf(method);
+                final int methodSequence = ((Integer)methodSequences.get(method.getName())).intValue();
 
                 addStaticJoinPointField(cpg, cg, mg, methodSequence);
 
@@ -151,7 +179,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                     if (clInitMethod == null) {
                         clInitMethod = createClInitMethodWithStaticJoinPointField(
                                 cpg, cg,
-                                methods[i],
+                                method,
                                 factory,
                                 methodSequence
                         );
@@ -159,7 +187,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                     else {
                         clInitMethod = createStaticJoinPointField(
                                 cpg, cg, clInitMethod,
-                                methods[i],
+                                method,
                                 factory,
                                 methodSequence
                         );
@@ -169,7 +197,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                     // we have a <clinit> method
                     methods[indexClinit] = createStaticJoinPointField(
                             cpg, cg, methods[indexClinit],
-                            methods[i],
+                            method,
                             factory,
                             methodSequence
                     );
@@ -177,17 +205,20 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
 
                 // create a proxy method for the original method
                 newMethods.add(createProxyMethod(
-                        cpg, cg, mg,
-                        factory,
+                        cpg, cg,
+                        methodMetaData.getName(),
+                        mg, factory,
                         methodLookupId,
                         methodSequence,
-                        methods[i].getAccessFlags(),
-                        uuid,
+                        method.getAccessFlags(),
+                        definition.getUuid(),
                         controllerClassName
                 ));
 
                 // add a prefix to the original method
-                methods[i] = addPrefixToMethod(mg, methods[i], methodSequence);
+                methods[i] = addPrefixToMethod(
+                        mg, method, methodSequence, definition.getUuid()
+                );
 
                 mg.setMaxLocals();
                 mg.setMaxStack();
@@ -253,16 +284,16 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                                          final ClassGen cg,
                                          final MethodGen mg,
                                          final int methodSequence) {
-        final StringBuffer joinPoint = getJoinPointName(mg.getMethod(), methodSequence);
+        final String joinPoint = getJoinPointName(mg.getMethod(), methodSequence);
 
-        if (cg.containsField(joinPoint.toString()) != null) {
+        if (cg.containsField(joinPoint) != null) {
             return;
         }
 
         final FieldGen field = new FieldGen(
                 Constants.ACC_PRIVATE | Constants.ACC_FINAL | Constants.ACC_STATIC,
                 new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
-                joinPoint.toString(),
+                joinPoint,
                 cp
         );
 
@@ -288,7 +319,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
 
         final String className = cg.getClassName();
 
-        final StringBuffer joinPoint = getJoinPointName(method, methodSequence);
+        final String joinPoint = getJoinPointName(method, methodSequence);
 
         final InstructionList il = new InstructionList();
         final MethodGen clInit = new MethodGen(
@@ -314,7 +345,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
 
         il.append(factory.createFieldAccess(
                 cg.getClassName(),
-                joinPoint.toString(),
+                joinPoint,
                 new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                 Constants.PUTSTATIC
         ));
@@ -323,6 +354,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
 
         clInit.setMaxLocals();
         clInit.setMaxStack();
+
         return clInit.getMethod();
     }
 
@@ -387,7 +419,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                                               final InstructionFactory factory,
                                               final int methodSequence) {
 
-        final StringBuffer joinPoint = getJoinPointName(method, methodSequence);
+        final String joinPoint = getJoinPointName(method, methodSequence);
 
         final MethodGen mg = new MethodGen(clInit, cg.getClassName(), cp);
         final InstructionList il = mg.getInstructionList();
@@ -408,13 +440,14 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
 
         il.insert(ih, factory.createFieldAccess(
                 cg.getClassName(),
-                joinPoint.toString(),
+                joinPoint,
                 new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                 Constants.PUTSTATIC
         ));
 
         mg.setMaxStack();
         mg.setMaxLocals();
+
         return mg.getMethod();
     }
 
@@ -425,11 +458,13 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @param mg the MethodGen
      * @param method the current method
      * @param methodSequence the methods sequence number
+     * @param uuid the definition UUID
      * @return the modified method
      */
     private Method addPrefixToMethod(final MethodGen mg,
                                      final Method method,
-                                     final int methodSequence) {
+                                     final int methodSequence,
+                                     final String uuid) {
 
         // change the method access flags (should always be set to protected)
         int accessFlags = mg.getAccessFlags();
@@ -446,7 +481,11 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
             accessFlags &= ~Constants.ACC_PUBLIC;
         }
 
-        mg.setName(getPrefixedMethodName(method, methodSequence).toString());
+        String prefixedMethodName = getPrefixedMethodName(
+                method, methodSequence, uuid
+        );
+
+        mg.setName(prefixedMethodName);
         mg.setAccessFlags(accessFlags);
 
         mg.setMaxStack();
@@ -474,6 +513,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      */
     private Method createProxyMethod(final ConstantPoolGen cp,
                                      final ClassGen cg,
+                                     final String originalMethodName,
                                      final MethodGen originalMethod,
                                      final InstructionFactory factory,
                                      final int methodId,
@@ -486,14 +526,14 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
         final Type[] parameterTypes = Type.getArgumentTypes(originalMethod.getSignature());
         final String[] parameterNames = originalMethod.getArgumentNames();
         final Type returnType = Type.getReturnType(originalMethod.getSignature());
-        final StringBuffer joinPoint = getJoinPointName(originalMethod.getMethod(), methodSequence);
+        final String joinPoint = getJoinPointName(originalMethod.getMethod(), methodSequence);
 
         final MethodGen method = new MethodGen(
                 accessFlags,
                 returnType,
                 parameterTypes,
                 parameterNames,
-                originalMethod.getName(),
+                originalMethodName,
                 cg.getClassName(),
                 il, cp
         );
@@ -514,7 +554,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
         // Object joinPoint = ___jp.get();
         il.append(factory.createFieldAccess(
                 cg.getClassName(),
-                joinPoint.toString(),
+                joinPoint,
                 new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                 Constants.GETSTATIC
         ));
@@ -884,13 +924,12 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @param classMetaData the class meta-data
      * @param methodMetaData the method meta-data
      * @param method the method to filter
-     * @return the UUID for the weave model
+     * @return boolean
      */
-    private String methodFilter(final AspectWerkzDefinition definition,
-                                final ClassMetaData classMetaData,
-                                final MethodMetaData methodMetaData,
-                                final Method method) {
-        String uuid = null;
+    private boolean methodFilter(final AspectWerkzDefinition definition,
+                                 final ClassMetaData classMetaData,
+                                 final MethodMetaData methodMetaData,
+                                 final Method method) {
         if (method.isAbstract() || method.isNative() ||
                 method.getName().equals("<init>") ||
                 method.getName().equals("<clinit>") ||
@@ -899,17 +938,21 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                 method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
                 method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
                 method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
-            uuid = null;
+            return true;
         }
+        else if (definition.hasMethodPointcut(classMetaData, methodMetaData)) {
+            return false;
+        }
+        else if (definition.hasThrowsPointcut(classMetaData, methodMetaData)) {
+            return false;
+        }
+//        //TODO: not sufficient, need to match the method signature as well (without the prefixes)
+//        else if (method.getName().startsWith("___AW_wrapped_original_method")) {
+//            return false;
+//        }
         else {
-            if (definition.hasMethodPointcut(classMetaData, methodMetaData)) {
-                uuid = definition.getUuid();
-            }
-            if (definition.hasThrowsPointcut(classMetaData, methodMetaData)) {
-                uuid = definition.getUuid();
-            }
+            return true;
         }
-        return uuid;
     }
 
     /**
@@ -919,14 +962,14 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @param methodSequence the method sequence
      * @return the name of the join point
      */
-    private StringBuffer getJoinPointName(final Method method,
-                                          final int methodSequence) {
+    private String getJoinPointName(final Method method,
+                                    final int methodSequence) {
         final StringBuffer joinPoint = new StringBuffer();
         joinPoint.append(TransformationUtil.STATIC_METHOD_JOIN_POINT_PREFIX);
         joinPoint.append(method.getName());
         joinPoint.append(TransformationUtil.DELIMITER);
         joinPoint.append(methodSequence);
-        return joinPoint;
+        return joinPoint.toString();
     }
 
     /**
@@ -934,17 +977,20 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      *
      * @param method the method
      * @param methodSequence the method sequence
+     * @param uuid the definition UUID
      * @return the name of the join point
      */
-    private static StringBuffer getPrefixedMethodName(final Method method,
-                                                      final int methodSequence) {
+    private static String getPrefixedMethodName(final Method method,
+                                                final int methodSequence,
+                                                final String uuid) {
         final StringBuffer methodName = new StringBuffer();
         methodName.append(TransformationUtil.ORIGINAL_METHOD_PREFIX);
         methodName.append(method.getName());
         methodName.append(TransformationUtil.DELIMITER);
         methodName.append(methodSequence);
-        return methodName;
+        methodName.append(TransformationUtil.DELIMITER);
+        methodName.append(uuid);
+        return methodName.toString();
     }
-    ///CLOVER:ON
 }
 

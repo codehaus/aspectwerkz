@@ -208,9 +208,7 @@ public final class AddUuidTransformer
                 cg.getClassName(),
                 il, cpg);
 
-        if (cg.containsMethod(
-                TransformationUtil.GET_UUID_METHOD,
-                method.getSignature()) != null) {
+        if (cg.containsMethod(TransformationUtil.GET_UUID_METHOD, method.getSignature()) != null) {
             return;
         }
 

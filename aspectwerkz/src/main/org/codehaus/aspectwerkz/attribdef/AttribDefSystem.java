@@ -809,8 +809,7 @@ public final class AttribDefSystem implements System {
 
             // add only the advised original methods to the lookup table,
             // method pairs that consists of original:proxy
-            if (declaredMethods[i].getName().startsWith(
-                    TransformationUtil.ORIGINAL_METHOD_PREFIX)) {
+            if (declaredMethods[i].getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)) {
                 methods.add(declaredMethods[i]);
             }
         }

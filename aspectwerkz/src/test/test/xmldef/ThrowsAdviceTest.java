@@ -71,7 +71,7 @@ public class ThrowsAdviceTest extends TestCase {
                     error.getClass() +
                     error.getClass().getName() +
                     error.getLocalizedMessage() +
-                    "protected void test.xmldef.ThrowsAdviceTest.___AW_original_method$_AW_$getJoinPointMetaData$_AW_$1$_AW_$test_xmldef_ThrowsAdviceTest() throws java.lang.Throwable" +
+                    "protected void test.xmldef.ThrowsAdviceTest.___AW_original_method$_AW_$getJoinPointMetaData$_AW_$1$_AW_$test_xmldef_ThrowsAdviceTest$_AW_$tests() throws java.lang.Throwable" +
                     "getJoinPointMetaData" +
                     "void" +
                     this +
