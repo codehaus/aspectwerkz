@@ -49,7 +49,7 @@ public final class AspectManager {
     /**
      * The definition.
      */
-    private SystemDefinition m_definition;
+    public SystemDefinition m_definition;
 
     /**
      * The aspect registry.

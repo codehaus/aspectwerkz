@@ -41,7 +41,9 @@ public class ExpressionContext {
 
     private boolean m_hasBeenVisitingCflow = false;
 
-    private int m_argsIndex = 0;
+    private int m_currentTartgetArgsIndex = 0;
+
+    public gnu.trove.TIntIntHashMap m_exprIndexToTargetIndex = new gnu.trove.TIntIntHashMap();
 
     /**
      * Creates a new expression context.
@@ -159,12 +161,12 @@ public class ExpressionContext {
         m_cflowEvaluation = cflowEvaluation;
     }
 
-    public int getArgsIndex() {
-        return m_argsIndex;
+    public int getCurrentTargetArgsIndex() {
+        return m_currentTartgetArgsIndex;
     }
 
-    public void setArgsIndex(int argsIndex) {
-        this.m_argsIndex = argsIndex;
+    public void setCurrentTargetArgsIndex(int argsIndex) {
+        this.m_currentTartgetArgsIndex = argsIndex;
     }
 
     public boolean equals(Object o) {

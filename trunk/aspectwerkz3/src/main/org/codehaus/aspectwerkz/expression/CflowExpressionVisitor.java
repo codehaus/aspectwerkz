@@ -36,10 +36,11 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
      * @param namespace the namespace
      * @param root the AST root
      */
-    public CflowExpressionVisitor(final String expression,
+    public CflowExpressionVisitor(final ExpressionInfo expressionInfo,
+                                  final String expression,
                                   final String namespace,
                                   final ASTRoot root) {
-        super(expression, namespace, root);
+        super(expressionInfo, expression, namespace, root);
     }
 
     /**

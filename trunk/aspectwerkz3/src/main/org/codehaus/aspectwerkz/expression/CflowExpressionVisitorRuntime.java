@@ -36,10 +36,11 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
      * @param namespace the namespace
      * @param root the AST root
      */
-    public CflowExpressionVisitorRuntime(final String expression,
+    public CflowExpressionVisitorRuntime(final ExpressionInfo expressionInfo,
+                                         final String expression,
                                          final String namespace,
                                          final ASTRoot root) {
-        super(expression, namespace, root);
+        super(expressionInfo, expression, namespace, root);
     }
 
     /**

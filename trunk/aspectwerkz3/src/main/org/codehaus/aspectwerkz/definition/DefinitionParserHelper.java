@@ -58,8 +58,8 @@ public class DefinitionParserHelper {
             if (pointcutCallSignature != null) {
                 String[] parameters = Strings.splitString(pointcutCallSignature, ",");
                 for (int i = 0; i < parameters.length; i++) {
-                    String[] parameterInfo = Strings.splitString(parameters[i], " ");
-                    info.addArgument(parameterInfo[0], parameterInfo[1]);
+                    String[] parameterInfo = Strings.splitString(Strings.replaceSubString(parameters[i].trim(), "  "," "), " ");
+                    info.addArgument(parameterInfo[1], parameterInfo[0]);
                 }
             }
         }
@@ -301,9 +301,10 @@ public class DefinitionParserHelper {
             adviceCallSignature = adviceName.substring(adviceName.indexOf("(") + 1, adviceName.lastIndexOf(")"));
             String[] parameters = Strings.splitString(adviceCallSignature, ",");
             for (int i = 0; i < parameters.length; i++) {
-                String[] parameterInfo = Strings.splitString(parameters[i], " ");
-                expressionInfo.addArgument(parameterInfo[0], parameterInfo[1]);
+                String[] parameterInfo = Strings.splitString(Strings.replaceSubString(parameters[i].trim(), "  ", " "), " ");
+                expressionInfo.addArgument(parameterInfo[1], parameterInfo[0]);
             }
+            expressionInfo.m_isAdviceBindingWithArgs = true;
         }
 
         final AdviceDefinition adviceDef = new AdviceDefinition(

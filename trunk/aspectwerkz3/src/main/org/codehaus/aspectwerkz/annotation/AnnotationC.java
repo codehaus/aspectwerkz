@@ -266,7 +266,7 @@ public class AnnotationC {
                     ANNOTATION_EXPRESSION,
                     expressionProxy));
                 logInfo("    pointcut ["
-                    + AnnotationC.getMethodPointcutAsString(method)
+                    + AnnotationC.getShortCallSignature(method)
                     + " :: "
                     + expressionProxy.expression()
                     + ']');
@@ -282,7 +282,7 @@ public class AnnotationC {
                     ANNOTATION_AROUND,
                     aroundProxy));
                 logInfo("    around advice ["
-                    + method.getName()
+                    + AnnotationC.getShortCallSignature(method)
                     + " :: "
                     + aroundProxy.pointcut()
                     + ']');
@@ -297,7 +297,7 @@ public class AnnotationC {
                 enhancer.insertMethodAttribute(method, new AnnotationInfo(
                     ANNOTATION_BEFORE,
                     beforeProxy));
-                logInfo("    before [" + method.getName() + " :: " + beforeProxy.pointcut() + ']');
+                logInfo("    before [" + AnnotationC.getShortCallSignature(method) + " :: " + beforeProxy.pointcut() + ']');
             }
         }
         Annotation[] afterAnnotations = manager.getAnnotations(ANNOTATION_AFTER, method);
@@ -310,7 +310,7 @@ public class AnnotationC {
                     ANNOTATION_AFTER,
                     afterProxy));
                 logInfo("    after advice ["
-                    + method.getName()
+                    + AnnotationC.getShortCallSignature(method)
                     + " :: "
                     + afterProxy.pointcut()
                     + ']');
@@ -694,12 +694,18 @@ public class AnnotationC {
         }
     }
 
-    private static String getMethodPointcutAsString(JavaMethod method) {
+    private static String getShortCallSignature(JavaMethod method) {
         StringBuffer buffer = new StringBuffer(method.getName());
         buffer.append("(");
         for (int i = 0; i < method.getParameters().length; i++) {
             JavaParameter javaParameter = method.getParameters()[i];
-            buffer.append(javaParameter.getType().toString());
+            if (javaParameter.getType().toString().equals("org.codehaus.aspectwerkz.joinpoint.JoinPoint")) {
+                buffer.append("JoinPoint");
+            } else {
+                buffer.append(javaParameter.getType().toString());
+                buffer.append(" ");
+                buffer.append(javaParameter.getName());
+            }
             if ( i + 1 < method.getParameters().length) {
                 buffer.append(", ");
             }

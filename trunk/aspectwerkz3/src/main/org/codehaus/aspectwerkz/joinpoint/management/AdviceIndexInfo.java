@@ -21,6 +21,8 @@ public class AdviceIndexInfo {
 
     private final IndexTuple[] m_afterAdvices;
 
+    public gnu.trove.TIntIntHashMap m_adviceToTargetMethodArgIndexes;//XXXARGS
+
     public AdviceIndexInfo(final IndexTuple[] aroundAdvices,
                            final IndexTuple[] beforeAdvices,
                            final IndexTuple[] afterAdvices) {
