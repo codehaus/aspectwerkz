@@ -66,7 +66,7 @@ public class CflowExtractVisitor implements ExpressionParserVisitor {
 
     public Object visit(NotNode node, Object data) {
         StringBuffer lhs = (StringBuffer)node.jjtGetChild(0).jjtAccept(this, data);
-        StringBuffer expr = new StringBuffer("NOT ").append(lhs.toString()).append("");
+        StringBuffer expr = new StringBuffer("NOT (").append(lhs.toString()).append(")");
         return expr;
     }
 

@@ -45,6 +45,7 @@ import org.codehaus.aspectwerkz.pointcut.HandlerPointcut;
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class StartupManager {
 

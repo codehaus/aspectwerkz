@@ -29,6 +29,7 @@ import org.dom4j.Element;
  * Parses the attribdef XML definition using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class DocumentParser {
 

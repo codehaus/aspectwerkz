@@ -172,6 +172,19 @@ public class ExpressionTest extends TestCase {
             assertTrue(root.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
             assertTrue(rootAnonymous.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
             assertTrue(rootAnonymousAnonymous.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
+//            long loop = 100000;
+//            long t1 = System.currentTimeMillis();
+//            for (int i = 0; i < loop; i++) {
+//                assertTrue(root.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
+//            } System.out.println("\tNamed expression: " + (System.currentTimeMillis()-t1));
+//            t1 = System.currentTimeMillis();
+//            for (int i = 0; i < loop; i++) {
+//                assertTrue(rootAnonymous.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
+//            } System.out.println("\tHalfNamed HalfAnonymous expression: " + (System.currentTimeMillis()-t1));
+//            t1 = System.currentTimeMillis();
+//            for (int i = 0; i < loop; i++) {
+//                assertTrue(rootAnonymousAnonymous.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
+//            } System.out.println("\tAnonymous expression: " + (System.currentTimeMillis()-t1));
 
             assertFalse(root.match(classMetaData1, methodMetaData3, PointcutType.EXECUTION));
             assertFalse(rootAnonymous.match(classMetaData1, methodMetaData3, PointcutType.EXECUTION));
