@@ -9,9 +9,12 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.List;
 
 import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
@@ -33,18 +36,33 @@ public class AroundAdviceExecutor implements AdviceExecutor {
     private final IndexTuple[] m_adviceIndexes;
 
     /**
+     * The cflow expressions.
+     */
+    private final List m_cflowExpressions;
+
+    /**
      * The aspect system.
      */
     private final System m_system;
 
     /**
+     * Should the executor check the control flow at each invocation?
+     */
+    private final boolean m_checkCflow;
+
+    /**
      *
      * @param adviceIndexes
+     * @param cflowExpressions
      * @param system
      */
-    public AroundAdviceExecutor(final IndexTuple[] adviceIndexes, final System system) {
+    public AroundAdviceExecutor(final IndexTuple[] adviceIndexes,
+                                final List cflowExpressions,
+                                final System system) {
         m_adviceIndexes = adviceIndexes;
+        m_cflowExpressions = cflowExpressions;
         m_system = system;
+        m_checkCflow = cflowExpressions.size() != 0;
     }
 
     /**
@@ -54,6 +72,20 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      * @return             the result from the next advice in the chain or the invocation of the target method
      */
     public Object proceed(final JoinPoint joinPoint) throws Throwable {
+        if (m_checkCflow) {
+            boolean isInCFlow = false;
+            for (Iterator it = m_cflowExpressions.iterator(); it.hasNext();) {
+                Expression cflowExpression = (Expression)it.next();
+                if (m_system.isInControlFlowOf(cflowExpression)) {
+                    isInCFlow = true;
+                    break;
+                }
+            }
+            if (!isInCFlow) {
+                return invokeTargetMethod(joinPoint);
+            }
+        }
+
         m_currentAdviceIndex++;
         if (m_currentAdviceIndex < m_adviceIndexes.length) {
             IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
@@ -74,7 +106,7 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      * @return a deep copy of the intance
      */
     public AdviceExecutor deepCopy() {
-        return new AroundAdviceExecutor(m_adviceIndexes, m_system);
+        return new AroundAdviceExecutor(m_adviceIndexes, m_cflowExpressions, m_system);
     }
 
     /**

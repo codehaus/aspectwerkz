@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 
 import gnu.trove.TLongObjectHashMap;
 import gnu.trove.TLongLongHashMap;
@@ -65,6 +66,7 @@ public class JoinPointManager {
         }
     }
 
+    private static final List EMTPY_ARRAY_LIST = new ArrayList();
     private static final Map s_managers = new HashMap();
     private static final JoinPointRegistry s_registry = new JoinPointRegistry();
 
@@ -341,14 +343,14 @@ public class JoinPointManager {
                     case JoinPointType.FIELD_SET:
                         adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.SET);
                         joinPoint = createFieldJoinPoint(
-                                joinPointSignature, joinPointType, m_targetClass, adviceIndexes
+                                fieldHash, joinPointSignature, joinPointType, m_targetClass, adviceIndexes
                         );
                         break;
 
                     case JoinPointType.FIELD_GET:
                         adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.GET);
                         joinPoint = createFieldJoinPoint(
-                                joinPointSignature, joinPointType, m_targetClass, adviceIndexes
+                                fieldHash, joinPointSignature, joinPointType, m_targetClass, adviceIndexes
                         );
                         break;
 
@@ -490,76 +492,101 @@ public class JoinPointManager {
     /**
      * Create a method join point.
      *
-     * @param joinPointHash
+     * @param methodHash
      * @param joinPointType
      * @param declaringClass
      * @param adviceIndexes
      * @return
      */
-    private JoinPoint createMethodJoinPoint(final int joinPointHash,
+    private JoinPoint createMethodJoinPoint(final int methodHash,
                                             final int joinPointType,
                                             final Class declaringClass,
                                             final AdviceContainer[] adviceIndexes) {
-        MethodTuple methodTuple = m_system.getAspectManager().getMethodTuple(declaringClass, joinPointHash);
+        MethodTuple methodTuple = m_system.getAspectManager().getMethodTuple(declaringClass, methodHash);
         Class declaringType = methodTuple.getDeclaringClass();
         Signature signature = new MethodSignatureImpl(declaringType, methodTuple);
 
+        List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
+                ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+                ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod())
+        );
+
+        // TODO: cflow for before and after advices needed
         return new MethodJoinPoint(
                 m_uuid, joinPointType, m_targetClass, signature,
-                createAroundAdviceExecutor(adviceIndexes),
-                createBeforeAdviceExecutor(adviceIndexes),
-                createAfterAdviceExecutor(adviceIndexes)
+                createAroundAdviceExecutor(adviceIndexes, cflowExpressions),
+                createBeforeAdviceExecutor(adviceIndexes, cflowExpressions),
+                createAfterAdviceExecutor(adviceIndexes, cflowExpressions)
         );
     }
 
     /**
      * Create a constructor join point.
      *
-     * @param joinPointHash
+     * @param constructorHash
      * @param joinPointType
      * @param declaringClass
      * @param adviceIndexes
      * @return
      */
-    private JoinPoint createConstructorJoinPoint(final int joinPointHash,
+    private JoinPoint createConstructorJoinPoint(final int constructorHash,
                                                  final int joinPointType,
                                                  final Class declaringClass,
                                                  final AdviceContainer[] adviceIndexes) {
         // TODO: use constructor tuple
-        Constructor constructor = m_system.getAspectManager().getConstructor(declaringClass, joinPointHash);
+        Constructor constructor = m_system.getAspectManager().getConstructor(declaringClass, constructorHash);
         // TODO: set in constructor tuple
         constructor.setAccessible(true);
 
         Class declaringType = constructor.getDeclaringClass();
         Signature signature = new ConstructorSignatureImpl(declaringType, constructor);
 
+        // TODO: enable cflow for constructors
+//        List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
+//                ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+//                ReflectionMetaDataMaker.createConstructorMetaData(constructor)
+//        );
         return new ConstructorJoinPoint(
                 m_uuid, joinPointType, m_targetClass, signature,
-                createAroundAdviceExecutor(adviceIndexes),
-                createBeforeAdviceExecutor(adviceIndexes),
-                createAfterAdviceExecutor(adviceIndexes)
+                createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
+                createBeforeAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
+                createAfterAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST)
         );
     }
 
     /**
      * Create a field join point.
      *
-     * @param joinPointSignature
+     * @param fieldHash
+     * @param fieldSignature
      * @param joinPointType
      * @param declaringClass
      * @param adviceIndexes
      * @return
      */
-    private JoinPoint createFieldJoinPoint(final String joinPointSignature,
+    private JoinPoint createFieldJoinPoint(final int fieldHash,
+                                           final String fieldSignature,
                                            final int joinPointType,
                                            final Class declaringClass,
                                            final AdviceContainer[] adviceIndexes) {
-        Signature signature = new FieldSignatureImpl(declaringClass, joinPointSignature);
+
+        // TODO: store the Field instances in the AspectRegistry in the same way as the Methods
+        // TODO: pass the field instance to the executor and invoke the field in the same way as the target method (check type method/field etc.)
+//        Field field = m_system.getAspectManager().getField(declaringClass, fieldHash);
+
+        Signature signature = new FieldSignatureImpl(declaringClass, fieldSignature);
+
+        // TODO: enable cflow for field set get pointcuts
+//        List cflowExpressions = new ArrayList();
+//                m_system.getAspectManager().getCFlowExpressions(
+//                 ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+//                 ReflectionMetaDataMaker.createFieldMetaData(fieldSignature)
+//         );
         return new FieldJoinPoint(
                 m_uuid, joinPointType, m_targetClass, signature,
-                createAroundAdviceExecutor(adviceIndexes),
-                createBeforeAdviceExecutor(adviceIndexes),
-                createAfterAdviceExecutor(adviceIndexes)
+                createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
+                createBeforeAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
+                createAfterAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST)
         );
     }
 
@@ -567,21 +594,26 @@ public class JoinPointManager {
      * Create a catch clause join point.
      *
      * @param joinPointType
-     * @param joinPointSignature
+     * @param catchClauseSignature
      * @param declaringClass
      * @param adviceIndexes
      * @return
      */
     private JoinPoint createCatchClauseJoinPoint(final int joinPointType,
-                                                 final String joinPointSignature,
+                                                 final String catchClauseSignature,
                                                  final Class declaringClass,
                                                  final AdviceContainer[] adviceIndexes) {
-        Signature signature = new CatchClauseSignatureImpl(declaringClass, joinPointSignature);
+        Signature signature = new CatchC    lauseSignatureImpl(declaringClass, catchClauseSignature);
+        // TODO: enable cflow for catch clauses
+//        List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
+//                ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+//                ReflectionMetaDataMaker.createCatchClauseMetaData(signature)
+//        );
         return new CatchClauseJoinPoint(
                 m_uuid, joinPointType, m_targetClass, signature,
-                createAroundAdviceExecutor(adviceIndexes),
-                createBeforeAdviceExecutor(adviceIndexes),
-                createAfterAdviceExecutor(adviceIndexes)
+                createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
+                createBeforeAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
+                createAfterAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST)
         );
     }
 
@@ -589,9 +621,11 @@ public class JoinPointManager {
      * Creates an around advice executor.
      *
      * @param adviceIndexes
+     * @param cflowExpressions
      * @return the advice executor
      */
-    private AdviceExecutor createAroundAdviceExecutor(final AdviceContainer[] adviceIndexes) {
+    private AdviceExecutor createAroundAdviceExecutor(final AdviceContainer[] adviceIndexes,
+                                                      final List cflowExpressions) {
         int i, j;
         List aroundAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
@@ -606,16 +640,18 @@ public class JoinPointManager {
         for (Iterator it = aroundAdviceList.iterator(); it.hasNext(); i++) {
             aroundAdvices[i] = (IndexTuple)it.next();
         }
-        return new AroundAdviceExecutor(aroundAdvices, m_system);
+        return new AroundAdviceExecutor(aroundAdvices, cflowExpressions, m_system);
     }
 
     /**
      * Creates a before advice executor.
      *
      * @param adviceIndexes
+     * @param cflowExpressions
      * @return the advice executor
      */
-    private AdviceExecutor createBeforeAdviceExecutor(final AdviceContainer[] adviceIndexes) {
+    private AdviceExecutor createBeforeAdviceExecutor(final AdviceContainer[] adviceIndexes,
+                                                      final List cflowExpressions) {
         int i, j;
         List beforeAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
@@ -630,16 +666,18 @@ public class JoinPointManager {
         for (Iterator it = beforeAdviceList.iterator(); it.hasNext(); i++) {
             beforeAdvices[i] = (IndexTuple)it.next();
         }
-        return new BeforeAdviceExecutor(beforeAdvices, m_system);
+        return new BeforeAdviceExecutor(beforeAdvices, cflowExpressions, m_system);
     }
 
     /**
      * Creates an after advice executor.
      *
      * @param adviceIndexes
+     * @param cflowExpressions
      * @return the advice executor
      */
-    private AdviceExecutor createAfterAdviceExecutor(final AdviceContainer[] adviceIndexes) {
+    private AdviceExecutor createAfterAdviceExecutor(final AdviceContainer[] adviceIndexes,
+                                                      final List cflowExpressions) {
         int i, j;
         List afterAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
@@ -654,7 +692,7 @@ public class JoinPointManager {
         for (Iterator it = afterAdviceList.iterator(); it.hasNext(); i++) {
             afterAdvices[i] = (IndexTuple)it.next();
         }
-        return new AfterAdviceExecutor(afterAdvices, m_system);
+        return new AfterAdviceExecutor(afterAdvices, cflowExpressions, m_system);
     }
 
     /**

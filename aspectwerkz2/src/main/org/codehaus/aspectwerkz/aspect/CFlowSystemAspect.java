@@ -33,7 +33,7 @@ public class CFlowSystemAspect extends Aspect {
     /**
      * A unique name for the aspect.
      */
-    public static final String NAME = "org$codehaus$aspectwerkz$attribdef$aspect$CFlowSystemAspect";
+    public static final String NAME = "org$codehaus$aspectwerkz$aspect$CFlowSystemAspect";
 
     /**
      * The class name for the aspect.
@@ -75,10 +75,12 @@ public class CFlowSystemAspect extends Aspect {
         int postIndex = 0;
         for (Iterator i = methods.iterator(); i.hasNext(); index++) {
             Method m = (Method)i.next();
-            if (PRE_ADVICE.equals(m.getName()))
+            if (PRE_ADVICE.equals(m.getName())) {
                 preIndex = index;
-            else if (POST_ADVICE.equals(m.getName()))
+            }
+            else if (POST_ADVICE.equals(m.getName())) {
                 postIndex = index;
+            }
         }
         PRE_ADVICE_INDEX = preIndex;
         POST_ADVICE_INDEX = postIndex;
@@ -105,16 +107,18 @@ public class CFlowSystemAspect extends Aspect {
     }
 
     /**
-     * Creates meta-data for the method.
+     * Creates and returns the meta-data for the join point. Uses a cache.
      *
-     * @return the created method meta-data
+     * @todo should use a cache (used to cache on the Method instance but at caller side pointcuts no Method instance is available)
+     *
+     * @param joinPoint the join point
+     * @return the meta-data
      */
-    private static MethodMetaData createMethodMetaData(final JoinPoint joinPoint) {
-        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
-        return ReflectionMetaDataMaker.createMethodMetaData(
-                signature.getName(),
-                signature.getParameterTypes(),
-                signature.getReturnType());
+    private static ClassNameMethodMetaDataTuple getMetaData(final JoinPoint joinPoint) {
+        return new ClassNameMethodMetaDataTuple(
+                createClassMetaData(joinPoint),
+                createMethodMetaData(joinPoint)
+        );
     }
 
     /**
@@ -125,28 +129,19 @@ public class CFlowSystemAspect extends Aspect {
      */
     private static ClassMetaData createClassMetaData(final JoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
-        try {
-            return ReflectionMetaDataMaker.createClassMetaData(
-                    // TODO: declaring type is correct right?
-                Class.forName(signature.getDeclaringType().getName())
-            );
-        } catch (ClassNotFoundException nfe) {
-            throw new WrappedRuntimeException(nfe);
-        }
+        return ReflectionMetaDataMaker.createClassMetaData(signature.getDeclaringType());
     }
 
     /**
-     * Creates and returns the meta-data for the join point. Uses a cache.
+     * Creates meta-data for the method.
      *
-     * @todo should use a cache (used to cache on the Method instance but at caller side pointcuts no Method instance is available)
-     *
-     * @param joinPoint the join point
-     * @return the meta-data
+     * @return the created method meta-data
      */
-    private ClassNameMethodMetaDataTuple getMetaData(final JoinPoint joinPoint) {
-        return new ClassNameMethodMetaDataTuple(
-                createClassMetaData(joinPoint),
-                createMethodMetaData(joinPoint)
-        );
+    private static MethodMetaData createMethodMetaData(final JoinPoint joinPoint) {
+        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        return ReflectionMetaDataMaker.createMethodMetaData(
+                signature.getName(),
+                signature.getParameterTypes(),
+                signature.getReturnType());
     }
 }
