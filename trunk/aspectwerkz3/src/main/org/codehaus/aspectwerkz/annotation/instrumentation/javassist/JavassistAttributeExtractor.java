@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation.javassist;
 
-import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
@@ -149,7 +149,7 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
         if (attributeInfo.getName().startsWith(AttributeEnhancer.CUSTOM_ATTRIBUTE)) {
             byte[] serializedAttribute = attributeInfo.get();
             try {
-                Object attribute = new ContextClassLoader.NotBrokenObjectInputStream(new ByteArrayInputStream(
+                Object attribute = new UnbrokenObjectInputStream(new ByteArrayInputStream(
                     serializedAttribute)).readObject();
                 listToPutAttributesIn.add(attribute);
             } catch (Exception e) {

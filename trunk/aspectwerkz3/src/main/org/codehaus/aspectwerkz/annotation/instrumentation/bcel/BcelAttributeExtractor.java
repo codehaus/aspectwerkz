@@ -13,6 +13,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Unknown;
+import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -70,7 +71,7 @@ public class BcelAttributeExtractor implements AttributeExtractor {
                 Unknown unknownAttrib = (Unknown) classAttributes[i];
                 byte[] serializedAttribute = unknownAttrib.getBytes();
                 try {
-                    Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute))
+                    Object attribute = new UnbrokenObjectInputStream(new ByteArrayInputStream(serializedAttribute))
                             .readObject();
                     attributes.add(attribute);
                 } catch (Exception e) {
@@ -101,8 +102,8 @@ public class BcelAttributeExtractor implements AttributeExtractor {
                             Unknown unknownAttrib = (Unknown) methodAttributes[j];
                             byte[] serializedAttribute = unknownAttrib.getBytes();
                             try {
-                                Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute))
-                                        .readObject();
+                                Object attribute = new UnbrokenObjectInputStream(new ByteArrayInputStream(
+                                    serializedAttribute)).readObject();
                                 attributes.add(attribute);
                             } catch (Exception e) {
                                 // ignore
@@ -134,8 +135,8 @@ public class BcelAttributeExtractor implements AttributeExtractor {
                             Unknown unknownAttrib = (Unknown) methodAttributes[j];
                             byte[] serializedAttribute = unknownAttrib.getBytes();
                             try {
-                                Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute))
-                                        .readObject();
+                                Object attribute = new UnbrokenObjectInputStream(new ByteArrayInputStream(
+                                    serializedAttribute)).readObject();
                                 attributes.add(attribute);
                             } catch (Exception e) {
                                 // ignore
@@ -164,8 +165,8 @@ public class BcelAttributeExtractor implements AttributeExtractor {
                         Unknown unknownAttrib = (Unknown) fieldAttributes[j];
                         byte[] serializedAttribute = unknownAttrib.getBytes();
                         try {
-                            Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute))
-                                    .readObject();
+                            Object attribute = new UnbrokenObjectInputStream(new ByteArrayInputStream(
+                                serializedAttribute)).readObject();
                             attributes.add(attribute);
                         } catch (Exception e) {
                             // ignore
