@@ -7,11 +7,15 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
+import org.codehaus.aspectwerkz.exception.DefinitionException;
+
 /**
+ * A factory for the different kind of patterns in the AspectWerkz framework.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class PatternFactory {
+
     /**
      * Creates a class pattern and adds it to the pointcut definition.
      *
@@ -22,20 +26,28 @@ public class PatternFactory {
     public static void createClassPattern(final String pattern,
                                           final PointcutDefinition pointcutDef,
                                           final String packageName) {
-        String classPattern;
-        if (packageName.equals("")) {
-            classPattern = pattern;
-        }
-        else {
-            classPattern = packageName + "." + pattern;
-        }
+        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
+        if (pointcutDef == null) throw new IllegalArgumentException("pointcut definition can not be null");
+        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
 
-        if (classPattern.endsWith("+")) {
-            classPattern = classPattern.substring(0, classPattern.length() - 1);
-            pointcutDef.markAsHierarchical();
+        try {
+            String classPattern;
+            if (packageName.equals("")) {
+                classPattern = pattern;
+            }
+            else {
+                classPattern = packageName + "." + pattern;
+            }
+            if (classPattern.endsWith("+")) {
+                classPattern = classPattern.substring(0, classPattern.length() - 1);
+                pointcutDef.markAsHierarchical();
+            }
+            pointcutDef.setPattern(classPattern);
+            pointcutDef.setClassPattern(classPattern);
         }
-        pointcutDef.setPattern(classPattern);
-        pointcutDef.setClassPattern(classPattern);
+        catch (Exception e) {
+            throw new DefinitionException("pattern is not well formed [" + pattern + "]");
+        }
     }
 
     /**
@@ -48,28 +60,36 @@ public class PatternFactory {
     public static void createMethodPattern(final String pattern,
                                            final PointcutDefinition pointcutDef,
                                            final String packageName) {
-        int indexFirstSpace = pattern.indexOf(' ');
-        String returnType = pattern.substring(0, indexFirstSpace + 1);
-        String classNameWithMethodName = pattern.substring(
-                indexFirstSpace, pattern.indexOf('(')).trim();
-        String parameterTypes = pattern.substring(
-                pattern.indexOf('('), pattern.length()).trim();
-        int indexLastDot = classNameWithMethodName.lastIndexOf('.');
+        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
+        if (pointcutDef == null) throw new IllegalArgumentException("pointcut definition can not be null");
+        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
 
-        final String methodPattern = classNameWithMethodName.substring(
-                indexLastDot + 1, classNameWithMethodName.length()).trim();
-        String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
-        if (classPattern.endsWith("+")) {
-            classPattern = classPattern.substring(0, classPattern.length() - 1);
-            pointcutDef.markAsHierarchical();
+        try {
+            int indexFirstSpace = pattern.indexOf(' ');
+            String returnType = pattern.substring(0, indexFirstSpace + 1);
+            String classNameWithMethodName = pattern.substring(
+                    indexFirstSpace, pattern.indexOf('(')).trim();
+            String parameterTypes = pattern.substring(
+                    pattern.indexOf('('), pattern.length()).trim();
+            int indexLastDot = classNameWithMethodName.lastIndexOf('.');
+
+            final String methodPattern = classNameWithMethodName.substring(
+                    indexLastDot + 1, classNameWithMethodName.length()).trim();
+            String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
+            if (classPattern.endsWith("+")) {
+                classPattern = classPattern.substring(0, classPattern.length() - 1);
+                pointcutDef.markAsHierarchical();
+            }
+            StringBuffer buf = new StringBuffer();
+            buf.append(returnType);
+            buf.append(methodPattern);
+            buf.append(parameterTypes);
+            pointcutDef.setPattern(buf.toString());
+            pointcutDef.setClassPattern(classPattern);
         }
-
-        StringBuffer buf = new StringBuffer();
-        buf.append(returnType);
-        buf.append(methodPattern);
-        buf.append(parameterTypes);
-        pointcutDef.setPattern(buf.toString());
-        pointcutDef.setClassPattern(classPattern);
+        catch (Exception e) {
+            throw new DefinitionException("pattern is not well formed [" + pattern + "]");
+        }
     }
 
     /**
@@ -82,25 +102,34 @@ public class PatternFactory {
     public static void createFieldPattern(final String pattern,
                                           final PointcutDefinition pointcutDef,
                                           final String packageName) {
-        int indexFirstSpace = pattern.indexOf(' ');
-        String fieldType = pattern.substring(0, indexFirstSpace + 1);
-        String classNameWithFieldName = pattern.substring(
-                indexFirstSpace, pattern.length()).trim();
-        int indexLastDot = classNameWithFieldName.lastIndexOf('.');
+        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
+        if (pointcutDef == null) throw new IllegalArgumentException("pointcut definition can not be null");
+        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
 
-        final String fieldPattern = classNameWithFieldName.substring(
-                indexLastDot + 1, classNameWithFieldName.length()).trim();
-        String classPattern = packageName + classNameWithFieldName.substring(0, indexLastDot).trim();
-        if (classPattern.endsWith("+")) {
-            classPattern = classPattern.substring(0, classPattern.length() - 1);
-            pointcutDef.markAsHierarchical();
+        try {
+            int indexFirstSpace = pattern.indexOf(' ');
+            String fieldType = pattern.substring(0, indexFirstSpace + 1);
+            String classNameWithFieldName = pattern.substring(
+                    indexFirstSpace, pattern.length()).trim();
+            int indexLastDot = classNameWithFieldName.lastIndexOf('.');
+
+            final String fieldPattern = classNameWithFieldName.substring(
+                    indexLastDot + 1, classNameWithFieldName.length()).trim();
+            String classPattern = packageName + classNameWithFieldName.substring(0, indexLastDot).trim();
+            if (classPattern.endsWith("+")) {
+                classPattern = classPattern.substring(0, classPattern.length() - 1);
+                pointcutDef.markAsHierarchical();
+            }
+
+            StringBuffer buf = new StringBuffer();
+            buf.append(fieldType);
+            buf.append(fieldPattern);
+            pointcutDef.setPattern(buf.toString());
+            pointcutDef.setClassPattern(classPattern);
         }
-
-        StringBuffer buf = new StringBuffer();
-        buf.append(fieldType);
-        buf.append(fieldPattern);
-        pointcutDef.setPattern(buf.toString());
-        pointcutDef.setClassPattern(classPattern);
+        catch (Exception e) {
+            throw new DefinitionException("pattern is not well formed [" + pattern + "]");
+        }
     }
 
     /**
@@ -113,31 +142,40 @@ public class PatternFactory {
     public static void createThrowsPattern(final String pattern,
                                            final PointcutDefinition pointcutDef,
                                            final String packageName) {
-        String classAndMethodName = pattern.substring(0, pattern.indexOf('#')).trim();
-        final String exceptionName = pattern.substring(pattern.indexOf('#') + 1).trim();
-        int indexFirstSpace = classAndMethodName.indexOf(' ');
-        final String returnType = classAndMethodName.substring(0, indexFirstSpace + 1);
-        String classNameWithMethodName = classAndMethodName.substring(
-                indexFirstSpace, classAndMethodName.indexOf('(')).trim();
-        final String parameterTypes = classAndMethodName.substring(
-                classAndMethodName.indexOf('('), classAndMethodName.length()).trim();
-        int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-        final String methodPattern = classNameWithMethodName.substring(
-                indexLastDot + 1, classNameWithMethodName.length()).trim();
-        String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
-        if (classPattern.endsWith("+")) {
-            classPattern = classPattern.substring(0, classPattern.length() - 1);
-            pointcutDef.markAsHierarchical();
-        }
+        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
+        if (pointcutDef == null) throw new IllegalArgumentException("pointcut definition can not be null");
+        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
 
-        StringBuffer buf = new StringBuffer();
-        buf.append(returnType);
-        buf.append(methodPattern);
-        buf.append(parameterTypes);
-        buf.append('#');
-        buf.append(exceptionName);
-        pointcutDef.setClassPattern(classPattern);
-        pointcutDef.setPattern(buf.toString());
+        try {
+            String classAndMethodName = pattern.substring(0, pattern.indexOf('#')).trim();
+            final String exceptionName = pattern.substring(pattern.indexOf('#') + 1).trim();
+            int indexFirstSpace = classAndMethodName.indexOf(' ');
+            final String returnType = classAndMethodName.substring(0, indexFirstSpace + 1);
+            String classNameWithMethodName = classAndMethodName.substring(
+                    indexFirstSpace, classAndMethodName.indexOf('(')).trim();
+            final String parameterTypes = classAndMethodName.substring(
+                    classAndMethodName.indexOf('('), classAndMethodName.length()).trim();
+            int indexLastDot = classNameWithMethodName.lastIndexOf('.');
+            final String methodPattern = classNameWithMethodName.substring(
+                    indexLastDot + 1, classNameWithMethodName.length()).trim();
+            String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
+            if (classPattern.endsWith("+")) {
+                classPattern = classPattern.substring(0, classPattern.length() - 1);
+                pointcutDef.markAsHierarchical();
+            }
+
+            StringBuffer buf = new StringBuffer();
+            buf.append(returnType);
+            buf.append(methodPattern);
+            buf.append(parameterTypes);
+            buf.append('#');
+            buf.append(exceptionName);
+            pointcutDef.setClassPattern(classPattern);
+            pointcutDef.setPattern(buf.toString());
+        }
+        catch (Exception e) {
+            throw new DefinitionException("pattern is not well formed [" + pattern + "]");
+        }
     }
 
     /**
@@ -150,39 +188,46 @@ public class PatternFactory {
     public static void createCallerSidePattern(String pattern,
                                                final PointcutDefinition pointcutDef,
                                                final String packageName) {
-        if (pattern.indexOf('>') == -1) {
-            pattern = "*->" + pattern; // if no caller side pattern is specified => default to *
+        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
+        if (pointcutDef == null) throw new IllegalArgumentException("pointcut definition can not be null");
+        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
+
+        try {
+            if (pattern.indexOf('>') == -1) {
+                pattern = "*->" + pattern; // if no caller side pattern is specified => default to *
+            }
+            String callerClassPattern = packageName + pattern.substring(0, pattern.indexOf('-')).trim();
+            if (callerClassPattern.endsWith("+")) {
+                callerClassPattern = callerClassPattern.substring(0, callerClassPattern.length() - 1);
+                pointcutDef.markAsHierarchical();
+            }
+            String calleePattern = pattern.substring(pattern.indexOf('>') + 1).trim();
+            int indexFirstSpace = calleePattern.indexOf(' ');
+            String returnType = calleePattern.substring(0, indexFirstSpace + 1);
+            String classNameWithMethodName = calleePattern.substring(
+                    indexFirstSpace, calleePattern.indexOf('(')).trim();
+            String parameterTypes = calleePattern.substring(
+                    calleePattern.indexOf('('), calleePattern.length()).trim();
+            int indexLastDot = classNameWithMethodName.lastIndexOf('.');
+            String calleeMethodPattern = classNameWithMethodName.substring(
+                    indexLastDot + 1, classNameWithMethodName.length()).trim();
+            String calleeClassPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
+
+            if (calleeClassPattern.endsWith("+")) {
+                calleeClassPattern = calleeClassPattern.substring(0, calleeClassPattern.length() - 1);
+                pointcutDef.markAsHierarchical();
+            }
+            calleeMethodPattern = returnType + calleeMethodPattern + parameterTypes;
+
+            StringBuffer buf = new StringBuffer();
+            buf.append(calleeClassPattern);
+            buf.append('#');
+            buf.append(calleeMethodPattern);
+            pointcutDef.setPattern(buf.toString());
+            pointcutDef.setClassPattern(callerClassPattern);
         }
-
-        String callerClassPattern = packageName + pattern.substring(0, pattern.indexOf('-')).trim();
-        if (callerClassPattern.endsWith("+")) {
-            callerClassPattern = callerClassPattern.substring(0, callerClassPattern.length() - 1);
-            pointcutDef.markAsHierarchical();
+        catch (Exception e) {
+            throw new DefinitionException("pattern is not well formed [" + pattern + "]");
         }
-
-        String calleePattern = pattern.substring(pattern.indexOf('>') + 1).trim();
-        int indexFirstSpace = calleePattern.indexOf(' ');
-        String returnType = calleePattern.substring(0, indexFirstSpace + 1);
-        String classNameWithMethodName = calleePattern.substring(
-                indexFirstSpace, calleePattern.indexOf('(')).trim();
-        String parameterTypes = calleePattern.substring(
-                calleePattern.indexOf('('), calleePattern.length()).trim();
-        int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-        String calleeMethodPattern = classNameWithMethodName.substring(
-                indexLastDot + 1, classNameWithMethodName.length()).trim();
-        String calleeClassPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
-
-        if (calleeClassPattern.endsWith("+")) {
-            calleeClassPattern = calleeClassPattern.substring(0, calleeClassPattern.length() - 1);
-            pointcutDef.markAsHierarchical();
-        }
-        calleeMethodPattern = returnType + calleeMethodPattern + parameterTypes;
-
-        StringBuffer buf = new StringBuffer();
-        buf.append(calleeClassPattern);
-        buf.append('#');
-        buf.append(calleeMethodPattern);
-        pointcutDef.setPattern(buf.toString());
-        pointcutDef.setClassPattern(callerClassPattern);
     }
 }
