@@ -35,7 +35,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * @todo Implement the abstract factory pattern for the XML definition parser
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: Dom4jXmlDefinitionParser.java,v 1.1.1.1 2003-05-11 15:13:54 jboner Exp $
+ * @version $Id: Dom4jXmlDefinitionParser.java,v 1.2 2003-05-12 09:41:29 jboner Exp $
  */
 public class Dom4jXmlDefinitionParser {
 

@@ -37,7 +37,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.2 2003-05-12 09:20:45 jboner Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.3 2003-05-12 09:41:29 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
