@@ -1,4 +1,4 @@
-AspectWerkz 2.0.RC3-snapshot (c) 2002-2005 Jonas Bonér, Alexandre Vasseur
+AspectWerkz 2.0.RC3 (c) 2002-2005 Jonas Bonér, Alexandre Vasseur
 
 Usage: aspectwerkz [-options] <main class> [args...]
        aspectwerkz [-options] -jar <jar file> [args...]

@@ -51,7 +51,7 @@
     <!-- =================================================== -->
     <target name="init">
         <property name="name" value="aspectwerkz"/>
-        <property name="version" value="2.0.RC3-snapshot"/>
+        <property name="version" value="2.0.RC3"/>
         <property name="basedir" value="."/>
         <property name="src.dir" value="${basedir}/src"/>
         <property name="test.src.dir" value="${basedir}/src/test"/>
@@ -419,7 +419,7 @@
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.RC3-snapshot.jar -Daspectwerkz.transform.verbose=false  -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/jdk15/test/aop.xml"/>
+            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.RC3.jar -Daspectwerkz.transform.verbose=false  -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/jdk15/test/aop.xml"/>
         </java>
     </target>
 
@@ -644,7 +644,7 @@
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.RC3-snapshot.jar  -Daspectwerkz.definition.file=src/jdk15/samples/examples/callback/aop.xml -Daspectwerkz.transform.verbose=false"/>
+            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.RC3.jar  -Daspectwerkz.definition.file=src/jdk15/samples/examples/callback/aop.xml -Daspectwerkz.transform.verbose=false"/>
         </java>
     </target>
 
@@ -667,7 +667,7 @@
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.RC3-snapshot.jar -Daspectwerkz.definition.file=src/jdk15/samples/examples/proxy/aop.xml -Daspectwerkz.transform.verbose=false"/>
+            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.RC3.jar -Daspectwerkz.definition.file=src/jdk15/samples/examples/proxy/aop.xml -Daspectwerkz.transform.verbose=false"/>
         </java>
     </target>
 
