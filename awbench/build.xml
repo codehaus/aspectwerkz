@@ -48,7 +48,7 @@
     <!-- AJ -->
     <taskdef name="ajc" classname="org.aspectj.tools.ant.taskdefs.AjcTask" classpathref="project.classpath"/>
     <!-- JBoss -->
-    <taskdef name="aopc" classname="org.jboss.aop.ant.AopC" classpathref="project.classpath"/>
+    <taskdef name="jbossaopc" classname="org.jboss.aop.ant.AopC" classpathref="project.classpath"/>
 
     <condition property="args" value="">
         <not>
@@ -172,17 +172,25 @@
     </target>
 
     <target name="pre:jboss">
-        <aopc compilerclasspathref="project.classpath" verbose="true">
+        <jbossaopc compilerclasspathref="project.classpath" verbose="true">
             <aoppath path="${d}/src/jboss/META-INF/jboss-aop.xml"/>
             <classpath path="${d}/target"/>
-            <src path="${d}/target"/><!-- for sucky reason, we need both else JBoss fails with a NPE -->
-        </aopc>
+            <src path="${d}/target"/>
+        </jbossaopc>
     </target>
 
     <target name="pre:ext:aopalliance">
         <awweave classpathref="project.classpath" targetdir="${d}/target"
             verbose="true"
+            aspectmodels="org.codehaus.aspectwerkz.transform.aopalliance.AopAllianceAspectModel"
             definition="${d}/src/compiler-extensions/aopalliance/META-INF/aop.xml"/>
+    </target>
+
+    <target name="pre:ext:spring">
+        <awweave classpathref="project.classpath" targetdir="${d}/target"
+            verbose="true"
+            aspectmodels="org.codehaus.aspectwerkz.transform.spring.SpringAspectModel"
+            definition="${d}/src/compiler-extensions/spring/META-INF/aop.xml"/>
     </target>
 
     <!-- ============================================================== -->
@@ -230,22 +238,26 @@
         </java>
     </target>
 
-    <target name="run:ext:aopalliance" depends="init, compile, compile:ext:aopalliance">
+    <target name="run:ext:aopalliance" depends="init, compile, compile:ext:aopalliance, pre:ext:aopalliance">
+        <!-- do not defer to run since META-INF/aop.xml is different -->
         <java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
             <classpath>
                 <pathelement path="${d}/src/compiler-extensions/aopalliance/"/>
             </classpath>
-            <jvmarg line="-Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib/aspectwerkz-core-2.0beta1.jar:lib/asm-1.5.1.jar:lib/asm-attrs-1.5.1.jar -Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.aopalliance.AopAllianceAspectModel -Daspectwerkz.transform.verbose=true ${java.jvmarg}"/>
+            <!-- need to be aware of the aspectmodels for the runtime as well as at weave time -->
+            <jvmarg line="-Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.aopalliance.AopAllianceAspectModel ${java.jvmarg}"/>
             <arg line="${args}"/>
         </java>
     </target>
 
-    <target name="run:ext:spring" depends="init, compile, compile:ext:spring">
+    <target name="run:ext:spring" depends="init, compile, compile:ext:spring, pre:ext:spring">
+        <!-- do not defer to run since META-INF/aop.xml is different -->
         <java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
             <classpath>
                 <pathelement path="${d}/src/compiler-extensions/spring/"/>
             </classpath>
-            <jvmarg line="-Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib/aspectwerkz-core-2.0beta1.jar:lib/asm-1.5.1.jar:lib/asm-attrs-1.5.1.jar -Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.spring.SpringAspectModel -Daspectwerkz.transform.verbose=true ${java.jvmarg}"/>
+            <!-- need to be aware of the aspectmodels for the runtime as well as at weave time -->
+            <jvmarg line="-Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.spring.SpringAspectModel ${java.jvmarg}"/>
             <arg line="${args}"/>
         </java>
     </target>
