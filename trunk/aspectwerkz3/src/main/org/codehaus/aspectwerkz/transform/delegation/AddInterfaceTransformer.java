@@ -16,7 +16,6 @@ import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
 import org.codehaus.aspectwerkz.transform.Context;
-import org.codehaus.aspectwerkz.transform.Klass;
 import org.codehaus.aspectwerkz.transform.Transformer;
 
 import java.util.Iterator;
@@ -56,7 +55,6 @@ public final class AddInterfaceTransformer implements Transformer {
             }
             addInterfaceIntroductions(definition, ctClass, context, ctx);
         }
-        context.setBytecode(klass.getBytecode());
     }
 
     /**

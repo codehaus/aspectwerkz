@@ -15,7 +15,6 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistFieldInfo;
 import org.codehaus.aspectwerkz.transform.Context;
-import org.codehaus.aspectwerkz.transform.Klass;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
 
@@ -228,7 +227,6 @@ public class FieldSetGetTransformer implements Transformer {
         //AXTransformationUtil.setJoinPointIndex(klass.getCtClass(),
         // m_joinPointIndex);
         klass.flushJoinPointIndex();
-        context.setBytecode(klass.getBytecode());
     }
 
     /**

@@ -9,11 +9,12 @@ package org.codehaus.aspectwerkz.transform;
 
 /**
  * A tuple based on className and defining ClassLoader object
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class ClassCacheTuple {
     private ClassLoader classLoader;
+
     private String className;
 
     public ClassCacheTuple(ClassLoader classLoader, String className) {
@@ -49,7 +50,7 @@ public class ClassCacheTuple {
         if (!(o instanceof ClassCacheTuple)) {
             return false;
         }
-        final ClassCacheTuple classCacheTuple = (ClassCacheTuple)o;
+        final ClassCacheTuple classCacheTuple = (ClassCacheTuple) o;
         if (!classLoader.equals(classCacheTuple.classLoader)) {
             return false;
         }

@@ -18,36 +18,37 @@ import java.util.List;
 import org.codehaus.aspectwerkz.MethodComparator;
 
 /**
- * 
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ReflectHelper {
 
     /**
      * Creates a sorted method list of all the public methods in the class and super classes.
-     *
-     * @param klass the class with the methods
+     * 
+     * @param klass
+     *            the class with the methods
      * @return the sorted method list
      */
     public static List createSortedMethodList(final Class klass) {
         if (klass == null) {
             throw new IllegalArgumentException("class to sort method on can not be null");
         }
-    
+
         // get all public methods including the inherited methods
         java.lang.reflect.Method[] methods = klass.getMethods();
         List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
             java.lang.reflect.Method method = methods[i];
             if (!method.getName().equals("equals") && !method.getName().equals("hashCode")
-                && !method.getName().equals("getClass") && !method.getName().equals("toString")
-                && !method.getName().equals("wait") && !method.getName().equals("notify")
-                && !method.getName().equals("notifyAll") && !method.getName().startsWith(TransformationUtil.CLASS_LOOKUP_METHOD)
-                && !method.getName().startsWith(TransformationUtil.GET_UUID_METHOD) && !method.getName().startsWith(TransformationUtil.GET_META_DATA_METHOD)
-                && !method.getName().startsWith(TransformationUtil.SET_META_DATA_METHOD)
-                && !method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
-                && !method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+                    && !method.getName().equals("getClass") && !method.getName().equals("toString")
+                    && !method.getName().equals("wait") && !method.getName().equals("notify")
+                    && !method.getName().equals("notifyAll")
+                    && !method.getName().startsWith(TransformationUtil.CLASS_LOOKUP_METHOD)
+                    && !method.getName().startsWith(TransformationUtil.GET_UUID_METHOD)
+                    && !method.getName().startsWith(TransformationUtil.GET_META_DATA_METHOD)
+                    && !method.getName().startsWith(TransformationUtil.SET_META_DATA_METHOD)
+                    && !method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
+                    && !method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
                 methodList.add(method);
             }
         }
@@ -57,8 +58,9 @@ public class ReflectHelper {
 
     /**
      * Converts modifiers represented in a string array to an int.
-     *
-     * @param modifiers the modifiers as strings
+     * 
+     * @param modifiers
+     *            the modifiers as strings
      * @return the modifiers as an int
      */
     public static int getModifiersAsInt(final String[] modifiers) {
@@ -94,33 +96,35 @@ public class ReflectHelper {
     }
 
     /**
-         * Calculate the hash for a class.
-         *
-         * @param klass the class
-         * @return the hash
-         */
-        public static int calculateHash(final Class klass) {
-    //        int hash = 17;
-    //        Method[] methods = klass.getDeclaredMethods();
-    //        for (int i = 0; i < methods.length; i++) {
-    //            hash = (37 * hash) + calculateHash(methods[i]);
-    //        }
-    //        Constructor[] constructors = klass.getDeclaredConstructors();
-    //        for (int i = 0; i < constructors.length; i++) {
-    //            hash = (37 * hash) + calculateHash(constructors[i]);
-    //        }
-    //        Field[] fields = klass.getDeclaredFields();
-    //        for (int i = 0; i < fields.length; i++) {
-    //            hash = (37 * hash) + calculateHash(fields[i]);
-    //        }
-    //        return hash;
-            return klass.getName().hashCode();
-        }
+     * Calculate the hash for a class.
+     * 
+     * @param klass
+     *            the class
+     * @return the hash
+     */
+    public static int calculateHash(final Class klass) {
+        //        int hash = 17;
+        //        Method[] methods = klass.getDeclaredMethods();
+        //        for (int i = 0; i < methods.length; i++) {
+        //            hash = (37 * hash) + calculateHash(methods[i]);
+        //        }
+        //        Constructor[] constructors = klass.getDeclaredConstructors();
+        //        for (int i = 0; i < constructors.length; i++) {
+        //            hash = (37 * hash) + calculateHash(constructors[i]);
+        //        }
+        //        Field[] fields = klass.getDeclaredFields();
+        //        for (int i = 0; i < fields.length; i++) {
+        //            hash = (37 * hash) + calculateHash(fields[i]);
+        //        }
+        //        return hash;
+        return klass.getName().hashCode();
+    }
 
     /**
      * Calculate the hash for a method.
-     *
-     * @param method the method
+     * 
+     * @param method
+     *            the method
      * @return the hash
      */
     public static int calculateHash(final java.lang.reflect.Method method) {
@@ -135,8 +139,9 @@ public class ReflectHelper {
 
     /**
      * Calculate the hash for a constructor.
-     *
-     * @param constructor the constructor
+     * 
+     * @param constructor
+     *            the constructor
      * @return the hash
      */
     public static int calculateHash(final Constructor constructor) {
@@ -151,8 +156,9 @@ public class ReflectHelper {
 
     /**
      * Calculate the hash for a field.
-     *
-     * @param field the field
+     * 
+     * @param field
+     *            the field
      * @return the hash
      */
     public static int calculateHash(final Field field) {

@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.transform.delegation;
 
 import org.codehaus.aspectwerkz.transform.Context;
-import org.codehaus.aspectwerkz.transform.Klass;
 import org.codehaus.aspectwerkz.transform.Transformer;
 
 /**
@@ -26,11 +25,8 @@ public class AddSerialVersionUidTransformer implements Transformer {
      */
     public void transform(Context context, Klass klass) throws Exception {
         if (JavassistHelper.isSerialVerUidNeeded(klass.getCtClass())) {
-            long initialSerialVerUid = JavassistHelper
-                    .calculateSerialVerUid(klass.getInitialCtClass());
-            JavassistHelper.setSerialVersionUID(klass.getCtClass(),
-                    initialSerialVerUid);
+            long initialSerialVerUid = JavassistHelper.calculateSerialVerUid(klass.getInitialCtClass());
+            JavassistHelper.setSerialVersionUID(klass.getCtClass(), initialSerialVerUid);
         }
-        context.setBytecode(klass.getBytecode());
     }
 }

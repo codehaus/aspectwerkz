@@ -5,10 +5,9 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transform;
+package org.codehaus.aspectwerkz.transform.delegation;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.transform.delegation.JavassistHelper;
 
 import javassist.ByteArrayClassPath;
 import javassist.ClassPool;
@@ -16,14 +15,11 @@ import javassist.CtClass;
 import javassist.LoaderClassPath;
 
 /**
- * The AspectWerkz class concept.
- * <p/>
- * Contains informations and data about the class being transformed.
+ * The AspectWerkz class concept. <p/>Contains informations and data about the class being transformed.
  * 
  * @TODO: contains javassist specific stuff, refactor out and use an abstraction
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class Klass {
     /**
@@ -50,7 +46,7 @@ public class Klass {
      * The initial bytecode of the class
      */
     private final byte[] m_initialBytecode;
-    
+
     /**
      * The join point index.
      */
@@ -58,9 +54,11 @@ public class Klass {
 
     /**
      * Creates a new class.
-     *
-     * @param name     the name
-     * @param bytecode the byte code
+     * 
+     * @param name
+     *            the name
+     * @param bytecode
+     *            the byte code
      */
     public Klass(final String name, final byte[] bytecode, final ClassLoader loader) {
         m_name = name.replace('/', '.');
@@ -70,7 +68,7 @@ public class Klass {
 
     /**
      * Returns the name of the class.
-     *
+     * 
      * @return the name
      */
     public String getName() {
@@ -79,7 +77,7 @@ public class Klass {
 
     /**
      * Returns the Javassist class gen for the class.
-     *
+     * 
      * @return the class gen
      */
     public CtClass getCtClass() {
@@ -91,7 +89,7 @@ public class Klass {
 
     /**
      * Returns the Javassist initial class gen for the class.
-     *
+     * 
      * @return the initial class gen
      */
     public CtClass getInitialCtClass() {
@@ -103,7 +101,7 @@ public class Klass {
 
     /**
      * Returns the byte code for the class.
-     *
+     * 
      * @return
      */
     public byte[] getBytecode() {
@@ -116,8 +114,9 @@ public class Klass {
 
     /**
      * Transforms byte code to a Javassist class gen.
-     *
-     * @param bytecode the byte code
+     * 
+     * @param bytecode
+     *            the byte code
      * @return the Javassist class gen
      */
     public static CtClass fromByte(final String name, final byte[] bytecode, final ClassLoader loader) {
@@ -130,7 +129,7 @@ public class Klass {
             throw new WrappedRuntimeException(e);
         }
     }
-    
+
     /**
      * Returns the current join point index.
      * 
