@@ -3,7 +3,7 @@
     <system id="jdk5test">
         <aspect class="test.deployment.HotdeployableAspect"/>
         <aspect class="test.FieldGetOutOfWeaver$Aspect"/>
-        <aspect class="test.InterfaceDefinedMethodTestCase$Aspect"/>
+        <aspect class="test.InterfaceDefinedMethodTest$Aspect"/>
         <aspect class="test.CtorExecution$Aspect"/>
         <aspect class="test.CflowBelowTest$Aspect"/>
 
@@ -22,6 +22,8 @@
         <aspect class="test.QNameTest$AspectClass"/>
         <aspect class="test.QNameTest$AspectInstance"/>
         <aspect class="test.QNameTest$AspectGC"/>
+
+        <aspect class="test.AfterReturningThrowingTest$Aspect"/>
 
     </system>
 </aspectwerkz>

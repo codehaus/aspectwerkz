@@ -20,15 +20,15 @@ import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class InterfaceDefinedMethodTestCase extends TestCase {
+public class InterfaceDefinedMethodTest extends TestCase {
 
     public static String s_log = "";
 
-    public InterfaceDefinedMethodTestCase(String s) {
+    public InterfaceDefinedMethodTest(String s) {
         super(s);
     }
 
-    public InterfaceDefinedMethodTestCase() {
+    public InterfaceDefinedMethodTest() {
         SortedSet ss = new TreeSet();
         ss.add("foo"); // Warning, add is in super interface
         ss.first(); // Ok, first is in SortedSet
@@ -64,7 +64,7 @@ public class InterfaceDefinedMethodTestCase extends TestCase {
 
     public void testWithinCtor() {
         s_log = "";
-        InterfaceDefinedMethodTestCase me = new InterfaceDefinedMethodTestCase();
+        InterfaceDefinedMethodTest me = new InterfaceDefinedMethodTest();
         assertEquals("around around around around around around around ", s_log);
     }
 
@@ -75,7 +75,7 @@ public class InterfaceDefinedMethodTestCase extends TestCase {
     }
 
     private void withinNot() {
-        InterfaceDefinedMethodTestCase me = new InterfaceDefinedMethodTestCase("ignore");
+        InterfaceDefinedMethodTest me = new InterfaceDefinedMethodTest("ignore");
         subWithinNot();
     }
 
@@ -86,20 +86,20 @@ public class InterfaceDefinedMethodTestCase extends TestCase {
 
     public static class Aspect {
 
-        @Before("withincode(* test.InterfaceDefinedMethodTestCase.testInterfaceDefinedMethod(..))")
+        @Before("withincode(* test.InterfaceDefinedMethodTest.testInterfaceDefinedMethod(..))")
         public void before(StaticJoinPoint sjp) {
             s_log += "advice ";
         }
 
-        @Around("withincode(test.InterfaceDefinedMethodTestCase.new())")
+        @Around("withincode(test.InterfaceDefinedMethodTest.new())")
         public Object around(StaticJoinPoint sjp) throws Throwable {
             s_log += "around ";
             return sjp.proceed();
         }
 
-        @Before("cflow(within(test.InterfaceDefinedMethodTestCase) && call(* test.InterfaceDefinedMethodTestCase.withinNot()))" +
-                "&& !withincode(* test.InterfaceDefinedMethodTestCase.withinNot())" +
-                "&& within(test.InterfaceDefinedMethodTestCase)")
+        @Before("cflow(within(test.InterfaceDefinedMethodTest) && call(* test.InterfaceDefinedMethodTest.withinNot()))" +
+                "&& !withincode(* test.InterfaceDefinedMethodTest.withinNot())" +
+                "&& within(test.InterfaceDefinedMethodTest)")
         public void neverCalled(StaticJoinPoint sjp) {
             s_log += "withincode ";
             //System.out.println(sjp.getType() + " " + sjp.getSignature());
@@ -112,6 +112,6 @@ public class InterfaceDefinedMethodTestCase extends TestCase {
     }
 
     public static junit.framework.Test suite() {
-        return new junit.framework.TestSuite(InterfaceDefinedMethodTestCase.class);
+        return new junit.framework.TestSuite(InterfaceDefinedMethodTest.class);
     }
 }
