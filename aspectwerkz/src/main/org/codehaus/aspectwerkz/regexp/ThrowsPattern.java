@@ -14,8 +14,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
- * Implements the regular expression pattern matcher for throws pointcuts
- *  in AspectWerkz.
+ * Implements the regular expression pattern matcher for throws pointcuts in AspectWerkz.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -43,15 +42,8 @@ public class ThrowsPattern extends Pattern {
      * @param exceptionClassName the exception class name
      * @return true if we have a matches
      */
-    public boolean matches(final MethodMetaData method,
-                           final String exceptionClassName) {
-        if (m_methodPattern.matches(method) &&
-                m_exceptionPattern.matches(exceptionClassName)) {
-            return true;
-        }
-        else {
-            return false;
-        }
+    public boolean matches(final MethodMetaData method, final String exceptionClassName) {
+        return m_methodPattern.matches(method) && m_exceptionPattern.matches(exceptionClassName);
     }
 
     /**
@@ -61,12 +53,7 @@ public class ThrowsPattern extends Pattern {
      * @return true if we have a matches
      */
     public boolean matches(final MethodMetaData method) {
-        if (m_methodPattern.matches(method)) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return m_methodPattern.matches(method);
     }
 
     /**
@@ -75,9 +62,7 @@ public class ThrowsPattern extends Pattern {
      * @param pattern the method pattern
      */
     protected void parse(final String pattern) {
-        StringTokenizer tokenizer = new StringTokenizer(
-                m_pattern,
-                AspectWerkzDefinition.THROWS_DELIMITER);
+        StringTokenizer tokenizer = new StringTokenizer(m_pattern, AspectWerkzDefinition.THROWS_DELIMITER);
         try {
             m_methodPattern = Pattern.compileMethodPattern(tokenizer.nextToken());
             m_exceptionPattern = Pattern.compileClassPattern(tokenizer.nextToken());
