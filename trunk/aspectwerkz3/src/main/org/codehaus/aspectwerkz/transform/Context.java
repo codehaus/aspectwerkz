@@ -11,8 +11,6 @@ import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javassist.ClassPool;
-import javassist.LoaderClassPath;
 
 /**
  * Transformation context.

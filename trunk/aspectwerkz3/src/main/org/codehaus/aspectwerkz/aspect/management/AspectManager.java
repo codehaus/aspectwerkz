@@ -15,12 +15,12 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.Mixin;
+import org.codehaus.aspectwerkz.annotation.AnnotationParser;
+import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
-import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.util.Util;
 import java.lang.reflect.Field;
@@ -58,11 +58,9 @@ public final class AspectManager {
     private final AspectRegistry m_aspectRegistry;
 
     /**
-     * The attribute parser to parse the definitions for the aspects loaded at runtime.
-     *
-     * @TODO: should be configurable, need to handle other attribute implementations, f.e. JSR-175
+     * The attribute parser to parse the definitions for the hot deployed aspects.
      */
-    private AttributeParser m_attributeParser = new AspectAttributeParser();
+    private AnnotationParser m_attributeParser = new AspectAnnotationParser();
 
     /**
      * Cache for the pointcuts.

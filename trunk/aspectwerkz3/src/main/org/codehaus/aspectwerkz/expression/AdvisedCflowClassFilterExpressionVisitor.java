@@ -7,7 +7,19 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression;
 
-import org.codehaus.aspectwerkz.expression.ast.*;
+import org.codehaus.aspectwerkz.expression.ast.ASTCall;
+import org.codehaus.aspectwerkz.expression.ast.ASTCflow;
+import org.codehaus.aspectwerkz.expression.ast.ASTCflowBelow;
+import org.codehaus.aspectwerkz.expression.ast.ASTExecution;
+import org.codehaus.aspectwerkz.expression.ast.ASTGet;
+import org.codehaus.aspectwerkz.expression.ast.ASTHandler;
+import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
+import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
+import org.codehaus.aspectwerkz.expression.ast.ASTSet;
+import org.codehaus.aspectwerkz.expression.ast.ASTStaticInitialization;
+import org.codehaus.aspectwerkz.expression.ast.ASTWithin;
+import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
+import org.codehaus.aspectwerkz.expression.ast.Node;
 
 /**
  * The advised cflow class filter visitor.

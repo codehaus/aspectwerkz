@@ -7,19 +7,18 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation.asm;
 
+import org.apache.xmlbeans.impl.jam.JField;
+import org.apache.xmlbeans.impl.jam.JMethod;
+import org.apache.xmlbeans.impl.jam.JParameter;
+import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
-import org.apache.xmlbeans.impl.jam.JField;
-import org.apache.xmlbeans.impl.jam.JMethod;
-import org.apache.xmlbeans.impl.jam.JParameter;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -144,10 +143,11 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
         }
         final String[] methodParamTypes = new String[method.getParameters().length];
         JParameter[] parameters = method.getParameters();
-         for (int i = 0; i < methodParamTypes.length; i++) {
+        for (int i = 0; i < methodParamTypes.length; i++) {
             JParameter parameter = parameters[i];
             methodParamTypes[i] = parameter.getType().getQualifiedName();
-//            methodParamTypes[i] = TypeConverter.convertTypeToJava(parameter.getType());
+
+            //            methodParamTypes[i] = TypeConverter.convertTypeToJava(parameter.getType());
         }
         final byte[] serializedAttribute = serialize(attribute);
         m_reader.accept(new AttributeClassAdapter(m_writer, serializedAttribute) {

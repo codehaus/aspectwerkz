@@ -41,5 +41,4 @@ public class IntroduceAnnotationProxy extends TypedAnnotationProxyBase implement
     public void setIntroducedInterfaces(String[] introducedInterfaceNames) {
         m_introducedInterfaces = introducedInterfaceNames;
     }
-
 }

@@ -7,13 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
-import org.codehaus.aspectwerkz.definition.attribute.AttributeExtractor;
-import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
+import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -39,10 +36,9 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
      *
      * @param field
      * @param declaringType
-     * @param attributeExtractor
      */
-    JavaFieldInfo(final Field field, final JavaClassInfo declaringType, final AttributeExtractor attributeExtractor) {
-        super(field, declaringType, attributeExtractor);
+    JavaFieldInfo(final Field field, final JavaClassInfo declaringType) {
+        super(field, declaringType);
         JavaFieldInfo.addFieldInfo(field, this);
     }
 
@@ -62,25 +58,15 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
     }
 
     /**
-     * Returns the attributes.
+     * Returns the annotations.
      *
-     * @return the attributes
+     * @return the annotations
      */
     public List getAnnotations() {
         if (m_annotations == null) {
-            m_annotations = new ArrayList();
-            addAnnotations();
+            m_annotations = Annotations.getAnnotationInfos((Field)m_member);
         }
         return m_annotations;
-    }
-
-    /**
-     * Adds an attribute.
-     *
-     * @param attribute the attribute
-     */
-    public void addAnnotation(final Object attribute) {
-        m_annotations.add(attribute);
     }
 
     /**
@@ -141,26 +127,5 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
         result = (29 * result) + m_member.getName().toString().hashCode();
         result = (29 * result) + m_type.getName().toString().hashCode();
         return result;
-    }
-
-    /**
-     * Adds annotations to the field info.
-     */
-    private void addAnnotations() {
-        if (m_attributeExtractor == null) {
-            return;
-        }
-        Object[] attributes = m_attributeExtractor.getFieldAttributes(getName());
-        for (int i = 0; i < attributes.length; i++) {
-            Object attribute = attributes[i];
-            if (attribute instanceof CustomAttribute) {
-                CustomAttribute custom = (CustomAttribute)attribute;
-                if (custom.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
-                    // skip 'system' annotations
-                    continue;
-                }
-                addAnnotation(custom);
-            }
-        }
     }
 }

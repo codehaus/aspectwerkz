@@ -8,14 +8,12 @@
 package org.codehaus.aspectwerkz.annotation;
 
 import org.apache.xmlbeans.impl.jam.annotation.TypedAnnotationProxyBase;
-
 import java.io.Serializable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AnnotationInfo implements Serializable {
-
     private final String m_name;
     private final TypedAnnotationProxyBase m_annotation;
 

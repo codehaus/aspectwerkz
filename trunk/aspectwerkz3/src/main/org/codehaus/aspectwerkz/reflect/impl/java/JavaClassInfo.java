@@ -7,9 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
-import org.codehaus.aspectwerkz.definition.attribute.AttributeExtractor;
-import org.codehaus.aspectwerkz.definition.attribute.Attributes;
-import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
+import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
@@ -19,7 +17,6 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -79,7 +76,7 @@ public class JavaClassInfo implements ClassInfo {
     private ClassInfo m_superClass = null;
 
     /**
-     * The attributes.
+     * The annotations.
      */
     private List m_annotations = null;
 
@@ -94,11 +91,6 @@ public class JavaClassInfo implements ClassInfo {
     private final ClassInfoRepository m_classInfoRepository;
 
     /**
-     * The annotation extractor.
-     */
-    private AttributeExtractor m_attributeExtractor = null;
-
-    /**
      * Creates a new class meta data instance.
      *
      * @param klass
@@ -108,7 +100,6 @@ public class JavaClassInfo implements ClassInfo {
             throw new IllegalArgumentException("class can not be null");
         }
         m_class = klass;
-        m_attributeExtractor = Attributes.getAttributeExtractor(m_class);
         m_classInfoRepository = ClassInfoRepository.getRepository(klass.getClassLoader());
         m_isInterface = klass.isInterface();
         if (klass.isPrimitive()) {
@@ -126,12 +117,12 @@ public class JavaClassInfo implements ClassInfo {
             Method[] methods = m_class.getDeclaredMethods();
             m_methods = new MethodInfo[methods.length];
             for (int i = 0; i < methods.length; i++) {
-                m_methods[i] = new JavaMethodInfo(methods[i], this, m_attributeExtractor);
+                m_methods[i] = new JavaMethodInfo(methods[i], this);
             }
             Constructor[] constructors = m_class.getDeclaredConstructors();
             m_constructors = new ConstructorInfo[constructors.length];
             for (int i = 0; i < constructors.length; i++) {
-                m_constructors[i] = new JavaConstructorInfo(constructors[i], this, m_attributeExtractor);
+                m_constructors[i] = new JavaConstructorInfo(constructors[i], this);
             }
             Field[] fields = m_class.getDeclaredFields();
             m_fields = new FieldInfo[fields.length];
@@ -139,32 +130,22 @@ public class JavaClassInfo implements ClassInfo {
                 if (fields[i].getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
                     continue;
                 }
-                m_fields[i] = new JavaFieldInfo(fields[i], this, m_attributeExtractor);
+                m_fields[i] = new JavaFieldInfo(fields[i], this);
             }
         }
         m_classInfoRepository.addClassInfo(this);
     }
 
     /**
-     * Returns the attributes.
+     * Returns the annotations infos.
      *
-     * @return the attributes
+     * @return the annotations infos
      */
     public List getAnnotations() {
         if (m_annotations == null) {
-            m_annotations = new ArrayList();
-            addAnnotations();
+            m_annotations = Annotations.getAnnotationInfos(m_class);
         }
         return m_annotations;
-    }
-
-    /**
-     * Adds an attribute.
-     *
-     * @param attribute the attribute
-     */
-    public void addAnnotation(final Object attribute) {
-        m_annotations.add(attribute);
     }
 
     /**
@@ -350,26 +331,5 @@ public class JavaClassInfo implements ClassInfo {
 
     public int hashCode() {
         return m_class.getName().toString().hashCode();
-    }
-
-    /**
-     * Adds annotations to the class info.
-     */
-    private void addAnnotations() {
-        if (m_attributeExtractor == null) {
-            return;
-        }
-        Object[] attributes = m_attributeExtractor.getClassAttributes();
-        for (int i = 0; i < attributes.length; i++) {
-            Object attribute = attributes[i];
-            if (attribute instanceof CustomAttribute) {
-                CustomAttribute custom = (CustomAttribute)attribute;
-                if (custom.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
-                    // skip 'system' annotations
-                    continue;
-                }
-                addAnnotation(custom);
-            }
-        }
     }
 }

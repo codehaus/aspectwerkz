@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression;
 
-import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.expression.ast.ASTAnd;
 import org.codehaus.aspectwerkz.expression.ast.ASTCflow;
 import org.codehaus.aspectwerkz.expression.ast.ASTCflowBelow;
@@ -17,7 +16,6 @@ import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
 import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.Set;
 
 /**
  * The Cflow visitor.

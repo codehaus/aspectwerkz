@@ -7,10 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation;
 
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.annotation.instrumentation.bcel.BcelAttributeExtractor;
 import org.codehaus.aspectwerkz.annotation.instrumentation.javassist.JavassistAttributeExtractor;
-
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;

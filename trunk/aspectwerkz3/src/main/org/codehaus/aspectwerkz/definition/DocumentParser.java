@@ -8,8 +8,8 @@
 package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
-import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
+import org.codehaus.aspectwerkz.annotation.AnnotationParser;
+import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -33,7 +33,7 @@ public class DocumentParser {
      *
      * @TODO: should use factory, to be able to support othere implementations, f.e. JSR-175
      */
-    private static final AttributeParser s_attributeParser = new AspectAttributeParser();
+    private static final AnnotationParser s_attributeParser = new AspectAnnotationParser();
 
     /**
      * Parses aspect class names.
@@ -246,6 +246,7 @@ public class DocumentParser {
             }
 
             parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut in Attributes AW-152
+
             s_attributeParser.parse(aspectClass, aspectDef, definition);
 
             // XML definition settings always overrides attribute definition settings

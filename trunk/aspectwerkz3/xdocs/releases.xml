@@ -93,6 +93,9 @@
                                 JSR-163 JVMTI support for Java 1.5 class load time weaving with <code>-javaagent:</code>
                             </li>
                             <li>
+                                Documentation enhanced and refactored + introductory tutorials added
+                            </li>
+                            <li>
                                 Many bug fixes.
                             </li>
                         </ul>

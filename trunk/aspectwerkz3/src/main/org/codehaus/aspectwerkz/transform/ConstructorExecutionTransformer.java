@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.transform;
 
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
@@ -18,7 +17,6 @@ import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistConstructorInfo;
 import java.util.Iterator;
 import java.util.List;
 import javassist.CannotCompileException;
-import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtMethod;

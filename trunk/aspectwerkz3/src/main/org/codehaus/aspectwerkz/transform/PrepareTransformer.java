@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.transform;
 
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

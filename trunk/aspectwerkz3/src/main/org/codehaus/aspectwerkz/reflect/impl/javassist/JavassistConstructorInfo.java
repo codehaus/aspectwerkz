@@ -7,12 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
-import org.codehaus.aspectwerkz.definition.attribute.AttributeExtractor;
-import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
+import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
+import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -76,19 +75,9 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
      */
     public List getAnnotations() {
         if (m_annotations == null) {
-            m_annotations = new ArrayList();
             addAnnotations();
         }
         return m_annotations;
-    }
-
-    /**
-     * Adds an attribute.
-     *
-     * @param attribute the attribute
-     */
-    public void addAnnotation(final Object attribute) {
-        m_annotations.add(attribute);
     }
 
     public boolean equals(Object o) {
@@ -144,16 +133,13 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
         for (int i = 0; i < m_parameterTypes.length; i++) {
             parameterNames[i] = m_parameterTypes[i].getName();
         }
-        Object[] attributes = m_attributeExtractor.getMethodAttributes(getName(), parameterNames);
+
+        Object[] attributes = m_attributeExtractor.getMethodAttributes(m_member.getName(), parameterNames);
+        m_annotations = new ArrayList();
         for (int i = 0; i < attributes.length; i++) {
             Object attribute = attributes[i];
-            if (attribute instanceof CustomAttribute) {
-                CustomAttribute custom = (CustomAttribute)attribute;
-                if (custom.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
-                    // skip 'system' annotations
-                    continue;
-                }
-                addAnnotation(custom);
+            if (attribute instanceof AnnotationInfo) {
+                m_annotations.add(attribute);
             }
         }
     }

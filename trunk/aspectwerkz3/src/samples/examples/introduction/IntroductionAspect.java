@@ -16,7 +16,7 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
 
 
     /**
-     * @Introduce within(examples.introduction.Target) deploymentModel=perInstance
+     * @Introduce within(examples.introduction.Target) perInstance
      */
     public static class MyConcreteImpl extends MyImpl {
 
