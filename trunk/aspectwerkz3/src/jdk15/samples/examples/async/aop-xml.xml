@@ -1,0 +1,14 @@
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 1.0//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_1_0.dtd">
+<aspectwerkz>
+    <system id="math">
+        <aspect class="examples.async.AsyncAspect">
+            <pointcut name="asyncMethods" expression="execution(void examples.async.Math.async*(..))"/>
+            <advice name="execute" type="around" bind-to="asyncMethods"/>
+
+            <pointcut name="annotatedMethods" expression="execution(void examples.async.Math.substract(..))"/>
+            <advice name="execute" type="around" bind-to="annotatedMethods"/>
+        </aspect>
+    </system>
+</aspectwerkz>
