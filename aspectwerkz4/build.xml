@@ -285,12 +285,40 @@
         </jarjar>
         <copy tofile="${lib.dir}/aspectwerkz-core-${version}.jar" file="${build.dir}/aspectwerkz-core-${version}.jar" overwrite="true"/>
 
+        <!-- extensions embeds ASM as well -->
         <jarjar jarfile="${build.dir}/aspectwerkz-extensions-${version}.jar" basedir="${extensions.classes}">
             <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
         </jarjar>
         <copy tofile="${lib.dir}/aspectwerkz-extensions-${version}.jar" file="${build.dir}/aspectwerkz-extensions-${version}.jar" overwrite="true"/>
 
+        <!-- build a jdk neutral nodeps for the main jar (extensions + deps)
+             (not core, jdk14, jdk15, Ant, JUnit,) -->
+        <jar destfile="${build.dir}/aspectwerkz-nodeps-${version}.jar">
+            <zipfileset src="${build.dir}/aspectwerkz-${version}.jar"/>
+            <zipfileset src="${build.dir}/aspectwerkz-extensions-${version}.jar"/>
+            <zipgroupfileset dir="${lib.dir}">
+                <exclude name="jarjar*"/>
+                <exclude name="aspectwerkz*"/>
+                <exclude name="ant*"/>
+                <exclude name="asm*"/>
+                <exclude name="concurrent*"/>
+                <exclude name="junit*"/>
+                <exclude name="managementapi*"/>
+                <exclude name="qdox*"/>
+                <include name="*.jar"/>
+            </zipgroupfileset>
+            <!-- add qdox manually to remove its META-INF/LICENSE.txt that is not the one of AW -->
+            <zipfileset src="${lib.dir}/qdox-1.4.jar" excludes="META-INF/*"/>
+        </jar>
+        <!-- nodeps -->
+        <jar destfile="${build.dir}/aspectwerkz-nodeps-jdk14-${version}.jar">
+            <zipfileset src="${build.dir}/aspectwerkz-nodeps-${version}.jar"/>
+            <zipfileset src="${build.dir}/aspectwerkz-jdk14-${version}.jar"/>
+        </jar>
+        <copy tofile="${lib.dir}/aspectwerkz-nodeps-jdk14-${version}.jar" file="${build.dir}/aspectwerkz-nodeps-jdk14-${version}.jar" overwrite="true"/>
+
         <antcall target="dist:jdk15"/>
+
     </target>
 
     <target name="dist:jdk15" if="jdk15">
@@ -299,6 +327,13 @@
             <fileset dir="${jdk15.classes}"/>
         </jar>
         <copy tofile="${lib.dir}/aspectwerkz-jdk5-${version}.jar" file="${build.dir}/aspectwerkz-jdk5-${version}.jar" overwrite="true"/>
+
+        <!-- nodeps -->
+        <jar destfile="${build.dir}/aspectwerkz-nodeps-jdk5-${version}.jar">
+            <zipfileset src="${build.dir}/aspectwerkz-nodeps-${version}.jar"/>
+            <zipfileset src="${build.dir}/aspectwerkz-jdk5-${version}.jar"/>
+        </jar>
+        <copy tofile="${lib.dir}/aspectwerkz-nodeps-jdk5-${version}.jar" file="${build.dir}/aspectwerkz-nodeps-jdk5-${version}.jar" overwrite="true"/>
     </target>
 
     <!-- ============================================================== -->
