@@ -59,7 +59,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.2 2003-05-12 09:41:29 jboner Exp $
+ * @version $Id: DefinitionManager.java,v 1.3 2003-05-17 11:00:06 jboner Exp $
  */
 public class DefinitionManager {
 
@@ -102,18 +102,9 @@ public class DefinitionManager {
     private static WeaveModel s_weaveModel;
 
     /**
-     * The persistence manager to use.
+     * The persistence manager.
      */
     private static PersistenceManager s_persistenceManager;
-
-    /**
-     * Loads the persistence manager.
-     */
-    static {
-        s_persistenceManager = PersistenceManagerFactory.getFactory(
-                PersistenceManagerFactory.getPersistenceManagerType()).
-                createPersistenceManager();
-    }
 
     /**
      * Loads the system definition.
@@ -197,6 +188,9 @@ public class DefinitionManager {
                     aspect.createSetFieldPointcut(DirtyFieldCheckAdvice.PATTERN).
                             addPostAdvice(DirtyFieldCheckAdvice.NAME);
                 }
+                if (s_persistenceManager == null) {
+                    loadPersistenceManager();
+                }
                 s_persistenceManager.register(def.getName());
             }
             else {
@@ -262,6 +256,9 @@ public class DefinitionManager {
                         Aspect aspect = (Aspect)it2.next();
                         aspect.createSetFieldPointcut(DirtyFieldCheckAdvice.PATTERN).
                                 addPostAdvice(DirtyFieldCheckAdvice.NAME);
+                    }
+                    if (s_persistenceManager == null) {
+                        loadPersistenceManager();
                     }
                     s_persistenceManager.register(advice.getName());
                 }
@@ -822,6 +819,15 @@ public class DefinitionManager {
                 }
             }
         }
+    }
+
+    /**
+     * Creates the persistence manager.
+     */
+    private static void loadPersistenceManager() {
+        s_persistenceManager = PersistenceManagerFactory.getFactory(
+                PersistenceManagerFactory.getPersistenceManagerType()).
+                createPersistenceManager();
     }
 
     /**
