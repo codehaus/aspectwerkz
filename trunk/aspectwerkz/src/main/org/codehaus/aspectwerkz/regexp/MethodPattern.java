@@ -244,9 +244,18 @@ public class MethodPattern extends Pattern {
         if (tokenizer.hasMoreTokens()) {
             // if the first parameter is (..) set it and return
             String firstParameter = tokenizer.nextToken().trim();
-
+            //AW-91:check array type
+            int arraySize = 0;
+            while (firstParameter.endsWith("[]")) {
+                firstParameter = firstParameter.substring(0, firstParameter.length()-2);
+                arraySize++;
+            }
             if (m_abbreviations.containsKey(firstParameter)) {
                 firstParameter = (String)m_abbreviations.get(firstParameter);
+            }
+            //AW-91:rebuild array types
+            for (int i = arraySize; i>0; i--) {
+                firstParameter += "[]";
             }
             if (firstParameter.equals(SINGLE_WILDCARD)) {
                 firstParameter = "[a-zA-Z0-9_$.]+";
