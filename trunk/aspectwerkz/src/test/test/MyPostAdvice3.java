@@ -1,8 +1,3 @@
-package test;
-
-import org.codehaus.aspectwerkz.advice.PostAdvice;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-
 /**************************************************************************************
  * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
  * http://aspectwerkz.codehaus.org                                                    *
@@ -10,6 +5,14 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
+package test;
+
+import org.codehaus.aspectwerkz.advice.PostAdvice;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ */
 public class MyPostAdvice3 extends PostAdvice {
     public MyPostAdvice3() {
         super();

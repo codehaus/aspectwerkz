@@ -1,3 +1,10 @@
+/**************************************************************************************
+ * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the BSD style license *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package test;
 
 import java.util.Collection;
@@ -13,13 +20,9 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.advice.Advice;
 import org.codehaus.aspectwerkz.advice.PreAdvice;
 
-/**************************************************************************************
- * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the BSD style license *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ */
 public class AspectWerkzTest extends TestCase {
 
     public void testSetDeploymentModelForAdvice() {

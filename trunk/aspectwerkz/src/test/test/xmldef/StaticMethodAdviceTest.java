@@ -11,6 +11,9 @@ import junit.framework.TestCase;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ */
 public class StaticMethodAdviceTest extends TestCase {
 
     private static String m_logString = "";

@@ -12,6 +12,9 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.codehaus.aspectwerkz.AspectWerkz;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ */
 public class AllTests extends TestCase {
 
     public static Test suite() {
