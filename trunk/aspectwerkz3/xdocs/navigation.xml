@@ -28,8 +28,8 @@
             <item name="Annotation definition" href="/attribute_definition.html"/>
             <item name="XML definition" href="/xml_definition.html"/>
             <item name="Annnotation driven development" href="/annotations.html"/>
-            <item name="Integration schemes" href="/startup_and_runtime_issues.html"/>
-            <item name="Weaving" href="/online.html"/>
+            <item name="Weaving" href="/startup_and_runtime_issues.html"/>
+            <item name="Integration schemes" href="/online.html"/>
             <item name="Examples" href="/examples_2.html"/>
             <item name="IDE integration" href="/ide_integration.html"/>
             <item name="JavaDoc" href="/apidocs/index.html"/>
