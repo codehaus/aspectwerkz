@@ -60,7 +60,7 @@ public class MethodCallTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassMetaData classMetaData = context.getMetaDataMaker().createClassMetaData(ctClass);
+            final ClassMetaData classMetaData = context.getMetaDataMaker().createClassMetaData(ctClass);
 
             // filter caller classes
             if (classFilter(definition, classMetaData, ctClass)) {
@@ -107,7 +107,12 @@ public class MethodCallTransformer implements Transformer {
                                     );
                                 }
                                 catch (NotFoundException e) {
-                                    throw new WrappedRuntimeException(e);
+                                    //TODO - AV - 20040507 small fix for test.aopc. that use on the fly generated classes
+                                    if (calleeClassName.equals(ctClass.getName())) {
+                                        calleeSideClassMetaData = classMetaData;
+                                    } else {
+                                        throw new WrappedRuntimeException(e);
+                                    }
                                 }
 
                                 // create the method meta-data
