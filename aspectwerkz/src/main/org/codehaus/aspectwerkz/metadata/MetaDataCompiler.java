@@ -37,35 +37,14 @@ public abstract class MetaDataCompiler {
     public static final String WEAVE_MODEL_SUFFIX = ".ser";
 
     /**
-     * Creates a new weave model.
-     *
-     * @param uuid the UUID for the weave model
-     * @param definition the definition
-     * @return the weave model
-     */
-    protected static WeaveModel weave(
-            final String uuid,
-            final AspectWerkzDefinition definition) {
-
-        final WeaveModel weaveModel;
-        if (uuid != null) {
-            weaveModel = new WeaveModel(definition, uuid);
-        }
-        else {
-            weaveModel = new WeaveModel(definition);
-        }
-        return weaveModel;
-    }
-
-    /**
      * Validates the definition.
      *
-     * @param weaveModel the weave model
+     * @param definition the definition
      */
-    protected static void validate(final WeaveModel weaveModel) {
+    protected static void validate(final AspectWerkzDefinition definition) {
         if (System.getProperty("aspectwerkz.definition.validate", "false").equals("true")) {
             // validate the definition
-            DefinitionValidator validator = new DefinitionValidator(weaveModel);
+            DefinitionValidator validator = new DefinitionValidator(definition);
             validator.validate();
 
             // handle errors in definition

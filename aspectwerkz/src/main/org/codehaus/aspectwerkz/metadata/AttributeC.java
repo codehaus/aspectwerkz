@@ -7,9 +7,17 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
-import java.util.List;
 import java.util.Iterator;
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.List;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.DocumentHelper;
+import org.dom4j.io.XMLWriter;
+import org.dom4j.io.OutputFormat;
 
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
@@ -17,9 +25,7 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
 
-import org.codehaus.aspectwerkz.metadata.MetaDataCompiler;
 import org.codehaus.aspectwerkz.metadata.QDoxParser;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
@@ -31,14 +37,14 @@ import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
 import org.codehaus.aspectwerkz.definition.ControllerDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionValidator;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.advice.CFlowPreAdvice;
 import org.codehaus.aspectwerkz.advice.CFlowPostAdvice;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**
- * Parses a given source tree and compiles meta-data.
- * The meta-data compilation is based on the xml definition definition file
- * as well as "runtime attributes" set as JavaDoc tags throughout the code.
+ * Parses a given source tree and compiles "runtime attributes" (set as JavaDoc tags throughout
+ * the code) into an XML definition.
  * <p/>
  * Can be called from the command line.
  * <p/>
@@ -47,67 +53,48 @@ import org.codehaus.aspectwerkz.util.Strings;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class SourceFileMetaDataCompiler extends MetaDataCompiler {
+public class AttributeC {
 
-    public static final String METHOD_POINTCUT_NAME = "___method_pointcut_";
-    public static final String SETFIELD_POINTCUT_NAME = "___setfield_pointcut_";
-    public static final String GETFIELD_POINTCUT_NAME = "___getfield_pointcut_";
-    public static final String THROWS_POINTCUT_NAME = "___throws_pointcut_";
-    public static final String CALLERSIDE_POINTCUT_NAME = "___callerside_pointcut_";
-    public static final String CFLOW_POINTCUT_NAME = "___cflow_pointcut_";
-    public static final String CONTROLLER_POINTCUT_NAME = "___controller_pointcut_";
+    public static final String METHOD_POINTCUT_NAME = "_method_pointcut_";
+    public static final String SETFIELD_POINTCUT_NAME = "_setfield_pointcut_";
+    public static final String GETFIELD_POINTCUT_NAME = "_getfield_pointcut_";
+    public static final String THROWS_POINTCUT_NAME = "_throws_pointcut_";
+    public static final String CALLERSIDE_POINTCUT_NAME = "_callerside_pointcut_";
+    public static final String CFLOW_POINTCUT_NAME = "_cflow_pointcut_";
+    public static final String CONTROLLER_POINTCUT_NAME = "_controller_pointcut_";
 
     /**
-     * Parses a given source tree and creates and stores meta-data for
-     * all methods for all the introduced <code>Introduction</code>s as well
-     * as parses the runtime attributes defined in the code.
+     * Parses a given source tree, retrieves the runtime attributes defined in the code
+     * and creates an XML definition based on these attributes.
      *
-     * @param definitionFile the definition file to use
-     * @param sourcePath the path to the sources
-     * @param metaDataDir the path to the dir where to store the meta-data
+     * @param sourcePath the path to the sources to compile attributes for
+     * @param fileName the full name of the file name to compile the attributes to
      */
-    public static void compile(final String definitionFile,
-                               final String sourcePath,
-                               final String metaDataDir) {
-        compile(definitionFile, sourcePath, metaDataDir, null);
+    public static void compile(final String sourcePath, final String fileName) {
+        compile(sourcePath, fileName, null);
     }
 
     /**
-     * Parses a given source tree and creates and stores meta-data for
-     * all methods for all the introduced <code>Introduction</code>s as well
-     * as parses the runtime attributes defined in the code.
+     * Parses a given source tree, retrieves the runtime attributes defined in the code
+     * and creates an XML definition based on these attributes.
      *
-     * @param definitionFile the definition file to use
-     * @param sourcePath the path to the sources
-     * @param metaDataDir the path to the dir where to store the meta-data
-     * @param uuid the user-defined UUID for the weave model
+     * @param sourcePath the path to the sources to compile attributes for
+     * @param fileName the full name of the file name to compile the attributes to
+     * @param uuid the UUID for the definition
      */
-    public static void compile(final String definitionFile,
-                               final String sourcePath,
-                               final String metaDataDir,
-                               final String uuid) {
-        if (definitionFile == null) throw new IllegalArgumentException("definition file can not be null");
+    public static void compile(final String sourcePath, final String fileName, final String uuid) {
         if (sourcePath == null) throw new IllegalArgumentException("source path can not be null");
-        if (metaDataDir == null) throw new IllegalArgumentException("meta-data dir can not be null");
+        if (fileName == null) throw new IllegalArgumentException("file name can not be null");
 
-        createMetaDataDir(metaDataDir);
-        final AspectWerkzDefinition definition = AspectWerkzDefinition.getDefinition(definitionFile);
+        final AspectWerkzDefinition definition = new AspectWerkzDefinition();
 
         QDoxParser qdoxParser = new QDoxParser(sourcePath);
-        parseAttributeDefinitions(definition, qdoxParser.getAllClassesNames(), qdoxParser);
+        parseRuntimeAttributes(definition, qdoxParser.getAllClassesNames(), qdoxParser);
 
         validate(definition);
 
-        WeaveModel weaveModel;
-        if (uuid != null) {
-            weaveModel = new WeaveModel(definition, uuid);
-        }
-        else {
-            weaveModel = new WeaveModel(definition);
-        }
-        compileIntroductionMetaData(weaveModel, qdoxParser);
-
-        saveWeaveModelToFile(metaDataDir, weaveModel);
+        Document document = createDocument(definition);
+        writeDocumentToFile(document, fileName);
     }
 
     /**
@@ -117,11 +104,9 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
      * @param allClasses the classes parsed
      * @param qdoxParser the QDox parser
      */
-    public static void parseAttributeDefinitions(
-            final AspectWerkzDefinition definition,
-            final String[] allClasses,
-            final QDoxParser qdoxParser) {
-
+    public static void parseRuntimeAttributes(final AspectWerkzDefinition definition,
+                                              final String[] allClasses,
+                                              final QDoxParser qdoxParser) {
         // add the cflow advice to the system
         definition.addAdvice(CFlowPreAdvice.getDefinition());
 
@@ -153,37 +138,312 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
     }
 
     /**
-     * Parses a class, retrieves, wrappes up and returns it's meta-data.
+     * Creates a DOM documents out of the definition.
      *
-     * @param qdoxParser the QDox parser
-     * @param classToParse the name of the class to compile
-     * @return the meta-data for the class
+     * @param definition the AspectWerkz definition
+     * @return the DOM document
      */
-    public static ClassMetaData compileClassMetaData(final QDoxParser qdoxParser,
-                                                     final String classToParse) {
-        if (!qdoxParser.parse(classToParse)) {
-            return null;
+    public static Document createDocument(final AspectWerkzDefinition definition) {
+        if (definition == null) throw new IllegalArgumentException("definition can not be null");
+
+        Document document = DocumentHelper.createDocument();
+        Element root = document.addElement("aspectwerkz");
+
+        handleIntroductionDefinitions(root, definition);
+        handleAdviceDefinitions(root, definition);
+        handleAspectDefinitions(root, definition);
+
+        return document;
+    }
+
+    /**
+     * Handles the introduction definitions.
+     *
+     * @param root the document root
+     * @param definition the AspectWerkz definition
+     */
+    private static void handleIntroductionDefinitions(final Element root,
+                                                      final AspectWerkzDefinition definition) {
+        for (Iterator it = definition.getIntroductionDefinitions().iterator(); it.hasNext();) {
+            IntroductionDefinition def = (IntroductionDefinition)it.next();
+            addIntroductionDefElement(root, def);
+        }
+    }
+
+    /**
+     * Handles the advice definitions.
+     *
+     * @param root the document root
+     * @param definition the AspectWerkz definition
+     */
+    private static void handleAdviceDefinitions(final Element root,
+                                                final AspectWerkzDefinition definition) {
+        // create the cflow pre and post advice definitions
+        addAdviceDefElement(root, CFlowPreAdvice.getDefinition());
+        addAdviceDefElement(root, CFlowPostAdvice.getDefinition());
+
+        for (Iterator it = definition.getAdviceDefinitions().iterator(); it.hasNext();) {
+            AdviceDefinition def = (AdviceDefinition)it.next();
+            addAdviceDefElement(root, def);
+        }
+    }
+
+    /**
+     * Handles the introduction definition element.
+     *
+     * @param root the document root
+     * @param introDef the introduction definition
+     */
+    private static Element addIntroductionDefElement(final Element root,
+                                                     final IntroductionDefinition introDef) {
+        if (root == null) throw new IllegalArgumentException("root element can not be null");
+        if (introDef == null) throw new IllegalArgumentException("introduction definition can not be null");
+        Element introDefElement = root.addElement("introduction-def");
+        introDefElement.addAttribute("name", introDef.getName());
+        introDefElement.addAttribute("interface", introDef.getInterface());
+        String implementation = introDef.getImplementation();
+        if (implementation != null) {
+            introDefElement.addAttribute("implementation", implementation);
+        }
+        String deploymentModel = introDef.getDeploymentModel();
+        if (deploymentModel != null || deploymentModel.length() != 0) {
+            introDefElement.addAttribute("deployment-model", deploymentModel);
+        }
+        else {
+            introDefElement.addAttribute("deployment-model", "perJVM");
+        }
+        String attribute = introDef.getAttribute();
+        if (attribute != null || attribute.length() != 0) {
+            introDefElement.addAttribute("attribute", attribute);
+        }
+        return introDefElement;
+    }
+
+    /**
+     * Handles the advice definition element.
+     *
+     * @param root the document root
+     * @param adviceDef the advice definition
+     */
+    private static Element addAdviceDefElement(final Element root,
+                                               final AdviceDefinition adviceDef) {
+        if (root == null) throw new IllegalArgumentException("root element can not be null");
+        if (adviceDef == null) throw new IllegalArgumentException("advice definition can not be null");
+        Element adviceDefElement = root.addElement("advice-def");
+        adviceDefElement.addAttribute("name", adviceDef.getName());
+        adviceDefElement.addAttribute("advice", adviceDef.getAdviceClassName());
+        String deploymentModel = adviceDef.getDeploymentModel();
+        if (deploymentModel != null || deploymentModel.length() != 0) {
+            adviceDefElement.addAttribute("deployment-model", deploymentModel);
+        }
+        else {
+            adviceDefElement.addAttribute("deployment-model", "perJVM");
+        }
+        String attribute = adviceDef.getAttribute();
+        if (attribute != null || attribute.length() != 0) {
+            adviceDefElement.addAttribute("attribute", attribute);
         }
 
-        final JavaMethod[] methods = qdoxParser.getJavaMethods();
-        final JavaField[] fields = qdoxParser.getJavaFields();
+        addAdviceParamElements(adviceDefElement, adviceDef);
 
-        final List methodList = new ArrayList(methods.length);
-        for (int i = 0; i < methods.length; i++) {
-            methodList.add(QDoxMetaDataMaker.createMethodMetaData(methods[i]));
+        return adviceDefElement;
+    }
+
+    /**
+     * Handles the advice parameter elements.
+     *
+     * @param root the document root
+     * @param adviceDef the advice definition
+     */
+    private static void addAdviceParamElements(final Element adviceElement,
+                                               final AdviceDefinition adviceDef) {
+        if (adviceElement == null) throw new IllegalArgumentException("advice element can not be null");
+        if (adviceDef == null) throw new IllegalArgumentException("advice definition can not be null");
+        for (Iterator it = adviceDef.getParameters().entrySet().iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry)it.next();
+
+            Element adviceParamElement = adviceElement.addElement("param");
+            adviceParamElement.addAttribute("name", (String)entry.getKey());
+            adviceParamElement.addAttribute("value", (String)entry.getValue());
         }
+    }
 
-        final List fieldList = new ArrayList(fields.length);
-        for (int i = 0; i < fields.length; i++) {
-            fieldList.add(QDoxMetaDataMaker.createFieldMetaData(fields[i]));
+    /**
+     * Handles the aspect defintions.
+     *
+     * @param root the document root
+     * @param definition the AspectWerkz definition
+     */
+    private static void handleAspectDefinitions(final Element root,
+                                                final AspectWerkzDefinition definition) {
+        for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+
+            Element aspectElement = root.addElement("aspect");
+            aspectElement.addAttribute("name", aspectDef.getName());
+
+            handlePointcutDefinitions(aspectElement, aspectDef);
+            handleIntroductionWeavingRules(aspectElement, aspectDef);
+            handleAdviceWeavingRules(aspectElement, aspectDef);
         }
+    }
 
-        final ClassMetaData classMetaData = new ClassMetaData();
-        classMetaData.setName(classToParse);
-        classMetaData.setMethods(methodList);
-        classMetaData.setFields(fieldList);
+    /**
+     * Handles the pointcut defintions.
+     *
+     * @param aspectElement the aspect element
+     * @param aspectDef the aspect definition
+     */
+    private static void handlePointcutDefinitions(final Element aspectElement,
+                                                  final AspectDefinition aspectDef) {
+        for (Iterator it2 = aspectDef.getPointcutDefs().iterator(); it2.hasNext();) {
+            PointcutDefinition pointcutDef = (PointcutDefinition)it2.next();
 
-        return classMetaData;
+            Element pointcutDefElement = aspectElement.addElement("pointcut-def");
+            pointcutDefElement.addAttribute("name", pointcutDef.getName());
+            pointcutDefElement.addAttribute("type", pointcutDef.getType());
+
+            StringBuffer fullPattern = new StringBuffer();
+            String type = pointcutDef.getType();
+            if (type.equalsIgnoreCase(PointcutDefinition.METHOD) ||
+                    type.equalsIgnoreCase(PointcutDefinition.GET_FIELD) ||
+                    type.equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
+                String classPattern = pointcutDef.getClassPattern();
+                String pattern = pointcutDef.getPattern();
+                int space = pattern.indexOf(' ');
+                String returnType = pattern.substring(0, space + 1);
+                String methodName = pattern.substring(space + 1);
+                fullPattern.append(returnType);
+                fullPattern.append(classPattern);
+                fullPattern.append('.');
+                fullPattern.append(methodName);
+            }
+            else if (type.equalsIgnoreCase(PointcutDefinition.THROWS)) {
+                String classPattern = pointcutDef.getClassPattern();
+                String pattern = pointcutDef.getPattern();
+                int delimiter = pattern.indexOf('#');
+                String methodPattern = pattern.substring(0, delimiter);
+                String exception = pattern.substring(delimiter + 1);
+                int space = methodPattern.indexOf(' ');
+                String returnType = methodPattern.substring(0, space + 1);
+                String methodName = methodPattern.substring(space + 1);
+                fullPattern.append(returnType);
+                fullPattern.append(classPattern);
+                fullPattern.append('.');
+                fullPattern.append(methodName);
+                fullPattern.append('#');
+                fullPattern.append(exception);
+            }
+            else if (type.equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
+                String callerClassPattern = pointcutDef.getClassPattern();
+                String pattern = pointcutDef.getPattern();
+                int delimiter = pattern.indexOf('#');
+                String calleeClassPattern = pattern.substring(0, delimiter);
+                String methodPattern = pattern.substring(delimiter + 1);
+                int space = methodPattern.indexOf(' ');
+                String returnType = methodPattern.substring(0, space + 1);
+                String methodName = methodPattern.substring(space + 1);
+                fullPattern.append(callerClassPattern);
+                fullPattern.append("->");
+                fullPattern.append(returnType);
+                fullPattern.append(calleeClassPattern);
+                fullPattern.append(".");
+                fullPattern.append(methodName);
+                ;
+            }
+            else if (type.equals(PointcutDefinition.CFLOW)) {
+                String pattern = pointcutDef.getPattern();
+                int delimiter = pattern.indexOf('#');
+                String classPattern = pattern.substring(0, delimiter);
+                String methodPattern = pattern.substring(delimiter + 1);
+                int space = methodPattern.indexOf(' ');
+                String returnType = methodPattern.substring(0, space + 1);
+                String methodName = methodPattern.substring(space + 1);
+                fullPattern.append(returnType);
+                fullPattern.append(classPattern);
+                fullPattern.append(".");
+                fullPattern.append(methodName);
+            }
+            else {
+                throw new RuntimeException("invalid pointcut type: " + pointcutDef.getType());
+            }
+
+            pointcutDefElement.addAttribute("pattern", fullPattern.toString());
+        }
+    }
+
+    /**
+     * Handles the introduction weaving rules.
+     *
+     * @param aspectElement the aspect element
+     * @param aspectDef the aspect definition
+     */
+    private static void handleIntroductionWeavingRules(final Element aspectElement,
+                                                       final AspectDefinition aspectDef) {
+        for (Iterator it = aspectDef.getIntroductionWeavingRules().iterator(); it.hasNext();) {
+            IntroductionWeavingRule weavingRule = (IntroductionWeavingRule)it.next();
+
+            Element weavingRuleElement = aspectElement.addElement("introduction");
+            weavingRuleElement.addAttribute("class", weavingRule.getClassPattern());
+
+            for (Iterator it2 = weavingRule.getIntroductionRefs().iterator(); it2.hasNext();) {
+                String introductionRef = (String)it2.next();
+
+                Element introductionRefElement = weavingRuleElement.addElement("introduction-ref");
+                introductionRefElement.addAttribute("name", introductionRef);
+            }
+        }
+    }
+
+    /**
+     * Handles the advice weaving rules.
+     *
+     * @param aspectElement the aspect element
+     * @param aspectDef the aspect definition
+     */
+    private static void handleAdviceWeavingRules(final Element aspectElement,
+                                                 final AspectDefinition aspectDef) {
+        for (Iterator it = aspectDef.getAdviceWeavingRules().iterator(); it.hasNext();) {
+            AdviceWeavingRule weavingRule = (AdviceWeavingRule)it.next();
+
+            Element weavingRuleElement = aspectElement.addElement("advice");
+            weavingRuleElement.addAttribute("pointcut", weavingRule.getExpression());
+
+            String cflowExpression = weavingRule.getCFlowExpression();
+            if (cflowExpression != null) {
+                weavingRuleElement.addAttribute("cflow", cflowExpression);
+            }
+
+            for (Iterator it2 = weavingRule.getAdviceRefs().iterator(); it2.hasNext();) {
+                String adviceRef = (String)it2.next();
+
+                Element adviceRefElement = weavingRuleElement.addElement("advice-ref");
+                adviceRefElement.addAttribute("name", adviceRef);
+            }
+        }
+    }
+
+    /**
+     * Writes a DOM document to file.
+     *
+     * @param document the document
+     * @param fileName the name of the file (full path)
+     */
+    private static void writeDocumentToFile(final Document document, final String fileName) {
+        try {
+            // write to a file
+            OutputFormat format = OutputFormat.createPrettyPrint();
+            XMLWriter writer = new XMLWriter(new FileWriter(fileName), format);
+            writer.write(document);
+            writer.close();
+
+            // print the document to System.out
+//            writer = new XMLWriter(System.out, format);
+//            writer.write(document);
+        }
+        catch (IOException e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 
     /**
@@ -285,8 +545,8 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final String className,
             final QDoxParser qdoxParser) {
 
-        AspectDefinition aspectDefinition =
-                definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT);
+        AspectDefinition aspectDefinition = definition.getAspectDefinition(
+                AspectWerkzDefinition.SYSTEM_ASPECT);
 
         JavaClass javaClass = qdoxParser.getJavaClass();
         DocletTag[] introductionTags = javaClass.getTagsByName(AttributeTag.INTRODUCTION);
@@ -795,48 +1055,6 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
     }
 
     /**
-     * Compiles the class list.
-     *
-     * @param qdoxParser the QDox parser
-     * @return the class list
-     */
-    private static List compileClassList(final QDoxParser qdoxParser) {
-        final String[] allClassNames = qdoxParser.getAllClassesNames();
-        final List fullClassNames = new ArrayList(allClassNames.length);
-        for (int i = 0; i < allClassNames.length; i++) {
-            fullClassNames.add(allClassNames[i]);
-        }
-        return fullClassNames;
-    }
-
-    /**
-     * Compiles the class meta-data for all introduced implementations.
-     *
-     * @todo Move this method to the AddImplementationTransformer and recode it to make it accept a BCEL JavaClass instead
-     *
-     * @param model the weave model
-     * @param qdoxParser the QDox parser
-     * @param metaDataDir the meta-data dir
-     */
-    private static void compileIntroductionMetaData(final WeaveModel model,
-                                                    final QDoxParser qdoxParser) {
-        final List parsedClasses = compileClassList(qdoxParser);
-
-        for (Iterator it = model.getDefinition().getIntroductionDefinitions().iterator(); it.hasNext();) {
-            String introduction = ((IntroductionDefinition)it.next()).getImplementation();
-            if (introduction == null) {
-                continue; // interface introduction
-            }
-            for (Iterator it1 = parsedClasses.iterator(); it1.hasNext();) {
-                final String className = (String)it1.next();
-                if (introduction.equals(className)) {
-                    model.addIntroductionMetaData(compileClassMetaData(qdoxParser, className));
-                }
-            }
-        }
-    }
-
-    /**
      * Creates a method regular expression pattern.
      *
      * @param javaMethod the method
@@ -915,23 +1133,43 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
     }
 
     /**
+     * Validates the definition.
+     *
+     * @param definition the definition
+     */
+    private static void validate(final AspectWerkzDefinition definition) {
+        if (System.getProperty("aspectwerkz.definition.validate", "false").equals("true")) {
+            // validate the definition
+            DefinitionValidator validator = new DefinitionValidator(definition);
+            validator.validate();
+
+            // handle errors in definition
+            List errors = validator.getErrorMessages();
+            for (Iterator i = errors.iterator(); i.hasNext();) {
+                String errorMsg = (String)i.next();
+                System.out.println(errorMsg);
+            }
+        }
+    }
+
+    /**
      * Runs the compiler from the command line.
      *
      * @param args
      */
     public static void main(String[] args) {
-        if (args.length < 3) {
-            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler <pathToDefinitionFile> <pathToSrcDir> <pathToMetaDataDir> <uuidForWeaveModel>");
-            System.out.println("       <uuidForWeaveModel> is optional (if not specified one will be generated)");
+        if (args.length < 2) {
+            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.metadata.AttributeC <path to src dir> <file name> <uuid for definition>");
+            System.out.println("       <uuid for definition> is optional (if not specified one will be generated)");
             System.exit(0);
         }
-        System.out.println("compiling weave model...");
-        if (args.length == 4) {
-            SourceFileMetaDataCompiler.compile(args[0], args[1], args[2], args[3]);
+        System.out.println("compiling XML definition...");
+        if (args.length == 3) {
+            AttributeC.compile(args[0], args[1], args[2]);
         }
         else {
-            SourceFileMetaDataCompiler.compile(args[0], args[1], args[2]);
+            AttributeC.compile(args[0], args[1]);
         }
-        System.out.println("weave model for classes in " + args[1] + " have been compiled to " + args[2]);
+        System.out.println("XML definition for classes in " + args[0] + " have been compiled to " + args[1]);
     }
 }

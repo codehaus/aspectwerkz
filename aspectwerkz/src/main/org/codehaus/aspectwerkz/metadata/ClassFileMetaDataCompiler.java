@@ -37,9 +37,9 @@ import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
  * introduced <code>Introduction</code>s.
  * <p/>
  * Can be called from the command line.
- *
- * @todo only compile if we have a change in the class or jar file
- * @todo problem with inner classes
+ * <p/>
+ * Validation is turned off by default. To turn it on feed the JVM with:
+ * <code>-Daspectwerkz.definition.validate=true</code>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -81,10 +81,16 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
         createMetaDataDir(metaDataDir);
         final AspectWerkzDefinition definition = AspectWerkzDefinition.getDefinition(definitionFile);
 
-        final WeaveModel weaveModel = weave(uuid, definition);
-        compileIntroductionMetaData(weaveModel, classPath);
+        validate(definition);
 
-        validate(weaveModel);
+        WeaveModel weaveModel;
+        if (uuid != null) {
+            weaveModel = new WeaveModel(definition, uuid);
+        }
+        else {
+            weaveModel = new WeaveModel(definition);
+        }
+        compileIntroductionMetaData(weaveModel, classPath);
 
         saveWeaveModelToFile(metaDataDir, weaveModel);
     }
