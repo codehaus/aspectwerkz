@@ -60,7 +60,7 @@ public class AfterAdviceExecutor {
             IndexTuple index = m_adviceIndexes[i];
             int aspectIndex = index.getAspectIndex();
             int methodIndex = index.getMethodIndex();
-            m_aspectManagers[index.getAspectManagerIndex()]
+            index.getAspectManager()
                 .getAspectContainer(aspectIndex).invokeAdvice(methodIndex, joinPoint);
         }
         return null;

@@ -116,7 +116,7 @@ public final class AspectSystem {
             }
             if (aspectManager == null) {
                 // new def defined in THIS CL and not a parent one
-                aspectManager = new AspectManager(this, def, i);
+                aspectManager = new AspectManager(this, def);
                 System.out.println("Created AspectManager = " + uuid + ": " + aspectManager);
             } else {
                 System.out.println("Reused AspectManager = " + uuid + ": " + aspectManager);
