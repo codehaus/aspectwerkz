@@ -10,6 +10,8 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.JoinPointFactory;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
+import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
+import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModelManager;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.AdviceInfo;
@@ -516,17 +518,32 @@ public class JoinPointManager {
 
         // support for old style advices in XML whose name does not contain the call signature
         if (adviceArgNames.length == 0) {
+            AspectDefinition aspectDef = adviceInfo.getAdviceDefinition().getAspectDefinition();
             Type[] adviceArgTypes = adviceInfo.getMethodParameterTypes();
             for (int i = 0; i < adviceArgTypes.length; i++) {
-                if (isJoinPoint(adviceArgTypes[i])) {
-                    adviceToTargetArgs[i] = AdviceInfo.JOINPOINT_ARG;
-                } else if (isStaticJoinPoint(adviceArgTypes[i])) {
-                    adviceToTargetArgs[i] = AdviceInfo.STATIC_JOINPOINT_ARG;
+
+                if (aspectDef.isAspectWerkzAspect()) {
+                    if (isJoinPoint(adviceArgTypes[i])) {
+                        adviceToTargetArgs[i] = AdviceInfo.JOINPOINT_ARG;
+                    } else if (isStaticJoinPoint(adviceArgTypes[i])) {
+                        adviceToTargetArgs[i] = AdviceInfo.STATIC_JOINPOINT_ARG;
+                    } else {
+                        throw new Error(
+                                "Unbound unnamed advice parameter at index " + i +
+                                " in " + adviceInfo.getMethodSignature()
+                        );
+                    }
                 } else {
-                    throw new Error(
-                            "Unbound unnamed advice parameter at index " + i +
-                            " in " + adviceInfo.getMethodSignature()
-                    );
+                    AspectModel aspectModel = AspectModelManager.getModelFor(aspectDef.getAspectModel());
+                    String closureClassName = aspectModel.getAroundClosureClassInfo().getClassName();
+                    if (isValidAroundClosureType(adviceArgTypes[i], closureClassName)) {
+                        adviceToTargetArgs[i] = AdviceInfo.VALID_NON_AW_AROUND_CLOSURE_TYPE;
+                    } else {
+                        throw new Error(
+                                "around closure type advice parameter is not a known type [" +
+                                closureClassName + "]"
+                        );
+                    }
                 }
             }
         }
@@ -534,20 +551,25 @@ public class JoinPointManager {
         adviceInfo.setMethodToArgIndexes(adviceToTargetArgs);
     }
 
-    private static boolean isJoinPoint(Type type) {
+    private static boolean isValidAroundClosureType(final Type type, final String closureClassName) {
+        // FIXME Type.getType(..) throws exception
+//        return Type.getType(closureClassName).getDescriptor().equals(type.getDescriptor());
+        return true;
+    }
+
+    private static boolean isJoinPoint(final Type type) {
         return Type.getType(JoinPoint.class).getDescriptor().equals(type.getDescriptor());
     }
 
-    private static boolean isStaticJoinPoint(Type type) {
+    private static boolean isStaticJoinPoint(final Type type) {
         return Type.getType(StaticJoinPoint.class).getDescriptor().equals(type.getDescriptor());
     }
 
-    private static boolean isTarget(String adviceArgName, ExpressionContext ctx) {
+    private static boolean isTarget(final String adviceArgName, final ExpressionContext ctx) {
         return adviceArgName.equals(ctx.m_targetBoundedName);
     }
 
-    private static boolean isThis(String adviceArgName, ExpressionContext ctx) {
+    private static boolean isThis(final String adviceArgName, final ExpressionContext ctx) {
         return adviceArgName.equals(ctx.m_thisBoundedName);
     }
-
 }

@@ -32,6 +32,7 @@ public class AdviceInfo implements Serializable {
     public final static int STATIC_JOINPOINT_ARG = -2;
     public final static int TARGET_ARG = -3;
     public final static int THIS_ARG = -4;
+    public final static int VALID_NON_AW_AROUND_CLOSURE_TYPE = -5;
 
     /**
      * The method name.
