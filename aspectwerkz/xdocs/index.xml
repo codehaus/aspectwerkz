@@ -40,9 +40,10 @@
                 </p>
                 <p>
                     <code>AspectWerkz</code> is Free Software. The
-                    <a href="license.html">BSD-style</a> license is
+                    <a href="license.html">LGPL-style</a> license is
                     sufficiently flexible to allow the use of <code>AspectWerkz</code>
-                    in both open source and commercial projects.
+                    in both open source and commercial projects.<br/>
+                    If the LGPL is not suitable for your needs, please contact us.
                 </p>
 
             </subsection>
