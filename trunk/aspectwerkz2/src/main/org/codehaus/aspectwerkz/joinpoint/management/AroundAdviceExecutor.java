@@ -102,32 +102,37 @@ public class AroundAdviceExecutor implements AdviceExecutor {
             }
         }
 
-        m_currentAdviceIndex++;
         Object result = null;
-        if (m_currentAdviceIndex < m_adviceIndexes.length) {
-            IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
-            int aspectIndex = index.getAspectIndex();
-            int methodIndex = index.getMethodIndex();
-
-            result = m_aspectManager.getAspect(aspectIndex).___AW_invokeAdvice(methodIndex, joinPoint);
-        }
-        else {
-            switch (m_joinPointType) {
-
-                case JoinPointType.FIELD_SET:
-                    setTargetField(joinPoint);
-                    break;
-
-                case JoinPointType.FIELD_GET:
-                    result = getTargetField(joinPoint);
-                    break;
-
-                default:
-                    result = invokeTargetMethod(joinPoint);
-                    break;
+        if (m_currentAdviceIndex == m_adviceIndexes.length - 1) {
+            m_currentAdviceIndex = - 1;
+            try {
+                switch (m_joinPointType) {
+                    case JoinPointType.FIELD_SET:
+                        setTargetField(joinPoint);
+                        break;
+                    case JoinPointType.FIELD_GET:
+                        result = getTargetField(joinPoint);
+                        break;
+                    default:
+                        result = invokeTargetMethod(joinPoint);
+                        break;
+                }
+            }
+            finally {
+                m_currentAdviceIndex = m_adviceIndexes.length - 1;
             }
         }
-        m_currentAdviceIndex--;
+        else {
+            m_currentAdviceIndex++;
+            try {
+                IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
+                result = m_aspectManager.getAspect(index.getAspectIndex()).
+                        ___AW_invokeAdvice(index.getMethodIndex(), joinPoint);
+            }
+            finally {
+                m_currentAdviceIndex--;
+            }
+        }
         return result;
     }
 
