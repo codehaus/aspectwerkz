@@ -24,4 +24,6 @@ _metaData
 *.iws
 *.log
 .settings
+.tasks
+.externalToolBuilders
 
