@@ -39,6 +39,7 @@
             <advice bind-to="execution(void test.proceedinnewthread.ProceedTest.adviseMe2(..)) || execution(void test.proceedinnewthread.ProceedTest.adviseMe3(..))" type="around" name="advice2"/>
             <advice bind-to="execution(void test.proceedinnewthread.ProceedTest.adviseMe3(..))" type="around" name="advice3"/>
         </aspect>
+        <aspect class="test.deployment.PreparePointcuts"/>
         <aspect class="test.afterxxx.Aspect"/>
         <aspect class="test.callAndExecution.TestAspect"/>
         <aspect class="test.orthogonal.OrthogonalTestAspect"/>

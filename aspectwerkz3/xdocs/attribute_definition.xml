@@ -94,7 +94,7 @@
             <subsection name="Define the pointcuts">
                 <p>
                     In the aspect class you put the pointcut definitions as fields of the type
-                    <code>org.codehaus.aspectwerkz.Pointcut</code>
+                    <code>org.codehaus.aspectwerkz.definition.Pointcut</code>
                     along with metadata annotations which specifies the type of (execution, call, set, get, cflow or handler)
                     and pattern for the pointcut.
                     <br/>
@@ -216,7 +216,7 @@ public class MyAspect {
                 <ol>
                     <li>
                         If defined as a field, the field is of type
-                        <code>org.codehaus.aspectwerkz.Pointcut</code> and should be
+                        <code>org.codehaus.aspectwerkz.definition.Pointcut</code> and should be
                         declared in the aspect class or hierarchy.
                     </li>
                     <br/>

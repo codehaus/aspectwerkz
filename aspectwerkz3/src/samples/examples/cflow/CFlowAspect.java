@@ -8,7 +8,8 @@
 package examples.cflow;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.definition.Pointcut;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>

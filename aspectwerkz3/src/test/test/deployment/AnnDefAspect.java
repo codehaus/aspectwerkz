@@ -1,28 +1,27 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package test.superclassconstructor;
+package test.deployment;
 
-import org.codehaus.aspectwerkz.definition.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
- * @Aspect
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
-public class TestAspect {
+public class AnnDefAspect {
     /**
-     * @Expression execution(void test.superclassconstructor.C+.set())
+     * @Around execution(void test.deployment.DeployerTest.deployUndeployUsingHandle()) ||
+     * execution(void test.deployment.DeployerTest.deployUndeployUsingPreparedPointcut())
      */
-    Pointcut pc;
-
-    /**
-     * @Before pc
-     */
-    public void advice(final JoinPoint joinPoint) throws Throwable {
+    public Object advice(final JoinPoint joinPoint) throws Throwable {
+        DeployerTest.log("before ");
+        Object result = joinPoint.proceed();
+        DeployerTest.log("after ");
+        return result;
     }
+
 }

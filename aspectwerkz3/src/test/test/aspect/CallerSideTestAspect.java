@@ -8,7 +8,8 @@
 package test.aspect;
 
 import test.CallerSideAdviceTest;
-import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.definition.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**

@@ -58,6 +58,7 @@ public class AllTestsInlined extends TestCase {
         suite.addTestSuite(test.annotation.AnnotationCTest.class);
         suite.addTestSuite(test.polymorphic.PolymorphicTest.class);
         suite.addTestSuite(test.annotation.AnnotationCopyTest.class);
+        suite.addTestSuite(test.deployment.DeployerTest.class);
 
         // NOT YET COMPLETED
 //        suite.addTestSuite(test.handler.HandlerTest.class);

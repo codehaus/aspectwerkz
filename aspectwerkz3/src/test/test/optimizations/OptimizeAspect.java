@@ -11,7 +11,7 @@ import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
-import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.definition.Pointcut;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -97,24 +97,35 @@ public class OptimizeAspect {
 
     //------------- advice with Rtti
 
-    /** @Before execution(* test.optimizations.OptimizeTest$OptimizeRtti.before())
-     *          || execution(* test.optimizations.OptimizeTest$OptimizeRtti.beforeAround())*/
+    /**
+     * @Before execution(* test.optimizations.OptimizeTest$OptimizeRtti.before())
+     * || execution(* test.optimizations.OptimizeTest$OptimizeRtti.beforeAround())
+     */
     public void beforeRtti(Rtti rtti) {
         OptimizeTest.log("beforeRTTI-" + rtti.getName() + rtti.getThis() + rtti.getTarget());
     }
-    /** @Around execution(* test.optimizations.OptimizeTest$OptimizeRtti.around())
-     *          || execution(* test.optimizations.OptimizeTest$OptimizeRtti.beforeAround()) */
+
+    /**
+     * @Around execution(* test.optimizations.OptimizeTest$OptimizeRtti.around())
+     * || execution(* test.optimizations.OptimizeTest$OptimizeRtti.beforeAround())
+     */
     public Object aroundRtti(JoinPoint jp, Rtti rtti) throws Throwable {
         OptimizeTest.log("aroundRTTI-" + rtti.getName() + rtti.getThis() + rtti.getTarget());
         return jp.proceed();
     }
-    /** @Before execution(* test.optimizations.OptimizeTest$OptimizeRtti.before(int)) */
+
+    /**
+     * @Before execution(* test.optimizations.OptimizeTest$OptimizeRtti.before(int))
+     */
     public void beforeRttiInt(Rtti rtti) {
         OptimizeTest.log("beforeRTTI-" + rtti.getName() + rtti.getThis() + rtti.getTarget());
-        Integer param = (Integer)((MethodRtti)rtti).getParameterValues()[0];
+        Integer param = (Integer) ((MethodRtti) rtti).getParameterValues()[0];
         //TODO ...
     }
-    /** @Around execution(* test.optimizations.OptimizeTest$OptimizeRtti.around(int)) */
+
+    /**
+     * @Around execution(* test.optimizations.OptimizeTest$OptimizeRtti.around(int))
+     */
     public Object aroundRtti(Rtti rtti, StaticJoinPoint sjp/* note: silly but possible...*/) throws Throwable {
         OptimizeTest.log("aroundRTTI-" /*TODO*/);
         return sjp.proceed();
