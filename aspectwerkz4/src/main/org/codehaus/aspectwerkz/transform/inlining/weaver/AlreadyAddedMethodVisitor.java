@@ -7,13 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Attribute;
+import java.util.Set;
+
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
-import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
-
-import java.util.Set;
+import org.objectweb.asm.Attribute;
+import org.objectweb.asm.CodeVisitor;
 
 /**
  * A read only visitor to gather wrapper methods and proxy methods

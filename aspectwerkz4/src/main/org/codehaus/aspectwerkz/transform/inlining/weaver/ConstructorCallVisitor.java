@@ -7,13 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
-import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.Constants;
-import org.objectweb.asm.CodeAdapter;
-import org.objectweb.asm.Label;
+import gnu.trove.TIntObjectHashMap;
+import gnu.trove.TLongObjectHashMap;
+
+import java.lang.reflect.Modifier;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Stack;
+
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
@@ -23,23 +24,19 @@ import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.transform.Context;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
-import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCompiler;
-import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
+import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
-import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
-import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
-
-import java.lang.reflect.Modifier;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Stack;
-import java.util.Set;
-
-import gnu.trove.TLongObjectHashMap;
-import gnu.trove.TIntObjectHashMap;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCompiler;
+import org.objectweb.asm.Attribute;
+import org.objectweb.asm.ClassAdapter;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.CodeAdapter;
+import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.Label;
 
 /**
  * Instruments ctor CALL join points by replacing INVOKEXXX instructions with invocations of the compiled join point.

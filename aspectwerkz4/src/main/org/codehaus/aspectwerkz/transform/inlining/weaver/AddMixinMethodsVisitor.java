@@ -7,30 +7,33 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.List;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.objectweb.asm.*;
-import org.codehaus.aspectwerkz.transform.Context;
-import org.codehaus.aspectwerkz.transform.TransformationConstants;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
-import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.definition.MixinDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
-import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.transform.Context;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
+import org.objectweb.asm.Attribute;
+import org.objectweb.asm.ClassAdapter;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.CodeAdapter;
+import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.Type;
 
 /**
  * Adds mixin methods and fields to hold mixin instances to the target class.
