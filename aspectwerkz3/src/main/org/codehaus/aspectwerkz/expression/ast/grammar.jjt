@@ -92,7 +92,7 @@ TOKEN : /* POINTCUTS */
 |
     < OR  : "||" | "or"  | "OR"  | "|" >
 |
-    < NOT : "!"  | "not" | "NOT" >
+    < NOT : "!" >
 |
     < EXECUTION : "execution(" > : METHOD
 |
@@ -123,6 +123,7 @@ TOKEN : /* POINTCUTS */
     < IF : "if(" >
 |
     < HAS_METHOD : "hasmethod(" > : METHOD
+
 |
     < HAS_FIELD : "hasfield(" > : FIELD
 |
@@ -147,7 +148,7 @@ TOKEN : /* POINTCUTS */
 |
     < CLASS_FINAL: "final" >
 |
-    < CLASS_NOT : "!" | "not" | "NOT" >
+    < CLASS_NOT : "!" >
 |
     < CLASS_ATTRIBUTE : "@" <CLASS_IDENTIFIER> >
 |
@@ -180,7 +181,7 @@ TOKEN : /* POINTCUTS */
 |
     < METHOD_SYNCHRONIZED: "synchronized" >
 |
-    < METHOD_NOT : "!" | "not" | "NOT" >
+    < METHOD_NOT : "!" >
 |
     < METHOD_ANNOTATION : "@" <METHOD_IDENTIFIER> >
 |
@@ -215,7 +216,7 @@ TOKEN : /* POINTCUTS */
 |
     < FIELD_TRANSIENT: "transient" >
 |
-    < FIELD_NOT : "!" | "not" | "NOT" >
+    < FIELD_NOT : "!" >
 |
     < FIELD_ANNOTATION : "@" <FIELD_IDENTIFIER> >
 |
@@ -244,7 +245,7 @@ TOKEN : /* POINTCUTS */
 |
     < #PARAMETER_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
 |
-    < PARAMETER_NOT : "!" | "not" | "NOT" >
+    < PARAMETER_NOT : "!" >
 }
 
 //------------------ Lexical scope for args() ------------------

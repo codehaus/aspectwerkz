@@ -244,10 +244,10 @@
 	<!-- jjtree and javacc compilation -->
 	<!-- ============================================================== -->
 	<target name="jjtree" depends="init">
-		<jjtree target="${src.dir}/main/org/codehaus/aspectwerkz/expression/ast/grammar.jjt" outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/expression/ast" javacchome="${env.JAVACC_HOME}" />
-		<javacc target="${src.dir}/main/org/codehaus/aspectwerkz/expression/ast/grammar.jj" outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/expression/ast" javacchome="${env.JAVACC_HOME}" />
-		<jjtree target="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast/grammar.jjt" outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast" javacchome="${env.JAVACC_HOME}" />
-		<javacc target="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast/grammar.jj" outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast" javacchome="${env.JAVACC_HOME}" />
+        <jjtree target="${src.dir}/main/org/codehaus/aspectwerkz/expression/ast/grammar.jjt" outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/expression/ast" javacchome="${env.JAVACC_HOME}" />
+        <javacc target="${src.dir}/main/org/codehaus/aspectwerkz/expression/ast/grammar.jj" outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/expression/ast" javacchome="${env.JAVACC_HOME}" />
+        <jjtree target="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast/grammar.jjt" outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast" javacchome="${env.JAVACC_HOME}" />
+        <javacc target="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast/grammar.jj" outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast" javacchome="${env.JAVACC_HOME}" />
 	</target>
 
 	<target name="test:weawe" depends="init, jars, test:annotationc">
