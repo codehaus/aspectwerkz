@@ -1,0 +1,8 @@
+<aspectwerkz>
+    <system id="all-test">
+        <package name="aspectwerkz.aosd.test">
+            <use-aspect class="security.RoleBasedAccessProtocol"/>
+            <use-aspect class="unitofwork.UnitOfWorkProtocol"/>
+        </package>
+    </system>
+</aspectwerkz>
