@@ -112,7 +112,8 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
         if (m_isAdvised) {
             if (name.equals(INIT_METHOD_NAME)) {
                 CodeVisitor mv = new AppendToInitMethodCodeAdapter(
-                        cv.visitMethod(access, name, desc, exceptions, attrs)
+                        cv.visitMethod(access, name, desc, exceptions, attrs),
+                        name
                 );
                 mv.visitMaxs(0, 0);
                 return mv;
@@ -195,13 +196,14 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
      * @return boolean true if the method should be filtered away
      */
     public static boolean classFilter(final ClassInfo classInfo, final Set definitions) {
+        if (classInfo.isInterface()) {
+            return true;
+        }
+
         ExpressionContext ctx = new ExpressionContext(PointcutType.WITHIN, classInfo, classInfo);
 
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition systemDef = (SystemDefinition) it.next();
-            if (classInfo.isInterface()) {
-                return true;
-            }
             String className = classInfo.getName().replace('/', '.');
             if (systemDef.inExcludePackage(className)) {
                 return true;
@@ -218,8 +220,8 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                 if (expressionInfo == null) {
                     continue;
                 }
-                if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) &&
-                    adviceDef.getAspectDefinition().getDeploymentModel().equals(DeploymentModel.PER_INSTANCE)) {
+                if (adviceDef.getAspectDefinition().getDeploymentModel().equals(DeploymentModel.PER_INSTANCE)
+                    && expressionInfo.getAdvisedClassFilterExpression().match(ctx)) {
                     return false;
                 }
             }
@@ -246,16 +248,12 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
      *
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
-    private class AppendToInitMethodCodeAdapter extends CodeAdapter {
+    private class AppendToInitMethodCodeAdapter extends AfterObjectInitializationCodeAdapter {
 
-        /**
-         * Flag to track if we have visited the this() or super()
-         * method invocation in the visited constructor
-         */
         private boolean m_done = false;
 
-        public AppendToInitMethodCodeAdapter(final CodeVisitor ca) {
-            super(ca);
+        public AppendToInitMethodCodeAdapter(final CodeVisitor ca, String callerMemberName) {
+            super(ca, callerMemberName);
         }
 
         /**
@@ -270,10 +268,9 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                                     String owner,
                                     String name,
                                     String desc) {
-
-            if (opcode == INVOKESPECIAL) {
+            super.visitMethodInsn(opcode, owner, name, desc);
+            if (opcode == INVOKESPECIAL && m_isObjectInitialized && !m_done) {
                 m_done = true;
-                cv.visitMethodInsn(opcode, owner, name, desc);
 
                 // initialize aspect map field
                 cv.visitVarInsn(ALOAD, 0);
@@ -291,8 +288,6 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                         INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
                         INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
                 );
-            } else {
-                cv.visitMethodInsn(opcode, owner, name, desc);
             }
         }
     }
