@@ -96,6 +96,9 @@ public class AspectDefinition {
         if (className == null) throw new IllegalArgumentException("aspect class name can not be null");
         if (deploymentModel == null) throw new IllegalArgumentException("deployment model can not be null");
         m_name = name;
+
+        System.out.println("name = " + name);
+
         m_className = className;
         m_deploymentModel = deploymentModel;
     }
