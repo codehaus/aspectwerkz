@@ -90,4 +90,11 @@ public interface JoinPoint {
      * @return the type
      */
     String getType();
+
+    /**
+     * Resets the join point.
+     * <p/>
+     * Will restart the execution chain of advice.
+     */
+    void reset();
 }
