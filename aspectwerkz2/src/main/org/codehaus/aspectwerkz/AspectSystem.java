@@ -162,6 +162,7 @@ public final class AspectSystem {
         // Note: uuid is assumed to be unique within an AspectSystem
         for (int i = 0; i < m_aspectManagers.length; i++) {
             AspectManager aspectManager = m_aspectManagers[i];
+            
             // the null check makes sense only in the flow of <init>
             if (aspectManager != null && aspectManager.getUuid().equals(uuid)) {
                 return aspectManager;

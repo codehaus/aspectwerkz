@@ -59,9 +59,10 @@ public class HotSwapClient {
      * @param klazz
      */
     public static void hotswap(Class klazz) {
-        if (ClassPreProcessorHelper.class.getClassLoader() != null) {
-            throw new RuntimeException("AspectWerkz core must be in bootclasspath for HotSwap cache to work: "
-                + ClassPreProcessorHelper.class.getClassLoader());
+        if (ClassPreProcessorHelper.class.getClassLoader() != ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader()) {
+            throw new RuntimeException("AspectWerkz is misconfigured for HotSwap cache to work: "
+                + ClassPreProcessorHelper.class.getClassLoader() + " incompatible with "
+                + ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader());
         }
         try {
             RuntimeClassProcessor runtimeProcessor = (RuntimeClassProcessor) ClassPreProcessorHelper.getClassPreProcessor();
