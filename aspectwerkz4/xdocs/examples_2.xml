@@ -42,7 +42,7 @@
                 All examples together with ready to execute tests are to be found in the
                 source distribution under
                 <code>src/samples/examples</code>. They are all defined using the same definition file
-                <code>samples-attribdef.xml</code>
+                <code>aop.xml</code>
             </p>
         </section>
         <section name="Call and Execution pointcuts + Around advice">
