@@ -20,7 +20,6 @@ import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
@@ -415,6 +414,5 @@ public abstract class Aspect implements Serializable {
         m_container = StartupManager.createAspectContainer(this);
         m_system = SystemLoader.getSystem(m_uuid);
         m_system.initialize();
-//        m_parameters = (Map)fields.get("m_parameters", null);
     }
 }

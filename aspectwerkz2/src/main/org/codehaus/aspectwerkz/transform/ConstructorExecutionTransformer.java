@@ -38,6 +38,11 @@ public class ConstructorExecutionTransformer implements Transformer {
     private List m_definitions;
 
     /**
+     * The join point index.
+     */
+    private int m_joinPointIndex;
+
+    /**
      * Creates a new instance of the transformer.
      */
     public ConstructorExecutionTransformer() {
@@ -51,6 +56,7 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws Exception {
+        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
@@ -71,11 +77,12 @@ public class ConstructorExecutionTransformer implements Transformer {
                 }
                 context.markAsAdvised();
 
-                CtConstructor prefixedConstructor = addPrefixToConstructor(ctClass, constructor);
+                addPrefixToConstructor(ctClass, constructor);
                 int constructorHash = TransformationUtil.calculateHash(constructor);
                 createWrapperConstructor(constructor, constructorHash);
             }
         }
+        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
 
     /**
@@ -104,15 +111,15 @@ public class ConstructorExecutionTransformer implements Transformer {
         body.append(TransformationUtil.PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD);
         body.append('(');
         body.append(constructorHash);
-        body.append(", ");
-        body.append("$args");
         body.append(',');
-        body.append("(Object)null");
-        body.append(',');
+        body.append(m_joinPointIndex);
+        body.append(", $args, (Object)null,");
         body.append(TransformationUtil.JOIN_POINT_TYPE_CONSTRUCTOR_EXECUTION);
         body.append(",\"");
         body.append(originalConstructor.getSignature());
         body.append("\"); }");
+
+        m_joinPointIndex++;
 
         originalConstructor.setBody(body.toString());
     }
@@ -124,7 +131,7 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param constructor the current method
      * @return the new prefixed constructor
      */
-    private CtConstructor addPrefixToConstructor(final CtClass ctClass, final CtConstructor constructor)
+    private void addPrefixToConstructor(final CtClass ctClass, final CtConstructor constructor)
             throws NotFoundException, CannotCompileException {
 
         int accessFlags = constructor.getModifiers();
@@ -150,8 +157,6 @@ public class ConstructorExecutionTransformer implements Transformer {
         codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
 
         ctClass.addConstructor(newConstructor);
-
-        return newConstructor;
     }
 
     /**

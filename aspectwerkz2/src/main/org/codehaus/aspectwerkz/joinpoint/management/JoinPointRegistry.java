@@ -42,12 +42,16 @@ class JoinPointRegistry {
     private static final List EMTPY_ARRAY_LIST = new ArrayList();
 
     /**
+     * Pre allocated empty index tuple array.
+     */
+    private static final IndexTuple[] EMPTY_INDEX_TUPLE_ARRAY = new IndexTuple[]{};
+
+    /**
      * The registry with all the classes and the index for the advices attatched to the join points in this class.
      * <p/>
      * Map of: the class hash => map of: join point hash => map of: join point type => array with advice indexes.
      */
     private static final TLongObjectHashMap m_joinPointAdvicesMap = new TLongObjectHashMap();
-    public static final IndexTuple[] EMPTY_INDEX_TUPLE_ARRAY = new IndexTuple[]{};
 
     /**
      * Registers the advices for the method join point.
@@ -69,6 +73,7 @@ class JoinPointRegistry {
             final Class definedClass,
             final ClassMetaData definedClassMetaData,
             final System system) {
+
         if (!m_joinPointAdvicesMap.containsKey(classHash)) {
             m_joinPointAdvicesMap.put(classHash, new TLongObjectHashMap());
         }
@@ -105,21 +110,15 @@ class JoinPointRegistry {
                 break;
 
             case JoinPointType.FIELD_SET:
-                registerFieldSetJoinPoint(
-                        system, definedClass, definedClassMetaData, signature, pointcutTypeToAdvicesMap
-                );
+                registerFieldSetJoinPoint(system, definedClassMetaData, signature, pointcutTypeToAdvicesMap);
                 break;
 
             case JoinPointType.FIELD_GET:
-                registerFieldGetJoinPoint(
-                        system, definedClass, definedClassMetaData, signature, pointcutTypeToAdvicesMap
-                );
+                registerFieldGetJoinPoint(system, definedClassMetaData, signature, pointcutTypeToAdvicesMap);
                 break;
 
             case JoinPointType.HANDLER:
-                registerHandlerJoinPoint(
-                        system, definedClass, definedClassMetaData, signature, pointcutTypeToAdvicesMap
-                );
+                registerHandlerJoinPoint(system, definedClassMetaData, pointcutTypeToAdvicesMap);
                 break;
 
             case JoinPointType.STATIC_INITALIZATION:
@@ -157,6 +156,7 @@ class JoinPointRegistry {
             final ClassMetaData definedClassMetaData,
             final int joinPointHash,
             final Map pointcutTypeToAdvicesMap) {
+
         List executionAdvices = new ArrayList();
         MethodTuple methodTuple = system.getAspectManager().getMethodTuple(definedClass, joinPointHash);
         Method wrapperMethod = methodTuple.getWrapperMethod();
@@ -198,6 +198,7 @@ class JoinPointRegistry {
             final ClassMetaData definedClassMetaData,
             final int joinPointHash,
             final Map pointcutTypeToAdvicesMap) {
+
         List methodCallAdvices = new ArrayList();
         List methodCallPointcuts = system.getAspectManager().getCallPointcuts(
                 definedClassMetaData,
@@ -240,6 +241,7 @@ class JoinPointRegistry {
             final ClassMetaData definedClassMetaData,
             final int joinPointHash,
             final Map pointcutTypeToAdvicesMap) {
+
         List executionAdvices = new ArrayList();
         ConstructorTuple constructorTuple = system.getAspectManager().getConstructorTuple(definedClass, joinPointHash);
         Constructor wrapperConstructor = constructorTuple.getWrapperConstructor();
@@ -281,6 +283,7 @@ class JoinPointRegistry {
             final ClassMetaData definedClassMetaData,
             final int joinPointHash,
             final Map pointcutTypeToAdvicesMap) {
+
         List constructorCallAdvices = new ArrayList();
         List constructorCallPointcuts = system.getAspectManager().getCallPointcuts(
                 definedClassMetaData,
@@ -312,17 +315,16 @@ class JoinPointRegistry {
      * Register field set join points.
      *
      * @param system
-     * @param definedClass
      * @param definedClassMetaData
      * @param signature
      * @param pointcutTypeToAdvicesMap
      */
     private void registerFieldSetJoinPoint(
             final System system,
-            final Class definedClass,
             final ClassMetaData definedClassMetaData,
             final String signature,
             final Map pointcutTypeToAdvicesMap) {
+
         List setAdvices = new ArrayList();
         List setPointcuts = system.getAspectManager().getSetPointcuts(
                 definedClassMetaData,
@@ -350,17 +352,16 @@ class JoinPointRegistry {
      * Register field get join points.
      *
      * @param system
-     * @param definedClass
      * @param definedClassMetaData
      * @param signature
      * @param pointcutTypeToAdvicesMap
      */
     private void registerFieldGetJoinPoint(
             final System system,
-            final Class definedClass,
             final ClassMetaData definedClassMetaData,
             final String signature,
             final Map pointcutTypeToAdvicesMap) {
+
         List getAdvices = new ArrayList();
         List getPointcuts = system.getAspectManager().getGetPointcuts(
                 definedClassMetaData,
@@ -388,16 +389,12 @@ class JoinPointRegistry {
      * Register handler join points.
      *
      * @param system
-     * @param definedClass
      * @param exceptionClassMetaData
-     * @param signature
      * @param pointcutTypeToAdvicesMap
      */
     private void registerHandlerJoinPoint(
             final System system,
-            final Class definedClass,
             final ClassMetaData exceptionClassMetaData,
-            final String signature,
             final Map pointcutTypeToAdvicesMap) {
         List handlerAdvices = new ArrayList();
         List handlerPointcuts = system.getAspectManager().getHandlerPointcuts(exceptionClassMetaData);

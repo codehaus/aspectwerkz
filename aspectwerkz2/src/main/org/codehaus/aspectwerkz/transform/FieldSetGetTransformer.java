@@ -38,6 +38,11 @@ public class FieldSetGetTransformer implements Transformer {
     private List m_definitions;
 
     /**
+     * The join point index.
+     */
+    private int m_joinPointIndex;
+
+    /**
      * Creates a new instance of the transformer.
      */
     public FieldSetGetTransformer() {
@@ -52,6 +57,8 @@ public class FieldSetGetTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass)
             throws NotFoundException, CannotCompileException {
+
+        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());
 
         // loop over all the definitions
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
@@ -112,13 +119,13 @@ public class FieldSetGetTransformer implements Transformer {
                                     callBody.append('(');
                                     callBody.append(TransformationUtil.calculateHash(fieldAccess.getField()));
                                     callBody.append(',');
+                                    callBody.append(m_joinPointIndex);
                                     if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
-                                        callBody.append("(Object)null");
+                                        callBody.append(", (Object)null, ");
                                     }
                                     else {
-                                        callBody.append("$0");
+                                        callBody.append(", $0, ");
                                     }
-                                    callBody.append(',');
                                     callBody.append(declaringClassFieldName);
                                     callBody.append(",\"");
                                     callBody.append(fieldSignature);
@@ -146,6 +153,8 @@ public class FieldSetGetTransformer implements Transformer {
 
                                     fieldAccess.replace(body.toString());
                                     context.markAsAdvised();
+
+                                    m_joinPointIndex++;
                                 }
 
                                 // handle SET
@@ -168,14 +177,13 @@ public class FieldSetGetTransformer implements Transformer {
                                     body.append('(');
                                     body.append(TransformationUtil.calculateHash(fieldAccess.getField()));
                                     body.append(',');
-                                    body.append("$args,");
+                                    body.append(m_joinPointIndex);
                                     if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
-                                        body.append("(Object)null");
+                                        body.append(", $args, (Object)null, ");
                                     }
                                     else {
-                                        body.append("$0");
+                                        body.append(", $args, $0, ");
                                     }
-                                    body.append(',');
                                     body.append(declaringClassFieldName);
                                     body.append(",\"");
                                     body.append(fieldSignature);
@@ -183,6 +191,8 @@ public class FieldSetGetTransformer implements Transformer {
 
                                     fieldAccess.replace(body.toString());
                                     context.markAsAdvised();
+
+                                    m_joinPointIndex++;
                                 }
                             }
                             catch (NotFoundException nfe) {
@@ -192,6 +202,8 @@ public class FieldSetGetTransformer implements Transformer {
                     }
             );
         }
+
+        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
 
     /**
