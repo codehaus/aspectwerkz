@@ -3,7 +3,7 @@
 <plugin
    id="org.codehaus.aspectwerkz.ide.eclipse.core"
    name="AspectWerkz Core Plug-in"
-   version="2.0.3"
+   version="2.0.4"
    provider-name="AspectWerkz"
    class="org.codehaus.aspectwerkz.ide.eclipse.core.AwCorePlugin">
 
@@ -114,8 +114,8 @@
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
-            adaptable="true"
             objectClass="org.eclipse.core.resources.IProject"
+            adaptable="true"
             id="actions.ToggleProjectNatureActionDelegateContribution">
          <visibility>
             <and>
@@ -139,8 +139,8 @@
          </action>
       </objectContribution>
       <objectContribution
-            adaptable="true"
             objectClass="org.eclipse.core.resources.IProject"
+            adaptable="true"
             id="actions.ToggleProjectNatureActionDelegateContribution">
          <visibility>
             <objectState

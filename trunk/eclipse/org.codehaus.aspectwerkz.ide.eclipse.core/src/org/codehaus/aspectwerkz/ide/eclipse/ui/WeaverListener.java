@@ -33,6 +33,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.codehaus.aspectwerkz.org.objectweb.asm.*;
@@ -182,7 +183,11 @@ public class WeaverListener implements IWeaverListener {
                 boolean argMatch = true;
                 for (int t = 0; t < unresolvedArgs.length; t++) {
                     String javaName = JavaModelUtil.getResolvedTypeName(unresolvedArgs[t], atClass);
-                    AwLog.logTrace("comparing arg " + javaName + " to desc " + args[t].getClassName() + " for " + args[t].getDescriptor());
+                    int dim = Signature.getArrayCount(unresolvedArgs[t]);
+                    for (int d = 0; d < dim; d++) {
+                        javaName += "[]";
+                    }
+                    AwLog.logTrace("comparing unresolved " + unresolvedArgs[t] + " : " + javaName + " to desc " + args[t].getClassName() + " for " + args[t].getDescriptor());
                     if (javaName.equals(args[t].getClassName())) {
                         ;
                     } else {
