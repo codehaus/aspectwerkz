@@ -143,8 +143,8 @@
                     abstract method <code>Object execute(final JoinPoint jp)</code>.
                 </p>
                 <p>
-                    An <code>AroundAdvice</code> can <b>not</b> be used with caller side
-                    and field pointcuts.
+                    Please note: An <code>AroundAdvice</code> can <b>not</b> be used
+                    with caller side or field pointcuts.
                 </p>
                 <p>
                     Here is a simple example of an <code>AroundAdvice</code>.
@@ -181,10 +181,10 @@ public class MyAroundAdvice extends AroundAdvice {
                     The <code>PreAdvice</code> class is being executed before
                     the join point (that it has been applied to) has been is reached.
                 </p>
-                <p>
-                    A <code>PreAdvice</code> can currently <b>not</b> be used with
-                    method pointcuts.
-                </p>
+<!--                <p>-->
+<!--                    A <code>PreAdvice</code> can currently <b>not</b> be used with-->
+<!--                    method pointcuts.-->
+<!--                </p>-->
                 <p>
                     Here is a simple example of a <code>PreAdvice</code> advice.
                     It is in the method <code>execute</code> that you can implement
@@ -213,10 +213,10 @@ public class MyPreAdvice extends PreAdvice {
                     The <code>PreAdvice</code> class is being executed before
                     the join point (that it has been applied to) has been is reached.
                 </p>
-                <p>
-                    A <code>PostAdvice</code> can currently <b>not</b> be used with
-                    method pointcuts.
-                </p>
+<!--                <p>-->
+<!--                    A <code>PostAdvice</code> can currently <b>not</b> be used with-->
+<!--                    method pointcuts.-->
+<!--                </p>-->
                 <p>
                     Here is a simple example of a <code>PostAdvice</code> advice.
                     It is in the method <code>execute</code> that you can implement
@@ -474,11 +474,12 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                             <code>name</code> -
                             specifies the name of the pointcut. Needs to be a unique
                             name throughout the aspect definintion.
-                            <br/>
+                            <p/>
                             Caution: names must only consist of these characters:
                             <code>[A-Z]</code>, <code>[a-z]</code>, <code>[0-9]</code>
-                            and the characters <code>$</code> and <code>_</code>.
-                        </li>
+                            and the characters <code>$</code> and <code>_</code>
+                            (not for example <code>-</code> or <code>/</code>).
+                        </li><br/>
                         <li>
                             <code>type</code> -
                             specifies the type of the pointcut.
@@ -505,7 +506,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                                     </li>
                                 </ul>
                             </p>
-                        </li>
+                        </li><br/>
                         <li>
                             <code>pattern</code> -
                             specifies the pattern for the pointcut. This is the
@@ -599,7 +600,8 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 <p>
                     Then you specify the introductions that you want to define
                     in this <code>aspect</code>. This is done using the
-                    <code>introduction</code> element.
+                    <code>introduction</code> element. You can also use the element
+                    <code>introduce</code> if you find it more intuitive.
                 </p>
                 <p>
                     This element has an attribute <code>class</code> where you define
@@ -613,7 +615,8 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 </p>
                 <p>
                     You also define which advices should be applied to which pointcuts.
-                    This is done using the <code>advice</code> element.
+                    This is done using the <code>advice</code> element. You can also use
+                    the element <code>advise</code> if you find it more intuitive.
                 </p>
                 <p>
                     The <code>advice</code> element has an attribute called <code>expression</code>
@@ -1306,7 +1309,7 @@ String timeOut = getParameter("timeout");
                     </li><br/>
                     <li>
                         <code>ClassFileMetaDataCompiler</code> - compiles from
-                        the class files or a jar file. (If you have your
+                        the class files or a jar file. (For example if you have your
                         <code>Introductions</code> already compiled.)
                     </li><br/>
                 </ul>

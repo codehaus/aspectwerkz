@@ -25,8 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Collection;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.WeakHashMap;
 import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
@@ -47,7 +46,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodJoinPoint.java,v 1.10 2003-07-08 16:50:55 jboner Exp $
+ * @version $Id: MethodJoinPoint.java,v 1.11 2003-07-11 10:45:19 jboner Exp $
  */
 public abstract class MethodJoinPoint implements JoinPoint {
 
@@ -109,7 +108,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
     /**
      * Caches the throws pointcuts that are created at runtime.
      */
-    protected Map m_throwsJoinPointCache = new HashMap();
+    protected Map m_throwsJoinPointCache = new WeakHashMap();
 
     /**
      * The cflow pointcuts that this join point needs to be part of to execute its advices.
@@ -340,8 +339,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * @param e the wrapped exception
      * @throws Throwable the original exception
      */
-    protected void handleException(final InvocationTargetException e)
-            throws Throwable {
+    protected void handleException(final InvocationTargetException e) throws Throwable {
 
         final Throwable cause = e.getCause();
 

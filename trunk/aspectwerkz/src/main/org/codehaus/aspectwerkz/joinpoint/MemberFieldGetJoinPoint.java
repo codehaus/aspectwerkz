@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.ref.SoftReference;
 
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
 import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
@@ -33,19 +35,19 @@ import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
  * join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberFieldGetJoinPoint.java,v 1.7 2003-07-09 11:55:27 jboner Exp $
+ * @version $Id: MemberFieldGetJoinPoint.java,v 1.8 2003-07-11 10:45:19 jboner Exp $
  */
 public class MemberFieldGetJoinPoint extends FieldJoinPoint {
 
     /**
-     * A reference to the target object.
+     * A soft reference to the target object.
      */
-    protected Object m_targetObject;
+    protected SoftReference m_targetObjectReference;
 
     /**
      * The serial version uid for the class.
      */
-    private static final long serialVersionUID = 93013108117444769L;
+    private static final long serialVersionUID = 446929646654050997L;
 
     /**
      * Creates a new MemberFieldGetJoinPoint object.
@@ -59,7 +61,7 @@ public class MemberFieldGetJoinPoint extends FieldJoinPoint {
                                    final String signature) {
         super(uuid, signature);
         if (targetObject == null) throw new IllegalArgumentException("target object can not be null");
-        m_targetObject = targetObject;
+        m_targetObjectReference = new SoftReference(targetObject);
     }
 
     /**
@@ -68,7 +70,7 @@ public class MemberFieldGetJoinPoint extends FieldJoinPoint {
      * @return the target object
      */
     public Object getTargetObject() {
-        return m_targetObject;
+        return m_targetObjectReference.get();
     }
 
     /**
@@ -77,7 +79,7 @@ public class MemberFieldGetJoinPoint extends FieldJoinPoint {
      * @return the target class
      */
     public Class getTargetClass() {
-        return m_targetObject.getClass();
+        return m_targetObjectReference.get().getClass();
     }
 
     /**
@@ -123,6 +125,18 @@ public class MemberFieldGetJoinPoint extends FieldJoinPoint {
     }
 
     /**
+     * Provides custom serialization.
+     *
+     * @param stream the object output stream that should write the serialized object
+     * @throws java.lang.Exception in case of failure
+     */
+    private void writeObject(final ObjectOutputStream stream) throws Exception {
+        ObjectOutputStream.PutField fields = stream.putFields();
+        fields.put("m_targetObjectReference", m_targetObjectReference.get());
+        stream.writeFields();
+    }
+
+    /**
      * Provides custom deserialization.
      *
      * @param stream the object input stream containing the serialized object
@@ -130,6 +144,6 @@ public class MemberFieldGetJoinPoint extends FieldJoinPoint {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_targetObject = fields.get("m_targetObject", null);
+        m_targetObjectReference = new SoftReference(fields.get("m_targetObjectReference", null));
     }
 }

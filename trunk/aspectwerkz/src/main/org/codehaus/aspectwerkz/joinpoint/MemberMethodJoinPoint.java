@@ -19,9 +19,11 @@
 package org.codehaus.aspectwerkz.joinpoint;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.ref.SoftReference;
 import java.util.List;
 import java.util.Iterator;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
@@ -35,19 +37,19 @@ import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberMethodJoinPoint.java,v 1.10 2003-07-09 11:55:27 jboner Exp $
+ * @version $Id: MemberMethodJoinPoint.java,v 1.11 2003-07-11 10:45:19 jboner Exp $
  */
 public class MemberMethodJoinPoint extends MethodJoinPoint {
 
     /**
      * The serial version uid for the class.
      */
-    private static final long serialVersionUID = 6627213463917646395L;
+    private static final long serialVersionUID = -5484155333075124212L;
 
     /**
-     * A reference to the target instance.
+     * A soft reference to the target instance.
      */
-    protected Object m_targetObject;
+    protected SoftReference m_targetObjectReference;
 
     /**
      * Creates a new MemberMethodJoinPoint object.
@@ -62,7 +64,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
         super(uuid, methodId);
         if (targetObject == null) throw new IllegalArgumentException("target object can not be null");
 
-        m_targetObject = targetObject;
+        m_targetObjectReference = new SoftReference(targetObject);
         m_targetClass = targetObject.getClass();
 
         m_originalMethod = m_system.getMethod(m_targetClass, m_methodId);
@@ -97,7 +99,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      * @return the original object
      */
     public Object getTargetObject() {
-        return m_targetObject;
+        return m_targetObjectReference.get();
     }
 
     /**
@@ -129,7 +131,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
     protected Object invokeOriginalMethod() throws Throwable {
         Object result = null;
         try {
-            result = m_originalMethod.invoke(m_targetObject, m_parameters);
+            result = m_originalMethod.invoke(m_targetObjectReference.get(), m_parameters);
             setResult(result);
         }
         catch (InvocationTargetException e) {
@@ -156,7 +158,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      */
     protected MemberMethodJoinPoint deepCopy() {
         final MemberMethodJoinPoint clone =
-                new MemberMethodJoinPoint(m_uuid, m_targetObject, m_methodId);
+                new MemberMethodJoinPoint(m_uuid, m_targetObjectReference.get(), m_methodId);
         clone.m_targetClass = m_targetClass;
         clone.m_originalMethod = m_originalMethod;
         clone.m_pointcuts = m_pointcuts;
@@ -180,7 +182,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
         final MemberMethodJoinPoint obj = (MemberMethodJoinPoint)o;
         return areEqualsOrBothNull(obj.m_originalMethod, this.m_originalMethod) &&
                 areEqualsOrBothNull(obj.m_parameters, this.m_parameters) &&
-                areEqualsOrBothNull(obj.m_targetObject, this.m_targetObject) &&
+                areEqualsOrBothNull(obj.m_targetObjectReference, this.m_targetObjectReference) &&
                 areEqualsOrBothNull(obj.m_targetClass, this.m_targetClass) &&
                 areEqualsOrBothNull(obj.m_pointcuts, this.m_pointcuts) &&
                 areEqualsOrBothNull(obj.m_result, this.m_result) &&
@@ -191,6 +193,18 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
     }
 
     /**
+     * Provides custom serialization.
+     *
+     * @param stream the object output stream that should write the serialized object
+     * @throws java.lang.Exception in case of failure
+     */
+    private void writeObject(final ObjectOutputStream stream) throws Exception {
+        ObjectOutputStream.PutField fields = stream.putFields();
+        fields.put("m_targetObjectReference", m_targetObjectReference.get());
+        stream.writeFields();
+    }
+
+    /**
      * Provides custom deserialization.
      *
      * @param stream the object input stream containing the serialized object
@@ -198,6 +212,6 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_targetObject = fields.get("m_targetObject", null);
+        m_targetObjectReference = new SoftReference(fields.get("m_targetObjectReference", null));
     }
 }

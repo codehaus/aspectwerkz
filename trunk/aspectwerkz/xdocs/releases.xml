@@ -41,10 +41,11 @@
                             cflow (control flow) pointcuts.
                         </li>
                         <li>
-                            Performance improvement for advices by a factor of two.
+                            Performance improvement for advices by a factor of 2.
                         </li>
                         <li>
-                            Many bugfixes introduced by the new pointcut model implementation.
+                            Many, many bugfixes (introduced by the new pointcut model
+                            implementation in 0.6.x).
                         </li>
                         <li>
                             The runtime attributes tags have changed. (They now have

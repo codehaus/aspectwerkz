@@ -50,7 +50,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.14 2003-07-09 11:33:00 jboner Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.15 2003-07-11 10:45:19 jboner Exp $
  */
 public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -120,8 +120,8 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
                                   final ConstantPoolGen cpg,
                                   final InstructionFactory factory) {
 
-        for (Iterator it = m_weaveModel.getIntroductionNames(
-                cg.getClassName()).iterator(); it.hasNext();) {
+        for (Iterator it = m_weaveModel.getIntroductionNames(cg.getClassName()).iterator();
+             it.hasNext();) {
 
             String introductionName = (String)it.next();
 
