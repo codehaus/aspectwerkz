@@ -905,7 +905,8 @@ public class MyAspect extends Aspect {
                             and <code>@After</code>.
                         </li><br/>
                         <li>
-                            <code>@Class &lt;classPattern&gt;</code> - not used. TODO check me.
+                            <code>@Class &lt;classPattern&gt;</code> - picks out class names.
+                            To be used with mixin <code>@Implements</code> and <code>@Introduce</code> metadata.
                         </li><br/>
                         <li>
                             <code>@Set &lt;fieldPattern&gt;</code> - picks out join points
@@ -1030,7 +1031,7 @@ public class MyAspect extends Aspect {
                 <p>
 <source><![CDATA[
     /**
-     * Non anonymous expression (pc1 and pc2 are fields)
+     * Non anonymous expression (pc1 and pc2 are fields of type Pointcut with metadata)
      * @Around pc1 && pc2
      */
     public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
@@ -1125,12 +1126,25 @@ public MyAspect extends Aspect {
  */
 public MyAspect extends Aspect {
 
+    // anonymous pointcut
     /** @Introduce com.package.* */
     public class MyIntroduction extends SuperIntroduction implements ToBeIntroduced {
 
         // introduced methods implementation
         ...
     }
+
+    /** @Class com.package.Foo */
+    Pointcut pc1;
+
+    // named pointcut(s) in expression
+    /** @Introduce pc1 */
+    public class AnotherIntroduction implements AnotherToBeIntroduced {
+
+        // introduced methods implementation
+        ...
+    }
+
 
  }
                     ]]></source>
@@ -1186,6 +1200,13 @@ public MyAspect extends Aspect {
                         <td>@Introduce</td>
                         <td>inner class, class level</td>
                         <td>Implementation Introduction</td>
+                        <td>&lt;classPattern&gt;</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>@Class</td>
+                        <td>Pointcut field</td>
+                        <td>Pointcut, class selection</td>
                         <td>&lt;classPattern&gt;</td>
                         <td></td>
                     </tr>
