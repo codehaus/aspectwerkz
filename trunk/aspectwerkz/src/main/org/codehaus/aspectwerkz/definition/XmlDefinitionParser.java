@@ -525,7 +525,7 @@ public class XmlDefinitionParser {
                                                final String packageName) {
         for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
             final Element nestedAdviceElement = (Element)it2.next();
-            if (nestedAdviceElement.getName().trim().equals("introduce") ||
+            if (nestedAdviceElement.getName().trim().equals("bind-introduction") ||
                     nestedAdviceElement.getName().trim().equals("introduction")) {
                 try {
                     final IntroductionWeavingRule introWeavingRule = new IntroductionWeavingRule();
@@ -562,7 +562,7 @@ public class XmlDefinitionParser {
                                             final AspectDefinition aspectDef) {
         for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
             final Element nestedAdviceElement = (Element)it2.next();
-            if (nestedAdviceElement.getName().trim().equals("advise") ||
+            if (nestedAdviceElement.getName().trim().equals("bind-advice") ||
                     nestedAdviceElement.getName().trim().equals("advice")) {
                 try {
                     final AdviceWeavingRule adviceWeavingRule = new AdviceWeavingRule();

@@ -1,3 +1,10 @@
+/**************************************************************************************
+ * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the BSD style license *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package test;
 
 import java.io.File;
@@ -14,13 +21,6 @@ import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
 import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
 
-/**************************************************************************************
- * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
- * http://aspectwerkz.codehaus.org                                                    *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the BSD style license *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
 public class XmlDefinitionParserTest extends TestCase {
 
     private File m_input = new File("src/test/newdef.xml");
@@ -44,8 +44,7 @@ public class XmlDefinitionParserTest extends TestCase {
 
     public void testAdviceTag() {
         try {
-            AspectWerkzDefinition aspectwerkz =
-                   XmlDefinitionParser.parse(m_input);
+            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parse(m_input);
             Iterator it = aspectwerkz.getAdviceDefinitions().iterator();
             AdviceDefinition advice1 = (AdviceDefinition)it.next();
             assertEquals("logging", advice1.getName());
@@ -60,8 +59,7 @@ public class XmlDefinitionParserTest extends TestCase {
 
     public void testAspectTag() {
         try {
-            AspectWerkzDefinition aspectwerkz =
-                   XmlDefinitionParser.parse(m_input);
+            AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parse(m_input);
             Iterator it1 = aspectwerkz.getAspectDefinitions().iterator();
             AspectDefinition aspect = (AspectDefinition)it1.next();
             assertEquals("Logger", aspect.getName());
