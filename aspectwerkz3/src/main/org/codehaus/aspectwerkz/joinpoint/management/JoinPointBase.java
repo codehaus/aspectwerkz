@@ -525,8 +525,12 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      */
     public abstract Object[] extractArguments(int[] methodToArgIndexes);
 
-
-
-    //AW-265 for JIT jp
+    /**
+     * Allows to pass the RTTI to the JP. The JPBase implementation delegates getTarget to the RTTI.
+     * Since in 1.0 engine, JP are cached and shared, while the RTTI is not, we need to set the RTTI (AW-265).
+     * This method MUST not be called by the user.
+     *
+     * @param rtti
+     */
     public abstract void setRtti(Rtti rtti);
 }
