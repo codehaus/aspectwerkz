@@ -42,9 +42,10 @@ public class DefinitionParserHelper {
         }
 
         ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(name, info);
-//                                                                                             new ExpressionInfo(expression,
-//                                                                                                                aspectDef
-//                                                                                                                .getFullQualifiedName()));
+
+        //                                                                                             new ExpressionInfo(expression,
+        //                                                                                                                aspectDef
+        //                                                                                                                .getFullQualifiedName()));
     }
 
     /**
@@ -219,8 +220,11 @@ public class DefinitionParserHelper {
                                                                       final String deploymentModel,
                                                                       final AspectDefinition aspectDef) {
         ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
+
         // auto-name the pointcut which is anonymous for introduction
-        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo("AW_"+expression.hashCode(), expressionInfo);
+        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo("AW_"
+                                                                                             + expression.hashCode(),
+                                                                                             expressionInfo);
         final IntroductionDefinition introDef = new IntroductionDefinition(mixinClass, expressionInfo, deploymentModel);
         return introDef;
     }
@@ -239,8 +243,11 @@ public class DefinitionParserHelper {
                                                                                         final String interfaceClassName,
                                                                                         final AspectDefinition aspectDef) {
         ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
+
         // auto-name the pointcut which is anonymous for introduction
-        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo("AW_"+expression.hashCode(), expressionInfo);
+        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo("AW_"
+                                                                                             + expression.hashCode(),
+                                                                                             expressionInfo);
         final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(introductionName,
                                                                                              expressionInfo,
                                                                                              interfaceClassName);

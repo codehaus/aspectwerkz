@@ -41,10 +41,13 @@ public class StaticMethodAdviceTest extends TestCase {
     }
 
     public void testMultiplePointcuts() {
-        try {m_logString = "";
-        multiplePointcutsMethod();
-        assertEquals("before1 before2 invocation after2 after1 ", m_logString);
-        } catch (Throwable t) {t.printStackTrace();}
+        try {
+            m_logString = "";
+            multiplePointcutsMethod();
+            assertEquals("before1 before2 invocation after2 after1 ", m_logString);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     public void testGetJoinPointMetaData() {

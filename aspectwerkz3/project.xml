@@ -1,58 +1,73 @@
 <?xml version="1.0"?>
+
 <project>
     <pomVersion>3</pomVersion>
+
     <name>AspectWerkz - Dynamic AOP for Java</name>
     <id>aspectwerkz</id>
+
     <currentVersion>1.0-beta1</currentVersion>
+
     <organization>
         <name>Jonas Bon&#233;r, Alexandre Vasseur</name>
     </organization>
+
     <inceptionYear>2002</inceptionYear>
     <package>org.codehaus.aspectwerkz</package>
+
     <shortDescription>Dynamic AOP framework for Java.</shortDescription>
+
     <description>
         A high performant, lightweight and dynamic AOP/AOSD framework for Java.
     </description>
+
     <licenses>
         <license>
             <name>LGPL</name>
             <url>http://www.gnu.org/copyleft/lesser.html</url>
         </license>
-    </licenses>
+     </licenses>
+
     <url>http://aspectwerkz.codehaus.org/</url>
     <issueTrackingUrl>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10105</issueTrackingUrl>
+
     <siteAddress>localhost</siteAddress>
     <siteDirectory>C:/tools/Apache2/htdocs</siteDirectory>
     <distributionDirectory>C:/tools/Apache2/htdocs</distributionDirectory>
     <!--    	<siteAddress>codehaus.org</siteAddress>-->
     <!--    	<siteDirectory>/www/aspectwerkz.codehaus.org/</siteDirectory>-->
     <!--    	<distributionDirectory>/www/aspectwerkz.codehaus.org/downloads/</distributionDirectory>-->
+
     <repository>
-        <connection>scm:cvs:pserver:anonymous@cvs.codehaus.org:/cvsroot/aspectwerkz:aspectwerkz2</connection>
-        <developerConnection>scm:cvs:ext:${maven.username}@cvs.codehaus.org:/cvsroot/aspectwerkz:aspectwerkz2</developerConnection>
-        <url>http://aspectwerkz.cvs.codehaus.org/aspectwerkz2</url>
+        <connection>scm:cvs:pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm:aspectwerkz3</connection>
+        <developerConnection>scm:cvs:ext:${maven.username}@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm:aspectwerkz3</developerConnection>
+        <url>http://cvs.aspectwerkz.codehaus.org/aspectwerkz2</url>
     </repository>
+
     <versions>
         <version>
             <id>1.0-beta1</id>
             <name>1.0-beta1</name>
-            <tag>rel_1_0_beta1</tag>
+            <tag>rel_1.0-beta1</tag>
+            <branch>branch_1.0-beta1</branch>
         </version>
     </versions>
+
     <mailingLists>
         <mailingList>
             <name>AspectWerkz User List</name>
-            <subscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-user</subscribe>
-            <unsubscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-user</unsubscribe>
-            <archive>http://lists.codehaus.org/pipermail/aspectwerkz-user/</archive>
+            <subscribe>mailto:user-subscribe@aspectwerkz.codehaus.org</subscribe>
+            <unsubscribe>mailto:user-unsubscribe@aspectwerkz.codehaus.org</unsubscribe>
+            <archive>http://archive.aspectwerkz.codehaus.org/user/</archive>
         </mailingList>
         <mailingList>
             <name>AspectWerkz Developer List</name>
-            <subscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-devel</subscribe>
-            <unsubscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-devel</unsubscribe>
-            <archive>http://lists.codehaus.org/pipermail/aspectwerkz-devel/</archive>
+            <subscribe>mailto:dev-subscribe@aspectwerkz.codehaus.org</subscribe>
+            <unsubscribe>mailto:dev-unsubscribe@aspectwerkz.codehaus.org</unsubscribe>
+            <archive>http://archive.aspectwerkz.codehaus.org/dev/</archive>
         </mailingList>
     </mailingLists>
+
     <developers>
         <developer>
             <name>Jonas Bon&#233;r</name>
@@ -74,6 +89,7 @@
             </roles>
         </developer>
     </developers>
+
     <contributors>
         <contributor>
             <name>Ron Bodkin</name>
@@ -82,6 +98,7 @@
             </roles>
         </contributor>
     </contributors>
+
     <dependencies>
         <dependency>
             <!-- FAKE dependancy to have a header in maven generated stuff -->
@@ -132,10 +149,6 @@ Extensions:
             <version>1.0.2</version>
         </dependency>
         <dependency>
-            <id>jam</id>
-            <version>v2-20040613-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <id>dom4j</id>
             <version>1.4</version>
         </dependency>
@@ -150,6 +163,10 @@ Extensions:
         <dependency>
             <id>piccolo</id>
             <version>1.03</version>
+        </dependency>
+        <dependency>
+            <id>jam</id>
+            <version>v2-20040613-SNAPSHOT</version>
         </dependency>
 
         <!-- ============================================================== -->
@@ -172,8 +189,9 @@ Extensions:
             <version>1.3.1</version>
         </dependency>
     </dependencies>
+
     <build>
-        <nagEmailAddress>aspectwerkz-devel@lists.codehaus.org</nagEmailAddress>
+        <nagEmailAddress>dev@aspectwerkz.codehaus.org</nagEmailAddress>
         <sourceDirectory>src/main</sourceDirectory>
         <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
         <unitTest>
@@ -187,6 +205,7 @@ Extensions:
         <jars/>
         <integrationUnitTestPatterns/>
     </build>
+
     <reports>
         <report>maven-license-plugin</report>
         <report>maven-jdepend-plugin</report>
