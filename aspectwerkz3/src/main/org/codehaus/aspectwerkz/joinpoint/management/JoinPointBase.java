@@ -15,6 +15,7 @@ import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldRttiImpl;
@@ -56,7 +57,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     protected AfterAdviceExecutor m_afterAdviceExecutor;
 
-    protected transient WeakReference m_targetInstanceRef;
+    //protected transient WeakReference m_targetInstanceRef;//AW-265
 
     protected Map m_metaData = new HashMap();
 
@@ -397,7 +398,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * @return the target instance
      */
     public Object getTarget() {
-        return m_targetInstanceRef.get();
+        return getRtti().getTarget();//m_targetInstanceRef.get();//AW-265
     }
 
     /**
@@ -423,9 +424,10 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * 
      * @param targetInstance the target instance
      */
-    public void setTarget(final Object targetInstance) {
-        m_targetInstanceRef = new WeakReference(targetInstance);
-    }
+    //AW-265
+//    public void setTarget(final Object targetInstance) {
+//        m_targetInstanceRef = new WeakReference(targetInstance);
+//    }
 
     /**
      * Checks if the join point is in the correct control flow.
@@ -489,4 +491,8 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      */
     public abstract Object[] extractArguments(int[] methodToArgIndexes);
 
+
+
+    //AW-265 for JIT jp
+    public abstract void setRtti(Rtti rtti);
 }

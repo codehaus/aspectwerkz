@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.joinpoint.impl;
 
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.joinpoint.ConstructorRtti;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -23,9 +24,9 @@ public class ConstructorRttiImpl implements ConstructorRtti {
 
     private final ConstructorSignatureImpl m_signature;
 
-    private final WeakReference m_thisRef;
+    private WeakReference m_thisRef;
 
-    private final WeakReference m_targetRef;
+    private WeakReference m_targetRef;
 
     private Object[] m_parameterValues = EMPTY_OBJECT_ARRAY;
 
@@ -44,6 +45,10 @@ public class ConstructorRttiImpl implements ConstructorRtti {
         m_signature = signature;
         m_thisRef = new WeakReference(thisInstance);
         m_targetRef = new WeakReference(targetInstance);
+    }
+
+    public Rtti cloneFor(final Object thisInstance, final Object targetInstance) {
+        return new ConstructorRttiImpl(m_signature, thisInstance, targetInstance);
     }
 
     /**
@@ -176,4 +181,5 @@ public class ConstructorRttiImpl implements ConstructorRtti {
     public String toString() {
         return super.toString();
     }
+
 }

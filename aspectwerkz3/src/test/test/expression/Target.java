@@ -57,6 +57,9 @@ public final class Target {
     void parameters2(int i, float f, byte b) {
     }
 
+    void parameters2bis(int i, short s, byte b, int ibis, float fbis, byte bbis) {
+    }
+
     void parameters3(String s, java.lang.StringBuffer sb, java.lang.String s2) {
     }
 

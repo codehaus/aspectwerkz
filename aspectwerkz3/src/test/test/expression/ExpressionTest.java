@@ -44,6 +44,8 @@ public class ExpressionTest extends TestCase {
 
     private static MethodInfo parameters2;
 
+    private static MethodInfo parameters2bis;
+
     private static MethodInfo parameters3;
 
     private static MethodInfo parameters4;
@@ -109,6 +111,9 @@ public class ExpressionTest extends TestCase {
             }
             if (method.getName().equals("parameters2")) {
                 parameters2 = method;
+            }
+            if (method.getName().equals("parameters2bis")) {
+                parameters2bis = method;
             }
             if (method.getName().equals("parameters3")) {
                 parameters3 = method;
@@ -321,6 +326,19 @@ public class ExpressionTest extends TestCase {
                 .match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
         assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2(int, ..))", NAMESPACE)
                 .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
+        //AW-263
+        assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2(int, float, byte, ..))", NAMESPACE)
+                .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
+        assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2(.., int, float, byte, ..))", NAMESPACE)
+                .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
+        assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2(.., int, float, byte))", NAMESPACE)
+                .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
+        assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2(.., int, float, ..))", NAMESPACE)
+                .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
+        assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2bis(.., int, float, byte, ..))", NAMESPACE)
+                .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2bis, null)));
+
+
         assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2(int, float, byte))", NAMESPACE)
                 .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
         assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2(int, *, *))", NAMESPACE)
@@ -1444,6 +1462,27 @@ public class ExpressionTest extends TestCase {
             NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
         assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2(..)) && args(int, ..)", NAMESPACE)
                 .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
+
+        // AW-263
+        assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2(..)) && args(int, float, byte, ..)", NAMESPACE)
+                .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
+        assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2(..)) && args(.., int, float, byte, ..)", NAMESPACE)
+                .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
+        assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2(..)) && args(.., int, float, byte)", NAMESPACE)
+                .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
+
+        // target method is parameters2bis(int i, short s, byte b, int ibis, float fbis, byte bbis)
+        assertFalse(new ExpressionInfo("call(void test.expression.Target.parameters2bis(..)) && args(int, float, byte, ..)", NAMESPACE)
+                .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2bis, null)));
+        assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2bis(..)) && args(.., int, float, byte, ..)", NAMESPACE)
+                .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2bis, null)));
+        assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2bis(..)) && args(.., int, float, byte)", NAMESPACE)
+                .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2bis, null)));
+        assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters2bis(..)) && args(.., int, float, ..)", NAMESPACE)
+                .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2bis, null)));
+        assertFalse(new ExpressionInfo("call(void test.expression.Target.parameters2bis(..)) && args(.., int, float, a, b, c, d, e, f, g, h, i,..)", NAMESPACE)
+                .getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2bis, null)));
+
         assertFalse(new ExpressionInfo(
             "call(void test.expression.Target.parameters2(..)) && args(WRONG, ..)",
             NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));

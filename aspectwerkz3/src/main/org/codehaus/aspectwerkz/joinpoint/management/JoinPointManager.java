@@ -20,6 +20,7 @@ import org.codehaus.aspectwerkz.joinpoint.CodeRtti;
 import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
+import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
@@ -43,6 +44,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 //import EDU.oswego.cs.dl.util.concurrent.ReadWriteLock;
 //import EDU.oswego.cs.dl.util.concurrent.ReaderPreferenceReadWriteLock;
@@ -294,14 +296,16 @@ public class JoinPointManager {
         }
 
         // set the RTTI
-        joinPoint.setTarget(targetInstance);
+        Rtti rtti = joinPoint.getRtti().cloneFor(targetInstance, targetInstance);
         if (parameters != null) {
-            ((CodeRtti) joinPoint.getRtti()).setParameterValues(parameters);
+            ((CodeRtti) rtti).setParameterValues(parameters);
         }
+        setRtti(joinPointType, joinPointInfo, rtti);
         enterCflow(joinPointInfo);
         try {
             return joinPoint.proceed();
         } finally {
+            unsetRtti(joinPointType, joinPointInfo);
             exitCflow(joinPointInfo);
         }
     }
@@ -428,14 +432,17 @@ public class JoinPointManager {
                 joinPointInfo.state = JoinPointState.HAS_ADVICES;
             }
         }
-        joinPoint.setTarget(thisInstance);
+
+        Rtti rtti = joinPoint.getRtti().cloneFor(targetInstance, thisInstance);//AW-265
         if (parameters != null) {
-            ((CodeRtti) joinPoint.getRtti()).setParameterValues(parameters);
+            ((CodeRtti) rtti).setParameterValues(parameters);
         }
+        setRtti(joinPointType, joinPointInfo, rtti);
         enterCflow(joinPointInfo);
         try {
             return joinPoint.proceed();
         } finally {
+            unsetRtti(joinPointType, joinPointInfo);
             exitCflow(joinPointInfo);
         }
     }
@@ -529,16 +536,17 @@ public class JoinPointManager {
         }
 
         // intialize the join point before each usage
-        joinPoint.setTarget(targetInstance);
+        Rtti rtti = joinPoint.getRtti().cloneFor(targetInstance, targetInstance);//AW-265
         if (fieldValue[0] != null) {
-            ((FieldRtti) joinPoint.getRtti()).setFieldValue(fieldValue[0]); // array due to sucky
-            // javassist field
-            // handling
+            ((FieldRtti) rtti).setFieldValue(fieldValue[0]);
+            // array due to sucky javassist field handling
         }
+        setRtti(JoinPointType.FIELD_SET, joinPointInfo, rtti);
         enterCflow(joinPointInfo);
         try {
             joinPoint.proceed();
         } finally {
+            unsetRtti(JoinPointType.FIELD_SET, joinPointInfo);
             exitCflow(joinPointInfo);
         }
     }
@@ -630,11 +638,13 @@ public class JoinPointManager {
         }
 
         // intialize the join point before each usage
-        joinPoint.setTarget(targetInstance);
+        Rtti rtti = joinPoint.getRtti().cloneFor(targetInstance, targetInstance);//AW-265
+        setRtti(JoinPointType.FIELD_GET, joinPointInfo, rtti);
         enterCflow(joinPointInfo);
         try {
             return joinPoint.proceed();
         } finally {
+            unsetRtti(JoinPointType.FIELD_GET, joinPointInfo);
             exitCflow(joinPointInfo);
         }
     }
@@ -727,12 +737,13 @@ public class JoinPointManager {
         }
 
         // intialize the join point before each usage
-        joinPoint.setTarget(targetInstance);
-        ((CatchClauseRtti) joinPoint.getRtti()).setParameterValue(exceptionInstance);
+        Rtti rtti = joinPoint.getRtti().cloneFor(targetInstance, targetInstance);//AW-265
+        setRtti(JoinPointType.HANDLER, joinPointInfo, rtti);
         enterCflow(joinPointInfo);
         try {
             joinPoint.proceed();
         } finally {
+            unsetRtti(JoinPointType.HANDLER, joinPointInfo);
             exitCflow(joinPointInfo);
         }
     }
@@ -1173,5 +1184,26 @@ public class JoinPointManager {
         public AdviceInfo enterCflow;
 
         public AdviceInfo exitCflow;
+        
+        public Stack rttis = new Stack();
+    }
+
+    private static void unsetRtti(int joinpointType, JoinPointInfo joinPointInfo) {
+//        if (joinPointInfo.isJitCompiled)//joinPointInfo.joinPoint.getClass().getName().startsWith("org.codehaus.aspectwerkz.joinpoint.management.___AW_JP"))
+//            return;
+        JoinPoint joinPoint = joinPointInfo.joinPoint;
+        ((JoinPointBase)joinPoint).setRtti((Rtti)joinPointInfo.rttis.pop());
+    }
+
+    /**
+     * Helper
+     */
+    private static void setRtti(int joinpointType, JoinPointInfo joinPointInfo, Rtti rtti) {
+//        if (joinPointInfo.isJitCompiled)//joinPoint.getClass().getName().startsWith("org.codehaus.aspectwerkz.joinpoint.management.___AW_JP"))
+//            return;
+//
+        JoinPoint joinPoint = joinPointInfo.joinPoint;
+        ((JoinPointBase)joinPoint).setRtti(rtti);
+        joinPointInfo.rttis.push(rtti);
     }
 }

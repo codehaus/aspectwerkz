@@ -20,7 +20,7 @@ import org.codehaus.aspectwerkz.joinpoint.Signature;
 class FieldJoinPoint extends JoinPointBase {
     private final FieldSignature m_signature;
 
-    private transient final FieldRtti m_rtti;
+    private transient FieldRtti m_rtti;
 
     /**
      * Creates a new join point.
@@ -109,5 +109,9 @@ class FieldJoinPoint extends JoinPointBase {
             }
             return args;
         }
+    }
+
+    public void setRtti(Rtti rtti) {
+        m_rtti = (FieldRtti)rtti;
     }
 }
