@@ -31,13 +31,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Array;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Implementation of the ClassInfo interface utilizing the ASM bytecode library for the info retriaval.
+ *
+ * TODO: the name switching between "/" and "." seems fragile (especially at lookup). Do a review.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AsmClassInfo implements ClassInfo {
 
@@ -139,7 +143,7 @@ public class AsmClassInfo implements ClassInfo {
     /**
      * Creates a new ClassInfo instance. TODO switch access back to private
      * 
-     * @param className
+     * @param bytecode
      * @param loader
      */
     public AsmClassInfo(final byte[] bytecode, final ClassLoader loader) {
@@ -158,6 +162,37 @@ public class AsmClassInfo implements ClassInfo {
             t.printStackTrace();
         }
 
+        m_classInfoRepository.addClassInfo(this);
+    }
+
+    /**
+     * Create a ClassInfo based on a component type and a given dimension
+     * Due to java.lang.reflect. behavior, the ClassInfo is almost empty. It is not an interface, only subclass
+     * of java.lang.Object, no methods, fields, or constructor, no annotation.
+     *
+     * TODO: not sure it has to be abstract final but it looks like all reflect based are.
+     *
+     * @param className
+     * @param loader
+     * @param componentInfo
+     * @param dimension
+     */
+    private AsmClassInfo(String className, ClassLoader loader, ClassInfo componentInfo, int dimension) {
+        m_loader = loader;
+        m_name = className.replace('/', '.');
+        m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
+
+        m_isArray = true;
+        m_componentType = componentInfo;
+        m_componentTypeName = componentInfo.getName();
+        m_modifiers = componentInfo.getModifiers() | Modifier.ABSTRACT | Modifier.FINAL;
+        m_isInterface = false;//as in java.reflect
+        m_superClass = JavaClassInfo.getClassInfo(Object.class);
+        m_superClassName = m_superClass.getName();
+        m_interfaceClassNames = new String[0];
+        m_interfaces = new ClassInfo[0];
+
+        m_bytecode = null;
         m_classInfoRepository.addClassInfo(this);
     }
 
@@ -221,45 +256,41 @@ public class AsmClassInfo implements ClassInfo {
      */
     public static ClassInfo createClassInfoFromStream(String className, final ClassLoader loader) {
         className = className.replace('.', '/');
-        Class primitiveClass = AsmClassInfo.getPrimitiveClass(className);
-     
-        // TODO put JavaClassInfo instances in the ASM repository????
-        
-        // primitive type
-        if (primitiveClass != null) {
-            return JavaClassInfo.getClassInfo(primitiveClass);
 
-        // array type
-        } else if (className.indexOf('[') > 0) {
-            String componentTypeName = className.substring(0, className.indexOf('['));
-            int dimension = 1;
-            char[] chars = className.toCharArray();
-            for (int i = 0; i < chars.length; i++) {
-                if (chars[i] == '[') {
-                    dimension++;
-                }
-            }
-            primitiveClass = AsmClassInfo.getPrimitiveClass(componentTypeName);
+        // compute array type dimension if any
+        int componentTypeIndex = className.indexOf('[');
+        String componentName = className;
+        int dimension = 1;
+        if (componentTypeIndex > 0) {
+            componentName = className.substring(0, componentTypeIndex);
+            dimension = 1 + (int) (className.length() - componentTypeIndex)/2;
+        }
+
+        // primitive type
+        if (componentName.indexOf('/') < 0) {
+            // it might be one
+            Class primitiveClass = AsmClassInfo.getPrimitiveClass(componentName);
             if (primitiveClass != null) {
-                Class arrayClass = Array.newInstance(primitiveClass, dimension).getClass();
-                return JavaClassInfo.getClassInfo(arrayClass);
-            } else {
-                try {
-                    Class arrayClass = Array.newInstance(loader.loadClass(componentTypeName), dimension).getClass();
+                if (dimension <= 1) {
+                    return JavaClassInfo.getClassInfo(primitiveClass);
+                } else {
+                    Class arrayClass = Array.newInstance(primitiveClass, dimension).getClass();
                     return JavaClassInfo.getClassInfo(arrayClass);
-                } catch (ClassNotFoundException e) {
-                    throw new WrappedRuntimeException(e);
                 }
             }
-        
-        // regular type
+        }
+
+        // non primitive type
+        InputStream componentClassAsStream = loader.getResourceAsStream(componentName + ".class");
+        if (componentClassAsStream == null) {
+            throw new RuntimeException("could not load class [" + componentName + "] as a resource in loader ["
+                    + loader + "]");
+        }
+        ClassInfo componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader);
+        if (dimension <= 1) {
+            return componentInfo;
         } else {
-            InputStream classAsStream = loader.getResourceAsStream(className + ".class");
-            if (classAsStream == null) {
-                throw new RuntimeException("could not load class [" + className + "] as a resource in loader ["
-                        + loader + "]");
-            }
-            return AsmClassInfo.getClassInfo(classAsStream, loader);
+            return AsmClassInfo.getArrayClassInfo(className, loader, componentInfo, dimension);
         }
     }
 
@@ -317,7 +348,7 @@ public class AsmClassInfo implements ClassInfo {
      * @return the name of the class
      */
     public String getName() {
-        return m_name;
+        return m_name.replace('/', '.');
     }
 
     /**
@@ -487,6 +518,24 @@ public class AsmClassInfo implements ClassInfo {
     public int hashCode() {
         return m_name.hashCode();
     }
+
+    /**
+     * Create a ClassInfo based on a component type and a given dimension
+     *
+     * @param className
+     * @param loader
+     * @param componentClassInfo
+     * @param dimension
+     * @return
+     */
+    public static ClassInfo getArrayClassInfo(String className, ClassLoader loader, ClassInfo componentClassInfo, int dimension) {
+        if (dimension <= 1) {
+            return componentClassInfo;
+        }
+        ClassInfo info = new AsmClassInfo(className, loader, componentClassInfo, dimension);
+        return info;
+    }
+
 
     /**
      * ASM bytecode visitor that retrieves the class name from the bytecode.
