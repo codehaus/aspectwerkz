@@ -15,7 +15,7 @@
             <aspect class="logging.ArgAspect"/>
             <aspect class="logging.PreparePointcuts"/>
 
-            <!--            <aspect class="annotation.Target$AnnotationMatchAspect"/>-->
+            <aspect class="annotation.Target$AnnotationMatchAspect"/>
 
             <!--            <aspect class="logging.XmlDefLoggingAspect">-->
             <!--                <pointcut name="methodsToLog" expression="execution(* examples.logging.Target.toLog*(..))"/>-->
