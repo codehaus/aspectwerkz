@@ -34,8 +34,9 @@
                     <li>
                         run examples:
                         <p/>
-                        <code>maven aspectwerkz:samples:&lt;name_of_example&gt;</code> or
-                        <code>ant aspectwerkz:samples:&lt;name_of_example&gt;</code>
+                        <code>maven aspectwerkz:&lt;definition_model&gt;:samples:&lt;name_of_example&gt;</code> or
+                        <code>ant aspectwerkz:&lt;definition_model&gt;:samples:&lt;name_of_example&gt;</code>
+                        where &lt;definition_model&gt; is <code>xmldef</code> or <code>attribdef</code>
                     </li>
                 </ul>
             </p>
