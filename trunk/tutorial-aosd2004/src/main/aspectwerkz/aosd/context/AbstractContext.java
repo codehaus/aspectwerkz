@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the BSD-style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package aspectwerkz.aosd;
+package aspectwerkz.aosd.context;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -26,7 +26,7 @@ public abstract class AbstractContext implements Context {
      *
      * @param key the key of item
      * @return the item stored in context
-     * @throws aspectwerkz.aosd.ContextException if item not present
+     * @throws aspectwerkz.aosd.context.ContextException if item not present
      */
     public Object get(final Object key) throws ContextException {
         if (key == null) throw new IllegalArgumentException("key can not be null");

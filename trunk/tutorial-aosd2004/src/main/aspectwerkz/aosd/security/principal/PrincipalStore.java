@@ -9,7 +9,7 @@ package aspectwerkz.aosd.security.principal;
 
 import javax.security.auth.Subject;
 
-import aspectwerkz.aosd.Context;
+import aspectwerkz.aosd.context.Context;
 
 /**
  * Provides storage for the client principals, credentials and security subjects.

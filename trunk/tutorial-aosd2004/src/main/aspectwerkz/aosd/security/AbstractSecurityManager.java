@@ -17,7 +17,7 @@ import java.security.Principal;
 
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
-import aspectwerkz.aosd.Context;
+import aspectwerkz.aosd.context.Context;
 import aspectwerkz.aosd.definition.Definition;
 import aspectwerkz.aosd.definition.SecurityDefinition;
 

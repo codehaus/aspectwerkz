@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the BSD-style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package aspectwerkz.aosd;
+package aspectwerkz.aosd.context;
 
 import java.io.Serializable;
 
@@ -25,7 +25,7 @@ public interface Context extends Serializable {
      *
      * @param key the key into context
      * @return the object
-     * @exception aspectwerkz.aosd.ContextException if object not found.
+     * @exception aspectwerkz.aosd.context.ContextException if object not found.
      */
     Object get(Object key) throws ContextException;
 
