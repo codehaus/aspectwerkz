@@ -4,6 +4,7 @@
 
     <properties>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
+        <author email="alex at gnilux dot com">alexandre vasseur</author>
         <title>Definition issues</title>
     </properties>
 
@@ -11,14 +12,15 @@
         <section name="Table of Contents">
             <p>
                 <ol>
+                    <b>General definition issues</b><br/>
                     <li>
                         <a href="#Join point selection pattern language">Join point selection pattern language</a>
                     </li>
                     <li>
-                        <a href="#Passing parameters to advices">Passing parameters to advices</a>
+                        <a href="#AOP system">AOP system</a>
                     </li>
                     <li>
-                        <a href="#Advice stacks">Advice stacks</a>
+                        <a href="#Deployment models">Deployment models</a>
                     </li>
                     <li>
                         <a href="#Package namespaces">Package namespaces</a>
@@ -28,24 +30,35 @@
                     </li>
                     <li>
                         <a href="#DTD for XML definition">DTD for XML definition</a>
+                    </li><br/>
+                    <b>Model 1 - XML centric</b><br/>
+                    <li>
+                        <a href="#Model 1 - Passing parameters to advices">Passing parameters to advices</a>
                     </li>
                     <li>
-                        <a href="#Example of an XML definition">Example of an XML definition</a>
+                        <a href="#Model 1 - Advice stacks">Advice stacks</a>
                     </li>
                     <li>
-                        <a href="#Runtime attributes">Runtime attributes</a>
+                        <a href="#Model 1 - Example of an XML definition">Example of an XML definition</a>
                     </li>
                     <li>
-                        <a href="#Attribute compilation">Attribute compilation</a>
+                        <a href="#Model 1 - Doclets">Doclets</a>
                     </li>
                     <li>
-                        <a href="#Deployment models">Deployment models</a>
+                        <a href="#Model 1 - Doclets compilation">Doclets compilation</a>
                     </li>
                     <li>
-                        <a href="#Join point controller">Join point controller</a>
+                        <a href="#Model 1 - Join point controller">Join point controller</a>
+                    </li>
+<!--                    <li>-->
+<!--                        <a href="#Non-reentrancy">Non-reentrancy</a>-->
+<!--                    </li>-->
+                    <br/><b>Model 2 - Self defined Aspects</b><br/>
+                    <li>
+                        <a href="#Model 2 - Aspects compilation">Aspects compilation</a>
                     </li>
                     <li>
-                        <a href="#Non-reentrancy">Non-reentrancy</a>
+                        <a href="#Model 2 - Example of an XML definition">Example of an XML definition</a>
                     </li>
                 </ol>
             </p>
@@ -67,7 +80,7 @@
                      <li>
                          <code>*</code> - which is used as a regular wildcard.
                          Matches for example only one package level or one method parameter.
-                         Matches <b>at least one</b> character when used solely else match <b>zero or more</b> character.
+                         When used to match a package name, matches <b>at least one</b> character. Else match <b>zero or more</b> character.
                      </li><br/>
                      <li>
                          <code>..</code> - matches any sequence of characters that
@@ -332,9 +345,211 @@
                     wildcards).
                 </p>
             </subsection>
+
+            <subsection name="Expression">
+                <p>
+                    It is possible to combine patterns selection together using algebraic expressions. The following operators are supported:
+                    TODO check if nospace separated is supported
+                    <ul>
+                        <li>AND or &amp;&amp;</li>
+                        <li>OR or ||</li>
+                        <li>NOT or !</li>
+                        <li>parenthesis for grouping</li>
+                    </ul>
+                    For model 1 deployed aspects, since the expression is defined in an XML file, the operator AND is more convient (else &amp; should be escaped).
+                </p>
+            </subsection>
         </section>
 
-        <section name="Passing parameters to advices">
+        <section name="AOP system">
+            <p>
+                Aspects deployed belong to a <code>system</code>. For now AspectWerkz support only a single system in the whole JVM.
+                System are named thru the XML definition file and each system should have a unique name (though for now AspectWerkz is singled system).
+                The system name (<code>id</code>) is used when accessing system at runtime, f.e. to swap mixin implementation.<br/>
+                System is wether of type <a href="core_concepts.html#Model 1 - XML centric">Model 1 - XML centric</a> whether of type <a href="core_concepts.html#Model 2 - Self defined Aspects">Model 2 - self defined aspects</a>. The type is guessed from the
+                XML file. For a detailled documentation on each system type read the <a href="core_concepts.html">core concepts</a>.
+            </p>
+            <p>
+                Sample for a Model 1 - XML centric system
+                <source><![CDATA[
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+<aspectwerkz>
+    <system id="system name">
+        ...
+        <aspect name="MyAspect">
+            ...
+        </aspect>
+    </system>
+</aspectwerkz>
+                ]]></source>
+            </p>
+            <p>
+                Sample for a Model 2 - Self defined aspects system
+                <source><![CDATA[
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+<aspectwerkz>
+    <system id="system name">
+        ...
+        <use-aspect class="MySelfDefinedAspect"/>
+        ...
+    </system>
+</aspectwerkz>
+                ]]></source>
+            </p>
+            <p>
+                Sample to access a system at runtime
+                <source><![CDATA[
+    SystemLoader.getSystem("system name")
+                ]]></source>
+            </p>
+        </section>
+
+        <section name="Deployment models">
+            <p>
+                <code>AspectWerkz</code> supports four different deployment
+                models, which defines
+                <ul>
+                    <li>the scope of the <code>Advice</code> or <code>Introduction</code> in Model 1 systems</li>
+                    <li>the scope of the <code>Aspect</code> in Model 2 systems (the introductions and advices follow the Aspect scope)</li>
+                </ul>
+            </p>
+            <p>
+                The four different deployment models are:
+                <ul>
+                    <li>
+                        <code>perJVM</code> - one sole instance per JVM.
+                        Basically the same thing as a singleton class.
+                    </li><br/>
+                    <li>
+                        <code>perClass</code> - one instance per class.
+                    </li><br/>
+                    <li>
+                        <code>perInstance</code> - one instance per class instance.
+                    </li><br/>
+                    <li>
+                        <code>perThread</code> - one instance per thread.
+                    </li>
+                </ul>
+            </p>
+            <p>
+                The internal component model of AspectWerkz uses the <i>prototype</i> design pattern, which means for example that with a perJVM deployement
+                model, 2 instances are created (one prototype and one perJVM) though only one is really used (the perJVM one).
+            </p>
+        </section>
+
+        <section name="Transformation scopes">
+            <p>
+                Using transformation scopes you can choose to perform the transformation within
+                certain packages only. E.g. filter out all classes from all other packages in
+                the transformation process. This can speed up the transformation process a lot as
+                well as assure you that only classes within the packages you have defined is
+                getting transformed no matter how freely you define your pointcut patterns.
+            </p>
+            <p>
+                A transformation scope is defined using the <code>exclude</code> and <code>include</code>
+                element which have one attribute <code>package</code> where you define the package
+                name. You can define as many transformation scopes as you want.<br/>
+                The <code>package</code> attribute supports only <code>.*</code> as an ending pattern (package and all sub package).
+                TODO fix bug com.do match com.doe
+                TODO check not homogenous with com.do.. - could be supported as well
+            </p>
+
+            <p>
+                During the transformation process (online or offline), a class might be transformed (depending on the pointcuts) if
+                <ol>
+                    <li>the class does not belongs to any <code>exclude</code> packages if any</li>
+                    and
+                    <li>the class belongs to <b>at least one</b> <code>include</code> packages if any</li>
+                </ol>
+                Note that when <code>include</code> is used the selection is much more restrictive.
+                This selection mechanism should be used as most as possible especially in online mode since it enables an ealry filtering.
+            </p>
+            <p>
+                <b>Example</b>
+<source><![CDATA[
+<aspectwerkz>
+    <system id="sample">
+        <!-- Transformations will only take place within the 'org.codehaus.package' package
+             and its subpackages -->
+        <include package="org.codehaus"/>
+        <include package="org.codehaus.*"/><!-- synonymous of org.codehaus -->
+        <exclude package="com.oracle.*"/>
+        ...
+    </system>
+</aspectwerkz>
+]]></source>
+            </p>
+        </section>
+
+        <section name="Package namespaces">
+            <p>
+                TODO fix for system level
+                Package namespaces provide a way to simplify the edition of the XML definition file so that it is not necessary
+                to prefix all <code>class</code> with the complete package information.<br/>
+                You have two ways of defining a package namespace:
+                <ul>
+                    <li>
+                        using the <code>base-package</code> attribute in the <code>system</code>
+                        element. This defines a global package namespace for all elements defined within the <code>system</code> element.
+                    </li><br/>
+                    <li>
+                        using the <code>package</code> element. This element has one attribute;
+                        <code>name</code>, which defines the package namespace.
+                    </li>
+                </ul>
+                The package name will be used as a prefix for all nested elements.
+            </p>
+            <p>
+                <b>Example</b>
+            </p>
+            <p>
+<source><![CDATA[
+<aspectwerkz>
+    <system id="foodemo" base-package="foo">
+        <!-- All classes are prefixed by 'foo' -->
+
+        <package name="bar">
+            <!-- All classes within these 'package' tags are prefixed by 'foo.bar' -->
+        </package>
+
+        <package name="baz.buzz">
+            <!-- All classes within these 'package' tags are prefixed by 'foo.baz.buzz' -->
+        </package>
+    </system>
+</aspectwerkz>
+]]></source>
+            </p>
+        </section>
+
+        <section name="DTD for XML definition">
+            <p>
+                Each distribution comes with a bundled DTD so that it is not looked
+                for on the web at runtime. The XML is not validated against its DTD at runtime so be cautious
+                to provide a valid XML defintion.
+            </p>
+            <p>
+                When you write your XML definition file, add the following at the top of your XML to reference the latest release:
+                <source><![CDATA[
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+            ]]></source>
+            </p>
+            <p>
+                It is possible to specify a specific released version number as well (starting with 0.8)
+                <source><![CDATA[
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 0.9//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_9.dtd">
+                ]]></source>
+            </p>
+        </section>
+
+        <section name="Model 1 - Passing parameters to advices">
             <p>
                 You also have the option of passing parameters to your advices.
                 This can be very convenient if you want to reuse the same
@@ -376,7 +591,7 @@ String timeOut = getParameter("timeout");
             </p>
         </section>
 
-        <section name="Advice stacks">
+        <section name="Model 1 - Advice stacks">
             <p>
                 An <code>advice stack</code> lets you define a stack/chain with
                 advices that you can refer to in your pointcuts. The order of the
@@ -421,176 +636,86 @@ String timeOut = getParameter("timeout");
 
         </section>
 
-        <section name="Package namespaces">
-            <p>
-                You have two ways of defining a package namespace:
-                <ul>
-                    <li>
-                        using the <code>base-package</code> attribute in the <code>aspectwerkz</code>
-                        element. This defines a global package namespace.
-                    </li><br/>
-                    <li>
-                        using the <code>package</code> element. This element has one attribute;
-                        <code>name</code>, which defines the package namespace.
-                    </li>
-                </ul>
-            </p>
-            <p>
-                <b>Example</b>
-            </p>
-            <p>
-<source><![CDATA[
-<aspectwerkz base-package="foo">
-    <!-- All classes are prefixed by 'foo' -->
-
-    <package name="bar">
-        <!-- All classes within these 'package' tags are prefixed by 'foo.bar' -->
-    </package>
-
-    <package name="baz.buzz">
-        <!-- All classes within these 'package' tags are prefixed by 'foo.baz.buzz' -->
-    </package>
-
-</aspectwerkz>
-]]></source>
-            </p>
-        </section>
-
-        <section name="Transformation scopes">
-            <p>
-                Using transformation scopes you can choose to perform the transformation within
-                certain packages only. E.g. filter out all classes from all other packages in
-                the transformation process. This can speed up the transformation process a lot as
-                well as assure you that only classes within the packages you have defined is
-                getting transformed no matter how freely you define your pointcut patterns.
-            </p>
-            <p>
-                A transformation scope is defined using the <code>transformation-scope</code>
-                element which has one attribute; <code>package</code> where you define the package
-                name. You can define as many transformation scopes as you want.
-            </p>
-            <p>
-                <b>Example</b>
-            </p>
-            <p>
-<source><![CDATA[
-<aspectwerkz>
-
-    <!-- Transformations will only take place within the 'org.codehaus.package' package
-         and its subpackages -->
-    <transformation-scope package="org.codehaus"/>
-    ...
-
-</aspectwerkz>
-]]></source>
-            </p>
-        </section>
-
-        <section name="DTD for XML definition">
-            <p>
-                The DTD is provided since 0.8. Each distribution comes with a bundled DTD so that it is not looked
-                for on the web at runtime.<br/>
-                When you write your XML definition file, add the following at the top of your XML.
-                <source><![CDATA[
-<!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD 0.8.1//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd">
-                ]]></source>
-                The 0.8 and 0.8.1 DTD are the same so you can also use
-                <source><![CDATA[
-<!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD 0.8//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8.dtd">
-                ]]></source>
-            </p>
-            <p>
-                The DTD of the latest release is also referenced
-                <source><![CDATA[
-<!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
-            ]]></source>
-            </p>
-        </section>
-
-        <section name="Example of an XML definition">
+        <section name="Model 1 - Example of an XML definition">
             <p>
                 Here is an example where all the definitions are put together
                 into a single <code>AspectWerkz</code> XML definition file.
             </p>
 <source><![CDATA[
 <!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD 0.8.1//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd">
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
 
-<aspectwerkz id="example">
-    <!-- ============================================= -->
-    <!--  Define the advices                           -->
-    <!-- ============================================= -->
-    <advice-def name="log"
-                advice="advices.LoggingAdvice"
-                deployment-model="perInstance"/>
+<aspectwerkz>
+    <system id="example">
+        <!-- ============================================= -->
+        <!--  Define the advices                           -->
+        <!-- ============================================= -->
+        <advice-def name="log"
+                    class="advices.LoggingAdvice"
+                    deployment-model="perInstance"/>
 
-    <advice-def name="cache"
-                advice="advices.CachingAdvice"
-                deployment-model="perClass"/>
+        <advice-def name="cache"
+                    class="advices.CachingAdvice"
+                    deployment-model="perClass"/>
 
-    <advice-def name="persistent"
-                advice="advices.PersistenceAdvice"
-                deployment-model="perJVM"/>
+        <advice-def name="persistent"
+                    class="advices.PersistenceAdvice"
+                    deployment-model="perJVM"/>
 
-    <advices-def name="log_and_cache">
-        <advice-ref name="log"/>
-        <advice-ref name="cache"/>
-    </advices-def>
+        <advices-def name="log_and_cache">
+            <advice-ref name="log"/>
+            <advice-ref name="cache"/>
+        </advices-def>
 
-    <!-- ============================================= -->
-    <!--  Define the introductions                     -->
-    <!-- ============================================= -->
-    <introduction-def name="serializable"
-                      interface="java.io.Serializable"/>
+        <!-- ============================================= -->
+        <!--  Define the introductions                     -->
+        <!-- ============================================= -->
+        <introduction-def name="serializable"
+                          interface="java.io.Serializable"/>
 
-    <introduction-def name="mixin"
-                      interface="mixins.Mixin"
-                      implementation="mixins.MixinImpl"
-                      deployment-model="perInstance"/>
+        <introduction-def name="mixin"
+                          interface="mixins.Mixin"
+                          implementation="mixins.MixinImpl"
+                          deployment-model="perInstance"/>
 
-    <!-- ============================================= -->
-    <!--  Define the aspects                           -->
-    <!-- ============================================= -->
-    <abstract-aspect name="MyAbstractAspect">
+        <!-- ============================================= -->
+        <!--  Define the aspects                           -->
+        <!-- ============================================= -->
+        <abstract-aspect name="MyAbstractAspect">
 
-        <bind-advice cflow="facadeCalls" pointcut="setters AND !getters">
-            <advices-ref name="log_and_cache"/>
-        </bind-advice>
+            <bind-advice cflow="facadeCalls" pointcut="setters AND !getters">
+                <advices-ref name="log_and_cache"/>
+            </bind-advice>
 
-        <bind-advice pointcut="persistentFields">
-            <advice-ref name="persistent"/>
-        </bind-advice>
-    </abstract-aspect>
+            <bind-advice pointcut="persistentFields">
+                <advice-ref name="persistent"/>
+            </bind-advice>
+        </abstract-aspect>
 
-    <aspect name="MyAspect" extends="MyAbstractAspect">
-        <bind-introduction class="domain.*">
-            <introduction-ref name="serializable"/>
-            <introduction-ref name="mixin"/>
-        </bind-introduction>
+        <aspect name="MyAspect" extends="MyAbstractAspect">
+            <bind-introduction class="domain.*">
+                <introduction-ref name="serializable"/>
+                <introduction-ref name="mixin"/>
+            </bind-introduction>
 
-        <pointcut-def name="facadeCalls" type="cflow" pattern="* *..facade.*.*(..)"/>
-        <pointcut-def name="setters" type="method" pattern="String domain.*.set*(..)"/>
-        <pointcut-def name="getters" type="method" pattern="String domain.*.get*(..)"/>
-        <pointcut-def name="persistentFields" type="setField" pattern="* domain.*.*">
-    </aspect>
+            <pointcut-def name="facadeCalls" type="cflow" pattern="* *..facade.*.*(..)"/>
+            <pointcut-def name="setters" type="method" pattern="String domain.*.set*(..)"/>
+            <pointcut-def name="getters" type="method" pattern="String domain.*.get*(..)"/>
+            <pointcut-def name="persistentFields" type="setField" pattern="* domain.*.*"/>
+        </aspect>
+
+    </system>
 </aspectwerkz>
 ]]></source>
         </section>
 
-        <section name="Runtime attributes">
+        <section name="Model 1 - Doclets">
             <p>
-                <code>AspectWerkz</code> supports runtime attributes.
-                Runtime attributes enables you to decorate your code
-                with meta-data. This meta-data can then be parsed and used during
-                the transformation process. The attributes are defined using
-                JavaDoc tags.
+                <code>AspectWerkz</code> supports Doclets style instead (or in complement) of the standard Model 1 XML file.
+                Doclets enables you to decorate your code
+                with meta-data. This meta-data can then be parsed and turned in an XML file in a preprocessing phase.
+                The Doclets attributes are defined using JavaDoc tags.
             </p>
             <p>
                 At the moment you can use attributes to define advices and
@@ -598,16 +723,15 @@ String timeOut = getParameter("timeout");
                 can also pass parameters to your advices using attributes.
             </p>
             <p>
-                You compile you attributes using the
+                You transform you attributes in an XML file using the
                 <code>AttributeC</code> compiler. (See the
                 <a href="#Attribute compilation">Attribute compilation</a>
                 section for a detailed description on how to use the compiler.)
             </p>
             <p>
                 If you are defining your whole system <b>only</b> using attributes
-                (yes, it is possible) then you <b>don't</b> need the XML definition
-                at all at runtime. I.e. you can skip the
-                <code>-Daspectwerkz.definition.file=..</code> parameter.
+                (yes, it is possible) then you <b>don't</b> need to write the XML definition
+                at all. This one will be entirely generated.
             </p>
             <subsection name="Definition tags">
                 <p>
@@ -804,23 +928,18 @@ public Object someMethod(..) {..}
 ]]></source>
                 </p>
             </subsection>
-
         </section>
 
-        <section name="Attribute compilation">
-            <p>
-                If you are using runtime attributes then you have to compile a
-                the attributes to an XML definition. You can choose to compile a
-                standalone XML definition file or merge with an existing definition.
-            </p>
-            <p>
-                To compile the attributes you have to use the <code>AttributeC</code>
-                compiler.
-            </p>
-
-            <subsection name="Compile from command line">
+        <section name="Doclets compilation">
+            <subsection name="Doclets compilation">
                 <p>
-                    You can run the <code>AttributeC</code> from the command line.
+                    If you are using Doclets then you have to compile them to an XML definition.
+                    You can choose to compile a
+                    standalone XML definition file or merge with an existing definition.
+                </p>
+                <p>
+                    To compile the attributes you have to use the <code>AttributeC</code>
+                    compiler. You can run the <code>AttributeC</code> from the command line.
                     (It might be useful to run the
                     <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)
                 </p>
@@ -850,8 +969,8 @@ public Object someMethod(..) {..}
                 </p>
             </subsection>
 
-            <subsection name="Compile using the Ant task">
-                TODO
+<!--            <subsection name="Compile using the Ant task">-->
+<!--                TODO-->
 <!--                <p>-->
 <!--                    Both of the compilers can also be executed using an-->
 <!--                    <a href="http://ant.apache.org/">Ant</a> task. (It might be-->
@@ -900,36 +1019,10 @@ public Object someMethod(..) {..}
 <!--                    application will run in). This is an optional parameter, if you-->
 <!--                    don't specify a UUID one will be generated for you.-->
 <!--                </p>-->
-            </subsection>
+<!--            </subsection>-->
         </section>
 
-        <section name="Deployment models">
-            <p>
-                <code>AspectWerkz</code> supports four different deployment
-                models, which defines the scope of the <code>Advice</code>
-                or <code>Introduction</code>.
-            </p>
-            <p>
-                The four different deployment models are:
-                <ul>
-                    <li>
-                        <code>perJVM</code> - one sole instance per JVM.
-                        Basically the same thing as a singleton class.
-                    </li><br/>
-                    <li>
-                        <code>perClass</code> - one instance per class.
-                    </li><br/>
-                    <li>
-                        <code>perInstance</code> - one instance per class instance.
-                    </li><br/>
-                    <li>
-                        <code>perThread</code> - one instance per thread.
-                    </li>
-                </ul>
-            </p>
-        </section>
-
-        <section name="Join point controller">
+        <section name="Model 1 - Join point controller">
             <p>
                 The <code>JoinPointController</code> allows you to control the execution
                 flow of your advices based on custom defined constraints and rules, rules
@@ -1037,56 +1130,125 @@ public void someMethod() {
             </subsection>
         </section>
 
-        <section name="Non-reentrancy">
-            <p>
-                By default <code>AspectWerkz</code> allows reentrancy for advices
-                at the join points. This could lead to infinite recursion, which
-                will end your application abruptly with a <code>StackOverflowException</code>.
-            </p>
-            <p>
-                To prevent this you have the option of defining some of your pointcuts as
-                <code>non-reentrant</code>, which means that the programs execution flow is
-                not allowed to enter the same join point more that once.
-            </p>
-            <subsection name="Definition">
-                <p>
-                </p>
-                <p>
-                    <b>Attributes</b>
-                </p>
-                <p>
-                    You can define the non-reentrancy in the <code>@aspectwerkz.advice.method</code>
-                    attribute tag. Simply add an attribute called <code>non-reentrant</code>
-                    and set it to <code>true</code>.
-                </p>
-                <p>
-<source><![CDATA[
-/**
- * @aspectwerkz.advice.method log non-reentrant=true
- */
-public void someMethod() {
-    ...
-}
-]]></source>
-                </p>
-                <p>
-                    <b>XML definition</b>
-                </p>
-                <p>
-                    To define a pointcut as <code>non-reentrant</code> in the XML definition
-                    you have to add the attribute <code>non-reentrant</code> to the
-                    <code>pointcut-def</code> element and set it to <code>true</code>.
-                </p>
-                <p>
-<source><![CDATA[
-<aspect name="MyAspect">
-    <pointcut-def ... non-reentrant="true"/>
-    ...
-</aspect>
-]]></source>
-                </p>
+<!--        <section name="Non-reentrancy">-->
+<!--            <p>-->
+<!--                By default <code>AspectWerkz</code> allows reentrancy for advices-->
+<!--                at the join points. This could lead to infinite recursion, which-->
+<!--                will end your application abruptly with a <code>StackOverflowException</code>.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                To prevent this you have the option of defining some of your pointcuts as-->
+<!--                <code>non-reentrant</code>, which means that the programs execution flow is-->
+<!--                not allowed to enter the same join point more that once.-->
+<!--            </p>-->
+<!--            <subsection name="Definition">-->
+<!--                <p>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    <b>Attributes</b>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    You can define the non-reentrancy in the <code>@aspectwerkz.advice.method</code>-->
+<!--                    attribute tag. Simply add an attribute called <code>non-reentrant</code>-->
+<!--                    and set it to <code>true</code>.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--<source><![CDATA[-->
+<!--/**-->
+<!-- * @aspectwerkz.advice.method log non-reentrant=true-->
+<!-- */-->
+<!--public void someMethod() {-->
+<!--    ...-->
+<!--}-->
+<!--]]></source>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    <b>XML definition</b>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    To define a pointcut as <code>non-reentrant</code> in the XML definition-->
+<!--                    you have to add the attribute <code>non-reentrant</code> to the-->
+<!--                    <code>pointcut-def</code> element and set it to <code>true</code>.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--<source><![CDATA[-->
+<!--<aspect name="MyAspect">-->
+<!--    <pointcut-def ... non-reentrant="true"/>-->
+<!--    ...-->
+<!--</aspect>-->
+<!--]]></source>-->
+<!--                </p>-->
+<!---->
+<!--            </subsection>-->
+<!--        </section>-->
 
+        <section name="Model 2 - Aspects compilation">
+            <p>
+                <a href="core_concepts.html#Model 2 - Self defined Aspects">Self defined Aspects</a> need to be compiled in order to incorporate the metadata in the bytecode.
+                This allow to almost totally skip the XML definition file complexity. The post compilation phase will not be needed under java 1.5 with JSR-175 support.
+            </p>
+            <subsection name="Aspect metadata compilation">
+                <p>
+                    To post-compile the aspects <code>.class</code> files you have to use the <code>AspectC</code>
+                    compiler, which needs both the regular <code>.class</code> files and the aspect sources files containing the attributes metadata.
+                    You can run the <code>AspectC</code> from the command line.
+                    (It might be useful to run the
+                    <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)
+                </p>
+                <p>
+                    <code>java [options...] org.codehaus.aspectwerkz.attribdef.definition.AspectC [-verbose] &lt;path to src dir&gt; &lt;path to classes dir&gt; [&lt;path to destination dir&gt;]</code>
+                </p>
+                <p>
+                    <ul>
+                        <li>
+                            <code>-verbose</code> - (optional) to activate verbose logging of compilation
+                        </li>
+                        <li>
+                            <code>&lt;path to src dir&gt;</code> - the path directory
+                            for the sources files (this is not mandatory to point to the root package directory since package name is extracted from the source file itself)
+                        </li><br/>
+                        <li>
+                            <code>&lt;path to classes dir&gt;</code> - the path to the root directory of the regular <code>.class</code> files for the aspects
+                        </li><br/>
+                        <li>
+                            <code>&lt;path to destination dir&gt;</code> - (optional)
+                            - the path to the root directory to write the new <code>.class</code> files for the self defined aspects. If not specified, the initial <code>.class</code> files are overriden.
+                        </li>
+                    </ul>
+                </p>
             </subsection>
+            <subsection name="Custom metadata compilation">
+                <p>
+                    The same <code>AspectC</code> utility can be used to compile custom metadata to the class bytecode.
+                    Custom metadata is marked with <a href="core_concepts.html#Model 2 - Metadata reference"><code>@Custom &lt;value&gt;</code></a>.
+                </p>
+            </subsection>
+        </section>
+
+        <section name="Model 2 - Example of an XML definition">
+            <p>
+                Here is an example where all the definitions are put together
+                into a single <code>AspectWerkz</code> XML definition file.
+            </p>
+            <source><![CDATA[
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 0.9//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_9.dtd">
+<aspectwerkz>
+    <system id="tests">
+        <exclude package="test.attribdeff"/>
+        <package name="test.attribdef.aspect">
+            <use-aspect class="MemberMethodTestAspect"/>
+            <use-aspect class="StaticMethodTestAspect"/>
+            <use-aspect class="FieldTestAspect"/>
+            <use-aspect class="CallerSideTestAspect"/>
+            <use-aspect class="CFlowTestAspect"/>
+            <use-aspect class="IntroductionTestAspect"/>
+            <use-aspect class="DynamicDeploymentTestAspect"/>
+        </package>
+    </system>
+</aspectwerkz>
+            ]]></source>
         </section>
 
     </body>
