@@ -158,7 +158,7 @@ public class AspectWerkzC {
      * t.printStackTrace(); }
      */
     public void setVerbose(boolean verbose) {
-        utility.setVerbose();
+        utility.setVerbose(verbose);
     }
 
     public void setHaltOnError(boolean haltOnError) {

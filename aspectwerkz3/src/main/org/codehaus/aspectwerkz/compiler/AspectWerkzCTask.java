@@ -1,6 +1,6 @@
 /*
- * $Id: AspectWerkzCTask.java,v 1.1.2.1 2004-10-14 16:34:25 avasseur Exp $
- * $Date: 2004-10-14 16:34:25 $
+ * $Id: AspectWerkzCTask.java,v 1.1.2.2 2004-10-15 07:23:07 avasseur Exp $
+ * $Date: 2004-10-15 07:23:07 $
  */
 package org.codehaus.aspectwerkz.compiler;
 
@@ -17,23 +17,34 @@ import org.apache.tools.ant.types.FileSet;
 
 /**
  * AspectWerkzC offline Ant task.
- * Use the following parameters - all are optional
+ *
+ * Use the following parameters to configure the task:
  * <ul>
- * <li><em>verbose</em>: flag marking the weaver verbosity
- * <li><em>definition</em>: path to aspect definition xml file (optional, can be found on the path as META-INF/aop.xml - even several)</li>
+ * <li>verbose: [optional] flag marking the weaver verbosity [true / false]</li>
+ * <li>taskverbose: [optional] flag marking the task verbose [true / false]</li>
+ * <li>definition: [optional] path to aspect definition xml file (optional, can be found on the path as META-INF/aop.xml - even several)</li>
  * </ul>
  * <p/>
- * Inner parameters - mainly required
+ * Use the following parameters to configure the classpath and to point to the classes to be weaved. Those can be specified
+ * with nested elements as well / instead:
  * <ul>
- * <li><em>classpath</em>: <tt>Path</tt>-like structure for the classpath to be used by the weaver</li>
- * <li><em>target</em>: <tt>Path</tt>-like structure for the class directories to be weaved</li>
- * <li>fileset: same as target</li>
- * </ul
+ * <li>classpath: classpath to use</li>
+ * <li>classpathref: classpath reference to use</li>
+ * <li>targetdir: directory where to find classes to weave</li>
+ * <li>targetpath: classpath where to find classes to weave</li>
+ * <li>targetpathref: classpath reference where to find classes to weave</li>
+ * </ul>
  * <p/>
- * Options that we usually pass as JVM options are also available but are unlikely to be used
+ * Nested elements are similar to the "java" task when you configure a classpath:
  * <ul>
- * <li><em>backupdir</em>: directory path to backup original classes, defautls to ./_aspectwerkzc
- * <li><em>preprocessor</em>: fully qualified name of the preprocessor. If not set default is used.</li>
+ * <li>classpath: Path-like structure for the classpath to be used by the weaver. Similar to "java" task classpath</li>
+ * <li>targetpath: Path-like structure for the class to be weaved</li>
+ * </ul>
+ * <p/>
+ * Some rarely used options are also available:
+ * <ul>
+ * <li>backupdir: directory where to backup original classes during compilation, defautls to ./_aspectwerkzc</li>
+ * <li>preprocessor: fully qualified name of the preprocessor. If not set the default is used.</li>
  * </ul>
  *
  * @author <a href='mailto:the_mindstorm@evolva.ro'>the_mindstorm(at)evolva(dot)ro</a>
@@ -45,6 +56,7 @@ public class AspectWerkzCTask extends Task {
     private static final String AW_DEFINITION_FILE = "aspectwerkz.definition.file";
 
     private boolean m_verbose;
+    private boolean m_taskVerbose = false;
     private File m_backupdir;
     private String m_preprocessor;
     private File m_definitionFile;
@@ -67,6 +79,14 @@ public class AspectWerkzCTask extends Task {
      */
     public void setVerbose(boolean verbose) {
         m_verbose = verbose;
+    }
+
+    /**
+     * compilerverbose=..
+     * @param verbose
+     */
+    public void setTaskVerbose(boolean verbose) {
+        m_taskVerbose = verbose;
     }
 
     //-- <target .., <targetpath.. and targetdir=.. targetpathref=..
@@ -150,7 +170,7 @@ public class AspectWerkzCTask extends Task {
             AspectWerkzC compiler = new AspectWerkzC();
 
             compiler.setHaltOnError(true);
-            compiler.setVerbose(m_verbose);
+            compiler.setVerbose(m_taskVerbose);
             compiler.setVerify(false);
 
             if (m_definitionFile != null) {
@@ -165,7 +185,7 @@ public class AspectWerkzCTask extends Task {
                 compiler.setBackupDir(m_backupdir.getAbsolutePath());
             }
 
-            if (m_verbose) {
+            if (m_taskVerbose) {
                 System.out.println("Classpath    : " + dump(getDirectories(m_classpath)));
                 System.out.println("Target       : " + dump(getDirectories(m_target)));
                 System.out.println("Definition   : " + m_definitionFile);

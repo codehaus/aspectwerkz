@@ -29,6 +29,34 @@ import org.apache.tools.ant.types.Reference;
 /**
  * AnnotationC Ant task.
  *
+ * Use the following parameters to configure the task:
+ * <ul>
+ * <li>verbose: [optional] flag marking the task verbosity [true / false]</li>
+ * <li>properties: [optional] path to a properties file when user-defined annoations are to be used</li>
+ * <li>destdir: [optional unless input classes are in more than one path] directory where to put annnotated class files</li>
+ * <li>copytodest: [optional] filename pattern to copy extra resources like dtd, xml, or properties files that were found
+ *      in the input classes path(s). By defaults, only ".class" files will be handled. It is ignored if "destdir" is not set.</li>
+ * </ul>
+ * <p/>
+ * Use the following parameters to configure the classpath to point to the classes to be weaved. Those can be specified
+ * with nested elements as well / instead:
+ * <ul>
+ * <li>classpath: classpath of classes to annotated, as well as classpath to discover user-defined annotations if any</li>
+ * <li>classpathref: classpath reference of classes to annotated, as well as classpath to discover user-defined annotations if any</li>
+ * <li>srcdir: directory where to find annotated java source files</li>
+ * <li>sourcepath: path where to find annotated java source files</li>
+ * <li>sourcepathref: path reference where to find annotated java source files</li>
+ * </ul>
+ * <p/>
+ * Nested elements are similar to the "javac" task when you configure a classpath and a sourcepath:
+ * <ul>
+ * <li>classpath: Path-like structure of classes to annotated, as well as classpath to discover user-defined annotations if any</li>
+ * <li>src: single path entry of annotated java source files</li>
+ * <li>sourcepath: Path-like structure of annotated java source files</li>
+ * <li>fileset: fileset to contain annotated java source files</li>
+ * </ul>
+ * <p/>
+ *
  * @author <a href='mailto:the_mindstorm@evolva.ro'>the_mindstorm(at)evolva(dot)ro</a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */

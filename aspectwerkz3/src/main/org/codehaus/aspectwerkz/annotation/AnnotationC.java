@@ -136,8 +136,8 @@ public class AnnotationC {
             destDir = classPath;
         }
 
-        String[] srcDirs = null;
-        String[] srcFiles = null;
+        String[] srcDirs = new String[0];
+        String[] srcFiles = new String[0];
         if (srcDirList != null) {
             srcDirs = split(srcDirList, File.pathSeparator);
         } else if (srcFileList != null) {
@@ -145,8 +145,6 @@ public class AnnotationC {
         } else {
             srcFiles = loadSourceList(srcFileIncludes);
         }
-
-        boolean isDir = (srcDirs != null);
 
         compile(s_verbose, srcDirs, srcFiles, split(classPath, File.pathSeparator), destDir, annotationPropetiesFile);
     }

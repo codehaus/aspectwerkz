@@ -36,6 +36,9 @@
                         <a href="#Compiling Annotations">Compiling Annotations</a>
                     </li>
                     <li>
+                        <a href="#Ant task for compiling Annotations">Ant task for compiling Annotations</a>
+                    </li>
+                    <li>
                         <a href="#Runtime retrieval of Annotations">Runtime retrieval of Annotations</a>
                     </li>
                     <li>
@@ -387,6 +390,76 @@ readonly
                 <p>
                 For Java 1.5 annotations you would have to specify the fully qualified name of the
                 annotation interface as the name.
+                </p>
+            </subsection>
+        </section>
+        <section name="Ant task for compiling Annotations">
+            <p>
+                An Ant task is provided to compile the annotations.
+            </p>
+            <subsection name="Usage">
+                <p>
+                    First you need to activate the custom task in your Ant build.xml file with the following:
+                    (refer to Ant documentation on "taskdef" for more details)
+                     <source><![CDATA[
+<!-- we assume we defined a classpath with the id="aw.class.path" for AspectWerkz jars -->
+<path id="aw.class.path">
+    ...
+    <pathelement path="pathToAspectWerkz.jar"/>
+    ...
+</path>
+
+<!-- define the custom task (annotationc can be changed to what you prefer)
+<taskdef name="annotationc" classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" classpathref="aw.class.path"/>
+<!-- Note: the <daskdef> element can be nested within a <target> element at your convenience -->
+
+<!-- invoke the annotationc defined task -->
+<target name="samples:task:annotationc" depends="init, compile:all">
+    <annotationc
+        verbose="true"
+        destdir="${basedir}/target/samples-classes"
+        properties="${basedir}/src/samples/annotation.properties"
+        copytodest="**/*.dtd">
+
+        <src path="${basedir}/src/samples"/>
+        <src path="${basedir}/src/test"/>
+        <classpath path="${basedir}/target/samples-classes"/>
+        <classpath path="${basedir}/target/test-classes"/>
+        <classpath path="${basedir}/target/classes"/>
+        <fileset dir="other">
+            <include name="**/BAZ.java"/>
+        </fileset>
+    </annotationc>
+</target>
+                 ]]></source>
+                </p>
+            </subsection>
+            <subsection name="Reference">
+                <p>The AnnotationCTask task accepts the following:</p>
+                <p>
+                <ul>
+                <li>verbose: [optional] flag marking the task verbosity [true / false]</li>
+                <li>properties: [optional] path to a properties file when user-defined annoations are to be used</li>
+                <li>destdir: [optional unless input classes are in more than one path] directory where to put annnotated class files</li>
+                <li>copytodest: [optional] filename pattern to copy extra resources like dtd, xml, or properties files that were found
+                     in the input classes path(s). By defaults, only ".class" files will be handled. It is ignored if "destdir" is not set.</li>
+                </ul>
+                Use the following parameters to configure the classpath to point to the classes to be weaved. Those can be specified
+                with nested elements as well / instead:
+                <ul>
+                <li>classpath: classpath of classes to annotated, as well as classpath to discover user-defined annotations if any</li>
+                <li>classpathref: classpath reference of classes to annotated, as well as classpath to discover user-defined annotations if any</li>
+                <li>srcdir: directory where to find annotated java source files</li>
+                <li>sourcepath: path where to find annotated java source files</li>
+                <li>sourcepathref: path reference where to find annotated java source files</li>
+                </ul>
+                Nested elements are similar to the "javac" task when you configure a classpath and a sourcepath:
+                <ul>
+                <li>classpath: Path-like structure of classes to annotated, as well as classpath to discover user-defined annotations if any</li>
+                <li>src: single path entry of annotated java source files</li>
+                <li>sourcepath: Path-like structure of annotated java source files</li>
+                <li>fileset: fileset to contain annotated java source files</li>
+                </ul>
                 </p>
             </subsection>
         </section>
