@@ -7,16 +7,17 @@
  **************************************************************************************/
 package awbench.spring;
 
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
+import java.lang.reflect.Method;
+
+import org.springframework.aop.MethodBeforeAdvice;
 import awbench.Run;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MethodExecutionAroundAdvice implements MethodInterceptor {
-    public Object invoke(MethodInvocation invocation) throws Throwable {
+public class MethodExecutionBeforeJPAdvice implements MethodBeforeAdvice {
+    public void before(Method m, Object[] args, Object target) throws Throwable {
+        Object o = target;
         Run.ADVICE_HIT++;
-        return invocation.proceed();
     }
 }

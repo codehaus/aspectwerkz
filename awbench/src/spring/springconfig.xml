@@ -13,8 +13,11 @@
         </property>
         <property name="interceptorNames">
             <list>
-                <value>theMethodExecutionAroundAdvisor</value>
+                <value>theMethodExecutionAroundSJPAdvisor</value>
+                <value>theMethodExecutionAroundJPAdvisor</value>
                 <value>theMethodExecutionBeforeAdvisor</value>
+                <value>theMethodExecutionBeforeSJPAdvisor</value>
+                <value>theMethodExecutionBeforeJPAdvisor</value>
                 <value>theMethodExecutionBeforeWithPrimitiveArgsAdvisor</value>
                 <value>theMethodExecutionBeforeWithWrappedArgsAdvisor</value>
                 <value>theMethodExecutionBeforeWithArgsAndTargetAdvisor</value>
@@ -29,14 +32,25 @@
 
     <bean id="executionImpl" class="awbench.method.Execution"/>
 
-    <bean id="theMethodExecutionAroundAdvisor"
+    <bean id="theMethodExecutionAroundSJPAdvisor"
         class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
         <property name="advice">
-            <ref local="theMethodExecutionAroundAdvice"/>
+            <ref local="theMethodExecutionAroundSJPAdvice"/>
         </property>
         <property name="patterns">
             <list>
                 <value>.*aroundSJP</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="theMethodExecutionAroundJPAdvisor"
+        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+            <ref local="theMethodExecutionAroundJPAdvice"/>
+        </property>
+        <property name="patterns">
+            <list>
                 <value>.*aroundJP</value>
             </list>
         </property>
@@ -50,7 +64,29 @@
         <property name="patterns">
             <list>
                 <value>.*before</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="theMethodExecutionBeforeSJPAdvisor"
+        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+            <ref local="theMethodExecutionBeforeSJPAdvice"/>
+        </property>
+        <property name="patterns">
+            <list>
                 <value>.*beforeSJP</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="theMethodExecutionBeforeJPAdvisor"
+        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+            <ref local="theMethodExecutionBeforeJPAdvice"/>
+        </property>
+        <property name="patterns">
+            <list>
                 <value>.*beforeJP</value>
             </list>
         </property>
@@ -136,8 +172,11 @@
         </property>
     </bean>
 
-    <bean id="theMethodExecutionAroundAdvice" class="awbench.spring.MethodExecutionAroundAdvice"/>
+    <bean id="theMethodExecutionAroundSJPAdvice" class="awbench.spring.MethodExecutionAroundSJPAdvice"/>
+    <bean id="theMethodExecutionAroundJPAdvice" class="awbench.spring.MethodExecutionAroundJPAdvice"/>
     <bean id="theMethodExecutionBeforeAdvice" class="awbench.spring.MethodExecutionBeforeAdvice"/>
+    <bean id="theMethodExecutionBeforeSJPAdvice" class="awbench.spring.MethodExecutionBeforeSJPAdvice"/>
+    <bean id="theMethodExecutionBeforeJPAdvice" class="awbench.spring.MethodExecutionBeforeJPAdvice"/>
     <bean id="theMethodExecutionBeforeWithPrimitiveArgsAdvice" class="awbench.spring.MethodExecutionBeforeWithPrimitiveArgsAdvice"/>
     <bean id="theMethodExecutionBeforeWithWrappedArgsAdvice" class="awbench.spring.MethodExecutionBeforeWithWrappedArgsAdvice"/>
     <bean id="theMethodExecutionBeforeWithArgsAndTargetAdvice" class="awbench.spring.MethodExecutionBeforeWithArgsAndTargetAdvice"/>
