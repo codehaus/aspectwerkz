@@ -18,52 +18,70 @@ import org.codehaus.aspectwerkz.Pointcut;
  */
 public class ArgAspect {
 
+    private int m_level = 0;
+
     /**
-     * Around pc1(ai, as)
+     * @Around pc1(ai, as)
      */
     public Object around1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
-        System.out.println("==> around1 -- pre " + ai + ", " + as);
+        indent();
+        m_level++;
+        System.out.println(" ==> around1 -- pre " + ai + ", " + as);
         Object result = joinPoint.proceed();
-        System.out.println("==> around1 -- post " + ai + ", " + as);
+        m_level--;
+        indent();
+        System.out.println(" ==> around1 -- post " + ai + ", " + as);
         return result;
     }
 
     /**
-     * Before pc1(ai, as)
+     * @Before pc1(ai, as)
      */
     public void before1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
         MethodSignature sig = (MethodSignature)joinPoint.getSignature();
         Annotation a = sig.getAnnotation("Annotation");
-        System.out.println("==> before1: " + ai + ", " + as);
+        indent();
+        m_level++;
+        System.out.println(" ==> before1: " + ai + ", " + as);
     }
 
     /**
-     * After pc1(ai, as)
+     * @After pc1(ai, as)
      */
     public void after1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
-        System.out.println("==> after1: " + ai + ", " + as);
+        m_level--;
+        indent();
+        System.out.println(" ==> after1: " + ai + ", " + as);
     }
 
     /**
-     * Before pc1(ai, as)
+     * @Before pc1(ai, as)
      */
     public void before2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
-        System.out.println("==> before2: " + as + ", " + ai);
+        indent();
+        m_level++;
+        System.out.println(" ==> before2: " + as + ", " + ai);
     }
 
     /**
-     * After pc1(ai, as)
+     * @After pc1(ai, as)
      */
     public void after2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
-        System.out.println("==> after2: " + as + ", " + ai);
+        m_level--;
+        indent();
+        System.out.println(" ==> after2: " + as + ", " + ai);
     }
 
     /**
      * @Around pc2(sarr)
      */
     public Object around3(final JoinPoint joinPoint, String[] sarr) throws Throwable {
+        indent();
+        m_level++;
         System.out.println("==> around3 -- pre " + sarr);
         Object result = joinPoint.proceed();
+        m_level--;
+        indent();
         System.out.println("==> around3 -- post " + sarr);
         return result;
     }
@@ -72,6 +90,8 @@ public class ArgAspect {
      * @Before pc2(sarr)
      */
     public void before3(final JoinPoint joinPoint, String[] sarr) throws Throwable {
+        indent();
+        m_level++;
         System.out.println("==> before3: " + sarr);
     }
 
@@ -79,11 +99,13 @@ public class ArgAspect {
      * @After pc2(sarr)
      */
     public void after3(final JoinPoint joinPoint, String[] sarr) throws Throwable {
+        m_level--;
+        indent();
         System.out.println("==> after3: " + sarr);
     }
 
     /**
-     * Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(int, s, i)
+     * @Expression call(* ..ArgLoggingTarget.toLog*(..)) && args(int, s, i)
      */
     Pointcut pc1(int i, String s) {
         return null;
@@ -97,7 +119,7 @@ public class ArgAspect {
     }
     
     /**
-     * Expression call(* ..ArgLoggingTarget.toLog*(..))
+     * @Expression call(* ..ArgLoggingTarget.toLog*(..))
      */
     Pointcut pc3() {
         return null;
@@ -132,4 +154,10 @@ public class ArgAspect {
     //DO it later.
 
     //methodsToLog(String s) {};
+
+    private void indent() {
+        for (int i = 0; i < m_level; i++) {
+            System.out.print("  ");
+        }
+    }
 }
