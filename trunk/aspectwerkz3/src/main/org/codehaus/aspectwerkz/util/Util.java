@@ -87,4 +87,21 @@ public final class Util {
         //        }
         //        exception.setStackTrace(newStackTrace);
     }
+
+    /**
+     * Returns a String representation of a classloader
+     * Avoid to do a toString() if the resulting string is too long (occurs on Tomcat)
+     *
+     * @param loader
+     * @return String representation (toString or FQN@hashcode)
+     */
+    public static String classLoaderToString(ClassLoader loader) {
+        if ((loader != null) && (loader.toString().length() < 120)) {
+            return loader.toString();
+        } else if (loader != null) {
+            return loader.getClass().getName() + "@" + loader.hashCode();
+        } else {
+            return "null";
+        }
+    }
 }

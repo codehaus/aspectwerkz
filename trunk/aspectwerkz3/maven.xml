@@ -47,6 +47,7 @@
     <goal name="aspectwerkz:jar">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="java:compile"/>
+        <attainGoal name="aspectwerkz:jdk15:compile"/>        
         <copy file="${src.dir}/main/aspectwerkz.dtd" todir="${main.classes}"/>
         <jar jarfile="${target.dir}/aspectwerkz-${pom.currentVersion}.jar" manifest="${lib.dir}/manifest.mf">
             <fileset dir="${main.classes}">
@@ -64,6 +65,30 @@
         <copy tofile="${lib.dir}/aspectwerkz-core-${pom.currentVersion}.jar" file="${target.dir}/aspectwerkz-core-${pom.currentVersion}.jar" overwrite="true"/>
         <attainGoal name="aspectwerkz:extensions:compile"/>
         <copy tofile="${lib.dir}/aspectwerkz-extensions-${pom.currentVersion}.jar" file="${target.dir}/extensions.jar" overwrite="true"/>
+    </goal>
+    
+    <goal name="aspectwerkz:jdk15:compile">
+        <j:choose>
+            <j:when test="${systemScope['java.version'].startsWith('1.5')}">
+                <echo message="** Found jdk15 specific compilation..."/>
+                <attainGoal name="aspectwerkz:init"/>
+                <javac destdir="${main.classes}" deprecation="true"
+                    debug="true" optimize="false">
+                    <src>
+                        <pathelement location="src/jdk15"></pathelement>
+                    </src>
+                    <classpath>
+                        <pathelement path="${main.classes}"/>
+                        <fileset dir="${lib.dir}">
+                            <include name="*.jar"></include>
+                        </fileset>
+                    </classpath>
+                </javac>
+            </j:when>
+            <j:otherwise>
+                <echo message="** Skipping jdk15 specific compilation..."/>
+            </j:otherwise>
+        </j:choose>
     </goal>
 
     <!-- =================================================== -->

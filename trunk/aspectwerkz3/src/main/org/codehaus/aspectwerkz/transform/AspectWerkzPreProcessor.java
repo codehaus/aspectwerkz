@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
+import org.codehaus.aspectwerkz.util.Util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,6 +65,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             DUMP_AFTER = false;
             DUMP_PATTERN = null;
         } else {
+            dumpPattern.trim();
             DUMP_AFTER = true;
             DUMP_BEFORE = dumpPattern.indexOf(",before") > 0;
             if (DUMP_BEFORE) {
@@ -96,11 +98,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * Marks the pre-processor as initialized.
      */
     private boolean m_initialized = false;
-
-    /**
-     * @TODO: ALEX - remove?
-     */
-    private SystemDefinitionContainer m_aopc_defs = new SystemDefinitionContainer();
 
     /**
      * Initializes the transformer stack.
@@ -148,7 +145,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             return bytecode;
         }
         if (VERBOSE) {
-            log(loader.toString() + ':' + className + '[' + Thread.currentThread().getName() + ']');
+            log(Util.classLoaderToString(loader) + ':' + className + '[' + Thread.currentThread().getName() + ']');
         }
 
         // AOPC
