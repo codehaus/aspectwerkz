@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Utility methods.
+ * Utility methods for dealing with stack traces.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -23,9 +23,8 @@ public final class StackTraceHelper {
      *
      * @param exception the Throwable to modify the stack trace on
      * @param className the name of the fake origin class of the exception
-     * @TODO Make use of if java version is 1.4+ (use reflection)
      */
-    public static void cutStackTrace(final Throwable exception, final String className) {
+    public static void hideFrameworkSpecificStackTrace(final Throwable exception, final String className) {
         if (exception == null) {
             throw new IllegalArgumentException("exception can not be null");
         }

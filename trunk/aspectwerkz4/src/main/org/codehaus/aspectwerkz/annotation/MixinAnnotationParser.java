@@ -71,6 +71,10 @@ public class MixinAnnotationParser {
                         expressionInfo
                 );
                 mixinDef.addExpressionInfo(expressionInfo);
+                boolean isTransient = annotation.isTransient();
+                if (isTransient) {
+                    mixinDef.setTransient(isTransient);
+                }
             }
         }
     }

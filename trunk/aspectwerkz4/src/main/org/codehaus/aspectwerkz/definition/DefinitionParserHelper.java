@@ -126,17 +126,20 @@ public class DefinitionParserHelper {
      * @param mixinClassInfo
      * @param expression
      * @param deploymentModel
+     * @param isTransient
      * @param systemDef
      * @return the mixin definition
      */
     public static MixinDefinition createAndAddMixinDefToSystemDef(final ClassInfo mixinClassInfo,
                                                                   final String expression,
                                                                   final String deploymentModel,
+                                                                  final boolean isTransient,
                                                                   final SystemDefinition systemDef) {
         final MixinDefinition mixinDef = createMixinDefinition(
                 mixinClassInfo,
                 expression,
                 deploymentModel,
+                isTransient,
                 systemDef
         );
 
@@ -264,14 +267,16 @@ public class DefinitionParserHelper {
      * @param mixinClassInfo
      * @param expression
      * @param deploymentModel
+     * @param isTransient
      * @param systemDef
      * @return
      */
     public static MixinDefinition createMixinDefinition(final ClassInfo mixinClassInfo,
                                                         final String expression,
                                                         final String deploymentModel,
+                                                        final boolean isTransient,
                                                         final SystemDefinition systemDef) {
-        final MixinDefinition mixinDef = new MixinDefinition(mixinClassInfo, deploymentModel, systemDef);
+        final MixinDefinition mixinDef = new MixinDefinition(mixinClassInfo, deploymentModel, isTransient, systemDef);
         if (expression != null) {
             ExpressionInfo expressionInfo = new ExpressionInfo(expression, systemDef.getUuid());
 

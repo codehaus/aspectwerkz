@@ -11,6 +11,7 @@
         <aspect class="test.mixin.perinstance.IntroductionTestAspect"/>
         <mixin class="test.mixin.perclass.MyImpl"
              deployment-model="perClass"
+             transient="true"
              bind-to="within(test.mixin.perclass.ToBeIntroduced) OR hasfield(int test.mixin.perclass.*.thisFieldNameShouldHopefullyBeUnique_perclass) OR hasmethod(void test.mixin.perclass.*.thisMethodNameShouldHopefullyBeUnique_perclass(..))"/>
         <aspect class="test.mixin.perclass.IntroductionTestAspect"/>
         <package name="test.aspect">

@@ -28,6 +28,11 @@ public class MixinDefinition {
     private String m_deploymentModel;
 
     /**
+     * Flags the mixin as transient.
+     */
+    private boolean m_isTransient;
+
+    /**
      * The introduced methods info list.
      */
     private final List m_methodsToIntroduce = new ArrayList();
@@ -63,19 +68,17 @@ public class MixinDefinition {
     private SystemDefinition m_systemDefinition;
 
     /**
-     * Construct a new Definition for mixin.
+     * Construct a new definition for mixin.
      *
      * @param mixinClass      the mixin class
      * @param deploymentModel mixin deployment model
+     * @param isTransient transient flag
      * @param systemDef the system definition
      */
     public MixinDefinition(final ClassInfo mixinClass,
                            final String deploymentModel,
+                           final boolean isTransient,
                            final SystemDefinition systemDef) {
-        if (deploymentModel.equals("perJVM")) {
-            System.out.println("mixinClass = " + mixinClass);
-            (new Exception()).printStackTrace();
-        }
         m_mixinImpl = mixinClass;
         m_systemDefinition = systemDef;
         m_expressionInfos = new ExpressionInfo[]{};
@@ -87,6 +90,7 @@ public class MixinDefinition {
             m_methodsToIntroduce.add((MethodInfo) iterator.next());
         }
         m_deploymentModel = deploymentModel;
+        m_isTransient = isTransient;
     }
 
     /**
@@ -131,6 +135,24 @@ public class MixinDefinition {
      */
     public void setDeploymentModel(final String deploymentModel) {
         m_deploymentModel = deploymentModel;
+    }
+
+    /**
+     * Checks if the mixin is transient.
+     *
+     * @return
+     */
+    public boolean isTransient() {
+        return m_isTransient;
+    }
+
+    /**
+     * Sets the mixin as transient.
+     *
+     * @param isTransient
+     */
+    public void setTransient(boolean isTransient) {
+        m_isTransient = isTransient;
     }
 
     /**
