@@ -14,14 +14,16 @@ import com.thoughtworks.qdox.model.JavaMethod;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface AttributeEnhancer {
+
     /**
      * Initializes the attribute enhancer.
      * Must always be called before use.
      *
      * @param className the class name
      * @param classPath the class path
+     * @return true if the class was succefully loaded, false otherwise
      */
-    void initialize(String className, String classPath);
+    boolean initialize(String className, String classPath);
 
     /**
      * Inserts an attribute on class level.

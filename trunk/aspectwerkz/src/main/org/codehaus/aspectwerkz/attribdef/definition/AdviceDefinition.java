@@ -252,6 +252,9 @@ public class AdviceDefinition {
         for (Iterator it = getPointcutRefs().iterator(); it.hasNext();) {
             String pointcutName = (String)it.next();
             PointcutDefinition pointcutDef = m_aspectDefinition.getPointcutDef(pointcutName);
+
+            if (pointcutDef == null) throw new DefinitionException("referenced pointcut [" + pointcutName + "] does not exist in definition");
+
             if (pointcutDef.getType().equals(PointcutDefinition.CFLOW)) {
                 continue;
             }
