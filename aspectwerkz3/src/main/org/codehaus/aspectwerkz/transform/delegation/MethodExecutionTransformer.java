@@ -18,6 +18,7 @@ import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistMethodInfo;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -193,9 +194,9 @@ public class MethodExecutionTransformer implements Transformer {
         StringBuffer body = new StringBuffer();
         StringBuffer callBody = new StringBuffer();
         body.append('{');
-        callBody.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+        callBody.append(TransformationConstants.JOIN_POINT_MANAGER_FIELD);
         callBody.append('.');
-        callBody.append(TransformationUtil.PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD);
+        callBody.append(TransformationConstants.PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD);
         callBody.append('(');
         callBody.append(methodHash);
         callBody.append(", ");
@@ -208,7 +209,7 @@ public class MethodExecutionTransformer implements Transformer {
             callBody.append("this");
         }
         callBody.append(',');
-        callBody.append(TransformationUtil.JOIN_POINT_TYPE_METHOD_EXECUTION);
+        callBody.append(TransformationConstants.JOIN_POINT_TYPE_METHOD_EXECUTION);
         callBody.append(");");
         if (originalMethod.getParameterTypes().length > 0) {
             body.append("Object[] args = $args; ");
@@ -224,7 +225,7 @@ public class MethodExecutionTransformer implements Transformer {
             body.append(callBody.toString());
             body.append("}");
         } else {
-            String localResult = TransformationUtil.ASPECTWERKZ_PREFIX + "res";
+            String localResult = TransformationConstants.ASPECTWERKZ_PREFIX + "res";
             body.append("Object ").append(localResult).append(" = ");
             body.append(callBody.toString());
             body.append("if (").append(localResult).append(" != null)");
@@ -333,8 +334,8 @@ public class MethodExecutionTransformer implements Transformer {
             || Modifier.isNative(method.getModifiers())
             || method.getName().equals("<init>")
             || method.getName().equals("<clinit>")
-            || method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
-            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)) {
+            || method.getName().startsWith(TransformationConstants.ORIGINAL_METHOD_PREFIX)
+            || method.getName().equals(TransformationConstants.CLASS_LOOKUP_METHOD)) {
             return STATUS_SKIP;
         }
         for (Iterator defs = definitions.iterator(); defs.hasNext();) {

@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 
 /**
  * Helper class with utility methods for working with the java.lang.reflect.* package.
@@ -100,9 +101,9 @@ public class ReflectHelper {
             && !method.getName().equals("wait")
             && !method.getName().equals("notify")
             && !method.getName().equals("notifyAll")
-            && !method.getName().startsWith(TransformationUtil.CLASS_LOOKUP_METHOD)
-            && !method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
-            && !method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+            && !method.getName().startsWith(TransformationConstants.CLASS_LOOKUP_METHOD)
+            && !method.getName().startsWith(TransformationConstants.ORIGINAL_METHOD_PREFIX)
+            && !method.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
             return true;
         } else {
             return false;

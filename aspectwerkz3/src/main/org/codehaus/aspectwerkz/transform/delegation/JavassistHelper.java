@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -224,8 +225,8 @@ public class JavassistHelper {
      * @return true if empty wrapper
      */
     public static boolean isAnnotatedEmpty(CtMethod method) {
-        byte[] emptyBytes = method.getAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE);
-        return ((emptyBytes != null) && (emptyBytes[0] == TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY));
+        byte[] emptyBytes = method.getAttribute(TransformationConstants.EMPTY_WRAPPER_ATTRIBUTE);
+        return ((emptyBytes != null) && (emptyBytes[0] == TransformationConstants.EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY));
     }
 
     /**
@@ -235,8 +236,8 @@ public class JavassistHelper {
      * @return true if non empty wrapper
      */
     public static boolean isAnnotatedNotEmpty(CtMethod method) {
-        byte[] emptyBytes = method.getAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE);
-        return ((emptyBytes == null) || (emptyBytes[0] == TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY));
+        byte[] emptyBytes = method.getAttribute(TransformationConstants.EMPTY_WRAPPER_ATTRIBUTE);
+        return ((emptyBytes == null) || (emptyBytes[0] == TransformationConstants.EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY));
     }
 
     /**
@@ -245,8 +246,8 @@ public class JavassistHelper {
      * @param method
      */
     public static void setAnnotatedEmpty(CtMethod method) {
-        method.setAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE, new byte[] {
-            TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY
+        method.setAttribute(TransformationConstants.EMPTY_WRAPPER_ATTRIBUTE, new byte[] {
+            TransformationConstants.EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY
         });
     }
 
@@ -256,8 +257,8 @@ public class JavassistHelper {
      * @param method
      */
     public static void setAnnotatedNotEmpty(CtMethod method) {
-        method.setAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE, new byte[] {
-            TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY
+        method.setAttribute(TransformationConstants.EMPTY_WRAPPER_ATTRIBUTE, new byte[] {
+            TransformationConstants.EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY
         });
     }
 
@@ -501,20 +502,20 @@ public class JavassistHelper {
         final CtClass ctClass,
         final SystemDefinition definition,
         final Context context) throws NotFoundException, CannotCompileException {
-        if (!hasField(ctClass, TransformationUtil.ASPECT_MANAGER_FIELD)) {
+        if (!hasField(ctClass, TransformationConstants.ASPECT_MANAGER_FIELD)) {
             CtField field = new CtField(
-                ctClass.getClassPool().get(TransformationUtil.ASPECT_MANAGER_CLASS),
-                TransformationUtil.ASPECT_MANAGER_FIELD,
+                ctClass.getClassPool().get(TransformationConstants.ASPECT_MANAGER_CLASS),
+                TransformationConstants.ASPECT_MANAGER_FIELD,
                 ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             StringBuffer body = new StringBuffer();
-            body.append(TransformationUtil.SYSTEM_LOADER_CLASS);
+            body.append(TransformationConstants.SYSTEM_LOADER_CLASS);
             body.append("#getSystem(");
-            body.append(TransformationUtil.STATIC_CLASS_FIELD);
+            body.append(TransformationConstants.STATIC_CLASS_FIELD);
             body.append('.');
             body.append("getClassLoader())");
             body.append('.');
-            body.append(TransformationUtil.GET_ASPECT_MANAGER_METHOD);
+            body.append(TransformationConstants.GET_ASPECT_MANAGER_METHOD);
             body.append("(\"");
             body.append(definition.getUuid());
             body.append("\");");
@@ -536,10 +537,10 @@ public class JavassistHelper {
      */
     public static void addStaticClassField(final CtClass ctClass, final Context context) throws NotFoundException,
             CannotCompileException {
-        if (!hasField(ctClass, TransformationUtil.STATIC_CLASS_FIELD)) {
+        if (!hasField(ctClass, TransformationConstants.STATIC_CLASS_FIELD)) {
             CtField field = new CtField(
                 ctClass.getClassPool().get("java.lang.Class"),
-                TransformationUtil.STATIC_CLASS_FIELD,
+                TransformationConstants.STATIC_CLASS_FIELD,
                 ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class#forName(\"" + ctClass.getName().replace('/', '.') + "\")");
@@ -557,18 +558,18 @@ public class JavassistHelper {
         final CtClass ctClass,
         final SystemDefinition definition,
         final Context context) throws NotFoundException, CannotCompileException {
-        if (!hasField(ctClass, TransformationUtil.JOIN_POINT_MANAGER_FIELD)) {
+        if (!hasField(ctClass, TransformationConstants.JOIN_POINT_MANAGER_FIELD)) {
             CtField field = new CtField(
-                ctClass.getClassPool().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS),
-                TransformationUtil.JOIN_POINT_MANAGER_FIELD,
+                ctClass.getClassPool().get(TransformationConstants.JOIN_POINT_MANAGER_CLASS),
+                TransformationConstants.JOIN_POINT_MANAGER_FIELD,
                 ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE);
             StringBuffer body = new StringBuffer();
-            body.append(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
+            body.append(TransformationConstants.JOIN_POINT_MANAGER_CLASS);
             body.append('#');
-            body.append(TransformationUtil.GET_JOIN_POINT_MANAGER);
+            body.append(TransformationConstants.GET_JOIN_POINT_MANAGER);
             body.append('(');
-            body.append(TransformationUtil.STATIC_CLASS_FIELD);
+            body.append(TransformationConstants.STATIC_CLASS_FIELD);
             body.append(", \"");
             body.append(definition.getUuid());
             body.append("\")");
@@ -681,9 +682,9 @@ public class JavassistHelper {
                 && !method.getName().equals("wait")
                 && !method.getName().equals("notify")
                 && !method.getName().equals("notifyAll")
-                && !method.getName().startsWith(TransformationUtil.CLASS_LOOKUP_METHOD)
-                && !method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
-                && !method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+                && !method.getName().startsWith(TransformationConstants.CLASS_LOOKUP_METHOD)
+                && !method.getName().startsWith(TransformationConstants.ORIGINAL_METHOD_PREFIX)
+                && !method.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
                 methodList.add(method);
             }
         }
@@ -698,9 +699,9 @@ public class JavassistHelper {
      * @return the index
      */
     public static int getJoinPointIndex(final CtClass klass) {
-        byte[] attribute = klass.getAttribute(TransformationUtil.JOIN_POINT_INDEX_ATTRIBUTE);
+        byte[] attribute = klass.getAttribute(TransformationConstants.JOIN_POINT_INDEX_ATTRIBUTE);
         if (attribute == null) {
-            klass.setAttribute(TransformationUtil.JOIN_POINT_INDEX_ATTRIBUTE, new byte[] {
+            klass.setAttribute(TransformationConstants.JOIN_POINT_INDEX_ATTRIBUTE, new byte[] {
                 new Integer(0).byteValue()
             });
             return 0;
@@ -715,7 +716,7 @@ public class JavassistHelper {
      * @param index
      */
     public static void setJoinPointIndex(final CtClass klass, final int index) {
-        klass.setAttribute(TransformationUtil.JOIN_POINT_INDEX_ATTRIBUTE, new byte[] {
+        klass.setAttribute(TransformationConstants.JOIN_POINT_INDEX_ATTRIBUTE, new byte[] {
             new Integer(index).byteValue()
         });
     }

@@ -15,6 +15,7 @@ import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 
 import java.util.Iterator;
 import java.util.List;
@@ -236,10 +237,10 @@ public class MethodCallUnTransformer implements Transformer {
      */
     private String addCalleeMethodDeclaringClassField(final CtClass ctClass, final CtMethod ctMethod) throws NotFoundException,
             CannotCompileException {
-        String fieldName = TransformationUtil.STATIC_CLASS_FIELD
-            + TransformationUtil.DELIMITER
+        String fieldName = TransformationConstants.STATIC_CLASS_FIELD
+            + TransformationConstants.DELIMITER
             + "method"
-            + TransformationUtil.DELIMITER
+            + TransformationConstants.DELIMITER
             + ctMethod.getDeclaringClass().getName().replace('.', '_');
         boolean hasField = false;
         CtField[] fields = ctClass.getDeclaredFields();
@@ -294,7 +295,7 @@ public class MethodCallUnTransformer implements Transformer {
     public static boolean methodFilterCaller(final CtBehavior method) {
         if (Modifier.isNative(method.getModifiers())
             || Modifier.isInterface(method.getModifiers())
-            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)) {
+            || method.getName().equals(TransformationConstants.CLASS_LOOKUP_METHOD)) {
             return true;
         } else {
             return false;
@@ -311,8 +312,8 @@ public class MethodCallUnTransformer implements Transformer {
     public static boolean methodFilterCallee(final CtMethod method) {
         if (method.getName().equals("<init>")
             || method.getName().equals("<clinit>")
-            || method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
-            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)) {
+            || method.getName().startsWith(TransformationConstants.ORIGINAL_METHOD_PREFIX)
+            || method.getName().equals(TransformationConstants.CLASS_LOOKUP_METHOD)) {
             return true;
         } else {
             return false;

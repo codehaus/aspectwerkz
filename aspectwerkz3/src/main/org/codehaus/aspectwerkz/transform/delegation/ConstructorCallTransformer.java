@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistMethodInfo;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 
 import java.util.Iterator;
 import java.util.List;
@@ -119,7 +120,7 @@ public class ConstructorCallTransformer implements Transformer {
                             // class, if that is the case
                             // then we have have class loaded and set in the
                             // ___AW_clazz already
-                            String declaringClassMethodName = TransformationUtil.STATIC_CLASS_FIELD;
+                            String declaringClassMethodName = TransformationConstants.STATIC_CLASS_FIELD;
                             CtClass declaringClass = ctConstructor.getDeclaringClass();
                             if (!declaringClass.getName().replace('/', '.').equals(
                                 where.getDeclaringClass().getName().replace('/', '.'))) {
@@ -142,15 +143,15 @@ public class ConstructorCallTransformer implements Transformer {
                                 body.append("Object nullObject = null;");
                             }
                             body.append("$_ = ($r)");
-                            body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                            body.append(TransformationConstants.JOIN_POINT_MANAGER_FIELD);
                             body.append('.');
-                            body.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
+                            body.append(TransformationConstants.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
                             body.append('(');
                             body.append(JavassistHelper.calculateHash(ctConstructor));
                             body.append(',');
                             body.append(klass.getJoinPointIndex());
                             body.append(", args, ");
-                            body.append(TransformationUtil.STATIC_CLASS_FIELD);
+                            body.append(TransformationConstants.STATIC_CLASS_FIELD);
                             if (Modifier.isStatic(where.getModifiers())) {
                                 body.append(", nullObject, ");
                             } else {
@@ -161,7 +162,7 @@ public class ConstructorCallTransformer implements Transformer {
                             body.append("\",\"");
                             body.append(where.getSignature());
                             body.append("\",");
-                            body.append(TransformationUtil.JOIN_POINT_TYPE_CONSTRUCTOR_CALL);
+                            body.append(TransformationConstants.JOIN_POINT_TYPE_CONSTRUCTOR_CALL);
                             body.append("); }");
                             newExpr.replace(body.toString());
                             context.markAsAdvised();
@@ -190,10 +191,10 @@ public class ConstructorCallTransformer implements Transformer {
      */
     private String addCalleeMethodDeclaringClassField(final CtClass ctClass, final CtConstructor ctConstructor) throws NotFoundException,
             CannotCompileException {
-        String fieldName = TransformationUtil.STATIC_CLASS_FIELD
-            + TransformationUtil.DELIMITER
+        String fieldName = TransformationConstants.STATIC_CLASS_FIELD
+            + TransformationConstants.DELIMITER
             + "init"
-            + TransformationUtil.DELIMITER
+            + TransformationConstants.DELIMITER
             + ctConstructor.getDeclaringClass().getName().replace('.', '_');
         boolean hasField = false;
         CtField[] fields = ctClass.getDeclaredFields();
@@ -248,7 +249,7 @@ public class ConstructorCallTransformer implements Transformer {
     public static boolean methodFilterCaller(final CtBehavior method) {
         if (Modifier.isNative(method.getModifiers())
             || Modifier.isInterface(method.getModifiers())
-            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)) {
+            || method.getName().equals(TransformationConstants.CLASS_LOOKUP_METHOD)) {
             return true;
         } else {
             return false;
@@ -262,7 +263,7 @@ public class ConstructorCallTransformer implements Transformer {
      * @return boolean true if the method should be filtered away
      */
     public static boolean constructorFilter(final CtConstructor constructor) {
-        if (constructor.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+        if (constructor.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
             return true;
         } else {
             return false;

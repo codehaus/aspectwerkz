@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -202,8 +203,8 @@ public class PrepareTransformer implements Transformer {
             || Modifier.isNative(method.getModifiers())
             || method.getName().equals("<init>")
             || method.getName().equals("<clinit>")
-            || method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
-            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)) {
+            || method.getName().startsWith(TransformationConstants.ORIGINAL_METHOD_PREFIX)
+            || method.getName().equals(TransformationConstants.CLASS_LOOKUP_METHOD)) {
             return true;
         }
         return false;

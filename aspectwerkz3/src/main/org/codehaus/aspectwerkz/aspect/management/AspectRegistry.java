@@ -26,6 +26,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.util.Strings;
 
@@ -548,12 +549,12 @@ public class AspectRegistry {
         TIntObjectHashMap methodMap = new TIntObjectHashMap(methods.length);
         for (int i = 0; i < methods.length; i++) {
             Method wrapperMethod = methods[i];
-            if (!wrapperMethod.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+            if (!wrapperMethod.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
                 Method prefixedMethod = null;
                 for (int j = 0; j < methods.length; j++) {
                     Method method2 = methods[j];
-                    if (method2.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
-                        String[] tokens = Strings.splitString(method2.getName(), TransformationUtil.DELIMITER);
+                    if (method2.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
+                        String[] tokens = Strings.splitString(method2.getName(), TransformationConstants.DELIMITER);
                         String methodName = tokens[1];
                         if (!methodName.equals(wrapperMethod.getName())) {
                             continue;
@@ -625,7 +626,7 @@ public class AspectRegistry {
                         }
                     }
                     if (parameterTypes2[parameterTypes1.length].getName().equals(
-                        TransformationUtil.JOIN_POINT_MANAGER_CLASS)) {
+                        TransformationConstants.JOIN_POINT_MANAGER_CLASS)) {
                         match = true;
                     }
                     if (!match) {
@@ -644,7 +645,7 @@ public class AspectRegistry {
                         }
                     }
                     if (parameterTypes1[parameterTypes2.length].getName().equals(
-                        TransformationUtil.JOIN_POINT_MANAGER_CLASS)) {
+                        TransformationConstants.JOIN_POINT_MANAGER_CLASS)) {
                         match = true;
                     }
                     if (!match) {

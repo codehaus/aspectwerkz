@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 
 import java.util.Iterator;
 import java.util.List;
@@ -149,10 +150,10 @@ public class AddImplementationTransformer implements Transformer {
                 body.append("Object[] aobj = $args;");
             }
             body.append("return ($r)");
-            body.append(TransformationUtil.ASPECT_MANAGER_FIELD);
-            body.append(".").append(TransformationUtil.GET_MIXIN_METHOD);
+            body.append(TransformationConstants.ASPECT_MANAGER_FIELD);
+            body.append(".").append(TransformationConstants.GET_MIXIN_METHOD);
             body.append("(").append(mixinIndex).append(")");
-            body.append(".").append(TransformationUtil.INVOKE_MIXIN_METHOD);
+            body.append(".").append(TransformationConstants.INVOKE_MIXIN_METHOD);
             body.append("(").append(methodIndex).append(",");
             if (parameters.length > 0) {
                 body.append("aobj").append(",");
