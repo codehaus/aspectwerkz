@@ -160,9 +160,9 @@
         <ajc srcdir="${d}/src/aspectj;${d}/src/main" destdir="${d}/target" classpathref="project.classpath"/>
     </target>
 
-    <target name="compile:jasco" depends="init">
+    <target name="compile:jasco" depends="init, compile">
         <jascoaspectcompiler input="${d}/src/jasco/awbench/jasco/MethodExecutionAspect.asp" destination="${d}/target" classpath="${d}/target" classpathref="project.classpath"/>
-	<jascoconnectorcompiler input="${d}/src/jasco/awbench/jasco/MethodExecutionAspectConnector.con" destination="${d}/target" classpath="${d}/target" classpathref="project.classpath"/>
+    	<jascoconnectorcompiler input="${d}/src/jasco/awbench/jasco/MethodExecutionAspectConnector.con" destination="${d}/target" classpath="${d}/target" classpathref="project.classpath"/>
     </target>
 
     <target name="compile:jboss" depends="init">
