@@ -2,7 +2,6 @@
 <aspectwerkz>
     <system id="awbench">
         <aspect class="awbench.extension.spring.MethodExecutionBeforeAdvice">
-<!--            <advice name="before" type="before" bind-to="execution(* awbench.method.Execution.before*(..))"/>-->
             <advice name="before" type="before" bind-to="execution(* awbench.method.Execution.before*(..)) || execution(* awbench.method.Execution.with*(..))"/>
         </aspect>
         <aspect class="awbench.extension.spring.MethodExecutionAfterReturningAdvice">
