@@ -19,7 +19,7 @@ import java.util.Iterator;
  * Issued from JMangler, the transformer stack is hardcoded here - need refactoring.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: AspectWerkzPreProcessor.java,v 1.1.2.1 2003-07-16 08:13:21 avasseur Exp $
+ * @version $Id: AspectWerkzPreProcessor.java,v 1.1.2.2 2003-07-17 17:48:48 avasseur Exp $
  */
 public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.ClassPreProcessor {
 
@@ -73,6 +73,13 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
         if (filter(klass))
             return bytecode;
 
+        if (klass.startsWith("weblogic.rmi.internal.dgc.DGCServerImpl_WLSkel")) {
+            return bytecode;
+        }
+
+        //@todo temp
+        System.out.println(klass);
+
         // prepare BCEL ClassGen
         AspectWerkzUnextendableClassSet cs = null;
         try {
@@ -111,13 +118,22 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
 
         //dump
         //@todo refactor dump facility
-        if ("yes".equalsIgnoreCase(System.getProperty("aw.besee.dump", "no"))) {
+        /*if ("yes".equalsIgnoreCase(System.getProperty("aw.besee.dump", "no"))) {
             try {
                 cs.getClassGen().getJavaClass().dump("dump/"+klass.replace('.', '/')+".class");
             } catch (Exception e) {
                 ;
             }
+        }*/
+        //@todo temp
+        if (klass.startsWith("weblogic.rmi.internal.dgc.")) {
+            try {
+                cs.getClassGen().getJavaClass().dump("dump/"+klass.replace('.', '/')+".class");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
 
         return cs.getBytecode();
     }
