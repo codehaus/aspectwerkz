@@ -299,6 +299,9 @@ public class FieldSetGetTransformer implements Transformer {
         if (fieldMetaData.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return true;
         }
+        if (Modifier.isFinal(fieldMetaData.getModifiers())) {
+            return true;
+        }
         if (definition.hasSetPointcut(classMetaData, fieldMetaData)) {
             return false;
         }

@@ -15,6 +15,7 @@ import java.util.Map;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.definition.expression.ExecutionExpression;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
@@ -525,31 +526,47 @@ public class PointcutManager {
 //    }
 
     /**
-     * Returns all the cflow call expression for the given metadata (callee side)
+     * Returns all the expression with 1+ cflow for the given metadata
+     * The Expression are optimized thru inflated evaluation
+     *
+     * TODO: ALEX AVCF: support for @CALL etc cflow
      *
      * @param classMetaData  the name of the class
-     * @param methodMetaData the meta-data for the method
+     * @param memberMetaData the meta-data for the method / field
+     * @param callerClassMetaData
+     * @param pointcutType
      * @return the pointcuts
      */
     public List getCFlowExpressions(
             final ClassMetaData classMetaData,
-            final MethodMetaData methodMetaData) {
+            final MemberMetaData memberMetaData,
+            final ClassMetaData callerClassMetaData,
+            final PointcutType pointcutType) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
-        if (methodMetaData == null) {
-            throw new IllegalArgumentException("method meta-data can not be null");
+        if (memberMetaData == null) {
+            throw new IllegalArgumentException("member meta-data can not be null");
         }
 
-        List pointcutList = new ArrayList();
-        for (Iterator it = m_methodToCFlowMethodsMap.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry)it.next();
-            Expression expression = (Expression)entry.getKey();
-            if (expression.match(classMetaData, methodMetaData, PointcutType.ANY)) {
-                pointcutList.addAll((List)entry.getValue());
+        List expressions = new ArrayList();
+        List pointcutListToLookIn = null;
+        if (pointcutType.equals(PointcutType.EXECUTION)) {
+            pointcutListToLookIn = m_executionPointcuts;
+        } else {
+            throw new RuntimeException("TODO: cflow for @CALL @GET/SET ...");
+        }
+        for (Iterator it = pointcutListToLookIn.iterator(); it.hasNext();) {
+            Expression expression = ((ExecutionPointcut)it.next()).getExpression();
+            // filter out if does not contains CFLOW exprs
+            if (expression.isOfType(PointcutType.CFLOW)
+                && expression.match(classMetaData, memberMetaData, PointcutType.EXECUTION)) {
+                // generate a minimalist expression like "TRUE AND cflow OR FALSE"
+                // where TRUE , FALSE etc is the result of the match as done at TF time
+                expressions.add(expression.extractCflowExpression(classMetaData, memberMetaData, pointcutType));
             }
         }
-        return pointcutList;
+        return expressions;
     }
 
     // --- over-ridden methods ---

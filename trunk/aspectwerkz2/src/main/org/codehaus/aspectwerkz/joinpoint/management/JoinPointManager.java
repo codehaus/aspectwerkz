@@ -196,6 +196,7 @@ public class JoinPointManager {
 
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
 
+        //TODO: ALEX AVCF - JIT breaks cflow - dig that
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(
                     methodHash, joinPointType, PointcutType.EXECUTION, joinPointInfo, m_targetClass, m_targetClass
@@ -658,7 +659,8 @@ public class JoinPointManager {
 
         List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
                 ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-                ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod())
+                ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
+                null, PointcutType.EXECUTION//TODO CAN BE @CALL - see proceedWithCallJoinPoint
         );
 
         // TODO: cflow for before and after advices needed

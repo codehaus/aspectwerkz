@@ -9,23 +9,25 @@ package org.codehaus.aspectwerkz.definition.expression.visitor;
 
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionContext;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.ast.AndNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.BooleanLiteral;
 import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisitor;
 import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionScript;
 import org.codehaus.aspectwerkz.definition.expression.ast.FalseNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.Identifier;
-import org.codehaus.aspectwerkz.definition.expression.ast.InNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.NotInNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.CflowPattern;
 
 /**
- * Evaluate the expression, ignore the IN and NOT IN sub-expressions<br/>
+ * Evaluate the expression, ignore the CFLOW sub-expressions<br/>
  * Resulting Boolean is returned<br/>
  * Visit' data is namespace to retrieve expression from literals
+ *
+ * This visit should be used at TF time only
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -49,13 +51,13 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
         return rhs;
     }
 
-    public Object visit(InNode node, Object data) {
-        return node.jjtGetChild(0).jjtAccept(this, data);
-    }
-
-    public Object visit(NotInNode node, Object data) {
-        return node.jjtGetChild(0).jjtAccept(this, data);
-    }
+//    public Object visit(InNode node, Object data) {
+//        return node.jjtGetChild(0).jjtAccept(this, data);
+//    }
+//
+//    public Object visit(NotInNode node, Object data) {
+//        return node.jjtGetChild(0).jjtAccept(this, data);
+//    }
 
     public Object visit(AndNode node, Object data) {
         Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
@@ -81,9 +83,14 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
         String leafName = node.name;
         Expression expression = ctx.getNamespace().getExpression(leafName);
         if (expression != null) {
-            return new Boolean(
-                    expression.match(ctx.getClassMetaData(), ctx.getMemberMetaData(), ctx.getExceptionType(), ctx.getPointcutType())
-            );
+            if (PointcutType.isCflowTypeOnly(expression.getTypes())) {
+                return Boolean.TRUE;//match at TF time
+            } else {
+                //TODO WITHIN
+                return new Boolean(expression.match(ctx.getClassMetaData(),
+                        ctx.getMemberMetaData(), ctx.getExceptionType(), ctx.getPointcutType())
+                );
+            }
         }
         else {
             throw new RuntimeException("no such registered expression");

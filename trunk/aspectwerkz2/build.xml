@@ -147,6 +147,25 @@
         <copy tofile="${lib.dir}/aspectwerkz-extensions-${version}.jar" file="${target.dir}/extensions.jar" overwrite="true"/>
     </target>
 
+    <target name="aspectwerkz:jjtree"
+        depends="aspectwerkz:init">
+        <delete dir="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast/">
+            <include name="*.java"/>
+            <exclude name="Identifier.java"/>
+            <exclude name="CflowPattern.java"/>
+        </delete>
+        <delete dir="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast/" includes="*.jj"/>
+        <jjtree target="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast/expression_grammar.jjt"
+            outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast"
+            javacchome="D:\java\javacc-3.2"/>
+        <javacc target="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast/expression_grammar.jj"
+            outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/definition/expression/ast"
+            javacchome="D:\java\javacc-3.2"/>
+    </target>
+
+
+
+
     <!-- =================================================== -->
     <!--  offline transforms the tests -->
     <!--  illustration purpose -->

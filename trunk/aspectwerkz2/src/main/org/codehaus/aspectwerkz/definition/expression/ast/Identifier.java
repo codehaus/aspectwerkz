@@ -19,4 +19,8 @@ public class Identifier extends SimpleNode {
     public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+
+    public String toString() {
+        return name;
+    }
 }

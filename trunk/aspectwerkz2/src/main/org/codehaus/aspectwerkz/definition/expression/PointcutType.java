@@ -7,6 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression;
 
+import java.util.Set;
+import java.util.Iterator;
+
 /**
  * Type-safe enum for the pointcut types.
  *
@@ -34,4 +37,21 @@ public class PointcutType {
     public String toString() {
         return m_name;
     }
+
+    public static boolean isCflowTypeOnly(Set typeSet) {
+        boolean hasCflow = false;
+        boolean hasOther = false;
+        for (Iterator types = typeSet.iterator(); types.hasNext();) {
+            PointcutType type = (PointcutType)types.next();
+            if (type.equals(PointcutType.CFLOW)) {
+                hasCflow = true;
+            } else {
+                //TODO add support for WITHIN
+                //??ANY??
+                hasOther = true;
+            }
+        }
+        return (hasCflow && ! hasOther);
+    }
+
 }

@@ -94,10 +94,11 @@ public class ExpressionTest extends TestCase {
             space.registerExpression(
                     space.createExpression("* test.ExpressionTest.get2(..)", "", "cf2", PointcutType.CFLOW)
             );
-            //Expression root = ExpressionNamespace.getExpressionNamespace().createExpression("pc1 IN (cf1 OR cf2)");
-            Expression root = ExpressionNamespace.getExpressionNamespace().createExpression("pc1 IN (cf1)");
+            Expression root1 = ExpressionNamespace.getExpressionNamespace().createExpression("pc1 AND (cf1 OR cf2)");
+            Expression root2 = ExpressionNamespace.getExpressionNamespace().createExpression("pc1 AND cf1");
         }
         catch (Exception e) {
+            e.printStackTrace();
             fail(e.toString());
         }
     }
@@ -345,7 +346,7 @@ public class ExpressionTest extends TestCase {
         try {
             space.registerExpression("* test.ExpressionTest.get(..)", "", "pc1", PointcutType.EXECUTION);
             space.registerExpression("* test.ExpressionTest.set(..)", "", "cf1", PointcutType.CFLOW);
-            Expression root = space.createExpression("pc1 IN cf1");
+            Expression root = space.createExpression("pc1 AND cf1");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
             ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
@@ -374,7 +375,7 @@ public class ExpressionTest extends TestCase {
         try {
             space.registerExpression("* test.ExpressionTest.get(..)", "", "pc1", PointcutType.CALL);
             space.registerExpression("* test.ExpressionTest.set(..)", "", "cf1", PointcutType.CFLOW);
-            Expression root = space.createExpression("pc1 IN cf1");
+            Expression root = space.createExpression("pc1 AND cf1");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
             MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(

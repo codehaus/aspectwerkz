@@ -30,6 +30,7 @@ import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
@@ -469,19 +470,24 @@ public class AspectRegistry {
     }
 
     /**
-     * Returns the cflow pointcut list for the class and method specified.
+     * Returns the cflow expressions list for the class and method specified.
      *
      * @param classMetaData  the meta-data for the class
-     * @param methodMetaData meta-data for the method
-     * @return the pointcuts for this join point
+     * @param memberMetaData meta-data for the method | field
+     * @param callerClassMetaData
+     * @param pointcutType
+     * @return the expression with 1+ cflow for this join point (optimized thru inflated evaluation)
      */
-    public List getCflowPointcuts(final ClassMetaData classMetaData, final MethodMetaData methodMetaData) {
-        List pointcuts = new ArrayList();
+    public List getCflowExpressions(final ClassMetaData classMetaData, final MemberMetaData memberMetaData,
+                                    final ClassMetaData callerClassMetaData, final PointcutType pointcutType) {
+        List expressions = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
-            pointcuts.addAll(aspect.getCFlowExpressions(classMetaData, methodMetaData));
+            expressions.addAll(aspect.getCFlowExpressions(classMetaData, memberMetaData,
+                                                          callerClassMetaData, pointcutType)
+            );
         }
-        return pointcuts;
+        return expressions;
     }
 
     /**
