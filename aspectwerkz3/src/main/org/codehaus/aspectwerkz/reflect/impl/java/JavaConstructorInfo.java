@@ -7,14 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
+import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
-
-import java.lang.reflect.Constructor;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Constructor;
 import java.util.List;
-
-import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the ConstructorInfo interface for java.lang.reflect.*.
@@ -57,8 +55,10 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
     public static JavaConstructorInfo getConstructorInfo(final Constructor constructor) {
         int hash = constructor.hashCode();
         WeakReference constructorInfoRef = (WeakReference)s_cache.get(hash);
-        JavaConstructorInfo constructorInfo = (constructorInfoRef==null?null:(JavaConstructorInfo)constructorInfoRef.get());
-        if (constructorInfoRef == null || constructorInfo == null) {
+        JavaConstructorInfo constructorInfo = ((constructorInfoRef == null) ? null
+                                                                            : (JavaConstructorInfo)constructorInfoRef
+                                                                              .get());
+        if ((constructorInfoRef == null) || (constructorInfo == null)) {
             new JavaClassInfo(constructor.getDeclaringClass());
             constructorInfo = (JavaConstructorInfo)((WeakReference)s_cache.get(hash)).get();
         }

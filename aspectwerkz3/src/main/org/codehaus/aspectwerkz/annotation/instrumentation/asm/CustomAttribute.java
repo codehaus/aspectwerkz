@@ -7,12 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation.asm;
 
+import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ByteVector;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
-import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 
 /**
  * @TODO: document

@@ -104,7 +104,6 @@ public class StartupManager {
             Constructor constructor = klass.getConstructor(new Class[] { CrossCuttingInfo.class });
             return (AspectContainer)constructor.newInstance(new Object[] { crossCuttingInfo });
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
             throw new DefinitionException(e.getTargetException().toString());
         } catch (NoSuchMethodException e) {
             throw new DefinitionException("aspect container does not have a valid constructor [" + containerClassName

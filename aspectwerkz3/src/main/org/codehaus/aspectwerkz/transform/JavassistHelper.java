@@ -7,9 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
-
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -39,7 +38,6 @@ import javassist.bytecode.Descriptor;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JavassistHelper {
-
     /**
      * Helper method for bogus CtMethod.make in Javassist for static methods
      *

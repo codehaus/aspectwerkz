@@ -39,6 +39,7 @@ public class ConstructorCallTransformer implements Transformer {
     /**
      * The join point index.
      */
+
     //AXprivate int m_joinPointIndex;
 
     /**
@@ -49,6 +50,7 @@ public class ConstructorCallTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
+
         //AXm_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO is not thread safe / reentrant
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
@@ -164,6 +166,7 @@ public class ConstructorCallTransformer implements Transformer {
                     }
                 });
         }
+
         //TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
         klass.flushJoinPointIndex();
     }

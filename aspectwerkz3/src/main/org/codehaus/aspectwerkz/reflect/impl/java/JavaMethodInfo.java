@@ -7,14 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
+import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import java.lang.reflect.Method;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
 import java.util.List;
-
-import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the MethodInfo interface for java.lang.reflect.*.
@@ -62,8 +61,8 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     public static JavaMethodInfo getMethodInfo(final Method method) {
         int hash = method.hashCode();
         WeakReference methodInfoRef = (WeakReference)s_cache.get(hash);
-        JavaMethodInfo methodInfo = (methodInfoRef==null?null:(JavaMethodInfo)methodInfoRef.get());
-        if (methodInfoRef == null || methodInfo == null) { //  declaring class is not loaded yet; load it and retry
+        JavaMethodInfo methodInfo = ((methodInfoRef == null) ? null : (JavaMethodInfo)methodInfoRef.get());
+        if ((methodInfoRef == null) || (methodInfo == null)) { //  declaring class is not loaded yet; load it and retry
             new JavaClassInfo(method.getDeclaringClass());
             methodInfo = (JavaMethodInfo)((WeakReference)s_cache.get(hash)).get();
         }

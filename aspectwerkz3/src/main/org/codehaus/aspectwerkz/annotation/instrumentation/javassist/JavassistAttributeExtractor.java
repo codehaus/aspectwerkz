@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation.javassist;
 
-import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
+import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;

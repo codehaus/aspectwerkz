@@ -8,7 +8,20 @@
 package org.codehaus.aspectwerkz.annotation.expression;
 
 import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
-import org.codehaus.aspectwerkz.annotation.expression.ast.*;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ASTAnnotation;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ASTArray;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ASTBoolean;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ASTChar;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ASTFloat;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ASTHex;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ASTIdentifier;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ASTInteger;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ASTKeyValuePair;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ASTOct;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ASTRoot;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ASTString;
+import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParserVisitor;
+import org.codehaus.aspectwerkz.annotation.expression.ast.SimpleNode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 

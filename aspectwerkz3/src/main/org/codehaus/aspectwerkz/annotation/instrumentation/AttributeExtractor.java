@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation;
 
+
 /**
  * Methods that should be implemented in order to extract attributes associate with a class.
  * <p/>

@@ -14,7 +14,6 @@ package org.codehaus.aspectwerkz.annotation;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface Annotation {
-
     /**
      * Returns the name.
      *
@@ -31,7 +30,7 @@ public interface Annotation {
 
     /**
      * Sets the full value of the annotation (including possible named parameters etc.).
-     * 
+     *
      * @param value
      */
     void setValue(String value);

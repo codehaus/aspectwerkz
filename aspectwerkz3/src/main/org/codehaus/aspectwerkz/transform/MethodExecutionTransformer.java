@@ -42,6 +42,7 @@ public class MethodExecutionTransformer implements Transformer {
     /**
      * The join point index.
      */
+
     //private int m_joinPointIndex;
 
     /**
@@ -52,6 +53,7 @@ public class MethodExecutionTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws Exception {
         List definitions = context.getDefinitions();
+
         //m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); // TODO not thread safe
         final CtClass ctClass = klass.getCtClass();
         ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
@@ -181,8 +183,8 @@ public class MethodExecutionTransformer implements Transformer {
      * @param methodHash     the method hash
      * @return the wrapper method
      */
-    private CtMethod createWrapperMethod(final CtClass ctClass, final CtMethod originalMethod, final int methodHash, final Klass klass)
-                                  throws NotFoundException, CannotCompileException {
+    private CtMethod createWrapperMethod(final CtClass ctClass, final CtMethod originalMethod, final int methodHash,
+                                         final Klass klass) throws NotFoundException, CannotCompileException {
         StringBuffer body = new StringBuffer();
         StringBuffer callBody = new StringBuffer();
         body.append('{');

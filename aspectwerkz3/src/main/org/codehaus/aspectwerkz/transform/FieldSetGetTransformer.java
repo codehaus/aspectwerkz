@@ -35,6 +35,7 @@ public class FieldSetGetTransformer implements Transformer {
     /**
      * The join point index.
      */
+
     //AXprivate int m_joinPointIndex;
 
     /**
@@ -45,8 +46,8 @@ public class FieldSetGetTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
-        //m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe and reentrant
 
+        //m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe and reentrant
         // loop over all the definitions
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
@@ -179,6 +180,7 @@ public class FieldSetGetTransformer implements Transformer {
                     }
                 });
         }
+
         //AXTransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
         klass.flushJoinPointIndex();
     }

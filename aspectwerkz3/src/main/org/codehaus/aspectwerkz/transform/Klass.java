@@ -46,7 +46,6 @@ public class Klass {
      * The initial bytecode of the class
      */
     private final byte[] m_initialBytecode;
-
     private int m_joinPointIndex = -1;
 
     /**

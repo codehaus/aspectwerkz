@@ -18,12 +18,11 @@ import java.io.Serializable;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class UntypedAnnotationProxy implements Annotation, Serializable {
-
     /**
      * The full value of the annotation.
      */
     protected String m_value = "";
-    
+
     /**
      * The name of the annotation.
      */
