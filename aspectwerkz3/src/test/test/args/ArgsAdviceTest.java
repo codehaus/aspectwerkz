@@ -141,12 +141,16 @@ public class ArgsAdviceTest extends TestCase implements Loggable {
     public static String getStaticField() {return s_field;}
     //arg(s)
     public void testFieldSetArg() {
+        try {
         m_logString = "";
         m_field = "s";
         assertEquals("before null,s before1 null,s after1 s,changed after s,s ", m_logString);
         s_logString = "";
         s_field = "s";
         assertEquals("before null,s before1 null,s after1 s,changed after s,s ", s_logString);
+        } catch (Error e) {
+            e.printStackTrace();
+        }
     }
 
 

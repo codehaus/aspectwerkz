@@ -22,17 +22,17 @@ public class CallExecutionTest extends TestCase implements Intf {
         super(name);
     }
 
-//    public void testPrivateMethod() {
-//        s_logString = "";
-//        privateMethod();
-//        assertEquals("call1 execution1 invocation execution2 call2 ", s_logString);
-//    }
-//
-//    public void testPublicMethod() {
-//        s_logString = "";
-//        publicMethod();
-//        assertEquals("call1 execution1 invocation execution2 call2 ", s_logString);
-//    }
+    public void testPrivateMethod() {
+        s_logString = "";
+        privateMethod();
+        assertEquals("call1 execution1 invocation execution2 call2 ", s_logString);
+    }
+
+    public void testPublicMethod() {
+        s_logString = "";
+        publicMethod();
+        assertEquals("call1 execution1 invocation execution2 call2 ", s_logString);
+    }
 
     public void testIntfMethod() {
         //AW-253
@@ -56,13 +56,13 @@ public class CallExecutionTest extends TestCase implements Intf {
         s_logString += wasHere;
     }
 
-//    private void privateMethod() {
-//        log("invocation ");
-//    }
-//
-//    public void publicMethod() {
-//        log("invocation ");
-//    }
+    private void privateMethod() {
+        log("invocation ");
+    }
+
+    public void publicMethod() {
+        log("invocation ");
+    }
 
     public void called() {
         //AW-253 interface declared method
