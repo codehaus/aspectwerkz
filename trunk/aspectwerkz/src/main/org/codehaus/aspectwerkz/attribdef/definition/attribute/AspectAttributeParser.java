@@ -140,7 +140,7 @@ public abstract class AspectAttributeParser {
                 introducedInterfaceNames,
                 introducedMethods,
                 aspectDef);
-        aspectDef.addInterfaceIntroduction(introDef);
+        aspectDef.addIntroduction(introDef);
     }
 
     /**
@@ -195,7 +195,7 @@ public abstract class AspectAttributeParser {
                                                                    final String introductionName,
                                                                    final String interfaceClassName,
                                                                    final AspectDefinition aspectDef) {
-        IntroductionDefinition introDef = createInterfaceIntroductionDefinition(
+        InterfaceIntroductionDefinition introDef = createInterfaceIntroductionDefinition(
                 introductionName, expression, interfaceClassName, aspectDef);
         aspectDef.addInterfaceIntroduction(introDef);
     }
@@ -259,13 +259,13 @@ public abstract class AspectAttributeParser {
      * @param aspectDef the aspect definition
      * @return the new introduction definition
      */
-    protected IntroductionDefinition createInterfaceIntroductionDefinition(
+    protected InterfaceIntroductionDefinition createInterfaceIntroductionDefinition(
             final String introductionName,
             final String expression,
             final String interfaceClassName,
             final AspectDefinition aspectDef) {
 
-        final IntroductionDefinition introDef = new IntroductionDefinition(
+        final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(
                 introductionName, expression, interfaceClassName
         );
 

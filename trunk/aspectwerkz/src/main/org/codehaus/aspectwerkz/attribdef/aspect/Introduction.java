@@ -22,12 +22,14 @@ import java.util.Arrays;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Constructor;
+import java.io.Serializable;
+import java.io.ObjectInputStream;
 
 /**
  * Interface+Implementation Introduction
  *
  * This represents the inner class mixin based implementation in the system
- * todo: is serializable needed ?
+ * todo: is serializable needed ? if so move all non serializable to a container
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -195,7 +197,7 @@ public class Introduction implements Mixin {
                 }
                 boolean missingInterface = false;
                 String requiredInterfaceName = null;
-                for (Iterator i = m_definition.getInterfaceIntroductions().iterator(); i.hasNext();) {
+                for (Iterator i = m_definition.getInterfaceClassNames().iterator(); i.hasNext();) {
                     requiredInterfaceName = (String)i.next();
                     if ( ! newInterfaceNames.contains(requiredInterfaceName)) {
                         missingInterface = true;

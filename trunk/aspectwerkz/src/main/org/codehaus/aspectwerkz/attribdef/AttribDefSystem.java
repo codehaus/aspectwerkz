@@ -260,12 +260,9 @@ public final class AttribDefSystem implements System {
                                 }
 
 
-                                List introductions = aspect.___AW_getAspectDef().getInterfaceIntroductions();
+                                List introductions = aspect.___AW_getAspectDef().getIntroductions();
                                 for (Iterator it = introductions.iterator(); it.hasNext(); ) {
                                     IntroductionDefinition introDef = (IntroductionDefinition) it.next();
-                                    if (introDef.getMethodIntroductions().isEmpty()) {
-                                        continue;//TODO bad
-                                    }
                                     Introduction mixin = new Introduction(introDef.getName(), aspect, introDef);
                                     //todo : very bad
                                     final Mixin[] tmpMixins = new Mixin[m_mixins.length + 1];

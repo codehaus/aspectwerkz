@@ -15,6 +15,9 @@ import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * Holds the meta-data for the interface introductions.
+ * This definition holds only pure interface introduction.
+ *
+ * It is extended in IntroductionDefinition for interface+implementation introductions
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -28,27 +31,27 @@ public class InterfaceIntroductionDefinition {
     /**
      * The pointcut for the introduction.
      */
-    private final String m_expression;
+    protected final String m_expression;
 
     /**
      * The introduction weaving rule.
      */
-    private IntroductionWeavingRule m_weavingRule;
+    protected IntroductionWeavingRule m_weavingRule;
 
     /**
      * The attribute for the introduction.
      */
-    private String m_attribute = "";
+    protected String m_attribute = "";
 
     /**
      * The pointcut definition references.
      */
-    private List m_pointcutRefs = null;
+    protected List m_pointcutRefs = null;
 
     /**
-     * The interface class name.
+     * The interface classes name.
      */
-    private String m_interfaceClassName;
+    protected List m_interfaceClassNames = new ArrayList();
 
     /**
      * Creates a new introduction meta-data instance.
@@ -65,7 +68,7 @@ public class InterfaceIntroductionDefinition {
         if (expression == null) throw new IllegalArgumentException("expression can not be null");
 
         m_name = name;
-        m_interfaceClassName = interfaceClassName;
+        m_interfaceClassNames.add(interfaceClassName);
         m_expression = expression;
     }
 
@@ -81,7 +84,7 @@ public class InterfaceIntroductionDefinition {
     /**
      * Returns the pointcut.
      *
-     * @retur1n the pointcut
+     * @return the pointcut
      */
     public String getExpression() {
         return m_expression;
@@ -93,7 +96,16 @@ public class InterfaceIntroductionDefinition {
      * @return the class name of the interface
      */
     public String getInterfaceClassName() {
-        return m_interfaceClassName;
+        return (String) m_interfaceClassNames.get(0);
+    }
+
+    /**
+     * Returns the class name of the interface.
+     *
+     * @return the class name of the interface
+     */
+    public List getInterfaceClassNames() {
+        return m_interfaceClassNames;
     }
 
     /**

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
 
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
