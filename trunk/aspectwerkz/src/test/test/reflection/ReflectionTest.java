@@ -47,4 +47,9 @@ public class ReflectionTest extends TestCase {
         Child c = new Child();
         assertEquals(-1, c.do$2(1));
     }
+
+    public void testReflectionCall() {
+        Child c = new Child();
+        assertEquals(+3, c.reflectionCallIncr(1));
+    }
 }
