@@ -143,7 +143,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
             return Boolean.TRUE;
         }
 
-        // if not 'call'
+        // if not a 'call' or 'handler' pointcut
         for (int i = 0; i < nrOfChildren; i++) {
             Boolean match = (Boolean)node.jjtGetChild(i).jjtAccept(this, data);
             if (match.equals(Boolean.TRUE)) {

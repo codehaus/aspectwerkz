@@ -52,7 +52,7 @@ public class JavaClassInfo implements ClassInfo {
     private boolean m_isArray = false;
 
     /**
-     * A list with the <code>ConstructorMetaData</code> instances.
+     * A list with the <code>ConstructorInfo</code> instances.
      */
     private final TIntObjectHashMap m_constructors = new TIntObjectHashMap();
 
@@ -62,7 +62,7 @@ public class JavaClassInfo implements ClassInfo {
     private final TIntObjectHashMap m_methods = new TIntObjectHashMap();
 
     /**
-     * A list with the <code>FieldMetaData</code> instances.
+     * A list with the <code>FieldInfo</code> instances.
      */
     private final TIntObjectHashMap m_fields = new TIntObjectHashMap();
 

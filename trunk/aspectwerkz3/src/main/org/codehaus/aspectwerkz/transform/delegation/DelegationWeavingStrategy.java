@@ -12,12 +12,17 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.Transformer;
 import org.codehaus.aspectwerkz.transform.WeavingStrategy;
 
 /**
+ * A weaving strategy implementing a weaving scheme based on delegation.
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class DelegationWeavingStrategy implements WeavingStrategy {
@@ -34,8 +39,7 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
     /**
      * Initializes the transformer stack.
      * 
-     * @param params
-     *            not used
+     * @param params not used
      */
     public void initialize(final Hashtable params) {
         m_addSerialVerUidTransformer = new AddSerialVersionUidTransformer();
@@ -56,13 +60,28 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
     }
 
     /**
+     * Transforms the class.
+     * 
      * @param className
      * @param klass
      * @param context
      */
     public void transform(final String className, final Context context) {
+//        ClassInfo classInfo = AsmClassInfo.getClassInfo(context.getInitialBytecode(), context.getLoader());
+//        System.out.println("classInfo.getName(): " + classInfo.getName());
+//        System.out.println("classInfo.getAnnotations(): " + classInfo.getAnnotations());
+//        System.out.println("classInfo.getAnnotations().size(): " + classInfo.getAnnotations().size());
+//        ClassInfo base = classInfo.getSuperClass();
+//        System.out.println("---- base.getName(): " + base.getName());
+//        MethodInfo[] methods = base.getMethods();
+//        for (int i = 0; i < methods.length; i++) {
+//            MethodInfo info = methods[i];
+//            System.out.println("-------- info.getName(): " + info.getName());
+//            System.out.println("-------- info.getReturnType().getName(): " + info.getReturnType().getName());
+//        }
+
         boolean advisedAtLeastOnce = false;
-        Klass klass = (Klass)context.getClassAbstraction();
+        Klass klass = (Klass) context.getClassAbstraction();
         for (Iterator it = m_stack.iterator(); it.hasNext();) {
             Object transformer = it.next();
             if (transformer instanceof Transformer) {

@@ -42,7 +42,6 @@ import java.util.Map;
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
- * @TODO: dump before/after broken on Javassist due to frozen status
  */
 public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassProcessor {
     private final static String AW_TRANSFORM_FILTER = "aspectwerkz.transform.filter";
@@ -120,6 +119,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * @return modified (or not) bytecode
      */
     public byte[] preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
+       
         // filter out ExtClassLoader and BootClassLoader
         if (!NOFILTER) {
             if ((loader == null) || (loader.getParent() == null)) {
@@ -184,6 +184,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             throw new RuntimeException("can not find cached class in cache for prepared classes: " + className);
         }
 
+        // FIXME this method does now work with inlining - uses javassist stuff
+
         // flush class info repository cache so that new weaving is aware of wrapper method existence
         JavassistClassInfoRepository.removeClassInfoFromAllClassLoaders(klazz.getName());
 
@@ -247,10 +249,21 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         }
     }
 
+    /**
+     * Always dumps class.
+     * 
+     * @param className
+     * @param context
+     */
     public static void dumpForce(final String className, final Context context) {
         context.dump("_dump/force/");
     }
 
+    /**
+     * Returns the caching tuples.
+     * 
+     * @return
+     */
     public Collection getClassCacheTuples() {
         return s_classByteCache.keySet();
     }

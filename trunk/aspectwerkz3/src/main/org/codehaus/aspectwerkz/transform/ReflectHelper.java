@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +17,8 @@ import java.util.List;
 import org.codehaus.aspectwerkz.MethodComparator;
 
 /**
+ * Helper class with utility methods for working with the java.lang.reflect.* package.
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ReflectHelper {
@@ -25,8 +26,7 @@ public class ReflectHelper {
     /**
      * Creates a sorted method list of all the public methods in the class and super classes.
      * 
-     * @param klass
-     *            the class with the methods
+     * @param klass the class with the methods
      * @return the sorted method list
      */
     public static List createSortedMethodList(final Class klass) {
@@ -59,8 +59,7 @@ public class ReflectHelper {
     /**
      * Converts modifiers represented in a string array to an int.
      * 
-     * @param modifiers
-     *            the modifiers as strings
+     * @param modifiers the modifiers as strings
      * @return the modifiers as an int
      */
     public static int getModifiersAsInt(final String[] modifiers) {
@@ -98,33 +97,17 @@ public class ReflectHelper {
     /**
      * Calculate the hash for a class.
      * 
-     * @param klass
-     *            the class
+     * @param klass the class
      * @return the hash
      */
     public static int calculateHash(final Class klass) {
-        //        int hash = 17;
-        //        Method[] methods = klass.getDeclaredMethods();
-        //        for (int i = 0; i < methods.length; i++) {
-        //            hash = (37 * hash) + calculateHash(methods[i]);
-        //        }
-        //        Constructor[] constructors = klass.getDeclaredConstructors();
-        //        for (int i = 0; i < constructors.length; i++) {
-        //            hash = (37 * hash) + calculateHash(constructors[i]);
-        //        }
-        //        Field[] fields = klass.getDeclaredFields();
-        //        for (int i = 0; i < fields.length; i++) {
-        //            hash = (37 * hash) + calculateHash(fields[i]);
-        //        }
-        //        return hash;
         return klass.getName().hashCode();
     }
 
     /**
      * Calculate the hash for a method.
      * 
-     * @param method
-     *            the method
+     * @param method the method
      * @return the hash
      */
     public static int calculateHash(final java.lang.reflect.Method method) {
@@ -140,8 +123,7 @@ public class ReflectHelper {
     /**
      * Calculate the hash for a constructor.
      * 
-     * @param constructor
-     *            the constructor
+     * @param constructor the constructor
      * @return the hash
      */
     public static int calculateHash(final Constructor constructor) {
@@ -157,8 +139,7 @@ public class ReflectHelper {
     /**
      * Calculate the hash for a field.
      * 
-     * @param field
-     *            the field
+     * @param field the field
      * @return the hash
      */
     public static int calculateHash(final Field field) {
