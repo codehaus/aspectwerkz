@@ -15,14 +15,14 @@ import java.util.StringTokenizer;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**
- * Holds the meta-data for the introductions.
+ * Holds the meta-data for the method introductions.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class IntroductionDefinition {
+public class MethodIntroductionDefinition {
 
     /**
-     * The name of the advice.
+     * The name of the introduction.
      */
     private String m_name;
 
@@ -37,12 +37,12 @@ public class IntroductionDefinition {
     private final String m_aspectName;
 
     /**
-     * The pointcut for the advice.
+     * The pointcut for the introduction.
      */
     private final String m_pointcut;
 
     /**
-     * The method for the advice.
+     * The method for the introduction.
      */
     private final Method m_method;
 
@@ -82,13 +82,13 @@ public class IntroductionDefinition {
      * @param methodIndex the method index
      * @param deploymentModel the deployment model
      */
-    public IntroductionDefinition(final String name,
-                                  final String aspectName,
-                                  final String aspectClassName,
-                                  final String pointcut,
-                                  final Method method,
-                                  final int methodIndex,
-                                  final String deploymentModel) {
+    public MethodIntroductionDefinition(final String name,
+                                        final String aspectName,
+                                        final String aspectClassName,
+                                        final String pointcut,
+                                        final Method method,
+                                        final int methodIndex,
+                                        final String deploymentModel) {
         if (name == null) throw new IllegalArgumentException("name can not be null");
         if (aspectName == null) throw new IllegalArgumentException("aspect name can not be null");
         if (aspectClassName == null) throw new IllegalArgumentException("class name can not be null");
@@ -112,15 +112,6 @@ public class IntroductionDefinition {
      */
     public String getName() {
         return m_name;
-    }
-
-    /**
-     * Sets the name or the introduction.
-     *
-     * @param name the name
-     */
-    public void setName(final String name) {
-        m_name = name.trim();
     }
 
     /**
