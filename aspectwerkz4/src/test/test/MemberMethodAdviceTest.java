@@ -19,7 +19,16 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     private String m_logString = "";
 
     public MemberMethodAdviceTest() {
+        MemberMethodAdviceTest fake = new MemberMethodAdviceTest(new Long(0));
+    }
 
+    //AW-393 test case
+    public MemberMethodAdviceTest(Integer fake) {
+    }
+
+    //AW-393 test case
+    public MemberMethodAdviceTest(Long l) {
+        this(new Integer(0));
     }
 
     public void testBeforeAroundAroundAfterAdvice() {
