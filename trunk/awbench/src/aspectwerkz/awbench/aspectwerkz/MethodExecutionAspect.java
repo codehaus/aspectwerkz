@@ -60,8 +60,8 @@ public class MethodExecutionAspect {
 
     /**
      * @AfterReturning(
-     *      type = java.lang.String,
-     *      expression = execution(* awbench.method.Execution.afterReturningString())
+     *      type = "java.lang.String",
+     *      expression = "execution(* awbench.method.Execution.afterReturningString())"
      * )
      */
     public void afterReturning(String returnValue) {
@@ -71,8 +71,8 @@ public class MethodExecutionAspect {
 
      /**
       * @AfterThrowing(
-      *      type = java.lang.RuntimeException,
-      *      expression = execution(* awbench.method.Execution.afterThrowingRTE())
+      *      type = "java.lang.RuntimeException",
+      *      expression = "execution(* awbench.method.Execution.afterThrowingRTE())"
       * )
      */
     public void afterThrowing(RuntimeException rte) {

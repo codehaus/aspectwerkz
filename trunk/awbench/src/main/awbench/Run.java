@@ -67,7 +67,7 @@ public class Run {
             if (run.adviceHit <= 0) {
                 System.out.print("[NOT ADVISED]       ");
             }
-            System.out.print(run.name);
+            System.out.print(run.adviceHit + "   " + run.name);
             System.out.println(" (measured in " + ITERATIONS + " iterations)");
             System.out.println("|--------------------------------------------------------------------------------");
         }
