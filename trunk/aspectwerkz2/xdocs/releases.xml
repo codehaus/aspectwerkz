@@ -12,13 +12,13 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 0.10.RC1
+                    The latest official release is 0.10.RC2
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.10.RC1.zip?download">0.10.RC1 in zip format.</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.10.RC2.zip?download">0.10.RC2 in zip format.</a>
                         </li>
                         <br/>
 
@@ -39,31 +39,77 @@
 
                         <br/>
                         <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/">native HotSwap modules (for 0.8 and later).</a>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/">Native HotSwap modules (for 0.8 and later).</a>
                         </li>
 
-                        <br/>
-                        <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.4.zip?download">0.7.4 in zip format.</a>
-                        </li>
-                        <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.4.tar.gz?download">0.7.4 in tar.gz format.</a>
-                        </li>
-
-                        <br/>
-                        <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.5.1.zip?download">0.5.1 in zip format.</a>
-                        </li>
-                        <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.5.1.tar.gz?download">0.5.1 in tar.gz format.</a>
-                        </li>
+<!--                        <br/>-->
+<!--                        <li>-->
+<!--                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.4.zip?download">0.7.4 in zip format.</a>-->
+<!--                        </li>-->
+<!--                        <li>-->
+<!--                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.4.tar.gz?download">0.7.4 in tar.gz format.</a>-->
+<!--                        </li>-->
+<!---->
+<!--                        <br/>-->
+<!--                        <li>-->
+<!--                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.5.1.zip?download">0.5.1 in zip format.</a>-->
+<!--                        </li>-->
+<!--                        <li>-->
+<!--                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.5.1.tar.gz?download">0.5.1 in tar.gz format.</a>-->
+<!--                        </li>-->
                     </ul>
                 </p>
             </subsection>
 
             <section name="Release notes">
 
-                <subsection name="New features and changes in release 0.10.x">
+                <subsection name="New features and changes in release 0.10RC2">
+
+                    <p>
+                        In this release is mainly a bug-fix release, but we have added some new functionality
+                        (and changed some APIs) as well:
+                        <ul>
+                            <li>
+                                Aspects does not have to extend the <code>Aspect</code> base class anymore, but
+                                can be any Java class and extend anything they like. The only requirement is that
+                                they have to have a default no-argument constructor.
+                            </li>
+                            <br/>
+                            <li>
+                                The <code>JoinPoint</code> class has two methods:
+                                <ul>
+                                    <li>
+                                        <code>getSignature()</code> - which is used to retrieve the static signature
+                                        for the join point.
+                                    </li>
+                                    <li>
+                                        <code>getRtti()</code> - which is used to retrieve the RTTI (Runtime Type Information)
+                                        about the join point.
+                                    </li>
+                                </ul>
+                                Both these methods returns a base interface that could be used, but is usually best
+                                to cast to a more fine-grained and specific type.
+                            </li>
+                            <br/>
+                            <li>
+                                Retrieval of information about the system, adding and reading of parameters and metadata etc. is
+                                done through the <code>CrossCuttingInfo</code> class. This instance can be retrieved
+                                from within an aspect like this:
+                                <code>CrossCuttingInfo info = CrossCuttingInfo.getInfo("systemID", this)</code>.
+                                See the docs for details.
+                            </li>
+                            <br/>
+                            <li>
+                                The possibility to provide your own aspect container implementation is back.
+                                Useful if you need to control how your aspects are instantiated for example if you
+                                want that to be handled by an IoC container (Spring, PicoContainer etc.))
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
+
+                <subsection name="New features and changes in release 0.10RC1">
+
                     <p>
                         AspectWerkz has gone through a lot of changes, the whole core engine has
                         for example been thrown out and replaced by a much more flexible and
@@ -71,11 +117,13 @@
                         orthogonal we have also implemented a JIT compiler that is making
                         AspectWerkz much more performant.  On top of that we have a new
                         implementation of true runtime weaving, which allows you to redefine
-                        your aspect model including adding <b>new</b> pointcuts at runtime.
+                        your aspect model including adding
+                        <b>new</b> pointcuts at runtime.
                     </p>
 
                     <p>
-                        We will not list all new features here, see the <a href="http://aspectwerkz.codehaus.org/">docs</a>
+                        We will not list all new features here, see the
+                        <a href="http://aspectwerkz.codehaus.org/">docs</a>
                         for details. But the main new features are these:
                     </p>
 
@@ -127,7 +175,8 @@
                                     You can compose new pointcuts by mixing any types of pointcuts.
                                 </li>
                             </ul>
-                            The syntax has changed slightly, both in the XML and attribute definition. However not more than that the migration should be fairly easy. See the <a href="http://aspectwerkz.codehaus.org/">docs</a> for details on the new syntax.
+                            The syntax has changed slightly, both in the XML and attribute definition. However not more than that the migration should be fairly easy. See the
+                            <a href="http://aspectwerkz.codehaus.org/">docs</a> for details on the new syntax.
                         </p>
 
                     </subsection>
@@ -145,58 +194,58 @@
                         </p>
 
                         <p>
-                        <b>The overhead of one around advice applied to a method call join point:</b>
-                        <table>
-                            <tr>
-                                <th></th>
-                                <th></th>
-                             </tr>
-                            <tr>
-                                <td>AspectJ 1.1.1
-                                </td>
-                                <td>0.000018 ms/call
-                                </td>
-                           </tr>
-                            <tr>
-                                <td>AspectWerkz 0.10 RC1
-                                </td>
-                                <td>0.000097 ms/call
-                                </td>
-                           </tr>
-                            <tr>
-                                <td>JBoss AOP 1.0Beta
-                                </td>
-                                <td>0.000181 ms/call
-                                </td>
-                           </tr>
-                        </table>
+                            <b>The overhead of one around advice applied to a method call join point:</b>
+                            <table>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <td>AspectJ 1.1.1
+                                    </td>
+                                    <td>0.000018 ms/call
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>AspectWerkz 0.10 RC1
+                                    </td>
+                                    <td>0.000097 ms/call
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>JBoss AOP 1.0Beta
+                                    </td>
+                                    <td>0.000181 ms/call
+                                    </td>
+                                </tr>
+                            </table>
                         </p>
 
                         <p>
-                        <b>The overhead of five around advice applied to a method call join point:</b>
-                        <table>
-                            <tr>
-                                <th></th>
-                                <th></th>
-                             </tr>
-                            <tr>
-                                <td>AspectJ 1.1.1</td>
-                                <td>0.000097 ms/call
-                                </td>
-                           </tr>
-                            <tr>
-                                <td>AspectWerkz 0.10 RC1
-                                </td>
-                                <td>0.000163 ms/call
-                                </td>
-                           </tr>
-                            <tr>
-                                <td>JBoss AOP 1.0Beta
-                                </td>
-                                <td>0.000263 ms/call
-                                </td>
-                           </tr>
-                        </table>
+                            <b>The overhead of five around advice applied to a method call join point:</b>
+                            <table>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <td>AspectJ 1.1.1</td>
+                                    <td>0.000097 ms/call
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>AspectWerkz 0.10 RC1
+                                    </td>
+                                    <td>0.000163 ms/call
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>JBoss AOP 1.0Beta
+                                    </td>
+                                    <td>0.000263 ms/call
+                                    </td>
+                                </tr>
+                            </table>
                         </p>
 
 

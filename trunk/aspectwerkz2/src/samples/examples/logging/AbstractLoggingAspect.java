@@ -12,7 +12,6 @@ import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @Aspect
  */
 public abstract class AbstractLoggingAspect {
 

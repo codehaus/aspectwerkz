@@ -11,7 +11,10 @@
 
         <section name="Features">
 
-            <subsection name="AspectWerkz supports the following features (very incomplete list)">
+            <subsection name="AspectWerkz supports the following features">
+                <p>
+                    This is a very incomplete list, see the documentation for all features.
+                </p>
                 <ul>
                     <li>
                         Runtime and load time bytecode modification (weaving).
@@ -54,7 +57,7 @@
                     </li>
                     <br/>
                     <li>
-                        Very high-performant. An <code>advice</code> adds an overhead of only ~0.00001 ms/call
+                        Very high-performant. An <code>advice</code> adds an overhead of only ~0.000009 ms/call
                         (on my Intel Pentium 4 Mobile 1.6 Mhz).
                     </li>
                     <br/>
