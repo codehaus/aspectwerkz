@@ -11,10 +11,7 @@
 
         <section name="AspectWerkz">
 
-<!--            <subsection name="AspectWerkz">-->
-<!--            </subsection>-->
-
-            <subsection name="Simple, dynamic and lightweight AOP for Java">
+            <subsection name="Simple, dynamic, lightweight and powerful AOP for Java">
                 <p>
                     <code>AspectWerkz</code> is a dynamic, lightweight and
                     high-performant AOP/AOSD framework for Java.
@@ -50,6 +47,18 @@
                     in both open source and commercial projects.
                 </p>
 
+            </subsection>
+
+        </section>
+
+        <section name="News">
+            <subsection name="2003-05-12 - AspectWerkz 0.5 has been released">
+                <p>
+                    The 0.5 release is a huge improvement compared to previous
+                    releases. Apart from fixing many bugs it is also packed with
+                    new features. For more information read the
+                    <a href="http://aspectwerkz.codehaus.org/releases.html">release notes</a>.
+                </p>
             </subsection>
         </section>
 

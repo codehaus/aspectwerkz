@@ -1293,8 +1293,6 @@ String timeOut = getParameter("timeout");
                         <p/>
                         You can of course compile the weave model anyway
                         and feed it to the system as outlined above.
-                        This will actually give you a slightly faster startup
-                        process (but add one compilation phase).
                     </li><br/>
                     (When you are using the XML definition you don't have to
                     care about the weave model.)
