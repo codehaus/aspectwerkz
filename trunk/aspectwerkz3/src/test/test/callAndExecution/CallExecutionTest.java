@@ -7,12 +7,12 @@
  **************************************************************************************/
 package test.callAndExecution;
 
-import org.codehaus.aspectwerkz.WeavedTestCase;
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CallExecutionTest extends WeavedTestCase {
+public class CallExecutionTest extends TestCase {
     private static String s_logString = "";
 
     public CallExecutionTest() {

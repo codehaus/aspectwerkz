@@ -7,12 +7,12 @@
  **************************************************************************************/
 package test.annotation;
 
-import org.codehaus.aspectwerkz.WeavedTestCase;
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AnnotationTest extends WeavedTestCase {
+public class AnnotationTest extends TestCase {
     private static String s_logString = "";
 
     /** @@privateField */

@@ -7,12 +7,12 @@
  **************************************************************************************/
 package test.pointcutexpression;
 
-import org.codehaus.aspectwerkz.WeavedTestCase;
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class PointcutExpressionTest extends WeavedTestCase {
+public class PointcutExpressionTest extends TestCase {
     public static String s_logString = "";
 
     public PointcutExpressionTest(String name) {

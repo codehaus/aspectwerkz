@@ -8,12 +8,11 @@
 package test.handler;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class HandlerTest extends WeavedTestCase {
+public class HandlerTest extends TestCase {
     private static String s_log = "";
 
     public HandlerTest() {

@@ -7,9 +7,9 @@
  **************************************************************************************/
 package test.bindingsyntax;
 
-import org.codehaus.aspectwerkz.WeavedTestCase;
+import junit.framework.TestCase;
 
-public class AdviceBindingTest extends WeavedTestCase {
+public class AdviceBindingTest extends TestCase {
     public static transient String flow = "";
 
     public AdviceBindingTest(String s) {
