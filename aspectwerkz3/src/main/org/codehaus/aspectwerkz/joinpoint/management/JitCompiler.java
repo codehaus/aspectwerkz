@@ -69,7 +69,7 @@ public class JitCompiler {
     private static final String SIGNATURE_FIELD_NAME = "m_signature";
     private static final String RTTI_FIELD_NAME = "m_rtti";
     private static final String SYSTEM_FIELD_NAME = "m_system";
-    private static final String TARGET_INSTANCE_FIELD_NAME = "m_targetInstance";
+    private static final String TARGET_INSTANCE_FIELD_NAME = "m_targetInstanceRef";
     private static final String TARGET_CLASS_FIELD_NAME = "m_targetClass";
     private static final String AROUND_ADVICE_FIELD_PREFIX = "m_around";
     private static final String BEFORE_ADVICE_FIELD_PREFIX = "m_before";
@@ -174,6 +174,10 @@ public class JitCompiler {
     private static final String L = "L";
     private static final String I = "I";
     private static final String SEMICOLON = ";";
+    private static final String WEAK_REFERENCE_CLASS_SIGNATURE = "Ljava/lang/ref/WeakReference;";
+    private static final String WEAK_REFERENCE_CLASS_NAME = "java/lang/ref/WeakReference";
+    private static final String WEAK_REFERENCE_GET_METHOD_NAME = "get";
+    private static final String WEAK_REFERENCE_GET_METHOD_SIGNATURE = "()Ljava/lang/Object;";
 
     /**
      * Private constructor to prevent instantiation.
@@ -851,7 +855,9 @@ public class JitCompiler {
         prepareParameterUnwrapping(joinPointType, argTypes, cv, className);
         if (!Modifier.isStatic(targetMethod.getModifiers())) {
             cv.visitVarInsn(Constants.ALOAD, 0);
-            cv.visitFieldInsn(Constants.GETFIELD, className, TARGET_INSTANCE_FIELD_NAME, OBJECT_CLASS_SIGNATURE);
+            cv.visitFieldInsn(Constants.GETFIELD, className, TARGET_INSTANCE_FIELD_NAME, WEAK_REFERENCE_CLASS_SIGNATURE);
+            cv.visitMethodInsn(Constants.INVOKEVIRTUAL, WEAK_REFERENCE_CLASS_NAME, WEAK_REFERENCE_GET_METHOD_NAME,
+                               WEAK_REFERENCE_GET_METHOD_SIGNATURE);
             cv.visitTypeInsn(Constants.CHECKCAST, declaringClassName);
         }
         unwrapParameters(argTypes, cv);

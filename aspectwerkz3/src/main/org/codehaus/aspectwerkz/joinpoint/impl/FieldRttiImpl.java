@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.joinpoint.impl;
 
 import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 
 /**
@@ -17,8 +18,8 @@ import java.lang.reflect.Field;
  */
 public class FieldRttiImpl implements FieldRtti {
     private final FieldSignatureImpl m_signature;
-    private final Object m_this;
-    private final Object m_target;
+    private final WeakReference m_thisRef;
+    private final WeakReference m_targetRef;
     private Object m_fieldValue;
 
     /**
@@ -30,8 +31,8 @@ public class FieldRttiImpl implements FieldRtti {
      */
     public FieldRttiImpl(final FieldSignatureImpl signature, final Object thisInstance, final Object targetInstance) {
         m_signature = signature;
-        m_this = thisInstance;
-        m_target = targetInstance;
+        m_thisRef = new WeakReference(thisInstance);
+        m_targetRef = new WeakReference(targetInstance);
     }
 
     /**
@@ -40,7 +41,7 @@ public class FieldRttiImpl implements FieldRtti {
      * @return the target instance
      */
     public Object getTarget() {
-        return m_target;
+        return m_targetRef.get();
     }
 
     /**
@@ -49,7 +50,7 @@ public class FieldRttiImpl implements FieldRtti {
      * @return the instance currently executing
      */
     public Object getThis() {
-        return m_this;
+        return m_thisRef.get();
     }
 
     /**

@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.joinpoint.impl;
 
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 
 /**
@@ -19,8 +20,8 @@ import java.lang.reflect.Method;
 public class MethodRttiImpl implements MethodRtti {
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[] {  };
     private final MethodSignatureImpl m_signature;
-    private final Object m_this;
-    private final Object m_target;
+    private final WeakReference m_thisRef;
+    private final WeakReference m_targetRef;
     private Object[] m_parameterValues = EMPTY_OBJECT_ARRAY;
     private Object m_returnValue;
 
@@ -33,8 +34,8 @@ public class MethodRttiImpl implements MethodRtti {
      */
     public MethodRttiImpl(final MethodSignatureImpl signature, final Object thisInstance, final Object targetInstance) {
         m_signature = signature;
-        m_this = thisInstance;
-        m_target = targetInstance;
+        m_thisRef = new WeakReference(thisInstance);
+        m_targetRef = new WeakReference(targetInstance);
     }
 
     /**
@@ -43,7 +44,7 @@ public class MethodRttiImpl implements MethodRtti {
      * @return the target instance
      */
     public Object getTarget() {
-        return m_target;
+        return m_targetRef.get();
     }
 
     /**
@@ -52,7 +53,7 @@ public class MethodRttiImpl implements MethodRtti {
      * @return the instance currently executing
      */
     public Object getThis() {
-        return m_this;
+        return m_thisRef.get();
     }
 
     /**
