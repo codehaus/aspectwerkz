@@ -39,28 +39,28 @@ public class CallerSideTestAspect extends Aspect {
     /**
      * @Before pc1 || pc3 || pc4 || pc6
      */
-    public void preAdvice1(final JoinPoint joinPoint) {
+    public void preAdvice1(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("pre1 ");
     }
 
     /**
      * @Before pc1 || pc3 || pc4 || pc6
      */
-    public void preAdvice2(final JoinPoint joinPoint) {
+    public void preAdvice2(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("pre2 ");
     }
 
     /**
      * @After pc2 || pc3 || pc5 || pc6
      */
-    public void postAdvice1(final JoinPoint joinPoint) {
+    public void postAdvice1(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("post1 ");
     }
 
     /**
      * @After pc2 || pc3 || pc5 || pc6
      */
-    public void postAdvice2(final JoinPoint joinPoint) {
+    public void postAdvice2(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("post2 ");
     }
 }

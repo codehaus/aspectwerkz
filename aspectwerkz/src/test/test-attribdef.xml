@@ -10,6 +10,7 @@
             <use-aspect class="CallerSideTestAspect"/>
             <use-aspect class="CFlowTestAspect"/>
             <use-aspect class="IntroductionTestAspect"/>
+            <use-aspect class="DynamicDeploymentTestAspect"/>
         </package>
     </system>
 </aspectwerkz>

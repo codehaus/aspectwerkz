@@ -61,28 +61,28 @@ public class FieldTestAspect extends Aspect {
     /**
      * @Before pc2 || pc5 || pc6 || pc9 || pc10 || pc13 || pc14 || pc17
      */
-    public void preAdvice1(final JoinPoint joinPoint) {
+    public void preAdvice1(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("pre1 ");
     }
 
     /**
      * @Before pc1 || pc5 || pc7 || pc11 || pc13 || pc15 || pc9 || pc17
      */
-    public void preAdvice2(final JoinPoint joinPoint) {
+    public void preAdvice2(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("pre2 ");
     }
 
     /**
      * @After pc4 || pc5 || pc8 || pc9 || pc12 || pc13 || pc16 || pc17
      */
-    public void postAdvice1(final JoinPoint joinPoint) {
+    public void postAdvice1(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("post1 ");
     }
 
     /**
      * @After pc3 || pc5 || pc8 || pc9 || pc12 || pc13 || pc16 || pc17
      */
-    public void postAdvice2(final JoinPoint joinPoint) {
+    public void postAdvice2(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("post2 ");
     }
 }
