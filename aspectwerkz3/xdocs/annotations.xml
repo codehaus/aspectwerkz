@@ -427,7 +427,7 @@ List annotationInfos = Annotations.getAnnotationInfos(field);
         <section name="Introducing Annotations">
             <p>
                 TODO - not yet implemented (targetted for
-                <code>1.0-beta2</code>)
+                <code>1.0 final</code>)
             </p>
         </section>
     </body>

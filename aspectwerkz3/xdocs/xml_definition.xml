@@ -100,10 +100,12 @@
                 <ul>
                     <li>
                         <code>name</code> -
-                        specifies the name of the pointcut. Needs to be a unique
-                        name throughout the aspect definintion.
+                        specifies the name of the pointcut. Needs to be composed of a first part also called pointcut name, unique
+                        throughout the aspect defininition, and an optional second part called the pointcut signature :
+                        <code>name="&lt;pointcut name&gt;[(&lt;pointcut signature&gt;)]"</code>.
+                        The signature must name its parameters (as if it was some source code).
                         <p/>
-                        Caution: names must only consist of these characters:
+                        Caution: pointcut names must only consist of these characters:
                         <code>[A-Z]</code>,
                         <code>[a-z]</code>,
                         <code>[0-9]</code> and the characters
@@ -111,8 +113,11 @@
                         <code>_</code> (not for example
                         <code>-</code> or
                         <code>/</code>).
+                        <br/>
+                        The optional <code>pointcut signature</code> must be compatible with the <code>args()</code> selector
+                        when used. The abbreviations for <code>java.lang.*</code> can be used as described
+                        <a href="definition_issues.html#Join_point_selection_pattern_language">here</a>.
                     </li>
-                    <br/>
                     <li>
                         <code>expression</code> - specifies the expression for the pointcut. This is the
                         pattern that picks out the join points that should be included in the pointcut.
@@ -140,6 +145,10 @@
     <pointcut name="pc5" expression="call(String foo.Callee.method()) AND within(foo.bar.*)"/>
     <pointcut name="pc6" expression="cflow(execution(* Transaction.begin(..)))"/>
     ...
+    <!-- do not use a pointcut name more than once (pcArg1) -->
+    <pointcut name="pcArg1(String s)" expression="execution(* foo.Bar.method(..)) AND args(s, ..)"/>
+    <pointcut name="pcArg1Same(String s)" expression="pc1 AND args(s, ..)"/>
+    <pointcut name="pcArg1Other(com.Foo foo, String[] s)" expression="execution(* foo.Bar.method(..)) AND args(foo, int, .., s)"/>
 </aspect>
                 ]]></source>
             </p>
@@ -165,7 +174,11 @@
                 <ul>
                     <li>
                         <code>name</code> - the name of the advice is the name of the method in the
-                        aspect class that implements the advice.
+                        aspect class that implements the advice, with a optional method signature if pointcut with
+                        signature are used. Abbreviations can be used in this signature, including for the <code>JoinPoint</code> parameter.
+                        The signature must name its parameters (as if it was some source code) like
+                        <code>advice3(JoinPoint jp, int i)</code>.
+                        The method defined this way must exist with the same signature in the aspect class hierarchy.
                     </li>
                     <br/>
                     <li>
@@ -185,9 +198,10 @@
                     <br/>
                     <li>
                         <code>bind-to</code> - binds the advice to a
-                        <code>pointcut</code> by referencing the name
-                         of the
+                        <code>pointcut</code> by referencing the name of the
                         <code>pointcut</code> or by defining an anonymous pointcut.
+                        If the pointcut has a signature (with <code>args()</code> selector), then those
+                        must be refered as named in the advice name signature part.
                     </li>
                     <br/>
                 </ul>
@@ -197,11 +211,19 @@
                 <source><![CDATA[
 <advice name="advice1"
         type="before"
-        bind-to="(pc1 || pc2) && pc3"/>
+        bind-to="(pc1 || pc2) AND pc3"/>
 
 <advice name="advice2"
         type="around"
         bind-to="execution(int examples.caching.Pi.getPiDecimal(int))"/>
+
+<advice name="advice3(JoinPoint jp, int i)"
+        type="around"
+        bind-to="pc1 AND args(i, String[], foo.Bar)"/>
+
+<advice name="advice4(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp, int i)"
+        type="around"
+        bind-to="execution(int examples.caching.Pi.getPiDecimal(..)) AND args(i)"/>
                  ]]></source>
             </p>
         </section>
@@ -406,6 +428,15 @@
                 <advice name="cache"
                         type="around"
                         bind-to="callee"/>
+
+                <!-- use of args() -->
+                <pointcut name="calleeArgFiltered(int i)"
+                          expression="callee AND args(i)"/>
+
+                <advice name="traceArg(JoinPoint jp, int theArg)"
+                        type="around"
+                        bind-to="calleeArgFiltered(theArg)"/>
+
             </aspect>
         </package>
     </system>

@@ -3,7 +3,7 @@
     <properties>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <author email="alex at gnilux dot com">Alexandre Vasseur</author>
-        <title>Integration schemes</title>
+        <title>Weaving</title>
     </properties>
     <body>
         <section name="Table of Contents">
@@ -63,6 +63,19 @@
                     AW distribution contains a
                     <b>command line tool</b> that helps to be up and running quickly, although it is a good thing to really
                     understand the different schemes for a production environment.
+                </p>
+            </subsection>
+            <subsection name="Just In Time join point optimization">
+                <p>
+                    By default, joinpoint execution logic blocks are compiled on the fly as standalone classes.
+                    This behavior is the default one since it provides the best performance, avoiding the use of reflection
+                    whe it comes to executes advices and target advised method/constructor.
+                    <br/>
+                    If you encounter troubles with this mode, it can be for now deactivated thru the option
+                    <code>-Daspectwerkz.jit.off=true</code> when you start your application (this can be used with an offline weaved
+                    application as well).
+                    <br/>
+                    This option might be deprecated with the 1.1 version.
                 </p>
             </subsection>
             <subsection name="Aspects deployment descriptors">

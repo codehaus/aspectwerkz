@@ -97,7 +97,9 @@
                     <code>org.codehaus.aspectwerkz.Pointcut</code>
                     along with metadata annotations which specifies the type of (execution, call, set, get, cflow or handler)
                     and pattern for the pointcut.
-                    See
+                    <br/>
+                    If the pointcut is used to retain parameters value of the matching target (method/constructor execution/call and field value set)
+                    it has to be defined as a method, with a signature that conforms to the <code>args()</code> selector in the expression.
                     <a href="#Pointcuts">Pointcuts section</a>.
                 </p>
             </subsection>
@@ -207,10 +209,11 @@ public class MyAspect {
                 <a href="definition_issues.html#Pointcut composition">Pointcut composition</a> sections.
             </p>
             <p>
-                Named pointcuts are defined as fields in the Aspect class and they have to follow the following requirements:
+                Named pointcuts are defined as fields in the Aspect class, or as method if they have a signature
+                (that is using the <code>args()</code> selector), and they have to follow the following requirements:
                 <ol>
                     <li>
-                        The field is of type
+                        If defined as a field, the field is of type
                         <code>org.codehaus.aspectwerkz.Pointcut</code> and should be
                         declared in the aspect class or hierarchy.
                     </li>
@@ -221,13 +224,26 @@ public class MyAspect {
                         There can be a composition, whether or not anonymous like in
                         <code>@Expression anExpression OR call(&lt;call pattern&gt;)</code>
                     </li>
+                    <br/>
+                    <li>
+                        If using the <code>args()</code> selector, the pointcut is defined as a method. The return type
+                        of the method does not matter, but the signature must conform to the <code>args()</code> selector
+                        (see samples below).
+                    </li>
+                    <br/>
+                    <li>
+                        The name of the pointcut must be unique - that is its signature does not allow to differenciate
+                        to pointcut defined as method. The methods names must differ.
+                    </li>
                 </ol>
             </p>
             <p>
-                The name of the pointcut is the field name.
+                The name of the pointcut is the field name if a field, or the method name if a method.
             </p>
             <p>
                 <source><![CDATA[
+    //-- defined as fields
+
     /**
      * @Expression execution(* com.package..*.*(..))
      */
@@ -237,6 +253,18 @@ public class MyAspect {
      * @Expression set(* com.package.Constants.*)
      */
     Pointcut allConstantAccess;
+
+    //-- defined as methods
+
+    /**
+     * @Expression execution(* com.package..*.*(..)) && args(s)
+     */
+    Poincut allMethodsWithStringArg(String s) {return null;}
+
+    /**
+     * @Expression execution(* com.package..*.*(..)) && args(i, s, String ..)
+     */
+    void allMethodsWithIntArgTwoStringArgsAndSomeOtherArgs(int i, String s) {}
                     ]]></source>
             </p>
         </section>
@@ -247,13 +275,23 @@ public class MyAspect {
                     <li>
                         The signature of the method is
                         <code>public Object &lt;name of method&gt;(JoinPoint joinPoint) throws Throwable</code>
-                        (the public modifier is not mandatory, choose according to your needs).
+                        (the public modifier is not mandatory, choose according to your needs) <b>unless...</b>
+                    </li>
+                    <br/>
+                    <li>
+                        The advice is bounded to a pointcut with signature (<code>args()</code>). In such a case, the
+                        parameter referenced in the pointcut signature must appear in the advice signature.
+                        The JoinPoint parameter must appear although not referenced by the pointcut signature.
+                        We can thus have any signature.
                     </li>
                     <br/>
                     <li>
                         The method has a metadata that specifies the advice type and the matching joinpoints through a pointcut expression.
                         The matching joinpoints are whether defined as an anonymous pointcut (and not a as a field)
                         whether as an algebraic expression composed by other poincuts, whose type matches the advice type.
+                        <br/>
+                        If the expression is referencing a pointcut with a signature, then the parameters names as defined
+                        in the method signature must be passed to it.
                     </li>
                     <br/>
                 </ol>
@@ -290,6 +328,8 @@ public class MyAspect {
             </p>
             <p>
                 <source><![CDATA[
+    //-- no arguments, JoinPoint is implictly mandatory
+
     /**
      * Non-anonymous expression (pc1 and pc2 are fields of type Pointcut with metadata).
      *
@@ -309,6 +349,38 @@ public class MyAspect {
      */
     public Object myAroundAdvice2(JoinPoint joinPoint) throws Throwable {
         // do some stuff
+        Object result = joinPoint.proceed();
+        // do some more stuff
+        return result;
+    }
+
+    //-- pointcut with signatures
+
+    /**
+     * Non-anonymous expression (pc1 is a method defining a Pointcut, with a String parameter).
+     * Note the use of "s" in the metadata expression.
+     *
+     * @Around pc1(s)
+     */
+    public Object myAroundAdvice1WithArg(JoinPoint joinPoint, String s) throws Throwable {
+        // do some stuff
+        // "s" can be accessed without the use of RTTI
+        // Note that it can be modified according to the rules of Java Language references passing
+        System.out.println(s);
+        Object result = joinPoint.proceed();
+        // do some more stuff
+        return result;
+    }
+
+    /**
+     * Anonymous pointcuts.
+     *
+     * @Around execution(* com.package.Target.*(..)) && args(arg0, int[][], arg2)
+     */
+    public Object myAroundAdvice2WithArg(JoinPoint joinPoint, String arg0, com.Foo arg2) throws Throwable {
+        // do some stuff
+        // access arg0, arg2
+        arg2.doSomething();
         Object result = joinPoint.proceed();
         // do some more stuff
         return result;
@@ -434,10 +506,10 @@ public class MyAspect {
             <p>
                 <table>
                     <tr>
-                        <th>meta</th>
+                        <th>Annotations</th>
                         <th>level</th>
-                        <th>component</th>
-                        <th>anonymous parameter</th>
+                        <th>defines</th>
+                        <th>anonymous value</th>
                         <th>parameter(s)</th>
                     </tr>
                     <tr>
@@ -452,7 +524,7 @@ public class MyAspect {
                     </tr>
                     <tr>
                         <td>@Expression</td>
-                        <td>Pointcut field</td>
+                        <td>Pointcut field, method with matching signature</td>
                         <td>Pointcut, method execution</td>
                         <td>&lt;pointcut expression&gt;</td>
                         <td></td>
@@ -473,7 +545,7 @@ public class MyAspect {
                     </tr>
                     <tr>
                         <td>@Around</td>
-                        <td>maethod</td>
+                        <td>method</td>
                         <td>around advice</td>
                         <td>&lt;pointcut expression&gt;</td>
                         <td>name [0:&lt;aspect class mame&gt;.&lt;method name&gt;</td>

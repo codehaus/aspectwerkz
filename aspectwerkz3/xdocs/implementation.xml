@@ -101,7 +101,8 @@
         </section>
         <section name="Advice">
             <p>
-                    In the aspect class the advice are regular methods. The methods needs to conform to a specfic signature:
+                    In the aspect class the advice are regular methods. The methods needs to conform to a specfic signature
+                    unless <code>args()</code> selector is used in the pointcut the advice is bounded to.
                 <ul>
                     <li>
                             For
@@ -141,6 +142,36 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
     return result;
 }
             ]]></source>
+            </p>
+            <p>
+                If a pointcut is using the <code>args()</code> selector to gain direct access to the advised method/constructor/field set
+                the Pointcut declaration itself will have a signature. The bounded advice(s) is then required to have those
+                parameters in their signature as well. This allows to avoid using the RTTI interface as well as providing strong typing.
+            </p>
+            <p>
+                Such an advice can be defined thru Annotations and thru XML. See the
+                <a href="xml_definition.html">XML definition</a> section or the
+                <a href="attribute_definition.html">Annotation definition</a> section for more information.
+            </p>
+            <p>
+                The advice signature is thus depending on the pointcut signature, although the JoinPoint argument is mandatory.
+                A sample could look like the following:
+                <source><![CDATA[
+// will match all method named "log" with a "java.lang.String" as sole parameter
+@Expression execution(* log(..)) AND args(s)
+Pointcut myPointcut(String s) {return null;}
+
+@Before myPointcut(adviceArg)
+public void myBeforeAdvice(JoinPoint joinPoint, String adviceArg) {...}
+
+// it is possible to have the JoinPoint at any index in the advice parameter list
+// though a best practice is to keep it at the first position
+@Around myPointcut(adviceArg)
+public Object myAroundAdvice(String adviceArg, JoinPoint joinPoint) {... joinPoint.proceed(); ...}
+
+@After myPointcut(adviceArg)
+public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
+                ]]></source>
             </p>
         </section>
         <section name="JoinPoint instance">

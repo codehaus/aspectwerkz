@@ -2,7 +2,7 @@
 <document>
     <properties>
         <author email="alex at gnilux dot com">Alexandre Vasseur</author>
-        <title>Online mode architecture</title>
+        <title>Integration schemes</title>
     </properties>
     <body>
         <!-- TODO add a section to OFFLINE weaving, or a link -->
