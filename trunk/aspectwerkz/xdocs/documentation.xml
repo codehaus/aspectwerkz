@@ -38,6 +38,9 @@
                         <a href="#Advice stacks">Advice stacks</a>
                     </li>
                     <li>
+                        <a href="#Package namespaces">Package namespaces</a>
+                    </li>
+                    <li>
                         <a href="#Example of an XML definition">Example of an XML definition</a>
                     </li>
                     <li>
@@ -1041,6 +1044,41 @@ String timeOut = getParameter("timeout");
 ]]></source>
             </p>
 
+        </section>
+
+        <section name="Package namespaces">
+            <p>
+                You have two ways of defining a package namespace:
+                <ul>
+                    <li>
+                        using the <code>base-package</code> attribute in the <code>aspectwerkz</code>
+                        element. This defines a global package namespace.
+                    </li><br/>
+                    <li>
+                        using the <code>package</code> element. This element has one attribute;
+                        <code>name</code>, which defines the package namespace.
+                    </li>
+                </ul>
+            </p>
+            <p>
+                <b>Example</b>
+            </p>
+            <p>
+<source><![CDATA[
+<aspectwerkz base-package="foo">
+    <!-- All classes are prefixed by 'foo' -->
+
+    <package name="bar">
+        <!-- All classes within these 'package' tags are prefixed by 'foo.bar' -->
+    </package>
+
+    <package name="baz.buzz">
+        <!-- All classes within these 'package' tags are prefixed by 'foo.baz.buzz' -->
+    </package>
+
+</aspectwerkz>
+]]></source>
+            </p>
         </section>
 
         <section name="Example of an XML definition">
