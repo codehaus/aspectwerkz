@@ -47,7 +47,7 @@
         <section name="Introduction">
             <subsection name="Weaving Schemes">
                 <p>
-                    AW supports several integration schemes. Each schemes depends on your requirements and provides different advantages and drawbacks.
+                    AspectWerkz supports several integration schemes. Each schemes depends on your requirements and provides different advantages and drawbacks.
                     It is possible to use :
                     <ul>
                         <li>post compilation of the application (like AspectJ does): offline weaving at
@@ -60,7 +60,7 @@
                             <b>running application</b> (experimental)
                         </li>
                     </ul>
-                    AW distribution contains a
+                    AspectWerkz distribution contains a
                     <b>command line tool</b> that helps to be up and running quickly, although it is a good thing to really
                     understand the different schemes for a production environment.
                 </p>
@@ -80,7 +80,7 @@
             </subsection>
             <subsection name="Aspects deployment descriptors">
                 <p>
-                    Since release 1.0 AW support to
+                    Since release 1.0 AspectWerkz support to
                     <a href="Handling several Aspects across several deployed applications"> configure several
                         <code>AspectSystem</code> alongside the deployed applications and the container
                     </a> (application server)
@@ -192,7 +192,7 @@
             </subsection>
             <subsection name="Weaving scope of META-INF/aop.xml and WEB-INF/aop.xml files">
                 <p>
-                    The single idea you need to remember is that AW deployed Aspects thru aop.xml files have the scope of the ClassLoader
+                    The single idea you need to remember is that AspectWerkz deployed Aspects thru aop.xml files have the scope of the ClassLoader
                     that has this file in its path and all its child ClassLoader(s).
                 </p>
                 <p>
@@ -262,7 +262,7 @@
         <section name="Offline weaving">
             <subsection name="Introduction">
                 <p>
-                    AW provides several way to weave the aspects in the application classes at build time. This is called
+                    AspectWerkz provides several way to weave the aspects in the application classes at build time. This is called
                     <i>offline weaving</i>,
                     <i>offline mode</i>, or even
                     <i>class post-processing</i>.
@@ -295,7 +295,7 @@
                     You can find several samples of Ant and Maven integration in the AspectWerkz distribution.
                     <br/>
                     The following are the options supported by the AspectWerkzC tool. Most of them can be used as well in the
-                    AW command line tool.
+                    AspectWerkz command line tool.
                     <source>
 # set the classpath correctly
 # see bin/setEnv in the AspectWerkz distribution
@@ -407,11 +407,11 @@ java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnE
         <section name="AspectWerkz command line tool">
             <subsection name="Environment setting">
                 <p>
-                    The command line tool is the easiest way to start using AW since it provides all classpath settings for both class load time weaving and
+                    The command line tool is the easiest way to start using AspectWerkz since it provides all classpath settings for both class load time weaving and
                     offline post-processing.
                     <p/>
                     To use it, you first need to set the
-                    <code>ASPECTWERKZ_HOME</code> environment variable to the directory containing the AW installation.
+                    <code>ASPECTWERKZ_HOME</code> environment variable to the directory containing the AspectWerkz installation.
                     <source>
 set ASPECTWERKZ_HOME=C:\aop\aspectwerkz\
 
@@ -439,7 +439,7 @@ set ASPECTWERKZ_HOME=C:\aop\aspectwerkz\
                             <code>-verbose</code> to follow each step of the processing (optional).
                         </li>
                         <li>Turns on
-                            <code>-verify</code> to verify all weaved class according to the Java Class Format specification (optional, mainly usefull for AW development team).
+                            <code>-verify</code> to verify all weaved class according to the Java Class Format specification (optional, mainly usefull for AspectWerkz development team).
                         </li>
                         <li>When an error occurs, all classes of the current target are restored to their initilal state and
                             the processing goes on with the next target unless
