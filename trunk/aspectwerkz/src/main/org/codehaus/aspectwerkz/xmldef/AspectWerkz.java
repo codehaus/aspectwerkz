@@ -241,10 +241,11 @@ public final class AspectWerkz {
     /**
      * Creates a new AspectWerkz system instance.
      * Sets the UUID for the system.
+     * Is set to private since the instance should be retrieved using the getSystem(..) method.
      *
      * @param uuid the UUID for the system
      */
-    public AspectWerkz(final String uuid) {
+    private AspectWerkz(final String uuid) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         m_uuid = uuid;
         m_definition = AspectWerkzDefinition.getDefinition(m_uuid);
