@@ -184,10 +184,10 @@ public class StartupManager {
             Field field = AbstractAspect.class.getDeclaredField("m_uuid");
             field.setAccessible(true);
             field.set(aspect, uuid);
-            aspect.setName(aspectDef.getName());
-            aspect.setAspectClass(aspectClass);
-            aspect.setDeploymentModel(deploymentModel);
-            aspect.setAspectDef(aspectDef);
+            aspect.___AW_setName(aspectDef.getName());
+            aspect.___AW_setAspectClass(aspectClass);
+            aspect.___AW_setDeploymentModel(deploymentModel);
+            aspect.___AW_setAspectDef(aspectDef);
 
             // handle the parameters passed to the advice
 //            for (Iterator it2 = aspectDef.getParameters().entrySet().iterator(); it2.hasNext();) {
@@ -198,10 +198,10 @@ public class StartupManager {
             // create and set the container for the aspect
             AspectContainer container = createAspectContainer(aspect);
             if (container != null) {
-                aspect.setContainer(container);
+                aspect.___AW_setContainer(container);
             }
             else {
-                throw new DefinitionException("could not create aspect container for aspect [" + aspect.getName() + "]");
+                throw new DefinitionException("could not create aspect container for aspect [" + aspect.___AW_getName() + "]");
             }
 
             // register the aspect in the system
@@ -381,7 +381,7 @@ public class StartupManager {
                 aspectMetaData.addGetFieldPointcut(fieldPointcut);
             }
 
-            List postAdvices = aspectDef.getPreAdvices();
+            List postAdvices = aspectDef.getPostAdvices();
             for (Iterator it2 = postAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 FieldPointcut fieldPointcut = new FieldPointcut(

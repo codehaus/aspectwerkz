@@ -9,8 +9,6 @@ package examples.introduction;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- *
- * @aspectwerkz.introduction mixin
  */
 public class Target {
     public static void main(String[] args) {
