@@ -76,7 +76,7 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
         String leafName = node.name;
         Expression expression = ctx.getNamespace().getExpression(leafName);
         if (expression != null) {
-            return Boolean.valueOf(expression.match(ctx.getClassMetaData(), ctx.getMemberMetaData(), ctx.getExceptionType()));
+            return new Boolean(expression.match(ctx.getClassMetaData(), ctx.getMemberMetaData(), ctx.getExceptionType()));
         }
         else {
             throw new RuntimeException("no such registered expression");
