@@ -57,8 +57,8 @@ public class AllTests extends TestCase {
         // TODO: deprecated until a better hot deployment model has been implemented
 //        suite.addTestSuite(test.DynamicDeploymentTest.class);
 
-        // TODO: Alex fix this test please, don't understand it
-//        suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
+        // TODO: AlEX fix this test please, don't understand it
+        suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
 
         return suite;
     }
