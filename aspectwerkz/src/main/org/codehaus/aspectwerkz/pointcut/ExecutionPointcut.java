@@ -7,17 +7,18 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.pointcut;
 
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
- * Implements the pointcut concept for classes.
+ * Implements the pointcut concept for method access.
  * Is an abstraction of a well defined point of execution in the program.<br/>
  * Could matches one or many points as long as they are well defined.<br/>
  * Stores the advices for the specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ClassPointcut extends AbstractPointcut {
+public class ExecutionPointcut extends AbstractPointcut {
 
     /**
      * Marks the pointcut as reentrant.
@@ -25,12 +26,34 @@ public class ClassPointcut extends AbstractPointcut {
     protected boolean m_isNonReentrant = false;
 
     /**
-     * Creates a new class pointcut.
+     * Creates a new method pointcut.
      *
      * @param uuid the UUID for the AspectWerkz system
      * @param expression the expression of the pointcut
      */
-    public ClassPointcut(final String uuid, final Expression expression) {
+    public ExecutionPointcut(final String uuid, final Expression expression) {
         super(uuid, expression);
+    }
+
+    /**
+     * Checks if the pointcut is non-reentrant.
+     *
+     * @return the non-reentrancy flag
+     */
+    public boolean isNonReentrant() {
+        return m_isNonReentrant;
+    }
+
+    /**
+     * Adds a new pointcut pattern.
+     *
+     * @param pointcut the pointcut definition
+     */
+    public void addPointcutDef(final PointcutDefinition pointcut) {
+        // if one of the pointcut defs is non-reentrant, set the pointcut as non-reentrant
+        if (pointcut.isNonReentrant()) {
+            m_isNonReentrant = true;
+        }
+        m_pointcutPatterns.put(pointcut.getName(), pointcut);
     }
 }

@@ -30,8 +30,7 @@ public class ThrowsPointcutKey {
      * @param methodName
      * @param exceptionName
      */
-    public ThrowsPointcutKey(final String methodName,
-                             final String exceptionName) {
+    public ThrowsPointcutKey(final String methodName, final String exceptionName) {
         if (methodName == null) throw new IllegalArgumentException("method name can not be null");
         if (exceptionName == null) throw new IllegalArgumentException("exception name can not be null");
         m_methodName = methodName;
