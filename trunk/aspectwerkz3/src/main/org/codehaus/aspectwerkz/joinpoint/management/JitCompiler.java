@@ -38,7 +38,6 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaFieldInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
@@ -54,7 +53,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.io.FileOutputStream;
 
 /**
  * Runtime (Just-In-Time/JIT) compiler. <p/>Compiles a custom JoinPoint class that invokes all
