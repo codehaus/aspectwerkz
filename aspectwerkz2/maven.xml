@@ -379,7 +379,7 @@
     <goal name="aspectwerkz:aroundbench">
         <attainGoal name="aspectwerkz:test:aspectc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-Daspectwerkz.jit.boundry=1 -cp ${test.classes} -Daspectwerkz.definition.file=${src.dir}/test/aroundbench.xml -Daspectwerkz.transform.dump=* test.aroundbench.AroundTestRun"/>
+            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${src.dir}/test/aroundbench.xml -Daspectwerkz.transform.dump=* test.aroundbench.AroundTestRun"/>
         </exec>
     </goal>
 
