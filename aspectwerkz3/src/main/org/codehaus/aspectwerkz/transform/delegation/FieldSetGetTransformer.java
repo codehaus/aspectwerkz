@@ -125,7 +125,7 @@ public class FieldSetGetTransformer implements Transformer {
                                     callBody.append('.');
                                     callBody.append(TransformationUtil.PROCEED_WITH_GET_JOIN_POINT_METHOD);
                                     callBody.append('(');
-                                    callBody.append(TransformationUtil.calculateHash(fieldAccess.getField()));
+                                    callBody.append(JavassistHelper.calculateHash(fieldAccess.getField()));
                                     callBody.append(',');
                                     callBody.append(klass.getJoinPointIndex());
                                     if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
@@ -188,7 +188,7 @@ public class FieldSetGetTransformer implements Transformer {
                                     body.append('.');
                                     body.append(TransformationUtil.PROCEED_WITH_SET_JOIN_POINT_METHOD);
                                     body.append('(');
-                                    body.append(TransformationUtil.calculateHash(fieldAccess.getField()));
+                                    body.append(JavassistHelper.calculateHash(fieldAccess.getField()));
                                     body.append(',');
                                     body.append(klass.getJoinPointIndex());
                                     if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {

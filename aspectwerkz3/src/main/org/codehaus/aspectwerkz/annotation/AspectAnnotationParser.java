@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.transform.ReflectHelper;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 import java.lang.reflect.Field;
@@ -122,7 +123,7 @@ public class AspectAnnotationParser {
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
-        List methodList = TransformationUtil.createSortedMethodList(klass);
+        List methodList = ReflectHelper.createSortedMethodList(klass);
         int methodIndex = 0;
         for (Iterator it = methodList.iterator(); it.hasNext(); methodIndex++) {
             Method method = (Method)it.next();

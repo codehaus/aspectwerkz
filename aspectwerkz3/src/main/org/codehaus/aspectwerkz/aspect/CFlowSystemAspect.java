@@ -17,6 +17,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
+import org.codehaus.aspectwerkz.transform.ReflectHelper;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 import java.lang.reflect.Method;
@@ -69,7 +70,7 @@ public class CFlowSystemAspect {
         // set the method flow indexes
         // this is used when the aspect is registered in the system
         // we assume enterControlFlow and exitControlFlow are defined once in this class
-        List methods = TransformationUtil.createSortedMethodList(CFlowSystemAspect.class);
+        List methods = ReflectHelper.createSortedMethodList(CFlowSystemAspect.class);
         int index = 0;
         int preIndex = 0;
         int postIndex = 0;

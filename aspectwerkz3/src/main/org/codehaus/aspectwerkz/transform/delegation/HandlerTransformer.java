@@ -109,7 +109,7 @@ public class HandlerTransformer implements Transformer {
                                     body.append('(');
 
                                     // TODO: unique hash is needed, based on: executing class, executing method, catch clause (and sequence number?)
-                                    body.append(TransformationUtil.calculateHash(exceptionClass));
+                                    body.append(JavassistHelper.calculateHash(exceptionClass));
                                     body.append(',');
                                     body.append(klass.getJoinPointIndex());
                                     if (Modifier.isStatic(where.getModifiers())) {

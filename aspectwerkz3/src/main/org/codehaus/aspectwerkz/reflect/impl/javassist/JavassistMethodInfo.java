@@ -12,7 +12,7 @@ import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.transform.JavassistHelper;
+import org.codehaus.aspectwerkz.transform.delegation.JavassistHelper;
 
 import java.util.List;
 

@@ -153,7 +153,7 @@ public class MethodCallTransformer implements Transformer {
                                     callBody.append('.');
                                     callBody.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
                                     callBody.append('(');
-                                    callBody.append(TransformationUtil.calculateHash(method));
+                                    callBody.append(JavassistHelper.calculateHash(method));
                                     callBody.append(',');
                                     callBody.append(klass.getJoinPointIndex());
                                     callBody.append(", args, ");

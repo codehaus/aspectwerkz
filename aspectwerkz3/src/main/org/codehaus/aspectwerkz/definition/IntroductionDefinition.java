@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
+import org.codehaus.aspectwerkz.transform.ReflectHelper;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 import java.lang.reflect.Method;
@@ -64,7 +65,7 @@ public class IntroductionDefinition {
             final String deploymentModel) {
         m_name = mixinClass.getName();
         m_expressionInfos = new ExpressionInfo[]{expressionInfo};
-        List sortedMethodList = TransformationUtil.createSortedMethodList(mixinClass);
+        List sortedMethodList = ReflectHelper.createSortedMethodList(mixinClass);
         for (Iterator iterator = sortedMethodList.iterator(); iterator.hasNext();) {
             m_methodsToIntroduce.add(JavaMethodInfo.getMethodInfo((Method)iterator.next()));
         }

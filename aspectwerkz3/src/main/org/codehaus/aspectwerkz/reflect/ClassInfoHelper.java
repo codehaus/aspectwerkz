@@ -7,8 +7,15 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
+import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.transform.delegation.JavassistHelper;
 
 /**
  * Utility method for manipulating and managing ClassInfo hierarchies.
@@ -91,5 +98,102 @@ public class ClassInfoHelper {
             }
         }
         return false;
+    }
+
+    /**
+     * Creates a member info instance based on the signature etc.
+     *
+     * @param targetClass
+     * @param withinMethodName
+     * @param withinMethodSignature
+     * @return a member info instance
+     * @TODO: check if we have a constructor and not a method
+     */
+    public static MemberInfo createMemberInfo(
+            final Class targetClass, 
+            final String withinMethodName,
+            final String withinMethodSignature) {
+        MemberInfo withinMemberInfo = null;
+        String[] withinMethodParameterNames = DescriptorUtil.getParameters(withinMethodSignature);
+        Method[] targetMethods = targetClass.getDeclaredMethods();
+        for (int i = 0; i < targetMethods.length; i++) {
+            Method method = targetMethods[i];
+            Class[] parameterTypes = method.getParameterTypes();
+            if (method.getName().equals(withinMethodName)
+                && (withinMethodParameterNames.length == parameterTypes.length)) {
+                boolean match = true;
+                for (int j = 0; j < parameterTypes.length; j++) {
+                    String withinMethodParameterName = JavassistHelper
+                            .convertJavassistTypeSignatureToReflectTypeSignature(withinMethodParameterNames[j]);
+                    if (!parameterTypes[j].getName().equals(withinMethodParameterName)) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) {
+                    withinMemberInfo = JavaMethodInfo.getMethodInfo(method);
+                    break;
+                }
+            }
+        }
+        return withinMemberInfo;
+    }
+
+    /**
+     * Checks if a method is static or not.
+     *
+     * @param methodInfo the info for the method
+     * @return boolean
+     */
+    public static boolean isMethodStatic(final MethodInfo methodInfo) {
+        int modifiers = methodInfo.getModifiers();
+        if ((modifiers & Modifier.STATIC) != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Checks if a class implements a certain inteface, somewhere up in the class hierarchy.
+     *
+     * @param classInfo
+     * @param interfaceName
+     * @return true if we have a parse else false
+     */
+    public static boolean implementsInterface(final ClassInfo classInfo, final String interfaceName) {
+        if ((classInfo == null) || (interfaceName == null)) {
+            return false;
+        } else if (classInfo.getName().equals(null)) {
+            return true;
+        } else {
+            ClassInfo[] interfaces = classInfo.getInterfaces();
+            for (int i = 0; i < interfaces.length; i++) {
+                ClassInfo anInterface = interfaces[i];
+                if (ClassInfoHelper.implementsInterface(anInterface, interfaceName)) {
+                    return true;
+                }
+            }
+            return ClassInfoHelper.implementsInterface(classInfo.getSuperClass(), interfaceName);
+        }
+    }
+
+    /**
+     * Checks if a class has a certain class as super class, somewhere up in the class hierarchy.
+     *
+     * @param classInfo the meta-data for the class to parse
+     * @param className the name of the super class
+     * @return true if we have a parse else false
+     */
+    public static boolean extendsSuperClass(final ClassInfo classInfo, final String className) {
+        if ((classInfo == null) || (className == null)) {
+            return false;
+        } else if (classInfo.getName().equals(null)) {
+            return true;
+        } else if (className.equals(classInfo.getName())) {
+            return true;
+        } else {
+            return ClassInfoHelper.extendsSuperClass(classInfo.getSuperClass(), className);
+        }
     }
 }
