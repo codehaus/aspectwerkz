@@ -103,31 +103,33 @@ public class FieldAdviceTest extends TestCase {
         }
     }
 
-    public void testSetMemberFieldAroundAdvicedObjectWithAPI() {
-        s_logString = "";
-        try {
-            setFieldAroundAdvicedObjectWithAPI();
-            assertEquals("before after ", s_logString);
+    //FIXME - activate when proceed(args) will be supported 
 
-            //The advice is using the Signature API to alter the assigned value
-            assertEquals("byAdvice", m_setFieldAroundAdvicedObjectWithAPI);
-        } catch (Exception e) {
-            fail();
-        }
-    }
-
-    public void testSetMemberFieldAroundAdvicedWithAPI() {
-        s_logString = "";
-        try {
-            setFieldAroundAdvicedWithAPI();
-            assertEquals("before after ", s_logString);
-
-            //The advice is using the Signature API to alter the assigned value
-            assertEquals(3, m_setFieldAroundAdvicedWithAPI);
-        } catch (Exception e) {
-            fail();
-        }
-    }
+//    public void testSetMemberFieldAroundAdvicedObjectWithAPI() {
+//        s_logString = "";
+//        try {
+//            setFieldAroundAdvicedObjectWithAPI();
+//            assertEquals("before after ", s_logString);
+//
+//            //The advice is using the Signature API to alter the assigned value
+//            assertEquals("byAdvice", m_setFieldAroundAdvicedObjectWithAPI);
+//        } catch (Exception e) {
+//            fail();
+//        }
+//    }
+//
+//    public void testSetMemberFieldAroundAdvicedWithAPI() {
+//        s_logString = "";
+//        try {
+//            setFieldAroundAdvicedWithAPI();
+//            assertEquals("before after ", s_logString);
+//
+//            //The advice is using the Signature API to alter the assigned value
+//            assertEquals(3, m_setFieldAroundAdvicedWithAPI);
+//        } catch (Exception e) {
+//            fail();
+//        }
+//    }
 
     public void testGetMemberFieldAroundAdviced() {
         s_logString = "";

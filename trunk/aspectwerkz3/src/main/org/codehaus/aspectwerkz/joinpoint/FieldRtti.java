@@ -35,13 +35,4 @@ public interface FieldRtti extends MemberRtti {
      * @return the value of the field
      */
     Object getFieldValue();
-
-    /**
-     * @TODO remove in 2.0
-     *
-     * Sets the value of the field.
-     *
-     * @param fieldValue the value of the field
-     */
-    void setFieldValue(final Object fieldValue);
 }
