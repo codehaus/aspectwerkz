@@ -215,7 +215,8 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
                         desc,
                         access,
                         joinPointHash,
-                        joinPointClassName
+                        joinPointClassName,
+                        EmittedJoinPoint.NO_LINE_NUMBER
                 )
         );
     }

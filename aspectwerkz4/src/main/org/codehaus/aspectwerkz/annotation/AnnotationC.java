@@ -478,7 +478,8 @@ public class AnnotationC {
                 enhancer.insertMethodAttribute(method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER_RETURNING, afterAnnotation));
                 logInfo(
                         "    after returning advice [" + AnnotationC.getShortCallSignature(method) + " :: "
-                        + ((AfterReturning) afterAnnotation).value()
+                        + AspectAnnotationParser.getAfterXXExpression(((AfterReturning) afterAnnotation).value(),
+                                                                      ((AfterReturning) afterAnnotation).expression())
                         + " :: " + ((AfterReturning) afterAnnotation).type()+ ']'
                 );
             }
@@ -490,7 +491,8 @@ public class AnnotationC {
                 enhancer.insertMethodAttribute(method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER_THROWING, afterAnnotation));
                 logInfo(
                         "    after throwing advice [" + AnnotationC.getShortCallSignature(method) + " :: "
-                        + ((AfterThrowing) afterAnnotation).value()
+                        + AspectAnnotationParser.getAfterXXExpression(((AfterThrowing) afterAnnotation).value(),
+                                                                      ((AfterThrowing) afterAnnotation).expression())
                         + " :: " + ((AfterThrowing) afterAnnotation).type()+ ']'
                 );
             }

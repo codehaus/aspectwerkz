@@ -57,7 +57,9 @@ public class CustomAttributeHelper {
             } else {
                 // should not occur
                 throw new RuntimeException(
-                        "Custom annotation is not wrapped in AnnotationInfo: " + userAnnotation.getClass().getName()
+                        "Custom annotation is not wrapped in AnnotationInfo: " + userAnnotation.getClass().getName() +
+                        " [" + AnnotationInfo.class.getClassLoader().toString() + " / " +
+                        userAnnotation.getClass().getClassLoader()
                 );
             }
         } catch (Exception e) {

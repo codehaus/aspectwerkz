@@ -205,6 +205,7 @@ public class DefinitionParserHelper {
 
         // support for pointcut signature
         String adviceCallSignature = null;
+        String resolvedSpecialArgumentType = specialArgumentType;
         if (adviceName.indexOf('(') > 0) {
             adviceCallSignature = adviceName.substring(adviceName.indexOf('(') + 1, adviceName.lastIndexOf(')'));
             String[] parameters = Strings.splitString(adviceCallSignature, ",");
@@ -220,12 +221,18 @@ public class DefinitionParserHelper {
                 if (parameterInfo.length == 2) {
                     paramName = parameterInfo[1];
                     paramType = parameterInfo[0];
-                    //FIXME
+                    //FIXME -- ?? what ??
                 } else {
                     paramName = "anonymous_" + i;
                     paramType = (String) Pattern.ABBREVIATIONS.get(parameterInfo[0]);
                 }
-                expressionInfo.addArgument(paramName, paramType);
+                // skip the parameter if this ones is a after returning / throwing binding
+                if (paramName.equals(specialArgumentType)) {
+                    resolvedSpecialArgumentType = paramType;
+                    expressionInfo.setSpecialArgumentName(paramName);
+                } else {
+                    expressionInfo.addArgument(paramName, paramType);
+                }
             }
         }
 
@@ -241,7 +248,7 @@ public class DefinitionParserHelper {
         final AdviceDefinition adviceDef = new AdviceDefinition(
                 adviceName,
                 adviceType,
-                specialArgumentType,
+                resolvedSpecialArgumentType,
                 aspectName,
                 aspectClassName,
                 expressionInfo,

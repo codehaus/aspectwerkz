@@ -24,7 +24,7 @@ import java.util.Iterator;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-class Java14AnnotationInvocationHander implements InvocationHandler, Serializable {
+public class Java14AnnotationInvocationHander implements InvocationHandler, Serializable {
 
     //TODO calculate
     private static final long serialVersionUID = 1L;

@@ -13,6 +13,7 @@ import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.CodeAdapter;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.Label;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
@@ -109,6 +110,7 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
         private final String m_callerMethodName;
         private final String m_callerMethodDesc;
         private final MemberInfo m_callerMemberInfo;
+        private int m_lineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
 
         /**
          * Creates a new instance.
@@ -152,6 +154,16 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                         + callerMethodDesc
                 );
             }
+        }
+
+        /**
+         * Line number
+         *
+         * @param lineNumber
+         * @param label
+         */
+        public void visitLineNumber(int lineNumber, Label label) {
+            m_lineNumber = lineNumber;
         }
 
         /**
@@ -230,7 +242,8 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                                     fieldDesc,
                                     fieldInfo.getModifiers(),
                                     joinPointHash,
-                                    joinPointClassName
+                                    joinPointClassName,
+                                    m_lineNumber
                             )
                     );
                 }
@@ -288,7 +301,8 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                                     fieldDesc,
                                     fieldInfo.getModifiers(),
                                     joinPointHash,
-                                    joinPointClassName
+                                    joinPointClassName,
+                                    m_lineNumber
                             )
                     );
                 }

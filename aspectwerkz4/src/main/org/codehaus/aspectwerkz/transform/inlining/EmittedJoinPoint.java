@@ -16,6 +16,9 @@ package org.codehaus.aspectwerkz.transform.inlining;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class EmittedJoinPoint {
+
+    public final static int NO_LINE_NUMBER = -1;
+
     private final int joinPointType;
     private final String callerClassName;
     private final String callerMethodName;
@@ -27,6 +30,7 @@ public final class EmittedJoinPoint {
     private final int calleeMemberModifiers;
     private final int joinPointHash;
     private final String joinPointClassName;
+    private final int lineNumber;
 
     /**
      * Creates a new instance.
@@ -53,7 +57,8 @@ public final class EmittedJoinPoint {
                             final String calleeMemberDesc,
                             final int calleeMemberModifiers,
                             final int joinPointHash,
-                            final String joinPointClassName) {
+                            final String joinPointClassName,
+                            final int lineNumber) {
         this.joinPointType = joinPointType;
         this.callerClassName = callerClassName;
         this.callerMethodName = callerMethodName;
@@ -65,6 +70,7 @@ public final class EmittedJoinPoint {
         this.calleeMemberModifiers = calleeMemberModifiers;
         this.joinPointHash = joinPointHash;
         this.joinPointClassName = joinPointClassName;
+        this.lineNumber = lineNumber;
     }
 
     public int getJoinPointType() {
@@ -109,6 +115,10 @@ public final class EmittedJoinPoint {
 
     public String getJoinPointClassName() {
         return joinPointClassName;
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
     }
 
     public boolean equals(Object o) {

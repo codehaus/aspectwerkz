@@ -96,6 +96,7 @@ public class AdviceDefinition {
 
         // support for pointcut signature
         String adviceCallSignature = null;
+        String resolvedSpecialArgumentType = specialArgumentType;
         if (adviceName.indexOf('(') > 0) {
             adviceCallSignature = adviceName.substring(adviceName.indexOf('(') + 1, adviceName.lastIndexOf(')'));
             String[] parameters = Strings.splitString(adviceCallSignature, ",");
@@ -104,14 +105,20 @@ public class AdviceDefinition {
                         Strings.replaceSubString(parameters[i].trim(), "  ", " "),
                         " "
                 );
-                expressionInfo.addArgument(parameterInfo[1], parameterInfo[0]);
+                // skip the parameter if this ones is a after returning / throwing binding
+                if (parameterInfo[1].equals(specialArgumentType)) {
+                    resolvedSpecialArgumentType = parameterInfo[0];
+                    expressionInfo.setSpecialArgumentName(parameterInfo[1]);
+                } else {
+                    expressionInfo.addArgument(parameterInfo[1], parameterInfo[0]);
+                }
             }
         }
 
         return new AdviceDefinition(
                 adviceName,
                 adviceType,
-                specialArgumentType,
+                resolvedSpecialArgumentType,
                 aspectName,
                 aspectClassName,
                 expressionInfo,

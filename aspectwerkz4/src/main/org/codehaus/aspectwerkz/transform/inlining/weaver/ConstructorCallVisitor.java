@@ -13,6 +13,7 @@ import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.Constants;
 import org.objectweb.asm.CodeAdapter;
+import org.objectweb.asm.Label;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
@@ -163,6 +164,8 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
          */
         private boolean m_skipNextDup = false;
 
+        private int m_lineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
+
         /**
          * Creates a new instance.
          *
@@ -206,6 +209,16 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                         + callerMethodDesc
                 );
             }
+        }
+
+        /**
+         * Line number
+         *
+         * @param lineNumber
+         * @param label
+         */
+        public void visitLineNumber(int lineNumber, Label label) {
+            m_lineNumber = lineNumber;
         }
 
         /**
@@ -368,7 +381,8 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                                 calleeConstructorDesc,
                                 struct.constructorInfo.getModifiers(),
                                 struct.joinPointHash,
-                                joinPointClassName
+                                joinPointClassName,
+                                m_lineNumber
                         )
                 );
             }
