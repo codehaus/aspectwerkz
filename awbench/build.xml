@@ -20,7 +20,7 @@
     <!--    define the AspectWerkz classpath used to compile the project    -->
     <!--    we exclude jarjar and alike, used only for build purpose        -->
     <path id="project.classpath">
-        <pathelement path="${java.home}/../lib/tools.jar"/>
+<!--        <pathelement path="${java.home}/../lib/tools.jar"/>-->
         <fileset dir="${basedir}/lib">
             <exclude name="aspectwerkz-1.0*"/>
             <include name="*.jar"/>

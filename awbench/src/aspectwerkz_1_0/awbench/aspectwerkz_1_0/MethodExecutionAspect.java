@@ -8,7 +8,6 @@
 package awbench.aspectwerkz_1_0;
 
 import awbench.method.Execution;
-import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
@@ -27,13 +26,13 @@ public class MethodExecutionAspect {
         s_count++;
     }
 
-    /** @Before execution(* awbench.method.Execution.beforeSjp()) */
-    public void beforeSjp(JoinPoint jp) {
+    /** @Before execution(* awbench.method.Execution.beforeSJP()) */
+    public void beforeSJP(JoinPoint jp) {
         s_count++;
     }
 
-    /** @Before execution(* awbench.method.Execution.beforeJp()) */
-    public void beforeJp(JoinPoint jp) {
+    /** @Before execution(* awbench.method.Execution.beforeJP()) */
+    public void beforeJP(JoinPoint jp) {
         s_count++;
     }
 
@@ -55,8 +54,14 @@ public class MethodExecutionAspect {
         s_count++;
     }
 
-    /** @Around  execution(* awbench.method.Execution.aroundJp()) */
-    public Object aroundJp(JoinPoint jp) throws Throwable {
+    /** @Around  execution(* awbench.method.Execution.aroundJP()) */
+    public Object aroundJP(JoinPoint jp) throws Throwable {
+        s_count++;
+        return jp.proceed();
+    }
+
+    /** @Around  execution(* awbench.method.Execution.aroundSJP()) */
+    public Object aroundSJP(JoinPoint jp) throws Throwable {
         s_count++;
         return jp.proceed();
     }

@@ -30,15 +30,15 @@ public class MethodExecutionAspect {
         s_count++;
     }
 
-    /** @Before execution(* awbench.method.Execution.beforeSjp()) */
-    public void beforeSjp(StaticJoinPoint sjp) {
+    /** @Before execution(* awbench.method.Execution.beforeSJP()) */
+    public void beforeSJP(StaticJoinPoint sjp) {
         // TODO - we don't make use of sjp / jp so a very lazy impl could hide its weakness
         // but we want it comparable to before() advice
         s_count++;
     }
 
-    /** @Before execution(* awbench.method.Execution.beforeJp()) */
-    public void beforeJp(JoinPoint jp) { // , Rtti rtti) {//when using Rtti, the current impl creates a lof of object not lazyly
+    /** @Before execution(* awbench.method.Execution.beforeJP()) */
+    public void beforeJP(JoinPoint jp) { // , Rtti rtti) {//when using Rtti, the current impl creates a lof of object not lazyly
         // TODO - we don't make use of sjp / jp so a very lazy impl could hide its weakness
         // but we want it comparable to before() advice
         s_count++;
@@ -62,8 +62,14 @@ public class MethodExecutionAspect {
         s_count++;
     }
 
-    /** @Around  execution(* awbench.method.Execution.aroundJp()) */
-    public Object aroundJp(JoinPoint jp) throws Throwable {
+    /** @Around  execution(* awbench.method.Execution.aroundJP()) */
+    public Object aroundJP(JoinPoint jp) throws Throwable {
+        s_count++;
+        return jp.proceed();
+    }
+
+    /** @Around  execution(* awbench.method.Execution.aroundSJP()) */
+    public Object aroundSJP(StaticJoinPoint jp) throws Throwable {
         s_count++;
         return jp.proceed();
     }

@@ -9,12 +9,12 @@
         <advice name="before" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
-    <bind pointcut="execution(* awbench.method.Execution->beforeSjp())">
-        <advice name="beforeSjp" aspect="awbench.jboss.MethodExecutionAspect"/>
+    <bind pointcut="execution(* awbench.method.Execution->beforeSJP())">
+        <advice name="beforeSJP" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
-    <bind pointcut="execution(* awbench.method.Execution->beforeJp())">
-        <advice name="beforeJp" aspect="awbench.jboss.MethodExecutionAspect"/>
+    <bind pointcut="execution(* awbench.method.Execution->beforeJP())">
+        <advice name="beforeJP" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
     <bind pointcut="execution(* awbench.method.Execution->withPrimitiveArgs(int))">
@@ -30,8 +30,12 @@
         <advice name="beforeAfter_2" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
-    <bind pointcut="execution(* awbench.method.Execution->aroundJp())">
-        <advice name="aroundJp" aspect="awbench.jboss.MethodExecutionAspect"/>
+    <bind pointcut="execution(* awbench.method.Execution->aroundJP())">
+        <advice name="aroundJP" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
+
+    <bind pointcut="execution(* awbench.method.Execution->aroundSJP())">
+        <advice name="aroundSJP" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
     <bind pointcut="execution(* awbench.method.Execution->withArgsAndTarget(int))">
