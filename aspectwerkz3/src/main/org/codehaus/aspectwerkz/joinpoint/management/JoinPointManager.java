@@ -487,7 +487,8 @@ public class JoinPointManager {
                 } else if (isThis(adviceArgName, ctx)) {
                     adviceToTargetArgs[k] = AdviceInfo.THIS_ARG;
                 } else {
-                    throw new Error("Unbound advice parameter at index " + k + " in " + adviceInfo.getMethodSignature());
+                    throw new Error("Unbound advice parameter at index " + k +
+                            " in " + adviceInfo.getMethodSignature() + " named " + adviceArgName);
                 }
             }
         }
@@ -507,6 +508,6 @@ public class JoinPointManager {
     }
 
     private static boolean isThis(String adviceArgName, ExpressionContext ctx) {
-        return adviceArgName.equals(ctx.m_targetBoundedName);
+        return adviceArgName.equals(ctx.m_thisBoundedName);
     }
 }

@@ -13,6 +13,8 @@ import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
+import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -509,7 +511,7 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a method has an pointcut.
+     * Checks if a context has a pointcut.
      *
      * @param ctx the expression context
      * @return boolean
@@ -523,12 +525,13 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAdviceDefinitions().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 ExpressionVisitor expression = adviceDef.getExpressionInfo().getExpression();
-
-//                System.out.println("? " + expression.toString() + " FOR " + ctx.getReflectionInfo().toString() + " type " + ctx.getPointcutType().toString());
-//                if (ctx.getReflectionInfo().toString().indexOf("TargetI.target") > 0) {
-//                    System.out.println("STOP");
-//                }
                 if (expression.match(ctx)) {
+                    if (AspectWerkzPreProcessor.VERBOSE) {
+                        System.out.println("match: " + expression.toString() + " @ " + aspectDef.getQualifiedName() + "/" + adviceDef.getName());
+                        System.out.println("\tfor     " + ctx.getReflectionInfo().toString());
+                        System.out.println("\twithin  " + ctx.getWithinReflectionInfo().toString());
+                        System.out.println("\ttype    " + ctx.getPointcutType().toString());
+                    }
                     return true;
                 }
             }
@@ -578,6 +581,12 @@ public class SystemDefinition {
                     ExpressionContext ctx = ctxs[i];
                     if (adviceDef.getExpressionInfo().getAdvisedClassFilterExpression().match(ctx)
                         || adviceDef.getExpressionInfo().getAdvisedCflowClassFilterExpression().match(ctx)) {
+                        if (AspectWerkzPreProcessor.VERBOSE) {
+                            System.out.println("early match: " + adviceDef.getExpressionInfo().toString() + " @ " + aspectDef.getQualifiedName() + "/" + adviceDef.getName());
+                            System.out.println("\tfor    " + ctx.getReflectionInfo());
+                            System.out.println("\twithin " + ctx.getWithinReflectionInfo());
+                            System.out.println("\ttype   " + ctx.getPointcutType().toString());
+                        }
                         return true;
                     }
                 }

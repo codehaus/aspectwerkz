@@ -20,22 +20,22 @@ public class TargetTest extends TestCase {
 
     public void testMethodExecutionTarget() {
         // interface
-        s_log = "";
         ITarget iTarget = new TargetI();
+        s_log = "";
         iTarget.target();
         // this is both an interface, and an instance of TargetI
         assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_log);
 
         // implementation of interface
-        s_log = "";
         TargetI targetI = new TargetI();
+        s_log = "";
         targetI.target();
         // this is both an interface, and an instance of TargetI
         assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_log);
 
         // super class
-        s_log = "";
         SuperTarget superTarget = new TargetSuper();
+        s_log = "";
         superTarget.target();
         assertEquals("before_SuperTarget pre_SuperTarget SuperTarget post_SuperTarget after_SuperTarget ", s_log);
 
@@ -45,11 +45,36 @@ public class TargetTest extends TestCase {
         assertEquals("before_SuperTargetA pre_SuperTargetA TargetSuperA post_SuperTargetA after_SuperTargetA ", s_log);
 
         // none
-        s_log = "";
         Target target = new Target();
+        s_log = "";
         target.target();
         assertEquals("Target ", s_log);
     }
+
+    public void testConstructorCallTarget() {
+        // interface
+        s_log = "";
+        ITarget iTarget = new TargetI();
+        // this is both an interface, and an instance of TargetI
+        assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_log);
+
+        // implementation of interface
+        s_log = "";
+        TargetI targetI = new TargetI();
+        // this is both an interface, and an instance of TargetI
+        assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_log);
+
+        // super class
+        s_log = "";
+        SuperTarget superTarget = new TargetSuper();
+        assertEquals("before_SuperTarget pre_SuperTarget SuperTarget post_SuperTarget after_SuperTarget ", s_log);
+
+        // none
+        s_log = "";
+        Target target = new Target();
+        assertEquals("Target ", s_log);
+    }
+
 
 
 

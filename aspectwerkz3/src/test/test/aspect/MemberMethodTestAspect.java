@@ -28,7 +28,7 @@ public class MemberMethodTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression call(* test.MemberMethodAdviceTest.get*(..))
+     * @Expression call(* test.MemberMethodAdviceTest.get*(..)) && within(test.MemberMethodAdviceTest)
      */
     Pointcut member_pc1;
 
@@ -43,7 +43,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc3;
 
     /**
-     * @Expression call(* test.MemberMethodAdviceTest.methodAdvicedMethod())
+     * @Expression call(* test.MemberMethodAdviceTest.methodAdvicedMethod()) && within(test.MemberMethodAdviceTest)
      */
     Pointcut member_pc4;
 
@@ -53,7 +53,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc5;
 
     /**
-     * @Expression call(* test.MemberMethodAdviceTest.method*icedMethodNewThread(..))
+     * @Expression call(* test.MemberMethodAdviceTest.method*icedMethodNewThread(..)) && within(test.MemberMethodAdviceTest)
      */
     Pointcut member_pc6;
 
@@ -63,7 +63,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc7;
 
     /**
-     * @Expression call(* test.MemberMethodAdviceTest.multipleMethodAdvicedMethod(..))
+     * @Expression call(* test.MemberMethodAdviceTest.multipleMethodAdvicedMethod(..)) && within(test.MemberMethodAdviceTest)
      */
     Pointcut member_pc8;
 
@@ -73,12 +73,12 @@ public class MemberMethodTestAspect {
     Pointcut member_pc9;
 
     /**
-     * @Expression call(* test.MemberMethodAdviceTest.joinPointMetaData(..))
+     * @Expression call(* test.MemberMethodAdviceTest.joinPointMetaData(..)) && within(test.MemberMethodAdviceTest)
      */
     Pointcut member_pc10;
 
     /**
-     * @Expression call(void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..))
+     * @Expression call(void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..)) && within(test.MemberMethodAdviceTest)
      */
     Pointcut member_pc11;
 
@@ -88,7 +88,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc12;
 
     /**
-     * @Expression call(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..))
+     * @Expression call(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..)) && within(test.MemberMethodAdviceTest)
      */
     Pointcut member_pc13;
 
@@ -98,7 +98,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc14;
 
     /**
-     * @Expression call(long test.MemberMethodAdviceTest.getPrimitiveAndNullFromAdvice())
+     * @Expression call(long test.MemberMethodAdviceTest.getPrimitiveAndNullFromAdvice()) && within(test.MemberMethodAdviceTest)
      */
     Pointcut member_pc15;
 
@@ -108,7 +108,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc16;
 
     /**
-     * @Expression call(void test.MemberMethodAdviceTest.afterAdvicedMethod())
+     * @Expression call(void test.MemberMethodAdviceTest.afterAdvicedMethod()) && within(test.MemberMethodAdviceTest)
      */
     Pointcut member_pc17;
 
@@ -118,12 +118,12 @@ public class MemberMethodTestAspect {
     Pointcut member_pc18;
 
     /**
-     * @Expression call(void test.MemberMethodAdviceTest.beforeAroundAfterAdvicedMethod())
+     * @Expression call(void test.MemberMethodAdviceTest.beforeAroundAfterAdvicedMethod()) && within(test.MemberMethodAdviceTest)
      */
     Pointcut member_pc19;
 
     /**
-     * @Expression call(* test.MemberMethodAdviceTest.longNoAroundAdvice(..))
+     * @Expression call(* test.MemberMethodAdviceTest.longNoAroundAdvice(..)) && within(test.MemberMethodAdviceTest)
      */
     Pointcut noAroundAdvice;
 
