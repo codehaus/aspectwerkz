@@ -50,13 +50,13 @@ public class AllTestsInlined extends TestCase {
         //suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal
 //        suite.addTestSuite(test.advisetostringbug.Test.class);//mixin
 //        suite.addTestSuite(test.handler.HandlerTest.class);
-//        suite.addTestSuite(test.orthogonal.OrthogonalTest.class);//field
-//        suite.addTestSuite(test.annotation.AnnotationTest.class);//field
-//        suite.addTestSuite(test.modifier.ModifierTest.class);//field
+        suite.addTestSuite(test.orthogonal.OrthogonalTest.class);//field
+        suite.addTestSuite(test.annotation.AnnotationTest.class);//field
+        suite.addTestSuite(test.modifier.ModifierTest.class);//field
 //        suite.addTestSuite(CFlowTest.class);
 //        suite.addTestSuite(ComplexCFlowTest.class);
-//        suite.addTestSuite(test.superclassconstructor.SuperClassConstructorTest.class);
-//        suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);//field
+        suite.addTestSuite(test.superclassconstructor.SuperClassConstructorTest.class);
+        suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);//field
 //        suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
 //        suite.addTestSuite(IntroductionTest.class);
 //        suite.addTestSuite(test.implementsbug.ImplementsTest.class);
