@@ -1227,6 +1227,35 @@ public class ExpressionTest extends TestCase {
                                                                                              modifiers3, s_declaringType)));
     }
 
+    // ============ pointcut ref tests =============
+    public void testPointcutReferenceOutsideScope() throws Exception {
+        String namespace1 = "Lib";
+        String namespace2 = "org.moneymaker.Util";
+        ExpressionNamespace.getNamespace(namespace1).addExpressionInfo("pc1",
+                                                                       new ExpressionInfo("execution(void test.expression.Target.modifiers1())",
+                                                                                          namespace1));
+        ExpressionNamespace.getNamespace(namespace2).addExpressionInfo("pc2",
+                                                                       new ExpressionInfo("execution(void test.expression.Target.modifiers2())",
+                                                                                          namespace2));
+
+        assertTrue(new ExpressionInfo("execution(* foo.bar.*()) || Lib.pc1", NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION,
+                                                                                                                                    modifiers1,
+                                                                                                                                    null)));
+        assertTrue(new ExpressionInfo("Lib.pc1 || execution(* foo.bar.*())", NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION,
+                                                                                                                                    modifiers1,
+                                                                                                                                    null)));
+        assertTrue(new ExpressionInfo("org.moneymaker.Util.pc2 || Lib.pc1", NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION,
+                                                                                                                                   modifiers2,
+                                                                                                                                   null)));
+        assertTrue(new ExpressionInfo("Lib.pc1 || org.moneymaker.Util.pc2", NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION,
+                                                                                                                                   modifiers2,
+                                                                                                                                   null)));
+        assertFalse(new ExpressionInfo("execution(void test.expression.Target.modifiers1()) || Lib.pc1", NAMESPACE).getExpression()
+                                                                                                                   .match(new ExpressionContext(PointcutType.EXECUTION,
+                                                                                                                                                modifiers2,
+                                                                                                                                                null)));
+    }
+
     // ============ and tests =============
     public void testAnd() throws Exception {
         assertTrue(new ExpressionInfo("execution(void test.expression.Target.modifiers1()) AND within(test.expression.Target)",
