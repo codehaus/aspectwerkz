@@ -46,7 +46,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.15.2.1 2003-07-16 08:13:21 avasseur Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.15.2.2 2003-07-17 21:00:01 avasseur Exp $
  */
 public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -519,7 +519,7 @@ public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTr
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.isAdvised(cg.getClassName()) &&
+        if (m_weaveModel.inTransformationScope(cg.getClassName()) &&
                 m_weaveModel.hasIntroductions(cg.getClassName())) {
             return false;
         }

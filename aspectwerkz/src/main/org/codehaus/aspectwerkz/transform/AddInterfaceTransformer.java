@@ -35,7 +35,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an interfaces to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddInterfaceTransformer.java,v 1.13.2.1 2003-07-16 08:13:21 avasseur Exp $
+ * @version $Id: AddInterfaceTransformer.java,v 1.13.2.2 2003-07-17 21:00:01 avasseur Exp $
  */
 public final class AddInterfaceTransformer extends AspectWerkzAbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -137,7 +137,7 @@ public final class AddInterfaceTransformer extends AspectWerkzAbstractInterfaceT
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.isAdvised(cg.getClassName()) &&
+        if (m_weaveModel.inTransformationScope(cg.getClassName()) &&
                 m_weaveModel.hasIntroductions(cg.getClassName())) {
             return false;
         }
