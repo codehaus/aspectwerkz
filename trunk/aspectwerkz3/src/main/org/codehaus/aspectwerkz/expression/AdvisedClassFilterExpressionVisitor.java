@@ -62,14 +62,7 @@ import java.util.Iterator;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author Michael Nascimento
  */
-public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisitor {
-    protected final ExpressionInfo m_expressionInfo;
-
-    protected final ASTRoot m_root;
-
-    protected final String m_expression;
-
-    protected final String m_namespace;
+public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor implements ExpressionParserVisitor {
 
     /**
      * Creates a new expression.
@@ -80,24 +73,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
      */
     public AdvisedClassFilterExpressionVisitor(final ExpressionInfo expressionInfo, final String expression,
                                                final String namespace, final ASTRoot root) {
-        m_expressionInfo = expressionInfo;
-        m_root = root;
-        m_expression = expression;
-        m_namespace = namespace;
-    }
-
-    /**
-     * Matches the expression context.
-     *
-     * @param context
-     * @return
-     */
-    public boolean match(final ExpressionContext context) {
-        Boolean match = ((Boolean) visit(m_root, context));
-        // undeterministic is assumed to be "true" at this stage
-        // since it won't be composed anymore with a NOT (unless
-        // thru pointcut reference ie a new visitor)
-        return (match != null) ? match.booleanValue() : true;
+        super(expressionInfo, expression, namespace, root);
     }
 
     // ============ Boot strap =============
@@ -107,114 +83,14 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     public Object visit(ASTRoot node, Object data) {
         Node child = node.jjtGetChild(0);
-
-//        // if 'call' or 'handler' but no 'within*' then return true
-//        if (child instanceof ASTCall || child instanceof ASTHandler) {
-//            return Boolean.TRUE;
-//        }
         Boolean match = (Boolean) child.jjtAccept(this, data);
         return match;
     }
 
     public Object visit(ASTExpression node, Object data) {
         Node child = node.jjtGetChild(0);
-
-//        // if 'call' or 'handler' but no 'within*' then return true
-//        if (child instanceof ASTCall || child instanceof ASTHandler) {
-//            return Boolean.TRUE;
-//        }
         Boolean match = (Boolean) child.jjtAccept(this, data);
         return match;
-    }
-
-    // ============ Logical operators =============
-    public Object visit(ASTOr node, Object data) {
-        Boolean matchL = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
-        Boolean matchR = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
-        Boolean intermediate = matchUndeterministicOr(matchL, matchR);
-        for (int i = 2; i < node.jjtGetNumChildren(); i++) {
-            Boolean matchNext = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
-            intermediate = matchUndeterministicOr(intermediate, matchNext);
-        }
-        return intermediate;
-    }
-
-    public Object visit(ASTAnd node, Object data) {
-        // the AND and OR can have more than 2 nodes [see jjt grammar]
-        Boolean matchL = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
-        Boolean matchR = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
-        Boolean intermediate = matchUnderterministicAnd(matchL, matchR);
-        for (int i = 2; i < node.jjtGetNumChildren(); i++) {
-            Boolean matchNext = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
-            intermediate = matchUnderterministicAnd(intermediate, matchNext);
-        }
-        return intermediate;
-
-//        boolean hasCallOrHandlerPc = false;
-//        boolean hasWithinPc = false;
-//        boolean hasNotPc = false;
-//        int notPcIndex = -1;
-//
-//        // handle 'call', with and without 'within*'
-//        int nrOfChildren = node.jjtGetNumChildren();
-//        for (int i = 0; i < nrOfChildren; i++) {
-//            Node child = node.jjtGetChild(i);
-//            if (child instanceof ASTNot) {
-//                hasNotPc = true;
-//                notPcIndex = i;
-//            } else if (child instanceof ASTCall || child instanceof ASTHandler) {
-//                hasCallOrHandlerPc = true;
-//            } else if (child instanceof ASTWithin || child instanceof ASTWithinCode) {
-//                hasWithinPc = true;
-//            }
-//        }
-//
-//        // check the child of the 'not' node
-//        if (hasCallOrHandlerPc && hasNotPc) {
-//            Node childChild = node.jjtGetChild(notPcIndex).jjtGetChild(0);
-//            if (childChild instanceof ASTWithin || childChild instanceof ASTWithinCode) {
-//                if (Boolean.TRUE.equals(childChild.jjtAccept(this, data))) {
-//                    return Boolean.FALSE;
-//                } else {
-//                    return Boolean.TRUE;
-//                }
-//            }
-//        } else if (hasCallOrHandlerPc && !hasWithinPc) {
-//            return Boolean.TRUE;
-//        }
-//
-//        // if not a 'call' or 'handler' pointcut
-//        for (int i = 0; i < nrOfChildren; i++) {
-//            Boolean match = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
-//            if (match.equals(Boolean.TRUE)) {
-//                return Boolean.TRUE;
-//            }
-//        }
-//        return Boolean.FALSE;
-    }
-
-    public Object visit(ASTNot node, Object data) {
-//        // the NOT is not evaluated unless on within expressions
-//        if (node.jjtGetChild(0) instanceof ASTWithin) {
-//            Boolean match = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
-//            if (match.equals(Boolean.TRUE)) {
-//                return Boolean.FALSE;
-//            } else {
-//                return Boolean.TRUE;
-//            }
-//        }
-//
-        Boolean match = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
-        if (match != null) {
-            // regular NOT
-            if (match.equals(Boolean.TRUE)) {
-                return Boolean.FALSE;
-            } else {
-                return Boolean.TRUE;
-            }
-        } else {
-            return null;
-        }
     }
 
     // ============ Pointcut types =============
@@ -222,7 +98,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         AdvisedClassFilterExpressionVisitor expression = namespace.getAdvisedClassExpression(node.getName());
-        return new Boolean(expression.match(context));
+        return expression.matchUndeterministic(context);
     }
 
     public Object visit(ASTExecution node, Object data) {
@@ -476,7 +352,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         return true;
     }
 
-    private static Boolean matchUnderterministicAnd(Boolean lhs, Boolean rhs) {
+    public static Boolean matchUnderterministicAnd(Boolean lhs, Boolean rhs) {
         if (lhs != null && rhs != null) {
             // regular AND
             if (lhs.equals(Boolean.TRUE) && rhs.equals(Boolean.TRUE)) {
@@ -496,7 +372,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         }
     }
 
-    private static Boolean matchUndeterministicOr(Boolean lhs, Boolean rhs) {
+    public static Boolean matchUndeterministicOr(Boolean lhs, Boolean rhs) {
         if (lhs != null && rhs != null) {
             // regular OR
             if (lhs.equals(Boolean.TRUE) || rhs.equals(Boolean.TRUE)) {

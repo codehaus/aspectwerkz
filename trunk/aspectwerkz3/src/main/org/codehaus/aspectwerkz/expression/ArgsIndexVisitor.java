@@ -44,7 +44,7 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         ArgsIndexVisitor expression = namespace.getExpressionInfo(node.getName()).getArgsIndexMapper();
-        Boolean match = new Boolean(expression.match(context));
+        Boolean match = expression.matchUndeterministic(context);
 
         // update the this and target bounded name from this last visit
         //FIXME
@@ -129,7 +129,12 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
                 throw new DefinitionException("target(..) seems to be bounded to different bounded entities in " + ctx.toString());
             }
         }
-        return super.visit(node, data);
+        // keep track if the result was undetermined: we will need a runtime check
+        Object match = super.visit(node, data);
+        if (match == null) {
+            ((ExpressionContext)data).m_targetWithRuntimeCheck = true;
+        }
+        return match;
     }
 
     /**

@@ -66,6 +66,12 @@ public class ExpressionContext {
     public String m_targetBoundedName = null;
 
     /**
+     * Set to true when we encounter a poincut using target(..) and when match cannot be done without a
+     * runtime check with instance of.
+     */
+    public boolean m_targetWithRuntimeCheck = false;
+
+    /**
      * Creates a new expression context.
      *
      * @param pointcutType
@@ -238,9 +244,10 @@ public class ExpressionContext {
         return m_pointcutType;
     }
 
-    public void resetArgsThisAndTarget() {
+    public void resetRuntimeState() {
         m_targetBoundedName = null;
         m_thisBoundedName = null;
         m_exprIndexToTargetIndex = new TIntIntHashMap();
+        m_targetWithRuntimeCheck = false;
     }
 }

@@ -380,7 +380,7 @@ public class JoinPointManager {
                     AdviceDefinition adviceDefinition = (AdviceDefinition) iterator2.next();
                     if (adviceDefinition.getExpressionInfo().getExpression().match(exprCtx)) {
                         // compute the target method to advice method arguments map
-                        exprCtx.resetArgsThisAndTarget();
+                        exprCtx.resetRuntimeState();
                         adviceDefinition.getExpressionInfo().getArgsIndexMapper().match(exprCtx);
 
                         // create a lightweight representation of the bounded advices to pass to the compiler
@@ -394,7 +394,10 @@ public class JoinPointManager {
                                 AsmHelper.getArgumentTypes(adviceMethodInfo),
                                 adviceDefinition.getType(),
                                 adviceDefinition.getSpecialArgumentType(),
-                                adviceDefinition.getName()
+                                adviceDefinition.getName(),
+                                exprCtx.m_targetWithRuntimeCheck,
+                                adviceDefinition.getExpressionInfo(),
+                                exprCtx
                         );
 
                         setMethodArgumentIndexes(adviceDefinition.getExpressionInfo(), exprCtx, info);
