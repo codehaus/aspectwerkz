@@ -9,13 +9,13 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 1.0.RC3, which is likely to be the 1.0 final
+                    The latest official release is 1.0
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0.RC3.zip?download">1.0.RC3</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0.zip?download">1.0</a>
                         </li>
                         <br/>
                         <li>
