@@ -144,65 +144,6 @@ public class DefinitionLoader {
     }
 
     /**
-     * Loads and merges the definition.
-     *
-     * @TODO: to be implemented
-     *
-     * @param loader the class loader to use
-     * @return the aspectwerkz definition
-     */
-    public static SystemDefinition loadAndMergeDefinitions(final ClassLoader loader) {
-        SystemDefinition definition = null;
-//        try {
-//            Enumeration definitions = loader.getResources(
-//                    "META-INF/" +
-//                    DEFAULT_DEFINITION_FILE_NAME
-//            );
-//
-//            // grab the definition in the current class loader
-//            Document document = null;
-//            if (definitions.hasMoreElements()) {
-//                URL url = (URL)definitions.nextElement();
-//                document = XmlParser.createDocument(url);
-//            }
-//
-//            // merge the definition with the definitions in class loaders
-//            // higher up in the class loader hierachy
-//            while (definitions.hasMoreElements()) {
-//                document = XmlParser.mergeDocuments(
-//                        document,
-//                        XmlParser.createDocument((URL)definitions.nextElement())
-//                );
-//            }
-//
-//            // handle the merging of the 'aspectwerkz.xml' definition on the classpath
-//            // (if there is one)
-//            InputStream stream = getDefinitionInputStream();
-//            if (stream != null) {
-//                document = XmlParser.mergeDocuments(
-//                        document,
-//                        XmlParser.createDocument(stream)
-//                );
-//            }
-//
-//            // handle the merging of the definition file specified using the JVM option
-//            if (DEFINITION_FILE != null) {
-//                document = XmlParser.mergeDocuments(
-//                        document,
-//                        XmlParser.createDocument(new File(DEFINITION_FILE).toURL())
-//                );
-//            }
-//
-//            // create a new definition based on the merged definition documents
-//            definition = createDefinition(document);
-//        }
-//        catch (Exception e) {
-//            ;// ignore
-//        }
-        return definition;
-    }
-
-    /**
      * Loads the definitions from disk.
      * Only loads a new model from disk if it has changed.
      *

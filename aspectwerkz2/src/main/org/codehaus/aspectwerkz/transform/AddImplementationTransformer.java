@@ -9,6 +9,12 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.util.Iterator;
 
+import javassist.CtClass;
+import javassist.NotFoundException;
+import javassist.Modifier;
+import javassist.CtNewMethod;
+import javassist.CtMethod;
+
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
@@ -16,11 +22,6 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import javassist.CtClass;
-import javassist.NotFoundException;
-import javassist.Modifier;
-import javassist.CtNewMethod;
-import javassist.CtMethod;
 
 /**
  * Adds an Introductions to classes.
@@ -42,26 +43,26 @@ public class AddImplementationTransformer implements Transformer {
         for (Iterator it = DefinitionLoader.getDefinitions().iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
-            final CtClass cg = klass.getCtClass();
-            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(cg);
-            if (classFilter(cg, classMetaData, definition)) {
+            final CtClass ctClass = klass.getCtClass();
+            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            if (classFilter(ctClass, classMetaData, definition)) {
                 return;
             }
 
-            IntroductionTransformer.addMethodIntroductions(definition, context, classMetaData, cg, this);
+            IntroductionTransformer.addMethodIntroductions(definition, context, classMetaData, ctClass, this);
         }
     }
 
     /**
      * Creates a proxy method for the introduces method.
      *
-     * @param cg the class gen
+     * @param ctClass the class gen
      * @param methodMetaData the meta-data for the method
      * @param mixinIndex the mixin index
      * @param methodIndex the method index
      * @param uuid the uuid for the weave model
      */
-    public void createProxyMethod(final CtClass cg,
+    public void createProxyMethod(final CtClass ctClass,
                                   final MethodMetaData methodMetaData,
                                   final int mixinIndex,
                                   final int methodIndex,
@@ -71,23 +72,22 @@ public class AddImplementationTransformer implements Transformer {
             String[] parameters = methodMetaData.getParameterTypes();
             String returnType = methodMetaData.getReturnType();
             String[] exceptionTypes = methodMetaData.getExceptionTypes();
-            int modifiers = methodMetaData.getModifiers();
 
             final String[] parameterNames = new String[parameters.length];
             final CtClass[] bcelParameterTypes = new CtClass[parameters.length];
             final CtClass[] bcelExceptionTypes = new CtClass[exceptionTypes.length];
-            final CtClass bcelReturnType = cg.getClassPool().get(returnType);
-            if (bcelReturnType == null) {
+            final CtClass javassistReturnType = ctClass.getClassPool().get(returnType);
+            if (javassistReturnType == null) {
                 return; // we have a constructor => skip
             }
 
             for (int i = 0; i < parameters.length; i++) {
-                bcelParameterTypes[i] = cg.getClassPool().get(parameters[i]);
+                bcelParameterTypes[i] = ctClass.getClassPool().get(parameters[i]);
                 parameterNames[i] = "arg" + i;
             }
 
             for (int i = 0; i < exceptionTypes.length; i++) {
-                bcelExceptionTypes[i] = cg.getClassPool().get(exceptionTypes[i]);
+                bcelExceptionTypes[i] = ctClass.getClassPool().get(exceptionTypes[i]);
             }
 
             if (isMethodStatic(methodMetaData)) {
@@ -112,14 +112,16 @@ public class AddImplementationTransformer implements Transformer {
             body.append("this").append(");");
             body.append("}");
 
-            CtMethod method = CtNewMethod.make(bcelReturnType,
+            CtMethod method = CtNewMethod.make(
+                    javassistReturnType,
                     methodName,
                     bcelParameterTypes,
                     bcelExceptionTypes,
                     body.toString(),
-                    cg);
+                    ctClass
+            );
             method.setModifiers(Modifier.PUBLIC);
-            cg.addMethod(method);
+            ctClass.addMethod(method);
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
