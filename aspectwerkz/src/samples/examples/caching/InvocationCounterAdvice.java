@@ -31,7 +31,8 @@ public class InvocationCounterAdvice extends PreAdvice {
     public void execute(final JoinPoint joinPoint) throws Throwable {
         CallerSideJoinPoint jp = (CallerSideJoinPoint)joinPoint;
         CacheStatistics.addMethodInvocation(
-                jp.getCalleeMethodName(), jp.getCalleeMethodParameterTypes());
+                jp.getCalleeMethodName(),
+                jp.getCalleeMethodParameterTypes());
         joinPoint.proceed();
     }
 }
