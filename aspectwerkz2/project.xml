@@ -21,6 +21,13 @@
         A high performant, lightweight and dynamic AOP/AOSD framework for Java.
     </description>
 
+    <licenses>
+        <license>
+            <name>LGPL</name>
+            <url>http://www.gnu.org/copyleft/lesser.html</url>
+        </license>
+     </licenses>
+
     <url>http://aspectwerkz.codehaus.org/</url>
     <issueTrackingUrl>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10105</issueTrackingUrl>
 
