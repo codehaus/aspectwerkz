@@ -220,12 +220,9 @@ public final class CrossCuttingInfo implements Serializable {
      * Returns the value of a parameter.
      * 
      * @param name the name of the parameter
-     * @return the value of the parameter
+     * @return the value of the parameter or null if not found
      */
     public String getParameter(final String name) {
-        if (!m_parameters.containsKey(name)) {
-            throw new DefinitionException("parameter to advice not specified: " + name);
-        }
         return (String) m_parameters.get(name);
     }
 
