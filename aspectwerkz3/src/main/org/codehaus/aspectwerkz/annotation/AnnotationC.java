@@ -110,22 +110,22 @@ public class AnnotationC {
     /**
      * Compiles the annotations.
      *
-     * @param srcDirs
+     * @param srcDirList
      * @param srcFileList
      * @param classPath
      * @param destDir
      * @param annotationPropetiesFile
      */
-    private static void compile(final String srcDirs,
+    private static void compile(final String srcDirList,
                                 final String srcFileList,
                                 final String srcFileIncludes,
                                 final String classPath,
                                 String destDir,
                                 final String annotationPropetiesFile) {
-        if (srcDirs == null && srcFileList == null && srcFileIncludes == null) {
+        if (srcDirList == null && srcFileList == null && srcFileIncludes == null) {
             throw new IllegalArgumentException("one of src or srcfiles or srcincludes must be not null");
         }
-        if ((srcDirs != null && srcFileList != null) || (srcDirs != null && srcFileIncludes != null)
+        if ((srcDirList != null && srcFileList != null) || (srcDirList != null && srcFileIncludes != null)
             || (srcFileList != null && srcFileIncludes != null)) { // FIXME: refactor
             throw new IllegalArgumentException("maximum one of src, srcfiles or srcincludes must be not null");
         }
@@ -136,18 +136,19 @@ public class AnnotationC {
             destDir = classPath;
         }
 
-        String[] src = null;
-        if (srcDirs != null) {
-            src = split(srcDirs, File.pathSeparator);
+        String[] srcDirs = null;
+        String[] srcFiles = null;
+        if (srcDirList != null) {
+            srcDirs = split(srcDirList, File.pathSeparator);
         } else if (srcFileList != null) {
-            src = split(srcFileList, FILE_SEPARATOR);
+            srcFiles = split(srcFileList, FILE_SEPARATOR);
         } else {
-            src = loadSourceList(srcFileIncludes);
+            srcFiles = loadSourceList(srcFileIncludes);
         }
 
         boolean isDir = (srcDirs != null);
 
-        compile(s_verbose, src, isDir, split(classPath, File.pathSeparator), destDir, annotationPropetiesFile);
+        compile(s_verbose, srcDirs, srcFiles, split(classPath, File.pathSeparator), destDir, annotationPropetiesFile);
     }
 
     /**
