@@ -49,7 +49,7 @@ public class IntroduceAnnotationProxy extends UntypedAnnotationProxy {
                 if (name.equalsIgnoreCase("deploymentModel")) {
                     m_deploymentModel = param;
                 }
-                else if (name.equalsIgnoreCase("transient")) {
+                else if (name.equalsIgnoreCase("isTransient")) {
                     if (param.equalsIgnoreCase("true")) {
                         m_isTransient = true;
                     } else if (param.equalsIgnoreCase("false")) {

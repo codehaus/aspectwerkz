@@ -7,15 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect.management;
 
-import org.codehaus.aspectwerkz.aspect.AspectContainer;
-import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
-import org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy;
 import org.codehaus.aspectwerkz.aspect.DefaultMixinFactory;
 import org.codehaus.aspectwerkz.aspect.MixinFactory;
-import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.AspectContext;
 import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.definition.MixinDefinition;
@@ -63,7 +57,7 @@ public class Mixins {
     }
 
     /**
-     * Returns the per class mixin instance for the mixin with the given name for the perTarget model
+     * Returns the per class mixin instance for the mixin with the given name for the perClass model
      *
      * @param name        the name of the mixin
      * @param targetClass the targetClass class
@@ -74,23 +68,24 @@ public class Mixins {
             Class mixinClass = Class.forName(name, false, targetClass.getClassLoader());
             return mixinOf(mixinClass, targetClass);
         } catch (ClassNotFoundException e) {
-                throw new Error("could not load mixin " + name + " from " + targetClass.getClassLoader());
+            throw new Error("could not load mixin " + name + " from " + targetClass.getClassLoader());
         }
     }
 
     /**
-     * Returns the per class mixin instance for the mixin with the given name for the perTarget model
+     * Returns the per class mixin instance for the mixin with the given implemnentation class
+     * deployed using the perClass model.
      *
      * @param mixinClass  the name of the mixin
      * @param targetClass the targetClass class
      * @return the per class mixin instance
      */
-    private static Object mixinOf(final Class mixinClass, final Class targetClass) {
+    public static Object mixinOf(final Class mixinClass, final Class targetClass) {
         return getFactory(mixinClass).mixinOf(targetClass);
     }
 
     /**
-     * Returns the per targetClass instance mixin instance for the mixin with the given name for the perTarget model
+     * Returns the per targetClass instance mixin instance for the mixin with the given name for the perInstance model.
      *
      * @param name           the name of the mixin
      * @param targetInstance the targetClass instance, can be null (static method, ctor call)
@@ -101,20 +96,19 @@ public class Mixins {
             Class mixinClass = Class.forName(name, false, targetInstance.getClass().getClassLoader());
             return mixinOf(mixinClass, targetInstance);
         } catch (ClassNotFoundException e) {
-                throw new Error(
-                        "could not load mixin " + name + " from " + targetInstance.getClass().getClassLoader()
-                );
+            throw new Error("could not load mixin " + name + " from " + targetInstance.getClass().getClassLoader());
         }
     }
 
     /**
-     * Returns the per targetClass instance mixin instance for the mixin with the given name for the perTarget model
+     * Returns the per class mixin instance for the mixin with the given implemnentation class
+     * deployed using the perClass model.
      *
      * @param mixinClass     the name of the mixin
      * @param targetInstance the targetClass instance, can be null
      * @return the per targetClass instance mixin instance, fallback to perClass if targetInstance is null
      */
-    private static Object mixinOf(final Class mixinClass, final Object targetInstance) {
+    public static Object mixinOf(final Class mixinClass, final Object targetInstance) {
         return getFactory(mixinClass).mixinOf(targetInstance);
     }
 
