@@ -59,7 +59,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * An implementation of the PersistenceManager interface using JISP.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: JispPersistenceManager.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: JispPersistenceManager.java,v 1.3 2003-06-17 15:11:29 jboner Exp $
  */
 public class JispPersistenceManager
         extends AbstractPersistenceManager implements Serializable {
@@ -155,8 +155,6 @@ public class JispPersistenceManager
 
         m_loader = loader;
         m_definition = (PersistenceDefinition)definition;
-
-        advisePersistentObjects(m_definition);
 
         PersistenceManagerDefinition persistenceManagerDef = null;
         for (Iterator it = m_definition.getPersistenceManagers().iterator(); it.hasNext();) {
