@@ -10,6 +10,9 @@ package org.codehaus.aspectwerkz.extension.hotswap;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import javassist.ByteArrayClassPath;
+import javassist.LoaderClassPath;
+import org.codehaus.aspectwerkz.hook.ClassLoaderPatcher;
 
 /**
  * A simple class to test the in process HotSwap
@@ -19,7 +22,7 @@ import javassist.CtMethod;
 public class Foo {
 
     public void sayHello() {
-        System.out.println("\tHello - I am " + this + " class " + this.getClass().hashCode());
+        System.out.println("Hello - I am " + this + " class " + this.getClass().hashCode());
     }
 
     public static void main(String a[]) throws Throwable {
@@ -44,6 +47,13 @@ public class Foo {
         // other instance is hotswapped
         Foo bFoo = new Foo();
         bFoo.sayHello();
+
+        ClassPool cp2 = new ClassPool(null);
+        cp2.appendClassPath(new LoaderClassPath(Foo.class.getClassLoader()));
+
+        cp2.writeFile("java.lang.ClassLoader", "__ii__");
+        //byte[] bytecode = ClassLoaderPatcher.getPatchedClassLoader("org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl");
+        client.hotswap(ClassLoader.class, cp2.get("java.lang.ClassLoader").toBytecode());
 
     }
 }
