@@ -40,8 +40,9 @@ public class ReflectionTest extends TestCase {
 
     public void testDualPointcutWithOverridedMethodDelegating() {
         Child c = new Child();
-        assertEquals(-3, c.incr(1));
+        assertEquals(+3, c.incr(1));
         // Note: special use case - advice of overrided method not executed
         // Thus result is -3 and not +3 as we could think
+        // hehe fixed !
     }
 }

@@ -128,7 +128,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             final int methodSequence = ((Integer)methodSequences.
                     get(methods[i].getName())).intValue();
 
-            handleCallToOverriddenSuperClassMethod(mg, cg, cpg, factory, methodSequence, context);
+            //handleCallToOverriddenSuperClassMethod(mg, cg, cpg, factory, methodSequence, context);
 
             // check if the pointcut should be deployed as thread safe or not
 
@@ -379,7 +379,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             accessFlags &= ~Constants.ACC_PUBLIC;
         }
 
-        mg.setName(getPrefixedMethodName(method, methodSequence).toString());
+        mg.setName(getPrefixedMethodName(method, methodSequence, mg.getClassName()).toString());
         mg.setAccessFlags(accessFlags);
         mg.setMaxStack();
         mg.setMaxLocals();
@@ -840,12 +840,14 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * @return the name of the join point
      */
     private StringBuffer getPrefixedMethodName(final Method method,
-                                               final int methodSequence) {
+                                               final int methodSequence, final String className) {
         final StringBuffer methodName = new StringBuffer();
         methodName.append(TransformationUtil.ORIGINAL_METHOD_PREFIX);
         methodName.append(method.getName());
         methodName.append(TransformationUtil.DELIMITER);
         methodName.append(methodSequence);
+        methodName.append(TransformationUtil.DELIMITER);
+        methodName.append(className.replace('.', '_'));
         return methodName;
     }
 ///CLOVER:ON
