@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -670,13 +671,18 @@ public class AnnotationC {
         if (propertiesFile == null) {
             return;
         }
+        InputStream in = null;
         try {
-            ANNOTATION_DEFINITION.load(new FileInputStream(propertiesFile));
+            in = new FileInputStream(propertiesFile);
+            ANNOTATION_DEFINITION.load(in);
         } catch (Exception e) {
             String message = "custom annotation properties can not be loaded: " + e.toString();
             logWarning(message);
             throw new DefinitionException(message);
+        } finally {
+            try { in.close(); } catch(Exception e) {;}
         }
+        
         for (Iterator it = ANNOTATION_DEFINITION.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry) it.next();
             String name = ((String) entry.getKey()).trim();
