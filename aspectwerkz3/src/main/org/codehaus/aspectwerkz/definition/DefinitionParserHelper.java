@@ -14,6 +14,8 @@ import org.codehaus.aspectwerkz.util.Strings;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Helper class for the attribute and the XML definition parsers.
@@ -370,5 +372,34 @@ public class DefinitionParserHelper {
             expressionInfo,
             interfaceClassName);
         return introDef;
+    }
+
+    /**
+     * Given a call signature like "method(Type t)", extract the method name and param type and call name.
+     *
+     * @param methodCallSignature
+     * @return each element (2xp+1 sized) (f.e. [method, Type, t] in the previous sample])
+     */
+    public static String[] extractMethodSignature(String methodCallSignature) {
+        List extracted = new ArrayList();
+        String methodName = methodCallSignature;
+        String methodCallDesc = null;
+        if (methodCallSignature.indexOf("(") > 0) {
+            methodName = methodName.substring(0, methodCallSignature.indexOf("("));
+            methodCallDesc = methodCallSignature.substring(methodCallSignature.indexOf("(") + 1, methodCallSignature.lastIndexOf(")"));
+        }
+        extracted.add(methodName);
+        if (methodCallDesc != null) {
+            String[] parameters = Strings.splitString(methodCallDesc, ",");
+            for (int i = 0; i < parameters.length; i++) {
+                String[] parameterInfo = Strings.splitString(Strings.replaceSubString(
+                    parameters[i].trim(),
+                    "  ",
+                    " "), " ");
+                extracted.add(parameterInfo[0]);
+                extracted.add(parameterInfo[1]);
+            }
+        }
+        return (String[])extracted.toArray(new String[]{});
     }
 }

@@ -54,6 +54,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.inheritedmixinbug.Target.class);
         suite.addTestSuite(test.interfacesubtypebug.InterfaceSubtypeBug.class);
         suite.addTestSuite(test.adviseonintroducedinterface.Test.class);
+        suite.addTestSuite(test.args.ArgsAdviceTest.class);
         suite.addTestSuite(test.aopc.AspectSystemTest.class);
         suite.addTestSuite(test.aspectutilmethodbug.Test.class);
         //suite.addTestSuite(test.performance.PerformanceTest.class);

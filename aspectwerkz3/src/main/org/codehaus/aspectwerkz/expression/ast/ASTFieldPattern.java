@@ -39,7 +39,17 @@ public class ASTFieldPattern extends SimpleNode {
 
     public void setFullNamePattern(final String pattern) {
         int index = pattern.lastIndexOf('.');
-        String classPattern = pattern.substring(0, index);
+        String classPattern = null;
+        //Aw-112 support for "field" and "com..field"
+        if (index > 0) {
+            classPattern = pattern.substring(0, index);
+            if (classPattern.endsWith(".")) {
+                classPattern += ".*";
+            }
+        } else {
+            // unspecified classPattern like "method(..)"
+            classPattern = "*..*";
+        }
         if (classPattern.endsWith("+")) {
             classPattern = classPattern.substring(0, classPattern.length() - 1);
             m_declaringTypePattern = Pattern.compileTypePattern(classPattern, SubtypePatternType.MATCH_ON_ALL_METHODS);

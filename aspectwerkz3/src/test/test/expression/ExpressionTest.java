@@ -22,7 +22,7 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaFieldInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class ExpressionTest extends TestCase {
@@ -181,14 +181,22 @@ public class ExpressionTest extends TestCase {
         super(name);
     }
 
-    // ============ constructor modifiers test =============
+    // ============ constructor signature test =============
     public void testConstructor() throws Exception {
         assertTrue(new ExpressionInfo("call(test.expression.Target.new())", NAMESPACE).getExpression().match(
             new ExpressionContext(PointcutType.CALL, constructor, null)));
         assertFalse(new ExpressionInfo("call(test.expression.Target.new(String))", NAMESPACE).getExpression().match(
             new ExpressionContext(PointcutType.CALL, constructor, null)));
+        //AW-112 below
+        assertTrue(new ExpressionInfo("within(test.expression.Target) && execution(new())", NAMESPACE).getExpression().match(
+            new ExpressionContext(PointcutType.EXECUTION, constructor, null)));
+        assertTrue(new ExpressionInfo("within(test..*) && execution(*.expression.Target.new())", NAMESPACE).getExpression().match(
+            new ExpressionContext(PointcutType.EXECUTION, constructor, constructor.getDeclaringType())));
+        assertTrue(new ExpressionInfo("within(test..*.*) && execution(*.expression.Target.new())", NAMESPACE).getExpression().match(
+            new ExpressionContext(PointcutType.EXECUTION, constructor, constructor.getDeclaringType())));
     }
 
+    // ============ constructor modifiers test =============
     public void testConstructorModifiers1() throws Exception {
         assertTrue(new ExpressionInfo("call(public test.expression.Target.new())", NAMESPACE).getExpression().match(
             new ExpressionContext(PointcutType.CALL, constructor, null)));
@@ -452,6 +460,21 @@ public class ExpressionTest extends TestCase {
                 .match(new ExpressionContext(PointcutType.CALL, _method$Name1, null)));
         assertFalse(new ExpressionInfo("call(void test.expression.Target._methodName1())", NAMESPACE).getExpression()
                 .match(new ExpressionContext(PointcutType.CALL, _method$Name1, null)));
+        assertTrue(new ExpressionInfo("execution(* __method$Name1())", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.EXECUTION, _method$Name1, null)));
+        assertTrue(new ExpressionInfo("within(test.expression.Target) && execution(* __method$Name1())", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.EXECUTION, _method$Name1, _method$Name1.getDeclaringType())));
+        //AW-112 below
+        assertTrue(new ExpressionInfo("within(test.expression.Target) && execution(* __method$Name1())", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.EXECUTION, _method$Name1, _method$Name1.getDeclaringType())));
+        assertTrue(new ExpressionInfo("execution(* test.expression..*(..)) && execution(* *..Target.__method$Name1())", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.EXECUTION, _method$Name1, _method$Name1.getDeclaringType())));
+        assertTrue(new ExpressionInfo("execution(* test.expression..*.*(..)) && execution(* *..Target.__method$Name1())", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.EXECUTION, _method$Name1, _method$Name1.getDeclaringType())));
+        assertTrue(new ExpressionInfo("execution(* test..*(..)) && execution(* *.expression.Target.__method$Name1())", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.EXECUTION, _method$Name1, _method$Name1.getDeclaringType())));
+        assertTrue(new ExpressionInfo("execution(* test..*.*(..)) && execution(* *.expression.Target.__method$Name1())", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.EXECUTION, _method$Name1, _method$Name1.getDeclaringType())));
     }
 
     // ============ method attribute test =============
@@ -609,6 +632,12 @@ public class ExpressionTest extends TestCase {
             new ExpressionContext(PointcutType.SET, _field$Name1, null)));
         assertFalse(new ExpressionInfo("set(int test..*.__fieldName1)", NAMESPACE).getExpression().match(
             new ExpressionContext(PointcutType.SET, _field$Name1, null)));
+        // AW-112 below
+        assertTrue(new ExpressionInfo("within(test.expression.Target) && set(int __field$Name1)", NAMESPACE).getExpression().match(
+            new ExpressionContext(PointcutType.SET, _field$Name1, null)));
+        assertTrue(new ExpressionInfo("within(*.expression.Target) && set(int test..__field$Name1)", NAMESPACE).getExpression().match(
+            new ExpressionContext(PointcutType.SET, _field$Name1, null)));
+
     }
 
     // ============ field attribute test =============

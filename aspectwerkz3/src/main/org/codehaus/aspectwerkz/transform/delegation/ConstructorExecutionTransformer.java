@@ -57,7 +57,7 @@ public class ConstructorExecutionTransformer implements Transformer {
             SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
-            if (classFilter(definition, new ExpressionContext(PointcutType.EXECUTION, classInfo, null), ctClass)) {
+            if (classFilter(definition, new ExpressionContext(PointcutType.EXECUTION, classInfo, classInfo), ctClass)) {
                 continue;
             }
             final CtConstructor[] constructors = ctClass.getConstructors();
@@ -65,7 +65,7 @@ public class ConstructorExecutionTransformer implements Transformer {
                 CtConstructor constructor = constructors[i];
                 ConstructorInfo constructorInfo = JavassistConstructorInfo.getConstructorInfo(constructor, context
                         .getLoader());
-                ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, constructorInfo, null);
+                ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, constructorInfo, constructorInfo);
                 if (constructorFilter(definition, ctx)) {
                     continue;
                 }
