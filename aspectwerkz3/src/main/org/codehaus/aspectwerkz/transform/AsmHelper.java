@@ -252,4 +252,14 @@ public class AsmHelper {
         hash = (37 * hash) + type.toString().hashCode();
         return hash;
     }
+
+    /**
+     * Calculates the class hash.
+     *
+     * @param declaringType
+     * @return
+     */
+    public static int calculateClassHash(final String declaringType) {
+        return declaringType.hashCode();
+    }
 }

@@ -269,20 +269,21 @@ public final class TransformationUtil {
      * @return the hash
      */
     public static int calculateHash(final Class klass) {
-        int hash = 17;
-        Method[] methods = klass.getDeclaredMethods();
-        for (int i = 0; i < methods.length; i++) {
-            hash = (37 * hash) + calculateHash(methods[i]);
-        }
-        Constructor[] constructors = klass.getDeclaredConstructors();
-        for (int i = 0; i < constructors.length; i++) {
-            hash = (37 * hash) + calculateHash(constructors[i]);
-        }
-        Field[] fields = klass.getDeclaredFields();
-        for (int i = 0; i < fields.length; i++) {
-            hash = (37 * hash) + calculateHash(fields[i]);
-        }
-        return hash;
+//        int hash = 17;
+//        Method[] methods = klass.getDeclaredMethods();
+//        for (int i = 0; i < methods.length; i++) {
+//            hash = (37 * hash) + calculateHash(methods[i]);
+//        }
+//        Constructor[] constructors = klass.getDeclaredConstructors();
+//        for (int i = 0; i < constructors.length; i++) {
+//            hash = (37 * hash) + calculateHash(constructors[i]);
+//        }
+//        Field[] fields = klass.getDeclaredFields();
+//        for (int i = 0; i < fields.length; i++) {
+//            hash = (37 * hash) + calculateHash(fields[i]);
+//        }
+//        return hash;
+        return klass.getName().hashCode();
     }
 
     /**
@@ -292,20 +293,21 @@ public final class TransformationUtil {
      * @return the hash
      */
     public static int calculateHash(final CtClass ctClass) throws NotFoundException {
-        int hash = 17;
-        CtMethod[] methods = ctClass.getDeclaredMethods();
-        for (int i = 0; i < methods.length; i++) {
-            hash = (37 * hash) + calculateHash(methods[i]);
-        }
-        CtConstructor[] constructors = ctClass.getDeclaredConstructors();
-        for (int i = 0; i < constructors.length; i++) {
-            hash = (37 * hash) + calculateHash(constructors[i]);
-        }
-        CtField[] fields = ctClass.getDeclaredFields();
-        for (int i = 0; i < fields.length; i++) {
-            hash = (37 * hash) + calculateHash(fields[i]);
-        }
-        return hash;
+//        int hash = 17;
+//        CtMethod[] methods = ctClass.getDeclaredMethods();
+//        for (int i = 0; i < methods.length; i++) {
+//            hash = (37 * hash) + calculateHash(methods[i]);
+//        }
+//        CtConstructor[] constructors = ctClass.getDeclaredConstructors();
+//        for (int i = 0; i < constructors.length; i++) {
+//            hash = (37 * hash) + calculateHash(constructors[i]);
+//        }
+//        CtField[] fields = ctClass.getDeclaredFields();
+//        for (int i = 0; i < fields.length; i++) {
+//            hash = (37 * hash) + calculateHash(fields[i]);
+//        }
+//        return hash;
+        return ctClass.getName().hashCode();
     }
 
     /**

@@ -38,7 +38,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-class JoinPointRegistry {
+public class JoinPointRegistry {
     /**
      * Pre allocated empty array list.
      */
@@ -58,12 +58,6 @@ class JoinPointRegistry {
      * Map of: the class hash => map of: join point hash => map of: join point type => array cflow expressions.
      */
     private static final TLongObjectHashMap m_joinPointCflowExpressionMap = new TLongObjectHashMap();
-
-    /**
-     * Package private constructor.
-     */
-    JoinPointRegistry() {
-    }
 
     /**
      * Registers the advices for the method join point.
