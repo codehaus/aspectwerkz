@@ -1,15 +1,15 @@
 /*
- * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it A/or
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR and PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an interfaces to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddInterfaceTransformer.java,v 1.12 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AddInterfaceTransformer.java,v 1.13 2003-07-09 05:21:28 jboner Exp $
  */
 public final class AddInterfaceTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -63,7 +63,7 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
             throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
         }
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode A put each weave model on the classpath");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);

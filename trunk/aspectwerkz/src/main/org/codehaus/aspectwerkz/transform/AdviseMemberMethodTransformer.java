@@ -1,15 +1,15 @@
 /*
- * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it A/or
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR and PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -58,7 +58,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.13 2003-07-08 12:59:08 jboner Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.14 2003-07-09 05:21:28 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -78,7 +78,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
         }
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode A put each weave model on the classpath");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -405,7 +405,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
 
     /**
      * Creates a proxy method for the original method specified.
-     * This method has the same signature as the original method A
+     * This method has the same signature as the original method and
      * catches the invocation for further processing by the framework
      * before redirecting to the original method.
      *
@@ -527,7 +527,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
         // if we have parameters, wrap them up
         if (parameterTypes.length != 0) {
 
-            // create A allocate the parameters array
+            // create and allocate the parameters array
             il.append(new PUSH(cp, parameterTypes.length));
             il.append((CPInstruction)factory.createNewArray(Type.OBJECT, (short)1));
 
@@ -678,7 +678,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             il.append(factory.createStore(Type.OBJECT, indexParam));
             il.append(factory.createLoad(Type.OBJECT, indexParam));
 
-            // cast the result A return it, if the return type is a
+            // cast the result and return it, if the return type is a
             // primitive type, retrieve it from the wrapped object first
             if (returnType instanceof BasicType) {
                 if (returnType.equals(Type.LONG)) {
