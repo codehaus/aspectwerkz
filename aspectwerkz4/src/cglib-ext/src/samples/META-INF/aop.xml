@@ -1,0 +1,14 @@
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz2.dtd">
+<aspectwerkz>
+    <system id="proxy-sample">
+        <aspect class="samples.tracing.TracingAspect">
+            <pointcut name="methodsToLog" expression="execution(* samples.tracing.Trace*.*(..))"/>
+            <!--            <pointcut name="methodsToLog" expression="execution(* samples.tracing.Trace*.*(..)) || execution(samples.tracing.Trace*.new(..))"/>-->
+            <advice name="logMethod(StaticJoinPoint)" type="around" bind-to="methodsToLog"/>
+            <advice name="logBefore(StaticJoinPoint)" type="before" bind-to="methodsToLog"/>
+            <advice name="logAfter(StaticJoinPoint)" type="after" bind-to="methodsToLog"/>
+        </aspect>
+    </system>
+</aspectwerkz>
