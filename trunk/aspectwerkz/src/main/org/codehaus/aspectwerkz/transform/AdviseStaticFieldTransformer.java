@@ -57,7 +57,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticFieldTransformer.java,v 1.14 2003-07-22 14:03:18 jboner Exp $
+ * @version $Id: AdviseStaticFieldTransformer.java,v 1.15 2003-07-22 19:38:54 jboner Exp $
  */
 public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -615,10 +615,7 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
      * @return boolean true if the method should be filtered away
      */
     private boolean methodFilter(final Method method) {
-        return method.isNative() ||
-                method.isAbstract() ||
-                method.getName().equals("<init>") ||
-                method.getName().equals("<clinit>");
+        return method.isNative() || method.isAbstract();
     }
 
     /**

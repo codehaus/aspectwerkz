@@ -19,7 +19,7 @@
         <property environment="env"/>
 
         <property name="name" value="aspectwerkz"/>
-        <property name="version" value="0.7.3"/>
+        <property name="version" value="0.7.4"/>
         <property name="basedir" value="."/>
 
         <property name="src.dir" value="${basedir}/src/main"/>
