@@ -73,7 +73,6 @@ public class WeavedTarget {
 
     // added by the weaver to trigger JIT generation if not packaged together
     private static void ___AW_$_AW_$initJoinPoints() {
-        InlinedJoinPointManager.loadJoinPointBase(___AW_Clazz);
 //        InlinedJoinPointManager.loadJoinPoint(JoinPointType.METHOD_EXECUTION, ___AW_Clazz, "toLog1", "(I)I", Modifier.PUBLIC, null, null, null, 2,
 //                -2091835264, "examples/logging/WeavedTarget_1__2091835264___AW_JoinPoint" );
     }

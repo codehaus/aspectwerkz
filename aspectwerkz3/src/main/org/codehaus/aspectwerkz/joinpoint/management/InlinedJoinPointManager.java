@@ -25,18 +25,6 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 public class InlinedJoinPointManager {
 
     /**
-     * Ensures that the joinPointBase class for the given target class is generated. This call is added to the weaved
-     * class as a "clinit" block
-     *
-     * @param klass
-     */
-    public static void loadJoinPointBase(final Class klass) {
-        //TODO: do a load test to avoid useless JITgen
-        //TODO: could be yet another option "-XoverridePackagedJITWithJITGen"
-        JoinPointCompiler.compileJoinPointBase(klass.getName(), klass.getClassLoader());
-    }
-
-    /**
      * Ensures that the specific joinPoint class for the given target class and joinPoint info is generated. This call
      * is added to the weaved class as a "clinit" block
      *
@@ -290,7 +278,7 @@ public class InlinedJoinPointManager {
                 pointcutType, system, reflectionInfo, withinInfo
         );
 
-        JoinPointCompiler.loadJoinPoint(
+        Class clazz = JoinPointCompiler.loadJoinPoint(
                 joinPointClassName,
                 joinPointType,
                 joinPointHash,
@@ -310,5 +298,6 @@ public class InlinedJoinPointManager {
                 calleeClass.getClassLoader(),
                 joinPointSequence
         );
+        System.out.println("loading join point class: " + clazz);
     }
 }
