@@ -11,17 +11,17 @@ import org.codehaus.aspectwerkz.AspectContext;
 
 /**
  * The aspect mixin is deployed as perInstance
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @Aspect perJVM
  */
 public class IntroductionDeploymentAspect {
     /**
      * Set to parse
-     * 
+     *
      * @Introduce within(test.mixindeployment.IntroductionDeploymentTest$TargetA) ||
-     *            within(test.mixindeployment.IntroductionDeploymentTest$TargetB)
-     *            deploymentModel=perInstance
+     * within(test.mixindeployment.IntroductionDeploymentTest$TargetB)
+     * deploymentModel=perInstance
      */
     public static class MarkerImpl implements Marker {
         /**
@@ -32,7 +32,7 @@ public class IntroductionDeploymentAspect {
         /**
          * We are interested in cross-cutting info, therefore we have added a constructor that takes
          * a cross-cutting infor instance as its only parameter.
-         * 
+         *
          * @param info the cross-cutting info
          */
         public MarkerImpl(final AspectContext info) {
@@ -50,9 +50,9 @@ public class IntroductionDeploymentAspect {
 
     /**
      * Note: explicit within(..) pointcut is needed
-     * 
+     *
      * @Introduce within(test.mixindeployment.IntroductionDeploymentTest$TargetC)
-     *            deploymentModel=perClass
+     * deploymentModel=perClass
      */
     public static class AnotherMarkerImpl implements Marker {
         /**
@@ -63,7 +63,7 @@ public class IntroductionDeploymentAspect {
         /**
          * We are interested in cross-cutting info, therefore we have added a constructor that takes
          * a cross-cutting infor instance as its only parameter.
-         * 
+         *
          * @param info the cross-cutting info
          */
         public AnotherMarkerImpl(final AspectContext info) {
@@ -82,8 +82,9 @@ public class IntroductionDeploymentAspect {
 
     /**
      * Note: will fail with a StackOverflow if perInstance - due to hashCode use to fetch mixin impl.
+     *
      * @Introduce within(test.mixindeployment.IntroductionDeploymentTest$TargetD)
-     *            deploymentModel=perClass
+     * deploymentModel=perClass
      */
     public static class HashcodeImpl implements Hashcode {
         public int hashCode() {

@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 /**
  * Holds the annotation proxy instance and the name of the annotation.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AnnotationInfo implements Serializable {

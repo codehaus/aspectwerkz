@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
 
 /**
  * Holds the meta-data for the advices.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AdviceDefinition {
@@ -68,14 +68,14 @@ public class AdviceDefinition {
 
     /**
      * Creates a new advice meta-data instance.
-     * 
-     * @param name the name of the expressionInfo
-     * @param type the type of the advice
+     *
+     * @param name                the name of the expressionInfo
+     * @param type                the type of the advice
      * @param specialArgumentType the special arg type, such as returning(TYPE) or throwing(TYPE)
-     * @param aspectName the name of the aspect
-     * @param aspectClassName the class name of the aspect
-     * @param expressionInfo the expressionInfo
-     * @param method the method
+     * @param aspectName          the name of the aspect
+     * @param aspectClassName     the class name of the aspect
+     * @param expressionInfo      the expressionInfo
+     * @param method              the method
      */
     public AdviceDefinition(final String name,
                             final AdviceType type,
@@ -127,7 +127,7 @@ public class AdviceDefinition {
 
     /**
      * Returns the name of the advice.
-     * 
+     *
      * @return the name
      */
     public String getName() {
@@ -136,7 +136,7 @@ public class AdviceDefinition {
 
     /**
      * Sets the name of the advice.
-     * 
+     *
      * @param name the name
      */
     public void setName(final String name) {
@@ -145,7 +145,7 @@ public class AdviceDefinition {
 
     /**
      * Returns the expression.
-     * 
+     *
      * @return the expression
      */
     public ExpressionInfo getExpressionInfo() {
@@ -154,7 +154,7 @@ public class AdviceDefinition {
 
     /**
      * Returns the class name.
-     * 
+     *
      * @return the class name
      */
     public String getAspectClassName() {
@@ -163,7 +163,7 @@ public class AdviceDefinition {
 
     /**
      * Returns the aspect name.
-     * 
+     *
      * @return the aspect name
      */
     public String getAspectName() {
@@ -181,7 +181,7 @@ public class AdviceDefinition {
 
     /**
      * Returns the method.
-     * 
+     *
      * @return the method
      */
     public Method getMethod() {
@@ -190,7 +190,7 @@ public class AdviceDefinition {
 
     /**
      * Returns the the deployment model for the advice
-     * 
+     *
      * @return the deployment model
      */
     public String getDeploymentModel() {
@@ -199,7 +199,7 @@ public class AdviceDefinition {
 
     /**
      * Returns the attribute.
-     * 
+     *
      * @return the attribute
      */
     public String getAttribute() {
@@ -208,7 +208,7 @@ public class AdviceDefinition {
 
     /**
      * Sets the attribute.
-     * 
+     *
      * @param attribute the attribute
      */
     public void setAttribute(final String attribute) {
@@ -217,19 +217,20 @@ public class AdviceDefinition {
 
     /**
      * Deep copy of the definition.
-     * 
+     *
      * @param expressionInfo
      * @return
      */
     public AdviceDefinition copyAt(final ExpressionInfo expressionInfo) {
         return new AdviceDefinition(
-            getName(),
-            getType(),
-            getSpecialArgumentType(),
-            getAspectName(),
-            getAspectClassName(),
-            expressionInfo,
-            getMethod(),
-            m_aspectDefinition);
+                getName(),
+                getType(),
+                getSpecialArgumentType(),
+                getAspectName(),
+                getAspectClassName(),
+                expressionInfo,
+                getMethod(),
+                m_aspectDefinition
+        );
     }
 }

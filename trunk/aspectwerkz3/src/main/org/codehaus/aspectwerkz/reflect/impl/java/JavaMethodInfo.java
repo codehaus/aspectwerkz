@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Implementation of the MethodInfo interface for java.lang.reflect.*.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
@@ -38,7 +38,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Creates a new method meta data instance.
-     * 
+     *
      * @param method
      * @param declaringType
      */
@@ -48,7 +48,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Returns the method info for the method specified.
-     * 
+     *
      * @param method the method
      * @return the method info
      */
@@ -64,7 +64,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Returns the annotations.
-     * 
+     *
      * @return the annotations
      */
     public List getAnnotations() {
@@ -76,7 +76,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Returns the return type.
-     * 
+     *
      * @return the return type
      */
     public ClassInfo getReturnType() {
@@ -94,7 +94,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Returns the parameter types.
-     * 
+     *
      * @return the parameter types
      */
     public ClassInfo[] getParameterTypes() {
@@ -118,7 +118,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Returns the exception types.
-     * 
+     *
      * @return the exception types
      */
     public ClassInfo[] getExceptionTypes() {

@@ -9,13 +9,10 @@ package org.codehaus.aspectwerkz.annotation;
 
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
-import org.codehaus.aspectwerkz.transform.aspectj.AjAspectDefinitionManager;
-import org.codehaus.aspectwerkz.transform.aspectj.AjAdviceInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
@@ -166,7 +163,7 @@ public class AspectAnnotationParser {
         List methodList = ReflectHelper.createSortedMethodList(klass);
 
         // iterate first on all method to lookup @Expression Pointcut annotations so that they can be resolved
-        for (Iterator it = methodList.iterator(); it.hasNext(); ) {
+        for (Iterator it = methodList.iterator(); it.hasNext();) {
             Method method = (Method) it.next();
 
             // Pointcut with signature
@@ -185,7 +182,7 @@ public class AspectAnnotationParser {
         }
 
         // iterate on other annotations
-        for (Iterator it = methodList.iterator(); it.hasNext(); ) {
+        for (Iterator it = methodList.iterator(); it.hasNext();) {
             Method method = (Method) it.next();
 
             try {

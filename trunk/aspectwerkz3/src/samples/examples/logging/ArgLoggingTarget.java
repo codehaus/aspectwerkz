@@ -59,6 +59,7 @@ class Runner {
         ArgLoggingTarget target = new ArgLoggingTarget();
         doRun(target);
     }
+
     public void doRun(ArgLoggingTarget target) {
         target.toLog_1(0, "a", 1);
         int counter1 = target.getCounter();

@@ -17,9 +17,10 @@ import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 public class PerJVMPerformanceAspect {
     /**
      * Around execution(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM())
+     *
      * @Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM())
-     *         &&
-     *         within(test.performance.*)
+     * &&
+     * within(test.performance.*)
      */
     public Object advice1(final StaticJoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();

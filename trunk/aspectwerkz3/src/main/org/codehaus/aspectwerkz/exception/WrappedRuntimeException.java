@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 
 /**
  * Wrappes the original throwable in a RuntimeException.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class WrappedRuntimeException extends RuntimeException {
@@ -23,7 +23,7 @@ public class WrappedRuntimeException extends RuntimeException {
 
     /**
      * Creates a new WrappedRuntimeException.
-     * 
+     *
      * @param throwable the non-RuntimeException to be wrapped.
      */
     public WrappedRuntimeException(final Throwable throwable) {
@@ -32,7 +32,7 @@ public class WrappedRuntimeException extends RuntimeException {
 
     /**
      * Returns the error message string of the wrapped exception.
-     * 
+     *
      * @return the error message string of the wrapped exception
      */
     public String getMessage() {
@@ -41,7 +41,7 @@ public class WrappedRuntimeException extends RuntimeException {
 
     /**
      * Returns the localized description of the wrapped exception in order to produce a locale-specific message.
-     * 
+     *
      * @return the localized description of the wrapped exception.
      */
     public String getLocalizedMessage() {
@@ -50,7 +50,7 @@ public class WrappedRuntimeException extends RuntimeException {
 
     /**
      * Returns the original exception.
-     * 
+     *
      * @return the cause
      */
     public Throwable getCause() {
@@ -59,7 +59,7 @@ public class WrappedRuntimeException extends RuntimeException {
 
     /**
      * Returns a short description of the wrapped exception.
-     * 
+     *
      * @return a string representation of the wrapped exception.
      */
     public String toString() {
@@ -77,7 +77,7 @@ public class WrappedRuntimeException extends RuntimeException {
 
     /**
      * Prints the wrapped excpetion A its backtrace to the specified print stream.
-     * 
+     *
      * @param s the print stream
      */
     public void printStackTrace(final PrintStream s) {
@@ -86,7 +86,7 @@ public class WrappedRuntimeException extends RuntimeException {
 
     /**
      * Prints the wrapped exception A its backtrace to the specified print writer.
-     * 
+     *
      * @param s the print writer
      */
     public void printStackTrace(final PrintWriter s) {

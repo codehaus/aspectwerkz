@@ -26,65 +26,112 @@ public class MethodComparatorTest extends TestCase {
         Method method5 = null;
         Method method6 = null;
         try {
-            method1 = this.getClass().getMethod("__generated$_AW_$method1", new Class[] {});
-            method11 = this.getClass().getMethod("__generated$_AW_$method1$x", new Class[] {});
-            method2 = this.getClass().getMethod("__generated$_AW_$method1", new Class[] {
-                int.class
-            });
-            method3 = this.getClass().getMethod("__generated$_AW_$method2", new Class[] {});
-            method4 = this.getClass().getMethod("__generated$_AW_$method2", new Class[] {
-                int.class
-            });
-            method5 = this.getClass().getMethod("__generated$_AW_$method2", new Class[] {
-                String.class
-            });
-            method6 = this.getClass().getMethod("__generated$_AW_$method2", new Class[] {
-                Array.newInstance(String.class, 1).getClass()
-            });
+            method1 = this.getClass().getMethod("__generated$_AW_$method1", new Class[]{});
+            method11 = this.getClass().getMethod("__generated$_AW_$method1$x", new Class[]{});
+            method2 = this.getClass().getMethod(
+                    "__generated$_AW_$method1", new Class[]{
+                        int.class
+                    }
+            );
+            method3 = this.getClass().getMethod("__generated$_AW_$method2", new Class[]{});
+            method4 = this.getClass().getMethod(
+                    "__generated$_AW_$method2", new Class[]{
+                        int.class
+                    }
+            );
+            method5 = this.getClass().getMethod(
+                    "__generated$_AW_$method2", new Class[]{
+                        String.class
+                    }
+            );
+            method6 = this.getClass().getMethod(
+                    "__generated$_AW_$method2", new Class[]{
+                        Array.newInstance(String.class, 1).getClass()
+                    }
+            );
         } catch (Exception e) {
             throw new RuntimeException("exception unexpected: " + e);
         }
-        assertTrue(0 == MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
-            method1,
-            method1));
-        assertTrue(0 == MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
-            method2,
-            method2));
-        assertTrue(0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
-            method1,
-            method2));
-        assertTrue(0 < MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
-            method2,
-            method1));
-        assertTrue(0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
-            method1,
-            method11));
-        assertTrue(0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
-            method3,
-            method4));
-        assertTrue(0 < MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
-            method4,
-            method3));
-        assertTrue(0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
-            method1,
-            method4));
-        assertTrue(0 < MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
-            method4,
-            method1));
-        assertTrue(0 < MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
-            method3,
-            method2));
-        assertTrue(0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
-            method2,
-            method3));
-        assertTrue(0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
-            method4,
-            method5));
+        assertTrue(
+                0 == MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
+                        method1,
+                        method1
+                )
+        );
+        assertTrue(
+                0 == MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
+                        method2,
+                        method2
+                )
+        );
+        assertTrue(
+                0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
+                        method1,
+                        method2
+                )
+        );
+        assertTrue(
+                0 < MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
+                        method2,
+                        method1
+                )
+        );
+        assertTrue(
+                0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
+                        method1,
+                        method11
+                )
+        );
+        assertTrue(
+                0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
+                        method3,
+                        method4
+                )
+        );
+        assertTrue(
+                0 < MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
+                        method4,
+                        method3
+                )
+        );
+        assertTrue(
+                0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
+                        method1,
+                        method4
+                )
+        );
+        assertTrue(
+                0 < MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
+                        method4,
+                        method1
+                )
+        );
+        assertTrue(
+                0 < MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
+                        method3,
+                        method2
+                )
+        );
+        assertTrue(
+                0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
+                        method2,
+                        method3
+                )
+        );
+        assertTrue(
+                0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
+                        method4,
+                        method5
+                )
+        );
 
         // AW-104 test
-        assertTrue(0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
-            method5,
-            method6));
+        assertTrue(
+                0 > MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(
+                        method5,
+                        method6
+                )
+        );
     }
 
     public static void main(String[] args) {

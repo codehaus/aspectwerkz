@@ -41,19 +41,19 @@ public class ComplexCFlowTest extends TestCase {
 
     //--- Aspect
 
-	public static class Aspect {
+    public static class Aspect {
 
         /**
          * FIXME: this expression leads to match all at cflow early filtering.
-         *
+         * <p/>
          * XXBefore execution(* test.ComplexCFlowTest.method4(..)) AND within(test.ComplexCFlowTest)
-         *         AND !cflow(call(* test.ComplexCFlowTest.method2(..)) AND within(test.ComplexCFlowTest))
-         *         AND !cflow(call(* test.ComplexCFlowTest.method3(..)) AND within(test.ComplexCFlowTest))
+         * AND !cflow(call(* test.ComplexCFlowTest.method2(..)) AND within(test.ComplexCFlowTest))
+         * AND !cflow(call(* test.ComplexCFlowTest.method3(..)) AND within(test.ComplexCFlowTest))
          */
-		public void method4NotIn2Or3Advice(JoinPoint joinPoint) {
+        public void method4NotIn2Or3Advice(JoinPoint joinPoint) {
             s_logString += " 4-!2-!3-Advice";
-		}
-	}
+        }
+    }
 
     //--- JUnit
 

@@ -15,7 +15,7 @@ import java.util.Set;
 
 /**
  * The advice annotation proxy base.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
  */

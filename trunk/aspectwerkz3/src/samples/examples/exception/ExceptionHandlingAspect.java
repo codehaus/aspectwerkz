@@ -11,7 +11,7 @@ public class ExceptionHandlingAspect {
     /**
      * before handler(java.lang.Exception) && withincode(public static void
      * examples.exception.Target.main(String[]))
-     * 
+     *
      * @Before handler(java.lang.Exception) && within(examples.exception.Target)
      */
     public void logEntry(final JoinPoint joinPoint) throws Throwable {

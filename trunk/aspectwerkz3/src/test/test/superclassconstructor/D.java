@@ -9,7 +9,7 @@ package test.superclassconstructor;
 
 /**
  * Derived.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class D extends C {

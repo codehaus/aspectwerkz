@@ -21,8 +21,10 @@ import java.util.HashMap;
  */
 public class ComputationStandalone {
 
-    private static final int WEAVING_FREQUENCY = new Integer(System
-            .getProperty("weaving.frequency")).intValue();
+    private static final int WEAVING_FREQUENCY = new Integer(
+            System
+            .getProperty("weaving.frequency")
+    ).intValue();
 
     private static final boolean USE_CACHE = System.getProperty("cache").equals("true");
 
@@ -54,20 +56,22 @@ public class ComputationStandalone {
         if (USE_CACHE) {
             System.err.println("weaving in cache support");
             EWorldUtil.activate(
-                SYSTEM_ID,
-                CacheAspect.class.getName(),
-                CACHE_ADVICE,
-                EXPRESSION,
-                CACHE_POINTCUT);
+                    SYSTEM_ID,
+                    CacheAspect.class.getName(),
+                    CACHE_ADVICE,
+                    EXPRESSION,
+                    CACHE_POINTCUT
+            );
         }
         if (USE_TRACE) {
             System.err.println("weaving in trace support");
             EWorldUtil.activate(
-                SYSTEM_ID,
-                TraceAspect.class.getName(),
-                TRACE_ADVICE,
-                EXPRESSION,
-                TRACE_POINTCUT);
+                    SYSTEM_ID,
+                    TraceAspect.class.getName(),
+                    TRACE_ADVICE,
+                    EXPRESSION,
+                    TRACE_POINTCUT
+            );
         }
     }
 
@@ -75,18 +79,20 @@ public class ComputationStandalone {
         if (USE_CACHE) {
             System.err.println("un-weaving cache support");
             EWorldUtil.deactivate(
-                SYSTEM_ID,
-                CacheAspect.class.getName(),
-                CACHE_ADVICE,
-                CACHE_POINTCUT);
+                    SYSTEM_ID,
+                    CacheAspect.class.getName(),
+                    CACHE_ADVICE,
+                    CACHE_POINTCUT
+            );
         }
         if (USE_TRACE) {
             System.err.println("un-weaving trace support");
             EWorldUtil.deactivate(
-                SYSTEM_ID,
-                TraceAspect.class.getName(),
-                TRACE_ADVICE,
-                TRACE_POINTCUT);
+                    SYSTEM_ID,
+                    TraceAspect.class.getName(),
+                    TRACE_ADVICE,
+                    TRACE_POINTCUT
+            );
         }
     }
 
@@ -141,10 +147,14 @@ public class ComputationStandalone {
             int counter = 0;
             boolean isWeaved = false;
             while (true) {
-                System.out.println("TraceAspect weave status = "
-                    + EWorldUtil.isWeaved(SYSTEM_ID, TraceAspect.class.getName()));
-                System.out.println("CacheAspect weave status = "
-                    + EWorldUtil.isWeaved(SYSTEM_ID, CacheAspect.class.getName()));
+                System.out.println(
+                        "TraceAspect weave status = "
+                        + EWorldUtil.isWeaved(SYSTEM_ID, TraceAspect.class.getName())
+                );
+                System.out.println(
+                        "CacheAspect weave status = "
+                        + EWorldUtil.isWeaved(SYSTEM_ID, CacheAspect.class.getName())
+                );
                 counter++;
                 Thread.sleep(sleep);
                 System.err.println("fib(" + iterations + ") = " + fib(iterations));
@@ -197,18 +207,22 @@ public class ComputationStandalone {
         public Object trace(final JoinPoint joinPoint) throws Throwable {
             MemberSignature signature = (MemberSignature) joinPoint.getSignature();
             indent();
-            System.out.println("--> "
-                + signature.getDeclaringType().getName()
-                + "::"
-                + signature.getName());
+            System.out.println(
+                    "--> "
+                    + signature.getDeclaringType().getName()
+                    + "::"
+                    + signature.getName()
+            );
             m_level++;
             final Object result = joinPoint.proceed();
             m_level--;
             indent();
-            System.out.println("<-- "
-                + signature.getDeclaringType().getName()
-                + "::"
-                + signature.getName());
+            System.out.println(
+                    "<-- "
+                    + signature.getDeclaringType().getName()
+                    + "::"
+                    + signature.getName()
+            );
             return result;
         }
 

@@ -53,21 +53,21 @@ public class PolymorphicTest extends TestCase {
 
     //---- Aspect
 
-	public static class TestAspect {
-	
-		public void method1Advise(JoinPoint joinPoint) {
-			MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
-			LOG.append("call ");
-		}
+    public static class TestAspect {
+
+        public void method1Advise(JoinPoint joinPoint) {
+            MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
+            LOG.append("call ");
+        }
 
         public void ctor1Advise(JoinPoint joinPoint) {
-            ConstructorRtti rtti = (ConstructorRtti)joinPoint.getRtti();
+            ConstructorRtti rtti = (ConstructorRtti) joinPoint.getRtti();
             LOG.append("exector ");
         }
 
         public void ctor2Advise(JoinPoint joinPoint) {
-            ConstructorRtti rtti = (ConstructorRtti)joinPoint.getRtti();
+            ConstructorRtti rtti = (ConstructorRtti) joinPoint.getRtti();
             LOG.append("callctor ");
         }
-	}
+    }
 }

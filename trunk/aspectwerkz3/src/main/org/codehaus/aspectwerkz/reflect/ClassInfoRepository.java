@@ -15,7 +15,7 @@ import java.util.WeakHashMap;
 
 /**
  * A repository for the class info hierarchy. Is class loader aware.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ClassInfoRepository {
@@ -36,7 +36,7 @@ public class ClassInfoRepository {
 
     /**
      * Creates a new repository.
-     * 
+     *
      * @param loader
      */
     private ClassInfoRepository(final ClassLoader loader) {
@@ -45,7 +45,7 @@ public class ClassInfoRepository {
 
     /**
      * Returns the class info repository for the specific class loader
-     * 
+     *
      * @param loader
      * @return
      */
@@ -69,7 +69,7 @@ public class ClassInfoRepository {
 
     /**
      * Remove a class from the repository.
-     * 
+     *
      * @param className the name of the class
      */
     public static void removeClassInfoFromAllClassLoaders(final String className) {
@@ -79,7 +79,7 @@ public class ClassInfoRepository {
 
     /**
      * Returns the class info.
-     * 
+     *
      * @param className
      * @return
      */
@@ -93,7 +93,7 @@ public class ClassInfoRepository {
 
     /**
      * Adds a new class info.
-     * 
+     *
      * @param classInfo
      */
     public void addClassInfo(final ClassInfo classInfo) {
@@ -108,7 +108,7 @@ public class ClassInfoRepository {
 
     /**
      * Checks if the class info for a specific class exists.
-     * 
+     *
      * @param name
      * @return
      */
@@ -118,12 +118,12 @@ public class ClassInfoRepository {
 
     /**
      * Searches for a class info up in the class loader hierarchy.
-     * 
+     *
      * @param className
      * @param loader
      * @return the class info
      * @TODO might clash for specific class loader lookup algorithms, user need to override this class and implement
-     *       this method
+     * this method
      */
     public ClassInfo checkParentClassRepository(final String className, final ClassLoader loader) {
         if (loader == null) {

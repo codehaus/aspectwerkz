@@ -18,19 +18,19 @@ public class TestAspect {
 
     /**
      * @Expression call(void test.callAndExecution.CallExecutionTest.privateMethod()) &&
-     *             within(test.callAndExecution.*)
+     * within(test.callAndExecution.*)
      */
     Pointcut call1;
 
     /**
      * @Expression call(void test.callAndExecution.CallExecutionTest.publicMethod()) &&
-     *             within(test.callAndExecution.*)
+     * within(test.callAndExecution.*)
      */
     Pointcut call2;
 
     /**
      * @Expression call(void test.callAndExecution.Intf+.called()) &&
-     *             within(test.callAndExecution.*)
+     * within(test.callAndExecution.*)
      */
     Pointcut callIntf;
 

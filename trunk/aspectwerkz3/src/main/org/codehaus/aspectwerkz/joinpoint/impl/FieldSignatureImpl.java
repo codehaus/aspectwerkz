@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * Implementation for the field signature.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class FieldSignatureImpl implements FieldSignature {
@@ -36,7 +36,7 @@ public class FieldSignatureImpl implements FieldSignature {
 
     /**
      * Returns the declaring class.
-     * 
+     *
      * @return the declaring class
      */
     public Class getDeclaringType() {
@@ -45,11 +45,11 @@ public class FieldSignatureImpl implements FieldSignature {
 
     /**
      * Returns the modifiers for the signature. <p/>Could be used like this:
-     * 
+     * <p/>
      * <pre>
      * boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
      * </pre>
-     * 
+     *
      * @return the mofifiers
      */
     public int getModifiers() {
@@ -58,7 +58,7 @@ public class FieldSignatureImpl implements FieldSignature {
 
     /**
      * Returns the name (f.e. name of method of field).
-     * 
+     *
      * @return the name
      */
     public String getName() {
@@ -67,7 +67,7 @@ public class FieldSignatureImpl implements FieldSignature {
 
     /**
      * Returns the field.
-     * 
+     *
      * @return the field
      */
     public Field getField() {
@@ -76,7 +76,7 @@ public class FieldSignatureImpl implements FieldSignature {
 
     /**
      * Returns the field type.
-     * 
+     *
      * @return the field type
      */
     public Class getFieldType() {
@@ -85,7 +85,7 @@ public class FieldSignatureImpl implements FieldSignature {
 
     /**
      * Return the annotation with a specific name.
-     * 
+     *
      * @param annotationName the annotation name
      * @return the annotation or null
      */
@@ -95,18 +95,18 @@ public class FieldSignatureImpl implements FieldSignature {
 
     /**
      * Return a list with the annotations with a specific name.
-     * 
+     *
      * @param annotationName the annotation name
      * @return the annotations in a list (can be empty)
      */
     public List getAnnotations(final String annotationName) {
-        return Annotations.getAnnotations(annotationName, m_field);        
+        return Annotations.getAnnotations(annotationName, m_field);
     }
 
     /**
      * Return all the annotations <p/>Each annotation is wrapped in
      * {@link org.codehaus.aspectwerkz.annotation.AnnotationInfo}instance.
-     * 
+     *
      * @return a list with the annotations
      */
     public List getAnnotationInfos() {
@@ -115,7 +115,7 @@ public class FieldSignatureImpl implements FieldSignature {
 
     /**
      * Returns a string representation of the signature.
-     * 
+     *
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */

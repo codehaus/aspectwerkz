@@ -16,7 +16,7 @@ import java.util.StringTokenizer;
 /**
  * ProcessStarter uses JPDA JDI api to start a VM with a runtime modified java.lang.ClassLoader, or transparently use a
  * Xbootclasspath style (java 1.3 detected or forced) <p/>
- * <p>
+ * <p/>
  * <h2>Important note</h2>
  * Due to a JPDA issue in LauchingConnector, this implementation is based on Process forking. If Xbootclasspath is not
  * used the target VM is started with JDWP options <i>transport=dt_socket,address=9300 </i> unless other specified.
@@ -24,7 +24,7 @@ import java.util.StringTokenizer;
  * has been validated against a WebLogic 7 startup and is the <i>must use </i> implementation.
  * </p>
  * <p/>
- * <p>
+ * <p/>
  * <h2>Implementation Note</h2>
  * See http://java.sun.com/products/jpda/ <br/>See http://java.sun.com/j2se/1.4.1/docs/guide/jpda/jdi/index.html <br/>
  * </p>
@@ -37,7 +37,7 @@ import java.util.StringTokenizer;
  * for java 1.3 is used.
  * </p>
  * <p/>
- * <p>
+ * <p/>
  * <h2>Usage</h2>
  * Use it as a replacement of "java" :<br/><code>java [target jvm option] [target classpath]
  * targetMainClass [targetMainClass args]</code>
@@ -48,7 +48,7 @@ import java.util.StringTokenizer;
  * JDWP options, transport and address are preserved if specified.
  * </p>
  * <p/>
- * <p>
+ * <p/>
  * <h2>Options</h2>
  * [classpath] must contain %JAVA_HOME%/tools.jar and the jar you want for bytecode modification (bcel, javassist, asm...)
  * <br/>The java.lang.ClassLoader is patched using the <code>-Daspectwerkz.classloader.clpreprocessor=...</code> in
@@ -60,7 +60,7 @@ import java.util.StringTokenizer;
  * connection for HotSwap. Defaults to no wait.
  * </p>
  * <p/>
- * <p>
+ * <p/>
  * <h2>Disabling HotSwap</h2>
  * You disable HotSwap and thus force the use of -Xbootclasspath (like in java 1.3 mode) and specify the directory where
  * the modified class loader bytecode will be stored using in [jvm option]
@@ -71,7 +71,7 @@ import java.util.StringTokenizer;
  * different jvm with different classloader preprocessor implementations.
  * </p>
  * <p/>
- * <p>
+ * <p/>
  * <h2>Option for AspectWerkz layer 1 Javassist implementation</h2>
  * When using the default AspectWerkz layer 1 Javassist implementation
  * <code>org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl</code>, java.lang.ClassLoader is modified to
@@ -81,7 +81,7 @@ import java.util.StringTokenizer;
  * this parameter is not given, the default AspectWerkz layer 2
  * org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor is used. <br/>
  * </p>
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class ProcessStarter {
@@ -135,7 +135,7 @@ public class ProcessStarter {
      */
     private static boolean hasCanRedefineClass() {
         try {
-            VirtualMachine.class.getMethod("canRedefineClasses", new Class[] {});
+            VirtualMachine.class.getMethod("canRedefineClasses", new Class[]{});
         } catch (NoSuchMethodException e) {
             return false;
         }
@@ -150,8 +150,9 @@ public class ProcessStarter {
         String mainArgs = javaArgs[2];
         String options = optionArgs + " -cp " + cpArgs;
         String clp = System.getProperty(
-            CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
-            "org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl");
+                CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
+                "org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl"
+        );
 
         // if java version does not support method "VirtualMachine.canRedefineClass"
         // or if bootclasspath is forced, transform optionsArg
@@ -198,10 +199,11 @@ public class ProcessStarter {
                 ;
             }
             VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(
-                clp,
-                starter.getTransport(),
-                starter.getAddress(),
-                secondsToWait);
+                    clp,
+                    starter.getTransport(),
+                    starter.getAddress(),
+                    secondsToWait
+            );
             if (vm == null) {
                 process.destroy();
             } else {
@@ -290,7 +292,7 @@ public class ProcessStarter {
 
     /**
      * Remove first and last " or ' if any
-     * 
+     *
      * @param s string to handle
      * @return s whitout first and last " or ' if any
      */
@@ -306,7 +308,7 @@ public class ProcessStarter {
 
     /**
      * Analyse the args[] as a java command line
-     * 
+     *
      * @param args
      * @return String[] [0]:jvm options except -cp|-classpath, [1]:classpath without -cp, [2]: mainClass + mainOptions
      */
@@ -324,9 +326,11 @@ public class ProcessStarter {
                 }
             } else if (!foundMain && ("-cp".equals(previous) || "-classpath".equals(previous))) {
                 if (cpOptionsArgB.length() > 0) {
-                    cpOptionsArgB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0)
-                        ? ";"
-                        : ":");
+                    cpOptionsArgB.append(
+                            (System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0)
+                            ? ";"
+                            : ":"
+                    );
                 }
                 cpOptionsArgB.append(removeEmbracingQuotes(args[i]));
             } else {
@@ -343,7 +347,7 @@ public class ProcessStarter {
         } else {
             classPath = classPath.append(escapeWhiteSpace(cpOptionsArgB.toString()));
         }
-        String[] res = new String[] {
+        String[] res = new String[]{
             optionsArgB.toString(), classPath.toString(), mainArgB.toString()
         };
         return res;

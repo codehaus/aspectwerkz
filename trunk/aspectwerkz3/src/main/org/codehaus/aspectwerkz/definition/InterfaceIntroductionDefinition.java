@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Holds the meta-data for the interface introductions. <p/>This definition holds only pure interface introduction.
  * <p/>It is extended in IntroductionDefinition for interface+implementation introductions
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -42,9 +42,9 @@ public class InterfaceIntroductionDefinition {
 
     /**
      * Creates a new introduction meta-data instance.
-     * 
-     * @param name the name of the expressionInfo
-     * @param expressionInfo the expressionInfo
+     *
+     * @param name               the name of the expressionInfo
+     * @param expressionInfo     the expressionInfo
      * @param interfaceClassName the class name of the interface
      */
     public InterfaceIntroductionDefinition(final String name,
@@ -67,7 +67,7 @@ public class InterfaceIntroductionDefinition {
 
     /**
      * Returns the name of the introduction.
-     * 
+     *
      * @return the name
      */
     public String getName() {
@@ -76,7 +76,7 @@ public class InterfaceIntroductionDefinition {
 
     /**
      * Returns the expressions.
-     * 
+     *
      * @return the expressions array
      */
     public ExpressionInfo[] getExpressionInfos() {
@@ -85,7 +85,7 @@ public class InterfaceIntroductionDefinition {
 
     /**
      * Returns the class name of the interface.
-     * 
+     *
      * @return the class name of the interface
      */
     public String getInterfaceClassName() {
@@ -94,7 +94,7 @@ public class InterfaceIntroductionDefinition {
 
     /**
      * Returns the class name of the interface.
-     * 
+     *
      * @return the class name of the interface
      */
     public List getInterfaceClassNames() {
@@ -103,7 +103,7 @@ public class InterfaceIntroductionDefinition {
 
     /**
      * Returns the attribute.
-     * 
+     *
      * @return the attribute
      */
     public String getAttribute() {
@@ -112,7 +112,7 @@ public class InterfaceIntroductionDefinition {
 
     /**
      * Sets the attribute.
-     * 
+     *
      * @param attribute the attribute
      */
     public void setAttribute(final String attribute) {
@@ -121,7 +121,7 @@ public class InterfaceIntroductionDefinition {
 
     /**
      * Adds a new expression info.
-     * 
+     *
      * @param expression a new expression info
      */
     public void addExpressionInfo(final ExpressionInfo expression) {
@@ -134,7 +134,7 @@ public class InterfaceIntroductionDefinition {
 
     /**
      * Adds an array with new expression infos.
-     * 
+     *
      * @param expressions an array with new expression infos
      */
     public void addExpressionInfos(final ExpressionInfo[] expressions) {

@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 /**
  * A so far VERY limited bench. <p/>Only tests the overhead of one around advice and one introduced
  * method.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @TODO: extends this test case to be more interesting or replace with a real bench
  * @TODO: should add some more around advice, since JIT really shines when we have advice chains

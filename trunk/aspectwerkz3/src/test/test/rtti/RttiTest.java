@@ -20,7 +20,9 @@ public class RttiTest extends TestCase {
         rttiTarget.doSomething(1);
         // will have a nested call to another instance of target, with arg0 = 2
 
-        assertEquals("+Target-1.1 Target-1.1 +Target-2.2 Target-2.2 -Target-2.2 -Target-1.1 ", RttiTarget.LOG.toString());
+        assertEquals(
+                "+Target-1.1 Target-1.1 +Target-2.2 Target-2.2 -Target-2.2 -Target-1.1 ", RttiTarget.LOG.toString()
+        );
 
         RttiTarget.LOG = new StringBuffer();
         rttiTarget = new RttiTarget();

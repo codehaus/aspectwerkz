@@ -30,22 +30,22 @@ import java.util.zip.ZipEntry;
  * Main application that allow two steps preparation of the hook <p/>This can be used instead of ProcessStarter to dual
  * JVM and stream piping <br/><p/>
  * <h2>Usage</h2>
- * 
+ * <p/>
  * <pre>
- * 
- *  
- *   
- *    
+ * <p/>
+ * <p/>
+ * <p/>
+ * <p/>
  *     java [options..] org.codehaus.aspectwerkz.hook.Plug -target &lt;targetJar.jar&gt;
  *     java [options..] org.codehaus.aspectwerkz.hook.Plug -hotswap &lt;jdwp options&gt;
  *     java [options..] org.codehaus.aspectwerkz.hook.Plug -resume &lt;jdwp options&gt;
  *     java [options..] org.codehaus.aspectwerkz.hook.Plug -info &lt;jdwp options&gt;
- *     
- *    
- *   
- *  
+ * <p/>
+ * <p/>
+ * <p/>
+ * <p/>
  * </pre>
- * 
+ * <p/>
  * <ul>
  * <li>-target targetJar.jar to generate a targetJar.jar containing the patched java.lang.ClassLoader suitable for your
  * current java installation. <br/>Add this jar in -Xbootclasspath/p: options as other AspectWerkz options [see
@@ -56,22 +56,22 @@ import java.util.zip.ZipEntry;
  * </ul>
  * For the last two invocations, [jdwp options] must be the subpart of the -Xrunjdwp option indicating how to connect to
  * the remote JVM (see sample below or documentation). <i>For now, only localhost connection is supported. </i>
- * 
+ * <p/>
  * <pre>
- * 
- *  
- *   
- *    
+ * <p/>
+ * <p/>
+ * <p/>
+ * <p/>
  *     If the JVM was started with -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y
  *     Use java [options..] ..Plug -prepare transport=dt_socket,address=8000
- *     
- *    
- *   
- *  
+ * <p/>
+ * <p/>
+ * <p/>
+ * <p/>
  * </pre>
- * 
+ * <p/>
  * <b>Be sure to set AspectWerkz option prior to starting the JVM with -Xrunjdwp options. </b>
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class Plug {
@@ -88,7 +88,7 @@ public class Plug {
     /**
      * Dumps the modified java.lang.ClassLoader in destJar <p/>The aspectcwerkz.classloader.clclasspreprocessor is used
      * if specified, else defaults to AspectWerkz layer 1
-     * 
+     *
      * @param destJar
      * @throws Exception
      */
@@ -99,9 +99,12 @@ public class Plug {
         }
 
         // patch the java.lang.ClassLoader
-        byte[] patched = ClassLoaderPatcher.getPatchedClassLoader(System.getProperty(
-            ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
-            org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class.getName()));
+        byte[] patched = ClassLoaderPatcher.getPatchedClassLoader(
+                System.getProperty(
+                        ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
+                        org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class.getName()
+                )
+        );
 
         //@todo refactor Patcher to handle errors instead of stderr warnings / Error
         // pack the jar file
@@ -123,7 +126,7 @@ public class Plug {
 
     /**
      * Connects to a remote JVM using the jdwp options specified in jdwp
-     * 
+     *
      * @param jdwp
      * @return VirtualMachine or null if failure
      * @throws Exception
@@ -173,7 +176,7 @@ public class Plug {
 
     /**
      * Resume the remote JVM, without hotswapping classes
-     * 
+     *
      * @param jdwp
      * @throws Exception
      */
@@ -187,7 +190,7 @@ public class Plug {
 
     /**
      * Prints information about the remote JVM and resume
-     * 
+     *
      * @param jdwp
      * @throws Exception
      */
@@ -204,16 +207,19 @@ public class Plug {
 
     /**
      * Hotswaps the java.lang.ClassLoader of the remote JVM and resume
-     * 
+     *
      * @param jdwp
      * @throws Exception
      */
     public void hotswap(Map jdwp) throws Exception {
         // @todo check it works at runtime not suspended
-        VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(System.getProperty(
-            ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
-            org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class.getName()), (String) jdwp
-                .get(TRANSPORT_JDWP), (String) jdwp.get(ADDRESS_JDWP));
+        VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(
+                System.getProperty(
+                        ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
+                        org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class.getName()
+                ), (String) jdwp
+                            .get(TRANSPORT_JDWP), (String) jdwp.get(ADDRESS_JDWP)
+        );
         if (vm != null) {
             vm.resume();
             vm.dispose();
@@ -234,7 +240,7 @@ public class Plug {
     /**
      * Parse a jdwp like string in a Map <p/>transport=dt_socket,address=8000 will produce a Map of 2 entries whose keys
      * are transport and address
-     * 
+     *
      * @param args
      * @return Map jdwp options
      */

@@ -77,7 +77,9 @@ public class Aspects {
             if (className != null) {
                 return aspectOf(className);
             } else {
-                throw new Error("Could not load aspect " + name + " from " + Thread.currentThread().getContextClassLoader());
+                throw new Error(
+                        "Could not load aspect " + name + " from " + Thread.currentThread().getContextClassLoader()
+                );
             }
         }
     }
@@ -95,7 +97,7 @@ public class Aspects {
     /**
      * Returns the per class aspect instance for the aspect with the given name for the perTarget model
      *
-     * @param name the name of the aspect
+     * @param name   the name of the aspect
      * @param target the target class
      * @return the per class aspect instance
      */
@@ -118,7 +120,7 @@ public class Aspects {
      * Returns the per class aspect instance for the aspect with the given name for the perTarget model
      *
      * @param aspectClass the name of the aspect
-     * @param target the target class
+     * @param target      the target class
      * @return the per class aspect instance
      */
     public static Object aspectOf(final Class aspectClass, final Class target) {
@@ -135,11 +137,11 @@ public class Aspects {
         AspectDefinition aspectDefinition = null;
 
         List definitions = SystemDefinitionContainer.getHierarchicalDefs(aspectClass.getClassLoader());
-        for (Iterator iterator = definitions.iterator(); iterator.hasNext() && aspectDefinition==null;) {
+        for (Iterator iterator = definitions.iterator(); iterator.hasNext() && aspectDefinition == null;) {
             SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
             for (Iterator iterator1 = systemDefinition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
                 AspectDefinition aspectDef = (AspectDefinition) iterator1.next();
-                if (aspectClass.getName().replace('/','.').equals(aspectDef.getClassName())) {
+                if (aspectClass.getName().replace('/', '.').equals(aspectDef.getClassName())) {
                     aspectDefinition = aspectDef;
                     break;
                 }
@@ -197,7 +199,7 @@ public class Aspects {
     }
 
     private static String lookupAspectClassName(ClassLoader loader, String qualifiedName) {
-        if (qualifiedName.indexOf('/')<=0) {
+        if (qualifiedName.indexOf('/') <= 0) {
             // no uuid
             return null;
         }

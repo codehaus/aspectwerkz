@@ -14,7 +14,7 @@ import java.io.Serializable;
 /**
  * Test the Javassist based SerialVerUid computation.
  * See AW-244 for synthetic members bug.
- *
+ * <p/>
  * FIXME impl with ASM
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>

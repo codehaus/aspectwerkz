@@ -9,7 +9,7 @@ package test.mixindeployment;
 
 /**
  * Provides access to the mixin targets
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public interface Marker {

@@ -678,13 +678,12 @@ public class SystemDefinition {
     }
 
     /**
-     * @TODO XXX move to the aspect def instead of being separated from the aspect def concept
-     *
-     * Adds a new parameter for the aspect.
-     *
      * @param aspectName the name of the aspect
      * @param key        the key
      * @param value      the value
+     * @TODO XXX move to the aspect def instead of being separated from the aspect def concept
+     * <p/>
+     * Adds a new parameter for the aspect.
      */
     public void addParameter(final String aspectName, final String key, final String value) {
         Map parameters;

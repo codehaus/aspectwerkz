@@ -29,7 +29,7 @@ public class UntypedAnnotationProxy implements Annotation, Serializable {
 
     /**
      * Returns the value.
-     * 
+     *
      * @return the value
      */
     public String getValue() {
@@ -38,7 +38,7 @@ public class UntypedAnnotationProxy implements Annotation, Serializable {
 
     /**
      * Returns the name.
-     * 
+     *
      * @return
      */
     public String getName() {
@@ -47,7 +47,7 @@ public class UntypedAnnotationProxy implements Annotation, Serializable {
 
     /**
      * Sets the name of the annotation, the '@[name]'.
-     * 
+     *
      * @param name
      */
     public void setName(final String name) {
@@ -56,7 +56,7 @@ public class UntypedAnnotationProxy implements Annotation, Serializable {
 
     /**
      * Sets the string single value of this untyped annotation
-     * 
+     *
      * @param value
      */
     public void setValue(final String value) {
@@ -65,7 +65,7 @@ public class UntypedAnnotationProxy implements Annotation, Serializable {
 
     /**
      * Checks if the annotation is typed or not.
-     * 
+     *
      * @return boolean
      */
     public boolean isTyped() {
@@ -86,7 +86,7 @@ public class UntypedAnnotationProxy implements Annotation, Serializable {
 
     /**
      * Provides custom deserialization.
-     * 
+     *
      * @param stream the object input stream containing the serialized object
      * @throws Exception in case of failure
      */

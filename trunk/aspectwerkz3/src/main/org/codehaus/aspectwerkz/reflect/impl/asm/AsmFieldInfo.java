@@ -21,7 +21,7 @@ import java.io.IOException;
 
 /**
  * ASM implementation of the FieldInfo interface.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
@@ -38,7 +38,7 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
 
     /**
      * Creates a new field java instance.
-     * 
+     *
      * @param field
      * @param declaringType
      * @param loader
@@ -50,18 +50,17 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
 
     /**
      * Returns the field info for the field specified.
-     * 
+     *
      * @param fieldName
      * @param fieldDesc
      * @param bytecode
      * @param loader
      * @return the field info
      */
-    public static FieldInfo getFieldInfo(
-        final String fieldName,
-        final String fieldDesc,
-        final byte[] bytecode,
-        final ClassLoader loader) {
+    public static FieldInfo getFieldInfo(final String fieldName,
+                                         final String fieldDesc,
+                                         final byte[] bytecode,
+                                         final ClassLoader loader) {
         String className = AsmClassInfo.retrieveClassNameFromBytecode(bytecode);
         AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(className);
@@ -73,7 +72,7 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
 
     /**
      * Returns the type.
-     * 
+     *
      * @return the type
      */
     public ClassInfo getType() {
@@ -91,17 +90,25 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
     public List getAnnotations() {
         if (m_annotations == null) {
             try {
-                ClassReader cr = new ClassReader(((ClassLoader)m_loaderRef.get()).getResourceAsStream(m_declaringTypeName.replace('.','/')+".class"));
+                ClassReader cr = new ClassReader(
+                        ((ClassLoader) m_loaderRef.get()).getResourceAsStream(
+                                m_declaringTypeName.replace('.', '/') + ".class"
+                        )
+                );
                 List annotations = new ArrayList();
                 cr.accept(
-                        new AsmAnnotationHelper.FieldAnnotationExtractor(annotations, m_member.name, (ClassLoader)m_loaderRef.get()),
+                        new AsmAnnotationHelper.FieldAnnotationExtractor(
+                                annotations, m_member.name, (ClassLoader) m_loaderRef.get()
+                        ),
                         AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES,
                         true
                 );
                 m_annotations = annotations;
             } catch (IOException e) {
                 // unlikely to occur since ClassInfo relies on getResourceAsStream
-                System.err.println("WARN - could not load " + m_declaringTypeName + " as a resource to retrieve annotations");
+                System.err.println(
+                        "WARN - could not load " + m_declaringTypeName + " as a resource to retrieve annotations"
+                );
                 m_annotations = AsmClassInfo.EMPTY_LIST;
             }
         }

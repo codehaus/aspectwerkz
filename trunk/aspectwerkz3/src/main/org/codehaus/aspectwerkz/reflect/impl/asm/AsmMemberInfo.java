@@ -118,25 +118,25 @@ public abstract class AsmMemberInfo implements MemberInfo {
         Attribute attributes = attrs;
         while (attributes != null) {
             if (attributes instanceof RuntimeInvisibleAnnotations) {
-                for (Iterator it = ((RuntimeInvisibleAnnotations)attributes).annotations.iterator(); it.hasNext();) {
-                    Annotation annotation = (Annotation)it.next();
+                for (Iterator it = ((RuntimeInvisibleAnnotations) attributes).annotations.iterator(); it.hasNext();) {
+                    Annotation annotation = (Annotation) it.next();
                     if (CustomAttribute.TYPE.equals(annotation.type)) {
                         m_annotations.add(CustomAttributeHelper.extractCustomAnnotation(annotation));
                     } else {
                         AnnotationInfo annotationInfo = AsmClassInfo.getAnnotationInfo(
                                 annotation,
-                                (ClassLoader)m_loaderRef.get()
+                                (ClassLoader) m_loaderRef.get()
                         );
                         m_annotations.add(annotationInfo);
                     }
                 }
             }
             if (attributes instanceof RuntimeVisibleAnnotations) {
-                for (Iterator it = ((RuntimeVisibleAnnotations)attributes).annotations.iterator(); it.hasNext();) {
-                    Annotation annotation = (Annotation)it.next();
+                for (Iterator it = ((RuntimeVisibleAnnotations) attributes).annotations.iterator(); it.hasNext();) {
+                    Annotation annotation = (Annotation) it.next();
                     AnnotationInfo annotationInfo = AsmClassInfo.getAnnotationInfo(
                             annotation,
-                            (ClassLoader)m_loaderRef.get()
+                            (ClassLoader) m_loaderRef.get()
                     );
                     m_annotations.add(annotationInfo);
                 }

@@ -25,7 +25,7 @@ import java.util.WeakHashMap;
 /**
  * A simple implementation of class preprocessor. <p/>It does not modify the bytecode. It just prints on stdout some
  * messages.
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class StdoutPreProcessor implements ClassPreProcessor {
@@ -88,7 +88,7 @@ public class StdoutPreProcessor implements ClassPreProcessor {
 
     /**
      * Register a weak reference on the classloader Looks for META-INF/manifest.mf resource and log a line
-     * 
+     *
      * @param loader
      * @param firstClassLoaded
      */
@@ -226,11 +226,13 @@ public class StdoutPreProcessor implements ClassPreProcessor {
 
     public static void main(String[] args) throws Exception {
         URL u = new URL(
-            "jar:file:/C:/bea/user_projects/domains/mydomain/myserver/.wlnotdelete/gallery/gallery-rar.jar!/");
+                "jar:file:/C:/bea/user_projects/domains/mydomain/myserver/.wlnotdelete/gallery/gallery-rar.jar!/"
+        );
 
         // differ from a "/./"
         URL u2 = new URL(
-            "jar:file:/C:/bea/user_projects/domains/mydomain/./myserver/.wlnotdelete/gallery/gallery-rar.jar!/");
+                "jar:file:/C:/bea/user_projects/domains/mydomain/./myserver/.wlnotdelete/gallery/gallery-rar.jar!/"
+        );
         if (u.sameFile(u2)) {
             System.out.println("same");
         } else {

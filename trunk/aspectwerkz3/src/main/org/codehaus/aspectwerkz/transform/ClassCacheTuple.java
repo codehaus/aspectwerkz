@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz.transform;
 
 /**
  * A tuple based on className and defining ClassLoader object
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class ClassCacheTuple {

@@ -9,13 +9,13 @@ package org.codehaus.aspectwerkz.reflect;
 
 /**
  * Inspects info.
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class MetaDataInspector {
     /**
      * Checks if a class has a certain field.
-     * 
+     *
      * @param classInfo
      * @param fieldName
      * @return
@@ -32,7 +32,7 @@ public class MetaDataInspector {
 
     /**
      * Checks if a class implements a certain interface.
-     * 
+     *
      * @param classInfo
      * @param interfaceName
      * @return

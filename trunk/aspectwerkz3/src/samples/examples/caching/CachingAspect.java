@@ -34,7 +34,7 @@ public class CachingAspect {
     /**
      * We are interested in cross-cutting info, therefore we have added a constructor that takes a
      * cross-cutting infor instance as its only parameter.
-     * 
+     *
      * @param info the cross-cutting info
      */
     public CachingAspect(final AspectContext info) {
@@ -43,7 +43,7 @@ public class CachingAspect {
 
     /**
      * @Before call(int examples.caching.Pi.getPiDecimal(int)) && withincode(int
-     *         examples.caching.main(String[]))
+     * examples.caching.main(String[]))
      */
     public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
@@ -54,7 +54,7 @@ public class CachingAspect {
      * @Around execution(int examples.caching.Pi.getPiDecimal(int))
      */
     public Object cache(final JoinPoint joinPoint) throws Throwable {
-        MethodRtti rtti   = (MethodRtti) joinPoint.getRtti();
+        MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
         final Long hash = new Long(calculateHash(rtti));
         final Object cachedResult = m_cache.get(hash);
         if (cachedResult != null) {

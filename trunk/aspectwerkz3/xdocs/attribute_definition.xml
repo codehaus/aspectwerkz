@@ -99,7 +99,8 @@
                     and pattern for the pointcut.
                     <br/>
                     If the pointcut is used to retain parameters value of the matching target (method/constructor execution/call and field value set)
-                    it has to be defined as a method, with a signature that conforms to the <code>args()</code> selector in the expression.
+                    it has to be defined as a method, with a signature that conforms to the
+                    <code>args()</code> selector in the expression.
                     <a href="#Pointcuts">Pointcuts section</a>.
                 </p>
             </subsection>
@@ -210,7 +211,8 @@ public class MyAspect {
             </p>
             <p>
                 Named pointcuts are defined as fields in the Aspect class, or as method if they have a signature
-                (that is using the <code>args()</code> selector), and they have to follow the following requirements:
+                (that is using the
+                <code>args()</code> selector), and they have to follow the following requirements:
                 <ol>
                     <li>
                         If defined as a field, the field is of type
@@ -226,8 +228,10 @@ public class MyAspect {
                     </li>
                     <br/>
                     <li>
-                        If using the <code>args()</code> selector, the pointcut is defined as a method. The return type
-                        of the method does not matter, but the signature must conform to the <code>args()</code> selector
+                        If using the
+                        <code>args()</code> selector, the pointcut is defined as a method. The return type
+                        of the method does not matter, but the signature must conform to the
+                        <code>args()</code> selector
                         (see samples below).
                     </li>
                     <br/>
@@ -275,11 +279,13 @@ public class MyAspect {
                     <li>
                         The signature of the method is
                         <code>public Object &lt;name of method&gt;(JoinPoint joinPoint) throws Throwable</code>
-                        (the public modifier is not mandatory, choose according to your needs) <b>unless...</b>
+                        (the public modifier is not mandatory, choose according to your needs)
+                        <b>unless...</b>
                     </li>
                     <br/>
                     <li>
-                        The advice is bounded to a pointcut with signature (<code>args()</code>). In such a case, the
+                        The advice is bounded to a pointcut with signature (
+                        <code>args()</code>). In such a case, the
                         parameter referenced in the pointcut signature must appear in the advice signature.
                         The JoinPoint parameter must appear although not referenced by the pointcut signature.
                         We can thus have any signature.
@@ -636,15 +642,18 @@ java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC
                 <a href="annotations.html#Compiling Annotations">here</a>.
             </p>
             <p>
-                Note that if you are using the <code>-dest</code> option, the anonymous inner classes will not be copied to
+                Note that if you are using the
+                <code>-dest</code> option, the anonymous inner classes will not be copied to
                 the destination directory, since the anonymous classes are not taken into account by the Annotation compiler.
                 In such a case it is recommanded to add the following (if using Ant) just after the call to AnnotationC
-                when the <code>-dest</code> option is used: (adapt according to the directories you are using)<br/>
-<![CDATA[
+                when the
+                <code>-dest</code> option is used: (adapt according to the directories you are using)
+                <br/>
+                <![CDATA[
     <copy todir="classes/annotated" overwrite="false">
         <fileset dir="classes/regular"/>
     </copy>
-]]>
+                ]]>
             </p>
         </section>
         <section name="XML deployment descriptor">

@@ -40,7 +40,7 @@ import java.util.List;
 
 /**
  * Enhances classes with custom attributes using the ASM library.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -87,7 +87,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Initializes the attribute enhancer. Must always be called before use.
-     * 
+     *
      * @param className the class name
      * @param classPath the class path
      * @return true if the class was succefully loaded, false otherwise
@@ -95,7 +95,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     public boolean initialize(final String className, final String classPath) {
         try {
             m_className = className;
-            URL[] urls = new URL[] {
+            URL[] urls = new URL[]{
                 new File(classPath).toURL()
             };
             m_loader = new URLClassLoader(urls);
@@ -118,7 +118,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Inserts an attribute on class level.
-     * 
+     *
      * @param attribute the attribute
      */
     public void insertClassAttribute(final Object attribute) {
@@ -131,8 +131,8 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Inserts an attribute on field level.
-     * 
-     * @param field the QDox java field
+     *
+     * @param field     the QDox java field
      * @param attribute the attribute
      */
     public void insertFieldAttribute(final JavaField field, final Object attribute) {
@@ -145,8 +145,8 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Inserts an attribute on method level.
-     * 
-     * @param method the QDox java method
+     *
+     * @param method    the QDox java method
      * @param attribute the attribute
      */
     public void insertMethodAttribute(final JavaMethod method, final Object attribute) {
@@ -163,9 +163,9 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Inserts an attribute on constructor level.
-     * 
+     *
      * @param constructor the QDox java method
-     * @param attribute the attribute
+     * @param attribute   the attribute
      */
     public void insertConstructorAttribute(final JavaMethod constructor, final Object attribute) {
         if (m_reader == null) {
@@ -181,7 +181,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Writes the enhanced class to file.
-     * 
+     *
      * @param destDir the destination directory
      */
     public void write(final String destDir) {
@@ -191,7 +191,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
         try {
             // parse the bytecode
             ClassWriter writer = AsmHelper.newClassWriter(true);
-            m_reader.accept(new AttributeClassAdapter(writer), Attributes.getDefaultAttributes(),false);
+            m_reader.accept(new AttributeClassAdapter(writer), Attributes.getDefaultAttributes(), false);
 
             // write the bytecode to disk
             String path = destDir + File.separator + m_classFileName;
@@ -200,9 +200,11 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             if (!parentFile.exists()) {
                 // directory does not exist create all directories in the path
                 if (!parentFile.mkdirs()) {
-                    throw new RuntimeException("could not create dir structure needed to write file "
-                        + path
-                        + " to disk");
+                    throw new RuntimeException(
+                            "could not create dir structure needed to write file "
+                            + path
+                            + " to disk"
+                    );
                 }
             }
             FileOutputStream os = new FileOutputStream(destDir + File.separator + m_classFileName);
@@ -215,7 +217,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Serializes the attribute to byte array.
-     * 
+     *
      * @param attribute the attribute
      * @return the attribute as a byte array
      */
@@ -232,7 +234,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
-     * 
+     *
      * @return nearest superclass (including itself) implemented interfaces
      */
     public String[] getNearestInterfacesInHierarchy(final String innerClassName) {
@@ -246,21 +248,23 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             throw new RuntimeException("could not load mixin for mixin implicit interface: " + e.toString());
         } catch (NoClassDefFoundError er) {
             // raised if extends / implements dependancies not found
-            throw new RuntimeException("could not find dependency for mixin implicit interface: "
-                + innerClassName
-                + " due to: "
-                + er.toString());
+            throw new RuntimeException(
+                    "could not find dependency for mixin implicit interface: "
+                    + innerClassName
+                    + " due to: "
+                    + er.toString()
+            );
         }
     }
 
     /**
      * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
-     * 
+     *
      * @return nearest superclass (including itself) implemented interfaces starting from root
      */
     private String[] getNearestInterfacesInHierarchy(final Class root) {
         if (root == null) {
-            return new String[] {};
+            return new String[]{};
         }
         Class[] implementedClasses = root.getInterfaces();
         String[] interfaces = null;
@@ -277,7 +281,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Base class for the attribute adapter visitors.
-     * 
+     *
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
     private class AttributeClassAdapter extends ClassAdapter {
@@ -289,12 +293,11 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             super(cv);
         }
 
-        public void visitField(
-            final int access,
-            final String name,
-            final String desc,
-            final Object value,
-            final Attribute attrs) {
+        public void visitField(final int access,
+                               final String name,
+                               final String desc,
+                               final Object value,
+                               final Attribute attrs) {
 
             RuntimeInvisibleAnnotations invisible = CustomAttributeHelper.linkRuntimeInvisibleAnnotations(attrs);
             for (Iterator it = m_fieldAttributes.iterator(); it.hasNext();) {
@@ -306,15 +309,14 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             if (invisible.annotations.size() == 0) {
                 invisible = null;
             }
-            super.visitField(access, name, desc, value, (attrs!=null)?attrs:invisible);
+            super.visitField(access, name, desc, value, (attrs != null) ? attrs : invisible);
         }
 
-        public CodeVisitor visitMethod(
-            final int access,
-            final String name,
-            final String desc,
-            final String[] exceptions,
-            final Attribute attrs) {
+        public CodeVisitor visitMethod(final int access,
+                                       final String name,
+                                       final String desc,
+                                       final String[] exceptions,
+                                       final Attribute attrs) {
 
             RuntimeInvisibleAnnotations invisible = CustomAttributeHelper.linkRuntimeInvisibleAnnotations(attrs);
             if (!name.equals(INIT_METHOD_NAME)) {
@@ -339,20 +341,20 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             if (invisible.annotations.size() == 0) {
                 invisible = null;
             }
-            return cv.visitMethod(access, name, desc, exceptions, (attrs!=null)?attrs:invisible);
+            return cv.visitMethod(access, name, desc, exceptions, (attrs != null) ? attrs : invisible);
         }
 
         public void visitAttribute(Attribute attrs) {
             classLevelAnnotationDone = true;
             RuntimeInvisibleAnnotations invisible = CustomAttributeHelper.linkRuntimeInvisibleAnnotations(attrs);
             for (Iterator it = m_classAttributes.iterator(); it.hasNext();) {
-                byte[] bytes = (byte[])it.next();
+                byte[] bytes = (byte[]) it.next();
                 invisible.annotations.add(CustomAttributeHelper.createCustomAnnotation(bytes));
             }
             if (invisible.annotations.size() == 0) {
                 invisible = null;
             }
-            super.visitAttribute((attrs!=null)?attrs:invisible);
+            super.visitAttribute((attrs != null) ? attrs : invisible);
         }
 
         public void visitEnd() {
@@ -360,7 +362,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
                 classLevelAnnotationDone = true;
                 RuntimeInvisibleAnnotations invisible = CustomAttributeHelper.linkRuntimeInvisibleAnnotations(null);
                 for (Iterator it = m_classAttributes.iterator(); it.hasNext();) {
-                    byte[] bytes = (byte[])it.next();
+                    byte[] bytes = (byte[]) it.next();
                     invisible.annotations.add(CustomAttributeHelper.createCustomAnnotation(bytes));
                 }
                 if (invisible.annotations.size() > 0) {

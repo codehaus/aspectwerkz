@@ -77,8 +77,8 @@ public class DescriptorUtil {
 
     /**
      * Converts from the Java/Javadoc method signature the JVM spec format.
-     * 
-     * @param javadocSig method signature as returned via Javadoc API.
+     *
+     * @param javadocSig        method signature as returned via Javadoc API.
      * @param javadocReturnType return type as returned via Javadoc API.
      * @return mtehod signature as defined in the JVM spec.
      */
@@ -103,7 +103,7 @@ public class DescriptorUtil {
 
     /**
      * Convert a JVM signature as defined in the JVM spec to that used in the Java.
-     * 
+     *
      * @param jvmSignature The JVM format signature.
      * @return a <code>String[]</code> containing the method parameter as elements of the array.
      */
@@ -144,12 +144,11 @@ public class DescriptorUtil {
      * The utility method that does the real work of parsing through the JVM formatted string and adding an converted
      * method parameter description to the StringBuffer.
      *
-     * @TODO this an extremely ugly method (the int an stringbuffer params must be removed)
-     *
-     * @param jvmFormat The JVM formatted string that is being parsed.
-     * @param i The offset into the string being parsed.
+     * @param jvmFormat    The JVM formatted string that is being parsed.
+     * @param i            The offset into the string being parsed.
      * @param stringbuffer The storage for building the converted method signature.
      * @return new offset location for parsing.
+     * @TODO this an extremely ugly method (the int an stringbuffer params must be removed)
      */
     private static int jvmFormatToJavaFormat(final String jvmFormat, int i, StringBuffer stringbuffer) {
         String s1 = "";

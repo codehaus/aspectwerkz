@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Implementation for the method signature.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class MethodSignatureImpl implements MethodSignature {
@@ -36,7 +36,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the method tuple.
-     * 
+     *
      * @return the method tuple
      */
     public MethodTuple getMethodTuple() {
@@ -45,7 +45,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the method.
-     * 
+     *
      * @return the method
      */
     public Method getMethod() {
@@ -54,7 +54,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the declaring class.
-     * 
+     *
      * @return the declaring class
      */
     public Class getDeclaringType() {
@@ -63,11 +63,11 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the modifiers for the signature. <p/>Could be used like this:
-     * 
+     * <p/>
      * <pre>
      * boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
      * </pre>
-     * 
+     *
      * @return the mofifiers
      */
     public int getModifiers() {
@@ -76,7 +76,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the name (f.e. name of method of field).
-     * 
+     *
      * @return
      */
     public String getName() {
@@ -85,7 +85,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the exception types declared by the code block.
-     * 
+     *
      * @return the exception types
      */
     public Class[] getExceptionTypes() {
@@ -94,7 +94,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the parameter types.
-     * 
+     *
      * @return the parameter types
      */
     public Class[] getParameterTypes() {
@@ -103,16 +103,16 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns the return type.
-     * 
+     *
      * @return the return type
      */
     public Class getReturnType() {
         return m_methodTuple.getOriginalMethod().getReturnType();
     }
-    
+
     /**
      * Return the annotation with a specific name.
-     * 
+     *
      * @param annotationName the annotation name
      * @return the annotation or null
      */
@@ -122,18 +122,18 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Return a list with the annotations with a specific name.
-     * 
+     *
      * @param annotationName the annotation name
      * @return the annotations in a list (can be empty)
      */
     public List getAnnotations(final String annotationName) {
-        return Annotations.getAnnotations(annotationName, m_methodTuple.getWrapperMethod());        
+        return Annotations.getAnnotations(annotationName, m_methodTuple.getWrapperMethod());
     }
 
     /**
      * Return all the annotations <p/>Each annotation is wrapped in
      * {@link org.codehaus.aspectwerkz.annotation.AnnotationInfo}instance.
-     * 
+     *
      * @return a list with the annotations
      */
     public List getAnnotationInfos() {
@@ -142,7 +142,7 @@ public class MethodSignatureImpl implements MethodSignature {
 
     /**
      * Returns a string representation of the signature.
-     * 
+     *
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */
@@ -153,7 +153,7 @@ public class MethodSignatureImpl implements MethodSignature {
         Class[] params = getParameterTypes();
         for (int i = 0; i < params.length; i++) {
             signature.append(params[i].getName());
-            if (i < params.length-1 ) {
+            if (i < params.length - 1) {
                 signature.append(", ");
             }
         }

@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Implementation of the FieldInfo interface for java.lang.reflect.*.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
@@ -28,7 +28,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
 
     /**
      * Creates a new field java instance.
-     * 
+     *
      * @param field
      * @param declaringType
      */
@@ -38,7 +38,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
 
     /**
      * Returns the field info for the field specified.
-     * 
+     *
      * @param field the field
      * @return the field info
      */
@@ -54,7 +54,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
 
     /**
      * Returns the annotations.
-     * 
+     *
      * @return the annotations
      */
     public List getAnnotations() {
@@ -66,7 +66,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
 
     /**
      * Returns the type.
-     * 
+     *
      * @return the type
      */
     public ClassInfo getType() {

@@ -26,7 +26,7 @@ import com.jrockit.management.rmp.RmpSocketListener;
  * http://edocs.bea.com/wls/docs81/adminguide/winservice.html <p/>In order to use the BEA JRockit
  * management server (for further connection of management console or runtime analyzer), the regular
  * option -Xmanagement will not have any effect. Instead, use <code>-Dmanagement</code>.
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -41,8 +41,9 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
 
     static {
         String clpp = System.getProperty(
-            "aspectwerkz.classloader.preprocessor",
-            "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor");
+                "aspectwerkz.classloader.preprocessor",
+                "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor"
+        );
         START_RMP_SERVER = System.getProperties().containsKey("management");
         try {
             // note: CLPP loaded by current thread classloader which is bootstrap classloader
@@ -54,8 +55,7 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
             //(ClassPreProcessor)ClassLoader.getSystemClassLoader().loadClass(clpp).newInstance();
             //s_preProcessor.initialize(null);
         } catch (Exception e) {
-            throw new ExceptionInInitializerError(
-                "could not initialize jrockit preprocessor due to: " + e.toString());
+            throw new ExceptionInInitializerError("could not initialize jrockit preprocessor due to: " + e.toString());
         }
     }
 
@@ -72,9 +72,9 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
 
     /**
      * Weave a class
-     * 
-     * @param caller classloader
-     * @param name of the class to weave
+     *
+     * @param caller   classloader
+     * @param name     of the class to weave
      * @param bytecode original
      * @return bytecode weaved
      */

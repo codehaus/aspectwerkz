@@ -44,8 +44,8 @@ public class Target {
     public static class AnnotationMatchAspect {
 
         /**
-         * @Before execution(@examples.annotation.AnnotationA * examples.annotation.Target.*(..))
          * @param jp
+         * @Before execution(@examples.annotation.AnnotationA * examples.annotation.Target.*(..))
          */
         public void beforeA(JoinPoint jp) {
             System.out.println("Target$AnnotationMatchAspect.beforeA");
@@ -53,8 +53,8 @@ public class Target {
         }
 
         /**
-         * @Before execution(@examples.annotation.AnnotationB * examples.annotation.Target.*(..))
          * @param jp
+         * @Before execution(@examples.annotation.AnnotationB * examples.annotation.Target.*(..))
          */
         public void beforeB(JoinPoint jp) {
             System.out.println("Target$AnnotationMatchAspect.beforeB");

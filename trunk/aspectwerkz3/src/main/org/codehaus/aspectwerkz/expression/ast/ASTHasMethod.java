@@ -3,17 +3,19 @@
 package org.codehaus.aspectwerkz.expression.ast;
 
 public class ASTHasMethod extends SimpleNode {
-  public ASTHasMethod(int id) {
-    super(id);
-  }
+    public ASTHasMethod(int id) {
+        super(id);
+    }
 
-  public ASTHasMethod(ExpressionParser p, int id) {
-    super(p, id);
-  }
+    public ASTHasMethod(ExpressionParser p, int id) {
+        super(p, id);
+    }
 
 
-  /** Accept the visitor. **/
-  public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+    /**
+     * Accept the visitor. *
+     */
+    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

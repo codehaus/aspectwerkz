@@ -11,7 +11,7 @@ import org.codehaus.aspectwerkz.aspect.AdviceType;
 
 /**
  * The 'Before' annotation proxy.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class BeforeAnnotationProxy extends AdviceAnnotationProxyBase {

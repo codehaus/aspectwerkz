@@ -27,7 +27,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTNot;
 /**
  * The advised cflow class filter visitor.
  * If the expression does not contains any cflow, it returns FALSE.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  * @author Michael Nascimento
@@ -41,19 +41,20 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
 
     /**
      * Creates a new cflow expression.
-     * 
+     *
      * @param expression the expression as a string
-     * @param namespace the namespace
-     * @param root the AST root
+     * @param namespace  the namespace
+     * @param root       the AST root
      */
-    public AdvisedCflowClassFilterExpressionVisitor(final ExpressionInfo expressionInfo, final String expression, final String namespace, final ASTRoot root) {
+    public AdvisedCflowClassFilterExpressionVisitor(final ExpressionInfo expressionInfo, final String expression,
+                                                    final String namespace, final ASTRoot root) {
         super(expression, namespace, root);
         m_expressionInfo = expressionInfo;
     }
 
     /**
      * Matches the expression context.
-     * 
+     *
      * @param context
      * @return
      */
@@ -66,7 +67,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
             // undeterministic is assumed to be "true" at this stage
             // since it won't be composed anymore with a NOT (unless
             // thru pointcut reference ie a new visitor)
-            return (match!=null)?match.booleanValue():true;
+            return (match != null) ? match.booleanValue() : true;
         } else {
             return true;
         }

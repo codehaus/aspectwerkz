@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 /**
  * Type safe enum for the different matching types.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class SubtypePatternType implements Serializable {
@@ -21,13 +21,14 @@ public class SubtypePatternType implements Serializable {
     public static final SubtypePatternType MATCH_ON_ALL_METHODS = new SubtypePatternType("MATCH_ON_ALL_METHODS");
 
     public static final SubtypePatternType MATCH_ON_BASE_TYPE_METHODS_ONLY = new SubtypePatternType(
-        "MATCH_ON_BASE_TYPE_METHODS_ONLY");
+            "MATCH_ON_BASE_TYPE_METHODS_ONLY"
+    );
 
     private final String myName;
 
     /**
      * Creates a new instance
-     * 
+     *
      * @param name
      */
     private SubtypePatternType(final String name) {
@@ -36,7 +37,7 @@ public class SubtypePatternType implements Serializable {
 
     /**
      * Returns the string representation.
-     * 
+     *
      * @return the string representation
      */
     public String toString() {

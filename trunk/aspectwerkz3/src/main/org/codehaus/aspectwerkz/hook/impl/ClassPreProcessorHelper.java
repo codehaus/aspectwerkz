@@ -16,7 +16,7 @@ import java.security.ProtectionDomain;
  * modified java.lang.ClassLoader of the org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl implemention.
  * <br/>This class must reside in the -Xbootclasspath when AspectWerkz layer 1 is used, but the effective implementation
  * of the class preprocessor (AspectWerkz layer 2) can be in standard system classpath (-cp).
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class ClassPreProcessorHelper {
@@ -46,7 +46,7 @@ public class ClassPreProcessorHelper {
 
     /**
      * Returns the configured class preprocessor Should be called after initialization only
-     * 
+     *
      * @return the preprocessor or null if not initialized
      */
     public static ClassPreProcessor getClassPreProcessor() {
@@ -94,13 +94,12 @@ public class ClassPreProcessorHelper {
     /**
      * byte code instrumentation of class loaded
      */
-    public static byte[] defineClass0Pre(
-        ClassLoader caller,
-        String name,
-        byte[] b,
-        int off,
-        int len,
-        ProtectionDomain pd) {
+    public static byte[] defineClass0Pre(ClassLoader caller,
+                                         String name,
+                                         byte[] b,
+                                         int off,
+                                         int len,
+                                         ProtectionDomain pd) {
         if (!preProcessorInitialized) {
             initializePreProcessor();
         }
@@ -114,15 +113,17 @@ public class ClassPreProcessorHelper {
         } else {
             try {
                 byte[] ibyte = new byte[len];
-                byte[] obyte = new byte[] {};
+                byte[] obyte = new byte[]{};
                 System.arraycopy(b, off, ibyte, 0, len);
                 obyte = preProcessor.preProcess(name, ibyte, caller);
                 return obyte;
             } catch (Throwable throwable) {
-                System.err.println("AspectWerkz - WARN - Error pre-processing class "
-                    + name
-                    + " in "
-                    + Thread.currentThread());
+                System.err.println(
+                        "AspectWerkz - WARN - Error pre-processing class "
+                        + name
+                        + " in "
+                        + Thread.currentThread()
+                );
                 throwable.printStackTrace();
                 byte[] obyte = new byte[len];
                 System.arraycopy(b, off, obyte, 0, len);

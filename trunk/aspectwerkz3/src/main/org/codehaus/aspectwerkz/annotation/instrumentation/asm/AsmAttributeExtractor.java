@@ -34,7 +34,7 @@ import java.lang.reflect.Method;
 
 /**
  * FIXME - REMOVE
- *
+ * <p/>
  * Extracts attributes from the class bytecode using the ASM library.
  * <p/>
  * Note: this class is parsing the bytecode at every single call. It does not cache anything

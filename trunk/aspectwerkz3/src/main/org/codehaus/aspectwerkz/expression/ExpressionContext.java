@@ -15,7 +15,7 @@ import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 
 /**
  * The expression context for AST evaluation.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
@@ -50,9 +50,9 @@ public class ExpressionContext {
 
     /**
      * Creates a new expression context.
-     * 
+     *
      * @param pointcutType
-     * @param reflectionInfo - can be null f.e. with early evaluation of CALL pointcut
+     * @param reflectionInfo       - can be null f.e. with early evaluation of CALL pointcut
      * @param withinReflectionInfo
      */
     public ExpressionContext(final PointcutType pointcutType,
@@ -199,8 +199,10 @@ public class ExpressionContext {
         if (!m_pointcutType.equals(expressionContext.m_pointcutType)) {
             return false;
         }
-        if ((m_withinReflectionInfo != null) ? (!m_withinReflectionInfo
-                .equals(expressionContext.m_withinReflectionInfo)) : (expressionContext.m_withinReflectionInfo != null)) {
+        if ((m_withinReflectionInfo != null) ?
+            (!m_withinReflectionInfo
+                .equals(expressionContext.m_withinReflectionInfo)) :
+            (expressionContext.m_withinReflectionInfo != null)) {
             return false;
         }
         return true;

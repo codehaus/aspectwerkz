@@ -152,7 +152,8 @@
                         JVM option. This is supported since release 1.0.
                         <br/>
                         <i>Note: due to JSR-163 updates, this option might not be supported in J2SE 5 beta2. Instead, you may have to use
-                        <code>-javaagent:org.codehaus.aspectwerkz.hook.Agent</code></i>
+                            <code>-javaagent:org.codehaus.aspectwerkz.hook.Agent</code>
+                        </i>
                         <br/>
                     </li>
                     <li>
