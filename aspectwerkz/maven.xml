@@ -309,6 +309,17 @@
     </goal>
 
     <!-- =================================================== -->
+    <!--  runs the caching test -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:samples:bug">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/examples/bug/aw.xml -Daspectwerkz.transform.dump=examples examples.bug.Main"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
     <!--  compiles attributes for the samples, merges w/ the samples.xml -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:attributes:samples">

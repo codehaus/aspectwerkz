@@ -79,7 +79,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
     /**
      * The result from the method invocation.
      */
-    protected Object m_result;
+    protected Object m_result = null;
 
     /**
      * The parameters to the method invocation.
@@ -105,6 +105,17 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * The controller object that controls the execution of advices for the join point.
      */
     protected JoinPointController m_controller = null;
+
+    /**
+     * Checks that the method invocation chain is not reentrant.
+     */
+    protected boolean m_reentrancyCheck = false;
+
+    /**
+     * Marks the join point as non-reentrant.
+     * @todo option in definition to choose between non-reentrancy and reentrancy for a specific pointcut
+     */
+    protected boolean m_nonReentrant = false;
 
     /**
      * Creates a new MethodJoinPoint object.
@@ -165,9 +176,9 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * Sets the cflow pointcuts (overwrites the old ones)
      * @param pointcuts the cflow pointcuts
      */
-	public void setCFlowPointcuts(final List pointcuts) {
-		m_cflowPointcuts = pointcuts;
-	}
+    public void setCFlowPointcuts(final List pointcuts) {
+        m_cflowPointcuts = pointcuts;
+    }
 
     /**
      * Returns the method meta-data.
@@ -238,7 +249,9 @@ public abstract class MethodJoinPoint implements JoinPoint {
     public String getMethodName() {
         // grab the original method name, ex: __originalMethod$<nameToExtract>$3
         final StringTokenizer tokenizer = new StringTokenizer(
-                m_originalMethod.getName(), TransformationUtil.DELIMITER);
+                m_originalMethod.getName(),
+                TransformationUtil.DELIMITER
+        );
         tokenizer.nextToken();
         return tokenizer.nextToken();
     }
@@ -335,15 +348,22 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * @throws Throwable the exception from the original method
      */
     public Object invokeOriginalMethod() throws Throwable {
-        Object result = null;
+        if (m_nonReentrant) {
+            if (m_reentrancyCheck) return m_result;
+            m_reentrancyCheck = true;
+        }
         try {
-            result = m_originalMethod.invoke(getTargetObject(), m_parameters);
-            setResult(result);
+            m_result = m_originalMethod.invoke(getTargetObject(), m_parameters);
         }
         catch (InvocationTargetException e) {
+            System.out.println("============ ERRRR ============");
+            System.out.println("m_originalMethod.getName() = " + m_originalMethod.getName());
+            System.out.println("getTargetObject() = " + getTargetObject());
+            System.out.println("m_methodId = " + m_methodId);
+
             handleException(e);
         }
-        return result;
+        return m_result;
     }
 
     /**
@@ -354,7 +374,8 @@ public abstract class MethodJoinPoint implements JoinPoint {
         m_methodMetaData = ReflectionMetaDataMaker.createMethodMetaData(
                 getMethodName(),
                 getParameterTypes(),
-                getReturnType());
+                getReturnType()
+        );
     }
 
     /**
@@ -386,7 +407,10 @@ public abstract class MethodJoinPoint implements JoinPoint {
 
         // take a look in the cache first
         Integer hash = calculateHash(
-                m_targetClass.getName(), m_methodMetaData, cause.getClass().getName());
+                m_targetClass.getName(),
+                m_methodMetaData,
+                cause.getClass().getName()
+        );
         ThrowsJoinPoint joinPoint = (ThrowsJoinPoint)m_throwsJoinPointCache.get(hash);
         if (joinPoint != null) {
             joinPoint.proceed();
@@ -397,7 +421,9 @@ public abstract class MethodJoinPoint implements JoinPoint {
         for (Iterator it = aspects.iterator(); it.hasNext();) {
             Aspect aspect = (Aspect)it.next();
             if (aspect.hasThrowsPointcut(
-                    m_classMetaData, m_methodMetaData, cause.getClass().getName())) {
+                    m_classMetaData,
+                    m_methodMetaData,
+                    cause.getClass().getName())) {
                 hasThrowsPointcut = true;
                 break;
             }
@@ -472,6 +498,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
         m_controller = (JoinPointController)fields.get("m_controller", null);
         m_classMetaData = (ClassMetaData)fields.get("m_classMetaData", null);
         m_methodMetaData = (MethodMetaData)fields.get("m_fieldMetaData", null);
+        m_reentrancyCheck = fields.get("m_reentrancyCheck", false);
         m_system = AspectWerkz.getSystem(m_uuid);
         m_system.initialize();
     }

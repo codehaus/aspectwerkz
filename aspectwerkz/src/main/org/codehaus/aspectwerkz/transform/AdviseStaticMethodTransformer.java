@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collections;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -27,11 +29,11 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.FieldGen;
 import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
@@ -908,7 +910,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @return boolean true if the method should be filtered away
      */
     private boolean classFilter(final ClassMetaData classMetaData, final ClassGen cg) {
-        if (    cg.isInterface() ||
+        if (cg.isInterface() ||
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.AroundAdvice") ||
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PreAdvice") ||
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PostAdvice")) {
@@ -955,6 +957,54 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
             }
         }
         return uuid;
+    }
+
+    /**
+     * Collects all methods for the class specified, calls itself recursively with
+     * the class' super class as argument to collect all methods.
+     *
+     * @param klass the BCEL JavaClass
+     * @param methods the method list
+     * @param addedMethods the method added to the method list
+     * @param context the context
+     * @param classMetaData the meta-data for the class being transformed
+     * @param isSuperClass
+     */
+    private void collectMethods(final JavaClass klass,
+                                final List methods,
+                                final Set addedMethods,
+                                final Context context,
+                                final ClassMetaData classMetaData,
+                                final boolean isSuperClass) {
+        final Method[] declaredMethods = klass.getMethods();
+        for (int i = 0; i < declaredMethods.length; i++) {
+            MethodMetaData methodMetaData =
+                    BcelMetaDataMaker.createMethodMetaData(declaredMethods[i]);
+            // add only the advised original methods to the lookup table,
+            // method pairs that consists of original:proxy
+            if (methodFilter(classMetaData, methodMetaData, declaredMethods[i]) != null &&
+                    !addedMethods.contains(methodMetaData)) {
+                if (isSuperClass &&
+                        (declaredMethods[i].isPublic() ||
+                        declaredMethods[i].isProtected())) {
+                    methods.add(declaredMethods[i]);
+                    addedMethods.add(methodMetaData);
+                }
+                else {
+                    methods.add(declaredMethods[i]);
+                    addedMethods.add(methodMetaData);
+                }
+            }
+        }
+        JavaClass superClass = context.getSuperClass(klass);
+        if (superClass != null) {
+//        if (superClass != null || superClass.getClassName().startsWith("java")) {
+            // calls itself recursively
+            collectMethods(superClass, methods, addedMethods, context, classMetaData, true);
+        }
+        else {
+            return;
+        }
     }
 
     /**
