@@ -181,8 +181,10 @@ public class AnnotationManager {
     }
 
     /**
-     * Extrac the raw information (name + unparsed value without optional parenthesis) from a Qdox doclet Note:
+     * Extract the raw information (name + unparsed value without optional parenthesis) from a Qdox doclet Note:
      * StringBuffer.append(null<string>) sucks and produce "null" string..
+     * Note: when using untyped annotation, then the first space character(s) in the value part will be
+     * resumed to only one space (untyped     type -> untyped type), due to QDox doclet handling.
      *
      * @param annotationName
      * @param tag
@@ -208,8 +210,8 @@ public class AnnotationManager {
                     rawAnnotation.value = Strings.removeFormattingCharacters(tag.getValue().trim());
                     return rawAnnotation;
                 } else {
-                    // complains - @Untyped(hello) nor @Untyped("hello") are allowed.
-                    throw new RuntimeException("Cannot instantiate UntypedAnnotation of name: " + tagName);
+                    // go on, we will need to parse the doclet
+                    ;
                 }
             }
         }
@@ -242,7 +244,7 @@ public class AnnotationManager {
             raw.append(rawValue);
         }
         if (rawEndValue != null) {
-            raw.append(rawEndValue);
+            raw.append(' ').append(rawEndValue);
         }
 
         // exact filtering
