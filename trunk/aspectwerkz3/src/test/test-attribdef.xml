@@ -3,7 +3,9 @@
     <system id="tests">
         <!--        <pointcut name="handler" expression="handler(test.handler.HandlerTestBeforeException) AND within(test.handler.*)"/>-->
         <pointcut name="handler">
-            handler(test.handler.HandlerTestBeforeException) AND within(test.handler.*)
+            handler(test.handler.HandlerTestBeforeException)
+            AND
+            within(test.handler.*)
         </pointcut>
         <exclude package="test.attribdeff"/>
         <package name="test.aspect">
@@ -31,6 +33,11 @@
         <aspect class="test.constructor.ConstructorTestAspect"/>
         <aspect class="test.handler.HandlerTestAspect">
             <advice bind-to="handler" type="before" name="before"/>
+        </aspect>
+        <aspect class="test.proceedinnewthread.TestAspect">
+            <advice bind-to="execution(void test.proceedinnewthread.ProceedTest.adviseMe*(..))" type="around" name="advice1"/>
+            <advice bind-to="execution(void test.proceedinnewthread.ProceedTest.adviseMe2(..)) || execution(void test.proceedinnewthread.ProceedTest.adviseMe3(..))" type="around" name="advice2"/>
+            <advice bind-to="execution(void test.proceedinnewthread.ProceedTest.adviseMe3(..))" type="around" name="advice3"/>
         </aspect>
         <aspect class="test.afterxxx.Aspect"/>
         <aspect class="test.callAndExecution.TestAspect"/>
