@@ -66,8 +66,9 @@ public class CtorExecution extends TestCase implements Serializable {
     }
 
     public static class Aspect {
-        @Before("execution(test.CtorExecution.new(..))" +
-                " || (call(test.CtorExecution.new(..)) && within(test.CtorExecution))")
+//        @Before("execution(test.CtorExecution.new(..))" +
+//                " || (call(test.CtorExecution.new(..)) && within(test.CtorExecution))")
+        @Before("within(*..*)")
         void before(StaticJoinPoint sjp) {
             s_count++;
             //System.out.println(sjp.getSignature());

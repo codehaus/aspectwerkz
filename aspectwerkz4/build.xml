@@ -498,7 +498,7 @@
     <!-- =================================================== -->
     <target name="samples:annotation" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/META-INF/aop.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.verbose=true examples.annotation.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.verbose=true examples.annotation.Target"/>
         </exec>
     </target>
 
@@ -507,7 +507,7 @@
     <!-- =================================================== -->
     <target name="samples:caching" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/META-INF/aop.xml -Daspectwerkz.transform.dump=* examples.caching.CacheTest"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.caching.CacheTest"/>
         </exec>
     </target>
 
@@ -516,7 +516,7 @@
     <!-- =================================================== -->
     <target name="samples:cflow" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/META-INF/aop.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
         </exec>
     </target>
 
@@ -525,7 +525,7 @@
     <!-- =================================================== -->
     <target name="samples:introduction" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/META-INF/aop.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
         </exec>
     </target>
 
@@ -547,7 +547,7 @@
     <!-- =================================================== -->
     <target name="samples:exception" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/META-INF/aop.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
         </exec>
     </target>
 
