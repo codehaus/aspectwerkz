@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
+import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 
 /**
  *
@@ -46,6 +48,11 @@ public class AroundAdviceExecutor implements AdviceExecutor {
     private final System m_system;
 
     /**
+     * The join point type.
+     */
+    private final int m_joinPointType;
+
+    /**
      * Should the executor check the control flow at each invocation?
      */
     private final boolean m_checkCflow;
@@ -58,10 +65,12 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      */
     public AroundAdviceExecutor(final IndexTuple[] adviceIndexes,
                                 final List cflowExpressions,
-                                final System system) {
+                                final System system,
+                                final int joinPointType) {
         m_adviceIndexes = adviceIndexes;
         m_cflowExpressions = cflowExpressions;
         m_system = system;
+        m_joinPointType = joinPointType;
         m_checkCflow = cflowExpressions.size() != 0;
     }
 
@@ -96,7 +105,14 @@ public class AroundAdviceExecutor implements AdviceExecutor {
             return result;
         }
         else {
-            return invokeTargetMethod(joinPoint);
+            switch (m_joinPointType) {
+                case JoinPointType.FIELD_SET:
+                    return setTargetField(joinPoint);
+                case JoinPointType.FIELD_GET:
+                    return getTargetField(joinPoint);
+                default:
+                    return invokeTargetMethod(joinPoint);
+            }
         }
     }
 
@@ -105,13 +121,14 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      *
      * @return a deep copy of the intance
      */
-    public AdviceExecutor deepCopy() {
-        return new AroundAdviceExecutor(m_adviceIndexes, m_cflowExpressions, m_system);
+    public AdviceExecutor newInstance() {
+        return new AroundAdviceExecutor(m_adviceIndexes, m_cflowExpressions, m_system, m_joinPointType);
     }
 
     /**
      * Invokes the origignal method.
      *
+     * @param joinPoint the join point instance
      * @return the result from the method invocation
      * @throws Throwable the exception from the original method
      */
@@ -126,5 +143,35 @@ public class AroundAdviceExecutor implements AdviceExecutor {
         catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
         }
+    }
+
+    /**
+     * Sets the target field.
+     *
+     * @param joinPoint the join point instance
+     * @throws Throwable the exception from the original method
+     */
+    public Object setTargetField(final JoinPoint joinPoint) throws Throwable {
+        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
+        Field targetField = signature.getField();
+        Object fieldValue = signature.getFieldValue();
+        Object targetInstance = joinPoint.getTargetInstance();
+        targetField.set(targetInstance, fieldValue);
+        return null;
+    }
+
+    /**
+     * Gets the target field.
+     *
+     * @param joinPoint the join point instance
+     * @param the value of the field
+     * @throws Throwable the exception from the original method
+     */
+    public Object getTargetField(final JoinPoint joinPoint) throws Throwable {
+        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
+        Field targetField = signature.getField();
+        Object targetInstance = joinPoint.getTargetInstance();
+        Object o = targetField.get(targetInstance);
+        return o;
     }
 }

@@ -71,6 +71,7 @@ public class FieldAdviceTest extends TestCase {
             assertEquals("pre1 pre2 ", s_logString);
         }
         catch (Exception e) {
+            e.printStackTrace();
             fail();
         }
     }

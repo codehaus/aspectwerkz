@@ -47,7 +47,8 @@ public final class TransformationUtil {
     public static final String GET_JOIN_POINT_MANAGER = "getJoinPointManager";
     public static final String PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD = "proceedWithExecutionJoinPoint";
     public static final String PROCEED_WITH_CALL_JOIN_POINT_METHOD = "proceedWithCallJoinPoint";
-    public static final String PROCEED_WITH_SET_GET_JOIN_POINT_METHOD = "proceedWithSetGetJoinPoint";
+    public static final String PROCEED_WITH_SET_JOIN_POINT_METHOD = "proceedWithSetJoinPoint";
+    public static final String PROCEED_WITH_GET_JOIN_POINT_METHOD = "proceedWithGetJoinPoint";
     public static final String PROCEED_WITH_CATCH_CLAUSE_JOIN_POINT_METHOD = "proceedWithCatchClauseJoinPoint";
 
     public static final String SUPER_CALL_WRAPPER_PREFIX = ASPECTWERKZ_PREFIX + DELIMITER + "super_call_wrapper" + DELIMITER;

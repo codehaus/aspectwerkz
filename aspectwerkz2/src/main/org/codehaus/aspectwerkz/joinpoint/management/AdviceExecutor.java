@@ -30,5 +30,5 @@ public interface AdviceExecutor {
     /**
      * Clones the executor.
      */
-    AdviceExecutor deepCopy();
+    AdviceExecutor newInstance();
 }

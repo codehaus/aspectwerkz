@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 
 import gnu.trove.TObjectIntHashMap;
 import gnu.trove.TIntObjectHashMap;
@@ -96,10 +97,14 @@ public class AspectRegistry {
     private Mixin[] m_mixins = new Mixin[0];
 
     /**
-     * Holds references to all the the advised methods in the system, maps the target Class to a sorted list of
-     * all the advised methods in the class.
+     * Holds references to the methods to the advised classes in the system.
      */
     private final Map m_methods = new HashMap();
+
+    /**
+     * Holds references to the fields to the advised classes in the system.
+     */
+    private final Map m_fields = new HashMap();
 
     /**
      * Holds references to all the the advised constructors in the system, maps the target Class to a sorted list of
@@ -548,6 +553,42 @@ public class AspectRegistry {
     }
 
     /**
+     * Returns a specific field by the class and the field hash.
+     *
+     * @param klass the class housing the method
+     * @param fieldHash the method hash
+     * @return the method tuple
+     */
+    public Field getField(final Class klass, final int fieldHash) {
+        if (klass == null) throw new IllegalArgumentException("class can not be null");
+
+        try {
+            // create the fields repository lazily
+            if (!m_fields.containsKey(klass)) {
+                createFieldRepository(klass);
+            }
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+
+        Field field;
+        try {
+            field = (Field)((TIntObjectHashMap)m_fields.get(klass)).get(fieldHash);
+        }
+        catch (Throwable e1) {
+            initialize();
+            try {
+                field = (Field)((TIntObjectHashMap)m_fields.get(klass)).get(fieldHash);
+            }
+            catch (Exception e) {
+                throw new WrappedRuntimeException(e);
+            }
+        }
+        return field;
+    }
+
+    /**
      * Creates a new method repository for the class specified.
      *
      * @param klass the class
@@ -625,6 +666,28 @@ public class AspectRegistry {
 
         synchronized (m_constructors) {
             m_constructors.put(klass, constructorMap);
+        }
+    }
+
+    /**
+     * Creates a new field repository for the class specified.
+     *
+     * @param klass the class
+     */
+    protected void createFieldRepository(final Class klass) {
+        if (klass == null) throw new IllegalArgumentException("class can not be null");
+
+        Field[] fields = klass.getDeclaredFields();
+        TIntObjectHashMap fieldMap = new TIntObjectHashMap(fields.length);
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            field.setAccessible(true);
+            int fieldHash = TransformationUtil.calculateHash(field);
+            fieldMap.put(fieldHash, field);
+        }
+
+        synchronized (m_fields) {
+            m_fields.put(klass, fieldMap);
         }
     }
 }

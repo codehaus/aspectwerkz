@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 
 /**
  * Manages the aspects. Meaning f.e. deployment, redeployment, management, configuration or redefinition of the aspects.
@@ -544,13 +545,24 @@ public final class AspectManager {
     }
 
     /**
-     * Returns a specific constructor by the class and the method index.
+     * Returns a specific constructor by the class and the constructor index.
      *
      * @param klass the class housing the method
-     * @param methodHash the method hash
-     * @return the method
+     * @param constructorHash the method hash
+     * @return the constructor
      */
-    public Constructor getConstructor(final Class klass, final int methodHash) {
-        return m_aspectRegistry.getConstructor(klass, methodHash);
+    public Constructor getConstructor(final Class klass, final int constructorHash) {
+        return m_aspectRegistry.getConstructor(klass, constructorHash);
+    }
+
+       /**
+     * Returns a specific field by the class and the field index.
+     *
+     * @param klass the class housing the method
+     * @param fieldHash the method hash
+     * @return the field
+     */
+    public Field getField(final Class klass, final int fieldHash) {
+        return m_aspectRegistry.getField(klass, fieldHash);
     }
 }
