@@ -272,7 +272,12 @@ public class AspectWerkzC {
                 className = packaging + "." + className;
 
             // transform
-            byte[] transformed = preprocessor.preProcess(className, bos.toByteArray(), compilationLoader);
+            byte[] transformed = null;
+            try {
+                transformed = preprocessor.preProcess(className, bos.toByteArray(), compilationLoader);
+            } catch (Throwable t) {
+                throw new CompileException("weaver failed for class: " + className, t);
+            }
 
             // override file
             fos = new FileOutputStream(file);
@@ -338,7 +343,12 @@ public class AspectWerkzC {
                 byte[] transformed = null;
                 if (ze.getName().toLowerCase().endsWith(".class")) {
                     utility.log("   [compilejar] compile " + file.getName() + ":" + ze.getName());
-                    transformed = preprocessor.preProcess(ze.getName().substring(0, ze.getName().length()-6), bos.toByteArray(), compilationLoader);
+                    String className = ze.getName().substring(0, ze.getName().length()-6);
+                    try {
+                        transformed = preprocessor.preProcess(className, bos.toByteArray(), compilationLoader);
+                    } catch (Throwable t) {
+                        throw new CompileException("weaver failed for class: " + className, t);
+                    }
                 } else {
                     transformed = bos.toByteArray();
                 }
