@@ -8,8 +8,8 @@ import java.lang.reflect.Method;
 import java.io.File;
 
 import org.codehaus.aspectwerkz.compiler.VerifierClassLoader;
-import com.clarkware.junitperf.LoadTest;
-import com.clarkware.junitperf.TestFactory;
+//import com.clarkware.junitperf.LoadTest;
+//import com.clarkware.junitperf.TestFactory;
 
 public class CustomClassLoaderTest extends TestCase {
 
@@ -18,11 +18,11 @@ public class CustomClassLoaderTest extends TestCase {
         targetPath = targetPath.substring(0, targetPath.indexOf("test/clapp/Target.class"));
     }
 
-    public static Test asLoadTest() {
-        Test test = new TestFactory(CustomClassLoaderTest.class);
-        Test loadTest = new LoadTest(test, 3, 4);
-        return loadTest;
-    }
+//    public static Test asLoadTest() {
+//        Test test = new TestFactory(CustomClassLoaderTest.class);
+//        Test loadTest = new LoadTest(test, 3, 4);
+//        return loadTest;
+//    }
 
     public void testCustomClassLoaderWeaving() {
         try {

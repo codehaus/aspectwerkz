@@ -265,7 +265,7 @@ public abstract class AbstractAdvice implements Advice {
      * @return the advice
      */
     protected Object getPerInstanceAdvice(final JoinPoint joinPoint) {
-        return m_container.getPerClassAdvice(joinPoint);
+        return m_container.getPerInstanceAdvice(joinPoint);
     }
 
     /**
