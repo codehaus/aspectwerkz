@@ -192,6 +192,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         // do the transformation
         m_weavingStrategy.transform(className, context);
 
+        // dump after as required
+        dumpAfter(className, context);
+
         // handle the prepared Class cache for further runtime weaving
         if (context.isPrepared()) {
             ClassCacheTuple key = new ClassCacheTuple(loader, className);
