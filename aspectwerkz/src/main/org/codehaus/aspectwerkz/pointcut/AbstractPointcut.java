@@ -18,7 +18,8 @@ import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
-import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
+import org.codehaus.aspectwerkz.NameIndexTuple;
+import org.codehaus.aspectwerkz.IndexTuple;
 
 /**
  * Abstract implementation of the pointcut concept.
@@ -54,7 +55,7 @@ public abstract class AbstractPointcut implements Pointcut {
     /**
      * The indexes of the advices.
      */
-    protected int[] m_indexes = new int[0];
+    protected IndexTuple[] m_indexes = new IndexTuple[0];
 
     /**
      * The UUID for the AspectWerkz system.
@@ -98,7 +99,7 @@ public abstract class AbstractPointcut implements Pointcut {
                 System.arraycopy(tmp, 0, m_names, 0, tmp.length);
 
                 // update the indexes
-                m_indexes = new int[m_names.length];
+                m_indexes = new IndexTuple[m_names.length];
                 for (int i = 0, j = m_names.length; i < j; i++) {
                     m_indexes[i] = AspectWerkz.getSystem(m_uuid).getAdviceIndexFor(m_names[i]);
                 }
@@ -128,10 +129,9 @@ public abstract class AbstractPointcut implements Pointcut {
                 m_names = new String[tmp.length];
                 System.arraycopy(tmp, 0, m_names, 0, tmp.length);
 
-                m_indexes = new int[m_names.length];
+                m_indexes = new IndexTuple[m_names.length];
                 for (int j = 0; j < m_names.length; j++) {
-                    m_indexes[j] = AspectWerkz.getSystem(m_uuid).
-                            getAdviceIndexFor(m_names[j]);
+                    m_indexes[j] = AspectWerkz.getSystem(m_uuid).getAdviceIndexFor(m_names[j]);
                 }
             }
         }
@@ -167,7 +167,7 @@ public abstract class AbstractPointcut implements Pointcut {
                 m_names = new String[names.length];
                 System.arraycopy(names, 0, m_names, 0, names.length);
 
-                final int[] indexes = new int[m_indexes.length - 1];
+                final IndexTuple[] indexes = new IndexTuple[m_indexes.length - 1];
                 for (j = 0, k = 0; j < index; j++, k++) {
                     indexes[j] = m_indexes[j];
                 }
@@ -175,7 +175,7 @@ public abstract class AbstractPointcut implements Pointcut {
                 for (; j < m_indexes.length; j++, k++) {
                     indexes[k] = m_indexes[j];
                 }
-                m_indexes = new int[indexes.length];
+                m_indexes = new IndexTuple[indexes.length];
                 System.arraycopy(indexes, 0, m_indexes, 0, indexes.length);
             }
         }
@@ -209,7 +209,7 @@ public abstract class AbstractPointcut implements Pointcut {
             synchronized (m_names) {
                 final List advices = new ArrayList(m_names.length);
                 for (int i = 0; i < m_names.length; i++) {
-                    advices.add(new AdviceIndexTuple(m_names[i], m_indexes[i]));
+                    advices.add(new NameIndexTuple(m_names[i], m_indexes[i]));
                 }
                 return advices;
             }
@@ -227,11 +227,11 @@ public abstract class AbstractPointcut implements Pointcut {
         synchronized (m_indexes) {
             synchronized (m_names) {
                 m_names = new String[advices.size()];
-                m_indexes = new int[advices.size()];
+                m_indexes = new IndexTuple[advices.size()];
                 int i = 0;
                 for (Iterator it = advices.iterator(); it.hasNext(); i++) {
                     try {
-                        AdviceIndexTuple tuple = (AdviceIndexTuple)it.next();
+                        NameIndexTuple tuple = (NameIndexTuple)it.next();
                         m_names[i] = tuple.getName();
                         m_indexes[i] = tuple.getIndex();
                     }
@@ -248,16 +248,16 @@ public abstract class AbstractPointcut implements Pointcut {
      *
      * @return the advice index
      */
-    public int getAdviceIndex(final int index) {
+    public IndexTuple getAdviceIndex(final int index) {
         return m_indexes[index];
     }
 
     /**
      * Returns a list with the indexes for the advices for the pointcut.
      *
-     * @return the advices
+     * @return the advice indexes
      */
-    public int[] getAdviceIndexes() {
+    public IndexTuple[] getAdviceIndexes() {
         return m_indexes;
     }
 
@@ -291,7 +291,7 @@ public abstract class AbstractPointcut implements Pointcut {
         m_expression = (String)fields.get("m_expression", null);
         m_pointcutPatterns = (Map)fields.get("m_pointcutPatterns", null);
         m_names = (String[])fields.get("m_names", null);
-        m_indexes = (int[])fields.get("m_indexes", null);
+        m_indexes = (IndexTuple[])fields.get("m_indexes", null);
         m_uuid = (String)fields.get("m_uuid", null);
 
         try {

@@ -21,11 +21,12 @@ import java.lang.reflect.Method;
 
 import gnu.trove.TObjectIntHashMap;
 
-import org.codehaus.aspectwerkz.advice.Advice;
-import org.codehaus.aspectwerkz.advice.AbstractAdvice;
-import org.codehaus.aspectwerkz.introduction.Introduction;
-import org.codehaus.aspectwerkz.definition.StartupManager;
+import org.codehaus.aspectwerkz.aspect.AspectMetaData;
+import org.codehaus.aspectwerkz.aspect.AbstractAspect;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.StartupManager;
+import org.codehaus.aspectwerkz.definition.AdviceDefinition;
+import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
@@ -64,7 +65,7 @@ public final class AspectWerkz {
     /**
      * Holds references to all the the aspects in the system.
      */
-    private final Map m_aspects = new SequencedHashMap();
+    private final Map m_aspectMap = new SequencedHashMap();
 
     /**
      * and cache for the method pointcuts.
@@ -114,19 +115,24 @@ public final class AspectWerkz {
     private final Map m_methods = new HashMap();
 
     /**
-     * Holds references to all the the advices in the system.
+     * Holds references to all the the aspects in the system.
      */
-    private Advice[] m_advices = new Advice[0];
+    private AbstractAspect[] m_aspects = new AbstractAspect[0];
+
+    /**
+     * Holds the indexes for the aspects.
+     */
+    private final TObjectIntHashMap m_aspectIndexes = new TObjectIntHashMap();
 
     /**
      * Holds the indexes for the advices.
      */
-    private final TObjectIntHashMap m_adviceIndexes = new TObjectIntHashMap();
+    private final Map m_adviceIndexes = new HashMap();
 
     /**
-     * Holds references to all the the introductions in the system.
+     * Holds the indexes for the introductions.
      */
-    private Introduction[] m_introductions = new Introduction[0];
+    private Map m_introductionIndexes = new HashMap();
 
     /**
      * Marks the system as initialized.
@@ -205,7 +211,7 @@ public final class AspectWerkz {
 //        final StackTraceElement[] stackTrace = exception.getStackTrace();
 //        int i;
 //        for (i = 1; i < stackTrace.length; i++) {
-//            if (stackTrace[i].getClassName().equals(className)) break;
+//            if (stackTrace[i].getAspectClassName().equals(className)) break;
 //        }
 //        for (int j = i; j < stackTrace.length; j++) {
 //            newStackTraceList.add(stackTrace[j]);
@@ -261,64 +267,56 @@ public final class AspectWerkz {
     }
 
     /**
-     * Registers a new aspect for a specific class.
+     * Registers a new aspect.
      *
      * @param aspect the aspect to register
+     * @param aspectMetaData the aspect meta-data
      */
-    public void register(final Aspect aspect) {
+    public void register(final AbstractAspect aspect, final AspectMetaData aspectMetaData) {
         if (aspect == null) throw new IllegalArgumentException("aspect can not be null");
-        if (aspect.getName() == null) throw new IllegalArgumentException("aspect name can not be null");
 
+        synchronized (m_aspectMap) {
+            m_aspectMap.put(aspect.getName(), aspect);
+        }
         synchronized (m_aspects) {
-            m_aspects.put(aspect.getName(), aspect);
-        }
-    }
+            synchronized (m_aspectIndexes) {
+                synchronized (m_adviceIndexes) {
+                    synchronized (m_introductionIndexes) {
+                        final int indexAspect = m_aspects.length + 1;
+                        m_aspectIndexes.put(aspect.getName(), indexAspect);
 
-    /**
-     * Registers a new advice and maps it to a name.
-     *
-     * @param name the name to map the advice to
-     * @param advice the advice to register
-     */
-    public void register(final String name, final Advice advice) {
-        if (name == null) throw new IllegalArgumentException("advice name can not be null");
-        if (advice == null) throw new IllegalArgumentException("advice can not be null");
+                        final AbstractAspect[] tmpAspects = new AbstractAspect[m_aspects.length + 1];
+                        System.arraycopy(m_aspects, 0, tmpAspects, 0, m_aspects.length);
 
-        synchronized (m_adviceIndexes) {
-            synchronized (m_advices) {
-                final int index = m_advices.length + 1;
-                m_adviceIndexes.put(name, index);
+                        tmpAspects[m_aspects.length] = aspect;
 
-                final Advice[] tmp = new Advice[m_advices.length + 1];
-                System.arraycopy(m_advices, 0, tmp, 0, m_advices.length);
+                        m_aspects = new AbstractAspect[m_aspects.length + 1];
+                        System.arraycopy(tmpAspects, 0, m_aspects, 0, tmpAspects.length);
 
-                tmp[m_advices.length] = advice;
+                        // retrieve a sorted advices list => matches the sorted method list in the container
+                        int adviceMethodIndex = 0;
+                        List advices = aspect.getAspectDef().getAllAdvices();
+                        for (Iterator it = advices.iterator(); it.hasNext(); adviceMethodIndex++) {
+                            final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
+                            m_adviceIndexes.put(
+                                    adviceDef.getName(),
+                                    new IndexTuple(indexAspect, adviceMethodIndex)
+                            );
+                        }
 
-                m_advices = new Advice[m_advices.length + 1];
-                System.arraycopy(tmp, 0, m_advices, 0, tmp.length);
+                        // retrieve a sorted introduction list => matches the sorted method list in the container
+                        int introMethodIndex = 0;
+                        List introductions = aspect.getAspectDef().getIntroductions();
+                        for (Iterator it = introductions.iterator(); it.hasNext(); introMethodIndex++) {
+                            final IntroductionDefinition introductionDef = (IntroductionDefinition)it.next();
+                            m_introductionIndexes.put(
+                                    introductionDef.getName(),
+                                    new IndexTuple(indexAspect, introMethodIndex)
+                            );
+                        }
+                    }
+                }
             }
-        }
-    }
-
-    /**
-     * Registers an introduction and maps it to a name.
-     * At the moment it is not possible to add new introductions at runtime (don't know
-     * if it makes sense).
-     *
-     * @param name the name to map the introduction to
-     * @param introduction the introduction to register
-     */
-    public void register(final String name, final Introduction introduction) {
-        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
-        if (introduction == null) throw new IllegalArgumentException("introduction can not be null");
-
-        synchronized (m_introductions) {
-            int nrOfIntroductions = m_definition.getIntroductionIndexes().size();
-            if (m_introductions.length == 0) {
-                m_introductions = new Introduction[nrOfIntroductions];
-            }
-            int index = m_definition.getIntroductionIndex(name) - 1;
-            m_introductions[index] = introduction;
         }
     }
 
@@ -380,69 +378,133 @@ public final class AspectWerkz {
     }
 
     /**
-     * Creates and registers new advice at runtime.
+     * Retrieves a specific aspect based on index.
      *
-     * @param name the name of the advice
-     * @param className the class name of the advice
-     * @param deploymentModel the deployment model for the advice
-     * @param loader an optional class loader (if null it uses the context classloader)
+     * @param index the index of the aspect
+     * @return the aspect
      */
-    public void createAdvice(final String name,
-                             final String className,
-                             final String deploymentModel,
-                             final ClassLoader loader) {
-        if (name == null) throw new IllegalArgumentException("advice name can not be null");
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
-        if (deploymentModel == null) throw new IllegalArgumentException("deployment model can not be null");
-
-        AbstractAdvice prototype = null;
-        Class adviceClass = null;
+    public AbstractAspect getAspect(final int index) {
+        AbstractAspect aspect;
         try {
-            if (loader == null) {
-                adviceClass = ContextClassLoader.loadClass(className);
-            }
-            else {
-                adviceClass = loader.loadClass(className);
-            }
-            prototype = (AbstractAdvice)adviceClass.newInstance();
+            aspect = m_aspects[index - 1];
         }
-        catch (Exception e) {
-            StringBuffer cause = new StringBuffer();
-            cause.append("could not deploy new prototype with name ");
-            cause.append(name);
-            cause.append(" and class ");
-            cause.append(className);
-            cause.append(" due to: ");
-            cause.append(e);
-            throw new RuntimeException(cause.toString());
+        catch (Throwable e) {
+            initialize();
+            try {
+                aspect = m_aspects[index - 1];
+            }
+            catch (ArrayIndexOutOfBoundsException e1) {
+                throw new DefinitionException("no aspect with index " + index);
+            }
         }
-
-        prototype.setDeploymentModel(DeploymentModel.getDeploymentModelAsInt(deploymentModel));
-        prototype.setName(name);
-        prototype.setAdviceClass(prototype.getClass());
-
-        prototype.setContainer(StartupManager.createAdviceContainer(prototype));
-
-        // register the advice
-        register(name, prototype);
+        return aspect;
     }
 
     /**
-     * Returns the aspect for the name specified.
+     * Returns the aspect for a specific name.
+     *
+     * @param name the name of the aspect
+     * @return the the aspect
+     */
+    public AbstractAspect getAspect(final String name) {
+        AbstractAspect aspect;
+        try {
+            aspect = m_aspects[m_aspectIndexes.get(name) - 1];
+        }
+        catch (Throwable e1) {
+            initialize();
+            try {
+                aspect = m_aspects[m_aspectIndexes.get(name) - 1];
+            }
+            catch (ArrayIndexOutOfBoundsException e2) {
+                throw new DefinitionException("aspect [" + name + "] is not properly defined");
+            }
+        }
+        return aspect;
+    }
+
+    /**
+     * Retrieves a specific introduction based it's index.
+     * (Actually the 'introduction' is an instance of the AbstractAspect class to not break
+     * the introduction transformer based on the XML definition.)
+     *
+     * @param index the index of the introduction
+     * @return the introduction
+     */
+    public AbstractAspect getIntroduction(final int index) {
+        AbstractAspect aspect;
+        try {
+            aspect = m_aspects[index - 1];
+        }
+        catch (Throwable e1) {
+            initialize();
+            try {
+                aspect = m_aspects[index - 1];
+            }
+            catch (ArrayIndexOutOfBoundsException e2) {
+                throw new DefinitionException("no aspect with index " + index);
+            }
+        }
+        return aspect;
+    }
+
+    /**
+     * Returns the index for a specific name to aspect mapping.
+     *
+     * @param name the name of the aspect
+     * @return the index of the aspect
+     */
+    public int getAspectIndexFor(final String name) {
+        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
+        final int index = m_aspectIndexes.get(name);
+        if (index == 0) throw new DefinitionException("aspect " + name + " is not properly defined");
+        return index;
+    }
+
+    /**
+     * Returns the index for a specific name to advice mapping.
+     *
+     * @param name the name of the advice
+     * @return the index of the advice
+     */
+    public IndexTuple getAdviceIndexFor(final String name) {
+        if (name == null) throw new IllegalArgumentException("advice name can not be null");
+        final IndexTuple index = (IndexTuple)m_adviceIndexes.get(name);
+        if (index == null) throw new DefinitionException("advice " + name + " is not properly defined");
+        return index;
+    }
+
+    /**
+     * Returns the index for a specific name to introduction mapping.
+     *
+     * @param name the name of the introduction
+     * @return the index of the introduction
+     */
+    public IndexTuple getIntroductionIndexFor(final String name) {
+        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
+        final IndexTuple index = (IndexTuple)m_introductionIndexes.get(name);
+        if (index == null) throw new DefinitionException("introduction " + name + " is not properly defined");
+        return index;
+    }
+
+    /**
+     * Returns the aspect meta-data for the name specified.
+     *
+     * @TODO: needed?
      *
      * @param name the name of the aspect
      * @return the aspect
      */
-    public Aspect getAspect(final String name) {
+    public AspectMetaData getAspectMetaData(final String name) {
         if (name == null) throw new IllegalArgumentException("aspect name can not be null");
 
-        if (m_aspects.containsKey(name)) {
-            return (Aspect)m_aspects.get(name);
+        if (m_aspectMap.containsKey(name)) {
+            return (AspectMetaData)m_aspectMap.get(name);
         }
         else {
             initialize();
-            if (m_aspects.containsKey(name)) {
-                return (Aspect)m_aspects.get(name);
+            if (m_aspectMap.containsKey(name)) {
+                return (AspectMetaData)m_aspectMap.get(name);
             }
             else {
                 throw new DefinitionException("aspect " + name + " is not properly defined");
@@ -451,21 +513,23 @@ public final class AspectWerkz {
     }
 
     /**
-     * Returns the aspect for the class pattern specified.
+     * Returns the aspect meta-data for the class pattern specified.
+     *
+     * @TODO: needed?
      *
      * @param classPattern the class pattern
      * @return the aspect
      */
-    public Aspect getAspect(final ClassPattern classPattern) {
+    public AspectMetaData getAspectMetaData(final ClassPattern classPattern) {
         if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
 
-        if (m_aspects.containsKey(classPattern)) {
-            return (Aspect)m_aspects.get(classPattern);
+        if (m_aspectMap.containsKey(classPattern)) {
+            return (AspectMetaData)m_aspectMap.get(classPattern);
         }
         else {
             initialize();
-            if (m_aspects.containsKey(classPattern)) {
-                return (Aspect)m_aspects.get(classPattern);
+            if (m_aspectMap.containsKey(classPattern)) {
+                return (AspectMetaData)m_aspectMap.get(classPattern);
             }
             else {
                 throw new DefinitionException(classPattern.getPattern() + " does not have any aspects defined");
@@ -474,13 +538,23 @@ public final class AspectWerkz {
     }
 
     /**
-     * Returns a list with all the aspects.
+     * Returns a list with all the aspects meta-data.
      *
      * @return the aspects
      */
-    public Collection getAspects() {
+    public Collection getAspectsMetaData() {
         initialize();
-        return m_aspects.values();
+        return m_aspectMap.values();
+    }
+
+    /**
+     * Returns an array with all the aspects.
+     *
+     * @return the aspects
+     */
+    public AbstractAspect[] getAspects() {
+        initialize();
+        return m_aspects;
     }
 
     /**
@@ -507,8 +581,8 @@ public final class AspectWerkz {
         }
 
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getMethodPointcuts(classMetaData, methodMetaData));
         }
 
@@ -543,8 +617,8 @@ public final class AspectWerkz {
         }
 
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getGetFieldPointcuts(classMetaData, fieldMetaData));
         }
 
@@ -579,8 +653,8 @@ public final class AspectWerkz {
         }
 
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getSetFieldPointcuts(classMetaData, fieldMetaData));
         }
 
@@ -615,8 +689,8 @@ public final class AspectWerkz {
         }
 
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getThrowsPointcuts(classMetaData, methodMetaData));
         }
 
@@ -651,8 +725,8 @@ public final class AspectWerkz {
         }
 
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getCallerSidePointcuts(className, methodMetaData));
         }
 
@@ -685,8 +759,8 @@ public final class AspectWerkz {
         }
 
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getCFlowPointcuts(className, methodMetaData));
         }
 
@@ -698,73 +772,13 @@ public final class AspectWerkz {
     }
 
     /**
-     * Returns the index for a specific name to advice mapping.
-     *
-     * @param name the name of the advice
-     * @return the index of the advice
-     */
-    public int getAdviceIndexFor(final String name) {
-        if (name == null) throw new IllegalArgumentException("advice name can not be null");
-
-        final int index = m_adviceIndexes.get(name);
-        if (index == 0) throw new DefinitionException("advice " + name + " is not properly defined (this also occurs if you have introductions defined in your definition but have not specified a meta-data dir for the pre-compiled definition)");
-        return index;
-    }
-
-    /**
-     * Retrieves a specific advice based setfield's index.
-     *
-     * @param index the index of the advice
-     * @return the advice
-     */
-    public Advice getAdvice(final int index) {
-        Advice advice;
-        try {
-            advice = m_advices[index - 1];
-        }
-        catch (Throwable e) {
-            initialize();
-            try {
-                advice = m_advices[index - 1];
-            }
-            catch (ArrayIndexOutOfBoundsException e1) {
-                throw new DefinitionException("no advice with index " + index);
-            }
-        }
-        return advice;
-    }
-
-    /**
-     * Returns the advice for a specific name.
-     *
-     * @param name the name of the advice
-     * @return the the advice
-     */
-    public Advice getAdvice(final String name) {
-        Advice advice;
-        try {
-            advice = m_advices[m_adviceIndexes.get(name) - 1];
-        }
-        catch (Throwable e1) {
-            initialize();
-            try {
-                advice = m_advices[m_adviceIndexes.get(name) - 1];
-            }
-            catch (ArrayIndexOutOfBoundsException e2) {
-                throw new DefinitionException("advice " + name + " is not properly defined");
-            }
-        }
-        return advice;
-    }
-
-    /**
      * Returns an array with all the introductions in the system.
      *
      * @return the introductions
      */
-    public Introduction[] getIntroductions() {
-        return m_introductions;
-    }
+//    public Introduction[] getIntroductions() {
+//        return m_introductions;
+//    }
 
     /**
      * Returns the index for a specific name to introduction mapping.
@@ -772,13 +786,13 @@ public final class AspectWerkz {
      * @param name the name of the introduction
      * @return the index of the introduction
      */
-    public int getIntroductionIndex(final String name) {
-        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
-
-        final int index = m_definition.getIntroductionIndex(name);
-        if (index == 0) throw new DefinitionException("introduction " + name + " is not properly defined");
-        return index;
-    }
+//    public int getIntroductionIndex(final String name) {
+//        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
+//
+//        final int index = m_definition.getIntroductionIndex(name);
+//        if (index == 0) throw new DefinitionException("introduction " + name + " is not properly defined");
+//        return index;
+//    }
 
     /**
      * Retrieves a specific introduction based it's index.
@@ -786,22 +800,22 @@ public final class AspectWerkz {
      * @param index the index of the introduction
      * @return the introduction
      */
-    public Introduction getIntroduction(final int index) {
-        Introduction introduction;
-        try {
-            introduction = m_introductions[index - 1];
-        }
-        catch (Throwable e1) {
-            initialize();
-            try {
-                introduction = m_introductions[index - 1];
-            }
-            catch (ArrayIndexOutOfBoundsException e2) {
-                throw new DefinitionException("no introduction with index " + index);
-            }
-        }
-        return introduction;
-    }
+//    public Introduction getIntroduction(final int index) {
+//        Introduction introduction;
+//        try {
+//            introduction = m_introductions[index - 1];
+//        }
+//        catch (Throwable e1) {
+//            initialize();
+//            try {
+//                introduction = m_introductions[index - 1];
+//            }
+//            catch (ArrayIndexOutOfBoundsException e2) {
+//                throw new DefinitionException("no introduction with index " + index);
+//            }
+//        }
+//        return introduction;
+//    }
 
     /**
      * Returns the introduction for a specific name.
@@ -809,24 +823,24 @@ public final class AspectWerkz {
      * @param name the name of the introduction
      * @return the the introduction
      */
-    public Introduction getIntroduction(final String name) {
-        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
-
-        Introduction introduction;
-        try {
-            introduction = m_introductions[m_definition.getIntroductionIndex(name) - 1];
-        }
-        catch (Throwable e1) {
-            initialize();
-            try {
-                introduction = m_introductions[m_definition.getIntroductionIndex(name) - 1];
-            }
-            catch (ArrayIndexOutOfBoundsException e2) {
-                throw new DefinitionException("no introduction with name " + name);
-            }
-        }
-        return introduction;
-    }
+//    public Introduction getIntroduction(final String name) {
+//        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
+//
+//        Introduction introduction;
+//        try {
+//            introduction = m_introductions[m_definition.getIntroductionIndex(name) - 1];
+//        }
+//        catch (Throwable e1) {
+//            initialize();
+//            try {
+//                introduction = m_introductions[m_definition.getIntroductionIndex(name) - 1];
+//            }
+//            catch (ArrayIndexOutOfBoundsException e2) {
+//                throw new DefinitionException("no introduction with name " + name);
+//            }
+//        }
+//        return introduction;
+//    }
 
     /**
      * Checks if a specific class has an aspect defined.
@@ -838,7 +852,7 @@ public final class AspectWerkz {
         if (name == null) throw new IllegalArgumentException("aspect name can not be null");
 
         initialize();
-        if (m_aspects.containsKey(name)) {
+        if (m_aspectMap.containsKey(name)) {
             return true;
         }
         else {

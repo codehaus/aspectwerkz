@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.transform;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ClassGen;
@@ -18,6 +19,8 @@ import org.apache.bcel.classfile.ConstantUtf8;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 
 /**
  * Adds an interfaces to classes.
@@ -47,12 +50,17 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
     /**
      * Adds an interfaces to the classes specified.
      *
+     * @TODO: support for def 2 needs to be added
+     *
      * @param context the transformation context
      * @param klass the class
      */
     public void transformInterface(final Context context, final Klass klass) {
+
         final ClassGen cg = klass.getClassGen();
-        if (classFilter(cg)) {
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+
+        if (classFilter(cg, classMetaData)) {
             return;
         }
         if (m_transformed.contains(cg.getClassName())) {
@@ -63,8 +71,8 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
         ConstantPoolGen cpg = cg.getConstantPool();
         int[] interfaces = cg.getInterfaces();
 
-        for (Iterator it2 = m_definition.getIntroductionNames(
-                cg.getClassName()).iterator(); it2.hasNext();) {
+        List introductionNames = m_definition.getIntroductionNamesForClass(cg.getClassName());
+        for (Iterator it2 = introductionNames.iterator(); it2.hasNext();) {
 
             String introductionName = (String)it2.next();
             String interfaceName = m_definition.getIntroductionInterfaceName(introductionName);
@@ -103,14 +111,15 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
      * Filters the classes to be transformed.
      *
      * @param cg the class to filter
+     * @param classMetaData the class meta-data
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg) {
+    private boolean classFilter(final ClassGen cg, final ClassMetaData classMetaData) {
         if (cg.isInterface()) {
             return true;
         }
         if (m_definition.inTransformationScope(cg.getClassName()) &&
-                m_definition.hasIntroductions(cg.getClassName())) {
+                m_definition.hasIntroductions(classMetaData)) {
             return false;
         }
         return true;

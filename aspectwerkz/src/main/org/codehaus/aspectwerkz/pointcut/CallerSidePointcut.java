@@ -26,7 +26,8 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
-import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
+import org.codehaus.aspectwerkz.NameIndexTuple;
+import org.codehaus.aspectwerkz.IndexTuple;
 
 /**
  * Implements the pointcut concept for caller side method access.
@@ -72,12 +73,12 @@ public class CallerSidePointcut implements Pointcut {
     /**
      * Holds the indexes of the pre advices.
      */
-    protected int[] m_preIndexes = new int[0];
+    protected IndexTuple[] m_preIndexes = new IndexTuple[0];
 
     /**
      * Holds the indexes of the post advices.
      */
-    protected int[] m_postIndexes = new int[0];
+    protected IndexTuple[] m_postIndexes = new IndexTuple[0];
 
     /**
      * Creates a new caller side pointcut.
@@ -137,10 +138,9 @@ public class CallerSidePointcut implements Pointcut {
                 m_preNames = new String[m_preNames.length + 1];
                 System.arraycopy(tmp, 0, m_preNames, 0, tmp.length);
 
-                m_preIndexes = new int[m_preNames.length];
+                m_preIndexes = new IndexTuple[m_preNames.length];
                 for (int i = 0, j = m_preNames.length; i < j; i++) {
-                    m_preIndexes[i] = AspectWerkz.getSystem(m_uuid).
-                            getAdviceIndexFor(m_preNames[i]);
+                    m_preIndexes[i] = AspectWerkz.getSystem(m_uuid).getAdviceIndexFor(m_preNames[i]);
                 }
             }
         }
@@ -163,7 +163,7 @@ public class CallerSidePointcut implements Pointcut {
                 m_postNames = new String[m_postNames.length + 1];
                 System.arraycopy(tmp, 0, m_postNames, 0, tmp.length);
 
-                m_postIndexes = new int[m_postNames.length];
+                m_postIndexes = new IndexTuple[m_postNames.length];
                 for (int i = 0, j = m_postNames.length; i < j; i++) {
                     m_postIndexes[i] = AspectWerkz.getSystem(m_uuid).
                             getAdviceIndexFor(m_postNames[i]);
@@ -195,7 +195,7 @@ public class CallerSidePointcut implements Pointcut {
                 m_preNames = new String[tmp.length];
                 System.arraycopy(tmp, 0, m_preNames, 0, tmp.length);
 
-                m_preIndexes = new int[m_preNames.length];
+                m_preIndexes = new IndexTuple[m_preNames.length];
                 for (int j = 0; j < m_preNames.length; j++) {
                     m_preIndexes[j] = AspectWerkz.getSystem(m_uuid).
                             getAdviceIndexFor(m_preNames[j]);
@@ -226,7 +226,7 @@ public class CallerSidePointcut implements Pointcut {
                 m_postNames = new String[tmp.length];
                 System.arraycopy(tmp, 0, m_postNames, 0, tmp.length);
 
-                m_postIndexes = new int[m_postNames.length];
+                m_postIndexes = new IndexTuple[m_postNames.length];
                 for (int j = 0; j < m_postNames.length; j++) {
                     m_postIndexes[j] = AspectWerkz.getSystem(m_uuid).
                             getAdviceIndexFor(m_postNames[j]);
@@ -265,7 +265,7 @@ public class CallerSidePointcut implements Pointcut {
                 m_preNames = new String[names.length];
                 System.arraycopy(names, 0, m_preNames, 0, names.length);
 
-                final int[] indexes = new int[m_preIndexes.length - 1];
+                final IndexTuple[] indexes = new IndexTuple[m_preIndexes.length - 1];
                 for (j = 0, k = 0; j < index; j++, k++) {
                     indexes[j] = m_preIndexes[j];
                 }
@@ -273,7 +273,7 @@ public class CallerSidePointcut implements Pointcut {
                 for (; j < m_preIndexes.length; j++, k++) {
                     indexes[k] = m_preIndexes[j];
                 }
-                m_preIndexes = new int[indexes.length];
+                m_preIndexes = new IndexTuple[indexes.length];
                 System.arraycopy(indexes, 0, m_preIndexes, 0, indexes.length);
             }
         }
@@ -309,7 +309,7 @@ public class CallerSidePointcut implements Pointcut {
                 m_postNames = new String[names.length];
                 System.arraycopy(names, 0, m_postNames, 0, names.length);
 
-                final int[] indexes = new int[m_postIndexes.length - 1];
+                final IndexTuple[] indexes = new IndexTuple[m_postIndexes.length - 1];
                 for (j = 0, k = 0; j < index; j++, k++) {
                     indexes[j] = m_postIndexes[j];
                 }
@@ -317,7 +317,7 @@ public class CallerSidePointcut implements Pointcut {
                 for (; j < m_postIndexes.length; j++, k++) {
                     indexes[k] = m_postIndexes[j];
                 }
-                m_postIndexes = new int[indexes.length];
+                m_postIndexes = new IndexTuple[indexes.length];
                 System.arraycopy(indexes, 0, m_postIndexes, 0, indexes.length);
             }
         }
@@ -359,12 +359,12 @@ public class CallerSidePointcut implements Pointcut {
      *
      * @return the current advice/index tuple array
      */
-    public AdviceIndexTuple[] getPreAdviceIndexTuples() {
+    public NameIndexTuple[] getPreAdviceIndexTuples() {
         synchronized (m_preIndexes) {
             synchronized (m_preNames) {
-                final AdviceIndexTuple[] tuples = new AdviceIndexTuple[m_preNames.length];
+                final NameIndexTuple[] tuples = new NameIndexTuple[m_preNames.length];
                 for (int i = 0; i < m_preNames.length; i++) {
-                    tuples[i] = new AdviceIndexTuple(m_preNames[i], m_preIndexes[i]);
+                    tuples[i] = new NameIndexTuple(m_preNames[i], m_preIndexes[i]);
                 }
                 return tuples;
             }
@@ -376,11 +376,11 @@ public class CallerSidePointcut implements Pointcut {
      *
      * @param tuple the new advice/index tuple array
      */
-    public void setPreAdviceIndexTuples(final AdviceIndexTuple[] tuple) {
+    public void setPreAdviceIndexTuples(final NameIndexTuple[] tuple) {
         synchronized (m_preIndexes) {
             synchronized (m_preNames) {
                 m_preNames = new String[tuple.length];
-                m_preIndexes = new int[tuple.length];
+                m_preIndexes = new IndexTuple[tuple.length];
                 for (int i = 0; i < tuple.length; i++) {
                     m_preNames[i] = tuple[i].getName();
                     m_preIndexes[i] = tuple[i].getIndex();
@@ -395,12 +395,12 @@ public class CallerSidePointcut implements Pointcut {
      *
      * @return the current advice/index tuple array
      */
-    public AdviceIndexTuple[] getPostAdviceIndexTuples() {
+    public NameIndexTuple[] getPostAdviceIndexTuples() {
         synchronized (m_postIndexes) {
             synchronized (m_postNames) {
-                final AdviceIndexTuple[] tuples = new AdviceIndexTuple[m_postNames.length];
+                final NameIndexTuple[] tuples = new NameIndexTuple[m_postNames.length];
                 for (int i = 0; i < m_postNames.length; i++) {
-                    tuples[i] = new AdviceIndexTuple(m_postNames[i], m_postIndexes[i]);
+                    tuples[i] = new NameIndexTuple(m_postNames[i], m_postIndexes[i]);
                 }
                 return tuples;
             }
@@ -412,11 +412,11 @@ public class CallerSidePointcut implements Pointcut {
      *
      * @param tuple the new advice/index tuple array
      */
-    public void setPostAdviceIndexTuples(final AdviceIndexTuple[] tuple) {
+    public void setPostAdviceIndexTuples(final NameIndexTuple[] tuple) {
         synchronized (m_postIndexes) {
             synchronized (m_postNames) {
                 m_postNames = new String[tuple.length];
-                m_postIndexes = new int[tuple.length];
+                m_postIndexes = new IndexTuple[tuple.length];
                 for (int i = 0; i < tuple.length; i++) {
                     m_postNames[i] = tuple[i].getName();
                     m_postIndexes[i] = tuple[i].getIndex();
@@ -430,7 +430,7 @@ public class CallerSidePointcut implements Pointcut {
      *
      * @return the pre advice indexes
      */
-    public int[] getPreAdviceIndexes() {
+    public IndexTuple[] getPreAdviceIndexes() {
         return m_preIndexes;
     }
 
@@ -448,7 +448,7 @@ public class CallerSidePointcut implements Pointcut {
      *
      * @return the pre advice indexes
      */
-    public int[] getPostAdviceIndexes() {
+    public IndexTuple[] getPostAdviceIndexes() {
         return m_postIndexes;
     }
 
@@ -477,7 +477,7 @@ public class CallerSidePointcut implements Pointcut {
      * @param indexes the new pre advice index array
      * @param names the new pre advice names array
      */
-    public void setPreAdvices(final int[] indexes, final String[] names) {
+    public void setPreAdvices(final IndexTuple[] indexes, final String[] names) {
         synchronized (m_preIndexes) {
             synchronized (m_preNames) {
                 m_preIndexes = indexes;
@@ -493,7 +493,7 @@ public class CallerSidePointcut implements Pointcut {
      * @param indexes the new post advice index array
      * @param names the new post advice names array
      */
-    public void setPostAdvices(final int[] indexes, final String[] names) {
+    public void setPostAdvices(final IndexTuple[] indexes, final String[] names) {
         synchronized (m_postIndexes) {
             synchronized (m_postNames) {
                 m_postIndexes = indexes;
@@ -656,8 +656,8 @@ public class CallerSidePointcut implements Pointcut {
         m_pointcutDefs = (Map)fields.get("m_pointcutDefs", null);
         m_preNames = (String[])fields.get("m_preNames", null);
         m_postNames = (String[])fields.get("m_postNames", null);
-        m_preIndexes = (int[])fields.get("m_preIndexes", null);
-        m_postIndexes = (int[])fields.get("m_postIndexes", null);
+        m_preIndexes = (IndexTuple[])fields.get("m_preIndexes", null);
+        m_postIndexes = (IndexTuple[])fields.get("m_postIndexes", null);
         m_uuid = (String)fields.get("m_uuid", null);
 
         try {

@@ -29,12 +29,12 @@ public interface JoinPointController extends Serializable {
      * @param jp    The joinpoint using this controller
      * @return      The result of the invocation.
      */
-    public Object proceed(MethodJoinPoint jp) throws Throwable;
+    Object proceed(MethodJoinPoint jp) throws Throwable;
 
     /**
      * Clones the controller
      *
      * @return      Clone of this controller.
      */
-    public JoinPointController deepCopy();
+    JoinPointController deepCopy();
 }

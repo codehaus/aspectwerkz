@@ -7,24 +7,106 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
+import org.codehaus.aspectwerkz.util.Strings;
 
 /**
- * Holds the introduction definition.
+ * Holds the meta-data for the introductions.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class IntroductionDefinition implements Serializable {
+public class IntroductionDefinition {
 
+    /**
+     * The name of the advice.
+     */
     private String m_name;
-    private String m_interface;
-    private String m_implementation;
+
+    /**
+     * The aspect class name.
+     */
+    private final String m_aspectClassName;
+
+    /**
+     * The aspect class name.
+     */
+    private final String m_aspectName;
+
+    /**
+     * The pointcut for the advice.
+     */
+    private final String m_pointcut;
+
+    /**
+     * The method for the advice.
+     */
+    private final Method m_method;
+
+    /**
+     * Index for the method for this introduction.
+     */
+    private final int m_methodIndex;
+
+    /**
+     * The deployment model.
+     */
     private String m_deploymentModel;
-    private String m_isPersistent;
+
+    /**
+     * The attribute for the introduction.
+     */
     private String m_attribute = "";
 
     /**
-     * Returns the name or the introduction.
+     * The pointcut definition references.
+     */
+    private List m_pointcutRefs = null;
+
+    /**
+     * The introduction weaving rule.
+     */
+    private IntroductionWeavingRule m_weavingRule;
+
+    /**
+     * Creates a new introduction meta-data instance.
+     *
+     * @param name the name of the pointcut
+     * @param aspectName the name of the aspect
+     * @param aspectClassName the class name of the aspect
+     * @param pointcut the pointcut
+     * @param method the method
+     * @param methodIndex the method index
+     * @param deploymentModel the deployment model
+     */
+    public IntroductionDefinition(final String name,
+                                  final String aspectName,
+                                  final String aspectClassName,
+                                  final String pointcut,
+                                  final Method method,
+                                  final int methodIndex,
+                                  final String deploymentModel) {
+        if (name == null) throw new IllegalArgumentException("name can not be null");
+        if (aspectName == null) throw new IllegalArgumentException("aspect name can not be null");
+        if (aspectClassName == null) throw new IllegalArgumentException("class name can not be null");
+        if (pointcut == null) throw new IllegalArgumentException("pointcut can not be null");
+        if (method == null) throw new IllegalArgumentException("method can not be null");
+        if (methodIndex < 0) throw new IllegalArgumentException("method index is not valid");
+        if (deploymentModel == null) throw new IllegalArgumentException("deployment model can not be null");
+        m_name = name;
+        m_aspectName = aspectName;
+        m_aspectClassName = aspectClassName;
+        m_pointcut = pointcut;
+        m_method = method;
+        m_methodIndex = methodIndex;
+        m_deploymentModel = deploymentModel;
+    }
+
+    /**
+     * Returns the name of the advice.
      *
      * @return the name
      */
@@ -42,39 +124,48 @@ public class IntroductionDefinition implements Serializable {
     }
 
     /**
-     * Returns the class name of the interface.
+     * Returns the aspect class name.
      *
-     * @return the class name
+     * @return the aspect class name
      */
-    public String getInterface() {
-        return m_interface;
+    public String getAspectClassName() {
+        return m_aspectClassName;
     }
 
     /**
-     * Sets the class name or the interface.
+     * Returns the aspect name.
      *
-     * @param anInterface the class name
+     * @return the aspect name
      */
-    public void setInterface(final String anInterface) {
-        m_interface = anInterface.trim();
+    public String getAspectName() {
+        return m_aspectName;
     }
 
     /**
-     * Returns the class name or the implementation.
+     * Returns the pointcut.
      *
-     * @return the class name
+     * @return the pointcut
      */
-    public String getImplementation() {
-        return m_implementation;
+    public String getPointcut() {
+        return m_pointcut;
     }
 
     /**
-     * Sets the class name of the implementation.
+     * Returns the method.
      *
-     * @param implementation the class name
+     * @return the method
      */
-    public void setImplementation(final String implementation) {
-        m_implementation = implementation.trim();
+    public Method getMethod() {
+        return m_method;
+    }
+
+    /**
+     * Returns the method index for the introduction method.
+     *
+     * @return the method index
+     */
+    public int getMethodIndex() {
+        return m_methodIndex;
     }
 
     /**
@@ -96,24 +187,6 @@ public class IntroductionDefinition implements Serializable {
     }
 
     /**
-     * Sets the persistent attribute.
-     *
-     * @param isPersistent the persistent attribute
-     */
-    public void setIsPersistent(final String isPersistent) {
-        m_isPersistent = isPersistent;
-    }
-
-    /**
-     * Gets the persistent attribute.
-     *
-     * @return the persistent attribute
-     */
-    public String getIsPersistent() {
-        return m_isPersistent;
-    }
-
-    /**
      * Returns the attribute.
      *
      * @return the attribute
@@ -132,18 +205,44 @@ public class IntroductionDefinition implements Serializable {
     }
 
     /**
-     * Checks if the introduction is persistent.
+     * Returns a list with the pointcut references.
      *
-     * @return true if introduction is persistent
+     * @return the pointcut references
      */
-    public boolean isPersistent() {
-        if (m_isPersistent != null &&
-                (m_isPersistent.equalsIgnoreCase("true") ||
-                m_isPersistent.equalsIgnoreCase("yes"))) {
-            return true;
+    public List getPointcutRefs() {
+        if (m_pointcutRefs != null) {
+            return m_pointcutRefs;
         }
-        else {
-            return false;
+        String expression = Strings.replaceSubString(m_pointcut, "&&", "");
+        expression = Strings.replaceSubString(expression, "||", "");
+        expression = Strings.replaceSubString(expression, "!", "");
+        expression = Strings.replaceSubString(expression, "(", "");
+        expression = Strings.replaceSubString(expression, ")", "");
+
+        m_pointcutRefs = new ArrayList();
+        StringTokenizer tokenizer = new StringTokenizer(expression, " ");
+        while (tokenizer.hasMoreTokens()) {
+            String pointcutRef = tokenizer.nextToken();
+            m_pointcutRefs.add(pointcutRef);
         }
+        return m_pointcutRefs;
+    }
+
+    /**
+     * Returns the weaving rule.
+     *
+     * @return the weaving rule
+     */
+    public IntroductionWeavingRule getWeavingRule() {
+        return m_weavingRule;
+    }
+
+    /**
+     * Sets the weaving rule.
+     *
+     * @param weavingRule the weaving rule
+     */
+    public void setWeavingRule(final IntroductionWeavingRule weavingRule) {
+        m_weavingRule = weavingRule;
     }
 }

@@ -8,14 +8,9 @@
 package org.codehaus.aspectwerkz.joinpoint.control;
 
 import java.io.ObjectInputStream;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.ArrayList;
 
 import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
-import org.codehaus.aspectwerkz.advice.Advice;
 
 /**
  * Abstract join point controller with convenience methods for managing advices.
@@ -74,31 +69,33 @@ public abstract class AbstractJoinPointController implements JoinPointController
     }
 
     /**
-     * Returns all advices of the joinpoint. If asSet is true, returns result as a set, otherwise
+     * Returns all advices of the joinpoint. If isSet is true, returns result as a set, otherwise
      * returns all advices in the order they are pointcut.
      *
+     * @TODO: think over how to implement
+     *
      * @param joinPoint  the joinpoint to inspect
-     * @param asSet     flag, whether result is a set
+     * @param isSet     flag, whether result is a set
      * @return          iterator containing all advices
      */
-    public static Iterator getAllAdvices(final MethodJoinPoint joinPoint, boolean asSet) {
-        Collection cAdvices;
-        if (asSet) {
-            cAdvices = new HashSet();
-        }
-        else {
-            cAdvices = new ArrayList();
-        }
-
-        for (int i = 0; i < joinPoint.getPointcuts().length; i++) {
-            for (int j = 0; j < joinPoint.getPointcuts()[i].getAdviceIndexes().length; j++) {
-                cAdvices.add(joinPoint.getSystem().
-                        getAdvice(joinPoint.getPointcuts()[i].getAdviceIndex(j)));
-            }
-        }
-
-        return cAdvices.iterator();
-    }
+//    public static Iterator getAllAdvices(final MethodJoinPoint joinPoint, boolean isSet) {
+//        Collection cAdvices;
+//        if (isSet) {
+//            cAdvices = new HashSet();
+//        }
+//        else {
+//            cAdvices = new ArrayList();
+//        }
+//
+//        for (int i = 0; i < joinPoint.getPointcuts().length; i++) {
+//            for (int j = 0; j < joinPoint.getPointcuts()[i].getAdviceIndexes().length; j++) {
+//                cAdvices.add(joinPoint.getSystem().getAspect(
+//                        joinPoint.getPointcuts()[i].getAdviceIndex(j)));
+//            }
+//        }
+//
+//        return cAdvices.iterator();
+//    }
 
     /**
      * Removes all empty pointcuts from the joinpoint. Pointcuts can become empty after advices
@@ -139,54 +136,58 @@ public abstract class AbstractJoinPointController implements JoinPointController
      * in java doclets <i>and</i> XML. After calling this method, only the first of a series
      * of redundant advices will remain in the advice chain that gets executed by the controller.
      *
+     * @TODO: think over how to implement
+     *
      * @param joinPoint            the joinpoint where redundant advices need to be removed
      * @param adviceName    the name of the advice to check for redundancy (e.g. log)
      * @param purge         true, if empty pointcuts shall be removed after redundancies have been found
      */
-    public int clearRedundancy(final MethodJoinPoint joinPoint,
-                               final String adviceName,
-                               boolean purge) {
-
-        int iFound = 0;
-        for (int i = 0; i < joinPoint.getPointcuts().length; i++) {
-            for (int j = 0; j < joinPoint.getPointcuts()[i].getAdviceIndexes().length; j++) {
-                if (joinPoint.getSystem().getAdvice(joinPoint.getPointcuts()[i].
-                        getAdviceIndex(j)).getName().equals(adviceName)) {
-                    iFound++;
-                    if (iFound > 1) {
-                        removeAdvice(adviceName, joinPoint, joinPoint.getPointcuts()[i]);
-                    }
-                }
-            }
-        }
-
-        // Purge pointcuts if requested
-        if (purge) {
-            purgePointcuts(joinPoint);
-        }
-
-        return iFound - 1;
-    }
+//    public int clearRedundancy(final MethodJoinPoint joinPoint,
+//                               final String adviceName,
+//                               boolean purge) {
+//
+//        int iFound = 0;
+//        for (int i = 0; i < joinPoint.getPointcuts().length; i++) {
+//            for (int j = 0; j < joinPoint.getPointcuts()[i].getAdviceIndexes().length; j++) {
+//                if (joinPoint.getSystem().getAspect(joinPoint.getPointcuts()[i].
+//                        getAdviceIndex(j)).getName().equals(adviceName)) {
+//                    iFound++;
+//                    if (iFound > 1) {
+//                        removeAdvice(adviceName, joinPoint, joinPoint.getPointcuts()[i]);
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Purge pointcuts if requested
+//        if (purge) {
+//            purgePointcuts(joinPoint);
+//        }
+//
+//        return iFound - 1;
+//    }
 
     /**
      * Checks all advices of a joinpoint for redundancies. If advices are redundant, they are removed.
      *
+     * @TODO: think over how to implement
+     *
      * @param jp        the joinpoint where redundant advices need to be removed
      */
-    public int clearAllRedundancies(final MethodJoinPoint jp) {
-        Iterator it = getAllAdvices(jp, true);
-
-        int iRedundancies = 0;
-        while (it.hasNext()) {
-            Advice advice = (Advice)it.next();
-            iRedundancies += clearRedundancy(jp, advice.getName(), false);
-        }
-
-        // Now that advices have been removed, purge the pointcuts
-        purgePointcuts(jp);
-
-        return iRedundancies;
-    }
+//    public int clearAllRedundancies(final MethodJoinPoint jp) {
+//        Iterator it = getAllAdvices(jp, true);
+//
+//        int iRedundancies = 0;
+//        while (it.hasNext()) {
+//            Advice advice = (Advice)it.next();
+//            iRedundancies += clearRedundancy(jp, advice.getName(), false);
+//        }
+//
+//        // Now that advices have been removed, purge the pointcuts
+//        purgePointcuts(jp);
+//
+//        return iRedundancies;
+//    }
 
     /**
      * Proceeds in the execution model for the join point to the next logical pointcut/advice<<P>

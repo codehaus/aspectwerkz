@@ -10,40 +10,40 @@ package examples.aspecttest;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @Aspect("perJVM")
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * Aspect("perJVM")
+ * author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class MyAspect {
 
     // ==== pointcuts ====
 
     /**
-     * @Pointcut("expression")
+     * Pointcut("expression")
      * Pointcut("**..*.set*(..)")
      */
     void setMethods() {}
 
     /**
-     * @Pointcut("expression")
+     * Pointcut("expression")
      * Pointcut("**..*.set*(..)")
      */
     void getMethods() {}
 
     /**
-     * @Pointcut("expression")
-     * Pointcut("getMethods() && setMethods()")
+     * Pointcut("expression")
+     * Pointcut("getIntroMethods() && setMethods()")
      */
     void methodsToLog() {}
 
     /**
-     * @Pointcut("domain.*")
+     * Pointcut("domain.*")
      */
     void domainObjects() {}
 
     // ==== advices ====
 
     /**
-     * @AroundAdvice("methodsToLog()")
+     * AroundAdvice("methodsToLog()")
      */
     public Object logMethod(JoinPoint joinPoint) throws Throwable {
         // do stuff
@@ -51,7 +51,7 @@ public class MyAspect {
     }
 
     /**
-     * @PreAdvice("setMethods()")
+     * PreAdvice("setMethods()")
      */
     public void logEntry(JoinPoint joinPoint) throws Throwable {
         // do stuff
@@ -62,14 +62,14 @@ public class MyAspect {
     String m_name;
 
     /**
-     * @Introduction("domainObjects()")
+     * Introduction("domainObjects()")
      */
     public String getName() {
         return m_name;
     }
 
     /**
-     * @Introduction("domainObjects()")
+     * Introduction("domainObjects()")
      */
     public void setName(String name) {
         m_name = name;
