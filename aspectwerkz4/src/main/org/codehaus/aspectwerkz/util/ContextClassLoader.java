@@ -28,7 +28,7 @@ public final class ContextClassLoader {
     public static Class loadClass(final ClassLoader loader, final String name) throws ClassNotFoundException {
         Class klass = null;
         if (loader != null) {
-            klass = loader.loadClass(name);
+            klass = Class.forName(name, false, loader);
         } else {
             klass = Class.forName(name);
         }

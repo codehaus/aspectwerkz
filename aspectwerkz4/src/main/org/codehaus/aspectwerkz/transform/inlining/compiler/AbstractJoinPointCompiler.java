@@ -676,6 +676,9 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         // retrieve the aspect set it to the field
         DeploymentModel deploymentModel = aspectInfo.getDeploymentModel();
         if (deploymentModel.equals(DeploymentModel.PER_JVM)) {
+            // AW-355, we need a ClassLoader here
+            cv.visitFieldInsn(GETSTATIC, joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+            cv.visitMethodInsn(INVOKEVIRTUAL, CLASS_CLASS, GETCLASSLOADER_METHOD_NAME, CLASS_CLASS_GETCLASSLOADER_METHOD_SIGNATURE);
             cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
             cv.visitMethodInsn(
                     INVOKESTATIC,
