@@ -24,6 +24,7 @@ import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
+import org.codehaus.aspectwerkz.expression.ArgsIndexVisitor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
@@ -379,9 +380,15 @@ public class JoinPointManager {
                 for (Iterator iterator2 = aspectDefinition.getAdviceDefinitions().iterator(); iterator2.hasNext();) {
                     AdviceDefinition adviceDefinition = (AdviceDefinition) iterator2.next();
                     if (adviceDefinition.getExpressionInfo().getExpression().match(exprCtx)) {
-                        // compute the target method to advice method arguments map
+                        // compute the target method to advice method arguments map, and grab information about this
+                        // and target bindings
                         exprCtx.resetRuntimeState();
-                        adviceDefinition.getExpressionInfo().getArgsIndexMapper().match(exprCtx);
+                        ArgsIndexVisitor.updateContextForRuntimeInformation(adviceDefinition.getExpressionInfo(),
+                                                                            exprCtx, loader);
+                        // Note that the exprCtx dynamic information updated here should only be used
+                        // in the scope of this code block, since at the next iteration, the data will be
+                        // updated for another advice binding
+                        // [hence see setMethodArgumentIndexes below]
 
                         // create a lightweight representation of the bounded advices to pass to the compiler
                         final MethodInfo adviceMethodInfo = adviceDefinition.getMethodInfo();

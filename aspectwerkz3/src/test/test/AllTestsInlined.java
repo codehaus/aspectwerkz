@@ -52,6 +52,7 @@ public class AllTestsInlined extends TestCase {
         suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);
         suite.addTestSuite(test.SerialVerUidTest.class);
         suite.addTestSuite(test.thistarget.TargetTest.class);
+        suite.addTestSuite(test.thistarget.TargetReferencedAndRuntimeCheckTest.class);
 
         // NOT YET COMPLETED
 //        suite.addTestSuite(test.handler.HandlerTest.class);

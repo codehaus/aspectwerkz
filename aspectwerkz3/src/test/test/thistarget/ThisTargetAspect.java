@@ -396,7 +396,61 @@ public class ThisTargetAspect {
     }
 
 
+    //------------------------- Method call while "this" is subclassed
 
+    /** @Expression this(caller) && call(* test.thistarget.*.call()) && withincode(* test.*.*.callFrom(..)) */
+    Pointcut call_thisSubinterface(IThis caller) {return null;}
+
+    // interface, while this implements the interface we match
+
+    /** @Before call_thisSubinterface(caller) && target(t) */
+    public void beforeICallSubinterface(ITarget t, Object caller) {
+        validate(t, ITarget.class);
+        validate(caller, IThis.class);
+        TargetTest.log("before_ITarget");
+    }
+    /** @Around call_thisSubinterface(caller) && target(t) */
+    public Object aroundICallSubinterface(JoinPoint jp, ITarget t, Object caller) throws Throwable {
+        validate(t, ITarget.class);
+        validate(caller, IThis.class);
+        TargetTest.log("pre_ITarget");
+        Object o = jp.proceed();
+        TargetTest.log("post_ITarget");
+        return o;
+    }
+    /** @After call_thisSubinterface(caller) && target(t) */
+    public void afterICallSubinterface(ITarget t, Object caller) {
+        validate(t, ITarget.class);
+        validate(caller, IThis.class);
+        TargetTest.log("after_ITarget");
+    }
+
+    /** @Expression this(caller) && call(* test.thistarget.*.call()) && withincode(* test.*.*.callFrom(..)) */
+    Pointcut call_thisSubclass(SuperThis caller) {return null;}
+
+    // interface, while this subclass the class we match
+
+    /** @Before call_thisSubclass(caller) && target(t) */
+    public void beforeICallSubclass(ITarget t, Object caller) {
+        validate(t, ITarget.class);
+        validate(caller, SuperThis.class);
+        TargetTest.log("before_ITarget");
+    }
+    /** @Around call_thisSubclass(caller) && target(t) */
+    public Object aroundICallSubclass(JoinPoint jp, ITarget t, Object caller) throws Throwable {
+        validate(t, ITarget.class);
+        validate(caller, SuperThis.class);
+        TargetTest.log("pre_ITarget");
+        Object o = jp.proceed();
+        TargetTest.log("post_ITarget");
+        return o;
+    }
+    /** @After call_thisSubclass(caller) && target(t) */
+    public void afterICallSubclass(ITarget t, Object caller) {
+        validate(t, ITarget.class);
+        validate(caller, SuperThis.class);
+        TargetTest.log("after_ITarget");
+    }
 
 
 
@@ -407,7 +461,7 @@ public class ThisTargetAspect {
      * @param t
      * @param checkCast
      */
-    private static void validate(Object t, Class checkCast) {
+    static void validate(Object t, Class checkCast) {
         if (checkCast == null && t != null) {
             TestCase.fail("should ne null: " + t.getClass().getName());
         } else if (checkCast != null) {

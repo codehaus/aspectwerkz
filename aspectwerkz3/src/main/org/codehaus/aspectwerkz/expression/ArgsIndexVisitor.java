@@ -34,7 +34,30 @@ import gnu.trove.TIntIntHashMap;
  */
 public class ArgsIndexVisitor extends ExpressionVisitor {
 
-    public ArgsIndexVisitor(final ExpressionInfo expressionInfo,
+    /**
+     * Classloader used to perform type checks (for target / this bindings)
+     * A strong reference is enough since this visitor is not be referenced.
+     */
+    private ClassLoader m_classLoader;
+
+    /**
+     * Update the given context with its runtime information (this, target, args).
+     * It should be called for each advice.
+     *
+     * @param expressionInfo
+     * @param context
+     */
+    public static void updateContextForRuntimeInformation(final ExpressionInfo expressionInfo,
+                                                          final ExpressionContext context,
+                                                          final ClassLoader loader) {
+        ArgsIndexVisitor visitor = new ArgsIndexVisitor(expressionInfo, expressionInfo.toString(),
+                                                        expressionInfo.getNamespace(),
+                                                        expressionInfo.getExpression().getASTRoot());
+        visitor.m_classLoader = loader;
+        visitor.match(context);
+    }
+
+    private ArgsIndexVisitor(final ExpressionInfo expressionInfo,
                             final String expression,
                             final String namespace,
                             final ASTRoot root) {
@@ -49,8 +72,11 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         ExpressionInfo expressionInfo = namespace.getExpressionInfo(node.getName());
 
-        // do the visit of the referenced expression
-        Boolean match = expressionInfo.getArgsIndexMapper().matchUndeterministic(context);
+        ArgsIndexVisitor referenced = new ArgsIndexVisitor(expressionInfo, expressionInfo.toString(),
+                                                           expressionInfo.getNamespace(),
+                                                           expressionInfo.getExpression().getASTRoot());
+        context.resetRuntimeState();
+        Boolean match = referenced.matchUndeterministic(context);
 
         // update the this and target bounded name from this last visit
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -129,7 +155,9 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
             if (ctx.m_thisBoundedName == null) {
                 ctx.m_thisBoundedName = node.getIdentifier();
             } else if (ctx.m_thisBoundedName != node.getIdentifier()) {
-                throw new DefinitionException("this(..) seems to be bounded to different bounded entities in " + ctx.toString());
+                throw new DefinitionException("this(..) seems to be bounded to different bounded entities in \""
+                        + m_expressionInfo.toString() + "\" in " + m_expressionInfo.getNamespace()
+                        + " : found " + ctx.m_targetBoundedName + " and " + node.getIdentifier());
             }
         }
         return super.visit(node, data);
@@ -142,7 +170,9 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
             if (ctx.m_targetBoundedName == null) {
                 ctx.m_targetBoundedName = node.getIdentifier();
             } else if (ctx.m_targetBoundedName != node.getIdentifier()) {
-                throw new DefinitionException("target(..) seems to be bounded to different bounded entities in " + ctx.toString());
+                throw new DefinitionException("target(..) seems to be bounded to different bounded entities in \""
+                        + m_expressionInfo.toString() + "\" in " + m_expressionInfo.getNamespace()
+                        + " : found " + ctx.m_targetBoundedName + " and " + node.getIdentifier());
             }
         }
         // keep track if the result was undetermined: we will need a runtime check
@@ -187,10 +217,7 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         } else {
             // advice(Foo f) for pc(f) with pc(Object o) for example
             // we need to ensure that Foo is an instance of Object
-
-            //FIXME
-            // we are using the ThreadCL - we should use good CL, needs to unplug ArgIndexVisitor from def model
-            ClassInfo classInfo = AsmClassInfo.getClassInfo(className, ContextClassLoader.getLoader());
+            ClassInfo classInfo = AsmClassInfo.getClassInfo(className, m_classLoader);
             boolean instanceOf = ClassInfoHelper.instanceOf(classInfo, superClassName);
             if ( ! instanceOf ) {
                 throw new DefinitionException("Attempt to reference a pointcut with incompatible object type: for \""
