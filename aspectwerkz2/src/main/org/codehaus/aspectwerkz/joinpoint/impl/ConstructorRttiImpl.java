@@ -5,35 +5,61 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.joinpoint.management;
+package org.codehaus.aspectwerkz.joinpoint.impl;
 
 import java.lang.reflect.Constructor;
 
 import org.codehaus.aspectwerkz.ConstructorTuple;
-import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
+import org.codehaus.aspectwerkz.joinpoint.ConstructorRtti;
 
 /**
- * Implementation for the constructor signature.
+ * Implementation for the constructor RTTI.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ConstructorSignatureImpl implements ConstructorSignature {
+public class ConstructorRttiImpl implements ConstructorRtti {
 
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
 
-    private final Class m_declaringType;
-    private final ConstructorTuple m_constructorTuple;
+    private final ConstructorSignatureImpl m_signature;
+    private final Object m_this;
+    private final Object m_target;
 
     private Object[] m_parameterValues = EMPTY_OBJECT_ARRAY;
     private Object m_newInstance;
 
     /**
-     * @param declaringType
-     * @param constructorTuple
+     * Creates a new constructor RTTI.
+     *
+     * @param signature
+     * @param thisInstance
+     * @param targetInstance
      */
-    public ConstructorSignatureImpl(final Class declaringType, final ConstructorTuple constructorTuple) {
-        m_declaringType = declaringType;
-        m_constructorTuple = constructorTuple;
+    public ConstructorRttiImpl(
+            final ConstructorSignatureImpl signature,
+            final Object thisInstance,
+            final Object targetInstance) {
+        m_signature = signature;
+        m_this = thisInstance;
+        m_target = targetInstance;
+    }
+
+    /**
+     * Returns the target instance.
+     *
+     * @return the target instance
+     */
+    public Object getTarget() {
+        return m_target;
+    }
+
+    /**
+     * Returns the instance currently executing.
+     *
+     * @return the instance currently executing
+     */
+    public Object getThis() {
+        return m_this;
     }
 
     /**
@@ -42,7 +68,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return the constructor tuple
      */
     public ConstructorTuple getConstructorTuple() {
-        return m_constructorTuple;
+        return m_signature.getConstructorTuple();
     }
 
     /**
@@ -51,7 +77,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return the constructor
      */
     public Constructor getConstructor() {
-        return m_constructorTuple.getOriginalConstructor();
+        return m_signature.getConstructor();
     }
 
     /**
@@ -60,7 +86,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return the declaring class
      */
     public Class getDeclaringType() {
-        return m_declaringType;
+        return m_signature.getDeclaringType();
     }
 
     /**
@@ -92,7 +118,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return the mofifiers
      */
     public int getModifiers() {
-        return m_constructorTuple.getOriginalConstructor().getModifiers();
+        return m_signature.getModifiers();
     }
 
     /**
@@ -101,7 +127,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return
      */
     public String getName() {
-        return m_constructorTuple.getName();
+        return m_signature.getName();
     }
 
     /**
@@ -110,7 +136,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return the exception types
      */
     public Class[] getExceptionTypes() {
-        return m_constructorTuple.getOriginalConstructor().getExceptionTypes();
+        return m_signature.getExceptionTypes();
     }
 
     /**
@@ -119,7 +145,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return the parameter types
      */
     public Class[] getParameterTypes() {
-        return m_constructorTuple.getOriginalConstructor().getParameterTypes();
+        return m_signature.getParameterTypes();
     }
 
     /**

@@ -5,17 +5,33 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
+package org.codehaus.aspectwerkz.joinpoint;
 
-package test.handler;
-
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import java.lang.reflect.Constructor;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class HandlerTestAspect {
+public interface ConstructorRtti extends CodeRtti {
 
-    public void before(final JoinPoint joinPoint) throws Throwable {
-        HandlerTest.log("pre ");
-    }
-}
+    /**
+     * Returns the constructor.
+     *
+     * @return the constructor
+     */
+    public Constructor getConstructor();
+
+    /**
+     * Returns the new instance created by the constructor.
+     *
+     * @return the new instance
+     */
+    Object getNewInstance();
+
+    /**
+     * Sets the new instance created by the constructor.
+     *
+     * @param newInstance
+     */
+//    void setNewInstance(Object newInstance);
+}                                             

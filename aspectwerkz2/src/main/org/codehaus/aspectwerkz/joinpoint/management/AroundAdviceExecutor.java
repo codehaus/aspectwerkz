@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.aspect.management.AspectManager;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-class AroundAdviceExecutor {
+public class AroundAdviceExecutor {
 
     /**
      * The index of the current advice.

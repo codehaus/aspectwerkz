@@ -46,7 +46,8 @@ import org.codehaus.aspectwerkz.util.Strings;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @TODO Use hashes, aspect=>hashcode for class advice=>hashcode for method signature
  * @TODO Store references to all join points that uses advices from a certain aspect [aspectKey=>joinPoints]
- * @TODO Map all aspects to a key, meaning have a key that maps to a data structure that contains full info about the aspect and all its advice methods. [aspectKey=>aspectDataStructure].
+ * @TODO Map all aspects to a key, meaning have a key that maps to a data structure that contains full info about the
+ * aspect and all its advice methods. [aspectKey=>aspectDataStructure].
  */
 public class AspectRegistry {
 
@@ -176,7 +177,8 @@ public class AspectRegistry {
                                     );
                                 }
 //
-                                List introductions = aspect.getCrossCuttingInfo().getAspectDefinition().getIntroductions();
+                                List introductions = aspect.getCrossCuttingInfo().getAspectDefinition()
+                                        .getIntroductions();
                                 for (Iterator it = introductions.iterator(); it.hasNext();) {
                                     IntroductionDefinition introDef = (IntroductionDefinition)it.next();
                                     // load default mixin impl from the aspect which defines it
@@ -187,9 +189,11 @@ public class AspectRegistry {
                                             introDef.getName(), defaultImplClass, aspect, introDef
                                     );
                                     // prepare the container
-                                    mixin.setContainer(new IntroductionContainer(
-                                            mixin, aspect.getCrossCuttingInfo().getContainer()
-                                    ));
+                                    mixin.setContainer(
+                                            new IntroductionContainer(
+                                                    mixin, aspect.getCrossCuttingInfo().getContainer()
+                                            )
+                                    );
                                     final Mixin[] tmpMixins = new Mixin[m_mixins.length + 1];
                                     java.lang.System.arraycopy(m_mixins, 0, tmpMixins, 0, m_mixins.length);
                                     tmpMixins[m_mixins.length] = mixin;
@@ -395,8 +399,8 @@ public class AspectRegistry {
     public List getExecutionPointcuts(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
-            PointcutManager aspect = (PointcutManager)it.next();
-            List executionPointcuts = aspect.getExecutionPointcuts(classMetaData, memberMetaData);
+            PointcutManager pointcutManager = (PointcutManager)it.next();
+            List executionPointcuts = pointcutManager.getExecutionPointcuts(classMetaData, memberMetaData);
             pointcuts.addAll(executionPointcuts);
         }
         return pointcuts;
@@ -412,8 +416,8 @@ public class AspectRegistry {
     public List getGetPointcuts(final ClassMetaData classMetaData, final FieldMetaData fieldMetaData) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
-            PointcutManager aspect = (PointcutManager)it.next();
-            pointcuts.addAll(aspect.getGetPointcuts(classMetaData, fieldMetaData));
+            PointcutManager pointcutManager = (PointcutManager)it.next();
+            pointcuts.addAll(pointcutManager.getGetPointcuts(classMetaData, fieldMetaData));
         }
         return pointcuts;
     }
@@ -428,8 +432,8 @@ public class AspectRegistry {
     public List getSetPointcuts(final ClassMetaData classMetaData, final FieldMetaData fieldMetaData) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
-            PointcutManager aspect = (PointcutManager)it.next();
-            pointcuts.addAll(aspect.getSetPointcuts(classMetaData, fieldMetaData));
+            PointcutManager pointcutManager = (PointcutManager)it.next();
+            pointcuts.addAll(pointcutManager.getSetPointcuts(classMetaData, fieldMetaData));
         }
         return pointcuts;
     }
@@ -443,8 +447,8 @@ public class AspectRegistry {
     public List getHandlerPointcuts(final ClassMetaData classMetaData) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
-            PointcutManager aspect = (PointcutManager)it.next();
-            List handlerPointcuts = aspect.getHandlerPointcuts(classMetaData);
+            PointcutManager pointcutManager = (PointcutManager)it.next();
+            List handlerPointcuts = pointcutManager.getHandlerPointcuts(classMetaData);
             pointcuts.addAll(handlerPointcuts);
         }
         return pointcuts;
@@ -460,8 +464,8 @@ public class AspectRegistry {
     public List getCallPointcuts(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
-            PointcutManager aspect = (PointcutManager)it.next();
-            pointcuts.addAll(aspect.getCallPointcuts(classMetaData, memberMetaData));
+            PointcutManager pointcutManager = (PointcutManager)it.next();
+            pointcuts.addAll(pointcutManager.getCallPointcuts(classMetaData, memberMetaData));
         }
         return pointcuts;
     }
@@ -469,19 +473,23 @@ public class AspectRegistry {
     /**
      * Returns the cflow expressions list for the class and method specified.
      *
-     * @param classMetaData  the meta-data for the class
-     * @param memberMetaData meta-data for the method | field
+     * @param classMetaData       the meta-data for the class
+     * @param memberMetaData      meta-data for the method | field
      * @param callerClassMetaData
      * @param pointcutType
      * @return the expression with 1+ cflow for this join point (optimized thru inflated evaluation)
      */
-    public List getCflowExpressions(final ClassMetaData classMetaData, final MemberMetaData memberMetaData,
-                                    final ClassMetaData callerClassMetaData, final PointcutType pointcutType) {
+    public List getCflowExpressions(
+            final ClassMetaData classMetaData, final MemberMetaData memberMetaData,
+            final ClassMetaData callerClassMetaData, final PointcutType pointcutType) {
         List expressions = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
-            PointcutManager aspect = (PointcutManager)it.next();
-            expressions.addAll(aspect.getCFlowExpressions(classMetaData, memberMetaData,
-                                                          callerClassMetaData, pointcutType)
+            PointcutManager pointcutManager = (PointcutManager)it.next();
+            expressions.addAll(
+                    pointcutManager.getCFlowExpressions(
+                            classMetaData, memberMetaData,
+                            callerClassMetaData, pointcutType
+                    )
             );
         }
         return expressions;

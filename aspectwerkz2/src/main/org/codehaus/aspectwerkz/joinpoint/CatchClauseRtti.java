@@ -5,17 +5,31 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-
-package test.handler;
-
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+package org.codehaus.aspectwerkz.joinpoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class HandlerTestAspect {
+public interface CatchClauseRtti extends Rtti {
 
-    public void before(final JoinPoint joinPoint) throws Throwable {
-        HandlerTest.log("pre ");
-    }
+    /**
+     * Returns the parameter type.
+     *
+     * @return the parameter type
+     */
+    Class getParameterType();
+
+    /**
+     * Returns the value of the parameter.
+     *
+     * @return the value of the parameter
+     */
+    Object getParameterValue();
+
+    /**
+     * Sets the value of the parameter.
+     *
+     * @param parameterValue the value of the parameter
+     */
+    void setParameterValue(Object parameterValue);
 }

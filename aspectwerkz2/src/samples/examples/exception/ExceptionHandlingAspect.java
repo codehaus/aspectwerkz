@@ -10,6 +10,7 @@ package examples.exception;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
+import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -26,8 +27,8 @@ public class ExceptionHandlingAspect {
      * @Before methods
      */
     public Object logEntry(final JoinPoint joinPoint) throws Throwable {
-        CatchClauseSignature sig = (CatchClauseSignature)joinPoint.getSignature();
-        Exception e = (Exception)sig.getParameterValue();
+        CatchClauseRtti rtti = (CatchClauseRtti)joinPoint.getRtti();
+        Exception e = (Exception)rtti.getParameterValue();
         System.out.println("[From advice] exception catched:" + e.toString());
         return "fake result from advice";
     }

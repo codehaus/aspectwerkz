@@ -25,18 +25,4 @@ public interface CodeSignature extends MemberSignature {
      * @return the parameter types
      */
     Class[] getParameterTypes();
-
-    /**
-     * Returns the values of the parameters.
-     *
-     * @return the values of the parameters
-     */
-    Object[] getParameterValues();
-
-    /**
-     * Sets the values of the parameters.
-     *
-     * @param parameterValues
-     */
-    void setParameterValues(Object[] parameterValues);
 }

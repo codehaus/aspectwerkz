@@ -18,18 +18,4 @@ public interface CatchClauseSignature extends Signature {
      * @return the parameter type
      */
     Class getParameterType();
-
-    /**
-     * Returns the value of the parameter.
-     *
-     * @return the value of the parameter
-     */
-    Object getParameterValue();
-
-    /**
-     * Sets the value of the parameter.
-     *
-     * @param parameterValue the value of the parameter
-     */
-    void setParameterValue(Object parameterValue);
 }

@@ -39,6 +39,13 @@ public interface JoinPoint {
     Signature getSignature();
 
     /**
+     * Returns the RTTI for the join point.
+     *
+     * @return the RTTI
+     */
+    Rtti getRtti();
+
+    /**
      * Returns the target instance or 'this'. If the join point is executing in a static context it returns null.
      *
      * @return the target instance
@@ -46,7 +53,7 @@ public interface JoinPoint {
     Object getTargetInstance();
 
     /**
-     * Sets the target instance. 
+     * Sets the target instance.
      *
      * @param targetInstance the target instance
      */

@@ -237,18 +237,10 @@ public class PointcutManager {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
-// //can be null for Handler PC
-//        if (memberMetaData == null) {
-//            throw new IllegalArgumentException("member meta-data can not be null");
-//        }
-//
-        //System.out.println("getExe pc PCManager " + classMetaData.getName() +" "+memberMetaData.getName() );//ALEX
         List pointcutList = new ArrayList();
         for (Iterator it = m_pointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
-            //System.out.println("TEST MATCH " + pointcut.getExpression().getExpression());//ALEX
             if (pointcut.getExpression().match(classMetaData, memberMetaData, pointcutType)) {
-                //System.out.println("MATCH " + pointcut.getExpression().getName());//ALEX
                 pointcutList.add(pointcut);
             }
         }

@@ -9,6 +9,8 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ import java.util.List;
 class CatchClauseJoinPoint extends JoinPointBase {
 
     private final CatchClauseSignature m_signature;
+    private final CatchClauseRtti m_rtti;
 
     /**
      * Creates a new join point. 
@@ -27,6 +30,7 @@ class CatchClauseJoinPoint extends JoinPointBase {
      * @param uuid
      * @param targetClass
      * @param signature
+     * @param rtti
      * @param cflowExpressions
      * @param aroundAdviceExecutor
      * @param beforeAdviceExecutor
@@ -36,6 +40,7 @@ class CatchClauseJoinPoint extends JoinPointBase {
             final String uuid,
             final Class targetClass,
             final Signature signature,
+            final Rtti rtti,
             final List cflowExpressions,
             final AroundAdviceExecutor aroundAdviceExecutor,
             final BeforeAdviceExecutor beforeAdviceExecutor,
@@ -45,6 +50,7 @@ class CatchClauseJoinPoint extends JoinPointBase {
                 aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor
         );
         m_signature = (CatchClauseSignature)signature;
+        m_rtti = (CatchClauseRtti)rtti;
     }
 
     /**
@@ -70,6 +76,15 @@ class CatchClauseJoinPoint extends JoinPointBase {
      */
     public Signature getSignature() {
         return m_signature;
+    }
+
+    /**
+     * Returns the RTTI for the join point.
+     *
+     * @return the RTTI
+     */
+    public Rtti getRtti() {
+        return m_rtti;
     }
 
     /**

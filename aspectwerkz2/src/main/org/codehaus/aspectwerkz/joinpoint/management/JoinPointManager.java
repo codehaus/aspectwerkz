@@ -26,6 +26,19 @@ import org.codehaus.aspectwerkz.joinpoint.CodeSignature;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.CodeRtti;
+import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
+import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
+import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
+import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseRttiImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.FieldRttiImpl;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
@@ -198,12 +211,16 @@ public class JoinPointManager {
             switch (joinPointType) {
                 case JoinPointType.METHOD_EXECUTION:
                     adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.EXECUTION);
-                    joinPoint = createMethodJoinPoint(methodHash, joinPointType, m_targetClass, adviceIndexes);
+                    joinPoint = createMethodJoinPoint(
+                            methodHash, joinPointType, m_targetClass, adviceIndexes, targetInstance, targetInstance
+                    );
                     break;
 
                 case JoinPointType.CONSTRUCTOR_EXECUTION:
                     adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.EXECUTION);
-                    joinPoint = createConstructorJoinPoint(methodHash, joinPointType, m_targetClass, adviceIndexes);
+                    joinPoint = createConstructorJoinPoint(
+                            methodHash, joinPointType, m_targetClass, adviceIndexes, targetInstance, targetInstance
+                    );
                     break;
 
                 default:
@@ -225,7 +242,7 @@ public class JoinPointManager {
         // set the RTTI
         ((JoinPointBase)joinPoint).setTargetInstance(targetInstance);
         if (parameters != null) {
-            ((CodeSignature)joinPoint.getSignature()).setParameterValues(parameters);
+            ((CodeRtti)joinPoint.getRtti()).setParameterValues(parameters);
         }
 
         return ((JoinPointBase)joinPoint).proceed();
@@ -297,12 +314,16 @@ public class JoinPointManager {
             switch (joinPointType) {
                 case JoinPointType.METHOD_CALL:
                     adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.CALL);
-                    joinPoint = createMethodJoinPoint(methodHash, joinPointType, declaringClass, adviceIndexes);
+                    joinPoint = createMethodJoinPoint(
+                            methodHash, joinPointType, declaringClass, adviceIndexes, targetInstance, targetInstance
+                    );
                     break;
 
                 case JoinPointType.CONSTRUCTOR_CALL:
                     adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.CALL);
-                    joinPoint = createConstructorJoinPoint(methodHash, joinPointType, declaringClass, adviceIndexes);
+                    joinPoint = createConstructorJoinPoint(
+                            methodHash, joinPointType, declaringClass, adviceIndexes, targetInstance, targetInstance
+                    );
                     break;
 
                 default:
@@ -323,7 +344,7 @@ public class JoinPointManager {
 
         ((JoinPointBase)joinPoint).setTargetInstance(targetInstance);
         if (parameters != null) {
-            ((CodeSignature)joinPoint.getSignature()).setParameterValues(parameters);
+            ((CodeRtti)joinPoint.getRtti()).setParameterValues(parameters);
         }
 
         return ((JoinPointBase)joinPoint).proceed();
@@ -393,8 +414,10 @@ public class JoinPointManager {
 
             AdviceContainer[] adviceIndexes = null;
             adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.SET);
-            joinPoint =
-            createFieldJoinPoint(fieldHash, fieldSignature, JoinPointType.FIELD_SET, m_targetClass, adviceIndexes);
+            joinPoint = createFieldJoinPoint(
+                    fieldHash, fieldSignature, JoinPointType.FIELD_SET, m_targetClass,
+                    adviceIndexes, targetInstance, targetInstance
+            );
 
             // set the join point
             joinPointInfo.joinPoint = joinPoint;
@@ -411,7 +434,7 @@ public class JoinPointManager {
         // intialize the join point before each usage
         ((JoinPointBase)joinPoint).setTargetInstance(targetInstance);
         if (fieldValue[0] != null) {
-            ((FieldSignature)joinPoint.getSignature()).setFieldValue(fieldValue[0]);
+            ((FieldRtti)joinPoint.getRtti()).setFieldValue(fieldValue[0]); // array due to sucky javassist field handling
         }
         ((JoinPointBase)joinPoint).proceed();
     }
@@ -478,8 +501,10 @@ public class JoinPointManager {
 
             AdviceContainer[] adviceIndexes = null;
             adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.GET);
-            joinPoint =
-            createFieldJoinPoint(fieldHash, fieldSignature, JoinPointType.FIELD_GET, m_targetClass, adviceIndexes);
+            joinPoint = createFieldJoinPoint(
+                    fieldHash, fieldSignature, JoinPointType.FIELD_GET, m_targetClass,
+                    adviceIndexes, targetInstance, targetInstance
+            );
 
             // set the join point
             joinPointInfo.joinPoint = joinPoint;
@@ -564,8 +589,10 @@ public class JoinPointManager {
             Map pointcutTypeToAdvicesMap = s_registry.getAdvicesForJoinPoint(m_classHash, handlerHash);
 
             AdviceContainer[] adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.HANDLER);
-            joinPoint =
-            createCatchClauseJoinPoint(exceptionInstance.getClass(), m_targetClass, handlerSignature, adviceIndexes);
+            joinPoint = createCatchClauseJoinPoint(
+                    exceptionInstance.getClass(), m_targetClass, handlerSignature,
+                    adviceIndexes, targetInstance, targetInstance
+            );
 
             // set the join point
             joinPointInfo.joinPoint = joinPoint;
@@ -581,7 +608,7 @@ public class JoinPointManager {
 
         // intialize the join point before each usage
         ((JoinPointBase)joinPoint).setTargetInstance(targetInstance);
-        ((CatchClauseSignature)joinPoint.getSignature()).setParameterValue(exceptionInstance);
+        ((CatchClauseRtti)joinPoint.getRtti()).setParameterValue(exceptionInstance);
 
         ((JoinPointBase)joinPoint).proceed();
     }
@@ -633,10 +660,13 @@ public class JoinPointManager {
             final int methodHash,
             final int joinPointType,
             final Class declaringClass,
-            final AdviceContainer[] adviceIndexes) {
+            final AdviceContainer[] adviceIndexes,
+            final Object thisInstance,
+            final Object targetInstance) {
         MethodTuple methodTuple = m_system.getAspectManager().getMethodTuple(declaringClass, methodHash);
         Class declaringType = methodTuple.getDeclaringClass();
-        Signature signature = new MethodSignatureImpl(declaringType, methodTuple);
+        MethodSignatureImpl signature = new MethodSignatureImpl(declaringType, methodTuple);
+        Rtti rtti = new MethodRttiImpl(signature, thisInstance, targetInstance);
 
         List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
                 ReflectionMetaDataMaker.createClassMetaData(declaringClass),
@@ -651,7 +681,7 @@ public class JoinPointManager {
 
         // TODO: cflow for before and after advices needed
         return new MethodJoinPoint(
-                m_uuid, joinPointType, m_targetClass, signature, cflowExpressions,
+                m_uuid, joinPointType, m_targetClass, signature, rtti, cflowExpressions,
                 createAroundAdviceExecutor(adviceIndexes, joinPointType),
                 createBeforeAdviceExecutor(adviceIndexes),
                 createAfterAdviceExecutor(adviceIndexes)
@@ -671,13 +701,16 @@ public class JoinPointManager {
             final int constructorHash,
             final int joinPointType,
             final Class declaringClass,
-            final AdviceContainer[] adviceIndexes) {
+            final AdviceContainer[] adviceIndexes,
+            final Object thisInstance,
+            final Object targetInstance) {
         ConstructorTuple constructorTuple = m_system.getAspectManager().getConstructorTuple(
                 declaringClass, constructorHash
         );
 
         Class declaringType = constructorTuple.getDeclaringClass();
-        Signature signature = new ConstructorSignatureImpl(declaringType, constructorTuple);
+        ConstructorSignatureImpl signature = new ConstructorSignatureImpl(declaringType, constructorTuple);
+        Rtti rtti = new ConstructorRttiImpl(signature, thisInstance, targetInstance);
 
         // TODO: enable cflow for constructors
 //        List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
@@ -685,7 +718,7 @@ public class JoinPointManager {
 //                ReflectionMetaDataMaker.createConstructorMetaData(constructor)
 //        );
         return new ConstructorJoinPoint(
-                m_uuid, joinPointType, m_targetClass, signature, EMTPY_ARRAY_LIST,
+                m_uuid, joinPointType, m_targetClass, signature, rtti, EMTPY_ARRAY_LIST,
                 createAroundAdviceExecutor(adviceIndexes, joinPointType),
                 createBeforeAdviceExecutor(adviceIndexes),
                 createAfterAdviceExecutor(adviceIndexes)
@@ -707,10 +740,13 @@ public class JoinPointManager {
             final String fieldSignature,
             final int joinPointType,
             final Class declaringClass,
-            final AdviceContainer[] adviceIndexes) {
+            final AdviceContainer[] adviceIndexes,
+            final Object thisInstance,
+            final Object targetInstance) {
 
         Field field = m_system.getAspectManager().getField(declaringClass, fieldHash);
-        Signature signature = new FieldSignatureImpl(declaringClass, field);
+        FieldSignatureImpl signature = new FieldSignatureImpl(declaringClass, field);
+        Rtti rtti = new FieldRttiImpl(signature, thisInstance, targetInstance);
 
         // TODO: enable cflow for field set get pointcuts
 //        List cflowExpressions = new ArrayList();
@@ -719,7 +755,7 @@ public class JoinPointManager {
 //                 ReflectionMetaDataMaker.createFieldMetaData(fieldSignature)
 //         );
         return new FieldJoinPoint(
-                m_uuid, joinPointType, m_targetClass, signature, EMTPY_ARRAY_LIST,
+                m_uuid, joinPointType, m_targetClass, signature, rtti, EMTPY_ARRAY_LIST,
                 createAroundAdviceExecutor(adviceIndexes, joinPointType),
                 createBeforeAdviceExecutor(adviceIndexes),
                 createAfterAdviceExecutor(adviceIndexes)
@@ -739,15 +775,21 @@ public class JoinPointManager {
             final Class exceptionClass,
             final Class declaringClass,
             final String catchClauseSignature,
-            final AdviceContainer[] adviceIndexes) {
-        Signature signature = new CatchClauseSignatureImpl(exceptionClass, declaringClass, catchClauseSignature);
+            final AdviceContainer[] adviceIndexes,
+            final Object thisInstance,
+            final Object targetInstance) {
+        CatchClauseSignatureImpl signature = new CatchClauseSignatureImpl(
+                exceptionClass, declaringClass, catchClauseSignature
+        );
+        Rtti rtti = new CatchClauseRttiImpl(signature, thisInstance, targetInstance);       
+
         // TODO: enable cflow for catch clauses
 //        List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
 //                ReflectionMetaDataMaker.createClassMetaData(declaringClass),
 //                ReflectionMetaDataMaker.createCatchClauseMetaData(signature)
 //        );
         return new CatchClauseJoinPoint(
-                m_uuid, m_targetClass, signature, EMTPY_ARRAY_LIST,
+                m_uuid, m_targetClass, signature, rtti, EMTPY_ARRAY_LIST,
                 createAroundAdviceExecutor(adviceIndexes, JoinPointType.HANDLER),
                 createBeforeAdviceExecutor(adviceIndexes),
                 createAfterAdviceExecutor(adviceIndexes)

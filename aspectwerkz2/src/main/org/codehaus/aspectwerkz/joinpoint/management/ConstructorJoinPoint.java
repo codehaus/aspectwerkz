@@ -8,6 +8,9 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
+import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
+import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
 
 import java.util.List;
 
@@ -18,7 +21,8 @@ import java.util.List;
  */
 class ConstructorJoinPoint extends JoinPointBase {
 
-    private final ConstructorSignatureImpl m_signature;
+    private final ConstructorSignature m_signature;
+    private final ConstructorRttiImpl m_rtti;
 
     /**
      * Creates a new constructor join point.
@@ -27,6 +31,7 @@ class ConstructorJoinPoint extends JoinPointBase {
      * @param type
      * @param targetClass
      * @param signature
+     * @param rtti
      * @param cflowExpressions
      * @param aroundAdviceExecutor
      * @param beforeAdviceExecutor
@@ -37,6 +42,7 @@ class ConstructorJoinPoint extends JoinPointBase {
             final int type,
             final Class targetClass,
             final Signature signature,
+            final Rtti rtti,
             final List cflowExpressions,
             final AroundAdviceExecutor aroundAdviceExecutor,
             final BeforeAdviceExecutor beforeAdviceExecutor,
@@ -45,7 +51,8 @@ class ConstructorJoinPoint extends JoinPointBase {
                 uuid, type, targetClass, cflowExpressions,
                 aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor
         );
-        m_signature = (ConstructorSignatureImpl)signature;
+        m_signature = (ConstructorSignature)signature;
+        m_rtti = (ConstructorRttiImpl)rtti;
     }
 
     /**
@@ -57,7 +64,7 @@ class ConstructorJoinPoint extends JoinPointBase {
      */
     public Object proceed() throws Throwable {
         final Object result = m_aroundAdviceExecutor.proceed(this);
-        m_signature.setNewInstance(result);
+        m_rtti.setNewInstance(result);
         return result;
     }
 
@@ -68,6 +75,15 @@ class ConstructorJoinPoint extends JoinPointBase {
      */
     public Signature getSignature() {
         return m_signature;
+    }
+
+    /**
+     * Returns the RTTI for the join point.
+     *
+     * @return the RTTI
+     */
+    public Rtti getRtti() {
+        return m_rtti;
     }
 
     /**
