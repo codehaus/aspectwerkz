@@ -55,7 +55,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     private final static TypePattern DUMP_PATTERN;
 
-    private final static boolean NOFILTER; // TODO: not used, remove?
+    private final static boolean NOFILTER;
 
     private final static boolean DUMP_BEFORE;
 
