@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import com.karneim.util.collection.regex.Pattern;
 
 /**
  * Validates an AspectWerkz definition, looking for:
@@ -35,10 +36,15 @@ public class DefinitionValidator {
 
     private List m_errors = new ArrayList();
 
-    private Set m_names = new HashSet();
+    private Set m_aspectNames = new HashSet();
+    private Set m_introductionNames = new HashSet();
+    private Set m_adviceNames = new HashSet();
+
     private Set m_attributes = new HashSet();
 
     private final AspectWerkzDefinition m_definition;
+
+    private final static Pattern VALIDE_PATTERN = new com.karneim.util.collection.regex.Pattern("[A-Za-z0-9_$]+");
 
     /**
      * Creates a new Definition Validator
@@ -57,6 +63,7 @@ public class DefinitionValidator {
         Collection adviceDefs = m_definition.getAdviceDefinitions();
         Collection aspectDefs = m_definition.getAspectDefinitions();
 
+        validateSyntax(m_definition.getUuid(), "uuid");
         validateIntroductions(introductionDefs);
         validateAdvices(adviceDefs);
         validateAspects(aspectDefs);
@@ -88,6 +95,7 @@ public class DefinitionValidator {
 
             Collection pointcutDefs = def.getPointcutDefs();
             validatePointcuts(pointcutDefs);
+            checkAspectName(def.getName());
         }
     }
 
@@ -122,7 +130,7 @@ public class DefinitionValidator {
     private void validatePointcuts(Collection pointcutDefs) {
         for (Iterator i = pointcutDefs.iterator(); i.hasNext();) {
             PointcutDefinition def = (PointcutDefinition)i.next();
-            checkDuplicateName(def.getName());
+            validateSyntax(def.getName(), "pointcut");
         }
     }
 
@@ -158,7 +166,7 @@ public class DefinitionValidator {
 
             }
 
-            checkDuplicateName(def.getName());
+            checkAdviceName(def.getName());
             checkDuplicateAttribute(def.getAttribute());
         }
     }
@@ -192,7 +200,7 @@ public class DefinitionValidator {
                 }
             }
 
-            checkDuplicateName(def.getName());
+            checkIntroductionName(def.getName());
             checkDuplicateAttribute(def.getAttribute());
         }
     }
@@ -210,12 +218,30 @@ public class DefinitionValidator {
     }
 
     /**
-     * Checks for duplicate aspect, advice or introduction m_names
+     * Checks for duplicate aspect
      * @param name name to check
      */
-    private void checkDuplicateName(String name) {
-        if (!m_names.add(name))
-            addErrorMessage("Duplicate name definition: " + name);
+    private void checkAspectName(String name) {
+        if (!m_aspectNames.add(name))
+            addErrorMessage("Duplicate aspect name definition: " + name);
+    }
+
+    /**
+     * Checks for duplicate aspect
+     * @param name name to check
+     */
+    private void checkAdviceName(String name) {
+        if (!m_adviceNames.add(name))
+            addErrorMessage("Duplicate advice name definition: " + name);
+    }
+
+    /**
+     * Checks for duplicate introduction
+     * @param name name to check
+     */
+    private void checkIntroductionName(String name) {
+        if (!m_introductionNames.add(name))
+            addErrorMessage("Duplicate introduction name definition: " + name);
     }
 
     /**
@@ -232,6 +258,18 @@ public class DefinitionValidator {
      */
     public List getErrorMessages() {
         return m_errors;
+    }
+
+    /**
+     * Validates syntax based on A-Z a-z 0-9 $ _
+     * This is needed for pointcut names and uuid.
+     * @param s string to validate
+     * @param errorMsg if failure
+     */
+    private void validateSyntax(String s, String errorMsg) {
+        if ( ! VALIDE_PATTERN.contains(s)) {
+            m_errors.add("Invalid syntax for " + errorMsg + ": " + s);
+        }
     }
 
 }
