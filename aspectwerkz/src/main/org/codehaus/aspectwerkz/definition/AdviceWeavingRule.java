@@ -26,7 +26,7 @@ import java.util.StringTokenizer;
  * Handles the advice weaving rule definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviceWeavingRule.java,v 1.4 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AdviceWeavingRule.java,v 1.5 2003-07-04 13:38:28 jboner Exp $
  */
 public class AdviceWeavingRule implements WeavingRule {
 
@@ -53,8 +53,8 @@ public class AdviceWeavingRule implements WeavingRule {
      */
     public void setExpression(final String expression) {
         String tmp = expression.
-                replaceAll("AND", "&&").replaceAll("and", "&&").
-                replaceAll("OR", "||").replaceAll("or", "||");
+                replaceAll(" AND ", " && ").replaceAll(" and ", " && ").
+                replaceAll(" OR ", " || ").replaceAll(" or ", " || ");
         m_expression = tmp;
     }
 

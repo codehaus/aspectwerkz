@@ -71,6 +71,14 @@
                 by the pointcuts mapped to this advice.
             </p>
             <p>
+                Note: The caching example has been rewritten and is now a bit
+                more complex than necessary. The background to the change is that
+                the current implementation is a solution to
+                <a href="http://beust.com/aop-thread.html">Cedric Beusts AOP challange</a>.
+                The simplified version is shown here for improved readability and
+                understanding.
+            </p>
+            <p>
                 To run the example type: <code>maven aspectwerkz:samples:caching</code>
             </p>
 <source><![CDATA[
