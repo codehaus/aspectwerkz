@@ -581,14 +581,19 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTAttribute node, Object data) {
+        boolean matchAnnotation = false;
         List annotations = (List) data;
         for (Iterator it = annotations.iterator(); it.hasNext();) {
             AnnotationInfo annotation = (AnnotationInfo) it.next();
             if (annotation.getName().equals(node.getName())) {
-                return Boolean.TRUE;
+                matchAnnotation = true;
             }
         }
-        return Boolean.FALSE;
+        if (node.isNot()) {
+            return Util.booleanValueOf(!matchAnnotation);
+        } else {
+            return Util.booleanValueOf(matchAnnotation);
+        }
     }
 
     public Object visit(ASTModifier node, Object data) {

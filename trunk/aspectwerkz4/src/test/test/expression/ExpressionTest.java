@@ -1299,6 +1299,16 @@ public class ExpressionTest extends TestCase {
                         new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType)
                 )
         );
+        assertFalse(
+                new ExpressionInfo("within(!@Serializable test.expression.Target)", NAMESPACE).getExpression().match(
+                        new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType)
+                )
+        );
+        assertTrue(
+                new ExpressionInfo("within(!@NotHereSerializable test.expression.Target)", NAMESPACE).getExpression().match(
+                        new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType)
+                )
+        );
         assertTrue(
                 new ExpressionInfo("within(@Serializable public final test.expression.Target)", NAMESPACE)
                 .getExpression().match(new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType))
@@ -2754,6 +2764,9 @@ public class ExpressionTest extends TestCase {
         //class @
         ExpressionInfo info = new ExpressionInfo("within(@examples.annotation.AnnotationA *)", NAMESPACE);
         info = new ExpressionInfo("within(@examples.annotation.Annotation$A *)", NAMESPACE);
+        info = new ExpressionInfo("within(@examples.annotation.Annotation$A @bar.Baz *)", NAMESPACE);
+        info = new ExpressionInfo("within(@examples.annotation.Annotation$A !@bar.Baz *)", NAMESPACE);
+
 
         // method @
         info = new ExpressionInfo(
@@ -2762,9 +2775,13 @@ public class ExpressionTest extends TestCase {
         info = new ExpressionInfo(
                 "execution(@examples.annotation.Annotation$A * examples.annotation.Target.*(..))", NAMESPACE
         );
+        info = new ExpressionInfo(
+                "execution(@examples.annotation.Annotation$A @bar.Baz * examples.annotation.Target.*(..))", NAMESPACE
+        );
 
         // field @
         info = new ExpressionInfo("set(@examples.annotation.AnnotationA * Class.field)", NAMESPACE);
+        info = new ExpressionInfo("set(@examples.annotation.AnnotationA @bar.Baz * Class.field)", NAMESPACE);
     }
 
     public void testWithinCtor() {

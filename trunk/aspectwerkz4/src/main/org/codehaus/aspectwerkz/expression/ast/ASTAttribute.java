@@ -4,6 +4,8 @@ package org.codehaus.aspectwerkz.expression.ast;
 public class ASTAttribute extends SimpleNode {
     private String m_name;
 
+    private boolean m_not = false;
+
     public ASTAttribute(int id) {
         super(id);
     }
@@ -23,5 +25,13 @@ public class ASTAttribute extends SimpleNode {
 
     public String getName() {
         return m_name;
+    }
+
+    public void toggleNot() {
+        m_not = !m_not;
+    }
+
+    public boolean isNot() {
+        return m_not;
     }
 }

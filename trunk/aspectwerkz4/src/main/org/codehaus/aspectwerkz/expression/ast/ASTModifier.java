@@ -18,8 +18,8 @@ public class ASTModifier extends SimpleNode {
         return visitor.visit(this, data);
     }
 
-    public void setNot() {
-        m_not = true;
+    public void toggleNot() {
+        m_not = !m_not;
     }
 
     public boolean isNot() {
