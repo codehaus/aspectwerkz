@@ -88,13 +88,13 @@
         </pointcut>
     </aspect>
 
-<!--    <aspect class="examples.logging.Target">-->
-<!--        <pointcut type="method">-->
-<!--            <pattern>* toLog*(..)</pattern>-->
-<!--            <pattern>* toLo*(..)</pattern>-->
-<!--            <pattern>* toL*(..)</pattern>-->
-<!--            <advice-ref name="logging"/>-->
-<!--        </pointcut>-->
-<!--    </aspect>-->
+    <!--    <aspect class="examples.logging.Target">-->
+    <!--        <pointcut type="method">-->
+    <!--            <pattern>* toLog*(..)</pattern>-->
+    <!--            <pattern>* toLo*(..)</pattern>-->
+    <!--            <pattern>* toL*(..)</pattern>-->
+    <!--            <advice-ref name="logging"/>-->
+    <!--        </pointcut>-->
+    <!--    </aspect>-->
 
 </aspectwerkz>

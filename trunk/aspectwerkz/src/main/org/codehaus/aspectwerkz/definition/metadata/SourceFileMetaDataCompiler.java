@@ -51,7 +51,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: SourceFileMetaDataCompiler.java,v 1.1.1.1 2003-05-11 15:14:06 jboner Exp $
+ * @version $Id: SourceFileMetaDataCompiler.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
  */
 public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
@@ -76,10 +76,12 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
         final QDoxParser qdoxParser = new QDoxParser(sourcePath);
         final AspectWerkzDefinition definition =
                 AspectWerkzDefinition.getDefinition(definitionFile);
+
         final WeaveModel weaveModel = weave(definition, qdoxParser);
 
+        compileIntroductionMetaData(weaveModel, qdoxParser);
+
         saveWeaveModelToFile(metaDataDir, weaveModel);
-        compileIntroductionMetaData(weaveModel, qdoxParser, metaDataDir);
     }
 
     /**
@@ -274,8 +276,8 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                 if (introductionAttribute == null) continue;
                 introductions.add(introductionAttribute);
             }
-            weaveModel.createClassMetaData(className);
-            weaveModel.getClassMetaData(className).
+            weaveModel.createWeaveMetaData(className);
+            weaveModel.getWeaveMetaData(className).
                     addIntroductions(introductions);
         }
     }
@@ -328,11 +330,10 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                             if (adviceName == null) continue;
                             pointcutDefinition.addAdvice(adviceName);
 
-                            weaveModel.createClassMetaData(className);
-                            weaveModel.getClassMetaData(className).
+                            weaveModel.createWeaveMetaData(className);
+                            weaveModel.getWeaveMetaData(className).
                                     addMethodPointcut(
-                                            pattern,
-                                            pointcutDefinition);
+                                            pattern, pointcutDefinition);
                             break;
                         }
                     }
@@ -390,8 +391,8 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                             if (adviceName == null) continue;
                             pointcutDefinition.addAdvice(adviceName);
 
-                            weaveModel.createClassMetaData(className);
-                            weaveModel.getClassMetaData(className).
+                            weaveModel.createWeaveMetaData(className);
+                            weaveModel.getWeaveMetaData(className).
                                     addSetFieldPointcut(
                                             fieldPattern,
                                             pointcutDefinition);
@@ -450,8 +451,8 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                             if (adviceName == null) continue;
                             pointcutDefinition.addAdvice(adviceName);
 
-                            weaveModel.createClassMetaData(className);
-                            weaveModel.getClassMetaData(className).
+                            weaveModel.createWeaveMetaData(className);
+                            weaveModel.getWeaveMetaData(className).
                                     addGetFieldPointcut(
                                             fieldPattern,
                                             pointcutDefinition);
@@ -510,8 +511,8 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                             if (adviceName == null) continue;
                             pointcutDefinition.addAdvice(adviceName);
 
-                            weaveModel.createClassMetaData(className);
-                            weaveModel.getClassMetaData(className).
+                            weaveModel.createWeaveMetaData(className);
+                            weaveModel.getWeaveMetaData(className).
                                     addThrowsPointcut(
                                             methodPattern,
                                             pointcutDefinition);
@@ -580,10 +581,10 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                                     callerSidePattern,
                                     pointcutDefinition);
 
-                            // create a regular ClassMetaData instance for the
+                            // create a regular WeaveMetaData instance for the
                             // caller side pattern, needed since attribute based
                             // caller side definitions doesn't have an aspect
-                            weaveModel.createClassMetaData(
+                            weaveModel.createWeaveMetaData(
                                     pointcutDefinition.getCallerSidePattern());
 
                             break;
@@ -617,8 +618,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
      * @param metaDataDir the meta-data dir
      */
     private static void compileIntroductionMetaData(final WeaveModel model,
-                                                    final QDoxParser qdoxParser,
-                                                    final String metaDataDir) {
+                                                    final QDoxParser qdoxParser) {
         final List parsedClasses = compileClassList(qdoxParser);
         final List introductions = model.getIntroductionDefinitions();
 
@@ -631,11 +631,8 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                 final String className = (String)it1.next();
 
                 if (introduction.equals(className)) {
-                    ClassMetaData classMetaData =
-                            parseClass(qdoxParser, className);
-                    saveClassMetaDataToFile(
-                            metaDataDir, className,
-                            classMetaData);
+                    ClassMetaData classMetaData = parseClass(qdoxParser, className);
+                    model.addIntroductionMetaData(classMetaData);
                 }
             }
         }
@@ -790,8 +787,8 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             System.out.println("usage: java [options...] org.codehaus.aspectwerkz.definition.metadata.SourceFileMetaDataCompiler <pathToDefinitionFile> <pathToSrcDir> <pathToMetaDataDir>");
             System.exit(0);
         }
-        System.out.println("compiling meta-data...");
+        System.out.println("compiling weave model...");
         SourceFileMetaDataCompiler.compile(args[0], args[1], args[2]);
-        System.out.println("meta-data for classes in " + args[1] + " have been compiled to " + args[2]);
+        System.out.println("weave model for classes in " + args[1] + " have been compiled to " + args[2]);
     }
 }

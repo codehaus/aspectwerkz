@@ -29,7 +29,7 @@ import org.codehaus.aspectwerkz.definition.metadata.ClassFileMetaDataCompiler;
  * introduced <code>Introduction</code>s.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: ClassFileMetaDataCompilerTask.java,v 1.1.1.1 2003-05-11 15:14:56 jboner Exp $
+ * @version $Id: ClassFileMetaDataCompilerTask.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
  */
 public class ClassFileMetaDataCompilerTask extends Task {
 
@@ -67,9 +67,9 @@ public class ClassFileMetaDataCompilerTask extends Task {
     }
 
     /**
-     * Sets the meta-data dir.
+     * Sets the weave model dir.
      *
-     * @param metaDataDir the meta-data dir
+     * @param metaDataDir the weave model dir
      */
     public void setMetaDataDir(final String metaDataDir) {
         m_metaDataDir = metaDataDir;
@@ -81,8 +81,8 @@ public class ClassFileMetaDataCompilerTask extends Task {
      * @throws BuildException
      */
     public void execute() throws BuildException {
-        System.out.println("compiling meta-data...");
+        System.out.println("compiling weave model...");
         ClassFileMetaDataCompiler.compile(m_definitionFile, m_repository, m_metaDataDir);
-        System.out.println("meta-data for classes in " + m_repository + " have been compiled to " + m_metaDataDir);
+        System.out.println("weave model for classes in " + m_repository + " have been compiled to " + m_metaDataDir);
     }
 }

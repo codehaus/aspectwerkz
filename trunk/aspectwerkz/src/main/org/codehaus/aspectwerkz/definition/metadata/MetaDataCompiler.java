@@ -31,7 +31,7 @@ import org.codehaus.aspectwerkz.definition.metadata.ClassMetaData;
  * Base class for the meta-data compilers.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: MetaDataCompiler.java,v 1.1.1.1 2003-05-11 15:14:00 jboner Exp $
+ * @version $Id: MetaDataCompiler.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
  */
 public abstract class MetaDataCompiler {
 
@@ -77,7 +77,6 @@ public abstract class MetaDataCompiler {
         filename.append(File.separator);
         filename.append(WEAVE_MODEL);
         filename.append(META_DATA_FILE_SUFFIX);
-
         try {
             ObjectOutput out = new ObjectOutputStream(
                     new FileOutputStream(filename.toString()));

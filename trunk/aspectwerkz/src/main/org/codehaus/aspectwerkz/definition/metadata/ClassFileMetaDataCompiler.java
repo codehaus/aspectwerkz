@@ -54,7 +54,7 @@ import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: ClassFileMetaDataCompiler.java,v 1.1.1.1 2003-05-11 15:13:57 jboner Exp $
+ * @version $Id: ClassFileMetaDataCompiler.java,v 1.2 2003-05-12 09:20:45 jboner Exp $
  */
 public class ClassFileMetaDataCompiler extends MetaDataCompiler {
 
@@ -80,9 +80,9 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
                 AspectWerkzDefinition.getDefinition(definitionFile);
         final WeaveModel weaveModel = weave(definition);
 
-        saveWeaveModelToFile(metaDataDir, weaveModel);
+        compileIntroductionMetaData(weaveModel, classPath);
 
-        compileIntroductionMetaData(weaveModel, classPath, metaDataDir);
+        saveWeaveModelToFile(metaDataDir, weaveModel);
     }
 
     /**
@@ -111,8 +111,7 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
      * @param metaDataDir the meta-data dir
      */
     private static void compileIntroductionMetaData(final WeaveModel model,
-                                                    final String classPath,
-                                                    final String metaDataDir) {
+                                                    final String classPath) {
         Set classSet = compileClassList(classPath);
         final List introductions = model.getIntroductionDefinitions();
         final ClassLoader loader = getClassLoader(classPath);
@@ -129,9 +128,8 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
                 if (introduction == null) continue; // interface introduction
 
                 if (introduction.equals(className)) {
-                    ClassMetaData classMetaData =
-                            parseClass(loader, className, classPath);
-                    saveClassMetaDataToFile(metaDataDir, className, classMetaData);
+                    model.addIntroductionMetaData(
+                            parseClass(loader, className, classPath));
                 }
             }
         }
@@ -321,8 +319,8 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
             System.out.println("usage: java [options...] org.codehaus.aspectwerkz.definition.metadata.ClassFileMetaDataCompiler <pathToDefinitionFile> <pathToClasses> <pathToMetaDataDir>");
             System.exit(0);
         }
-        System.out.println("compiling meta-data...");
+        System.out.println("compiling weave model...");
         ClassFileMetaDataCompiler.compile(args[0], args[1], args[2]);
-        System.out.println("meta-data for classes in " + args[1] + " have been compiled to " + args[2]);
+        System.out.println("weave model for classes in " + args[1] + " have been compiled to " + args[2]);
     }
 }

@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
  * Advises caller side method invocations.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.1.1.1 2003-05-11 15:15:09 jboner Exp $
+ * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
  */
 public class AdviseCallerSideMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF

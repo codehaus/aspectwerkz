@@ -87,10 +87,9 @@
     <goal name="aspectwerkz:test">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:metadata:samples"/>
         <attainGoal name="aspectwerkz:metadata:test"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar -Daspectwerkz.home=${basedir} -Daspectwerkz.definition.file=${basedir}/src/test/aspectwerkz-test.xml -Daspectwerkz.metadata.dir=${basedir}/_metaData test.AllTests"/>
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData test.AllTests"/>
         </exec>
     </goal>
 
@@ -100,7 +99,7 @@
     <goal name="aspectwerkz:transform">
         <attainGoal name="aspectwerkz:init"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-offline ${basedir}/src/test/aspectwerkz-test.xml ${test.classes} ${basedir}/_metaData"/>
+            <arg line="-offline ${test.classes} ${basedir}/src/test/aspectwerkz-test.xml ${basedir}/_metaData"/>
         </exec>
     </goal>
 
@@ -165,7 +164,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:metadata:samples:extensions"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="false">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml -Daspectwerkz.persistence.snapshot.thread=false -Daspectwerkz.persistence.clockactor.thread=false -Daspectwerkz.definition.file=${basedir}/src/samples/extensions_samples.xml -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.transparentpersistence.Client"/>
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml -Daspectwerkz.persistence.snapshot.thread=false -Daspectwerkz.definition.file=${basedir}/src/samples/extensions_samples.xml -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.transparentpersistence.Client"/>
         </exec>
     </goal>
 
@@ -177,7 +176,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:metadata:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.persistence.snapshot.thread=false -Daspectwerkz.persistence.clockactor.thread=false -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.persistence.Target"/>
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.persistence.snapshot.thread=false -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.persistence.Target"/>
         </exec>
     </goal>
 
@@ -190,7 +189,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:metadata:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -Daspectwerkz.persistence.snapshot.thread=false -Daspectwerkz.persistence.clockactor.thread=false -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.caching.CacheTest"/>
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -Daspectwerkz.persistence.snapshot.thread=false -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.caching.CacheTest"/>
         </exec>
     </goal>
 
@@ -201,9 +200,8 @@
         <attainGoal name="aspectwerkz:init"/>
         <delete dir="${basedir}/_txLogs"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:metadata:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -Daspectwerkz.persistence.snapshot.thread=false -Daspectwerkz.persistence.clockactor.thread=false -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.synchronization.Target"/>
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -Daspectwerkz.persistence.snapshot.thread=false examples.synchronization.Target"/>
         </exec>
     </goal>
 
@@ -216,7 +214,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:metadata:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -Daspectwerkz.persistence.snapshot.thread=false -Daspectwerkz.persistence.clockactor.thread=false -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.logging.Target"/>
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -Daspectwerkz.persistence.snapshot.thread=false -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.logging.Target"/>
         </exec>
     </goal>
 
@@ -227,9 +225,8 @@
         <attainGoal name="aspectwerkz:init"/>
         <delete dir="${basedir}/_txLogs"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:metadata:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -Daspectwerkz.persistence.snapshot.thread=false -Daspectwerkz.persistence.clockactor.thread=false -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.asynchronous.Target"/>
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -Daspectwerkz.persistence.snapshot.thread=false examples.asynchronous.Target"/>
         </exec>
     </goal>
 

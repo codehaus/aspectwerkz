@@ -1,16 +1,16 @@
-AspectWerkz 0.4 (c) 2002-2003 Jonas Boner
+AspectWerkz 0.5 (c) 2002-2003 Jonas Boner
 
 Usage: aspectwerkz [-options] <mainclass> [args...]
        aspectwerkz [-options] -jar <jarfile> [args...]
-       aspectwerkz -offline <definitionfile> <classpath> <srcdir>
+       aspectwerkz -offline <classpath> <definitionfile> <weavemodeldir>
 
-   options       (optional) standard JVM options, e.g. -cp or -D...
-   <mainclass>              class to execute
-   -jar <jarfile>           jar file to execute
-   args          (optional) program arguments
+   options         (optional) standard JVM options, e.g. -cp or -D...
+   <mainclass>                class to execute
+   -jar <jarfile>             jar file to execute
+   args            (optional) program arguments
 
-   -offline                 offline transformation of classes (preprocess)
-   <definitionfile>         path to the definition file
-   <classpath>              classes to transform
-   <srcdir>      (optional) sources for classes to transform (needed to compile meta-data)
+   -offline                   offline transformation of classes (post-process)
+   <classpath>                classes to transform
+   <definitionfile>           path to the definition file
+   <weavemodeldir> (optional) path to the compiled weave model (needed if you have introductions or using runtime attributes)
 

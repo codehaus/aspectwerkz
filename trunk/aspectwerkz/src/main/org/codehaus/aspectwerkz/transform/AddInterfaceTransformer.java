@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
  * Adds an interfaces to classes.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AddInterfaceTransformer.java,v 1.1.1.1 2003-05-11 15:15:01 jboner Exp $
+ * @version $Id: AddInterfaceTransformer.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
  */
 public final class AddInterfaceTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF

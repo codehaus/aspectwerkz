@@ -50,7 +50,7 @@ import org.codehaus.aspectwerkz.MethodComparator;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.1.1.1 2003-05-11 15:14:59 jboner Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
  */
 public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -100,15 +100,18 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
                                   final ClassGen cg,
                                   final ConstantPoolGen cpg,
                                   final InstructionFactory factory) {
-        final List introductionNames = m_weaveModel.
-                getIntroductionNames(cg.getClassName());
-        for (Iterator it = introductionNames.iterator(); it.hasNext();) {
+
+        for (Iterator it = m_weaveModel.getIntroductionNames(
+                cg.getClassName()).iterator(); it.hasNext();) {
+
             String introductionName = (String)it.next();
 
             int introductionIndex = m_weaveModel.
                     getIntroductionIndexFor(introductionName);
             List methodMetaDataList = m_weaveModel.
                     getIntroductionMethodsMetaData(introductionName);
+
+            if (methodMetaDataList == null) continue; // interface introduction
 
             for (Iterator it2 = methodMetaDataList.iterator(); it2.hasNext();) {
                 MethodMetaData methodMetaData = (MethodMetaData)it2.next();
