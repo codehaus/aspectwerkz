@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.expression.ExpressionException;
 import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.proxy.Proxy;
 
 import java.io.ObjectInputStream;
 
@@ -20,6 +21,7 @@ import java.io.ObjectInputStream;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class TypePattern extends Pattern {
+
     /**
      * The fully qualified type name.
      */
@@ -53,9 +55,23 @@ public class TypePattern extends Pattern {
      * @param typeName the name of the type
      * @return true if we have a matche
      */
-    public boolean matches(final String typeName) {
+    public boolean matches(String typeName) {
+        int awProxySuffixStart = typeName.indexOf(Proxy.PROXY_SUFFIX_START);
+        if (awProxySuffixStart > 0) {
+            typeName = typeName.substring(0, awProxySuffixStart);
+        } else {
+            int cglibFastClassSuffixStarg = typeName.indexOf("$$FastClassByCGLIB$$");
+            if (cglibFastClassSuffixStarg > 0) {
+                // always filter away cglib fast class classes
+                return false;
+            }
+            int cglibEnhancerSuffixStart = typeName.indexOf("$$EnhancerByCGLIB$$");
+            if (cglibEnhancerSuffixStart > 0) {
+                typeName = typeName.substring(0, cglibEnhancerSuffixStart);
+            }
+        }
         if (typeName == null) {
-            throw new IllegalArgumentException("type name can not be null");
+            return false;
         }
         if (typeName.equals("")) {
             return false;

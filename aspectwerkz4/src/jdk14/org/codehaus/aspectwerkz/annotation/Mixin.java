@@ -28,7 +28,8 @@ public interface Mixin {
 
     /**
      * Mixin deployment model.
-     * Defaults to ?? Only "perClass" and "perInstance" are supported for now
+     * Defaults to "perInstance". Only "perClass" and "perInstance" are supported for now
+     *
      * @see org.codehaus.aspectwerkz.DeploymentModel
      */
     public String deploymentModel();
