@@ -80,7 +80,7 @@
         <title>0.8 migration</title>
         <faq id="migration/changes">
             <question>
-                What should I change in my project running on 0.7.4 to make it run on 0.8 ?
+                What should I change in my project running on 0.7.4 to make it run on 0.8 and later ?
             </question>
             <answer>
                 <p>
