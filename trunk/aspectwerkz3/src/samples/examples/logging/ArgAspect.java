@@ -19,7 +19,7 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class ArgAspect {
 
     /**
-     * @Around pc1(ai, as)
+     * Around pc1(ai, as)
      */
     public Object around1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
         System.out.println("==> around1 -- pre " + ai + ", " + as);
@@ -29,7 +29,7 @@ public class ArgAspect {
     }
 
     /**
-     * @Before pc1(ai, as)
+     * Before pc1(ai, as)
      */
     public void before1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
         MethodSignature sig = (MethodSignature)joinPoint.getSignature();
@@ -38,21 +38,21 @@ public class ArgAspect {
     }
 
     /**
-     * @After pc1(ai, as)
+     * After pc1(ai, as)
      */
     public void after1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
         System.out.println("==> after1: " + ai + ", " + as);
     }
 
     /**
-     * @Before pc1(ai, as)
+     * Before pc1(ai, as)
      */
     public void before2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
         System.out.println("==> before2: " + as + ", " + ai);
     }
 
     /**
-     * @After pc1(ai, as)
+     * After pc1(ai, as)
      */
     public void after2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
         System.out.println("==> after2: " + as + ", " + ai);
@@ -80,14 +80,17 @@ public class ArgAspect {
     }
 
     /**
-     * @Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(sarr)
+     * @Expression 
+     *      call(* ..ArgLoggingTarget.toLog*(..)) 
+     *      && args(sarr) 
+     *      && within(examples.logging.*)
      */
     Pointcut pc2(String[] sarr) {
         return null;
     }
     
     /**
-     * @Expression execution(* ..ArgLoggingTarget.toLog*(..))
+     * @Expression call(* ..ArgLoggingTarget.toLog*(..))
      */
     Pointcut pc3() {
         return null;
