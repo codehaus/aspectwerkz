@@ -20,9 +20,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
-import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.IntroductionDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.XmlDefinitionParser;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;

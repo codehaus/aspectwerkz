@@ -12,7 +12,7 @@ import org.apache.bcel.generic.FieldGen;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.Constants;
 
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
 
 /**
  * Adds a new serialVersionUID to the class (if the class is serializable and does not

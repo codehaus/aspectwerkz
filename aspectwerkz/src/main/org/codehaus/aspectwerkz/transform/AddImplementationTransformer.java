@@ -31,7 +31,7 @@ import org.apache.bcel.Constants;
 import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**

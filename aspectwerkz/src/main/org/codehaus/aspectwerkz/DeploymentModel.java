@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
 
 /**
  * Enum containing the different deployment model types.
