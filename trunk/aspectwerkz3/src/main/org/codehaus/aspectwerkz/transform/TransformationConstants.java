@@ -21,7 +21,7 @@ public interface TransformationConstants {
     // prefixes
     public static final String ASPECTWERKZ_PREFIX = "___AW_";
     // FIMXE for 2.0 have only "access$" as prefix
-    public static final String WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "access$";//CAUTION: keep AW prefix or fix the AspectRegistry etc
+    public static final String WRAPPER_METHOD_PREFIX = "access$";
     public static final String DELIMITER = "$_AW_$";
     public static final String STATIC_CLASS_FIELD = ASPECTWERKZ_PREFIX + "clazz";
     public static final String JOIN_POINT_PREFIX = ASPECTWERKZ_PREFIX + "jp";
@@ -29,7 +29,6 @@ public interface TransformationConstants {
     public static final String INVOKE_WRAPPER_METHOD_PREFIX = "INVOKE" + DELIMITER;
     public static final String PUTFIELD_WRAPPER_METHOD_PREFIX = "PUTFIELD" + DELIMITER;
     public static final String GETFIELD_WRAPPER_METHOD_PREFIX = "GETFIELD" + DELIMITER;
-    public static final String JOIN_POINT_BASE_CLASS_SUFFIX = ASPECTWERKZ_PREFIX + "JoinPointBase";
     public static final String JOIN_POINT_CLASS_SUFFIX = ASPECTWERKZ_PREFIX + "JoinPoint";
     public static final String ASPECTWERKZ_PACKAGE_NAME = "org/codehaus/aspectwerkz";
 
@@ -52,6 +51,7 @@ public interface TransformationConstants {
     // method and class names
     public static final String INIT_METHOD_NAME = "<init>";
     public static final String CLINIT_METHOD_NAME = "<clinit>";
+    public static final String STATIC_INITIALIZATION_METHOD_NAME = WRAPPER_METHOD_PREFIX + "staticinitialization";
     public static final String CLASS_LOADER_REFLECT_CLASS_NAME = "java.lang.ClassLoader";
     public static final String DEFINE_CLASS_METHOD_NAME = "defineClass";
     public static final String INVOKE_METHOD_NAME = "invoke";
@@ -238,7 +238,5 @@ public interface TransformationConstants {
     public static final String SET_FIELD_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
     public static final String SET_RETURN_VALUE_METHOD_NAME = "setReturnValue";
     public static final String SET_RETURN_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
-
-    public static final int MODIFIER_INVOKEINTERFACE           = 0x10000000;
-
+    public static final int MODIFIER_INVOKEINTERFACE = 0x10000000;
 }
