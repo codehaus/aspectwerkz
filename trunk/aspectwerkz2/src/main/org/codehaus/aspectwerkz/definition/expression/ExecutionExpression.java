@@ -17,10 +17,9 @@ import org.codehaus.aspectwerkz.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.regexp.ConstructorPattern;
 
 /**
- * @todo document
- * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @todo document
  */
 public class ExecutionExpression extends LeafExpression {
 

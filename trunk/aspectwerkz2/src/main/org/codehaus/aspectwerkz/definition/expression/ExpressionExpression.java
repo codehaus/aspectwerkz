@@ -218,7 +218,7 @@ public class ExpressionExpression extends Expression {
                          final MemberMetaData memberMetaData,
                          final String exceptionType) {
         if (exceptionType != null) {
-            throw new RuntimeException("expression of type " + m_type.toString() + "cannot evaluate exception type");
+            throw new RuntimeException("cannot evaluate exception of type [" + m_type.toString() + ']');
         }
         ExpressionContext ctx = new ExpressionContext(m_type, m_namespace, classMetaData, memberMetaData, exceptionType);
         return ((Boolean)root.jjtAccept(EVALUATE_VISITOR, ctx)).booleanValue();
