@@ -101,17 +101,17 @@ public class JavaLoggingAspect {
         AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(
                 aspectDef
-                .getFullQualifiedName()
+                .getQualifiedName()
         );
         ExpressionInfo expressionInfo = new ExpressionInfo(
                 pointcut, aspectDef
-                          .getFullQualifiedName()
+                          .getQualifiedName()
         );
         namespace.addExpressionInfo(pointcutName, expressionInfo);
         AdviceDefinition newDef = null;
         for (Iterator arounds = aspectDef.getAroundAdviceDefinitions().iterator(); arounds.hasNext();) {
             AdviceDefinition around = (AdviceDefinition) arounds.next();
-            if (around.getName().equals(aspectName + ".logMethod")) {
+            if (around.getName().equals("logMethod")) {//FIXME pbly broken in 2.0
                 // copy the logMethod advice
                 // note: we could add a totally new advice as well
                 newDef = around.copyAt(expressionInfo);

@@ -51,10 +51,10 @@ public class DefinitionParserHelper {
         // do a lookup first to avoid infinite recursion when:
         // <pointcut name="pc" ...> [will be registered as pc]
         // <advice bind-to="pc" ...> [will be registered as pc and should not override previous one !]
-        ExpressionNamespace namespace = ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName());
+        ExpressionNamespace namespace = ExpressionNamespace.getNamespace(aspectDef.getQualifiedName());
         ExpressionInfo info = namespace.getExpressionInfoOrNull(pointcutName);
         if (info == null) {
-            info = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
+            info = new ExpressionInfo(expression, aspectDef.getQualifiedName());
             // extract the pointcut signature map
             if (pointcutCallSignature != null) {
                 String[] parameters = Strings.splitString(pointcutCallSignature, ",");
@@ -70,7 +70,7 @@ public class DefinitionParserHelper {
                 }
             }
         }
-        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(pointcutName, info);
+        ExpressionNamespace.getNamespace(aspectDef.getQualifiedName()).addExpressionInfo(pointcutName, info);
     }
 
     /**
@@ -153,7 +153,7 @@ public class DefinitionParserHelper {
                                                           final AspectDefinition aspectDef) {
         ExpressionInfo expressionInfo = new ExpressionInfo(
                 expression,
-                aspectDef.getFullQualifiedName()
+                aspectDef.getQualifiedName()
         );
 
         // support for pointcut signature
@@ -197,10 +197,10 @@ public class DefinitionParserHelper {
                                                                       final String expression,
                                                                       final String deploymentModel,
                                                                       final AspectDefinition aspectDef) {
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
+        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getQualifiedName());
 
         // auto-name the pointcut which is anonymous for introduction
-        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(
+        ExpressionNamespace.getNamespace(aspectDef.getQualifiedName()).addExpressionInfo(
                 EXPR_PREFIX + expression.hashCode(),
                 expressionInfo
         );
@@ -223,10 +223,10 @@ public class DefinitionParserHelper {
                                                                                         final String expression,
                                                                                         final String interfaceClassName,
                                                                                         final AspectDefinition aspectDef) {
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
+        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getQualifiedName());
 
         // auto-name the pointcut which is anonymous for introduction
-        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(
+        ExpressionNamespace.getNamespace(aspectDef.getQualifiedName()).addExpressionInfo(
                 EXPR_PREFIX + expression.hashCode(),
                 expressionInfo
         );

@@ -51,8 +51,10 @@ public class Aspects {
             AspectContainer container = (AspectContainer) ASPECT_CONTAINERS.get(klass);
             if (container == null) {
                 container = createAspectContainer(klass);
-                //TODO support for aspect reused accross systems with different params etc
+                //FIXME support for aspect reused accross systems with different params etc
                 //by using a lookup by uuid/aspectNickName
+                // right now broken since we have 1 container per aspect CLASS while the definition
+                // does allow for some mix (several aspect, several container, same aspect class)
                 ASPECT_CONTAINERS.put(klass, container);
             }
             return container;
@@ -70,7 +72,13 @@ public class Aspects {
             Class aspectClass = Class.forName(name, false, Thread.currentThread().getContextClassLoader());
             return aspectOf(aspectClass);
         } catch (ClassNotFoundException e) {
-            throw new Error("Could not load aspect " + name + " from " + Thread.currentThread().getContextClassLoader());
+            // try to guess it from the system definitions if we have a uuid prefix
+            String className = lookupAspectClassName(Thread.currentThread().getContextClassLoader(), name);
+            if (className != null) {
+                return aspectOf(className);
+            } else {
+                throw new Error("Could not load aspect " + name + " from " + Thread.currentThread().getContextClassLoader());
+            }
         }
     }
 
@@ -96,7 +104,13 @@ public class Aspects {
             Class aspectClass = Class.forName(name, false, target.getClassLoader());
             return aspectOf(aspectClass, target);
         } catch (ClassNotFoundException e) {
-            throw new Error("Could not load aspect " + name + " from " + target.getClassLoader());
+            // try to guess it from the system definitions if we have a uuid prefix
+            String className = lookupAspectClassName(Thread.currentThread().getContextClassLoader(), name);
+            if (className != null) {
+                return aspectOf(className);
+            } else {
+                throw new Error("Could not load aspect " + name + " from " + target.getClassLoader());
+            }
         }
     }
 
@@ -125,14 +139,13 @@ public class Aspects {
             SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
             for (Iterator iterator1 = systemDefinition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
                 AspectDefinition aspectDef = (AspectDefinition) iterator1.next();
-                if (aspectClass.getName().replace('/','.').equals(aspectDef.getName())) {
+                if (aspectClass.getName().replace('/','.').equals(aspectDef.getClassName())) {
                     aspectDefinition = aspectDef;
                     break;
                 }
             }
         }
         if (aspectDefinition == null) {
-            //FIXME occurs when aspect have nick names (see XML)
             throw new Error("Could not find AspectDefinition for " + aspectClass.getName());
         }
 
@@ -181,5 +194,25 @@ public class Aspects {
      * Class is non-instantiable.
      */
     private Aspects() {
+    }
+
+    private static String lookupAspectClassName(ClassLoader loader, String qualifiedName) {
+        if (qualifiedName.indexOf('/')<=0) {
+            // no uuid
+            return null;
+        }
+
+        List definitionsBottomUp = SystemDefinitionContainer.getHierarchicalDefs(loader);
+        Collections.reverse(definitionsBottomUp);
+        for (Iterator iterator = definitionsBottomUp.iterator(); iterator.hasNext();) {
+            SystemDefinition definition = (SystemDefinition) iterator.next();
+            for (Iterator iterator1 = definition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
+                AspectDefinition aspectDefinition = (AspectDefinition) iterator1.next();
+                if (qualifiedName.equals(aspectDefinition.getQualifiedName())) {
+                    return aspectDefinition.getClassName();
+                }
+            }
+        }
+        return null;
     }
 }

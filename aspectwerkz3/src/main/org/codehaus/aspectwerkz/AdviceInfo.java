@@ -33,7 +33,7 @@ public class AdviceInfo implements Serializable {
 
     /**
      * The advice name
-     * <aspectFQN>/<adviceMethodName>[(... call signature)]
+     * <adviceMethodName>[(... call signature)]
      */
     private final String m_name;
 
@@ -41,6 +41,11 @@ public class AdviceInfo implements Serializable {
      * The aspect class name where this advice is defined.
      */
     private String m_aspectClassName;
+
+    /**
+     * The aspect qualified name - <uuid>/<aspectNickName or FQNclassName>
+     */
+    private String m_aspectQualifiedName;
 
     /**
      * The aspect deployment model
@@ -65,6 +70,7 @@ public class AdviceInfo implements Serializable {
     /**
      * Creates a new advice info.
      *
+     * @param aspectQualifiedName
      * @param aspectClassName
      * @param aspectDeploymentModel
      * @param method         the advice method
@@ -72,12 +78,14 @@ public class AdviceInfo implements Serializable {
      * @param specialArgumentType the special arg type
      * @param adviceName full qualified advice method name (aspectFQN/advice(call sig))
      */
-    public AdviceInfo(final String aspectClassName,
+    public AdviceInfo(final String aspectQualifiedName,
+                      final String aspectClassName,
                       final int aspectDeploymentModel,
                       final Method method,
                       final AdviceType type,
                       final String specialArgumentType,
                       final String adviceName) {
+        m_aspectQualifiedName = aspectQualifiedName;
         m_aspectClassName = aspectClassName;
         m_aspectDeploymentModel = aspectDeploymentModel;
         m_method = method;
@@ -87,14 +95,27 @@ public class AdviceInfo implements Serializable {
     }
 
     /**
-     * Returns the aspect context.
+     * Returns the aspect qualified name.
      *
-     * @return the aspect context
+     * @return the aspect qualified name
+     */
+    public String getAspectQualifiedName() {
+        return m_aspectQualifiedName;
+    }
+
+    /**
+     * Returns the aspect FQN className.
+     *
+     * @return the aspect class name
      */
     public String getAspectClassName() {
         return m_aspectClassName;
     }
 
+    /**
+     * Returns the aspect deployment model
+     * @return
+     */
     public int getAspectDeploymentModel() {
         return m_aspectDeploymentModel;
     }

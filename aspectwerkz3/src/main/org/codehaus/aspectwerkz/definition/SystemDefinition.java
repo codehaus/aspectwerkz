@@ -199,22 +199,22 @@ public class SystemDefinition {
         return (AspectDefinition) m_aspectMap.get(name);
     }
 
-    /**
-     * Returns a specific advice definition.
-     *
-     * @param name the name of the advice definition
-     * @return the advice definition
-     */
-    public AdviceDefinition getAdviceDefinition(final String name) {
-        Collection adviceDefs = getAdviceDefinitions();
-        for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
-            AdviceDefinition adviceDef = (AdviceDefinition) it.next();
-            if (adviceDef.getName().equals(name)) {
-                return adviceDef;
-            }
-        }
-        return null;
-    }
+//    /**
+//     * Returns a specific advice definition.
+//     *
+//     * @param name the name of the advice definition
+//     * @return the advice definition
+//     */
+//    public AdviceDefinition getAdviceDefinition(final String name) {
+//        Collection adviceDefs = getAdviceDefinitions();
+//        for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
+//            AdviceDefinition adviceDef = (AdviceDefinition) it.next();
+//            if (adviceDef.getName().equals(name)) {
+//                return adviceDef;
+//            }
+//        }
+//        return null;
+//    }
 
     /**
      * Returns the introduction definitions for a specific class.
@@ -397,22 +397,22 @@ public class SystemDefinition {
         return m_preparePackages;
     }
 
-    /**
-     * Checks if there exists an advice with the name specified.
-     *
-     * @param name the name of the advice
-     * @return boolean
-     */
-    public boolean hasAdvice(final String name) {
-        Collection adviceDefs = getAdviceDefinitions();
-        for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
-            AdviceDefinition adviceDef = (AdviceDefinition) it.next();
-            if (adviceDef.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    /**
+//     * Checks if there exists an advice with the name specified.
+//     *
+//     * @param name the name of the advice
+//     * @return boolean
+//     */
+//    public boolean hasAdvice(final String name) {
+//        Collection adviceDefs = getAdviceDefinitions();
+//        for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
+//            AdviceDefinition adviceDef = (AdviceDefinition) it.next();
+//            if (adviceDef.getName().equals(name)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     /**
      * Checks if there exists an introduction with the name specified.
