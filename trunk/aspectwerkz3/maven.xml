@@ -200,7 +200,7 @@
     <goal name="aspectwerkz:test:bootcl">
         <attainGoal name="aspectwerkz:test:annotationc"/>
         <exec executable="java">
-            <arg line="-Daspectwerkz.classloader.clbootclasspath=./_boot -cp c:\java\hotspot\j2sdk1.4.2_01\lib\tools.jar;.\lib\aspectwerkz-core-1.0-beta1.jar;.\lib\javassist-3.0beta.jar org.codehaus.aspectwerkz.hook.ProcessStarter -Xbootclasspath/p:.\lib\aspectwerkz-core-1.0-beta1.jar;.\lib\javassist-3.0beta.jar -Daspectwerkz.jit.boundry=1 -cp .\lib\aspectwerkz-1.0-beta1.jar;.\lib\asm-1.4.3.jar;.\lib\bcel.jar;.\lib\dom4j-1.4.jar;.\lib\qdox-1.4.jar;.\lib\concurrent-1.3.1.jar;.\lib\trove-1.0.2.jar;.\lib\piccolo-1.03.jar;.\lib\jrexx-1.1.1.jar;${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
+            <arg line="-Daspectwerkz.classloader.clbootclasspath=./_boot -cp c:\java\hotspot\j2sdk1.4.2_01\lib\tools.jar;.\lib\aspectwerkz-core-1.0-beta1.jar;.\lib\javassist-3.0beta.jar org.codehaus.aspectwerkz.hook.ProcessStarter -Xbootclasspath/p:.\lib\aspectwerkz-core-1.0-beta1.jar;.\lib\javassist-3.0beta.jar -Daspectwerkz.jit.boundry=1 -cp .\lib\aspectwerkz-1.0-beta2.jar;.\lib\asm-1.4.3.jar;.\lib\dom4j-1.4.jar;.\lib\qdox-1.4.jar;.\lib\concurrent-1.3.1.jar;.\lib\trove-1.0.2.jar;.\lib\piccolo-1.03.jar;.\lib\jrexx-1.1.1.jar;${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
         </exec>
     </goal>
 

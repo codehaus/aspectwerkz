@@ -3,7 +3,7 @@
     <pomVersion>3</pomVersion>
     <name>AspectWerkz - Dynamic AOP for Java</name>
     <id>aspectwerkz</id>
-    <currentVersion>1.0-beta1</currentVersion>
+    <currentVersion>1.0-beta2</currentVersion>
     <organization>
         <name>Jonas Bon&#233;r, Alexandre Vasseur</name>
     </organization>
@@ -34,10 +34,10 @@
     </repository>
     <versions>
         <version>
-            <id>1.0-beta1</id>
-            <name>1.0-beta1</name>
-            <tag>rel_1_0_beta1</tag>
-            <branch>branch_1_0_beta1</branch>
+            <id>1.0-beta2</id>
+            <name>1.0-beta2</name>
+            <tag>rel_1_0_beta2</tag>
+            <branch>branch_1_0_beta2</branch>
         </version>
     </versions>
     <mailingLists>
@@ -84,38 +84,6 @@
         </contributor>
     </contributors>
     <dependencies>
-<!--        <dependency>-->
-            <!-- FAKE dependancy to have a header in maven generated stuff -->
-<!--            <id>Notes</id>-->
-<!--            <jar>-</jar>-->
-<!--            <version><![CDATA[-->
-<!--<pre>-->
-<!--Many dependencies listed are not needed depending the mode you are using:-->
-<!---->
-<!--Runtime only (once post compiled):-->
-<!--    trove, dom4j, asm, jrexx (piccolo or other SAX impl.)-->
-<!---->
-<!--Post compilation / Aspect compilation:-->
-<!--    javassist, ant, qdox (and runtime ones)-->
-<!---->
-<!--Class load time weaving and runtime:-->
-<!--    JDK tools.jar, javassist (and runtime ones)-->
-<!---->
-<!--Building and testing the project:-->
-<!--    ant, junit, junitperf (and all others)-->
-<!---->
-<!--Samples:-->
-<!--    concurrent-->
-<!---->
-<!--Extensions:-->
-<!--    jrockitmanagement...</pre>]]>-->
-<!--            </version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <id>tools</id>-->
-<!--            <jar>tools.jar</jar>-->
-<!--            <version>included in JDK/JRE</version>-->
-<!--        </dependency>-->
         <dependency>
             <id>asm</id>
             <version>1.4.3</version>
@@ -127,10 +95,6 @@
         <dependency>
             <id>asm-util</id>
             <version>1.4.3</version>
-        </dependency>
-        <dependency>
-            <id>bcel</id>
-            <version>5.1</version>
         </dependency>
         <dependency>
             <id>javassist</id>
