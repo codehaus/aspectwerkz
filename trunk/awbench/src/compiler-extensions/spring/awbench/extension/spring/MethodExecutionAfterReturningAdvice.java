@@ -13,6 +13,8 @@ import org.springframework.aop.AfterReturningAdvice;
 import awbench.Run;
 
 /**
+ * NOT SUPPORTED YET in AW ext.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class MethodExecutionAfterReturningAdvice implements AfterReturningAdvice {
