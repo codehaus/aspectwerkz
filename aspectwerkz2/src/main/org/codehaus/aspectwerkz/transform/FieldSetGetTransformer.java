@@ -27,6 +27,7 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
+ * Advises SET and GET join points.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -90,9 +91,8 @@ public class FieldSetGetTransformer implements Transformer {
                                 fieldAccess.getField()
                         );
 
-                        if ((fieldAccess.isReader() && !getFieldFilter(definition, classMetaData, fieldMetaData)) ||
-                                !setFieldFilter(definition, classMetaData, fieldMetaData)) {
-
+                        // handle GET
+                        if (fieldAccess.isReader() && !getFieldFilter(definition, classMetaData, fieldMetaData)) {
                             // check the declaring class for the field is not the same as target class,
                             // if that is the case then we have have class loaded and set in the ___AW_clazz already
                             String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
@@ -104,23 +104,49 @@ public class FieldSetGetTransformer implements Transformer {
                             }
 
                             StringBuffer body = new StringBuffer();
-                            if (fieldAccess.isReader()) {
-                                body.append("$_ = ($r)");
-                                body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
-                                body.append('.');
-                                body.append(TransformationUtil.PROCEED_WITH_GET_JOIN_POINT_METHOD);
-                            }
-                            else {
-                                body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
-                                body.append('.');
-                                body.append(TransformationUtil.PROCEED_WITH_SET_JOIN_POINT_METHOD);
-                            }
+                            body.append("$_ = ($r)");
+                            body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                            body.append('.');
+                            body.append(TransformationUtil.PROCEED_WITH_GET_JOIN_POINT_METHOD);
                             body.append('(');
                             body.append(TransformationUtil.calculateHash(fieldAccess.getField()));
                             body.append(',');
-                            if (fieldAccess.isWriter()) {
-                                body.append("$args,");
+                            if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
+                                body.append("(Object)null");
                             }
+                            else {
+                                body.append("$0");
+                            }
+                            body.append(',');
+                            body.append(declaringClassFieldName);
+                            body.append(",\"");
+                            body.append(fieldSignature);
+                            body.append("\");");
+
+                            fieldAccess.replace(body.toString());
+                            context.markAsAdvised();
+                        }
+
+                        // handle SET
+                        if (fieldAccess.isWriter() && !setFieldFilter(definition, classMetaData, fieldMetaData)) {
+                            // check the declaring class for the field is not the same as target class,
+                            // if that is the case then we have have class loaded and set in the ___AW_clazz already
+                            String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
+                            CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
+                            if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
+                                declaringClassFieldName = addFieldAccessDeclaringClassField(
+                                        declaringClass, fieldAccess.getField()
+                                );
+                            }
+
+                            StringBuffer body = new StringBuffer();
+                            body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                            body.append('.');
+                            body.append(TransformationUtil.PROCEED_WITH_SET_JOIN_POINT_METHOD);
+                            body.append('(');
+                            body.append(TransformationUtil.calculateHash(fieldAccess.getField()));
+                            body.append(',');
+                            body.append("$args,");
                             if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
                                 body.append("(Object)null");
                             }

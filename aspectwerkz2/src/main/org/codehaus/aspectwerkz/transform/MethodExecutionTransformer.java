@@ -28,6 +28,7 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
+ * Advises method EXECUTION join points.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -48,8 +49,6 @@ public class MethodExecutionTransformer implements Transformer {
 
     /**
      * Makes the member method transformations.
-     *
-     *  @TODO: track if we are in a static context and if so, pass in null instead of 'this'
      *
      * @param context the transformation context
      * @param klass the class set.
