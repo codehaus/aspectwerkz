@@ -34,7 +34,7 @@
 	<!-- =================================================== -->
 	<target name="init">
 		<property name="name" value="aspectwerkz" />
-		<property name="version" value="1.0.RC1" />
+		<property name="version" value="1.0" />
 		<property name="basedir" value="." />
 		<property name="src.dir" value="${basedir}/src" />
 		<property name="test.src.dir" value="${basedir}/src/test" />
@@ -264,7 +264,7 @@
 	</target>
 
 	<target name="test:weawe" depends="init, jars, test:annotationc">
-		<property name="weawe.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/javassist-3.0beta.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/asm-attrs-1.4.3.jar"/>
+		<property name="weawe.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/javassist-3.0RC1.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/asm-attrs-1.4.3.jar"/>
 		<echo>${weawe.classpath}</echo> 
 
 	    <java classname="org.codehaus.aspectwerkz.compiler.AspectWerkzC" fork="true"
@@ -285,7 +285,7 @@
 
 
 	<target name="test:offline" depends="init, jars, test:annotationc, test:weawe">
-		<property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/javassist-3.0beta.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/asm-attrs-1.4.3.jar"/>
+		<property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/javassist-3.0RC1.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/asm-attrs-1.4.3.jar"/>
 		<java 
 			classname="test.annotation.AnnotationTest"
 			classpath="${offline.classpath}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar"
