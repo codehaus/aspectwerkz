@@ -12,6 +12,10 @@ import java.util.*;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
+import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
+import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
+import org.codehaus.aspectwerkz.transform.ClassCacheTuple;
+import org.codehaus.aspectwerkz.extension.hotswap.HotSwapClient;
 
 /**
  * Stores the AspectSystem on a per ClassLoader basis.<p/>
@@ -76,7 +80,7 @@ public class SystemLoader {
         return s_systems.values();
     }
 
-    public static synchronized void deploySystemDefinitions(ClassLoader loader, List definitions) {
+    public static synchronized void deploySystemDefinitions(ClassLoader loader, List definitions, boolean activate) {
         SystemDefinitionContainer.deploySystemDefinitions(loader, definitions);
 
         //TODO check uuid in the bottom hierarchy
@@ -98,6 +102,26 @@ public class SystemLoader {
                 system.propagateAspectManagers(newAspectManagers, currentAspectManagers.length);
             }
         }
+
+        // hotswap if needed
+        if (activate) {
+            //TODO find a better way to trigger that
+            // the singleton idea of AWPP is boring
+            AspectWerkzPreProcessor awpp = (AspectWerkzPreProcessor) ClassPreProcessorHelper.getClassPreProcessor();
+            for (Iterator it = awpp.getClassCacheTuples().iterator(); it.hasNext();) {
+                ClassCacheTuple tuple = (ClassCacheTuple)it.next();
+                if (isChildOfOrEqual(tuple.getClassLoader(), loader)) {
+                    try {
+                        System.out.println("hotswap = " + tuple.getClassName());
+                        HotSwapClient.hotswap(tuple.getClassLoader().loadClass(tuple.getClassName()));
+                    } catch (Throwable t) {
+                        System.err.println("<WARN> " + t.getMessage());
+                    }
+                }
+            }
+        }
+
+
     }
 
     private static boolean isChildOfOrEqual(ClassLoader loader, ClassLoader parent) {
