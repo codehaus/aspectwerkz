@@ -34,7 +34,11 @@ public class ArgLoggingTarget {
         ArgLoggingTarget me = new ArgLoggingTarget();
         me.toLog_1(0, "a", 1);
         me.toLog_2(0, "b", 2);
-        me.toLog_3(0, new String[] {"c"});
+        me.log();
+    }
+
+    private void log() {
+        toLog_3(0, new String[] {"c"});
     }
 
 }

@@ -59,6 +59,16 @@ public class ArgAspect {
     }
 
     /**
+     * @Around pc2(sarr)
+     */
+    public Object around3(final JoinPoint joinPoint, String[] sarr) throws Throwable {
+        System.out.println("==> around3 -- pre " + sarr);
+        Object result = joinPoint.proceed();
+        System.out.println("==> around3 -- post " + sarr);
+        return result;
+    }
+
+    /**
      * @Before pc2(sarr)
      */
     public void before3(final JoinPoint joinPoint, String[] sarr) throws Throwable {
@@ -80,10 +90,7 @@ public class ArgAspect {
     }
 
     /**
-     * @Expression 
-     *      call(* ..ArgLoggingTarget.toLog*(..)) 
-     *      && args(sarr) 
-     *      && within(examples.logging.*)
+     * @Expression call(* ..ArgLoggingTarget.toLog*(..)) && args(int, sarr)
      */
     Pointcut pc2(String[] sarr) {
         return null;
