@@ -13,10 +13,10 @@ package org.codehaus.aspectwerkz.expression;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MatchingType {
-    public static final MatchingType NOT_HIERARCHICAL = new MatchingType("NOT_HIERARCHICAL");
-    public static final MatchingType MATCH_ON_ALL_METHODS = new MatchingType("MATCH_ON_ALL_METHODS");
-    public static final MatchingType MATCH_ON_BASE_TYPE_METHODS = new MatchingType("MATCH_ON_BASE_TYPE_METHODS");
+public class SubtypePatternType {
+    public static final SubtypePatternType NOT_HIERARCHICAL = new SubtypePatternType("NOT_HIERARCHICAL");
+    public static final SubtypePatternType MATCH_ON_ALL_METHODS = new SubtypePatternType("MATCH_ON_ALL_METHODS");
+    public static final SubtypePatternType MATCH_ON_BASE_TYPE_METHODS = new SubtypePatternType("MATCH_ON_BASE_TYPE_METHODS");
     private final String myName;
 
     /**
@@ -24,7 +24,7 @@ public class MatchingType {
      *
      * @param name
      */
-    private MatchingType(String name) {
+    private SubtypePatternType(String name) {
         myName = name;
     }
 

@@ -200,7 +200,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     // ============ Patterns =============
     public Object visit(ASTClassPattern node, Object data) {
         ClassInfo classInfo = (ClassInfo)data;
-        TypePattern typePattern = node.getDeclaringClassPattern();
+        TypePattern typePattern = node.getTypePattern();
         if (ClassInfoHelper.matchType(typePattern, classInfo) && visitAttributes(node, classInfo)
             && visitModifiers(node, classInfo)) {
             return Boolean.TRUE;

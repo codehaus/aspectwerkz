@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.expression.regexp;
 
 import org.codehaus.aspectwerkz.expression.ExpressionException;
+import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.util.Strings;
 import java.io.ObjectInputStream;
 
@@ -28,19 +29,19 @@ public class TypePattern extends Pattern {
     protected String m_pattern;
 
     /**
-     * Hierarchical boolean flag
+     * The subtype pattern type.
      */
-    private boolean m_hierarchical = false;
+    private SubtypePatternType m_subtypePatternType;
 
     /**
      * Private constructor.
      *
      * @param pattern      the pattern
-     * @param hierarchical boolean flag
+     * @param subtypePatternType the subtype pattern type
      */
-    TypePattern(final String pattern, final boolean hierarchical) {
+    TypePattern(final String pattern, final SubtypePatternType subtypePatternType) {
         m_pattern = pattern;
-        m_hierarchical = hierarchical;
+        m_subtypePatternType = subtypePatternType;
         escape(m_pattern);
     }
 
@@ -61,12 +62,12 @@ public class TypePattern extends Pattern {
     }
 
     /**
-     * Checks if the pattern is hierarchical.
+     * Returns the subtype pattern type
      *
      * @return boolean
      */
-    public boolean isHierarchical() {
-        return m_hierarchical;
+    public SubtypePatternType getSubtypePatternType() {
+        return m_subtypePatternType;
     }
 
     /**
@@ -85,15 +86,6 @@ public class TypePattern extends Pattern {
      */
     public String getPattern() {
         return m_pattern;
-    }
-
-    /**
-     * Sets the pattern as hierarchical.
-     *
-     * @param hierarchical
-     */
-    public void setHierarchical(boolean hierarchical) {
-        m_hierarchical = hierarchical;
     }
 
     /**

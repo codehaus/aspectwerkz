@@ -7,6 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression.regexp;
 
+import org.codehaus.aspectwerkz.expression.SubtypePatternType;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -308,11 +310,11 @@ public abstract class Pattern implements Serializable {
      * Compiles and returns a new type pattern.
      *
      * @param pattern      the full pattern as a string
-     * @param hierarchical boolean flag
+     * @param subtypePatternType the  subtype pattern type
      * @return the pattern
      */
-    public static TypePattern compileTypePattern(final String pattern, final boolean hierarchical) {
-        return new TypePattern(pattern, hierarchical);
+    public static TypePattern compileTypePattern(final String pattern, final SubtypePatternType subtypePatternType) {
+        return new TypePattern(pattern, subtypePatternType);
     }
 
     /**
