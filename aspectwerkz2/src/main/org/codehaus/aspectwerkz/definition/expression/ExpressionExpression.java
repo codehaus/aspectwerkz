@@ -28,6 +28,7 @@ import org.codehaus.aspectwerkz.definition.expression.visitor.CflowExtractVisito
 import org.codehaus.aspectwerkz.definition.expression.visitor.CflowExpressionContext;
 import org.codehaus.aspectwerkz.definition.expression.visitor.CflowEvaluateVisitor;
 import org.codehaus.aspectwerkz.definition.expression.visitor.EarlyEvaluateVisitor;
+import org.codehaus.aspectwerkz.definition.expression.visitor.AnonymousInflateVisitor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
@@ -67,11 +68,13 @@ public class ExpressionExpression extends Expression {
     /**
      * Expression early evaluation, ignores Cflow
      */
-    private static ExpressionParserVisitor EARLY_EVALUATE_VISITOR = new EarlyEvaluateVisitor();
+    private static ExpressionParserVisitor EARLYEVALUATE_VISITOR = new EarlyEvaluateVisitor();
 
     private static ExpressionParserVisitor CFLOWEXTRACT_VISITOR = new CflowExtractVisitor();
 
     private static ExpressionParserVisitor CFLOWEVALUATE_VISITOR = new CflowEvaluateVisitor();
+
+    private static ExpressionParserVisitor ANONYMOUSINFLATE_VISITOR = new AnonymousInflateVisitor();
 
     /**
      * AST root
@@ -100,6 +103,14 @@ public class ExpressionExpression extends Expression {
         try {
             ExpressionParser parser = new ExpressionParser(new StringReader(expression));
             root = parser.ExpressionScript();
+
+            // inflate anonymous expressions and register anonymous leaf (3x faster)
+            StringBuffer inflated = (StringBuffer)root.jjtAccept(ANONYMOUSINFLATE_VISITOR, m_namespace);
+            ExpressionParser parserInflate = new ExpressionParser(new StringReader(inflated.toString()));
+            SimpleNode newRoot = parserInflate.ExpressionScript();
+
+            // swap
+            root = newRoot;
         }
         catch (Throwable t) {
             throw new RuntimeException("unparsable["+expression+"]/"+name+": "+t.getMessage());
@@ -180,7 +191,7 @@ public class ExpressionExpression extends Expression {
      */
     public boolean match(final ClassMetaData classMetaData, PointcutType assumedType) {
         ExpressionContext ctx = new ExpressionContext(assumedType, m_namespace, classMetaData, null, null);
-        return ((Boolean)root.jjtAccept(EARLY_EVALUATE_VISITOR, ctx)).booleanValue();
+        return ((Boolean)root.jjtAccept(EARLYEVALUATE_VISITOR, ctx)).booleanValue();
     }
 
     /**

@@ -30,14 +30,9 @@ import java.util.Set;
 import java.util.HashSet;
 
 /**
- * Evaluate the expression, and build a simplified representation of it
- * with only TRUE / FALSE and the CFLOW sub-expressions<br/>
- * Resulting expression string is returned<br/>
- * Visit' data is evaluation context to retrieve expression from literals
- *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CflowExtractVisitor implements ExpressionParserVisitor {
+public class AnonymousInflateVisitor implements ExpressionParserVisitor {
 
     private final StringBuffer TRUE = new StringBuffer("true");
     private final StringBuffer FALSE = new StringBuffer("false");
@@ -71,30 +66,32 @@ public class CflowExtractVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(Identifier node, Object data) {
-        ExpressionContext ctx = (ExpressionContext)data;
-        String leafName = node.name;
-        Expression expression = ctx.getNamespace().getExpression(leafName);
-        if (expression != null) {
-            if (expression instanceof CflowExpression) {
-                return new StringBuffer(leafName);
-            }
-            else if (expression instanceof LeafExpression) {
-                if (expression.match(ctx.getClassMetaData(),
-                        ctx.getMemberMetaData(), ctx.getExceptionType(), ctx.getPointcutType())) {
-                    return TRUE;
-                } else {
-                    return FALSE;
-                }
-            }
-            else {
-                // recursive extraction
-                ExpressionExpression expr = (ExpressionExpression)expression;
-                StringBuffer referenced = (StringBuffer)(expr.getRoot().jjtAccept(this, data));
-                return referenced.insert(0, "(").append(")");//TODO is that SAFE ?
-            }
-        } else {
-            throw new RuntimeException("no such registered expression");
-        }
+        return new StringBuffer(node.name);
+        //TODO would it be better to inflate recursively ?
+//        ExpressionContext ctx = (ExpressionContext)data;
+//        String leafName = node.name;
+//        Expression expression = ctx.getNamespace().getExpression(leafName);
+//        if (expression != null) {
+//            if (expression instanceof CflowExpression) {
+//                return new StringBuffer(leafName);
+//            }
+//            else if (expression instanceof LeafExpression) {
+//                if (expression.match(ctx.getClassMetaData(),
+//                        ctx.getMemberMetaData(), ctx.getExceptionType(), ctx.getPointcutType())) {
+//                    return TRUE;
+//                } else {
+//                    return FALSE;
+//                }
+//            }
+//            else {
+//                // recursive extraction
+//                ExpressionExpression expr = (ExpressionExpression)expression;
+//                StringBuffer referenced = (StringBuffer)(expr.getRoot().jjtAccept(this, data));
+//                return referenced.insert(0, "(").append(")");
+//            }
+//        } else {
+//            throw new RuntimeException("no such registered expression");
+//        }
     }
 
     public Object visit(BooleanLiteral node, Object data) {
@@ -110,53 +107,63 @@ public class CflowExtractVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(Anonymous node, Object data) {
+        Expression expression = null;
+        ExpressionNamespace ns = (ExpressionNamespace)data;
         String expr = node.name;
-        if (expr.startsWith("cflow(")) {
-            return new StringBuffer(expr);
+        int hash = node.name.hashCode();
+        String exprAutoName = null;
+        if (hash >= 0) {
+            exprAutoName = "__AW__"+hash;
         } else {
-            Expression expression = null;
-            ExpressionContext ctx = (ExpressionContext)data;
-            ExpressionNamespace ns = ctx.getNamespace();
-            if (expr.startsWith("execution(")) {
-                expression = ns.createExecutionExpression(
-                        expr.substring(10, expr.length()-1),
-                        "",""
-                );
-            } else if (expr.startsWith("call(")) {
-                expression = ns.createCallExpression(
-                        expr.substring(5, expr.length()-1),
-                        "",""
-                );
-            } else if (expr.startsWith("set(")) {
-                expression = ns.createSetExpression(
-                        expr.substring(4, expr.length()-1),
-                        "",""
-                );
-            } else if (expr.startsWith("get(")) {
-                expression = ns.createGetExpression(
-                        expr.substring(4, expr.length()-1),
-                        "",""
-                );
-            } else if (expr.startsWith("class(")) {
-                expression = ns.createClassExpression(
-                        expr.substring(6, expr.length()-1),
-                        "",""
-                );
-            } else if (expr.startsWith("handler(")) {
-                expression = ns.createHandlerExpression(
-                        expr.substring(8, expr.length()-1),
-                        "",""
-                );
-            } else {
-                throw new RuntimeException("unknown anonymous: "+expr);
-            }
-            if (expression.match(
-                    ctx.getClassMetaData(), ctx.getMemberMetaData(), ctx.getExceptionType(), ctx.getPointcutType())) {
-                return TRUE;
-            } else {
-                return FALSE;
-            }
+            exprAutoName = "__AW____"+(-1*hash);
         }
+        if (ns.getExpression(exprAutoName) != null) {
+            return new StringBuffer(exprAutoName);
+        }
+        // register it
+        if (expr.startsWith("execution(")) {
+            expression = ns.createExecutionExpression(
+                    expr.substring(10, expr.length()-1),
+                    "", exprAutoName
+            );
+        } else if (expr.startsWith("call(")) {
+            expression = ns.createCallExpression(
+                    expr.substring(5, expr.length()-1),
+                    "", exprAutoName
+            );
+        } else if (expr.startsWith("cflow(")) {
+            expression = ns.createCflowExpression(
+                    expr.substring(6, expr.length()-1),
+                    "", exprAutoName
+            );
+        } else if (expr.startsWith("set(")) {
+            expression = ns.createSetExpression(
+                    expr.substring(4, expr.length()-1),
+                    "", exprAutoName
+            );
+        } else if (expr.startsWith("get(")) {
+            expression = ns.createGetExpression(
+                    expr.substring(4, expr.length()-1),
+                    "", exprAutoName
+            );
+        } else if (expr.startsWith("class(")) {
+            expression = ns.createClassExpression(
+                    expr.substring(6, expr.length()-1),
+                    "", exprAutoName
+            );
+        } else if (expr.startsWith("handler(")) {
+            expression = ns.createHandlerExpression(
+                    expr.substring(8, expr.length()-1),
+                    "", exprAutoName
+            );
+        } else {
+            throw new RuntimeException("unknown anonymous: "+expr);
+        }
+
+        // register the expression
+        ns.registerExpression(expression);
+
+        return new StringBuffer(exprAutoName);
     }
 
     //------------------------
