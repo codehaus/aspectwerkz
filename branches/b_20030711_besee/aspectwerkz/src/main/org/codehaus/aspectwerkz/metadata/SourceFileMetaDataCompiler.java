@@ -39,6 +39,7 @@ import org.codehaus.aspectwerkz.definition.AttributeTag;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionWeavingRule;
 import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
+import org.codehaus.aspectwerkz.definition.ControllerDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.advice.CFlowAdvice;
 
@@ -53,7 +54,7 @@ import org.codehaus.aspectwerkz.advice.CFlowAdvice;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: SourceFileMetaDataCompiler.java,v 1.9 2003-07-09 11:33:00 jboner Exp $
+ * @version $Id: SourceFileMetaDataCompiler.java,v 1.9.2.1 2003-07-17 21:00:01 avasseur Exp $
  */
 public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
@@ -63,6 +64,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
     public static final String THROWS_POINTCUT_NAME = "___throws_pointcut_";
     public static final String CALLERSIDE_POINTCUT_NAME = "___callerside_pointcut_";
     public static final String CFLOW_POINTCUT_NAME = "___cflow_pointcut_";
+    public static final String CONTROLLER_POINTCUT_NAME = "___controller_pointcut_";
 
     /**
      * Parses a given source tree and creates and stores meta-data for
@@ -143,15 +145,13 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             }
             weaveCFlowPointcutAttributes(definition, className, qdoxParser);
             weaveIntroductionAttributes(definition, className, qdoxParser);
+            weaveJoinPointControllerAttributes(definition, className, qdoxParser);
             weaveMethodPointcutAttributes(definition, className, qdoxParser);
             weaveSetFieldPointcutAttributes(definition, className, qdoxParser);
             weaveGetFieldPointcutAttributes(definition, className, qdoxParser);
             weaveThrowsPointcutAttributes(definition, className, qdoxParser);
             weaveCallerSidePointcutAttributes(definition, className, qdoxParser);
         }
-
-        // TODO: consider removal
-        // definition.addHasMetaDataMixinForAllIntroductions();
     }
 
     /**
@@ -310,6 +310,62 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                 weavingRule.addIntroductionRef(introductionRef);
             }
             aspectDefinition.addIntroductionWeavingRule(weavingRule);
+        }
+    }
+
+    /**
+     * Weaves the pointcut controller attributes.
+     *
+     * @param definition the definition
+     * @param className the name of the parsed class
+     * @param qdoxParser the QDox parser
+     */
+    private static void weaveJoinPointControllerAttributes(
+            final AspectWerkzDefinition definition,
+            final String className,
+            final QDoxParser qdoxParser) {
+        String pointcutName = CONTROLLER_POINTCUT_NAME + className.replaceAll("\\.", "_");
+
+        int counter = 0;
+        final JavaMethod[] javaMethods = qdoxParser.getJavaMethods();
+        for (int i = 0; i < javaMethods.length; i++) {
+
+            DocletTag[] methodTags = javaMethods[i].getTagsByName(AttributeTag.CONTROLLER);
+            for (int j = 0; j < methodTags.length; j++) {
+                if (methodTags[j] == null) {
+                    continue;
+                }
+
+                String[] attributes = methodTags[j].getParameters();
+                for (int k = 0; k < attributes.length; k++) {
+                    String attribute = attributes[k];
+
+                    String expression = pointcutName + counter;
+
+                    // create and add a new pointcut definition
+                    PointcutDefinition pointcutDef = new PointcutDefinition();
+                    pointcutDef.setName(expression);
+                    pointcutDef.setClassPattern(className);
+                    pointcutDef.setPattern(createMethodPattern(javaMethods[i]));
+                    pointcutDef.setType(PointcutDefinition.METHOD);
+                    definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                            addPointcutDef(pointcutDef);
+
+                    // create a new controller definition
+                    ControllerDefinition controllerDef = new ControllerDefinition();
+                    controllerDef.setClassName(attribute);
+                    controllerDef.setExpression(expression);
+
+                    definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                            addControllerDef(controllerDef);
+
+                    // add the pointcut pattern
+                    controllerDef.addMethodPointcutPattern(pointcutDef);
+
+                    counter++;
+                    break;
+                }
+            }
         }
     }
 

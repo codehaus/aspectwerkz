@@ -53,7 +53,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms static methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticMethodTransformer.java,v 1.13.2.1 2003-07-16 08:13:21 avasseur Exp $
+ * @version $Id: AdviseStaticMethodTransformer.java,v 1.13.2.2 2003-07-17 21:00:01 avasseur Exp $
  */
 public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
@@ -158,6 +158,10 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
 
                 addStaticJoinPointField(cpg, cg, mg, methodSequence, isThreadSafe);
 
+                // get the join point controller
+                final String controllerClassName = m_weaveModel.getJoinPointController(
+                        cg.getClassName(), BcelMetaDataMaker.createMethodMetaData(methods[i]));
+
                 if (noClInitMethod) {
                     // no <clinit> method exists
                     if (clInitMethod == null) {
@@ -201,7 +205,8 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                         methodSequence,
                         methods[i].getAccessFlags(),
                         isThreadSafe,
-                        uuid));
+                        uuid,
+                        controllerClassName));
 
                 // add a prefix to the original method
                 methods[i] = addPrefixToMethod(
@@ -586,6 +591,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @param accessFlags the access flags for the original method
      * @param isThreadSafe
      * @param uuid the UUID for the weave model
+     * @param controllerClassName the class name of the controller class to use
      * @return the proxy method
      */
     private Method createProxyMethod(final ConstantPoolGen cp,
@@ -596,7 +602,8 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                                      final int methodSequence,
                                      final int accessFlags,
                                      final boolean isThreadSafe,
-                                     final String uuid) {
+                                     final String uuid,
+                                     final String controllerClassName) {
         final InstructionList il = new InstructionList();
 
         final Type[] parameterTypes =
@@ -661,13 +668,14 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                     new ObjectType("java.lang.Class"),
                     Constants.GETSTATIC));
             il.append(new PUSH(cp, methodId));
+            il.append(new PUSH(cp, controllerClassName));
 
             // invokes the constructor
             il.append(factory.createInvoke(
                     TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS,
                     "<init>",
                     Type.VOID,
-                    new Type[]{Type.STRING, new ObjectType("java.lang.Class"), Type.INT},
+                    new Type[]{Type.STRING, new ObjectType("java.lang.Class"), Type.INT, Type.STRING},
                     Constants.INVOKESPECIAL));
 
             il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
@@ -980,7 +988,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PostAdvice")) {
             return true;
         }
-        else if (m_weaveModel.isAdvised(cg.getClassName())) {
+        else if (m_weaveModel.inTransformationScope(cg.getClassName())) {
             return false;
         }
         else {

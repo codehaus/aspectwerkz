@@ -18,14 +18,12 @@
  */
 package org.codehaus.aspectwerkz.joinpoint;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.ref.SoftReference;
 import java.util.List;
 import java.util.Iterator;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
 
 /**
@@ -37,14 +35,14 @@ import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberMethodJoinPoint.java,v 1.11 2003-07-11 10:45:19 jboner Exp $
+ * @version $Id: MemberMethodJoinPoint.java,v 1.11.2.1 2003-07-17 21:00:01 avasseur Exp $
  */
 public class MemberMethodJoinPoint extends MethodJoinPoint {
 
     /**
      * The serial version uid for the class.
      */
-    private static final long serialVersionUID = -5484155333075124212L;
+    private static final long serialVersionUID = 3503130760940517679L;
 
     /**
      * A soft reference to the target instance.
@@ -57,11 +55,14 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      * @param uuid the UUID for the AspectWerkz system to use
      * @param targetObject the target object
      * @param methodId the id of the original method
+     * @param controllerClass the class name of the controller class to use
      */
     public MemberMethodJoinPoint(final String uuid,
                                  final Object targetObject,
-                                 final int methodId) {
-        super(uuid, methodId);
+                                 final int methodId,
+                                 final String controllerClass) {
+        super(uuid, methodId, controllerClass);
+
         if (targetObject == null) throw new IllegalArgumentException("target object can not be null");
 
         m_targetObjectReference = new SoftReference(targetObject);
@@ -103,70 +104,21 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
     }
 
     /**
-     * Returns the original class.
-     *
-     * @return the original object
-     */
-    public Class getTargetClass() {
-        return m_targetClass;
-    }
-
-    /**
-     * To be called instead of proceed() when a new thread is spawned.
-     * Otherwise the result is unpredicable.
-     *
-     * @return the result from the next invocation
-     * @throws Throwable
-     */
-    public Object proceedInNewThread() throws Throwable {
-        return deepCopy().proceed();
-    }
-
-    /**
-     * Invokes the origignal method.
-     *
-     * @return the result from the method invocation
-     * @throws Throwable the exception from the original method
-     */
-    protected Object invokeOriginalMethod() throws Throwable {
-        Object result = null;
-        try {
-            result = m_originalMethod.invoke(m_targetObjectReference.get(), m_parameters);
-            setResult(result);
-        }
-        catch (InvocationTargetException e) {
-            handleException(e);
-        }
-
-        return result;
-    }
-
-    /**
-     * Creates meta-data for the join point.
-     */
-    protected void createMetaData() {
-        m_metadata = ReflectionMetaDataMaker.createMethodMetaData(
-                getMethodName(),
-                getParameterTypes(),
-                getReturnType());
-    }
-
-    /**
      * Makes a deep copy of the join point.
      *
      * @return the clone of the join point
      */
-    protected MemberMethodJoinPoint deepCopy() {
-        final MemberMethodJoinPoint clone =
-                new MemberMethodJoinPoint(m_uuid, m_targetObjectReference.get(), m_methodId);
+    protected MethodJoinPoint deepCopy() {
+        final MemberMethodJoinPoint clone = new MemberMethodJoinPoint(
+                        m_uuid, m_targetObjectReference.get(),
+                        m_methodId, m_controller.getClass().getName());
         clone.m_targetClass = m_targetClass;
         clone.m_originalMethod = m_originalMethod;
         clone.m_pointcuts = m_pointcuts;
-        clone.m_currentAdviceIndex = m_currentAdviceIndex;
-        clone.m_currentPointcutIndex = m_currentPointcutIndex;
         clone.m_parameters = m_parameters;
         clone.m_result = m_result;
         clone.m_metadata = m_metadata;
+        clone.m_controller = m_controller.deepCopy();
         return clone;
     }
 
@@ -187,9 +139,8 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
                 areEqualsOrBothNull(obj.m_pointcuts, this.m_pointcuts) &&
                 areEqualsOrBothNull(obj.m_result, this.m_result) &&
                 areEqualsOrBothNull(obj.m_metadata, this.m_metadata) &&
-                (obj.m_methodId == this.m_methodId) &&
-                (obj.m_currentPointcutIndex == this.m_currentPointcutIndex) &&
-                (obj.m_currentAdviceIndex == this.m_currentAdviceIndex);
+                areEqualsOrBothNull(obj.m_controller, this.m_controller) &&
+                (obj.m_methodId == this.m_methodId);
     }
 
     /**

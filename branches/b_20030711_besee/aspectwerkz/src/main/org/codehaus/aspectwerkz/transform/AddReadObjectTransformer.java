@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * to all target objects.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddReadObjectTransformer.java,v 1.9.2.1 2003-07-16 08:13:21 avasseur Exp $
+ * @version $Id: AddReadObjectTransformer.java,v 1.9.2.2 2003-07-17 21:00:01 avasseur Exp $
  */
 public class AddReadObjectTransformer extends AspectWerkzAbstractInterfaceTransformer {
     ///CLOVER:ON
@@ -154,7 +154,7 @@ public class AddReadObjectTransformer extends AspectWerkzAbstractInterfaceTransf
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.isAdvised(cg.getClassName())) {
+        if (m_weaveModel.inTransformationScope(cg.getClassName())) {
             return false;
         }
         return true;

@@ -41,7 +41,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * Holds the controller definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ControllerDefinition.java,v 1.1 2003-07-14 15:25:55 jboner Exp $
+ * @version $Id: ControllerDefinition.java,v 1.1.2.1 2003-07-17 21:00:00 avasseur Exp $
  */
 public class ControllerDefinition implements Serializable {
 
