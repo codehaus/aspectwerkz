@@ -35,8 +35,8 @@ public abstract class AbstractMixinFactory implements MixinFactory {
                 m_perInstanceConstructor = m_mixinClass.getConstructor(new Class[]{Object.class});
             } else {
                 throw new DefinitionException(
-                        "deploymen model for [" + m_mixinClass.getName() + "] is not supported [" +
-                        DeploymentModel.getDeploymentModelAsString(m_deploymentModel)
+                        "deployment model for [" + m_mixinClass.getName() + "] is not supported [" +
+                        DeploymentModel.getDeploymentModelAsString(m_deploymentModel) + "]"
                 );
             }
         } catch (NoSuchMethodException e1) {

@@ -146,8 +146,8 @@ public class DocumentParser {
         parseIntroduceElements(aspect, aspectDef, "", aspectClass.getClassLoader());
 
         // register introduction of aspect into the system
-        for (Iterator mixins = aspectDef.getInterfaceIntroductionDefinitions().iterator(); mixins.hasNext();) {
-            systemDef.addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition) mixins.next());
+        for (Iterator intfIntros = aspectDef.getInterfaceIntroductionDefinitions().iterator(); intfIntros.hasNext();) {
+            systemDef.addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition) intfIntros.next());
         }
 
         systemDef.addAspect(aspectDef);
@@ -370,8 +370,8 @@ public class DocumentParser {
             parseIntroduceElements(aspect, aspectDef, packageName, loader);
 
             // register interface introduction of aspect into the system
-            for (Iterator mixins = aspectDef.getInterfaceIntroductionDefinitions().iterator(); mixins.hasNext();) {
-                definition.addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition) mixins.next());
+            for (Iterator intfIntros = aspectDef.getInterfaceIntroductionDefinitions().iterator(); intfIntros.hasNext();) {
+                definition.addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition) intfIntros.next());
             }
             definition.addAspect(aspectDef);
         }
