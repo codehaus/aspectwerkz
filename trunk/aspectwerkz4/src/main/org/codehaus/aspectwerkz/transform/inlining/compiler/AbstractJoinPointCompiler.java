@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.transform.inlining.compiler;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Constants;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 
@@ -18,7 +17,6 @@ import org.codehaus.aspectwerkz.cflow.CflowCompiler;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.aspect.AdviceInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -64,7 +62,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
     protected static final String THIS_CLASS_FIELD_NAME	  = "THIS_CLASS";
 
     // FIXME define these two using VM option - if dump dir specified then dump
-    public static final boolean DUMP_JIT_CLASSES = false;
+    public static final boolean DUMP_JIT_CLASSES = true;
     protected static final String DUMP_DIR = "_dump";
 
     protected final String m_callerClassName;
@@ -1008,6 +1006,14 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
             createInvocationLocalJoinPointInstance(cv, argStartIndex, joinPointIndex, callerIndex, calleeIndex);
         }
 
+        //FIXME: see loadAspect and AssociationScopeTest_2_1456425365_738_9001546___AW_JoinPoint f.e.
+        // there is redundant checks because
+        // the system perObject aspect for a perX aspect will be called *AFTER* the initializeInstanceLevelAspects
+        // and thus the aspects.hasAspect will change in the middle of the invoke method
+        //
+        // flow should be: invoke perObject before aspect, init instance level, invoke all other before aspects
+        // we can wether have a createBeforeBefore(...) that checks for this perObject aspect
+
         // initialize the instance level aspects (perInstance)
         initializeInstanceLevelAspects(cv, isOptimizedJoinPoint, joinPointIndex, callerIndex, calleeIndex);
 
@@ -1057,7 +1063,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         for (int i = 0; i < m_aspectInfos.length; i++) {
             AspectInfo aspectInfo = m_aspectInfos[i];
             
-            // gen code: aspectField = (<TYPE>)((HasInstanceLocalAspect)CALLER).aw$getAspect(className, qualifiedName, containerClassName)
+            // gen code: if (Aspects.hasAspect(...) { aspectField = (<TYPE>)((HasInstanceLocalAspect)CALLER).aw$getAspect(className, qualifiedName, containerClassName) }
             if (DeploymentModel.PER_INSTANCE.equals(aspectInfo.getDeploymentModel())) {
                 storeAspectInstance(cv, isOptimizedJoinPoint, joinPointIndex, callerIndex, aspectInfo);
             } else if (DeploymentModel.PER_THIS.equals(aspectInfo.getDeploymentModel())
@@ -1153,12 +1159,12 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
                                       final String aspectQName) {
         Label hasAspectCheck = new Label();
 
-        cv.visitVarInsn(ALOAD, argumentIndex);
         cv.visitLdcInsn(aspectQName);
-        cv.visitMethodInsn(INVOKESTATIC, 
-                           PEROBJECTHELPER_CLASS_NAME,
-                           PEROBJECTHELPER_HASASPECT_METHOD_NAME,
-                           PEROBJECTHELPER_HASASPECT_METHOD_SIGNATURE
+        cv.visitVarInsn(ALOAD, argumentIndex);
+        cv.visitMethodInsn(INVOKESTATIC,
+                           ASPECTS_CLASS_NAME,
+                           HASASPECT_METHOD_NAME,
+                           HASASPECT_METHOD_SIGNATURE
         );
         cv.visitJumpInsn(IFEQ, hasAspectCheck);
 
@@ -2673,14 +2679,15 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
                               aspectInfo.getAspectFieldName(),
                               aspectInfo.getAspectClassSignature()
             );
-            
+
+            //FIXME see FIXME on aspect instantion
             Label nullCheck = new Label();
             cv.visitJumpInsn(IFNONNULL, nullCheck);
             storeAspectInstance(cv, isOptimizedJoinPoint, joinPointIndex, callerIndex, aspectInfo);
             cv.visitLabel(nullCheck);
-            
+
             loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
-            cv.visitFieldInsn(GETFIELD, 
+            cv.visitFieldInsn(GETFIELD,
                               m_joinPointClassName,
                               aspectInfo.getAspectFieldName(),
                               aspectInfo.getAspectClassSignature()
@@ -2692,14 +2699,15 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
                               aspectInfo.getAspectFieldName(),
                               aspectInfo.getAspectClassSignature()
             );
-            
+            //FIXME see FIXME on aspect instantion
+
             Label nullCheck = new Label();
             cv.visitJumpInsn(IFNONNULL, nullCheck);
             storeAspectInstance(cv, isOptimizedJoinPoint, joinPointIndex, calleeIndex, aspectInfo);
             cv.visitLabel(nullCheck);
-            
+
             loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
-            cv.visitFieldInsn(GETFIELD, 
+            cv.visitFieldInsn(GETFIELD,
                               m_joinPointClassName,
                               aspectInfo.getAspectFieldName(),
                     aspectInfo.getAspectClassSignature()

@@ -13,7 +13,7 @@ import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.cflow.CflowBinding;
-import org.codehaus.aspectwerkz.perx.PerObjectHelper;
+import org.codehaus.aspectwerkz.perx.PerObjectAspect;
 import org.codehaus.aspectwerkz.DeploymentModel;
 
 import java.util.ArrayList;
@@ -244,9 +244,9 @@ public class SystemDefinition {
 
             // register a PerObjectAspect if deployment-model is perThis or perTarget
             if(DeploymentModel.PER_TARGET.equals(aspectDef.getDeploymentModel())) {
-            	addAspect(PerObjectHelper.getAspectDefinition(this, aspectDef, false));
+            	addAspect(PerObjectAspect.getAspectDefinition(this, aspectDef));
             } else if(DeploymentModel.PER_THIS.equals(aspectDef.getDeploymentModel())) {
-            	addAspect(PerObjectHelper.getAspectDefinition(this, aspectDef, true));
+            	addAspect(PerObjectAspect.getAspectDefinition(this, aspectDef));
             }
             
             // register the "cflow" aspects for this aspect bindings
