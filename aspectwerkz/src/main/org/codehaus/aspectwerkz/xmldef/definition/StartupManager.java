@@ -317,6 +317,7 @@ public class StartupManager {
      */
     private static void registerAdvice(final String uuid, final AdviceDefinition def) {
         final String adviceClassName = def.getAdviceClassName();
+        final String name = def.getName();
 
         try {
             final Class adviceClass = ContextClassLoader.loadClass(adviceClassName);
@@ -350,7 +351,7 @@ public class StartupManager {
             // create and set the container for the advice
             newAdvice.setContainer(createAdviceContainer(newAdvice));
 
-            AspectWerkz.getSystem(uuid).register(def.getName(), newAdvice);
+            AspectWerkz.getSystem(uuid).register(name, newAdvice);
         }
         catch (ClassNotFoundException e) {
             throw new DefinitionException(adviceClassName + " could not be found in classpath");
