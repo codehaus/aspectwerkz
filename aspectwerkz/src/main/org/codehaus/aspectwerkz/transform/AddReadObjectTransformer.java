@@ -23,10 +23,6 @@ import java.util.Set;
 import java.util.List;
 import java.util.HashSet;
 
-import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
-import org.cs3.jmangler.bceltransformer.ExtensionSet;
-import org.cs3.jmangler.bceltransformer.AbstractInterfaceTransformer;
-
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -43,9 +39,9 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * to all target objects.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddReadObjectTransformer.java,v 1.9 2003-07-09 05:21:28 jboner Exp $
+ * @version $Id: AddReadObjectTransformer.java,v 1.9.2.1 2003-07-16 08:13:21 avasseur Exp $
  */
-public class AddReadObjectTransformer extends AbstractInterfaceTransformer {
+public class AddReadObjectTransformer extends AspectWerkzAbstractInterfaceTransformer {
     ///CLOVER:ON
 
     /**
@@ -82,8 +78,8 @@ public class AddReadObjectTransformer extends AbstractInterfaceTransformer {
      * @param es the extension set
      * @param cs the unextendable class set
      */
-    public void transformInterface(final ExtensionSet es,
-                                   final UnextendableClassSet cs) {
+    public void transformInterface(final AspectWerkzExtensionSet es,
+                                   final AspectWerkzUnextendableClassSet cs) {
         final Iterator it = cs.getIteratorForTransformableClasses();
         while (it.hasNext()) {
 
@@ -124,7 +120,7 @@ public class AddReadObjectTransformer extends AbstractInterfaceTransformer {
     private void addReadObjectMethod(final ClassGen cg,
                                      final ConstantPoolGen cpg,
                                      final InstructionFactory factory,
-                                     final ExtensionSet es) {
+                                     final AspectWerkzExtensionSet es) {
 
         InstructionList il = new InstructionList();
         MethodGen method = new MethodGen(
@@ -145,7 +141,7 @@ public class AddReadObjectTransformer extends AbstractInterfaceTransformer {
         method.setMaxStack();
         method.setMaxLocals();
 
-        es.addMethod(cg.getClassName(), method.getMethod());
+        es.addMethod(cg, method.getMethod());
     }
 
     /**

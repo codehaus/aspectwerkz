@@ -37,10 +37,6 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.Constants;
 
-import org.cs3.jmangler.bceltransformer.AbstractInterfaceTransformer;
-import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
-import org.cs3.jmangler.bceltransformer.ExtensionSet;
-
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.MethodComparator;
@@ -50,9 +46,9 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.15 2003-07-11 10:45:19 jboner Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.15.2.1 2003-07-16 08:13:21 avasseur Exp $
  */
-public class AddImplementationTransformer extends AbstractInterfaceTransformer {
+public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTransformer {
     ///CLOVER:OFF
 
     /**
@@ -88,8 +84,8 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
      * @param es the extension set
      * @param cs the unextendable class set
      */
-    public void transformInterface(final ExtensionSet es,
-                                   final UnextendableClassSet cs) {
+    public void transformInterface(final AspectWerkzExtensionSet es,
+                                   final AspectWerkzUnextendableClassSet cs) {
         Iterator it = cs.getIteratorForTransformableClasses();
         while (it.hasNext()) {
             final ClassGen cg = (ClassGen)it.next();
@@ -115,7 +111,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
      * @param cpg the constant pool gen
      * @param factory the instruction objectfactory
      */
-    private void addIntroductions(final ExtensionSet es,
+    private void addIntroductions(final AspectWerkzExtensionSet es,
                                   final ClassGen cg,
                                   final ConstantPoolGen cpg,
                                   final InstructionFactory factory) {
@@ -191,7 +187,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
      * @param methodIndex the method index
      * @param uuid the uuid for the weave model
      */
-    private void createProxyMethod(final ExtensionSet es,
+    private void createProxyMethod(final AspectWerkzExtensionSet es,
                                    final ClassGen cg,
                                    final ConstantPoolGen cpg,
                                    final InstructionFactory factory,
@@ -493,7 +489,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
         methodGen.setMaxStack();
         methodGen.setMaxLocals();
 
-        es.addMethod(cg.getClassName(), methodGen.getMethod());
+        es.addMethod(cg, methodGen.getMethod());
         il.dispose();
     }
 

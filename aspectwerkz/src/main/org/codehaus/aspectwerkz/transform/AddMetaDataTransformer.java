@@ -40,21 +40,16 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.ConstantClass;
 
-import org.cs3.jmangler.bceltransformer.AbstractInterfaceTransformer;
-import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
-import org.cs3.jmangler.bceltransformer.ExtensionSet;
-import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
-
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 
 /**
  * Adds meta-data storage for the target classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddMetaDataTransformer.java,v 1.11 2003-07-09 05:21:28 jboner Exp $
+ * @version $Id: AddMetaDataTransformer.java,v 1.11.2.1 2003-07-16 08:13:21 avasseur Exp $
  */
 public final class AddMetaDataTransformer
-        extends AbstractInterfaceTransformer implements CodeTransformerComponent {
+        extends AspectWerkzAbstractInterfaceTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
     /**
      * Holds references to the classes that have already been transformed by this
@@ -95,8 +90,8 @@ public final class AddMetaDataTransformer
      * @param es the extension set
      * @param cs the unextendable class set
      */
-    public void transformInterface(final ExtensionSet es,
-                                   final UnextendableClassSet cs) {
+    public void transformInterface(final AspectWerkzExtensionSet es,
+                                   final AspectWerkzUnextendableClassSet cs) {
         if (ADD_METADATA == null) return; // do not do any transformations
 
         final Iterator it = cs.getIteratorForTransformableClasses();
@@ -130,7 +125,7 @@ public final class AddMetaDataTransformer
      *
      * @param cs the class set.
      */
-    public void transformCode(final UnextendableClassSet cs) {
+    public void transformCode(final AspectWerkzUnextendableClassSet cs) {
         if (ADD_METADATA == null) return; // do not do any transformations
 
         final Iterator iterator = cs.getIteratorForTransformableClasses();
@@ -176,7 +171,7 @@ public final class AddMetaDataTransformer
      */
     private void addMetaDataEnhancableInterface(final ClassGen cg,
                                                 final ConstantPoolGen cpg,
-                                                final ExtensionSet es) {
+                                                final AspectWerkzExtensionSet es) {
         final int[] interfaces = cg.getInterfaces();
         final String interfaceName = TransformationUtil.META_DATA_INTERFACE;
 
@@ -191,7 +186,7 @@ public final class AddMetaDataTransformer
             }
         }
         if (addInterface) {
-            es.addInterfaceToClass(cg.getClassName(), interfaceName);
+            es.addInterfaceToClass(cg, interfaceName);
         }
     }
 
@@ -201,7 +196,7 @@ public final class AddMetaDataTransformer
      * @param cg the classgen
      * @param es the extension set
      */
-    private void addMapField(final ClassGen cg, final ExtensionSet es) {
+    private void addMapField(final ClassGen cg, final AspectWerkzExtensionSet es) {
         if (cg.containsField(TransformationUtil.META_DATA_FIELD) == null) {
 
             FieldGen field = new FieldGen(
@@ -210,7 +205,7 @@ public final class AddMetaDataTransformer
                     TransformationUtil.META_DATA_FIELD,
                     cg.getConstantPool());
 
-            es.addField(cg.getClassName(), field.getField());
+            es.addField(cg, field.getField());
         }
     }
 
@@ -223,7 +218,7 @@ public final class AddMetaDataTransformer
     private void addMetaDataGetterMethod(final ClassGen cg,
                                          final ConstantPoolGen cpg,
                                          final InstructionFactory factory,
-                                         final ExtensionSet es) {
+                                         final AspectWerkzExtensionSet es) {
         InstructionList il = new InstructionList();
         MethodGen method = new MethodGen(
                 Constants.ACC_PUBLIC,
@@ -260,7 +255,7 @@ public final class AddMetaDataTransformer
         method.setMaxStack();
         method.setMaxLocals();
 
-        es.addMethod(cg.getClassName(), method.getMethod());
+        es.addMethod(cg, method.getMethod());
     }
 
     /**
@@ -272,7 +267,7 @@ public final class AddMetaDataTransformer
     private void addMetaDataSetterMethod(final ClassGen cg,
                                          final ConstantPoolGen cpg,
                                          final InstructionFactory factory,
-                                         final ExtensionSet es) {
+                                         final AspectWerkzExtensionSet es) {
 
         InstructionList il = new InstructionList();
 
@@ -313,7 +308,7 @@ public final class AddMetaDataTransformer
         method.setMaxStack();
         method.setMaxLocals();
 
-        es.addMethod(cg.getClassName(), method.getMethod());
+        es.addMethod(cg, method.getMethod());
     }
 
     /**
