@@ -331,32 +331,12 @@ public class AspectDefinition {
      * Returns all the advices for this aspect.
      * 
      * @return all the advices
-     * @TODO: gets sorted every time, have a flag?
      */
     public List getAdviceDefinitions() {
         final List allAdvices = new ArrayList();
         allAdvices.addAll(m_aroundAdviceDefinitions);
         allAdvices.addAll(m_beforeAdviceDefinitions);
         allAdvices.addAll(m_afterAdviceDefinitions);
-        return sortAdviceDefinitions(allAdvices);
-    }
-
-    /**
-     * Sorts the advice by method.
-     * 
-     * @param adviceDefinitions a list with the adviceDefinitions to sort
-     * @return a sorted list with the adviceDefinitions
-     */
-    public static List sortAdviceDefinitions(final List adviceDefinitions) {
-        Collections.sort(adviceDefinitions, new Comparator() {
-            private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
-
-            public int compare(final Object obj1, final Object obj2) {
-                AdviceDefinition advice1 = (AdviceDefinition) obj1;
-                AdviceDefinition advice2 = (AdviceDefinition) obj2;
-                return m_comparator.compare(advice1.getMethod(), advice2.getMethod());
-            }
-        });
-        return adviceDefinitions;
+        return allAdvices;
     }
 }
