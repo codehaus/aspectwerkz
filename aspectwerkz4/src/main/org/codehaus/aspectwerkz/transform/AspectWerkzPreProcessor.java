@@ -132,11 +132,13 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             log(Util.classLoaderToString(loader) + ':' + className + '[' + Thread.currentThread().getName() + ']');
         }
 
-        Context context = _preProcess(className, bytecode, loader);
-        if (context == null) {
-            return bytecode;
-        } else {
+        try {
+            Context context = _preProcess(className, bytecode, loader);
             return context.getCurrentBytecode();
+        } catch (Exception e) {
+            log("failed " + className);
+            e.printStackTrace();
+            return bytecode;
         }
     }
 
@@ -148,15 +150,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * @return the weaving context, where getCurrentBytecode is the resulting bytecode
      */
     public Context _preProcess(final String className, final byte[] bytecode, final ClassLoader loader) {
-        final Context context;
-        try {
-            // create a new transformation context
-            context = m_weavingStrategy.newContext(className, bytecode, loader);
-        } catch (Exception e) {
-            log("failed " + className);
-            e.printStackTrace();
-            return null;
-        }
+        final Context context = m_weavingStrategy.newContext(className, bytecode, loader);
 
         // dump before (not compliant with multiple CL weaving same class differently, since based
         // on class FQN className)
@@ -187,15 +181,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         // we do not filter anything in this mode
 
         Context context = _preProcess(className, bytecode, loader);
-        if (context == null) {
-            return null;
-        } else {
-            Output output = new Output();
-            output.bytecode = context.getCurrentBytecode();
-            output.emittedJoinPoints =
-                    (EmittedJoinPoint[])((ContextImpl)context).getEmittedJoinPoints().toArray(new EmittedJoinPoint[0]);
-            return output;
-        }
+        Output output = new Output();
+        output.bytecode = context.getCurrentBytecode();
+        output.emittedJoinPoints =
+                (EmittedJoinPoint[])((ContextImpl)context).getEmittedJoinPoints().toArray(new EmittedJoinPoint[0]);
+        return output;
     }
 
     /**

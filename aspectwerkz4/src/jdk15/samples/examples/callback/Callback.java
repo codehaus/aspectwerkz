@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.annotation.Around;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Callback call from an async aspect
@@ -75,7 +76,13 @@ public class Callback {
         /**
          * Java 5 thread utils
          */
-        private Executor m_threadPool = Executors.newCachedThreadPool();
+        private Executor m_threadPool = Executors.newCachedThreadPool(new ThreadFactory() {
+            public Thread newThread(Runnable target) {
+                Thread t = new Thread(target);
+                t.setDaemon(true);// use of daemon to run from Ant
+                return t;
+            }
+        });
 
         // a bit tedious to match inner class so I am a bit lazy here.
         @Around("call(* *..*.*Callee.longOp(int)) && args(howLong) && this(caller)")

@@ -121,10 +121,9 @@
         <mkdir dir="${build.core.dir}"/>
         <javac destdir="${build.core.dir}" debug="on">
 	    <src path="${src.dir}/main"/>
-	    <src path="${src.dir}/jdk14"/>
-            <classpath>
-                <path refid="project.class.path"/>
-            </classpath>
+        <classpath>
+            <path refid="project.class.path"/>
+        </classpath>
         </javac>
     </target>
 
@@ -150,11 +149,28 @@
     </target>
 
     <!-- ============================================================== -->
+    <!-- compiles the Java 1.3/1.4 specific stuff excluded for Java 5 -->
+    <!-- ============================================================== -->
+    <target name="compile:jdk14" depends="init" unless="jdk15">
+        <echo message="** Found jdk14 specific compilation..."/>
+        <javac destdir="${main.classes}" deprecation="true" debug="true" optimize="false" >
+            <src>
+                <pathelement location="src/jdk14"/>
+            </src>
+            <classpath>
+                <pathelement path="${main.classes}"/>
+                <path refid="project.class.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- ============================================================== -->
     <!-- compiles the Java5 stuff -->
     <!-- ============================================================== -->
     <target name="compile:jdk15" depends="init" if="jdk15">
         <echo message="** Found jdk15 specific compilation..."/>
-        <javac destdir="${main.classes}" deprecation="true" debug="true" optimize="false">
+        <!-- dump jdk14 specifics things -->
+        <javac destdir="${main.classes}" deprecation="true" debug="true" optimize="false" >
             <src>
                 <pathelement location="src/jdk15/main">
                 </pathelement>
@@ -217,6 +233,7 @@
     <target name="compile:all" depends="init">
         <antcall target="compile"/>
         <antcall target="compile:test"/>
+        <antcall target="compile:jdk14"/>
         <antcall target="compile:jdk15"/>
         <antcall target="compile:extensions"/>
         <antcall target="compile:samples"/>
@@ -527,6 +544,17 @@
                 <path refid="project.class.path"/>
             </classpath>
             <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml"/>
+        </java>
+    </target>
+
+    <target name="samples:jdk5:callback" depends="clean, dist">
+        <java classname="examples.callback.Callback" fork="true">
+            <classpath>
+                <pathelement path="${samples.classes}"/>
+                <pathelement path="${main.classes}"/>
+                <path refid="project.class.path"/>
+            </classpath>
+            <jvmarg line="-javaagent:lib/aspectwerkz-core-2.0beta1.jar  -Daspectwerkz.definition.file=src/jdk15/samples/examples/callback/aop.xml"/>
         </java>
     </target>
 
