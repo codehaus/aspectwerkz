@@ -12,16 +12,17 @@ import org.codehaus.aspectwerkz.transform.Klass;
 
 /**
  * Activator alters bytecode at runtime
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public interface Activator {
     /**
      * Transforms bytecode at runtime
-     *
+     * 
      * @param context
      * @param klass
      * @throws Exception
      */
-    public abstract void activate(final Context context, final Klass klass) throws Exception;
+    public abstract void activate(final Context context, final Klass klass)
+            throws Exception;
 }

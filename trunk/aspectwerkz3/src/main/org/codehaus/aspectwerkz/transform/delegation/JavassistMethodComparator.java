@@ -15,12 +15,11 @@ import javassist.CtClass;
 import javassist.CtMethod;
 
 /**
- * Compares Javassist Methods.
- * <p/>
- * Based on code by Bob Lee (crazybob@crazybob.org)
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * Compares Javassist Methods. <p/>Based on code by Bob Lee
+ * (crazybob@crazybob.org)
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public final class JavassistMethodComparator implements Comparator {
     /**
@@ -30,7 +29,7 @@ public final class JavassistMethodComparator implements Comparator {
 
     /**
      * Returns the comparator instance.
-     *
+     * 
      * @return the instance
      */
     public static Comparator getInstance() {
@@ -39,18 +38,18 @@ public final class JavassistMethodComparator implements Comparator {
 
     /**
      * Compares two objects
-     *
+     * 
      * @param o1
      * @param o2
      * @return int
      */
     public int compare(final Object o1, final Object o2) {
-        return compare((CtMethod)o1, (CtMethod)o2);
+        return compare((CtMethod) o1, (CtMethod) o2);
     }
 
     /**
      * Compares two methods
-     *
+     * 
      * @param m1
      * @param m2
      * @return int

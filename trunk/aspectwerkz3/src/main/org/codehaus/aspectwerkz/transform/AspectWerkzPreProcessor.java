@@ -148,6 +148,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
         // create a new transformation context
         final Context context = new Context(loader);
+        context.setBytecode(bytecode);
+        
+        // do the transformation
         m_preProcessorStrategy.transform(className, klass, context);
 
         // handle the prepared Class cache for further runtime weaving

@@ -19,6 +19,8 @@ import javassist.LoaderClassPath;
  * The AspectWerkz class concept.
  * <p/>
  * Contains informations and data about the class being transformed.
+ * 
+ * @TODO: contains javassist specific stuff, refactor out and use an abstraction
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -48,6 +50,10 @@ public class Klass {
      * The initial bytecode of the class
      */
     private final byte[] m_initialBytecode;
+    
+    /**
+     * The join point index.
+     */
     private int m_joinPointIndex = -1;
 
     /**
@@ -124,7 +130,12 @@ public class Klass {
             throw new WrappedRuntimeException(e);
         }
     }
-
+    
+    /**
+     * Returns the current join point index.
+     * 
+     * @return
+     */
     public int getJoinPointIndex() {
         if (m_joinPointIndex != -1) {
             return m_joinPointIndex;
@@ -134,11 +145,17 @@ public class Klass {
         }
     }
 
+    /**
+     * Increments the join point index.
+     */
     public void incrementJoinPointIndex() {
         getJoinPointIndex();
         m_joinPointIndex++;
     }
 
+    /**
+     * Flushes the index count.
+     */
     public void flushJoinPointIndex() {
         if (m_joinPointIndex != -1) {
             JavassistHelper.setJoinPointIndex(getCtClass(), m_joinPointIndex);

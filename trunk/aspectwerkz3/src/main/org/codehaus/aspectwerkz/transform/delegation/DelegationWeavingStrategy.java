@@ -20,8 +20,8 @@ import org.codehaus.aspectwerkz.transform.WeavingStrategy;
 
 /**
  * 
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class DelegationWeavingStrategy implements WeavingStrategy {
     /**
@@ -30,14 +30,16 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
     private List m_stack;
 
     /**
-     * The transformer to add serial ver uid Out of the transformation stack to be applied only if class is weaved
+     * The transformer to add serial ver uid Out of the transformation stack to
+     * be applied only if class is weaved
      */
     private Transformer m_addSerialVerUidTransformer;
 
     /**
      * Initializes the transformer stack.
-     *
-     * @param params not used
+     * 
+     * @param params
+     *            not used
      */
     public void initialize(final Hashtable params) {
         m_addSerialVerUidTransformer = new AddSerialVersionUidTransformer();
@@ -62,12 +64,13 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
      * @param klass
      * @param context
      */
-    public void transform(final String className, final Klass klass, final Context context) {
+    public void transform(final String className, final Klass klass,
+            final Context context) {
         boolean advisedAtLeastOnce = false;
         for (Iterator it = m_stack.iterator(); it.hasNext();) {
             Object transformer = it.next();
             if (transformer instanceof Transformer) {
-                Transformer tf = (Transformer)transformer;
+                Transformer tf = (Transformer) transformer;
                 context.resetAdvised();
                 try {
                     tf.transform(context, klass);
@@ -78,7 +81,8 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
                     advisedAtLeastOnce = true;
                 }
                 if (context.isAdvised()) {
-                    AspectWerkzPreProcessor.log(" " + className + " <- " + transformer.getClass().getName());
+                    AspectWerkzPreProcessor.log(" " + className + " <- "
+                            + transformer.getClass().getName());
                 }
             }
         }
