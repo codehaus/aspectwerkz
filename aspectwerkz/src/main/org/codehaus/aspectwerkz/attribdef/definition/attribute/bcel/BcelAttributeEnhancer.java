@@ -148,7 +148,6 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         for (int i = 0; i < methodParamTypes.length; i++) {
             methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i].getType());
         }
-        System.out.println("method.getName() = " + method.getName());
 
         Method[] classfileMethod = m_classGen.getMethods();
         for (int i = 0; i < classfileMethod.length; i++) {

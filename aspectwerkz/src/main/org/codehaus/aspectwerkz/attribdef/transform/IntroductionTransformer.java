@@ -93,7 +93,6 @@ public class IntroductionTransformer {
                                               final ConstantPoolGen cpg,
                                               final InstructionFactory factory,
                                               final AddImplementationTransformer transformer) {
-System.out.println("IntroductionTransformer.addMethodIntroductions");
         AspectWerkzDefinitionImpl def = (AspectWerkzDefinitionImpl)definition;
 
         Map metaDataRepository = context.getMetaDataRepository();
