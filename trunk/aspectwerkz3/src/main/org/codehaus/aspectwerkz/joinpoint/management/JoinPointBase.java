@@ -25,25 +25,27 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.io.Serializable;
+import java.io.ObjectInputStream;
 
 /**
  * Base class for the join point implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class JoinPointBase implements JoinPoint {
-    protected final String m_uuid;
-    protected final Class m_targetClass;
-    protected final int m_type;
-    protected final String m_typeAsString;
-    protected final AspectSystem m_system;
-    protected final List m_cflowExpressions;
-    protected final boolean m_checkCflow;
-    protected final AroundAdviceExecutor m_aroundAdviceExecutor;
-    protected final BeforeAdviceExecutor m_beforeAdviceExecutor;
-    protected final AfterAdviceExecutor m_afterAdviceExecutor;
+public abstract class JoinPointBase implements JoinPoint, Serializable {
+    protected String m_uuid;
+    protected Class m_targetClass;
+    protected int m_type;
+    protected String m_typeAsString;
+    protected AspectSystem m_system;
+    protected List m_cflowExpressions;
+    protected boolean m_checkCflow;
+    protected AroundAdviceExecutor m_aroundAdviceExecutor;
+    protected BeforeAdviceExecutor m_beforeAdviceExecutor;
+    protected AfterAdviceExecutor m_afterAdviceExecutor;
     protected Object m_targetInstance;
-    protected final Map m_metaData = new HashMap();
+    protected Map m_metaData = new HashMap();
 
     /**
      * Creates a new join point base instance.
@@ -190,13 +192,10 @@ public abstract class JoinPointBase implements JoinPoint {
             }
         } else {
             java.lang.System.err.println("WARNING: When a constructor has both a CALL and EXECUTION join point, only the CALL will be executed. This limitation is due to a bug that has currently not been fixed yet.");
-
             Object[] parameters = new Object[parameterValues.length + 1];
-
             for (int i = 0; i < parameterValues.length; i++) {
                 parameters[i] = parameterValues[i];
             }
-
             try {
                 return originalConstructor.newInstance(parameters);
             } catch (InvocationTargetException e) {
@@ -255,9 +254,9 @@ public abstract class JoinPointBase implements JoinPoint {
         } else if (type == JoinPointType.FIELD_GET) {
             return JoinPoint.FIELD_GET;
         } else if (type == JoinPointType.HANDLER) {
-            return JoinPoint.CATCH_CLAUSE;
+            return JoinPoint.HANDLER;
         } else if (type == JoinPointType.STATIC_INITALIZATION) {
-            return JoinPoint.STATIC_INITALIZATION;
+            return JoinPoint.STATIC_INITIALIZATION;
         } else {
             throw new RuntimeException("join point type [" + type + "] is not a valid type");
         }
@@ -341,22 +340,41 @@ public abstract class JoinPointBase implements JoinPoint {
     public boolean isInCflow() {
         if (m_checkCflow) {
             boolean isInCFlow = false;
-
             for (Iterator it = m_cflowExpressions.iterator(); it.hasNext();) {
-                CflowExpressionVisitor cflowExpression = (CflowExpressionVisitor)it.next();
-
+                Object o = it.next();
+                System.out.println("o = " + o);
+                CflowExpressionVisitor cflowExpression = (CflowExpressionVisitor)o;
                 if (m_system.isInControlFlowOf(cflowExpression)) {
                     isInCFlow = true;
-
                     break;
                 }
             }
-
             if (!isInCFlow) {
                 return false;
             }
         }
-
         return true;
+    }
+
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws Exception in case of failure
+     */
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
+        m_uuid = (String)fields.get("m_uuid", null);
+        m_type = fields.get("m_uuid", 0);
+        m_typeAsString = getJoinPointTypeAsString(m_type);
+        m_targetClass = (Class)fields.get("m_targetClass", null);
+        m_cflowExpressions = (List)fields.get("m_cflowExpressions", null);
+        m_checkCflow = m_cflowExpressions.size() > 0;
+        m_aroundAdviceExecutor = (AroundAdviceExecutor)fields.get("m_aroundAdviceExecutor", null);
+        m_beforeAdviceExecutor = (BeforeAdviceExecutor)fields.get("m_beforeAdviceExecutor", null);
+        m_afterAdviceExecutor = (AfterAdviceExecutor)fields.get("m_afterAdviceExecutor", null);
+        m_metaData = (Map)fields.get("m_metaData", new HashMap());
+        m_system = SystemLoader.getSystem(m_targetClass.getClassLoader());
+        m_system.initialize();
     }
 }

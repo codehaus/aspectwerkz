@@ -15,10 +15,14 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
+import org.codehaus.aspectwerkz.expression.ExpressionContext;
+import org.codehaus.aspectwerkz.expression.PointcutType;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -48,10 +52,6 @@ import java.util.Set;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public final class AspectSystem {
-    //    /** All defined AspectManager, indexed by systemDefinition.hashcode()/uuid (uuid for readability only) */
-    //    private final static Map s_aspectManagerMap = new HashMap();
-    //    //TODO this structs is never freed which is bad
-
     /**
      * The path to the remote proxy server config file.
      */
@@ -69,10 +69,11 @@ public final class AspectSystem {
     private AspectManager[] m_aspectManagers;
 
     /**
-     * Holds a list of the cflow join points passed by the control flow of the current thread. TODO: I think we need to
-     * use a static TL - need test coverage
+     * Holds a list of the cflow join points passed by the control flow of the current thread.
+     *
+     * @TODO: I think we need to use a static TL - need test coverage
      */
-    private final ThreadLocal m_controlFlowLog = new ThreadLocal();
+    private final ThreadLocal m_cflowStack = new ThreadLocal();
 
     /**
      * The remote proxy server instance.
@@ -98,7 +99,6 @@ public final class AspectSystem {
         // copy the AspectManagers from the parent ClassLoader AspectSystem
         if (loader.getParent() != null) {
             AspectManager[] parentAspectManagers = SystemLoader.getSystem(loader.getParent()).getAspectManagers();
-
             System.arraycopy(parentAspectManagers, 0, m_aspectManagers, 0, parentAspectManagers.length);
         }
 
@@ -109,7 +109,6 @@ public final class AspectSystem {
 
             // check if the SystemDefinition comes from a parent AspectSystem before adding it
             AspectManager aspectManager = null;
-
             try {
                 aspectManager = getAspectManager(uuid);
             } catch (DefinitionException e) {
@@ -122,10 +121,8 @@ public final class AspectSystem {
                 System.out.println("Created AspectManager = " + uuid + ": " + aspectManager);
             } else {
                 System.out.println("Reused AspectManager = " + uuid + ": " + aspectManager);
-
                 continue;
             }
-
             m_aspectManagers[i] = aspectManager;
         }
 
@@ -171,7 +168,6 @@ public final class AspectSystem {
                 return aspectManager;
             }
         }
-
         throw new DefinitionException("No such AspectManager " + uuid + " in " + m_classLoader);
     }
 
@@ -197,69 +193,79 @@ public final class AspectSystem {
     /**
      * Registers entering of a control flow join point.
      *
-     * @param methodInfo the methodInfo
+     * @param pointcutType the pointcut type
+     * @param methodInfo   the method info
+     * @param withinInfo   the within info
      */
-    public void enteringControlFlow(final MethodInfo methodInfo) {
-        if (methodInfo == null) {
-            throw new IllegalArgumentException("methodInfo can not be null");
+    public void enteringControlFlow(final PointcutType pointcutType, final MethodInfo methodInfo,
+                                    final ClassInfo withinInfo) {
+        if (pointcutType == null) {
+            throw new IllegalArgumentException("pointcut type can not be null");
         }
-
-        Set cflowSet = (Set)m_controlFlowLog.get();
-
+        if (methodInfo == null) {
+            throw new IllegalArgumentException("method info can not be null");
+        }
+        Set cflowSet = (Set)m_cflowStack.get();
         if (cflowSet == null) {
             cflowSet = new HashSet();
         }
-
-        cflowSet.add(methodInfo);
-        m_controlFlowLog.set(cflowSet);
+        cflowSet.add(new ExpressionContext(pointcutType, methodInfo, withinInfo));
+        m_cflowStack.set(cflowSet);
     }
 
     /**
      * Registers exiting from a control flow join point.
      *
-     * @param methodInfo the methodInfo
+     * @param pointcutType the pointcut type
+     * @param methodInfo   the method info
+     * @param withinInfo   the within info
      */
-    public void exitingControlFlow(final MethodInfo methodInfo) {
-        //        if (methodInfo == null) {
-        //            throw new IllegalArgumentException("methodInfo can not be null");
-        //        }
-        //
-        //        Set cflowSet = (Set)m_controlFlowLog.get();
-        //        if (cflowSet == null) {
-        //            return;
-        //        }
-        //        cflowSet.remove(methodInfo);
-        //        m_controlFlowLog.set(cflowSet);
+    public void exitingControlFlow(final PointcutType pointcutType, final MethodInfo methodInfo,
+                                   final ClassInfo withinInfo) {
+        if (pointcutType == null) {
+            throw new IllegalArgumentException("pointcut type can not be null");
+        }
+        if (methodInfo == null) {
+            throw new IllegalArgumentException("method info can not be null");
+        }
+        Set cflowSet = (Set)m_cflowStack.get();
+        if (cflowSet == null) {
+            return;
+        }
+        cflowSet.remove(new ExpressionContext(pointcutType, methodInfo, withinInfo));
+        m_cflowStack.set(cflowSet);
     }
 
     /**
-     * Checks if we are in the control flow of a specific cflow pointcut.
+     * Checks if we are in the control flow of a join point picked out by a specific pointcut expression.
      *
-     * @param cflowExpression the cflow expression
+     * @param expression the cflow expression
      * @return boolean
      */
-    public boolean isInControlFlowOf(final CflowExpressionVisitor cflowExpression) {
-        //        if (cflowExpression == null) {
-        //            throw new IllegalArgumentException("cflowExpression can not be null");
-        //        }
-        //
-        //        Set cflowSet = (Set)m_controlFlowLog.get();
-        //        if (cflowSet == null) {
-        //            cflowSet = new HashSet();//fix for "NOT cflow"
-        //        }
-        //        if (cflowExpression.matchCflow(cflowSet)) {
-        //            return true;
-        //        }
+    public boolean isInControlFlowOf(final CflowExpressionVisitor expression) {
+        if (expression == null) {
+            throw new IllegalArgumentException("expression can not be null");
+        }
+        Set cflowSet = (Set)m_cflowStack.get();
+        if (cflowSet == null) {
+            cflowSet = new HashSet();
+        }
+        for (Iterator it = cflowSet.iterator(); it.hasNext();) {
+            ExpressionContext ctx = (ExpressionContext)it.next();
+            if (expression.match(ctx)) {
+                return true;
+            }
+        }
         return false;
     }
 
     /**
      * Starts up the remote proxy server.
+     *
+     * @TODO: option to shut down in a nice way?
      */
     private void startRemoteProxyServer() {
-        Invoker invoker = getInvoker();
-
-        m_remoteProxyServer = new RemoteProxyServer(ContextClassLoader.getLoader(), invoker);
+        m_remoteProxyServer = new RemoteProxyServer(ContextClassLoader.getLoader(), getInvoker());
         m_remoteProxyServer.start();
     }
 
@@ -269,20 +275,15 @@ public final class AspectSystem {
      * @return the Invoker
      */
     private Invoker getInvoker() {
-        Invoker invoker = null;
-
+        Invoker invoker;
         try {
             Properties properties = new Properties();
-
             properties.load(new FileInputStream(java.lang.System.getProperty("aspectwerkz.resource.bundle")));
-
             String className = properties.getProperty("remote.server.invoker.classname");
-
             invoker = (Invoker)ContextClassLoader.getLoader().loadClass(className).newInstance();
         } catch (Exception e) {
             invoker = getDefaultInvoker();
         }
-
         return invoker;
     }
 
@@ -295,39 +296,33 @@ public final class AspectSystem {
         return new Invoker() {
                 public Object invoke(final String handle, final String methodName, final Class[] paramTypes,
                                      final Object[] args, final Object context) {
-                    Object result = null;
-
+                    Object result;
                     try {
                         final Object instance = RemoteProxy.getWrappedInstance(handle);
                         final Method method = instance.getClass().getMethod(methodName, paramTypes);
-
                         result = method.invoke(instance, args);
                     } catch (Exception e) {
                         throw new WrappedRuntimeException(e);
                     }
-
                     return result;
                 }
             };
     }
 
     /**
-     * Checks uuid unicity within the list. Throw a DefinitionException on failure. TODO AVAOPC algo is crapped, check
-     * earlier and avoid exception but do a WARN (in SysDefContainer)
+     * Checks uuid unicity within the list. Throw a DefinitionException on failure.
+     * @TODO AVAOPC algo is crapped, check earlier and avoid exception but do a WARN (in SysDefContainer)
      *
      * @param definitions
      */
     private static void assertUuidUniqueWithinHierarchy(final List definitions) {
         for (int i = 0; i < definitions.size(); i++) {
             SystemDefinition systemDefinition = (SystemDefinition)definitions.get(i);
-
             for (int j = 0; j < definitions.size(); j++) {
                 if (j == i) {
                     continue;
                 }
-
                 SystemDefinition systemDefinition2 = (SystemDefinition)definitions.get(j);
-
                 if (systemDefinition2.getUuid().equals(systemDefinition.getUuid())) {
                     throw new DefinitionException("UUID is not unique within hierarchy: " + systemDefinition.getUuid());
                 }
@@ -335,17 +330,20 @@ public final class AspectSystem {
         }
     }
 
-    public void propagateAspectManagers(AspectManager[] block, int blockSizeBefore) {
+    /**
+     * Propagates the aspect managers.
+     *
+     * @param block
+     * @param blockSizeBefore
+     */
+    public void propagateAspectManagers(final AspectManager[] block, final int blockSizeBefore) {
         AspectManager[] newAspectManagers = new AspectManager[m_aspectManagers.length
                                             + (block.length - blockSizeBefore)];
-
         System.arraycopy(block, 0, newAspectManagers, 0, block.length);
-
         if (blockSizeBefore < m_aspectManagers.length) {
             System.arraycopy(m_aspectManagers, blockSizeBefore, newAspectManagers, block.length + 1,
                              m_aspectManagers.length - blockSizeBefore);
         }
-
         m_aspectManagers = newAspectManagers;
     }
 }

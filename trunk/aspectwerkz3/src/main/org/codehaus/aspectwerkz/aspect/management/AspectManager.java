@@ -37,8 +37,7 @@ import java.util.WeakHashMap;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it should remove a
- * certain advice from the pointcut - notification of the JoinPoinManager.
+ * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it should remove a certain advice from the pointcut - notification of the JoinPoinManager.
  */
 public final class AspectManager {
     /**
@@ -64,12 +63,20 @@ public final class AspectManager {
     private AttributeParser m_attributeParser = new AspectAttributeParser();
 
     /**
-     * Cache for the execution pointcuts.
+     * Cache for the pointcuts.
      *
      * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
      * invalidated.
      */
     private final Map m_pointcutCache = new WeakHashMap();
+
+    /**
+     * Cache for the cflow pointcuts.
+     *
+     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
+     * invalidated.
+     */
+    private final Map m_cflowPointcutCache = new WeakHashMap();
 
     /**
      * Creates a new aspect manager.
@@ -115,17 +122,14 @@ public final class AspectManager {
         if (name == null) {
             throw new IllegalArgumentException("aspect name can not be null");
         }
-
         if (aspectClassName == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
-
         if ((deploymentModel < 0) || (deploymentModel > 3)) {
             throw new IllegalArgumentException(deploymentModel + " is not a valid deployment model type");
         }
 
         Class aspectClass = null;
-
         try {
             if (loader == null) {
                 aspectClass = ContextClassLoader.loadClass(aspectClassName);
@@ -134,7 +138,6 @@ public final class AspectManager {
             }
         } catch (Exception e) {
             StringBuffer msg = new StringBuffer();
-
             msg.append("could not load aspect class [");
             msg.append(aspectClassName);
             msg.append("] with name ");
@@ -146,7 +149,6 @@ public final class AspectManager {
 
         // create the aspect definition
         AspectDefinition aspectDef = new AspectDefinition(aspectClassName, aspectClassName);
-
         aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelAsString(deploymentModel));
 
         // parse the class attributes and create a definition
@@ -157,7 +159,6 @@ public final class AspectManager {
                                                                  deploymentModel, aspectDef, new HashMap());
 
         AspectContainer container = StartupManager.createAspectContainer(crossCuttingInfo);
-
         crossCuttingInfo.setContainer(container);
         m_aspectRegistry.register(container, new PointcutManager(name, deploymentModel));
     }
@@ -265,7 +266,6 @@ public final class AspectManager {
      * @return the index of the advice
      */
     public IndexTuple getAdviceIndexFor(final String name) {
-        //java.lang.System.out.println("AspectManager.getAdviceIndexFor " + name + " = " + m_aspectRegistry.getAdviceIndexFor(name));
         return m_aspectRegistry.getAdviceIndexFor(name);
     }
 
@@ -289,7 +289,7 @@ public final class AspectManager {
     }
 
     /**
-     * Returns the pointcut list for the class and member specified.
+     * Returns the pointcut list for the context specified.
      * <p/>
      * Caches the list, needed since the actual method call is expensive and is made each time a new instance of an
      * advised class is created.
@@ -301,22 +301,15 @@ public final class AspectManager {
         if (ctx == null) {
             throw new IllegalArgumentException("expression context can not be null");
         }
-
         initialize();
-
-        // if cached; return the cached list
-        //TODO temp fix - AVEW eWorld RW / RuW requires NO CACHE
         List pointcuts;
-
         if (m_pointcutCache.containsKey(ctx)) {
             pointcuts = (List)m_pointcutCache.get(ctx);
-
             if (pointcuts == null) { // strange enough, but can be null
                 pointcuts = new ArrayList();
             }
         } else {
             pointcuts = m_aspectRegistry.getPointcuts(ctx);
-
             synchronized (m_pointcutCache) {
                 m_pointcutCache.put(ctx, pointcuts);
             }
@@ -326,31 +319,33 @@ public final class AspectManager {
     }
 
     /**
-     * Returns all Expression that match (no matter cflow) at join point related to given metadata and assumed type, and
-     * that contains 1+ cflow construct.
+     * Returns the cflow pointcut list for the context specified.
      * <p/>
-     * The Expressions are inflated and evaluated to allow optimization (pc1 AND cflow => TRUE|FALSE AND cflow)
-     * depending on given MetaDataBase
+     * Caches the list, needed since the actual method call is expensive and is made each time a new instance of an
+     * advised class is created.
      *
-     * @param ctx the context
-     * @return
+     * @param ctx the expression context
+     * @return the pointcuts for this join point
      */
-    public List getCFlowExpressions(final ExpressionContext ctx) {
+    public List getCflowPointcuts(final ExpressionContext ctx) {
         if (ctx == null) {
-            throw new IllegalArgumentException("context can not be null");
+            throw new IllegalArgumentException("expression context can not be null");
+        }
+        initialize();
+        List pointcuts;
+        if (m_cflowPointcutCache.containsKey(ctx)) {
+            pointcuts = (List)m_cflowPointcutCache.get(ctx);
+            if (pointcuts == null) { // strange enough, but can be null
+                pointcuts = new ArrayList();
+            }
+        } else {
+            pointcuts = m_aspectRegistry.getCflowPointcuts(ctx);
+            synchronized (m_cflowPointcutCache) {
+                m_cflowPointcutCache.put(ctx, pointcuts);
+            }
         }
 
-        initialize();
-
-        return new ArrayList();
-
-        // Note: cache is done at JP level
-        //                return m_aspectRegistry.getCflowExpressions(
-        //                        classMetaData,
-        //                        memberMetaData,
-        //                        callerClassInfo,
-        //                        pointcutType
-        //                );
+        return pointcuts;
     }
 
     /**
@@ -398,12 +393,10 @@ public final class AspectManager {
 
     public String toString() {
         StringBuffer sb = new StringBuffer("AspectManager@");
-
         sb.append(this.hashCode());
         sb.append("[").append(m_definition.getUuid());
         sb.append(" @ ").append(m_system.getDefiningClassLoader());
         sb.append("]");
-
         return sb.toString();
     }
 }

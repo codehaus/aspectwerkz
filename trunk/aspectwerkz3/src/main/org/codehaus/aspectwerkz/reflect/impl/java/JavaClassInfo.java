@@ -99,7 +99,6 @@ public class JavaClassInfo implements ClassInfo {
         m_class = klass;
         m_classInfoRepository = ClassInfoRepository.getRepository(klass.getClassLoader());
         m_isInterface = klass.isInterface();
-
         if (klass.isPrimitive()) {
             m_name = klass.getName();
             m_isPrimitive = true;
@@ -112,32 +111,22 @@ public class JavaClassInfo implements ClassInfo {
             m_interfaces = new ClassInfo[0];
         } else {
             m_name = klass.getName();
-
             Method[] methods = m_class.getDeclaredMethods();
-
             m_methods = new MethodInfo[methods.length];
-
             for (int i = 0; i < methods.length; i++) {
                 m_methods[i] = new JavaMethodInfo(methods[i], this);
             }
-
             Constructor[] constructors = m_class.getDeclaredConstructors();
-
             m_constructors = new ConstructorInfo[constructors.length];
-
             for (int i = 0; i < constructors.length; i++) {
                 m_constructors[i] = new JavaConstructorInfo(constructors[i], this);
             }
-
             Field[] fields = m_class.getDeclaredFields();
-
             m_fields = new FieldInfo[fields.length];
-
             for (int i = 0; i < fields.length; i++) {
                 m_fields[i] = new JavaFieldInfo(fields[i], this);
             }
         }
-
         m_classInfoRepository.addClassInfo(this);
     }
 
@@ -212,21 +201,16 @@ public class JavaClassInfo implements ClassInfo {
     public ClassInfo[] getInterfaces() {
         if (m_interfaces == null) {
             Class[] interfaces = m_class.getInterfaces();
-
             m_interfaces = new ClassInfo[interfaces.length];
-
             for (int i = 0; i < interfaces.length; i++) {
                 Class anInterface = interfaces[i];
                 ClassInfo classInfo = new JavaClassInfo(anInterface);
-
                 m_interfaces[i] = classInfo;
-
                 if (!m_classInfoRepository.hasClassInfo(anInterface.getName())) {
                     m_classInfoRepository.addClassInfo(classInfo);
                 }
             }
         }
-
         return m_interfaces;
     }
 
@@ -238,7 +222,6 @@ public class JavaClassInfo implements ClassInfo {
     public ClassInfo getSuperClass() {
         if (m_superClass == null) {
             Class superclass = m_class.getSuperclass();
-
             if (superclass != null) {
                 if (m_classInfoRepository.hasClassInfo(superclass.getName())) {
                     m_superClass = m_classInfoRepository.getClassInfo(superclass.getName());
@@ -248,7 +231,6 @@ public class JavaClassInfo implements ClassInfo {
                 }
             }
         }
-
         return m_superClass;
     }
 
@@ -260,7 +242,6 @@ public class JavaClassInfo implements ClassInfo {
     public ClassInfo getComponentType() {
         if (isArray() && (m_componentType == null)) {
             Class componentType = m_class.getComponentType();
-
             if (m_classInfoRepository.hasClassInfo(componentType.getName())) {
                 m_componentType = m_classInfoRepository.getClassInfo(componentType.getName());
             } else {
@@ -268,7 +249,6 @@ public class JavaClassInfo implements ClassInfo {
                 m_classInfoRepository.addClassInfo(m_componentType);
             }
         }
-
         return m_componentType;
     }
 
@@ -308,10 +288,8 @@ public class JavaClassInfo implements ClassInfo {
      */
     private static String convertArrayTypeName(final String typeName) {
         int index = typeName.lastIndexOf('[');
-
         if (index != -1) {
             StringBuffer arrayType = new StringBuffer();
-
             if (typeName.endsWith("I")) {
                 arrayType.append("int");
             } else if (typeName.endsWith("J")) {
@@ -331,11 +309,9 @@ public class JavaClassInfo implements ClassInfo {
             } else {
                 arrayType.append(typeName.substring(index + 2, typeName.length() - 1));
             }
-
             for (int i = 0; i < (index + 1); i++) {
                 arrayType.append("[]");
             }
-
             return arrayType.toString();
         } else {
             return typeName;
@@ -346,75 +322,58 @@ public class JavaClassInfo implements ClassInfo {
         if (this == o) {
             return true;
         }
-
         if (!(o instanceof JavaClassInfo)) {
             return false;
         }
-
         final JavaClassInfo javaClassInfo = (JavaClassInfo)o;
-
         if (m_isArray != javaClassInfo.m_isArray) {
             return false;
         }
-
         if (m_isPrimitive != javaClassInfo.m_isPrimitive) {
             return false;
         }
-
         if (m_isInterface != javaClassInfo.m_isInterface) {
             return false;
         }
-
         if ((m_attributes != null) ? (!m_attributes.equals(javaClassInfo.m_attributes))
                                    : (javaClassInfo.m_attributes != null)) {
             return false;
         }
-
         if ((m_class != null) ? (!m_class.equals(javaClassInfo.m_class)) : (javaClassInfo.m_class != null)) {
             return false;
         }
-
         if ((m_classInfoRepository != null) ? (!m_classInfoRepository.equals(javaClassInfo.m_classInfoRepository))
                                             : (javaClassInfo.m_classInfoRepository != null)) {
             return false;
         }
-
         if ((m_componentType != null) ? (!m_componentType.equals(javaClassInfo.m_componentType))
                                       : (javaClassInfo.m_componentType != null)) {
             return false;
         }
-
         if (!Arrays.equals(m_constructors, javaClassInfo.m_constructors)) {
             return false;
         }
-
         if (!Arrays.equals(m_fields, javaClassInfo.m_fields)) {
             return false;
         }
-
         if (!Arrays.equals(m_interfaces, javaClassInfo.m_interfaces)) {
             return false;
         }
-
         if (!Arrays.equals(m_methods, javaClassInfo.m_methods)) {
             return false;
         }
-
         if ((m_name != null) ? (!m_name.equals(javaClassInfo.m_name)) : (javaClassInfo.m_name != null)) {
             return false;
         }
-
         if ((m_superClass != null) ? (!m_superClass.equals(javaClassInfo.m_superClass))
                                    : (javaClassInfo.m_superClass != null)) {
             return false;
         }
-
         return true;
     }
 
     public int hashCode() {
         int result;
-
         result = ((m_class != null) ? m_class.hashCode() : 0);
         result = (29 * result) + ((m_name != null) ? m_name.hashCode() : 0);
         result = (29 * result) + (m_isPrimitive ? 1 : 0);
@@ -424,7 +383,6 @@ public class JavaClassInfo implements ClassInfo {
         result = (29 * result) + ((m_attributes != null) ? m_attributes.hashCode() : 0);
         result = (29 * result) + ((m_componentType != null) ? m_componentType.hashCode() : 0);
         result = (29 * result) + ((m_classInfoRepository != null) ? m_classInfoRepository.hashCode() : 0);
-
         return result;
     }
 }

@@ -126,7 +126,6 @@ public class AspectRegistry {
             if (m_initialized) {
                 return;
             }
-
             m_initialized = true;
             StartupManager.initializeSystem(m_aspectManager, m_definition);
         }
@@ -142,11 +141,9 @@ public class AspectRegistry {
         if (container == null) {
             throw new IllegalArgumentException("aspect container can not be null");
         }
-
         if (pointcutManager == null) {
             throw new IllegalArgumentException("pointcut manager can not be null");
         }
-
         synchronized (m_aspectContainers) {
             synchronized (m_aspectIndexes) {
                 synchronized (m_adviceIndexes) {
@@ -154,53 +151,38 @@ public class AspectRegistry {
                         synchronized (m_pointcutManagerMap) {
                             try {
                                 CrossCuttingInfo crossCuttingInfo = container.getCrossCuttingInfo();
-
                                 m_pointcutManagerMap.put(crossCuttingInfo.getName(), pointcutManager); //AVAOPC what is this name as a key here
-
-                                // aspects
                                 final int indexAspect = m_aspectContainers.length + 1;
-
                                 m_aspectIndexes.put(crossCuttingInfo.getName(), indexAspect);
-
                                 final Object[] tmpAspects = new Object[m_aspectContainers.length + 1];
-
                                 java.lang.System.arraycopy(m_aspectContainers, 0, tmpAspects, 0,
                                                            m_aspectContainers.length);
-
                                 tmpAspects[m_aspectContainers.length] = container;
-
                                 m_aspectContainers = new AspectContainer[m_aspectContainers.length + 1];
                                 java.lang.System.arraycopy(tmpAspects, 0, m_aspectContainers, 0, tmpAspects.length);
 
                                 // retrieve a sorted advices list => matches the sorted method list in the container
                                 List advices = crossCuttingInfo.getAspectDefinition().getAllAdvices();
-
                                 for (Iterator it = advices.iterator(); it.hasNext();) {
                                     final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
                                     IndexTuple tuple = new IndexTuple(indexAspect, adviceDef.getMethodIndex(),
                                                                       m_aspectManager.getUuid(), m_aspectManager);
-
                                     //prefix AdviceName with AspectName to allow AspectReuse
                                     m_adviceIndexes.put(crossCuttingInfo.getName() + "/" + adviceDef.getName(), tuple);
                                 }
 
                                 // mixins
                                 List introductions = crossCuttingInfo.getAspectDefinition().getIntroductions();
-
                                 for (Iterator it = introductions.iterator(); it.hasNext();) {
                                     IntroductionDefinition introDef = (IntroductionDefinition)it.next();
-
                                     // load default mixin impl from the aspect which defines it
                                     Class defaultImplClass = crossCuttingInfo.getAspectClass().getClassLoader()
                                                                              .loadClass(introDef.getName());
                                     Introduction mixin = new Introduction(introDef.getName(), defaultImplClass,
                                                                           crossCuttingInfo, introDef);
-
                                     // prepare the container
                                     mixin.setContainer(new IntroductionContainer(mixin, container));
-
                                     final Mixin[] tmpMixins = new Mixin[m_mixins.length + 1];
-
                                     java.lang.System.arraycopy(m_mixins, 0, tmpMixins, 0, m_mixins.length);
                                     tmpMixins[m_mixins.length] = mixin;
                                     m_mixins = new Mixin[m_mixins.length + 1];
@@ -420,7 +402,7 @@ public class AspectRegistry {
     }
 
     /**
-     * Returns the execution pointcut list for the class and member specified.
+     * Returns the pointcut list for the context specified.
      *
      * @param ctx the expression context
      * @return the pointcuts for this join point
@@ -430,9 +412,24 @@ public class AspectRegistry {
 
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager pointcutManager = (PointcutManager)it.next();
-            List executionPointcuts = pointcutManager.getPointcuts(ctx);
+            pointcuts.addAll(pointcutManager.getPointcuts(ctx));
+        }
 
-            pointcuts.addAll(executionPointcuts);
+        return pointcuts;
+    }
+
+    /**
+     * Returns the cflow pointcut list for the context specified.
+    *
+    * @param ctx the expression context
+    * @return the pointcuts for this join point
+    */
+    public List getCflowPointcuts(final ExpressionContext ctx) {
+        List pointcuts = new ArrayList();
+
+        for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
+            PointcutManager pointcutManager = (PointcutManager)it.next();
+            pointcuts.addAll(pointcutManager.getCflowPointcuts(ctx));
         }
 
         return pointcuts;
@@ -566,60 +563,44 @@ public class AspectRegistry {
 
         Method[] methods = klass.getDeclaredMethods();
         TIntObjectHashMap methodMap = new TIntObjectHashMap(methods.length);
-
         for (int i = 0; i < methods.length; i++) {
             Method wrapperMethod = methods[i];
-
             if (!wrapperMethod.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
                 Method prefixedMethod = null;
-
                 for (int j = 0; j < methods.length; j++) {
                     Method method2 = methods[j];
-
                     if (method2.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
                         String[] tokens = Strings.splitString(method2.getName(), TransformationUtil.DELIMITER);
                         String methodName = tokens[1];
                         Class[] parameterTypes1 = wrapperMethod.getParameterTypes();
                         Class[] parameterTypes2 = method2.getParameterTypes();
-
                         if (!methodName.equals(wrapperMethod.getName())) {
                             continue;
                         }
-
                         if (parameterTypes2.length != parameterTypes1.length) {
                             continue;
                         }
-
                         boolean match = true;
-
                         for (int k = 0; k < parameterTypes1.length; k++) {
                             if (parameterTypes1[k] != parameterTypes2[k]) {
                                 match = false;
-
                                 break;
                             }
                         }
-
                         if (!match) {
                             continue;
                         }
-
                         prefixedMethod = method2;
-
                         break;
                     }
                 }
-
                 // create a method tuple with 'wrapped method' and 'prefixed method'
                 MethodTuple methodTuple = new MethodTuple(wrapperMethod, prefixedMethod);
-
                 // map the tuple to the hash for the 'wrapper method'
                 int methodHash = TransformationUtil.calculateHash(wrapperMethod);
-
                 methodMap.put(methodHash, methodTuple);
             }
         }
-
         synchronized (s_methods) {
             s_methods.put(klass, methodMap);
         }
@@ -634,15 +615,12 @@ public class AspectRegistry {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
-
         Constructor[] constructors = klass.getDeclaredConstructors();
         TIntObjectHashMap constructorMap = new TIntObjectHashMap(constructors.length);
-
         for (int i = 0; i < constructors.length; i++) {
             Constructor constructor1 = constructors[i];
             Constructor prefixedConstructor = constructor1;
             Constructor wrapperConstructor = constructor1;
-
             for (int j = 0; j < constructors.length; j++) {
                 Constructor constructor2 = constructors[j];
                 Class[] parameterTypes1 = constructor1.getParameterTypes();
@@ -651,17 +629,14 @@ public class AspectRegistry {
                 if (!constructor2.getName().equals(constructor1.getName())) {
                     continue;
                 }
-
                 if (parameterTypes1.length == parameterTypes2.length) {
                     continue;
                 } else if ((parameterTypes1.length < parameterTypes2.length)
                            && (parameterTypes1.length == (parameterTypes2.length - 1))) {
                     boolean match = true;
-
                     for (int k = 0; k < parameterTypes1.length; k++) {
                         if (parameterTypes1[k] != parameterTypes2[k]) {
                             match = false;
-
                             break;
                         }
                     }
@@ -669,19 +644,15 @@ public class AspectRegistry {
                     if (parameterTypes2[parameterTypes1.length].getName().equals(TransformationUtil.JOIN_POINT_MANAGER_CLASS)) {
                         match = true;
                     }
-
                     if (!match) {
                         continue;
                     }
-
                     wrapperConstructor = constructor1;
                     prefixedConstructor = constructor2;
-
                     break;
                 } else if ((parameterTypes2.length < parameterTypes1.length)
                            && (parameterTypes2.length == (parameterTypes1.length - 1))) {
                     boolean match = true;
-
                     for (int k = 0; k < parameterTypes2.length; k++) {
                         if (parameterTypes2[k] != parameterTypes1[k]) {
                             match = false;
@@ -689,31 +660,23 @@ public class AspectRegistry {
                             break;
                         }
                     }
-
                     if (parameterTypes1[parameterTypes2.length].getName().equals(TransformationUtil.JOIN_POINT_MANAGER_CLASS)) {
                         match = true;
                     }
-
                     if (!match) {
                         continue;
                     }
-
                     wrapperConstructor = constructor2;
                     prefixedConstructor = constructor1;
-
                     break;
                 }
             }
-
             // create a constructor tuple with 'wrapper constructor' and 'prefixed constructor'
             ConstructorTuple constructorTuple = new ConstructorTuple(wrapperConstructor, prefixedConstructor);
-
             // map the tuple to the hash for the 'wrapper constructor'
             int constructorHash = TransformationUtil.calculateHash(wrapperConstructor);
-
             constructorMap.put(constructorHash, constructorTuple);
         }
-
         synchronized (s_constructors) {
             s_constructors.put(klass, constructorMap);
         }
@@ -728,20 +691,14 @@ public class AspectRegistry {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
-
         Field[] fields = klass.getDeclaredFields();
         TIntObjectHashMap fieldMap = new TIntObjectHashMap(fields.length);
-
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
-
             field.setAccessible(true);
-
             int fieldHash = TransformationUtil.calculateHash(field);
-
             fieldMap.put(fieldHash, field);
         }
-
         synchronized (s_fields) {
             s_fields.put(klass, fieldMap);
         }

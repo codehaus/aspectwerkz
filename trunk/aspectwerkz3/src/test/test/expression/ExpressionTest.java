@@ -1004,6 +1004,60 @@ public class ExpressionTest extends TestCase {
     }
 
     // ============ cflow type tests =============
+    public void testFindCflowPointcut() throws Exception {
+        MethodInfo method1 = new JavaMethodInfo(Target.class.getDeclaredMethod("modifiers1", new Class[] {  }),
+                                                s_declaringType);
+        MethodInfo method2 = new JavaMethodInfo(Target.class.getDeclaredMethod("modifiers2", new Class[] {  }),
+                                                s_declaringType);
+        MethodInfo method3 = new JavaMethodInfo(Target.class.getDeclaredMethod("modifiers3", new Class[] {  }),
+                                                s_declaringType);
+
+        s_namespace.addExpressionInfo("pc1",
+                                      new ExpressionInfo("execution(void test.expression.Target.modifiers2())",
+                                                         NAMESPACE));
+        s_namespace.addExpressionInfo("pc2",
+                                      new ExpressionInfo("execution(void test.expression.Target.modifiers3())",
+                                                         NAMESPACE));
+
+        s_namespace.addExpressionInfo("cflowPC",
+                                      new ExpressionInfo("cflow(call(void test.expression.Target.modifiers3()) AND within(test.expression.*))",
+                                                         NAMESPACE));
+
+        assertTrue(new ExpressionInfo("cflow(execution(void test.expression.Target.modifiers1()))", NAMESPACE).getCflowExpression()
+                                                                                                              .match(new ExpressionContext(PointcutType.EXECUTION,
+                                                                                                                                           method1,
+                                                                                                                                           null)));
+        assertTrue(new ExpressionInfo("execution(void test.expression.Target.modifiers2()) && cflow(execution(void test.expression.Target.modifiers1()))",
+                                      NAMESPACE).hasCflowPointcut());
+        assertTrue(new ExpressionInfo("execution(void test.expression.Target.modifiers2()) && cflow(execution(void test.expression.Target.modifiers1()))",
+                                      NAMESPACE).hasCflowPointcut());
+        assertTrue(new ExpressionInfo("cflow(execution(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers2())",
+                                      NAMESPACE).hasCflowPointcut());
+        assertTrue(new ExpressionInfo("cflowPC && pc1", NAMESPACE).hasCflowPointcut());
+        assertTrue(new ExpressionInfo("pc1 && cflowPC", NAMESPACE).hasCflowPointcut());
+        assertTrue(new ExpressionInfo("cflow(pc2) && pc1", NAMESPACE).hasCflowPointcut());
+        assertTrue(new ExpressionInfo("pc1 && cflow(pc2)", NAMESPACE).hasCflowPointcut());
+        assertTrue(new ExpressionInfo("pc2 && cflow(pc1 || pc2 || call(void test.expression.Target.modifiers1()))",
+                                      NAMESPACE).hasCflowPointcut());
+        assertTrue(new ExpressionInfo("cflow(pc1 || pc2 || call(void test.expression.Target.modifiers1())) AND pc1",
+                                      NAMESPACE).hasCflowPointcut());
+        assertTrue(new ExpressionInfo("cflow(pc1 || call(void test.expression.Target.modifiers1())) && (execution(void test.expression.Target.modifiers3()) || pc1)",
+                                      NAMESPACE).hasCflowPointcut());
+        assertTrue(new ExpressionInfo("cflow(execution(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers2())",
+                                      NAMESPACE).hasCflowPointcut());
+        assertTrue(new ExpressionInfo("cflow(pc1) && execution(void test.expression.Target.modifiers3())", NAMESPACE)
+                   .hasCflowPointcut());
+        assertTrue(new ExpressionInfo("cflow(call(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers1())",
+                                      NAMESPACE).hasCflowPointcut());
+        assertTrue(new ExpressionInfo("cflow(call(void test.expression.Target.modifiers1())) || execution(void test.expression.Target.modifiers1())",
+                                      NAMESPACE).hasCflowPointcut());
+
+        assertFalse(new ExpressionInfo("call(void test.expression.Target.modifiers1()) || execution(void test.expression.Target.modifiers1())",
+                                       NAMESPACE).hasCflowPointcut());
+        assertFalse(new ExpressionInfo("call(void test.expression.Target.modifiers1()) && execution(void test.expression.Target.modifiers1())",
+                                       NAMESPACE).hasCflowPointcut());
+    }
+
     public void testCflowTypes() throws Exception {
         MethodInfo method1 = new JavaMethodInfo(Target.class.getDeclaredMethod("modifiers1", new Class[] {  }),
                                                 s_declaringType);

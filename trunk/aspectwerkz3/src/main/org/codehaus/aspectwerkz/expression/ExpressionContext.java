@@ -43,7 +43,6 @@ public class ExpressionContext {
         if (pointcutType == null) {
             throw new IllegalArgumentException("pointcut type can not be null");
         }
-
         if (reflectionInfo == null) {
             throw new IllegalArgumentException("reflection info can not be null");
         }
@@ -153,48 +152,37 @@ public class ExpressionContext {
         if (this == o) {
             return true;
         }
-
         if (!(o instanceof ExpressionContext)) {
             return false;
         }
-
         final ExpressionContext expressionContext = (ExpressionContext)o;
-
         if (m_inCflowSubAST != expressionContext.m_inCflowSubAST) {
             return false;
         }
-
         if (m_hasBeenVisitingCflow != expressionContext.m_hasBeenVisitingCflow) {
             return false;
         }
-
         if (m_cflowEvaluation != expressionContext.m_cflowEvaluation) {
             return false;
         }
-
         if (m_reflectionInfoType != expressionContext.m_reflectionInfoType) {
             return false;
         }
-
         if (!m_matchingReflectionInfo.equals(expressionContext.m_matchingReflectionInfo)) {
             return false;
         }
-
         if (!m_pointcutType.equals(expressionContext.m_pointcutType)) {
             return false;
         }
-
         if ((m_withinReflectionInfo != null) ? (!m_withinReflectionInfo.equals(expressionContext.m_withinReflectionInfo))
                                              : (expressionContext.m_withinReflectionInfo != null)) {
             return false;
         }
-
         return true;
     }
 
     public int hashCode() {
         int result;
-
         result = (m_inCflowSubAST ? 1 : 0);
         result = (29 * result) + (m_cflowEvaluation ? 1 : 0);
         result = (29 * result) + (m_hasBeenVisitingCflow ? 1 : 0);
@@ -202,7 +190,6 @@ public class ExpressionContext {
         result = (29 * result) + m_matchingReflectionInfo.hashCode();
         result = (29 * result) + ((m_withinReflectionInfo != null) ? m_withinReflectionInfo.hashCode() : 0);
         result = (29 * result) + m_reflectionInfoType;
-
         return result;
     }
 }
