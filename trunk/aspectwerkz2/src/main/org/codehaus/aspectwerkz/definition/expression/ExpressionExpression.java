@@ -211,7 +211,7 @@ public class ExpressionExpression extends Expression {
     public boolean match(final ClassMetaData classMetaData,
                          final MemberMetaData memberMetaData,
                          final String exceptionType) {
-        if (exceptionType != null && !m_type.equals(PointcutType.THROWS)) {
+        if (exceptionType != null) {
             throw new RuntimeException("expression of type " + m_type.toString() + "cannot evaluate exception type");
         }
         ExpressionContext ctx = new ExpressionContext(

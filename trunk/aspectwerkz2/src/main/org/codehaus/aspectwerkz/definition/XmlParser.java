@@ -53,16 +53,6 @@ public class XmlParser {
     private static List s_definitions = null;
 
     /**
-     * Parses the XML definition file.
-     *
-     * @param definitionFile the definition file
-     * @return the definitions
-     */
-//    public static List parse(final File definitionFile) {
-//        return parse(definitionFile, false);
-//    }
-
-    /**
      * Parses the XML definition file, only if it has been updated.
      * Uses a timestamp to check for modifications.
      *

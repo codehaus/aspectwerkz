@@ -73,15 +73,6 @@ public class StaticMethodAdviceTest extends TestCase {
         }
     }
 
-    public void testThrowException() {
-        try {
-            exceptionThrower(); // this method throws an exception but the advice should swallow it
-        }
-        catch (Throwable e) {
-            fail("this point should never be reached");
-        }
-    }
-
     public void testReturnPrimitiveAndNullFromAdvice() {
         try {
             assertEquals(0L, getPrimitiveAndNullFromAdvice());

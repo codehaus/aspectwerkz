@@ -259,9 +259,6 @@ public class DocumentParser {
                 else if (PointcutType.CLASS.toString().equalsIgnoreCase(type)) {
                     pointcutType = PointcutType.CLASS;
                 }
-                else if (PointcutType.THROWS.toString().equalsIgnoreCase(type)) {
-                    pointcutType = PointcutType.THROWS;
-                }
                 else if (PointcutType.CATCH_CLAUSE.toString().equalsIgnoreCase(type)) {
                     pointcutType = PointcutType.CATCH_CLAUSE;
                 }

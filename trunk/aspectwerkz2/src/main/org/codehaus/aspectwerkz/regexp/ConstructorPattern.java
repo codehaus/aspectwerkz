@@ -137,7 +137,7 @@ public class ConstructorPattern extends Pattern {
      */
     protected void parse(final String pattern) {
         try {
-            parseMethodNamePattern(pattern);
+            parseConstructorNamePattern(pattern);
             parserParameterTypesPattern(pattern);
         }
         catch (Throwable e) {
@@ -150,10 +150,9 @@ public class ConstructorPattern extends Pattern {
      *
      * @param pattern the pattern
      */
-    protected void parseMethodNamePattern(final String pattern) {
-        final int startIndexMethodName = pattern.indexOf(' ') + 1;
+    protected void parseConstructorNamePattern(final String pattern) {
         final int endIndexMethodName = pattern.indexOf('(');
-        String methodNamePattern = pattern.substring(startIndexMethodName, endIndexMethodName);
+        String methodNamePattern = pattern.substring(0, endIndexMethodName);
 
         if (methodNamePattern.equals(SINGLE_WILDCARD)) {
             methodNamePattern = "[a-zA-Z0-9_$.]+";

@@ -18,6 +18,11 @@ import java.util.HashMap;
  */
 public abstract class Pattern implements Serializable {
 
+    public static final int METHOD = 1;
+    public static final int FIELD = 2;
+    public static final int CLASS = 3;
+    public static final int CONSTRUCTOR = 4;
+
     /**
      * Defines a single wildcard.
      */
@@ -82,21 +87,12 @@ public abstract class Pattern implements Serializable {
     /**
      * Compiles A returns a new caller side pattern.
      *
+     * @param type the pattern type
      * @param pattern the full pattern as a string
      * @return the pattern
      */
-    public static CallerSidePattern compileCallerSidePattern(final String pattern) {
-        return new CallerSidePattern(pattern);
-    }
-
-    /**
-     * Compiles and returns a new throws pattern.
-     *
-     * @param pattern the full pattern as a string
-     * @return the pattern
-     */
-    public static ThrowsPattern compileThrowsPattern(final String pattern) {
-        return new ThrowsPattern(pattern);
+    public static CallerSidePattern compileCallerSidePattern(final int type, final String pattern) {
+        return new CallerSidePattern(type, pattern);
     }
 
     /**
@@ -116,6 +112,20 @@ public abstract class Pattern implements Serializable {
         int index = fullClassName.lastIndexOf('.');
         String className = fullClassName.substring(index + 1, fullClassName.length());
         return className;
+    }
+
+    /**
+     * Checks if the patterns is a constructor.
+     *
+     * @return true if the pattern is a constructor pattern
+     */
+    public static boolean isConstructor(final String expression) {
+        int index1 = expression.indexOf(' ');
+        int index2 = expression.indexOf('(');
+        if (index1 < 0 || index1 > index2) {
+            return true;
+        }
+        return false;
     }
 
     static {

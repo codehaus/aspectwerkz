@@ -128,16 +128,6 @@ public class AspectAttributeParser implements AttributeParser {
                     );
                     break;
                 }
-                else if (fieldAttr instanceof ThrowsAttribute) {
-                    ThrowsAttribute attribute = ((ThrowsAttribute)fieldAttr);
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                            field.getName(),
-                            PointcutType.THROWS,
-                            attribute.getExpression(),
-                            aspectDef
-                    );
-                    break;
-                }
                 else if (fieldAttr instanceof CFlowAttribute) {
                     CFlowAttribute attribute = ((CFlowAttribute)fieldAttr);
                     DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
@@ -146,7 +136,7 @@ public class AspectAttributeParser implements AttributeParser {
                             attribute.getExpression(),
                             aspectDef
                     );
-                    // ALEX CFLOW
+                    // TODO: ALEX CFLOW
                     DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
                             field.getName() + "-System",
                             PointcutType.CALL,
