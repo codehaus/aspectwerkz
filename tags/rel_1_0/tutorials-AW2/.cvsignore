@@ -1,0 +1,12 @@
+classes
+build
+dist
+target
+_dump
+.classpath
+*.*~
+*.ipr
+*.iml
+*.iws
+*.log
+.DS_Store
