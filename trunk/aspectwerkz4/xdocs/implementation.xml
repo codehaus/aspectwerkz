@@ -224,17 +224,21 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
 
         <section name="After advice semantics">
             <p>
-                In previous releases of <code>AspectWerkz</code> we only supported one single type of
+                In previous releases of
+                <code>AspectWerkz</code> we only supported one single type of
                 <i>after advice</i>. The sematics of this type was that it was always executed, regardless
                 of wheter an exception had been throw or if the method returned successfully.
             </p>
             <p>
                 In the new 2.x architecture we have enhanced the semantics for this type of advice and have
-                borrow the semantics from <code>AspectJ</code>. So now we support three different types
-                of <i>after advice</i>:
+                borrow the semantics from
+                <code>AspectJ</code>. So now we support three different types
+                of
+                <i>after advice</i>:
                 <ul>
                     <li>
-                        <code>@AfterFinally</code> (same as <code>@After</code>)
+                        <code>@AfterFinally</code> (same as
+                        <code>@After</code>)
                     </li>
                     <li>
                         <code>@AfterReturning [TYPE]</code> -
@@ -250,7 +254,8 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
             </p>
             <subsection name="after finally (after)">
                 <p>
-                    An <code>after finally</code> advice declaration has the same semantics as an
+                    An
+                    <code>after finally</code> advice declaration has the same semantics as an
                     <code>after</code> advice declaration, you can use any syntax you like.
                 </p>
                 <p>
@@ -263,7 +268,7 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
                 </p>
                 <p>
                     <source><![CDATA[
-@AfterFinally("execution(@TxRequired * *.*(..))")
+@AfterFinally("execution(@TransactionAttribute * *.*(..))")
 public void logTxMethods(StaticJoinPoint joinPoint) {..}
                     ]]></source>
                 </p>
@@ -273,7 +278,7 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 /**
- * @AfterFinally("execution(@TxRequired * *.*(..))")
+ * @AfterFinally("execution(@TransactionAttribute * *.*(..))")
  */
 public void logTxMethods(StaticJoinPoint joinPoint) {..}
                     ]]></source>
@@ -284,7 +289,7 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 <advice type="after finally"
-        bind-to="execution(@TxRequired * *.*(..))"
+        bind-to="execution(@TransactionAttribute * *.*(..))"
         name="logTxMethods"/>
                     ]]></source>
                 </p>
@@ -292,7 +297,8 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
             <subsection name="after returning [TYPE]">
                 <p>
                     <code>after returning [TYPE]</code> advice are executed if the method returns normally (without
-                    throwing an exception) <b>and</b> the actual type that is returned is of the type that is specified
+                    throwing an exception)
+                    <b>and</b> the actual type that is returned is of the type that is specified
                     in the advice declaration.
                 </p>
                 <p>
@@ -304,7 +310,10 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
                 </p>
                 <p>
                     <source><![CDATA[
-@AfterReturning(type="@Service *..*", pointcut="execution(@TxRequired * *.*(..)")
+@AfterReturning(
+    type="@Service *..*",
+    pointcut="execution(@TransactionAttribute * *.*(..)"
+)
 public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                     ]]></source>
                 </p>
@@ -314,7 +323,10 @@ public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 /**
- * @AfterReturning(type="@Service *..*", pointcut="execution(@TxRequired * *.*(..)")
+ * @AfterReturning(
+ *      type="@Service *..*",
+ *      pointcut="execution(@TransactionAttribute * *.*(..)"
+ * )
  */
 public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                     ]]></source>
@@ -325,7 +337,7 @@ public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 <advice type="after returning(@Service *..*)"
-        bind-to="execution(@TxRequired * *.*(..))"
+        bind-to="execution(@TransactionAttribute * *.*(..))"
         name="txCommitReturningService"/>
                     ]]></source>
                 </p>
@@ -345,7 +357,10 @@ public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                 </p>
                 <p>
                     <source><![CDATA[
-@AfterThrowing(type="RuntimeException+", pointcut="execution(@TxRequired * *.*(..)")
+@AfterThrowing(
+    type="RuntimeException",
+    pointcut="execution(@TransactionAttribute * *.*(..)"
+)
 public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                     ]]></source>
                 </p>
@@ -355,7 +370,10 @@ public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 /**
- * @AfterThrowing(type="RuntimeException+", pointcut="execution(@TxRequired * *.*(..)")
+ * @AfterThrowing(
+ *    type="RuntimeException",
+ *    pointcut="execution(@TransactionAttribute * *.*(..)"
+ * )
  */
 public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                     ]]></source>
@@ -365,8 +383,8 @@ public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                 </p>
                 <p>
                     <source><![CDATA[
-<advice type="after throwing(SecurityException+)"
-        bind-to="execution(@TxRequired * *.*(..))"
+<advice type="after throwing(RuntimeException)"
+        bind-to="execution(@TransactionAttribute * *.*(..))"
         name="txRollbackOnRuntimeException"/>
                     ]]></source>
                 </p>

@@ -217,13 +217,16 @@ DeploymentScope scope = SystemDefinition.getDefinitionFor(loader, systemId).getD
             </subsection>
             <subsection name="Deployment handles">
                 <p>
-                All <code>deploy(..)</code> methods returns a <code>DeploymentHandle</code> which is a handle to
+                All
+                    <code>deploy(..)</code> methods returns a
+                    <code>DeploymentHandle</code> which is a handle to
                 the specific deployment event. You can use this handle to revert the changes made by the deployment,
                 In other words, it allows you to undeploy the aspect you deployed and be sure that it will be
                 undeployed exactly the way it was deployed, same class loader, same deployment scope etc.
                 </p>
                 <p>
-                    You retrieve it from one of the <code>deploy(..)</code> methods and can later use it when
+                    You retrieve it from one of the
+                    <code>deploy(..)</code> methods and can later use it when
                     undeploying the aspect:
                     <source><![CDATA[
 // deploy aspect
@@ -243,19 +246,24 @@ Deployer.undeploy(handle);
                 </p>
             </subsection>
         </section>
+
         <section name="Richer after advice semantics">
             <p>
-                In previous releases of <code>AspectWerkz</code> we only supported one single type of
+                In previous releases of
+                <code>AspectWerkz</code> we only supported one single type of
                 <i>after advice</i>. The sematics of this type was that it was always executed, regardless
                 of wheter an exception had been throw or if the method returned successfully.
             </p>
             <p>
                 In the new 2.x architecture we have enhanced the semantics for this type of advice and have
-                borrow the semantics from <code>AspectJ</code>. So now we support three different types
-                of <i>after advice</i>:
+                borrow the semantics from
+                <code>AspectJ</code>. So now we support three different types
+                of
+                <i>after advice</i>:
                 <ul>
                     <li>
-                        <code>@AfterFinally</code> (same as <code>@After</code>)
+                        <code>@AfterFinally</code> (same as
+                        <code>@After</code>)
                     </li>
                     <li>
                         <code>@AfterReturning [TYPE]</code> -
@@ -271,7 +279,8 @@ Deployer.undeploy(handle);
             </p>
             <subsection name="after finally (after)">
                 <p>
-                    An <code>after finally</code> advice declaration has the same semantics as an
+                    An
+                    <code>after finally</code> advice declaration has the same semantics as an
                     <code>after</code> advice declaration, you can use any syntax you like.
                 </p>
                 <p>
@@ -284,7 +293,7 @@ Deployer.undeploy(handle);
                 </p>
                 <p>
                     <source><![CDATA[
-@AfterFinally("execution(@TxRequired * *.*(..))")
+@AfterFinally("execution(@TransactionAttribute * *.*(..))")
 public void logTxMethods(StaticJoinPoint joinPoint) {..}
                     ]]></source>
                 </p>
@@ -294,7 +303,7 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 /**
- * @AfterFinally("execution(@TxRequired * *.*(..))")
+ * @AfterFinally("execution(@TransactionAttribute * *.*(..))")
  */
 public void logTxMethods(StaticJoinPoint joinPoint) {..}
                     ]]></source>
@@ -305,7 +314,7 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 <advice type="after finally"
-        bind-to="execution(@TxRequired * *.*(..))"
+        bind-to="execution(@TransactionAttribute * *.*(..))"
         name="logTxMethods"/>
                     ]]></source>
                 </p>
@@ -313,7 +322,8 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
             <subsection name="after returning [TYPE]">
                 <p>
                     <code>after returning [TYPE]</code> advice are executed if the method returns normally (without
-                    throwing an exception) <b>and</b> the actual type that is returned is of the type that is specified
+                    throwing an exception)
+                    <b>and</b> the actual type that is returned is of the type that is specified
                     in the advice declaration.
                 </p>
                 <p>
@@ -325,7 +335,10 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
                 </p>
                 <p>
                     <source><![CDATA[
-@AfterReturning(type="@Service *..*", pointcut="execution(@TxRequired * *.*(..)")
+@AfterReturning(
+    type="@Service *..*",
+    pointcut="execution(@TransactionAttribute * *.*(..)"
+)
 public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                     ]]></source>
                 </p>
@@ -335,7 +348,10 @@ public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 /**
- * @AfterReturning(type="@Service *..*", pointcut="execution(@TxRequired * *.*(..)")
+ * @AfterReturning(
+ *      type="@Service *..*",
+ *      pointcut="execution(@TransactionAttribute * *.*(..)"
+ * )
  */
 public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                     ]]></source>
@@ -346,7 +362,7 @@ public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 <advice type="after returning(@Service *..*)"
-        bind-to="execution(@TxRequired * *.*(..))"
+        bind-to="execution(@TransactionAttribute * *.*(..))"
         name="txCommitReturningService"/>
                     ]]></source>
                 </p>
@@ -366,7 +382,10 @@ public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                 </p>
                 <p>
                     <source><![CDATA[
-@AfterThrowing(type="RuntimeException+", pointcut="execution(@TxRequired * *.*(..)")
+@AfterThrowing(
+    type="RuntimeException",
+    pointcut="execution(@TransactionAttribute * *.*(..)"
+)
 public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                     ]]></source>
                 </p>
@@ -376,7 +395,10 @@ public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 /**
- * @AfterThrowing(type="RuntimeException+", pointcut="execution(@TxRequired * *.*(..)")
+ * @AfterThrowing(
+ *    type="RuntimeException",
+ *    pointcut="execution(@TransactionAttribute * *.*(..)"
+ * )
  */
 public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                     ]]></source>
@@ -386,8 +408,8 @@ public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                 </p>
                 <p>
                     <source><![CDATA[
-<advice type="after throwing(SecurityException+)"
-        bind-to="execution(@TxRequired * *.*(..))"
+<advice type="after throwing(RuntimeException)"
+        bind-to="execution(@TransactionAttribute * *.*(..))"
         name="txRollbackOnRuntimeException"/>
                     ]]></source>
                 </p>
@@ -412,7 +434,8 @@ public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
             </p>
             <p>
                 When only "StaticJoinPoint" is used, specific optimizations are used to maximize runtime performance
-                since RTTI access is then guaranteed to not happen.<br/>
+                since RTTI access is then guaranteed to not happen.
+                <br/>
             </p>
             <p>
                 The following demonstrates legal syntax:
@@ -478,7 +501,8 @@ Object around(JoinPoint jp, int myI, Bar myBar) throws Throwable {
                 available yet), and caller side static method for call pointcuts and field pointcuts).
             </p>
             <p>
-                They can be used with <b>type patterns</b>: this(foo.Bar+), target(foo.*) etc.
+                They can be used with
+                <b>type patterns</b>: this(foo.Bar+), target(foo.*) etc.
             </p>
             <p>
                 They can be used to gain direct access to callee and caller instance in advice by using advice argument binding, when
@@ -614,14 +638,17 @@ public void someMetod() {}
                         Serialization of the Mixins -
                         <br/>
                         The default behaviour is that the mixins will be serialized along with the target class.
-                        But you have the option of making the mixins <code>transient</code> (e.g. not serialized with
-                        when the target class is serialized), by setting the <code>transient=true</code> flag.
+                        But you have the option of making the mixins
+                        <code>transient</code> (e.g. not serialized with
+                        when the target class is serialized), by setting the
+                        <code>transient=true</code> flag.
                     </li>
                     <br/>
                     <li>
                         Providing your own factory to control the instantiation of the mixin. This means that you
                         can plug in any IoC (dependency injection) framework to handle this for you. The custom
-                        factories needs only to implement the <code>org.codehaus.aspectwerkz.aspect.MixinFactory</code>
+                        factories needs only to implement the
+                        <code>org.codehaus.aspectwerkz.aspect.MixinFactory</code>
                         interface.
                     </li>
                 </ul>
@@ -631,7 +658,10 @@ public void someMetod() {}
                 of a regular class or an inner class in your aspect class.
             </p>
             <p>
-                Two different <code>deployment models</code> are supported, <code>perClass</code> and <code>perInstance</code>.
+                Two different
+                <code>deployment models</code> are supported,
+                <code>perClass</code> and
+                <code>perInstance</code>.
                 <ul>
                     <li>
                         <code>perClass</code> - means that there will be one instance per mixin per
@@ -642,7 +672,9 @@ public void someMetod() {}
                         target instance.
                     </li>
                 </ul>
-                Note: the <code>perThread</code> deployment model has been left to die in peace. The <code>perJVM</code>
+                Note: the
+                <code>perThread</code> deployment model has been left to die in peace. The
+                <code>perJVM</code>
                 deployment model is currently not supported but might come back.
             </p>
             <p>
@@ -650,10 +682,12 @@ public void someMetod() {}
                 or a constructor that takes the:
                 <ul>
                     <li>
-                        target class as its only parameter - to be used with the <code>perClass</code> deployment model.
+                        target class as its only parameter - to be used with the
+                        <code>perClass</code> deployment model.
                     </li>
                     <li>
-                        target instance as its only parameter - to be used with the <code>perInstance</code> deployment model.
+                        target instance as its only parameter - to be used with the
+                        <code>perInstance</code> deployment model.
                     </li>
                 </ul>
             </p>
@@ -662,23 +696,27 @@ public void someMetod() {}
                 <p>
                     To define the mixin using annotations you have to use the
                     <code>org.codehaus.aspectwerkz.annotation.Mixin</code> annotation.
-                    If using Java 5 this is an annotation interface (e.g. <code>@interface</code>) else
+                    If using Java 5 this is an annotation interface (e.g.
+                    <code>@interface</code>) else
                     (for JavaDoc annotations) it is a regular interface.
                 </p>
                 <p>
                     This annotation has three different parameters:
                     <ul>
                         <li>
-                            <code>expression</code> (can be used as the default anonymous value) - the pointcut expression that is used to pick out the set of classes
-                            to apply this mixin to.
+                            <code>expression</code> (can be used as the default anonymous value) - the pointcut expression
+                            that is used to pick out the set of classes to apply this mixin to.
                         </li>
                         <li>
-                            <code>deploymentModel</code> (optional) - has to me one of <code>perClass</code> or
-                            <code>perInstance</code>. If not specified then <code>perInstance</code> is used.
+                            <code>deploymentModel</code> (optional) - has to me one of
+                            <code>perClass</code> or
+                            <code>perInstance</code>. If not specified then
+                            <code>perInstance</code> is used.
                         </li>
                         <li>
                             <code>isTransient</code> (optional) - defines the mixin as transient or not. If not
-                            specified then the default is <code>false</code>, e.g. serializable.
+                            specified then the default is
+                            <code>false</code>, e.g. serializable.
                         </li>
                     </ul>
                 </p>
@@ -697,7 +735,7 @@ public class MyOtherMixin { ... }
                     ]]></source>
                 </p>
                 <p>
-                   <b>Definition using JavaDoc annotations</b>
+                    <b>Definition using JavaDoc annotations</b>
                     <source><![CDATA[
 /** @Mixin("within(*..domain.*)") */
 public class MyMixin { ... }
@@ -716,13 +754,15 @@ public class MyOtherMixin { ... }
 
             <subsection name="XML definition">
                 <p>
-                    The XML definition (in the <code>META-INF/aop.xml</code> file) can be used for
+                    The XML definition (in the
+                    <code>META-INF/aop.xml</code> file) can be used for
                     three different purposes:
                     <ul>
                         <li>
                             Only to define which mixins should be used. Similar to how you declare which aspects
                             should be used.) This can be the option if the mixin is defined in annotations.
-                            Then you only need to use the <code>class</code> attribute, e.g.
+                            Then you only need to use the
+                            <code>class</code> attribute, e.g.
                             <code>&lt;mixin class="foo.bar.MyMixinImpl"/&gt;</code>. See below for details.
                         </li>
                         <li>
@@ -735,7 +775,8 @@ public class MyOtherMixin { ... }
                     </ul>
                 </p>
                 <p>
-                    To define the mixin using the XML definition, use the <code>mixin</code> element. It has
+                    To define the mixin using the XML definition, use the
+                    <code>mixin</code> element. It has
                     five different attributes that can be used:
                     <ul>
                         <li>
@@ -744,10 +785,12 @@ public class MyOtherMixin { ... }
                         </li>
                         <li>
                             <code>deployment-model</code> (optional) - defines the deployment model. Can be one of
-                            <code>perClass</code> of <code>perInstance</code>.
+                            <code>perClass</code> of
+                            <code>perInstance</code>.
                         </li>
                         <li>
-                            <code>transient</code> (optional) - defines the mixin as <code>transient</code> or not.
+                            <code>transient</code> (optional) - defines the mixin as
+                            <code>transient</code> or not.
                         </li>
                         <li>
                             <code>factory</code> (optional) - defines the custom mixin factory implementation to use
@@ -779,7 +822,8 @@ public class MyOtherMixin { ... }
                     Then you can create custom mixin factory.
                 </p>
                 <p>
-                    The custom factories needs to implement the <code>org.codehaus.aspectwerkz.aspect.MixinFactory</code>:
+                    The custom factories needs to implement the
+                    <code>org.codehaus.aspectwerkz.aspect.MixinFactory</code>:
                     <source><![CDATA[
 public interface MixinFactory {
 
@@ -802,7 +846,8 @@ public interface MixinFactory {
                     ]]></source>
                 </p>
                 <p>
-                    The custom mixin factory can only be defined in the <code>mixin</code> element in the
+                    The custom mixin factory can only be defined in the
+                    <code>mixin</code> element in the
                     <code>META-INF/aop.xml</code> file.
                 </p>
 

@@ -2,10 +2,10 @@
 <document>
     <properties>
         <author email="alex at gnilux dot com">Alexandre Vasseur</author>
-        <title>Integration schemes</title>
+        <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
+        <title>Weaving</title>
     </properties>
     <body>
-        <!-- TODO add a section to OFFLINE weaving, or a link -->
         <section name="Table of Contents">
             <p>
                 <ol>
@@ -16,7 +16,10 @@
                         <a href="#Note on previous releases">Note on previous releases</a>
                     </li>
                     <li>
-                        <a href="#Overview">Overview</a>
+                        <a href="#Weaving Schemes">Weaving Schemes</a>
+                    </li>
+                    <li>
+                        <a href="#Overview of options for online weaving">Overview of options for online weaving</a>
                     </li>
                     <li>
                         <a href="#How to choose the right option">How to choose the right option</a>
@@ -27,8 +30,9 @@
                     <li>
                         <a href="#BEA JRockit">BEA JRockit</a>
                     </li>
+s
                     <li>
-                        <a href="#Java 1.5">Java 1.5</a>
+                        <a href="#Java 5">Java 5</a>
                     </li>
                     <li>
                         <a href="#HotSwap">HotSwap</a>
@@ -48,6 +52,27 @@
                     <li>
                         <a href="#Released native HotSwap modules">Released native HotSwap modules</a>
                     </li>
+                    <li>
+                        <a href="#Offline weaving">Offline weaving (post compilation of the application)</a>
+                    </li>
+                    <li>
+                        <a href="#Ant task for Offline weaving">Ant task for Offline weaving</a>
+                    </li>
+                    <li>
+                        <a href="#AspectWerkz command line tool">AspectWerkz command line tool</a>
+                    </li>
+
+                    <!--                    <li>-->
+                    <!--                        <a href="Examples">Examples</a>-->
+                    <!--                        <ul>-->
+                    <!--                            <li><a href="#WebLogic Server and BEA JRockit integration">WebLogic Server and BEA JRockit integration</a></li>-->
+                    <!--                            <li><a href="#WebLogic Server domain wizards">WebLogic Server domain wizards</a></li>-->
+                    <!--                            <li><a href="#Tomcat">Tomcat</a></li>-->
+                    <!--                            <li><a href="#JBoss">JBoss</a></li>-->
+                    <!--                            <li><a href="#Apache Geronimo">Apache Geronimo</a></li>-->
+                    <!--                            <li><a href="ide_integration.html">IDE integration</a></li>                            -->
+                    <!--                        </ul>-->
+                    <!--                    </li>-->
                 </ol>
             </p>
         </section>
@@ -68,8 +93,8 @@
                 on classes loaded by all the preceeding class loaders, making it compatible with J2EE environments with
                 complex class loader hierarchy between system, ear, ejb-jar and war deployments.
                 <br/>
-                This feature is standardized in Java 1.5 thru JSR-163 and
-                <a href="#Java 1.5">supported as well</a>.
+                This feature is standardized in Java 5 thru JSR-163 and
+                <a href="#Java 5">supported as well</a>.
             </p>
             <p>
                 All options are described in term of architecture and impact, and a sample is given on how
@@ -78,7 +103,7 @@
                 Choosing the best option depends of your needs. Refer to the
                 <a href="#How to choose the right option">comparison matrix</a> for a quick view.
                 <br/>
-                For a more schematic view (does not apply for Java 1.5) about this architecture, refer to
+                For a more schematic view (does not apply for Java 5) about this architecture, refer to
                 <a href="http://aspectwerkz.codehaus.org/downloads/">official slides</a>.
             </p>
         </section>
@@ -104,10 +129,30 @@
                 <code>AspectWerkz</code> online mode in the most seamless way.
             </p>
             <p>
-                <code>JSR-163 JVMTI</code> for Java 1.5 is supported since the 1.0 release.
+                <code>JSR-163 JVMTI</code> for Java 5 is supported since the 1.0 release.
             </p>
         </section>
-        <section name="Overview">
+        <section name="Weaving Schemes">
+            <p>
+                AspectWerkz supports several integration schemes. Each schemes depends on your requirements and provides different advantages and drawbacks.
+                It is possible to use :
+                <ul>
+                    <li>post compilation of the application (like AspectJ does): offline weaving at
+                        <b>application build time</b>
+                    </li>
+                    <li>class load time weaving: online weaving at
+                        <b>application deployment time</b>
+                    </li>
+                    <li>runtime weaving: online weaving in a
+                        <b>running application</b> (experimental)
+                    </li>
+                </ul>
+                AspectWerkz distribution contains a
+                <b>command line tool</b> that helps to be up and running quickly, although it is a good thing to really
+                understand the different schemes for a production environment.
+            </p>
+        </section>
+        <section name="Overview of options for online weaving">
             <p>
                 This part describes the main concept of each option. For a detailled understanding, refer to the option section.
                 <br/>
@@ -140,11 +185,11 @@
                         <br/>
                     </li>
                     <li>
-                        <a href="#Java 1.5">
-                            <b>Java 1.5</b>
+                        <a href="#Java 5">
+                            <b>Java 5</b>
                         </a>
                         <br/>
-                        Java 1.5
+                        Java 5
                         <code>JSR-163 JVMTI</code> (
                         <a href="http://www.jcp.org/en/jsr/detail?id=163">read JSR</a>)
                         allows to integrate AspectWerkz with just a single
@@ -245,14 +290,14 @@
                         </tr>
                         <tr>
                             <td>
-                                <a href="#Java 1.5">Java 1.5</a>
+                                <a href="#Java 5">Java 5</a>
                             </td>
-                            <td>Java 1.5</td>
+                            <td>Java 5</td>
                             <td>1</td>
                             <td>
                                 <code>-javaagent:</code> JVM option
                                 <br/>
-                                <b>Recommended for Java 1.5</b>
+                                <b>Recommended for Java 5</b>
                             </td>
                         </tr>
                         <tr>
@@ -438,9 +483,7 @@
                     <br/>
                     The command line tool also allow for
                     <b>offline mode compilation</b>, though it can be achieve by direct Java
-                    invocation as described
-                    <a href="startup_and_runtime_issues.html#Startup and transformation issues">here</a>.
-                    <!-- @todo add more doco about AspectWerkzC -->
+                    invocation.
                 </p>
             </subsection>
         </section>
@@ -517,11 +560,11 @@ java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPrePro
                 </p>
             </subsection>
         </section>
-        <section name="Java 1.5">
+        <section name="Java 5">
             <subsection name="Description">
                 <p>
                 This options is based on
-                    <code>JSR-163 JVMTI</code>, part of Java 1.5 Tiger release.
+                    <code>JSR-163 JVMTI</code>, part of Java 5 Tiger release.
                 The
                     <code>AspectWerkz</code> weaver is embedded as a Java standardized
                     <code>preMain</code> agent in the
@@ -530,7 +573,7 @@ java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPrePro
                 </p>
                 <p>
                 This option is the only available and most elegant way to integrate
-                    <code>AspectWerkz</code> in a Java 1.5 environment:
+                    <code>AspectWerkz</code> in a Java 5 environment:
                     <ul>
                         <li>It is simply the Java standard.</li>
                     </ul>
@@ -538,22 +581,22 @@ java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPrePro
             </subsection>
             <subsection name="Usage">
                 <p>
-                    Due to some distributions issues and Java 1.3 / 1.4 support requirement, the module for Java 1.5 might not be compiled
-                    in the release you obtained. It is advised to recompile your release using your own Java 1.5 environment since at the time
-                    of this release, Java 1.5 is not in its final version neither.
+                    Due to some distributions issues and Java 1.3 / 1.4 support requirement, the module for Java 5 might not be compiled
+                    in the release you obtained. It is advised to recompile your release using your own Java 5 environment since at the time
+                    of this release, Java 5 is not in its final version neither.
                     <br/>
                     Set
                     <code>ASPECTWERZ_HOME</code> environment variable and type:
                     <br/>
                     <code>java -version</code>
                     <br/>
-                    to be sure you are running Java 1.5 as a default and then type
+                    to be sure you are running Java 5 as a default and then type
                     <br/>
                     <code>ant clean jars</code>
                 </p>
                 <p>
                 You then have a need to adapt
-                    <code>bin/aspectwerkz</code> script (if you are using it) to uncomment the line allowing Java 1.5 support.
+                    <code>bin/aspectwerkz</code> script (if you are using it) to uncomment the line allowing Java 5 support.
                 On your own applications make sure of the following:
                     <ul>
                         <li>The JVM is started with
@@ -584,7 +627,7 @@ java -javaagent:lib/aspectwerkz-jdk5-$VERSION.jar -cp $AW_PATH... ..
                 <p>
                 Key advantages using this mode are:
                     <ul>
-                        <li>based on an official standardized API of Java 1.5</li>
+                        <li>based on an official standardized API of Java 5</li>
                     </ul>
                 </p>
             </subsection>
@@ -1018,6 +1061,287 @@ java -Xbootclasspath/p:/path/to/enhanced.jar -Xbootclasspath/a:$BOOT_PATH ..
             </p>
         </section>
     </body>
+    <section name="Offline weaving">
+        <subsection name="Introduction">
+            <p>
+                AspectWerkz provides several way to weave the aspects in the application classes at build time. This is called
+                <i>offline weaving</i>,
+                <i>offline mode</i>, or even
+                <i>class post-processing</i>.
+                <p/>
+                With this mode you have to be sure to post-process the application classes as many times as required if you plan to use multiple Aspect Systems as described
+                <a href="#Handling several Aspects across several deployed applications">here</a>.
+                <p/>
+                There is mainly two ways to achieve this, allthough some variants can be built on top of them:
+                <ul>
+                    <li>Use the AspectWerkz command line tool with the
+                        <code>-offline</code> option on a specific
+                        <code>.class</code> file, directory or jar file.
+                    </li>
+                    <li>Use the
+                        <code>org.codehaus.aspectwerkz.compiler.AspectWerkzC</code> utility in an Ant or Maven script.
+                    </li>
+                </ul>
+                As you might have understood, the command line tool is delegating to the
+                <code>AspectWerkzC</code> class after all required jars have been added to the classpath.
+            </p>
+        </subsection>
+        <subsection name="Command line tool usage">
+            <p>
+                The command line tool is described in a
+                <a href="#AspectWerkz command line tool">next part</a>.
+            </p>
+        </subsection>
+        <subsection name="AspectWerkzC and Ant / Maven integration">
+            <p>
+                You can find several samples of Ant and Maven integration in the AspectWerkz distribution.
+                <br/>
+                The following are the options supported by the AspectWerkzC tool. Most of them can be used as well in the
+                AspectWerkz command line tool.
+                <source>
+# set the classpath correctly
+# see bin/setEnv in the AspectWerkz distribution
+
+# Add Ant-1.5 in the classpath
+
+java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify] [-cp {additional cp i}]*  {target 1} [{target i}]*
+
+# Use -Daspectwerkz.definition.file=... option to specify the XML definition file to use
+# Or rely on the META-INF/aop.xml and WEB-INF/aop.xml path lookup
+                </source>
+                <ul>
+                    <li>
+                        <code>-verbose</code>: turns on verbose mode (optional)
+                    </li>
+                    <li>
+                        <code>-haltOnError</code>: stops the compilation at the first error (target2 will not be post-processed if it fails on target1) (optional)
+                    </li>
+                    <li>
+                        <code>-verify</code>: do some bytecode verification (mainly usefull for AspectWerkz development team) (optional)
+                    </li>
+                    <li>
+                        <code>-cp path1;path2/some.jar</code>: additional classpath needed for the compilation. Put your aspect classes in this path, and your application third parties jar if any.
+                        This is mainly needed to match on subtype patterns (java.lang.String
+                        <b>+</b>), where the complete classes dependancies is needed.
+                        For convenience you can use several
+                        <code>-cp ...</code> option. Be sure to use ";" or ":" as a path separator as for the regular JVM classpath option.
+                    </li>
+                    <li>
+                        <code>target path/classes path/application.jar</code>: defines the classes, classes directories and jar files to post-process. It is possible to pass as many target as needed.
+                    </li>
+                </ul>
+                <p/>
+                A sample for Ant using the command line tool looks like the following. You will notice that the aspect classes
+                must be in the classpath (to retrieve their annotations that defines the pointcut f.e.).
+                <p/>
+                In this sample, since the command line tool is used, it is mandatory to pass the XML definition file as the second argument.
+                <source><![CDATA[
+<!-- =================================================== -->
+<!--  offline transformation of the samples -->
+<!-- =================================================== -->
+<target name="aspectwerkz:transform"
+depends="clean, aspectwerkz:init, aspectwerkz:compile, aspectwerkz:samples:aspectc">
+<exec executable="${bin.dir}/aspectwerkz.bat">
+    <arg line="-offline ${basedir}/src/application/aop.xml -verbose -verify -cp ${aspect.classes} ${application.classes}"/>
+</exec>
+</target>
+                ]]></source>
+                <p/>
+                A sample for Ant using the AspectWerkzC class looks like the following:
+                <source><![CDATA[
+<target name="aspectwerkz:war:transform"
+depends="aspectwerkz:compile, aspectwerkz:war:aspectc">
+<java classname="org.codehaus.aspectwerkz.compiler.AspectWerkzC" fork="true">
+    <classpath refid="project.class.path"/>
+    <classpath>
+        <pathelement path="${build.main.dir}"/><!-- needed for abstract Aspect activation -->
+        <pathelement path="${build.web.dir}"/><!-- needed for Aspect activation -->
+    </classpath>
+    <jvmarg value="-Daspectwerkz.definition.file=${src.web.dir}/WEB-INF/aspectwerkz.xml"/>
+    <jvmarg value="-Daspectwerkz.transform.verbose=true"/><!-- an AspectWerkz weaver option -->
+    <arg value="-verify"/><!-- an AspectWerkzC tool option -->
+    <arg value="-verbose"/><!-- an AspectWerkzC tool option -->
+    <!-- below is the classes dir to post-process. It could be some jar files as well. -->
+    <arg value="${build.web.dir}"/>
+    <arg value="${build.main.dir}"/>
+</java>
+</target>
+                ]]></source>
+                <p/>
+                There is also an Ant task for this - you can read more about it
+                <a href="#Ant_task_for_Offline_weaving">here</a>.
+            </p>
+        </subsection>
+        <subsection name="Packaging the post-compiled classes">
+            <p>
+                Once the application classes (or dir / jars) have been post-compiled, those have dependancies on
+                <ul>
+                    <li>AspectWerkz jars and third parties jars.
+                    </li>
+                    <li>Your own aspects classes and all aspects that might be triggered according to the
+                        <code>Aspect System</code> organization
+                    </li>
+                </ul>
+                It is then a good practice to package the aspects alongside your application just as regular classes, and then decide if
+                AspectWerkz jars and third parties jars should be packaged within the application (f.e. in
+                <code>First.war/WEB-INF/lib/</code>)
+                or added to the application regular classpath. You can use the
+                <code>bin/setEnv</code> script of the distribution for that, or change
+                your application startup script to add those jars in the
+                <code>-cp</code> or
+                <code>-classpath</code> JVM classpath settings.
+            </p>
+        </subsection>
+    </section>
+    <section name="Ant task for Offline weaving">
+        <p>An Ant task is provided for offline weaving</p>
+        <subsection name="Usage">
+            <p>
+                First you need to activate the custom task in your Ant build.xml file with the following:
+                (refer to Ant documentation on "taskdef" for more details)
+                <source><![CDATA[
+<!-- we assume we defined a classpath with the id="aw.class.path" for AspectWerkz jars -->
+<path id="aw.class.path">
+...
+<pathelement path="pathToAspectWerkz.jar"/>
+...
+</path>
+
+<!-- define the custom task (annotationc can be changed to what you prefer)
+<taskdef name="awc" classname="org.codehaus.aspectwerkz.compiler.AspectWerkzCTask" classpathref="aw.class.path"/>
+<!-- Note: the <daskdef> element can be nested within a <target> element at your convenience -->
+
+<!-- invoke the awc defined task -->
+<target name="samples:task:awc" depends="init, compile:all, samples:task:annoationc">
+<awc
+    verbose="true"
+    definition="${basedir}/src/samples/samples-attribdef.xml"
+    classpathref="project.class.path">
+
+    <target path="${basedir}/target/samples-classes"/>
+</awc>
+</target>
+            ]]></source>
+            </p>
+        </subsection>
+        <subsection name="Reference">
+            <p>The AspectWerkzCTask task accepts the following:</p>
+            <p>
+                <ul>
+                    <li>verbose: [optional] flag marking the weaver verbosity [true / false]</li>
+                    <li>taskverbose: [optional] flag marking the task verbose [true / false]</li>
+                    <li>definition: [optional] path to aspect definition xml file (optional, can be found on the path as META-INF/aop.xml - even several)</li>
+                </ul>
+                <p/>
+                Use the following parameters to configure the classpath and to point to the classes to be weaved. Those can be specified
+                with nested elements as well / instead:
+                <ul>
+                    <li>classpath: classpath to use</li>
+                    <li>classpathref: classpath reference to use</li>
+                    <li>targetdir: directory where to find classes to weave</li>
+                    <li>targetpath: classpath where to find classes to weave</li>
+                    <li>targetpathref: classpath reference where to find classes to weave</li>
+                </ul>
+                <p/>
+                Nested elements are similar to the "java" task when you configure a classpath:
+                <ul>
+                    <li>classpath: Path-like structure for the classpath to be used by the weaver. Similar to "java" task classpath</li>
+                    <li>targetpath: Path-like structure for the class to be weaved</li>
+                </ul>
+                <p/>
+                Some rarely used options are also available:
+                <ul>
+                    <li>backupdir: directory where to backup original classes during compilation, defautls to ./_aspectwerkzc</li>
+                    <li>preprocessor: fully qualified name of the preprocessor. If not set the default is used.</li>
+                </ul>
+            </p>
+
+        </subsection>
+    </section>
+
+    <section name="AspectWerkz command line tool">
+        <subsection name="Environment setting">
+            <p>
+                    The command line tool is the easiest way to start using AspectWerkz since it provides all classpath settings for both class load time weaving and
+                    offline post-processing.
+                <p/>
+                    To use it, you first need to set the
+                <code>ASPECTWERKZ_HOME</code> environment variable to the directory containing the AspectWerkz installation.
+                <source>
+set ASPECTWERKZ_HOME=C:\aop\aspectwerkz\
+
+# export might be needed on Linux / Unix OS.
+
+# The tool assumes JAVA_HOME environment variable is correctly set.
+                </source>
+                    The command line tool is then in
+                <code>ASPECTWERKZ_HOME/bin</code> directory.
+                    You can add this directory to your
+                <code>PATH</code> environment variable if you want.
+                <br/>
+                    Type
+                <code>aspectwerkz</code> without any arguments to print the usage message.
+            </p>
+        </subsection>
+        <subsection name="Offline compilation">
+            <p>
+                    To post-process all class files in a specific directory (recursively), jar or zip file:
+                <p/>
+                <code>aspectwerkz -offline &lt;definition file&gt; [-verbose] [-verify] [-haltOnError] [-cp &lt;classpath&gt;]* &lt;target classes to transform&gt;+</code>
+                <ul>
+                    <li>The 'definition file' option is the path to the XML definition file (mandatory).</li>
+                    <li>Turns on
+                        <code>-verbose</code> to follow each step of the processing (optional).
+                    </li>
+                    <li>Turns on
+                        <code>-verify</code> to verify all weaved class according to the Java Class Format specification (optional, mainly usefull for AspectWerkz development team).
+                    </li>
+                    <li>When an error occurs, all classes of the current target are restored to their initilal state and
+                            the processing goes on with the next target unless
+                        <code>-haltOnError</code> was set (optional).
+                            In this case the processing stops. Else a complete status about successfull and failed targets is printed at the end of all target processing.
+                    </li>
+                    <li>The 'classpath' option is the classpath needed for compilation but not to be transformed (eg
+                        <code>-cp myAspects.jar;servletAPI.jar</code>). It is possible to use several
+                        <code>-cp &lt;classpath&gt;</code> option instead of doing concatenation.
+                    </li>
+                    <li>The 'target classes to transform' option specifies the classes to transform.
+                            It must the path to the root directory of the classes you want to transform, or a jar file or a zip file.
+                            Several targets can be passed in one call (eg
+                        <code>toTransform.jar /classes otherToTransform.jar</code>).
+                    </li>
+                </ul>
+                <p/>
+                    Note: when you then are running the application (without using the
+                <code>aspectwerkz</code> command)
+                    you have to (apart from feeding it with the definition) put the aspectwerkz jars along with all
+                    the the dependency jars the
+                <code>ASPECTWERKZ_HOME/lib</code> directory in your classpath.
+                    Read more about it
+                <a href="#Packaging the post-compiled classes">here</a>.
+            </p>
+        </subsection>
+        <subsection name="Class load time weaving">
+            <p>
+                    It is possible to use the command line tool as a replacement of the
+                <code>JAVA_HOME/bin/java</code> command. In such a case,
+                    the command line tool will detect a suitable option for you and will enable class load time weaving.
+                <p/>
+                    This is the easiest way to give a try to class load time weaving although you should read and choose the best option by yourself by reading
+                    more on this topic
+                <a href="oneline.html">here</a>.
+                <p/>
+                    Starting up an application (use -Daspectwerkz.definition.file=.. or have META-INF/aop.xml and WEB-INF/aop.xml files in the classpath and applications packaging as explained in this section):
+                <p/>
+                <code>aspectwerkz [-options] &lt;main class&gt; [args...]</code>
+                <p/>
+                    Starting up an application using an executable jar file:
+                <p/>
+                <code>aspectwerkz [-options] -jar &lt;jar file&gt; [args...]</code>
+            </p>
+        </subsection>
+    </section>
+
 </document>
 
 
