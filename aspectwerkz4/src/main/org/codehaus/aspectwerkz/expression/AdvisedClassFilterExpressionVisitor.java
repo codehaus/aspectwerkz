@@ -237,9 +237,9 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
 
         if (checkPattern) {
             if (withinInfo instanceof MemberInfo) {
-                return node.jjtGetChild(0).jjtAccept(this, withinInfo);
+                return patternNode.jjtAccept(this, withinInfo);
             } else if (withinInfo instanceof ClassInfo) {
-                Boolean matchDeclaringType = (Boolean) node.jjtGetChild(0).jjtAccept(this, withinInfo);
+                Boolean matchDeclaringType = (Boolean) patternNode.jjtAccept(this, withinInfo);
                 if (Boolean.FALSE.equals(matchDeclaringType)) {
                     return Boolean.FALSE;
                 } else {

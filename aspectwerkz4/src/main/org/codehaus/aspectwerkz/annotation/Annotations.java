@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Utility class for annotation retrieval.
@@ -29,6 +30,8 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class Annotations {
+
+    private final static List EMPTY_LIST = new ArrayList();
 
     /**
      * Return the annotation with a specific name for a specific class.
@@ -247,7 +250,13 @@ public final class Annotations {
     public static List getAnnotationInfos(final Method method) {
         ClassLoader loader = method.getDeclaringClass().getClassLoader();
         ClassInfo classInfo = AsmClassInfo.getClassInfo(method.getDeclaringClass().getName(), loader);
-        return classInfo.getMethod(ReflectHelper.calculateHash(method)).getAnnotations();
+        // AW methods like aw$initJoinPoints may not be visible
+        MethodInfo methodInfo = classInfo.getMethod(ReflectHelper.calculateHash(method));
+        if (methodInfo != null) {
+            return methodInfo.getAnnotations();
+        } else {
+            return EMPTY_LIST;
+        }
     }
 
     /**
@@ -273,7 +282,13 @@ public final class Annotations {
     public static List getAnnotationInfos(final Field field) {
         ClassLoader loader = field.getDeclaringClass().getClassLoader();
         ClassInfo classInfo = AsmClassInfo.getClassInfo(field.getDeclaringClass().getName(), loader);
-        return classInfo.getField(ReflectHelper.calculateHash(field)).getAnnotations();
+        // AW fields like aw$instanceLevelAspects may not be visible
+        FieldInfo fieldInfo = classInfo.getField(ReflectHelper.calculateHash(field));
+        if (fieldInfo != null) {
+            return fieldInfo.getAnnotations();
+        } else {
+            return EMPTY_LIST;
+        }
     }
 
 //    /**
