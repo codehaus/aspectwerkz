@@ -66,7 +66,7 @@
         <property name="javac.verbose" value="off"/>
 
         <!-- Note: for AW 1.0, the nursery heap is completely exhausted very rapidly -->
-        <property name="java.gc" value="-Xms128m -Xmx128m -XX:NewSize=32m -XX:MaxNewSize=32m"/>
+        <property name="java.gc" value="-Xms128m -Xmx128m"/><!-- -XX:NewSize=32m -XX:MaxNewSize=32m" -->
         <property name="java.jvmarg" value="${java.gc} -verbose:gc"/>
 
         <property name="d" value="${basedir}"/>
