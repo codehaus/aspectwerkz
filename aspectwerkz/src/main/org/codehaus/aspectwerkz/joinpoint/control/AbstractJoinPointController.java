@@ -40,8 +40,6 @@ public abstract class AbstractJoinPointController implements JoinPointController
      */
     protected int m_currentPointcutIndex = 0;
 
-    // convenience methods for hot deployment
-
     /**
      * Adds an advice to a pointcut
      *
