@@ -9,22 +9,15 @@ package org.codehaus.aspectwerkz.reflect.impl.asm;
 
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttribute;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
-import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
-import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
 import org.objectweb.asm.attrs.Annotation;
 import org.objectweb.asm.attrs.RuntimeVisibleAnnotations;
-import org.objectweb.asm.attrs.AnnotationElementValue;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.*;
 

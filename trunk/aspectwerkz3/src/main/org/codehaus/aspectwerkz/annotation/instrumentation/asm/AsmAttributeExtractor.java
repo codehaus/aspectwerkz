@@ -10,8 +10,6 @@ package org.codehaus.aspectwerkz.annotation.instrumentation.asm;
 import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
-import org.codehaus.aspectwerkz.annotation.Annotations;
-import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.objectweb.asm.Attribute;
@@ -46,7 +44,7 @@ public class AsmAttributeExtractor implements AttributeExtractor {
      */
     private ClassWriter m_writer = null;
     private static final String INIT_METHOD_NAME = "<init>";
-    
+
     /**
      * The attributes of interest.
      */
