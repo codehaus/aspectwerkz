@@ -9,7 +9,7 @@ package test;
 
 import java.lang.reflect.Method;
 
-import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
 import org.codehaus.aspectwerkz.MethodComparator;
 import junit.framework.TestCase;
 

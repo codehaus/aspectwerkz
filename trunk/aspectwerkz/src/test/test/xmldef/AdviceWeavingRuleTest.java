@@ -8,7 +8,7 @@
 package test;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
+import org.codehaus.aspectwerkz.xmldef.definition.AdviceWeavingRule;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>

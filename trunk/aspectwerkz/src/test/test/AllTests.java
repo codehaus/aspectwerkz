@@ -10,7 +10,7 @@ package test;
 import junit.framework.TestCase;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
