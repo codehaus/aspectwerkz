@@ -25,7 +25,7 @@ import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
 /**
  * Interface to be implemented by each join point controller.
  *
- * @author <a href="mailto:"">Stefan Finkenzeller</a>
+ * @author <a href="mailto:stefan.finkenzeller@gmx.net">Stefan Finkenzeller</a>
  */
 public interface JoinPointController extends Serializable {
 
