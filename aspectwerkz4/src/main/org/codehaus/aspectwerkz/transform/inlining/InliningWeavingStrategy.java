@@ -23,7 +23,7 @@ import org.codehaus.aspectwerkz.transform.inlining.weaver.ConstructorBodyVisitor
 import org.codehaus.aspectwerkz.transform.inlining.weaver.ConstructorCallVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.FieldSetFieldGetVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.FieldWrapperVisitor;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.FinalizingVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.AddSerialVersionUidVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.JoinPointInitVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodCallVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodExecutionVisitor;
@@ -83,10 +83,6 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             // to support stub weaving
             AsmClassInfo.getClassInfo(bytecode, loader);
 
-            final ClassReader cr = new ClassReader(bytecode);
-            final ClassReader crLookahead = new ClassReader(bytecode);
-            final ClassWriter cw = AsmHelper.newClassWriter(true);
-
             // compute CALL + GET/SET early matching results to avoid registering useless visitors
             final boolean filterForCall = classFilterFor(
                     definitions, new ExpressionContext[]{
@@ -101,6 +97,8 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                         new ExpressionContext(PointcutType.WITHIN, classInfo, classInfo)
                     }
             );//FIXME - within make match all
+
+            final ClassReader crLookahead = new ClassReader(bytecode);
 
             // prepare ctor call jp
             TLongObjectHashMap newInvocationsByCallerMemberHash = null;
@@ -118,6 +116,9 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             // skip annotations visit and debug info by using the lookahead read-only classreader
             Set addedMethods = new HashSet();
             crLookahead.accept(new AlreadyAddedMethodAdapter(addedMethods), true);
+
+            final ClassWriter cw = AsmHelper.newClassWriter(true);
+            final ClassReader cr = new ClassReader(bytecode);
 
             // chain the visitors by registering them from last to first
             ClassVisitor reversedChain = cw;
@@ -142,7 +143,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             // FIXME classinfo needs to be updated to be able to advise on introduced methods
             reversedChain = new AddMixinMethodsVisitor(reversedChain, classInfo, context, addedMethods);
             reversedChain = new AddInterfaceVisitor(reversedChain, classInfo, context);
-            reversedChain = new FinalizingVisitor(reversedChain, classInfo, context);
+            reversedChain = new AddSerialVersionUidVisitor(reversedChain, classInfo, context);
 
             cr.accept(reversedChain, Attributes.getDefaultAttributes(), false);
 
