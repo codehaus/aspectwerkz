@@ -27,6 +27,10 @@ public class ClassInfoHelper {
         SubtypePatternType type = typePattern.getSubtypePatternType();
         if (type.equals(SubtypePatternType.MATCH_ON_ALL_METHODS)) {
             return matchSuperClasses(classInfo, typePattern);
+        } else if (type.equals(SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY)) {
+            // TODO: matching on methods ONLY in base type needs to be completed
+            // TODO: needs to work together with the method and field matching somehow
+            return matchSuperClasses(classInfo, typePattern);
         } else {
             return typePattern.matches(classInfo.getName());
         }

@@ -28,7 +28,7 @@ public class ASTFieldPattern extends SimpleNode {
             m_fieldTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.MATCH_ON_ALL_METHODS);
         } else if (pattern.endsWith("#")) {
             pattern = pattern.substring(0, pattern.length() - 1);
-            m_fieldTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS);
+            m_fieldTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY);
         } else {
             m_fieldTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.NOT_HIERARCHICAL);
         }
@@ -43,7 +43,7 @@ public class ASTFieldPattern extends SimpleNode {
         } else if (classPattern.endsWith("#")) {
             classPattern = classPattern.substring(0, classPattern.length() - 1);
             m_declaringTypePattern = Pattern.compileTypePattern(classPattern,
-                                                                SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS);
+                                                                SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY);
         } else {
             m_declaringTypePattern = Pattern.compileTypePattern(classPattern, SubtypePatternType.NOT_HIERARCHICAL);
         }

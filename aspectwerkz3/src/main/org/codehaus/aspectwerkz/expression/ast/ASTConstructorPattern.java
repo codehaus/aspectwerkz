@@ -27,7 +27,7 @@ public class ASTConstructorPattern extends SimpleNode {
             m_declaringTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.MATCH_ON_ALL_METHODS);
         } else if (pattern.endsWith("#")) {
             pattern = pattern.substring(0, pattern.length() - 1);
-            m_declaringTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS);
+            m_declaringTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY);
         } else {
             m_declaringTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.NOT_HIERARCHICAL);
         }
