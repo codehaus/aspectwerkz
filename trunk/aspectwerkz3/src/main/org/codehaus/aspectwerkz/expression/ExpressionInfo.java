@@ -42,8 +42,6 @@ public class ExpressionInfo {
 
     private final ExpressionVisitor m_expression;
 
-    private final ArgsIndexVisitor m_argsIndexMapper;
-
     private final CflowExpressionVisitor m_cflowExpression;
 
     private final CflowExpressionVisitorRuntime m_cflowExpressionRuntime;
@@ -81,7 +79,6 @@ public class ExpressionInfo {
         try {
             ASTRoot root = s_parser.parse(expression);
             m_expression = new ExpressionVisitor(this, expression, namespace, root);
-            m_argsIndexMapper = new ArgsIndexVisitor(this, expression, namespace, root);
             m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(this, expression, namespace, root);
             m_cflowExpression = new CflowExpressionVisitor(this, expression, namespace, root);
             m_cflowExpressionRuntime = new CflowExpressionVisitorRuntime(this, expression, namespace, root);
@@ -112,15 +109,6 @@ public class ExpressionInfo {
      */
     public String getNamespace() {
         return m_expression.m_namespace;
-    }
-
-    /**
-     * Returns the regular expression.
-     *
-     * @return the regular expression
-     */
-    public ArgsIndexVisitor getArgsIndexMapper() {
-        return m_argsIndexMapper;
     }
 
     /**

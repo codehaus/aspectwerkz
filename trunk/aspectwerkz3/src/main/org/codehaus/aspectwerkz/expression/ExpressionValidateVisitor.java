@@ -58,6 +58,9 @@ import org.codehaus.aspectwerkz.util.Strings;
 /**
  * The visitor that extract all possible arguments referenced by the expression.
  *
+ * TODO handle pointcut reference and handle parameter transition
+ * + checks as done in the ArgIndexVisitor for this / target compliance.
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
  */
 public class ExpressionValidateVisitor implements ExpressionParserVisitor {

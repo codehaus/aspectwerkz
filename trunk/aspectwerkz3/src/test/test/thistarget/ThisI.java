@@ -11,4 +11,9 @@ package test.thistarget;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class ThisI implements IThis {
+
+    public void callFrom() {
+        ITarget iTarget = new TargetI();
+        iTarget.call();
+    }
 }

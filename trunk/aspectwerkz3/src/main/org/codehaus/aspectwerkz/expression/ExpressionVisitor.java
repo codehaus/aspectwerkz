@@ -70,8 +70,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     protected String m_namespace;
 
     /**
-     * The expressionInfo this visitor is built on for expression with signature Caution: Can be null for visitor that
-     * don't need this information.
+     * The expressionInfo this visitor is built on
      */
     protected ExpressionInfo m_expressionInfo;
 
@@ -905,7 +904,19 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         }
     }
 
+    /**
+     * Access the ASTRoot we visit
+     * @return
+     */
     public ASTRoot getASTRoot() {
         return m_root;
+    }
+
+    /**
+     * Access the ExpressionInfo we are build on
+     * @return
+     */
+    public ExpressionInfo getExpressionInfo() {
+        return m_expressionInfo;
     }
 }

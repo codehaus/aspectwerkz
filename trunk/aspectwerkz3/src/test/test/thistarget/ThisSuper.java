@@ -11,4 +11,10 @@ package test.thistarget;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class ThisSuper extends SuperThis {
+
+    public void callFrom() {
+        ITarget iTarget = new TargetI();
+        iTarget.call();
+    }
+    
 }

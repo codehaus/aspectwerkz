@@ -143,7 +143,19 @@ public class TargetTest extends TestCase {
         s_logctorexe = "";
         Target target = new Target();
         assertEquals("Target ", s_logctorexe);
+    }
 
+    public void testMethodCallFromSubclassedThis() {
+        ThisI thisI = new ThisI();
+        s_log = "";
+        thisI.callFrom();
+        //note: first "TargetI" comes from the ctor - see ThisI impl
+        assertEquals("TargetI before_ITarget pre_ITarget TargetI post_ITarget after_ITarget ", s_log);
+
+        ThisSuper thisSuper = new ThisSuper();
+        s_log = "";
+        thisSuper.callFrom();
+        assertEquals("TargetI before_ITarget pre_ITarget TargetI post_ITarget after_ITarget ", s_log);
     }
 
 
