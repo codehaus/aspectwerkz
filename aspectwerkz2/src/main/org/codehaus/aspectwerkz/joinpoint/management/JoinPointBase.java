@@ -73,15 +73,35 @@ public abstract class JoinPointBase implements JoinPoint {
     }
 
     /**
-     * Invokes the original method.
+     * Invokes the original method - execution context.
      *
      * @param joinPoint the join point instance
      * @return the result from the method invocation
      * @throws Throwable the exception from the original method
      */
-    public static Object invokeTargetMethod(final JoinPoint joinPoint) throws Throwable {
+    public static Object invokeTargetMethodExecution(final JoinPoint joinPoint) throws Throwable {
         MethodSignatureImpl signature = (MethodSignatureImpl)joinPoint.getSignature();
         Method targetMethod = signature.getMethodTuple().getOriginalMethod();
+        Object[] parameterValues = signature.getParameterValues();
+        Object targetInstance = joinPoint.getTargetInstance();
+        try {
+            return targetMethod.invoke(targetInstance, parameterValues);
+        }
+        catch (InvocationTargetException e) {
+            throw e.getTargetException();
+        }
+    }
+
+    /**
+     * Invokes the original method - call context.
+     *
+     * @param joinPoint the join point instance
+     * @return the result from the method invocation
+     * @throws Throwable the exception from the original method
+     */
+    public static Object invokeTargetMethodCall(final JoinPoint joinPoint) throws Throwable {
+        MethodSignatureImpl signature = (MethodSignatureImpl)joinPoint.getSignature();
+        Method targetMethod = signature.getMethodTuple().getWrapperMethod();
         Object[] parameterValues = signature.getParameterValues();
         Object targetInstance = joinPoint.getTargetInstance();
         try {
@@ -238,10 +258,10 @@ public abstract class JoinPointBase implements JoinPoint {
         Object result = null;
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
-                result = invokeTargetMethod(joinPoint);
+                result = invokeTargetMethodExecution(joinPoint);
                 break;
             case JoinPointType.METHOD_CALL:
-                result = invokeTargetMethod(joinPoint);
+                result = invokeTargetMethodCall(joinPoint);
                 break;
             case JoinPointType.CONSTRUCTOR_EXECUTION:
                 result = invokeTargetConstructorExecution(joinPoint);

@@ -17,11 +17,16 @@ public class CallExecutionTest extends WeavedTestCase {
 
     private static String s_logString = "";
 
-    public void testMethod() {
+    public void testPrivateMethod() {
         s_logString = "";
-        method();
-        System.out.println("s_logString = " + s_logString);
-        assertEquals("call1 execution1 invocation call2 execution2 ", s_logString);
+        privateMethod();
+        assertEquals("call1 execution1 invocation execution2 call2 ", s_logString);
+    }
+
+    public void testPublicMethod() {
+        s_logString = "";
+        publicMethod();
+        assertEquals("call1 execution1 invocation execution2 call2 ", s_logString);
     }
 
     public static void main(String[] args) {
@@ -46,10 +51,11 @@ public class CallExecutionTest extends WeavedTestCase {
         s_logString += wasHere;
     }
 
-    private void nonAdvisedMethod() {
+    private void privateMethod() {
+        log("invocation ");
     }
 
-    private void method() {
+    public void publicMethod() {
         log("invocation ");
     }
 }

@@ -118,8 +118,10 @@ public class JitCompiler {
     private static final String PROCEED_METHOD_SIGNATURE = "()Ljava/lang/Object;";
     private static final String GET_PARAMETER_VALUES_METHOD_NAME = "getParameterValues";
     private static final String GET_PARAMETER_VALUES_METHOD_SIGNATURE = "()[Ljava/lang/Object;";
-    private static final String INVOKE_TARGET_METHOD_METHOD_NAME = "invokeTargetMethod";
-    private static final String INVOKE_TARGET_METHOD_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)Ljava/lang/Object;";
+    private static final String INVOKE_TARGET_METHOD_EXECUTION_METHOD_NAME = "invokeTargetMethodExecution";
+    private static final String INVOKE_TARGET_METHOD_CALL_METHOD_NAME = "invokeTargetMethodCall";
+    private static final String INVOKE_TARGET_METHOD_EXECUTION_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)Ljava/lang/Object;";
+    private static final String INVOKE_TARGET_METHOD_CALL_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)Ljava/lang/Object;";
     private static final String INVOKE_TARGET_CONSTRUCTOR_EXECUTION_METHOD_NAME = "invokeTargetConstructorExecution";
     private static final String INVOKE_TARGET_CONSTRUCTOR_EXECUTION_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)Ljava/lang/Object;";
     private static final String INVOKE_TARGET_CONSTRUCTOR_CALL_METHOD_NAME = "invokeTargetConstructorCall";
@@ -303,7 +305,7 @@ public class JitCompiler {
      * @param aroundAdvices
      * @param beforeAdvices
      * @param afterAdvices
-     * @param system        
+     * @param system
      * @return true if the JIT compilation should be skipped
      */
     private static boolean createInitMethod(
@@ -630,8 +632,11 @@ public class JitCompiler {
 
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
+                invokeMethodExecutionJoinPoint(system, declaringClass, joinPointHash, cv, joinPointType, className);
+                break;
+
             case JoinPointType.METHOD_CALL:
-                invokeMethodJoinPoint(system, declaringClass, joinPointHash, cv, joinPointType, className);
+                invokeMethodCallJoinPoint(system, declaringClass, joinPointHash, cv, joinPointType, className);
                 break;
 
             case JoinPointType.CONSTRUCTOR_CALL:
@@ -680,7 +685,7 @@ public class JitCompiler {
     }
 
     /**
-     * Invokes a method join point.
+     * Invokes a method join point - execution context.
      *
      * @param system
      * @param declaringClass
@@ -689,7 +694,7 @@ public class JitCompiler {
      * @param joinPointType
      * @param className
      */
-    private static void invokeMethodJoinPoint(
+    private static void invokeMethodExecutionJoinPoint(
             final System system,
             final Class declaringClass,
             final int joinPointHash,
@@ -710,7 +715,43 @@ public class JitCompiler {
             );
         }
         else {
-            invokeMethodReflectively(cv);
+            invokeMethodExecutionReflectively(cv);
+        }
+        setReturnValue(targetMethod, cv, className);
+    }
+
+    /**
+     * Invokes a method join point - call context.
+     *
+     * @param system
+     * @param declaringClass
+     * @param joinPointHash
+     * @param cv
+     * @param joinPointType
+     * @param className
+     */
+    private static void invokeMethodCallJoinPoint(
+            final System system,
+            final Class declaringClass,
+            final int joinPointHash,
+            final CodeVisitor cv,
+            final int joinPointType,
+            final String className) {
+
+        MethodTuple methodTuple = system.getAspectManager().getMethodTuple(declaringClass, joinPointHash);
+        Method targetMethod = methodTuple.getWrapperMethod();
+        String declaringClassName = targetMethod.getDeclaringClass().getName().replace('.', '/');
+        String methodName = targetMethod.getName();
+        String methodDescriptor = Type.getMethodDescriptor(targetMethod);
+        Type[] argTypes = Type.getArgumentTypes(targetMethod);
+        if (Modifier.isPublic(targetMethod.getModifiers()) && Modifier.isPublic(declaringClass.getModifiers())) {
+            invokeMethod(
+                    targetMethod, cv, joinPointType, argTypes, className,
+                    declaringClassName, methodName, methodDescriptor
+            );
+        }
+        else {
+            invokeMethodCallReflectively(cv);
         }
         setReturnValue(targetMethod, cv, className);
     }
@@ -925,18 +966,32 @@ public class JitCompiler {
     }
 
     /**
-     * Handles invocation of a method reflectively - call context.
+     * Handles invocation of a method reflectively - execution context.
      *
      * @param cv
      */
-    private static void invokeMethodReflectively(final CodeVisitor cv) {
-        // method is non-public -> invoke using reflection
+    private static void invokeMethodExecutionReflectively(final CodeVisitor cv) {
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitMethodInsn(
                 Constants.INVOKESTATIC,
                 JOIN_POINT_BASE_CLASS_NAME,
-                INVOKE_TARGET_METHOD_METHOD_NAME,
-                INVOKE_TARGET_METHOD_METHOD_SIGNATURE
+                INVOKE_TARGET_METHOD_EXECUTION_METHOD_NAME,
+                INVOKE_TARGET_METHOD_EXECUTION_METHOD_SIGNATURE
+        );
+    }
+
+        /**
+     * Handles invocation of a method reflectively - call context.
+     *
+     * @param cv
+     */
+    private static void invokeMethodCallReflectively(final CodeVisitor cv) {
+        cv.visitVarInsn(Constants.ALOAD, 0);
+        cv.visitMethodInsn(
+                Constants.INVOKESTATIC,
+                JOIN_POINT_BASE_CLASS_NAME,
+                INVOKE_TARGET_METHOD_CALL_METHOD_NAME,
+                INVOKE_TARGET_METHOD_CALL_METHOD_SIGNATURE
         );
     }
 
