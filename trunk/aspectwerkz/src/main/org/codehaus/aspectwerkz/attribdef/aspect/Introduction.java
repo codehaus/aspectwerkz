@@ -94,6 +94,7 @@ public class Introduction implements Mixin {
             }
         }
         catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
         }
     }
@@ -269,12 +270,13 @@ public class Introduction implements Mixin {
 
     /**
      * Check if klazz is an inner class of containingClass.
+     * Based on name to support private inner class with no arg ctor.
      *
      * @param klazz
      * @param containingClass
      * @return true if is an inner class
      */
     private static boolean isInnerClassOf(final Class klazz, final Class containingClass) {
-        return Arrays.asList(containingClass.getClasses()).contains(klazz);
+        return klazz.getName().startsWith(containingClass.getName()+"$");
     }
 }

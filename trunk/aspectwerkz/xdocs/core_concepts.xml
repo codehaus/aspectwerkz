@@ -680,7 +680,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 The following sections detail the Model 2 Self defined Aspects approach where Aspects are classes whose methods are Advices, fields are Pointcuts
                 and Introductions are inner-classes with metadata marker (JSR-175 ready).<br/>
                 You should be familiar with AOP vocabulary and AspectWerkz implementation as explained
-                in the <a href="TODO">model 1</a> section.
+                in the <a href="#Model 1 - XML centric">model 1</a> section.
                 <ol>
                     <li><a href="#Model 2 - Aspects">Aspects</a></li>
                     <li><a href="#Model 2 - Pointcuts">Pointcuts</a></li>
@@ -738,7 +738,6 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                     <b>Metadata</b>
                 </p>
                 <p>
-                    TODO aspect doclet and extends aspect overcost.
                     When defining the aspect the deployment-model is specified as metadata argument of the metadata tag <code>@Aspect</code>.
                     The current implementation uses a doclet syntax. AspectWerkz will support JSR-175 syntax as well as soon as it is available.
                 </p>
@@ -821,7 +820,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 </p>
                 <p>
                     The XML definition is just declaring which concrete aspect to use.
-                    See TODO for complete reference
+                    See <a href="definition_issues.html">dedicated section</a> for complete definition issue documentation.
 <source><![CDATA[
 <use-aspect class="package.NotAbstractAspect"/>
 ]]></source>
@@ -895,9 +894,6 @@ public class MyAspect extends Aspect {
                     The type is specified as metadata at the field level:
                     <ul>
                         <li>
-                            <code>@Custom &lt;value&gt;</code> - arbitrary custom metadata. TODO dedicated doco.
-                        </li><br/>
-                        <li>
                             <code>@Execution &lt;methodPattern&gt;</code> - picks out join points
                             defining method execution.
                             Valid advice method metadata for this pointcut is <code>@Around</code>
@@ -909,7 +905,7 @@ public class MyAspect extends Aspect {
                             and <code>@After</code>.
                         </li><br/>
                         <li>
-                            <code>@Class ??</code> - not used. TODO check me.
+                            <code>@Class &lt;classPattern&gt;</code> - not used. TODO check me.
                         </li><br/>
                         <li>
                             <code>@Set &lt;fieldPattern&gt;</code> - picks out join points
@@ -1084,7 +1080,7 @@ public class MyAspect extends Aspect {
                     Interface introductions (marker interface) are defined as fields in the aspect class.
                     The type of the field is the interface to introduce.<br/>
                     The field is marked with metadata <code>@Implements &lt;classPattern&gt;</code> to specify to which classes the introduction applies.<br/>
-                    The name of the introduction is the field name.TODO this is bad - aspect name concat required ?
+                    The name of the introduction is the field name.
                 </p>
                 <p>
                     When using abstract aspect or aspect inheritance, the aspect super class can define such introductions without
@@ -1111,8 +1107,8 @@ public MyAspect extends Aspect {
             </subsection>
             <subsection name="Implementation introduction">
                 <p>
-                    TODO where is public inner class required ??? / protected etc
                     Implementation introductions (interface with concrete implementation) are defined as public inner class of the aspect class.
+                    It is mandatory for the inner class to be accessible with a no-arg constructor, thus to be public or to explicitly have a no-arg constructor.
                     The inner class implements the interface(s) to introduce.<br/>
                     The inner class is marked with metadata <code>@Introduce &lt;classPattern&gt;</code> to specify to which classes the introduction applies.<br/>
                     The name of the introduction is the full qualified inner class name (thus like <code>&lt;aspectClassName&gt;$&lt;innerClassName&gt;</code>).
