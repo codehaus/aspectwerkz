@@ -470,7 +470,7 @@ Object around(JoinPoint jp, int myI, Bar myBar) throws Throwable {
             </p>
         </section>
 
-        <section name="#this() and target()">
+        <section name="this() and target()">
             <p>
                 AspectWerkz 2.x introduces this(..) and target(..) pointcut designators. They can be used to narrow
                 a pointcut expression based on caller and calle types (note: they will implictly filter out
@@ -499,7 +499,7 @@ void before(Bar myBar) {
             </p>
         </section>
 
-        <section name="#New annotation backend and Java 5 annotations support">
+        <section name="New annotation backend and Java 5 annotations support">
             <p>
                 In AspectWerkz 2.x, the former "TypedAnnotationProxy" and "UntypedAnnotationProxy" classes are gone.
                 To define a strongly typed custom annotation with Java 1.3/1.4, you need to write an interface.
@@ -570,7 +570,7 @@ public void someOtherMethod() {}
 // Note for such an annotation that has a single element "value()", the following doclet style syntax is allowed:
 // and the annotation value() will return "my text" as for @AnnotateMe("my text")
 /**
- * @AnnotateMe my text
+ * @AnnotateMe my text  
  */
 public void someOtherMethod() {}
                 ]]></source>
