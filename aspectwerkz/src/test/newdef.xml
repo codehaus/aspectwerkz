@@ -2,7 +2,7 @@
     "-//AspectWerkz//DTD 0.8.1//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd">
 
-<aspectwerkz id="xmltest">
+<aspectwerkz id="xmltest" model="xml">
 
     <introduction-def name="loggable" interface="logging.Loggable" deployment-model="perJVM" attribute="loggable"/>
     <introduction-def name="mixin" interface="mixins.Mixin" implementation="mixins.MixinImpl" deployment-model="perInstance" attribute="attribute"/>

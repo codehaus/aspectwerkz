@@ -10,7 +10,8 @@ package test.xmldef;
 import junit.framework.TestCase;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
+import org.codehaus.aspectwerkz.SystemLoader;
 import com.clarkware.junitperf.LoadTest;
 import com.clarkware.junitperf.TestFactory;
 
@@ -32,7 +33,7 @@ public class AllPerfTests extends TestCase {
 
     public AllPerfTests(String aName) {
         super(aName);
-        AspectWerkz.getSystem("tests").initialize();
+        SystemLoader.getSystem("tests").initialize();
     }
 
     private static Test asLoadTest(Class testClass, int thread, int loops) {

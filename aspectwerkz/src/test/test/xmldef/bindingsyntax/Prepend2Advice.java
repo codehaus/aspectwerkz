@@ -8,7 +8,7 @@
 package test.xmldef.bindingsyntax;
 
 import org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice;
-import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 public class Prepend2Advice extends AroundAdvice {
 

@@ -1,7 +1,7 @@
 <!DOCTYPE aspectwerkz PUBLIC
     "-//AspectWerkz//DTD//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
-<aspectwerkz id="tests">
+<aspectwerkz id="tests" model="xml">
 
     <!--    <transformation-scope package="test"/>-->
 
