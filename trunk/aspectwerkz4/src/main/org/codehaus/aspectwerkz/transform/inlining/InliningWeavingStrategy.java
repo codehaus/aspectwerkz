@@ -7,11 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining;
 
-import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
@@ -42,7 +39,7 @@ import org.objectweb.asm.attrs.Attributes;
 import gnu.trove.TLongObjectHashMap;
 
 /**
- * A weaving strategy implementing a weaving scheme based on inlining.
+ * A weaving strategy implementing a weaving scheme based on statical compilation, and no reflection.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
@@ -50,7 +47,7 @@ import gnu.trove.TLongObjectHashMap;
 public class InliningWeavingStrategy implements WeavingStrategy {
 
     /**
-     * Performs the weaving.
+     * Performs the weaving of the target class.
      *
      * @param className
      * @param context
@@ -62,8 +59,11 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                 return;
             }
 
-            System.out.println("className = " + className);
-            
+            // FIXME - "fix" for ASM enum bug - remove later
+            if (className.startsWith("javax")) {
+                return;
+            }
+
             final byte[] bytecode = context.getInitialBytecode();
             final ClassLoader loader = context.getLoader();
 
