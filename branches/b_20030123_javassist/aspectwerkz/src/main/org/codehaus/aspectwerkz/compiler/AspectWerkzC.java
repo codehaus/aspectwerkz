@@ -42,7 +42,7 @@ import java.util.Date;
  * <pre>
  * java [-Daspectwerkz.classloader.preprocessor={ClassPreProcessorImpl}] -cp [...] org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify] [-cp {additional cp i}]*  {target 1} .. {target n}
  *   {ClassPreProcessorImpl} : full qualified name of the ClassPreProcessor implementation (must be in classpath)
- *      defaults to org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor
+ *      defaults to org.codehaus.aspectwerkz.transformj.AspectWerkzPreProcessor
  *   {additional cp i} : additionnal classpath needed at compile time (eg: myaspect.jar)
  *      use as many -cp options as needed
  *      supports java classpath syntax for classpath separator: ; on windows, : on others
@@ -82,7 +82,7 @@ public class AspectWerkzC {
     private static String PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.preprocessor";
 
     /** default class preprocessor */
-    private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor";
+    private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transformj.AspectWerkzPreProcessor";
 
     private final static String MF_CUSTOM_DATE = "X-AspectWerkzC-created";
 
