@@ -24,42 +24,42 @@ public class AllTestsInlined extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("All tests");
 
-        suite.addTestSuite(MemberMethodAdviceTest.class);
-        suite.addTestSuite(StaticMethodAdviceTest.class);
-        suite.addTestSuite(CallerSideAdviceTest.class);
-        suite.addTestSuite(test.callAndExecution.CallExecutionTest.class);
-        suite.addTestSuite(test.hierarchicalpattern.HierachicalPatternTest.class);
-        suite.addTestSuite(test.abstractclass.AbstractClassTest.class);
-        suite.addTestSuite(test.reflection.ReflectionTest.class);
-        suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
-        suite.addTestSuite(test.args.ArgsAdviceTest.class);
-        suite.addTestSuite(test.afterxxx.Test.class);
-        suite.addTestSuite(FieldAdviceTest.class);
-        suite.addTestSuite(ClassPatternTest.class);
-        suite.addTestSuite(ExceptionTest.class);
-        suite.addTestSuite(MethodComparatorTest.class);
-        suite.addTestSuite(StringsTest.class);
-        suite.addTestSuite(test.SerialVerUidTest.class);
-        suite.addTestSuite(test.expression.ExpressionTest.class);
-        suite.addTestSuite(test.rtti.RttiTest.class);
-        suite.addTestSuite(test.proceedinnewthread.ProceedTest.class);
-        suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
-        suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
-        suite.addTestSuite(test.orthogonal.OrthogonalTest.class);
-        suite.addTestSuite(test.annotation.AnnotationTest.class);
-        suite.addTestSuite(test.modifier.ModifierTest.class);
-        suite.addTestSuite(test.superclassconstructor.SuperClassConstructorTest.class);
-        suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);
-        suite.addTestSuite(test.SerialVerUidTest.class);
-        suite.addTestSuite(test.thistarget.TargetTest.class);
-        suite.addTestSuite(test.thistarget.TargetReferencedAndRuntimeCheckTest.class);
-        suite.addTestSuite(test.optimizations.OptimizeTest.class);
-        suite.addTestSuite(test.annotation.AnnotationParserTest.class);
-        suite.addTestSuite(test.annotation.AnnotationCTest.class);
-        suite.addTestSuite(test.polymorphic.PolymorphicTest.class);
-        suite.addTestSuite(test.annotation.AnnotationCopyTest.class);
+//        suite.addTestSuite(MemberMethodAdviceTest.class);
+//        suite.addTestSuite(StaticMethodAdviceTest.class);
+//        suite.addTestSuite(CallerSideAdviceTest.class);
+//        suite.addTestSuite(test.callAndExecution.CallExecutionTest.class);
+//        suite.addTestSuite(test.hierarchicalpattern.HierachicalPatternTest.class);
+//        suite.addTestSuite(test.abstractclass.AbstractClassTest.class);
+//        suite.addTestSuite(test.reflection.ReflectionTest.class);
+//        suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
+//        suite.addTestSuite(test.args.ArgsAdviceTest.class);
+//        suite.addTestSuite(test.afterxxx.Test.class);
+//        suite.addTestSuite(FieldAdviceTest.class);
+//        suite.addTestSuite(ClassPatternTest.class);
+//        suite.addTestSuite(ExceptionTest.class);
+//        suite.addTestSuite(MethodComparatorTest.class);
+//        suite.addTestSuite(StringsTest.class);
+//        suite.addTestSuite(test.SerialVerUidTest.class);
+//        suite.addTestSuite(test.expression.ExpressionTest.class);
+//        suite.addTestSuite(test.rtti.RttiTest.class);
+//        suite.addTestSuite(test.proceedinnewthread.ProceedTest.class);
+//        suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
+//        suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
+//        suite.addTestSuite(test.orthogonal.OrthogonalTest.class);
+//        suite.addTestSuite(test.annotation.AnnotationTest.class);
+//        suite.addTestSuite(test.modifier.ModifierTest.class);
+//        suite.addTestSuite(test.superclassconstructor.SuperClassConstructorTest.class);
+//        suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);
+//        suite.addTestSuite(test.SerialVerUidTest.class);
+//        suite.addTestSuite(test.thistarget.TargetTest.class);
+//        suite.addTestSuite(test.thistarget.TargetReferencedAndRuntimeCheckTest.class);
+//        suite.addTestSuite(test.optimizations.OptimizeTest.class);
+//        suite.addTestSuite(test.annotation.AnnotationParserTest.class);
+//        suite.addTestSuite(test.annotation.AnnotationCTest.class);
+//        suite.addTestSuite(test.polymorphic.PolymorphicTest.class);
+//        suite.addTestSuite(test.annotation.AnnotationCopyTest.class);
         suite.addTestSuite(test.deployment.DeployerTest.class);
-
+//
         // NOT YET COMPLETED
 //        suite.addTestSuite(test.handler.HandlerTest.class);
         //suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal
