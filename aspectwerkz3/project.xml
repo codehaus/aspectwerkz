@@ -3,7 +3,7 @@
     <pomVersion>3</pomVersion>
     <name>AspectWerkz - Dynamic AOP for Java</name>
     <id>aspectwerkz</id>
-    <currentVersion>1.0.RC3</currentVersion>
+    <currentVersion>1.0</currentVersion>
     <organization>
         <name>Jonas Bon&#233;r, Alexandre Vasseur</name>
     </organization>
@@ -34,9 +34,9 @@
     </repository>
     <versions>
         <version>
-            <id>1.0.RC3</id>
-            <name>1.0.RC3</name>
-            <tag>rel_1_0_RC3</tag>
+            <id>1.0</id>
+            <name>1.0</name>
+            <tag>rel_1_0</tag>
             <branch>branch_1_0</branch>
         </version>
     </versions>
