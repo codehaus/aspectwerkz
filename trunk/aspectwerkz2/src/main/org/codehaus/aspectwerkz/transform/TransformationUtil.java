@@ -110,7 +110,7 @@ public final class TransformationUtil {
     public static final String JOIN_POINT_TYPE_HANDLER = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.HANDLER";
     public static final String JOIN_POINT_TYPE_STATIC_INITALIZATION = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.STATIC_INITALIZATION";
 
-    public static final String SYSTEM_CLASS = "org.codehaus.aspectwerkz.System";
+    public static final String SYSTEM_CLASS = "org.codehaus.aspectwerkz.RuntimeSystem";
     public static final String SYSTEM_LOADER_CLASS = "org.codehaus.aspectwerkz.SystemLoader";
     public static final String MIXIN_CLASS = "org.codehaus.aspectwerkz.Mixin";
     public static final String THREAD_LOCAL_CLASS = "org.codehaus.aspectwerkz.util.SerializableThreadLocal";

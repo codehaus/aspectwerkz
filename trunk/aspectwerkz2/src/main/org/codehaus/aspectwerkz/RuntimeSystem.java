@@ -29,7 +29,7 @@ import org.codehaus.aspectwerkz.metadata.CflowMetaData;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public final class System {
+public final class RuntimeSystem {
 
     /**
      * The path to the definition file.
@@ -63,7 +63,7 @@ public final class System {
      * @param uuid       the UUID for the system
      * @param definition the definition for the system
      */
-    System(final String uuid, final SystemDefinition definition) {
+    RuntimeSystem(final String uuid, final SystemDefinition definition) {
         if (uuid == null) {
             throw new IllegalArgumentException("uuid can not be null");
         }

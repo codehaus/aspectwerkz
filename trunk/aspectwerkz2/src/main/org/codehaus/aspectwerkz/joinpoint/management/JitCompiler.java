@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.*;
-import org.codehaus.aspectwerkz.System;
+import org.codehaus.aspectwerkz.RuntimeSystem;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
@@ -65,8 +65,8 @@ public class JitCompiler {
     private static final String OBJECT_CLASS_SIGNATURE = "Ljava/lang/Object;";
     private static final String CLASS_CLASS_SIGNATURE = "Ljava/lang/Class;";
     private static final String JOIN_POINT_BASE_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/management/JoinPointBase";
-    private static final String SYSTEM_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/System;";
-    private static final String SYSTEM_CLASS_NAME = "org/codehaus/aspectwerkz/System";
+    private static final String SYSTEM_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/RuntimeSystem;";
+    private static final String SYSTEM_CLASS_NAME = "org/codehaus/aspectwerkz/RuntimeSystem";
     private static final String ASPECT_MANAGER_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/AspectManager";
     private static final String ASPECT_CONTAINER_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/AspectContainer";
     private static final String THROWABLE_CLASS_NAME = "java/lang/Throwable";
@@ -78,7 +78,7 @@ public class JitCompiler {
     private static final String SYSTEM_LOADER_CLASS_NAME = "org/codehaus/aspectwerkz/SystemLoader";
     private static final String INIT_METHOD_NAME = "<init>";
     private static final String GET_SYSTEM_METHOD_NAME = "getSystem";
-    private static final String GET_SYSTEM_METHOD_NAME_SIGNATURE = "(Ljava/lang/String;)Lorg/codehaus/aspectwerkz/System;";
+    private static final String GET_SYSTEM_METHOD_NAME_SIGNATURE = "(Ljava/lang/String;)Lorg/codehaus/aspectwerkz/RuntimeSystem;";
     private static final String GET_ASPECT_MANAGER_METHOD_NAME = "getAspectManager";
     private static final String GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE = "()Lorg/codehaus/aspectwerkz/aspect/management/AspectManager;";
     private static final String GET_ASPECT_CONTAINER_METHOD_NAME = "getAspectContainer";
@@ -193,7 +193,7 @@ public class JitCompiler {
                 return null; // no advice => bail out
             }
 
-            System system = SystemLoader.getSystem(uuid);
+            RuntimeSystem system = SystemLoader.getSystem(uuid);
 
             RttiInfo rttiInfo = setRttiInfo(
                     joinPointType, joinPointHash, declaringClass, system, targetInstance, targetInstance
@@ -346,7 +346,7 @@ public class JitCompiler {
             final IndexTuple[] aroundAdvices,
             final IndexTuple[] beforeAdvices,
             final IndexTuple[] afterAdvices,
-            final System system) {
+            final RuntimeSystem system) {
 
         CodeVisitor cv =
                 cw.visitMethod(
@@ -482,7 +482,7 @@ public class JitCompiler {
      * @param className
      */
     private static boolean initAspectField(
-            final System system,
+            final RuntimeSystem system,
             final IndexTuple adviceTuple,
             final ClassWriter cw,
             final String aspectFieldName,
@@ -671,7 +671,7 @@ public class JitCompiler {
             final int joinPointType,
             final ClassWriter cw,
             final String className,
-            final System system,
+            final RuntimeSystem system,
             final Class declaringClass,
             final int joinPointHash,
             final RttiInfo signatureCflowExprStruct,
@@ -730,7 +730,7 @@ public class JitCompiler {
      */
     private static void invokeJoinPoint(
             final int joinPointType,
-            final System system,
+            final RuntimeSystem system,
             final Class declaringClass,
             final int joinPointHash,
             final CodeVisitor cv,
@@ -801,7 +801,7 @@ public class JitCompiler {
      * @param className
      */
     private static void invokeMethodExecutionJoinPoint(
-            final System system,
+            final RuntimeSystem system,
             final Class declaringClass,
             final int joinPointHash,
             final CodeVisitor cv,
@@ -837,7 +837,7 @@ public class JitCompiler {
      * @param className
      */
     private static void invokeMethodCallJoinPoint(
-            final System system,
+            final RuntimeSystem system,
             final Class declaringClass,
             final int joinPointHash,
             final CodeVisitor cv,
@@ -873,7 +873,7 @@ public class JitCompiler {
      * @param className
      */
     private static void invokeConstructorCallJoinPoint(
-            final System system,
+            final RuntimeSystem system,
             final Class declaringClass,
             final int joinPointHash,
             final int joinPointType,
@@ -908,7 +908,7 @@ public class JitCompiler {
      * @param className
      */
     private static void invokeConstrutorExecutionJoinPoint(
-            final System system,
+            final RuntimeSystem system,
             final Class declaringClass,
             final int joinPointHash,
             final int joinPointType,
@@ -1273,7 +1273,7 @@ public class JitCompiler {
             final IndexTuple[] aroundAdvices,
             final IndexTuple[] beforeAdvices,
             final IndexTuple[] afterAdvices,
-            final System system,
+            final RuntimeSystem system,
             final RttiInfo signatureCflowExprStruct) {
 
         // creates the labels needed for the switch and try-finally blocks
@@ -1356,7 +1356,7 @@ public class JitCompiler {
             boolean hasBeforeAfterAdvice,
             final IndexTuple[] beforeAdvices,
             final IndexTuple[] afterAdvices,
-            final System system,
+            final RuntimeSystem system,
             final String className,
             final CodeVisitor cv,
             final Label[] switchCaseLabels,
@@ -1433,7 +1433,7 @@ public class JitCompiler {
     private static void invokesAroundAdvice(
             boolean hasBeforeAfterAdvice,
             final IndexTuple[] aroundAdvices,
-            final System system,
+            final RuntimeSystem system,
             final String className,
             final CodeVisitor cv,
             final Label[] switchCaseLabels,
@@ -1743,7 +1743,7 @@ public class JitCompiler {
             final int joinPointType,
             final int joinPointHash,
             final Class declaringClass,
-            final System system,
+            final RuntimeSystem system,
             final Object thisInstance,
             final Object targetInstance) {
 
