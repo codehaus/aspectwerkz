@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-
 /**
  * Enumeration for all join point states.
  *
@@ -15,22 +14,22 @@ package org.codehaus.aspectwerkz.joinpoint.management;
  */
 public final class JoinPointState {
     /**
-    * The join point is not advised.
-    */
+     * The join point is not advised.
+     */
     public static final int NOT_ADVISED = 0;
 
     /**
-    * The join point is advised (this does not mean that it has advices attached to it).
-    */
+     * The join point is advised (this does not mean that it has advices attached to it).
+     */
     public static final int ADVISED = 1;
 
     /**
-    * The join point has advices.
-    */
+     * The join point has advices.
+     */
     public static final int HAS_ADVICES = 2;
 
     /**
-    * The join point has beed redefined, needs redeployment.
-    */
+     * The join point has beed redefined, needs redeployment.
+     */
     public static final int REDEFINED = 3;
 }

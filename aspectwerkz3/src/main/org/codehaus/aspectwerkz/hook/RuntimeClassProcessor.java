@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.hook;
 
-
 /**
  * Component able to transform a class at runtime
  *

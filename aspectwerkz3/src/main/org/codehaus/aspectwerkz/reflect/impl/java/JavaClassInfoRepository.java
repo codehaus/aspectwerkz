@@ -9,48 +9,49 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 
 import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
  * A repository for the class info hierarchy. Is class loader aware.
- *
+ * <p/>
  * TODO refactor some with JavassistClassInfoRepository but keep em separate for system runtime sake in AOPC (WLS)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JavaClassInfoRepository {
     /**
-    * Map with all the class info repositories mapped to their class loader.
-    */
+     * Map with all the class info repositories mapped to their class loader.
+     */
     private static final TIntObjectHashMap s_repositories = new TIntObjectHashMap();
 
     /**
-    * Map with all the class info mapped to their class names.
-    */
+     * Map with all the class info mapped to their class names.
+     */
     private final Map m_repository = new WeakHashMap();
 
     /**
-    * Class loader for the class repository.
-    */
+     * Class loader for the class repository.
+     */
     private transient final WeakReference m_loaderRef;
 
     /**
-    * Creates a new repository.
-    *
-    * @param loader
-    */
+     * Creates a new repository.
+     *
+     * @param loader
+     */
     private JavaClassInfoRepository(final ClassLoader loader) {
         m_loaderRef = new WeakReference(loader);
     }
 
     /**
-    * Returns the class info repository for the specific class loader
-    *
-    * @param loader
-    * @return
-    */
+     * Returns the class info repository for the specific class loader
+     *
+     * @param loader
+     * @return
+     */
     public static synchronized JavaClassInfoRepository getRepository(final ClassLoader loader) {
         int hash;
         if (loader == null) { // boot cl
@@ -59,8 +60,11 @@ public class JavaClassInfoRepository {
             hash = loader.hashCode();
         }
         WeakReference repositoryRef = (WeakReference)s_repositories.get(hash);
-        JavaClassInfoRepository repository = ((repositoryRef == null) ? null
-                                                                      : (JavaClassInfoRepository)repositoryRef.get());
+        JavaClassInfoRepository repository = (
+                                                 (repositoryRef == null)
+                                                 ? null
+                                                 : (JavaClassInfoRepository)repositoryRef.get()
+                                             );
         if (repository != null) {
             return repository;
         } else {
@@ -71,21 +75,21 @@ public class JavaClassInfoRepository {
     }
 
     /**
-    * Remove a class from the repository.
-    *
-    * @param className the name of the class
-    */
+     * Remove a class from the repository.
+     *
+     * @param className the name of the class
+     */
     public static void removeClassInfoFromAllClassLoaders(final String className) {
         //TODO - fix algorithm
         throw new UnsupportedOperationException("fix algorithm");
     }
 
     /**
-    * Returns the class info.
-    *
-    * @param className
-    * @return
-    */
+     * Returns the class info.
+     *
+     * @param className
+     * @return
+     */
     public ClassInfo getClassInfo(final String className) {
         ClassInfo info = (ClassInfo)m_repository.get(className);
         if (info == null) {
@@ -95,10 +99,10 @@ public class JavaClassInfoRepository {
     }
 
     /**
-    * Adds a new class info.
-    *
-    * @param classInfo
-    */
+     * Adds a new class info.
+     *
+     * @param classInfo
+     */
     public void addClassInfo(final ClassInfo classInfo) {
         // is the class loaded by a class loader higher up in the hierarchy?
         if (checkParentClassRepository(classInfo.getName(), (ClassLoader)m_loaderRef.get()) == null) {
@@ -109,24 +113,24 @@ public class JavaClassInfoRepository {
     }
 
     /**
-    * Checks if the class info for a specific class exists.
-    *
-    * @param name
-    * @return
-    */
+     * Checks if the class info for a specific class exists.
+     *
+     * @param name
+     * @return
+     */
     public boolean hasClassInfo(final String name) {
         return m_repository.containsKey(name);
     }
 
     /**
-    * Searches for a class info up in the class loader hierarchy.
-    *
-    * @param className
-    * @param loader
-    * @return the class info
-    * @TODO might clash for specific class loader lookup algorithms, user need to override this class and implement
-    * this method
-    */
+     * Searches for a class info up in the class loader hierarchy.
+     *
+     * @param className
+     * @param loader
+     * @return the class info
+     * @TODO might clash for specific class loader lookup algorithms, user need to override this class and implement
+     * this method
+     */
     public ClassInfo checkParentClassRepository(final String className, final ClassLoader loader) {
         if (loader == null) {
             return null;

@@ -34,9 +34,9 @@
                         <a href="#Introductions">Introductions</a>
                     </li>
                     <li>
-                         <a href="#System wide pointcuts">System wide pointcuts</a>
-                     </li>
-                      <li>
+                        <a href="#System wide pointcuts">System wide pointcuts</a>
+                    </li>
+                    <li>
                         <a href="#Passing parameters to aspects">Passing parameters to aspects</a>
                     </li>
                     <li>
@@ -144,15 +144,15 @@
                 ]]></source>
             </p>
         </section>
-
         <section name="System wide pointcuts">
             <p>
                 The pointcuts can also be "system-wide", which means that you can define pointcuts outside the
-                aspects, within the <code>system</code> tags. These can then be used by all <code>aspects</code>
+                aspects, within the
+                <code>system</code> tags. These can then be used by all
+                <code>aspects</code>
                 in the system defintion.
             </p>
         </section>
-
         <section name="Advice">
             <p>
                 In the XML defintion advice are defined using the
@@ -256,7 +256,6 @@
                 the parameter value as a String.
             </p>
         </section>
-
         <section name="Package namespaces">
             <p>
                 Package namespaces provide a way to simplify the edition of the XML definition file so that it is not necessary
@@ -355,7 +354,6 @@
                 ]]></source>
             </p>
         </section>
-
         <section name="DTD for XML definition">
             <p>
                 Each distribution comes with a bundled DTD so that it is not looked
@@ -379,7 +377,7 @@
                 ]]></source>
             </p>
         </section>
-           <section name="Example of an XML definition">
+        <section name="Example of an XML definition">
             <p>
                 Here is an example where all the definitions are put together into a single
                 <code>AspectWerkz</code> XML definition file.

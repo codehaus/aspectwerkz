@@ -9,7 +9,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression.ast;
 
-
 /**
  * An implementation of interface CharStream, where the stream is assumed to contain only ASCII characters (without
  * unicode processing).
@@ -33,9 +32,11 @@ public class SimpleCharStream {
 
     public SimpleCharStream(java.io.Reader dstream, int startline, int startcolumn, int buffersize) {
         if (inputStream != null) {
-            throw new Error("\n   ERROR: Second call to the constructor of a static SimpleCharStream.  You must\n"
-                            + "       either use ReInit() or setClass the JavaCC option STATIC to false\n"
-                            + "       during the generation of this class.");
+            throw new Error(
+                    "\n   ERROR: Second call to the constructor of a static SimpleCharStream.  You must\n"
+                    + "       either use ReInit() or setClass the JavaCC option STATIC to false\n"
+                    + "       during the generation of this class."
+            );
         }
         inputStream = dstream;
         line = startline;
@@ -192,17 +193,17 @@ public class SimpleCharStream {
     }
 
     /**
-    * @see #getEndColumn
-    * @deprecated
-    */
+     * @see #getEndColumn
+     * @deprecated
+     */
     static public int getColumn() {
         return bufcolumn[bufpos];
     }
 
     /**
-    * @see #getEndLine
-    * @deprecated
-    */
+     * @see #getEndLine
+     * @deprecated
+     */
     static public int getLine() {
         return bufline[bufpos];
     }
@@ -291,8 +292,8 @@ public class SimpleCharStream {
     }
 
     /**
-    * Method to adjust line and column numbers for the start of a token.
-    */
+     * Method to adjust line and column numbers for the start of a token.
+     */
     static public void adjustBeginLineColumn(int newLine, int newCol) {
         int start = tokenBegin;
         int len;

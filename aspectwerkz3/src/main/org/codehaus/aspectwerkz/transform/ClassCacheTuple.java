@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-
 /**
  * A tuple based on className and defining ClassLoader object
  *

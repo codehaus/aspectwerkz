@@ -16,7 +16,7 @@ public interface AnnotationParserTreeConstants {
     public int JJTHEX = 11;
     public int JJTOCT = 12;
     public String[] jjtNodeName = {
-                                      "Root", "Annotation", "KeyValuePair", "void", "Identifier", "Boolean", "Char",
-                                      "String", "Array", "Integer", "Float", "Hex", "Oct",
-                                  };
+        "Root", "Annotation", "KeyValuePair", "void", "Identifier", "Boolean", "Char",
+        "String", "Array", "Integer", "Float", "Hex", "Oct",
+    };
 }

@@ -15,15 +15,16 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  */
 public class PerInstancePerformanceAspect {
     /**
-    * @Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerInstance()) && within(test.performance.*)
-    */
+     * @Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerInstance()) &&
+     * within(test.performance.*)
+     */
     public Object advice(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
-    * @Introduce within(test.performance.PerformanceTest)
-    */
+     * @Introduce within(test.performance.PerformanceTest)
+     */
     public static class PerInstanceImpl implements PerInstance {
         public void runPerInstance() {
         }

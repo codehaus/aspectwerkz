@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-
 /**
  * The 'Expression' annotation proxy.
  *

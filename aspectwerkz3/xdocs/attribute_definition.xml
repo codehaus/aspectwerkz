@@ -521,14 +521,15 @@ public class MyAspect {
                 <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)
             </p>
                 You invoke the compiler like this:
-                <source><![CDATA[
+            <source><![CDATA[
 java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC
     [-verbose]
     -src <path to src dir>
     -classes <path to classes dir>
     [-dest <path to destination dir>]
     [-custom <property file for custom annotations>]
-                ]]></source>            <p>
+            ]]></source>
+            <p>
                 <ul>
                     <li>
                         <code>-verbose</code> - (optional) to activate verbose logging of compilation

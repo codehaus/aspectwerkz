@@ -11,6 +11,7 @@ import EDU.oswego.cs.dl.util.concurrent.BoundedBuffer;
 import EDU.oswego.cs.dl.util.concurrent.LinkedQueue;
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -41,8 +42,8 @@ public class RemoteProxyServer implements Runnable {
     private static boolean THREAD_POOL_WAIT_WHEN_BLOCKED;
 
     /**
-    * Initalize the server properties.
-    */
+     * Initalize the server properties.
+     */
     static {
         Properties properties = new Properties();
         try {
@@ -127,57 +128,59 @@ public class RemoteProxyServer implements Runnable {
     }
 
     /**
-    * The server socket.
-    */
+     * The server socket.
+     */
     private ServerSocket m_serverSocket = null;
 
     /**
-    * All listener threads.
-    */
+     * All listener threads.
+     */
     private Thread[] m_listenerThreads = null;
 
     /**
-    * The thread pool.
-    */
+     * The thread pool.
+     */
     private PooledExecutor m_threadPool = null;
 
     /**
-    * The class loader to use.
-    */
+     * The class loader to use.
+     */
     private ClassLoader m_loader = null;
 
     /**
-    * The invoker instance.
-    */
+     * The invoker instance.
+     */
     private Invoker m_invoker = null;
 
     /**
-    * Marks the server as running.
-    */
+     * Marks the server as running.
+     */
     private boolean m_running = true;
 
     /**
-    * Starts a server object and starts listening for client access.
-    *
-    * @param loader  the classloader to use
-    * @param invoker the invoker that makes the method invocation in the client thread
-    */
+     * Starts a server object and starts listening for client access.
+     *
+     * @param loader  the classloader to use
+     * @param invoker the invoker that makes the method invocation in the client thread
+     */
     public RemoteProxyServer(final ClassLoader loader, final Invoker invoker) {
         m_invoker = invoker;
         m_loader = loader;
     }
 
     /**
-    * Starts up the proxy server.
-    */
+     * Starts up the proxy server.
+     */
     public void start() {
         m_running = true;
         try {
             InetAddress bindAddress = InetAddress.getByName(HOST_NAME);
             m_serverSocket = new ServerSocket(PORT, BACKLOG, bindAddress);
             if (BOUNDED_THREAD_POOL) {
-                createBoundedThreadPool(THREAD_POOL_MAX_SIZE, THREAD_POOL_MIN_SIZE, THREAD_POOL_INIT_SIZE,
-                                        THREAD_POOL_KEEP_ALIVE_TIME, THREAD_POOL_WAIT_WHEN_BLOCKED);
+                createBoundedThreadPool(
+                        THREAD_POOL_MAX_SIZE, THREAD_POOL_MIN_SIZE, THREAD_POOL_INIT_SIZE,
+                        THREAD_POOL_KEEP_ALIVE_TIME, THREAD_POOL_WAIT_WHEN_BLOCKED
+                );
             } else {
                 createDynamicThreadPool(THREAD_POOL_MIN_SIZE, THREAD_POOL_INIT_SIZE, THREAD_POOL_KEEP_ALIVE_TIME);
             }
@@ -195,8 +198,8 @@ public class RemoteProxyServer implements Runnable {
     }
 
     /**
-    * Stops the socket proxy server.
-    */
+     * Stops the socket proxy server.
+     */
     public void stop() {
         m_running = false;
         for (int i = 0; i < NUM_LISTENER_THREADS; i++) {
@@ -206,16 +209,20 @@ public class RemoteProxyServer implements Runnable {
     }
 
     /**
-    * Does the actual work of listening for a client request and spawns a new RemoteProxyServerThread to serve the
-    * client.
-    */
+     * Does the actual work of listening for a client request and spawns a new RemoteProxyServerThread to serve the
+     * client.
+     */
     public void run() {
         try {
             while (m_running) {
                 final Socket clientSocket = m_serverSocket.accept();
                 synchronized (m_threadPool) {
-                    m_threadPool.execute(new RemoteProxyServerThread(clientSocket, m_loader, m_invoker,
-                                                                     CLIENT_THREAD_TIMEOUT));
+                    m_threadPool.execute(
+                            new RemoteProxyServerThread(
+                                    clientSocket, m_loader, m_invoker,
+                                    CLIENT_THREAD_TIMEOUT
+                            )
+                    );
                 }
             }
             m_serverSocket.close();
@@ -225,17 +232,18 @@ public class RemoteProxyServer implements Runnable {
     }
 
     /**
-    * Creates a new bounded thread pool.
-    *
-    * @param threadPoolMaxSize
-    * @param threadPoolMinSize
-    * @param threadPoolInitSize
-    * @param keepAliveTime
-    * @param waitWhenBlocked
-    */
-    private void createBoundedThreadPool(final int threadPoolMaxSize, final int threadPoolMinSize,
-                                         final int threadPoolInitSize, final int keepAliveTime,
-                                         final boolean waitWhenBlocked) {
+     * Creates a new bounded thread pool.
+     *
+     * @param threadPoolMaxSize
+     * @param threadPoolMinSize
+     * @param threadPoolInitSize
+     * @param keepAliveTime
+     * @param waitWhenBlocked
+     */
+    private void createBoundedThreadPool(
+            final int threadPoolMaxSize, final int threadPoolMinSize,
+            final int threadPoolInitSize, final int keepAliveTime,
+            final boolean waitWhenBlocked) {
         m_threadPool = new PooledExecutor(new BoundedBuffer(threadPoolInitSize), threadPoolMaxSize);
         m_threadPool.setKeepAliveTime(keepAliveTime);
         m_threadPool.createThreads(threadPoolInitSize);
@@ -246,14 +254,15 @@ public class RemoteProxyServer implements Runnable {
     }
 
     /**
-    * Creates a new dynamic thread pool
-    *
-    * @param threadPoolMinSize
-    * @param threadPoolInitSize
-    * @param keepAliveTime
-    */
-    private void createDynamicThreadPool(final int threadPoolMinSize, final int threadPoolInitSize,
-                                         final int keepAliveTime) {
+     * Creates a new dynamic thread pool
+     *
+     * @param threadPoolMinSize
+     * @param threadPoolInitSize
+     * @param keepAliveTime
+     */
+    private void createDynamicThreadPool(
+            final int threadPoolMinSize, final int threadPoolInitSize,
+            final int keepAliveTime) {
         m_threadPool = new PooledExecutor(new LinkedQueue());
         m_threadPool.setKeepAliveTime(keepAliveTime);
         m_threadPool.createThreads(threadPoolInitSize);

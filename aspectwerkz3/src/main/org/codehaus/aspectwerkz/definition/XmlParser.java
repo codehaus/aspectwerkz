@@ -15,6 +15,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,25 +31,25 @@ import java.util.List;
  */
 public class XmlParser {
     /**
-    * The current DTD public id. The matching dtd will be searched as a resource.
-    */
+     * The current DTD public id. The matching dtd will be searched as a resource.
+     */
     private final static String DTD_PUBLIC_ID = "-//AspectWerkz//DTD 1.0//EN";
     private final static String DTD_PUBLIC_ID_ALIAS = "-//AspectWerkz//DTD//EN";
 
     /**
-    * The timestamp, holding the last time that the definition was parsed.
-    */
+     * The timestamp, holding the last time that the definition was parsed.
+     */
     private static File s_timestamp = new File(".timestamp");
 
     /**
-    * The AspectWerkz definitions.
-    */
+     * The AspectWerkz definitions.
+     */
     private static List s_definitions = null;
 
     /**
-    * @param definitionFile the definition file
-    * @return the definitions
-    */
+     * @param definitionFile the definition file
+     * @return the definitions
+     */
     public static List getAspectClassNames(final File definitionFile) {
         if (definitionFile == null) {
             throw new IllegalArgumentException("definition file can not be null");
@@ -76,9 +77,9 @@ public class XmlParser {
     }
 
     /**
-    * @param stream the input stream containing the document
-    * @return the definitions
-    */
+     * @param stream the input stream containing the document
+     * @return the definitions
+     */
     public static List getAspectClassNames(final InputStream stream) {
         try {
             Document document = createDocument(stream);
@@ -89,13 +90,13 @@ public class XmlParser {
     }
 
     /**
-    * Parses the XML definition file, only if it has been updated. Uses a timestamp to check for modifications.
-    *
-    * @param loader         the current class loader
-    * @param definitionFile the definition file
-    * @param isDirty        flag to mark the the definition as updated or not
-    * @return the definitions
-    */
+     * Parses the XML definition file, only if it has been updated. Uses a timestamp to check for modifications.
+     *
+     * @param loader         the current class loader
+     * @param definitionFile the definition file
+     * @param isDirty        flag to mark the the definition as updated or not
+     * @return the definitions
+     */
     public static List parse(final ClassLoader loader, final File definitionFile, boolean isDirty) {
         if (definitionFile == null) {
             throw new IllegalArgumentException("definition file can not be null");
@@ -125,12 +126,12 @@ public class XmlParser {
     }
 
     /**
-    * Parses the XML definition file retrieved from an input stream.
-    *
-    * @param loader the current class loader
-    * @param stream the input stream containing the document
-    * @return the definitions
-    */
+     * Parses the XML definition file retrieved from an input stream.
+     *
+     * @param loader the current class loader
+     * @param stream the input stream containing the document
+     * @return the definitions
+     */
     public static List parse(final ClassLoader loader, final InputStream stream) {
         try {
             Document document = createDocument(stream);
@@ -142,12 +143,12 @@ public class XmlParser {
     }
 
     /**
-    * Parses the XML definition file not using the cache.
-    *
-    * @param loader the current class loader
-    * @param url    the URL to the definition file
-    * @return the definition object
-    */
+     * Parses the XML definition file not using the cache.
+     *
+     * @param loader the current class loader
+     * @param url    the URL to the definition file
+     * @return the definition object
+     */
     public static List parseNoCache(final ClassLoader loader, final URL url) {
         try {
             Document document = createDocument(url);
@@ -159,12 +160,12 @@ public class XmlParser {
     }
 
     /**
-    * Merges two DOM documents.
-    *
-    * @param document1 the first document
-    * @param document2 the second document
-    * @return the definition merged document
-    */
+     * Merges two DOM documents.
+     *
+     * @param document1 the first document
+     * @param document2 the second document
+     * @return the definition merged document
+     */
     public static Document mergeDocuments(final Document document1, final Document document2) {
         if ((document2 == null) && (document1 != null)) {
             return document1;
@@ -190,13 +191,13 @@ public class XmlParser {
     }
 
     /**
-    * Creates a DOM document.
-    *
-    * @param url the URL to the file containing the XML
-    * @return the DOM document
-    * @throws DocumentException
-    * @throws DocumentException
-    */
+     * Creates a DOM document.
+     *
+     * @param url the URL to the file containing the XML
+     * @return the DOM document
+     * @throws DocumentException
+     * @throws DocumentException
+     */
     public static Document createDocument(final URL url) throws DocumentException {
         SAXReader reader = new SAXReader();
         setEntityResolver(reader);
@@ -204,13 +205,13 @@ public class XmlParser {
     }
 
     /**
-    * Creates a DOM document.
-    *
-    * @param stream the stream containing the XML
-    * @return the DOM document
-    * @throws DocumentException
-    * @throws DocumentException
-    */
+     * Creates a DOM document.
+     *
+     * @param stream the stream containing the XML
+     * @return the DOM document
+     * @throws DocumentException
+     * @throws DocumentException
+     */
     public static Document createDocument(final InputStream stream) throws DocumentException {
         SAXReader reader = new SAXReader();
         setEntityResolver(reader);
@@ -218,10 +219,10 @@ public class XmlParser {
     }
 
     /**
-    * Sets the entity resolver which is created based on the DTD from in the root dir of the AspectWerkz distribution.
-    *
-    * @param reader the reader to set the resolver in
-    */
+     * Sets the entity resolver which is created based on the DTD from in the root dir of the AspectWerkz distribution.
+     *
+     * @param reader the reader to set the resolver in
+     */
     private static void setEntityResolver(final SAXReader reader) {
         EntityResolver resolver = new EntityResolver() {
             public InputSource resolveEntity(String publicId, String systemId) {
@@ -234,8 +235,10 @@ public class XmlParser {
                         return new InputSource(in);
                     }
                 } else {
-                    System.err.println("AspectWerkz - WARN - deprecated DTD " + publicId + " - consider upgrading to "
-                                       + DTD_PUBLIC_ID);
+                    System.err.println(
+                            "AspectWerkz - WARN - deprecated DTD " + publicId + " - consider upgrading to "
+                            + DTD_PUBLIC_ID
+                    );
                     return new InputSource(); // avoid null pointer exception
                 }
             }
@@ -244,28 +247,28 @@ public class XmlParser {
     }
 
     /**
-    * Checks if the definition file has been updated since the last parsing.
-    *
-    * @param definitionFile the definition file
-    * @return boolean
-    */
+     * Checks if the definition file has been updated since the last parsing.
+     *
+     * @param definitionFile the definition file
+     * @return boolean
+     */
     private static boolean isNotUpdated(final File definitionFile) {
         return (definitionFile.lastModified() < getParsingTimestamp()) && (s_definitions != null);
     }
 
     /**
-    * Sets the timestamp for the latest parsing of the definition file.
-    */
+     * Sets the timestamp for the latest parsing of the definition file.
+     */
     private static void setParsingTimestamp() {
         final long newModifiedTime = System.currentTimeMillis();
         s_timestamp.setLastModified(newModifiedTime);
     }
 
     /**
-    * Returns the timestamp for the last parsing of the definition file.
-    *
-    * @return the timestamp
-    */
+     * Returns the timestamp for the last parsing of the definition file.
+     *
+     * @return the timestamp
+     */
     private static long getParsingTimestamp() {
         final long modifiedTime = s_timestamp.lastModified();
         if (modifiedTime == 0L) {

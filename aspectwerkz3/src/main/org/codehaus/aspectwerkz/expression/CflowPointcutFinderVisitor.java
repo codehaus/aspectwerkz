@@ -44,12 +44,12 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
     protected final String m_namespace;
 
     /**
-    * Creates a new finder.
-    *
-    * @param expression the expression as a string
-    * @param namespace  the namespace
-    * @param root       the AST root
-    */
+     * Creates a new finder.
+     *
+     * @param expression the expression as a string
+     * @param namespace  the namespace
+     * @param root       the AST root
+     */
     public CflowPointcutFinderVisitor(final String expression, final String namespace, final ASTRoot root) {
         m_root = root;
         m_expression = expression;
@@ -57,10 +57,10 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
     }
 
     /**
-    * Checks if the expression has a cflow pointcut.
-    *
-    * @return
-    */
+     * Checks if the expression has a cflow pointcut.
+     *
+     * @return
+     */
     public boolean hasCflowPointcut() {
         return ((Boolean)visit(m_root, null)).booleanValue();
     }
@@ -184,19 +184,19 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
     }
 
     /**
-    * Returns the string representation of the AST.
-    *
-    * @return
-    */
+     * Returns the string representation of the AST.
+     *
+     * @return
+     */
     public String toString() {
         return m_expression;
     }
 
     /**
-    * Returns the namespace.
-    *
-    * @return
-    */
+     * Returns the namespace.
+     *
+     * @return
+     */
     public String getNamespace() {
         return m_namespace;
     }

@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-
 /**
  * Component for class transformation At load time / post compilation time: transform At runtime to activate prepared
  * declarations: activate
@@ -16,11 +15,11 @@ package org.codehaus.aspectwerkz.transform;
  */
 public interface Transformer {
     /**
-    * Transforms bytecode at load time
-    *
-    * @param context
-    * @param klass
-    * @throws Exception
-    */
+     * Transforms bytecode at load time
+     *
+     * @param context
+     * @param klass
+     * @throws Exception
+     */
     public abstract void transform(final Context context, final Klass klass) throws Exception;
 }

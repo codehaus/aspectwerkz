@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.TypeConverter;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.util.Strings;
+
 import java.lang.reflect.Method;
 import java.util.Comparator;
 
@@ -23,51 +24,51 @@ import java.util.Comparator;
  */
 public final class MethodComparator implements java.util.Comparator {
     /**
-    * Compares normal method names.
-    */
+     * Compares normal method names.
+     */
     public static final int NORMAL_METHOD = 0;
 
     /**
-    * Compares prefixed method names.
-    */
+     * Compares prefixed method names.
+     */
     public static final int PREFIXED_METHOD = 1;
 
     /**
-    * Compares method meta-data.
-    */
+     * Compares method meta-data.
+     */
     public static final int METHOD_META_DATA = 2;
 
     /**
-    * Defines the type of comparator.
-    */
+     * Defines the type of comparator.
+     */
     private final int m_type;
 
     /**
-    * Sets the type.
-    *
-    * @param type the type
-    */
+     * Sets the type.
+     *
+     * @param type the type
+     */
     private MethodComparator(final int type) {
         m_type = type;
     }
 
     /**
-    * Returns the comparator instance.
-    *
-    * @param type the type of the method comparison
-    * @return the instance
-    */
+     * Returns the comparator instance.
+     *
+     * @param type the type of the method comparison
+     * @return the instance
+     */
     public static Comparator getInstance(final int type) {
         return new MethodComparator(type);
     }
 
     /**
-    * Compares two objects.
-    *
-    * @param o1
-    * @param o2
-    * @return int
-    */
+     * Compares two objects.
+     *
+     * @param o1
+     * @param o2
+     * @return int
+     */
     public int compare(final Object o1, final Object o2) {
         switch (m_type) {
             case NORMAL_METHOD:
@@ -82,12 +83,12 @@ public final class MethodComparator implements java.util.Comparator {
     }
 
     /**
-    * Compares two methods.
-    *
-    * @param m1
-    * @param m2
-    * @return int
-    */
+     * Compares two methods.
+     *
+     * @param m1
+     * @param m2
+     * @return int
+     */
     private int compareNormal(final Method m1, final Method m2) {
         try {
             if (m1.equals(m2)) {
@@ -108,7 +109,9 @@ public final class MethodComparator implements java.util.Comparator {
             }
             for (int i = 0; i < args1.length; i++) {
                 //handles array types - AW-104
-                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
+                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(
+                        TypeConverter.convertTypeToJava(args2[i])
+                );
                 if (result != 0) {
                     return result;
                 }
@@ -122,12 +125,12 @@ public final class MethodComparator implements java.util.Comparator {
     }
 
     /**
-    * Compares two prefixed methods. Assumes the the prefixed methods looks like this: "somePrefix SEP methodName SEP"
-    *
-    * @param m1
-    * @param m2
-    * @return int
-    */
+     * Compares two prefixed methods. Assumes the the prefixed methods looks like this: "somePrefix SEP methodName SEP"
+     *
+     * @param m1
+     * @param m2
+     * @return int
+     */
     private int comparePrefixed(final Method m1, final Method m2) {
         try {
             if (m1.equals(m2)) {
@@ -152,7 +155,9 @@ public final class MethodComparator implements java.util.Comparator {
             }
             for (int i = 0; i < args1.length; i++) {
                 //handles array types - AW-104
-                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
+                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(
+                        TypeConverter.convertTypeToJava(args2[i])
+                );
                 if (result != 0) {
                     return result;
                 }
@@ -166,12 +171,12 @@ public final class MethodComparator implements java.util.Comparator {
     }
 
     /**
-    * Compares two methods meta-data.
-    *
-    * @param m1
-    * @param m2
-    * @return int
-    */
+     * Compares two methods meta-data.
+     *
+     * @param m1
+     * @param m2
+     * @return int
+     */
     private int compareMethodInfo(final MethodInfo m1, final MethodInfo m2) {
         try {
             if (m1.equals(m2)) {

@@ -12,7 +12,9 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+
 import java.util.List;
+
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.NotFoundException;
@@ -24,26 +26,27 @@ import javassist.NotFoundException;
  */
 public class JavassistConstructorInfo extends JavassistCodeInfo implements ConstructorInfo {
     /**
-    * Creates a new method meta data instance.
-    *
-    * @param constructor
-    * @param declaringType
-    * @param loader
-    * @param attributeExtractor
-    */
-    JavassistConstructorInfo(final CtConstructor constructor, final JavassistClassInfo declaringType,
-                             final ClassLoader loader, final AttributeExtractor attributeExtractor) {
+     * Creates a new method meta data instance.
+     *
+     * @param constructor
+     * @param declaringType
+     * @param loader
+     * @param attributeExtractor
+     */
+    JavassistConstructorInfo(
+            final CtConstructor constructor, final JavassistClassInfo declaringType,
+            final ClassLoader loader, final AttributeExtractor attributeExtractor) {
         super(constructor, declaringType, loader, attributeExtractor);
 
         //        addAnnotations();
     }
 
     /**
-    * Returns the constructor info for the constructor specified.
-    *
-    * @param constructor the constructor
-    * @return the constructor info
-    */
+     * Returns the constructor info for the constructor specified.
+     *
+     * @param constructor the constructor
+     * @return the constructor info
+     */
     public static ConstructorInfo getConstructorInfo(final CtConstructor constructor, final ClassLoader loader) {
         CtClass declaringClass = constructor.getDeclaringClass();
         JavassistClassInfoRepository repository = JavassistClassInfoRepository.getRepository(loader);
@@ -55,11 +58,11 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
     }
 
     /**
-    * Calculates the constructor hash.
-    *
-    * @param constructor
-    * @return the hash
-    */
+     * Calculates the constructor hash.
+     *
+     * @param constructor
+     * @return the hash
+     */
     public static int calculateHash(final CtConstructor constructor) {
         int hash = constructor.getName().hashCode();
         try {
@@ -73,12 +76,11 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
     }
 
     /**
-    * Returns the attributes.
-    *
-    * @TODO: fix constructor annotations
-    *
-    * @return the attributes
-    */
+     * Returns the attributes.
+     *
+     * @return the attributes
+     * @TODO: fix constructor annotations
+     */
     public List getAnnotations() {
         return m_annotations;
     }
@@ -123,10 +125,10 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
     }
 
     /**
-    * Adds annotations to the method info.
-    *
-    * @TODO: implement
-    */
+     * Adds annotations to the method info.
+     *
+     * @TODO: implement
+     */
     private void addAnnotations() {
         //        if (m_parameterTypes == null) {
         //            getParameterTypes();

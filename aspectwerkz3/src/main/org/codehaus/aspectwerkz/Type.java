@@ -26,24 +26,24 @@ public class Type implements Serializable {
     public static final Type CHAR = new Type("CHAR");
 
     /**
-    * The name of the type.
-    */
+     * The name of the type.
+     */
     private final String m_name;
 
     /**
-    * Private constructor to prevent instantiation A subclassing.
-    *
-    * @param name the name of the type
-    */
+     * Private constructor to prevent instantiation A subclassing.
+     *
+     * @param name the name of the type
+     */
     private Type(final String name) {
         m_name = name;
     }
 
     /**
-    * Returns the name of the type.
-    *
-    * @return the name of the type
-    */
+     * Returns the name of the type.
+     *
+     * @return the name of the type
+     */
     public String toString() {
         return m_name;
     }

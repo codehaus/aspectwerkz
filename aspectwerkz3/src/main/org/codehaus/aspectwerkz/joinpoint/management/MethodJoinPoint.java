@@ -22,33 +22,34 @@ class MethodJoinPoint extends JoinPointBase {
     private MethodRttiImpl m_rtti;
 
     /**
-    * Creates a new join point.
-    *
-    * @param type
-    * @param targetClass
-    * @param signature
-    * @param rtti
-    * @param joinPointMetaData
-    * @param aroundAdviceExecutor
-    * @param beforeAdviceExecutor
-    * @param afterAdviceExecutor
-    */
-    public MethodJoinPoint(final int type, final Class targetClass, final Signature signature, final Rtti rtti,
-                           final JoinPointMetaData joinPointMetaData, final AroundAdviceExecutor aroundAdviceExecutor,
-                           final BeforeAdviceExecutor beforeAdviceExecutor,
-                           final AfterAdviceExecutor afterAdviceExecutor) {
+     * Creates a new join point.
+     *
+     * @param type
+     * @param targetClass
+     * @param signature
+     * @param rtti
+     * @param joinPointMetaData
+     * @param aroundAdviceExecutor
+     * @param beforeAdviceExecutor
+     * @param afterAdviceExecutor
+     */
+    public MethodJoinPoint(
+            final int type, final Class targetClass, final Signature signature, final Rtti rtti,
+            final JoinPointMetaData joinPointMetaData, final AroundAdviceExecutor aroundAdviceExecutor,
+            final BeforeAdviceExecutor beforeAdviceExecutor,
+            final AfterAdviceExecutor afterAdviceExecutor) {
         super(type, targetClass, joinPointMetaData, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
         m_signature = (MethodSignature)signature;
         m_rtti = (MethodRttiImpl)rtti;
     }
 
     /**
-    * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
-    * invoked, the original method is invoked. Is called recursively.
-    *
-    * @return the result from the next invocation
-    * @throws Throwable
-    */
+     * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
+     * invoked, the original method is invoked. Is called recursively.
+     *
+     * @return the result from the next invocation
+     * @throws Throwable
+     */
     public Object proceed() throws Throwable {
         Object result = m_aroundAdviceExecutor.proceed(this);
         m_rtti.setReturnValue(result);
@@ -56,29 +57,29 @@ class MethodJoinPoint extends JoinPointBase {
     }
 
     /**
-    * Returns the signature for the join point.
-    *
-    * @return the signature
-    */
+     * Returns the signature for the join point.
+     *
+     * @return the signature
+     */
     public Signature getSignature() {
         return m_signature;
     }
 
     /**
-    * Returns the RTTI for the join point.
-    *
-    * @return the RTTI
-    */
+     * Returns the RTTI for the join point.
+     *
+     * @return the RTTI
+     */
     public Rtti getRtti() {
         return m_rtti;
     }
 
     /**
-    * Returns a string representation of the join puoint.
-    *
-    * @return a string representation
-    * @TODO: implement toString to something meaningful
-    */
+     * Returns a string representation of the join puoint.
+     *
+     * @return a string representation
+     * @TODO: implement toString to something meaningful
+     */
     public String toString() {
         return super.toString();
     }

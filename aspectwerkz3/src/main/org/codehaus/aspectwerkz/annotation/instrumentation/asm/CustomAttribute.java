@@ -15,9 +15,8 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 
 /**
- * @TODO: document
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @TODO: document
  */
 public class CustomAttribute extends Attribute {
     private final byte[] m_bytes;
@@ -37,8 +36,9 @@ public class CustomAttribute extends Attribute {
         return m_bytes;
     }
 
-    protected Attribute read(final ClassReader cr, final int off, final int len, final char[] buf, final int codeOff,
-                             final Label[] labels) {
+    protected Attribute read(
+            final ClassReader cr, final int off, final int len, final char[] buf, final int codeOff,
+            final Label[] labels) {
         byte[] bytes = new byte[len];
         int index = off;
         for (int i = 0; i < len; i++, index++) {
@@ -47,8 +47,9 @@ public class CustomAttribute extends Attribute {
         return new CustomAttribute(bytes);
     }
 
-    protected ByteVector write(final ClassWriter cw, final byte[] code, final int len, final int maxStack,
-                               final int maxLocals) {
+    protected ByteVector write(
+            final ClassWriter cw, final byte[] code, final int len, final int maxStack,
+            final int maxLocals) {
         return new ByteVector().putByteArray(m_bytes, 0, m_bytes.length);
     }
 }

@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-
 /**
  * Dummy class for back-compatibility reasons.
  *

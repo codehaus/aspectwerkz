@@ -17,7 +17,8 @@
                         <b>any</b> class loader
                         except the bootstrap class loader. Which basically means that
                         you can easily transform any (legacy) application or external
-                        library apart from rt.jar both at runtime and compile time.<br/>
+                        library apart from rt.jar both at runtime and compile time.
+                        <br/>
                         <code>JSR-163 JVMTI</code> is supported for Java 1.5 usage as well.
                     </li>
                     <br/>
@@ -30,11 +31,14 @@
                          Annotation support: Matching on annotations (both JavaDoc and JSR-175). Supports user-defined annotations,
                          retrieval of annotations. Both JavaDoc and JSR-175 annotations are accessed through one
                          single API and both schemes are strongly typed.
-                      </li>
-                      <br/>
-                         <li>
-                        Support for deploying several <code>aop.xml</code> Aspect defintion/deployment files alongside deployed
-                        application (<code>WEB-INF/aop.xml</code>, <code>META-INF/aop.xml</code>) and have them following
+                    </li>
+                    <br/>
+                    <li>
+                        Support for deploying several
+                        <code>aop.xml</code> Aspect defintion/deployment files alongside deployed
+                        application (
+                        <code>WEB-INF/aop.xml</code>,
+                        <code>META-INF/aop.xml</code>) and have them following
                         the classloader hierarchy.
                     </li>
                     <br/>
@@ -50,8 +54,8 @@
                     <li>
                          XML definition. Define your aspects using XML. The XML definition can also be used to refine,
                          override and resolve the annotation definition.
-                     </li>
-                     <br/>
+                    </li>
+                    <br/>
                     <li>
                         Pluggable aspect manager that can make it work seamlessly with IoC frameworks like Spring
                         or PicoContainer.

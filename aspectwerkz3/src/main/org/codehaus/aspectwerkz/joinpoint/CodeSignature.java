@@ -7,22 +7,21 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint;
 
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface CodeSignature extends MemberSignature {
     /**
-    * Returns the exception types declared by the code block.
-    *
-    * @return the exception types
-    */
+     * Returns the exception types declared by the code block.
+     *
+     * @return the exception types
+     */
     Class[] getExceptionTypes();
 
     /**
-    * Returns the parameter types.
-    *
-    * @return the parameter types
-    */
+     * Returns the parameter types.
+     *
+     * @return the parameter types
+     */
     Class[] getParameterTypes();
 }

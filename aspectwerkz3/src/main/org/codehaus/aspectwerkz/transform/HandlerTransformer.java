@@ -15,8 +15,10 @@ import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistMethodInfo;
+
 import java.util.Iterator;
 import java.util.List;
+
 import javassist.CannotCompileException;
 import javassist.CtBehavior;
 import javassist.CtClass;
@@ -34,17 +36,17 @@ import javassist.expr.Handler;
  */
 public class HandlerTransformer implements Transformer {
     /**
-    * The join point index.
-    */
+     * The join point index.
+     */
 
     //AXprivate int m_joinPointIndex;
 
     /**
-    * Transforms the call side pointcuts.
-    *
-    * @param context the transformation context
-    * @param klass   the class set.
-    */
+     * Transforms the call side pointcuts.
+     *
+     * @param context the transformation context
+     * @param klass   the class set.
+     */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
 
@@ -56,64 +58,75 @@ public class HandlerTransformer implements Transformer {
             if (classFilter(definition, new ExpressionContext(PointcutType.HANDLER, classInfo, classInfo), ctClass)) {
                 continue;
             }
-            ctClass.instrument(new ExprEditor() {
-                    public void edit(Handler handlerExpr) throws CannotCompileException {
-                        try {
-                            CtClass exceptionClass = null;
+            ctClass.instrument(
+                    new ExprEditor() {
+                        public void edit(Handler handlerExpr) throws CannotCompileException {
                             try {
-                                exceptionClass = handlerExpr.getType();
-                            } catch (NullPointerException e) {
-                                return;
-                            }
-                            CtBehavior where = null;
-                            try {
-                                where = handlerExpr.where();
-                            } catch (RuntimeException e) {
-                                // <clinit> access leads to a bug in Javassist
-                                where = ctClass.getClassInitializer();
-                            }
-                            MemberInfo withinMethodInfo = null;
-                            if (where instanceof CtMethod) {
-                                withinMethodInfo = JavassistMethodInfo.getMethodInfo((CtMethod)where,
-                                                                                     context.getLoader());
-                            } else if (where instanceof CtConstructor) {
-                                withinMethodInfo = JavassistConstructorInfo.getConstructorInfo((CtConstructor)where,
-                                                                                               context.getLoader());
-                            }
-                            ClassInfo exceptionClassInfo = JavassistClassInfo.getClassInfo(exceptionClass,
-                                                                                           context.getLoader());
-                            ExpressionContext ctx = new ExpressionContext(PointcutType.HANDLER, exceptionClassInfo,
-                                                                          withinMethodInfo);
-                            if (definition.hasPointcut(ctx)) {
-                                // call the wrapper method instead of the callee method
-                                StringBuffer body = new StringBuffer();
-                                body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
-                                body.append('.');
-                                body.append(TransformationUtil.PROCEED_WITH_HANDLER_JOIN_POINT_METHOD);
-                                body.append('(');
-
-                                // TODO: unique hash is needed, based on: executing class, executing method, catch clause (and sequence number?)
-                                body.append(TransformationUtil.calculateHash(exceptionClass));
-                                body.append(',');
-                                body.append(klass.getJoinPointIndex());
-                                if (Modifier.isStatic(where.getModifiers())) {
-                                    body.append(", $1, (Object)null, \"");
-                                } else {
-                                    body.append(", $1, this, \"");
+                                CtClass exceptionClass = null;
+                                try {
+                                    exceptionClass = handlerExpr.getType();
+                                } catch (NullPointerException e) {
+                                    return;
                                 }
+                                CtBehavior where = null;
+                                try {
+                                    where = handlerExpr.where();
+                                } catch (RuntimeException e) {
+                                    // <clinit> access leads to a bug in Javassist
+                                    where = ctClass.getClassInitializer();
+                                }
+                                MemberInfo withinMethodInfo = null;
+                                if (where instanceof CtMethod) {
+                                    withinMethodInfo = JavassistMethodInfo.getMethodInfo(
+                                            (CtMethod)where,
+                                            context.getLoader()
+                                    );
+                                } else if (where instanceof CtConstructor) {
+                                    withinMethodInfo =
+                                    JavassistConstructorInfo.getConstructorInfo(
+                                            (CtConstructor)where,
+                                            context.getLoader()
+                                    );
+                                }
+                                ClassInfo exceptionClassInfo = JavassistClassInfo.getClassInfo(
+                                        exceptionClass,
+                                        context.getLoader()
+                                );
+                                ExpressionContext ctx = new ExpressionContext(
+                                        PointcutType.HANDLER, exceptionClassInfo,
+                                        withinMethodInfo
+                                );
+                                if (definition.hasPointcut(ctx)) {
+                                    // call the wrapper method instead of the callee method
+                                    StringBuffer body = new StringBuffer();
+                                    body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                                    body.append('.');
+                                    body.append(TransformationUtil.PROCEED_WITH_HANDLER_JOIN_POINT_METHOD);
+                                    body.append('(');
 
-                                // TODO: use a better signature (or remove)
-                                body.append(exceptionClass.getName().replace('/', '.'));
-                                body.append("\");");
-                                handlerExpr.insertBefore(body.toString());
-                                context.markAsAdvised();
-                                klass.incrementJoinPointIndex();
+                                    // TODO: unique hash is needed, based on: executing class, executing method, catch clause (and sequence number?)
+                                    body.append(TransformationUtil.calculateHash(exceptionClass));
+                                    body.append(',');
+                                    body.append(klass.getJoinPointIndex());
+                                    if (Modifier.isStatic(where.getModifiers())) {
+                                        body.append(", $1, (Object)null, \"");
+                                    } else {
+                                        body.append(", $1, this, \"");
+                                    }
+
+                                    // TODO: use a better signature (or remove)
+                                    body.append(exceptionClass.getName().replace('/', '.'));
+                                    body.append("\");");
+                                    handlerExpr.insertBefore(body.toString());
+                                    context.markAsAdvised();
+                                    klass.incrementJoinPointIndex();
+                                }
+                            } catch (NotFoundException nfe) {
+                                nfe.printStackTrace();
                             }
-                        } catch (NotFoundException nfe) {
-                            nfe.printStackTrace();
                         }
                     }
-                });
+            );
         }
 
         //TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
@@ -121,14 +134,15 @@ public class HandlerTransformer implements Transformer {
     }
 
     /**
-    * Filters the classes to be transformed.
-    *
-    * @param definition the definition
-    * @param ctx        the context
-    * @param cg         the class to filter
-    * @return boolean true if the method should be filtered away
-    */
-    public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
+     * Filters the classes to be transformed.
+     *
+     * @param definition the definition
+     * @param ctx        the context
+     * @param cg         the class to filter
+     * @return boolean true if the method should be filtered away
+     */
+    public static boolean classFilter(
+            final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }

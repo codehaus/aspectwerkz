@@ -36,9 +36,9 @@ public interface AnnotationParserConstants {
     int JAVA_LETTER = 25;
     int DEFAULT = 0;
     String[] tokenImage = {
-                              "<EOF>", "\" \"", "\"\\t\"", "\".\"", "<INTEGER>", "<HEXNUMBER>", "<OCTNUMBER>", "<FLOAT>",
-                              "<EXPONENT>", "<DIGIT>", "<BOOLEAN>", "<STRING>", "<CHAR>", "\"\\n\"", "\"(\"", "\")\"",
-                              "\"{\"", "\"}\"", "\",\"", "\"=\"", "\"@\"", "<CHAR_LETTER>", "<ANNOTATION>",
-                              "<JAVA_TYPE>", "<JAVA_NAME>", "<JAVA_LETTER>", "\"\\r\\n\"",
-                          };
+        "<EOF>", "\" \"", "\"\\t\"", "\".\"", "<INTEGER>", "<HEXNUMBER>", "<OCTNUMBER>", "<FLOAT>",
+        "<EXPONENT>", "<DIGIT>", "<BOOLEAN>", "<STRING>", "<CHAR>", "\"\\n\"", "\"(\"", "\")\"",
+        "\"{\"", "\"}\"", "\",\"", "\"=\"", "\"@\"", "<CHAR_LETTER>", "<ANNOTATION>",
+        "<JAVA_TYPE>", "<JAVA_NAME>", "<JAVA_LETTER>", "\"\\r\\n\"",
+    };
 }

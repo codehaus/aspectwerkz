@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -31,66 +32,67 @@ public class Introduction implements Mixin {
     private static final Object[] ARRAY_WITH_CROSS_CUTTING_INFO = new Object[1];
 
     /**
-    * An empty <code>Object</code> array.
-    */
-    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[] {  };
+     * An empty <code>Object</code> array.
+     */
+    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
 
     /**
-    * Mixin name
-    */
+     * Mixin name
+     */
     private String m_name;
 
     /**
-    * Mixin implementation as aspect inner class Note: when swapped the impl can be an autonomous class
-    */
+     * Mixin implementation as aspect inner class Note: when swapped the impl can be an autonomous class
+     */
     private Class m_mixinImplClass;
 
     /**
-    * Mixin implementation as aspect inner class Note: when swapped the impl can be an autonomous class
-    */
+     * Mixin implementation as aspect inner class Note: when swapped the impl can be an autonomous class
+     */
     private Object m_mixinImpl;
 
     /**
-    * The constructor for the mixin.
-    */
+     * The constructor for the mixin.
+     */
     private Constructor m_mixinConstructor;
 
     /**
-    * The container for the introduction (single per JVM)
-    */
+     * The container for the introduction (single per JVM)
+     */
     private IntroductionContainer m_container;
 
     /**
-    * The cross-cutting info for the mixin.
-    */
+     * The cross-cutting info for the mixin.
+     */
     private CrossCuttingInfo m_crossCuttingInfo;
 
     /**
-    * Defintion to which this mixin relates
-    */
+     * Defintion to which this mixin relates
+     */
     private IntroductionDefinition m_definition;
 
     /**
-    * Holds the deployment model. The deployment model of an introduction is tight to the aspect deployment model that
-    * defines it
-    */
+     * Holds the deployment model. The deployment model of an introduction is tight to the aspect deployment model that
+     * defines it
+     */
     protected int m_deploymentModel;
 
     /**
-    * The mixin construction type.
-    */
+     * The mixin construction type.
+     */
     private int m_mixinConstructionType = MIXIN_CONSTRUCTION_TYPE_UNKNOWN;
 
     /**
-    * Create a new introduction
-    *
-    * @param name             of this introduction - by convention the AspectClassFQN $ InnerClass
-    * @param implClass
-    * @param crossCuttingInfo which defines this mixin
-    * @param definition
-    */
-    public Introduction(final String name, final Class implClass, final CrossCuttingInfo crossCuttingInfo,
-                        final IntroductionDefinition definition) {
+     * Create a new introduction
+     *
+     * @param name             of this introduction - by convention the AspectClassFQN $ InnerClass
+     * @param implClass
+     * @param crossCuttingInfo which defines this mixin
+     * @param definition
+     */
+    public Introduction(
+            final String name, final Class implClass, final CrossCuttingInfo crossCuttingInfo,
+            final IntroductionDefinition definition) {
         m_name = name;
         m_crossCuttingInfo = crossCuttingInfo;
         m_definition = definition;
@@ -115,32 +117,40 @@ public class Introduction implements Mixin {
             if (DeploymentModel.isMixinDeploymentModelCompatible(model, m_crossCuttingInfo.getDeploymentModel())) {
                 m_deploymentModel = model;
             } else {
-                throw new RuntimeException("could no create mixin from aspect: incompatible deployment models : mixin "
-                                           + DeploymentModel.getDeploymentModelAsString(model) + " with aspect "
-                                           + DeploymentModel.getDeploymentModelAsString(m_crossCuttingInfo
-                                                                                        .getDeploymentModel()));
+                throw new RuntimeException(
+                        "could no create mixin from aspect: incompatible deployment models : mixin "
+                        + DeploymentModel.getDeploymentModelAsString(model) +
+                        " with aspect "
+                        +
+                        DeploymentModel.getDeploymentModelAsString(
+                                m_crossCuttingInfo
+                                .getDeploymentModel()
+                        )
+                );
             }
         }
     }
 
     /**
-    * Clone the prototype Introduction.
-    *
-    * @param prototype        introduction
-    * @param crossCuttingInfo the cross-cutting info
-    * @return new introduction instance
-    */
+     * Clone the prototype Introduction.
+     *
+     * @param prototype        introduction
+     * @param crossCuttingInfo the cross-cutting info
+     * @return new introduction instance
+     */
     public static Introduction newInstance(final Introduction prototype, final CrossCuttingInfo crossCuttingInfo) {
-        Introduction introduction = new Introduction(prototype.m_name, prototype.m_mixinImplClass, crossCuttingInfo,
-                                                     prototype.m_definition);
+        Introduction introduction = new Introduction(
+                prototype.m_name, prototype.m_mixinImplClass, crossCuttingInfo,
+                prototype.m_definition
+        );
 
         //AW-207//introduction.createMixin();
         return introduction;
     }
 
     /**
-    * Creates a new mixin instance.
-    */
+     * Creates a new mixin instance.
+     */
     public void createMixin() {
         try {
             switch (m_mixinConstructionType) {
@@ -151,8 +161,11 @@ public class Introduction implements Mixin {
                     m_mixinImpl = m_mixinConstructor.newInstance(ARRAY_WITH_CROSS_CUTTING_INFO);
                     break;
                 default:
-                    throw new RuntimeException("mixin [" + m_mixinImplClass.getName()
-                                               + "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)");
+                    throw new RuntimeException(
+                            "mixin [" + m_mixinImplClass.getName()
+                            +
+                            "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)"
+                    );
             }
         } catch (InstantiationException e) {
             throw new WrappedRuntimeException(e);
@@ -164,81 +177,81 @@ public class Introduction implements Mixin {
     }
 
     /**
-    * Set the container.
-    *
-    * @param container
-    */
+     * Set the container.
+     *
+     * @param container
+     */
     public void setContainer(final IntroductionContainer container) {
         m_container = container;
     }
 
     /**
-    * Returns the cross-cutting info.
-    *
-    * @return the cross-cutting info.
-    */
+     * Returns the cross-cutting info.
+     *
+     * @return the cross-cutting info.
+     */
     public CrossCuttingInfo getCrossCuttingInfo() {
         return m_crossCuttingInfo;
     }
 
     /**
-    * Returns the definition.
-    *
-    * @return definition related to this introduction
-    */
+     * Returns the definition.
+     *
+     * @return definition related to this introduction
+     */
     public IntroductionDefinition getIntroductionDefinition() {
         return m_definition;
     }
 
     /**
-    * Returns the name of the mixin.
-    *
-    * @return the name
-    */
+     * Returns the name of the mixin.
+     *
+     * @return the name
+     */
     public String getName() {
         return m_name;
     }
 
     /**
-    * Returns the mixin deployment model.
-    *
-    * @return the deployment model
-    */
+     * Returns the mixin deployment model.
+     *
+     * @return the deployment model
+     */
     public int getDeploymentModel() {
         return m_deploymentModel;
     }
 
     /**
-    * Sets the deployment model.
-    *
-    * @param deploymentModel the deployment model
-    */
+     * Sets the deployment model.
+     *
+     * @param deploymentModel the deployment model
+     */
     public void setDeploymentModel(final int deploymentModel) {
         m_deploymentModel = deploymentModel;
     }
 
     /**
-    * Invokes the method with the index specified. Invoked by methods without any parameters (slight performance gain
-    * since we are saving us one array creation).
-    *
-    * @param methodIndex   the method index
-    * @param callingObject a reference to the calling object
-    * @return the result from the invocation
-    */
+     * Invokes the method with the index specified. Invoked by methods without any parameters (slight performance gain
+     * since we are saving us one array creation).
+     *
+     * @param methodIndex   the method index
+     * @param callingObject a reference to the calling object
+     * @return the result from the invocation
+     */
     public Object invokeMixin(final int methodIndex, final Object callingObject) throws Throwable {
         return invokeMixin(methodIndex, EMPTY_OBJECT_ARRAY, callingObject);
     }
 
     /**
-    * Invokes an introduced method with the index specified.
-    *
-    * @param methodIndex   the method index
-    * @param parameters    the parameters for the invocation
-    * @param callingObject a reference to the calling object
-    * @return the result from the invocation
-    */
+     * Invokes an introduced method with the index specified.
+     *
+     * @param methodIndex   the method index
+     * @param parameters    the parameters for the invocation
+     * @param callingObject a reference to the calling object
+     * @return the result from the invocation
+     */
     public Object invokeMixin(final int methodIndex, final Object[] parameters, final Object callingObject)
-                       throws Throwable {
+            throws Throwable {
         Object result = null;
         switch (m_deploymentModel) {
             case DeploymentModel.PER_JVM:
@@ -260,37 +273,37 @@ public class Introduction implements Mixin {
     }
 
     /**
-    * Returns the implementation class name for the mixin.
-    *
-    * @return the implementation class name for the mixin
-    */
+     * Returns the implementation class name for the mixin.
+     *
+     * @return the implementation class name for the mixin
+     */
     public String getImplementationClassName() {
         return m_mixinImplClass.getName();
     }
 
     /**
-    * Returns the implementation object for the mixin.
-    *
-    * @return the implementation for the mixin
-    */
+     * Returns the implementation object for the mixin.
+     *
+     * @return the implementation for the mixin
+     */
     public Class getImplementationClass() {
         return m_mixinImplClass;
     }
 
     /**
-    * Returns the implementation object for the mixin.
-    *
-    * @return the implementation for the mixin
-    */
+     * Returns the implementation object for the mixin.
+     *
+     * @return the implementation for the mixin
+     */
     public Object getImplementation() {
         return m_mixinImpl;
     }
 
     /**
-    * Swaps the current introduction implementation.
-    *
-    * @param className the class name of the new implementation
-    */
+     * Swaps the current introduction implementation.
+     *
+     * @param className the class name of the new implementation
+     */
     public void swapImplementation(final String className) {
         if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
@@ -304,10 +317,10 @@ public class Introduction implements Mixin {
     }
 
     /**
-    * Grabs the correct constructor for the mixin.
-    *
-    * @return the constructor for the mixin
-    */
+     * Grabs the correct constructor for the mixin.
+     *
+     * @return the constructor for the mixin
+     */
     private Constructor findConstructor() {
         Constructor mixinConstructor = null;
         Constructor[] constructors = m_mixinImplClass.getDeclaredConstructors();
@@ -325,17 +338,20 @@ public class Introduction implements Mixin {
             }
         }
         if (m_mixinConstructionType == MIXIN_CONSTRUCTION_TYPE_UNKNOWN) {
-            throw new RuntimeException("mixin [" + m_mixinImplClass.getName()
-                                       + "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)");
+            throw new RuntimeException(
+                    "mixin [" + m_mixinImplClass.getName()
+                    +
+                    "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)"
+            );
         }
         return mixinConstructor;
     }
 
     /**
-    * Swap the implementation of the mixin represented by this Introduction wrapper.
-    *
-    * @param newImplClass
-    */
+     * Swap the implementation of the mixin represented by this Introduction wrapper.
+     *
+     * @param newImplClass
+     */
     void swapImplementation(final Class newImplClass) {
         m_mixinImplClass = newImplClass;
         m_mixinConstructor = findConstructor();

@@ -11,11 +11,13 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
+
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.CtMethod;
@@ -30,15 +32,15 @@ import javassist.bytecode.ClassFile;
  */
 public class JavassistAttributeExtractor implements AttributeExtractor {
     /**
-    * The Javassist class.
-    */
+     * The Javassist class.
+     */
     private CtClass m_ctClass;
 
     /**
-    * Open the classfile and parse it in to the Javassist library.
-    *
-    * @param ctClass the class
-    */
+     * Open the classfile and parse it in to the Javassist library.
+     *
+     * @param ctClass the class
+     */
     public void initialize(final CtClass ctClass) {
         m_ctClass = ctClass;
         if (!(m_ctClass.isPrimitive() || m_ctClass.isArray())) {
@@ -47,10 +49,10 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
     }
 
     /**
-    * Returns the class attributes.
-    *
-    * @return the class attributes
-    */
+     * Returns the class attributes.
+     *
+     * @return the class attributes
+     */
     public Object[] getClassAttributes() {
         if (m_ctClass.isPrimitive() || m_ctClass.isArray()) {
             return EMPTY_OBJECT_ARRAY;
@@ -65,12 +67,12 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
     }
 
     /**
-    * Return all the attributes associated with a method that have a particular method signature.
-    *
-    * @param methodName       The name of the method.
-    * @param methodParamTypes An array of parameter types as given by the reflection api.
-    * @return the method attributes.
-    */
+     * Return all the attributes associated with a method that have a particular method signature.
+     *
+     * @param methodName       The name of the method.
+     * @param methodParamTypes An array of parameter types as given by the reflection api.
+     * @return the method attributes.
+     */
     public Object[] getMethodAttributes(final String methodName, final String[] methodParamTypes) {
         if (m_ctClass.isPrimitive() || m_ctClass.isArray()) {
             return EMPTY_OBJECT_ARRAY;
@@ -91,11 +93,11 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
     }
 
     /**
-    * Return all the attributes associated with a field.
-    *
-    * @param fieldName The name of the field.
-    * @return the field attributes.
-    */
+     * Return all the attributes associated with a field.
+     *
+     * @param fieldName The name of the field.
+     * @return the field attributes.
+     */
     public Object[] getFieldAttributes(final String fieldName) {
         if (m_ctClass.isPrimitive() || m_ctClass.isArray()) {
             return EMPTY_OBJECT_ARRAY;
@@ -114,17 +116,19 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
     }
 
     /**
-    * Retrieves custom attributes and puts them in a list.
-    *
-    * @param attributeInfo
-    * @param listToPutAttributesIn
-    */
+     * Retrieves custom attributes and puts them in a list.
+     *
+     * @param attributeInfo
+     * @param listToPutAttributesIn
+     */
     private void retrieveCustomAttributes(final AttributeInfo attributeInfo, final List listToPutAttributesIn) {
         if (attributeInfo.getName().startsWith(AttributeEnhancer.CUSTOM_ATTRIBUTE)) {
             byte[] serializedAttribute = attributeInfo.get();
             try {
-                Object attribute = new ContextClassLoader.NotBrokenObjectInputStream(new ByteArrayInputStream(serializedAttribute))
-                                   .readObject();
+                Object attribute = new ContextClassLoader.NotBrokenObjectInputStream(
+                        new ByteArrayInputStream(serializedAttribute)
+                )
+                        .readObject();
                 listToPutAttributesIn.add(attribute);
             } catch (Exception e) {
                 System.out.println("WARNING: could not retrieve annotation due to: " + e.toString());

@@ -18,8 +18,8 @@ import org.codehaus.aspectwerkz.expression.ast.ExpressionParser;
  */
 public class ExpressionInfo {
     /**
-    * The sole instance of the parser.
-    */
+     * The sole instance of the parser.
+     */
     private static final ExpressionParser s_parser = new ExpressionParser(System.in);
     private final ExpressionVisitor m_expression;
     private final CflowExpressionVisitor m_cflowExpression;
@@ -29,11 +29,11 @@ public class ExpressionInfo {
     private final boolean m_hasCflowPointcut;
 
     /**
-    * Creates a new expression info instance.
-    *
-    * @param expression the expression
-    * @param namespace  the namespace
-    */
+     * Creates a new expression info instance.
+     *
+     * @param expression the expression
+     * @param namespace  the namespace
+     */
     public ExpressionInfo(final String expression, final String namespace) {
         try {
             ASTRoot root = s_parser.parse(expression);
@@ -41,8 +41,10 @@ public class ExpressionInfo {
             m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(expression, namespace, root);
             m_cflowExpression = new CflowExpressionVisitor(expression, namespace, root);
             m_cflowExpressionRuntime = new CflowExpressionVisitorRuntime(expression, namespace, root);
-            m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(expression, namespace,
-                                                                                               root);
+            m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(
+                    expression, namespace,
+                    root
+            );
             m_hasCflowPointcut = new CflowPointcutFinderVisitor(expression, namespace, root).hasCflowPointcut();
         } catch (Throwable e) {
             throw new DefinitionException("expression is not well-formed [" + expression + "]: ", e);
@@ -50,28 +52,28 @@ public class ExpressionInfo {
     }
 
     /**
-    * Returns the expression as string.
-    *
-    * @return the expression as string
-    */
+     * Returns the expression as string.
+     *
+     * @return the expression as string
+     */
     public String getExpressionAsString() {
         return m_expression.toString();
     }
 
     /**
-    * Returns the regular expression.
-    *
-    * @return the regular expression
-    */
+     * Returns the regular expression.
+     *
+     * @return the regular expression
+     */
     public ExpressionVisitor getExpression() {
         return m_expression;
     }
 
     /**
-    * Returns the cflow expression.
-    *
-    * @return the cflow expression
-    */
+     * Returns the cflow expression.
+     *
+     * @return the cflow expression
+     */
     public CflowExpressionVisitor getCflowExpression() {
         return m_cflowExpression;
     }
@@ -81,46 +83,46 @@ public class ExpressionInfo {
     }
 
     /**
-    * Returns the advised class filter expression.
-    *
-    * @return the advised class filter expression
-    */
+     * Returns the advised class filter expression.
+     *
+     * @return the advised class filter expression
+     */
     public AdvisedClassFilterExpressionVisitor getAdvisedClassFilterExpression() {
         return m_advisedClassFilterExpression;
     }
 
     /**
-    * Returns the advised cflow class filter expression.
-    *
-    * @return the advised cflow class filter expression
-    */
+     * Returns the advised cflow class filter expression.
+     *
+     * @return the advised cflow class filter expression
+     */
     public AdvisedCflowClassFilterExpressionVisitor getAdvisedCflowClassFilterExpression() {
         return m_advisedCflowClassFilterExpression;
     }
 
     /**
-    * Returns the parser.
-    *
-    * @return the parser
-    */
+     * Returns the parser.
+     *
+     * @return the parser
+     */
     public static ExpressionParser getParser() {
         return s_parser;
     }
 
     /**
-    * Checks if the expression has a cflow pointcut node.
-    *
-    * @return
-    */
+     * Checks if the expression has a cflow pointcut node.
+     *
+     * @return
+     */
     public boolean hasCflowPointcut() {
         return m_hasCflowPointcut;
     }
 
     /**
-    * Returns the expression as string.
-    *
-    * @return the expression as string
-    */
+     * Returns the expression as string.
+     *
+     * @return the expression as string
+     */
     public String toString() {
         return m_expression.toString();
     }

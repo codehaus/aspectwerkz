@@ -17,7 +17,6 @@ import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- *
  * @Aspect perInstance name=NAME
  */
 public class CachingAspect {
@@ -43,8 +42,7 @@ public class CachingAspect {
     }
 
     /**
-     * @Before call(int examples.caching.Pi.getPiDecimal(int))
-     *         && withincode(int examples.caching.main(String[]))
+     * @Before call(int examples.caching.Pi.getPiDecimal(int)) && withincode(int examples.caching.main(String[]))
      */
     public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();

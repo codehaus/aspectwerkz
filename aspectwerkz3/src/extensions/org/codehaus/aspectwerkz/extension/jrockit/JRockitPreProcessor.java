@@ -93,7 +93,6 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
         // uncomment this lines to programmaticaly configure at runtime the CLPP
         JRockitPreProcessor pp = new JRockitPreProcessor();//self registration
         Class loadedCP = Class.forName("java.math.BigDecimal");
-
         while (true) {
             System.out.print(".");
             /*

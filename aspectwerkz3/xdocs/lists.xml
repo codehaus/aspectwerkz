@@ -125,7 +125,11 @@
                     </tr>
                 </table>
             </p>
-      <p class="paragraph">For an explanation of the purpose of each mailing list, see <span class="nobr"><a href="http://despots.codehaus.org/Project+Lists">http://docs.codehaus.org/display/DESPOTS/Project+Lists</a></span></p>
+            <p class="paragraph">For an explanation of the purpose of each mailing list, see
+                <span class="nobr">
+                    <a href="http://despots.codehaus.org/Project+Lists">http://docs.codehaus.org/display/DESPOTS/Project+Lists</a>
+                </span>
+            </p>
         </section>
     </body>
 </document>

@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
-
 /**
  * Marker interface for the member info classes (field and method).
  *
@@ -15,9 +14,9 @@ package org.codehaus.aspectwerkz.reflect;
  */
 public interface MemberInfo extends ReflectionInfo {
     /**
-    * Returns the declaring type.
-    *
-    * @return the declaring type
-    */
+     * Returns the declaring type.
+     *
+     * @return the declaring type
+     */
     ClassInfo getDeclaringType();
 }

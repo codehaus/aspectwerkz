@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.joinpoint.impl;
 
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
+
 import java.lang.reflect.Field;
 
 /**
@@ -20,9 +21,9 @@ public class FieldSignatureImpl implements FieldSignature {
     private final Field m_field;
 
     /**
-    * @param field
-    * @param declaringType
-    */
+     * @param field
+     * @param declaringType
+     */
     public FieldSignatureImpl(final Class declaringType, final Field field) {
         m_declaringType = declaringType;
         m_field = field;
@@ -30,61 +31,61 @@ public class FieldSignatureImpl implements FieldSignature {
     }
 
     /**
-    * Returns the declaring class.
-    *
-    * @return the declaring class
-    */
+     * Returns the declaring class.
+     *
+     * @return the declaring class
+     */
     public Class getDeclaringType() {
         return m_declaringType;
     }
 
     /**
-    * Returns the modifiers for the signature.
-    * <p/>
-    * Could be used like this:
-    * <pre>
-    *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
-    * </pre>
-    *
-    * @return the mofifiers
-    */
+     * Returns the modifiers for the signature.
+     * <p/>
+     * Could be used like this:
+     * <pre>
+     *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
+     * </pre>
+     *
+     * @return the mofifiers
+     */
     public int getModifiers() {
         return m_field.getModifiers();
     }
 
     /**
-    * Returns the name (f.e. name of method of field).
-    *
-    * @return the name
-    */
+     * Returns the name (f.e. name of method of field).
+     *
+     * @return the name
+     */
     public String getName() {
         return m_field.getName();
     }
 
     /**
-    * Returns the field.
-    *
-    * @return the field
-    */
+     * Returns the field.
+     *
+     * @return the field
+     */
     public Field getField() {
         return m_field;
     }
 
     /**
-    * Returns the field type.
-    *
-    * @return the field type
-    */
+     * Returns the field type.
+     *
+     * @return the field type
+     */
     public Class getFieldType() {
         return m_field.getType();
     }
 
     /**
-    * Returns a string representation of the signature.
-    *
-    * @return a string representation
-    * @TODO: implement toString to something meaningful
-    */
+     * Returns a string representation of the signature.
+     *
+     * @return a string representation
+     * @TODO: implement toString to something meaningful
+     */
     public String toString() {
         return super.toString();
     }

@@ -20,12 +20,12 @@ import java.net.URL;
  */
 public final class ContextClassLoader {
     /**
-    * Loads a class from the context class loader or, if that fails, from the default class loader.
-    *
-    * @param name is the name of the class to load.
-    * @return a <code>Class</code> object.
-    * @throws ClassNotFoundException if the class was not found.
-    */
+     * Loads a class from the context class loader or, if that fails, from the default class loader.
+     *
+     * @param name is the name of the class to load.
+     * @return a <code>Class</code> object.
+     * @throws ClassNotFoundException if the class was not found.
+     */
     public static Class loadClass(final String name) throws ClassNotFoundException {
         Class cls = null;
         try {
@@ -37,11 +37,11 @@ public final class ContextClassLoader {
     }
 
     /**
-    * Loads a resource from the context class loader or, if that fails, from the default class loader.
-    *
-    * @param name is the name of the resource to load.
-    * @return a <code>URL</code> object.
-    */
+     * Loads a resource from the context class loader or, if that fails, from the default class loader.
+     *
+     * @param name is the name of the resource to load.
+     * @return a <code>URL</code> object.
+     */
     public static URL loadResource(final String name) {
         try {
             return Thread.currentThread().getContextClassLoader().getResource(name);
@@ -51,11 +51,11 @@ public final class ContextClassLoader {
     }
 
     /**
-    * Loads a resource from the context class loader or, if that fails, from the default class loader, as stream
-    *
-    * @param name is the name of the resource to load.
-    * @return a <code>InputStream</code> object.
-    */
+     * Loads a resource from the context class loader or, if that fails, from the default class loader, as stream
+     *
+     * @param name is the name of the resource to load.
+     * @return a <code>InputStream</code> object.
+     */
     public static InputStream getResourceAsStream(final String name) {
         InputStream stream = null;
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -72,10 +72,10 @@ public final class ContextClassLoader {
     }
 
     /**
-    * Returns the context class loader.
-    *
-    * @return the context class loader
-    */
+     * Returns the context class loader.
+     *
+     * @return the context class loader
+     */
     public static ClassLoader getLoader() {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         if (loader == null) {
@@ -85,10 +85,10 @@ public final class ContextClassLoader {
     }
 
     /**
-    * Fixes a bug in the resolveClass() method.
-    *
-    * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
-    */
+     * Fixes a bug in the resolveClass() method.
+     *
+     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+     */
     public static class NotBrokenObjectInputStream extends ObjectInputStream {
         public NotBrokenObjectInputStream() throws IOException, SecurityException {
             super();

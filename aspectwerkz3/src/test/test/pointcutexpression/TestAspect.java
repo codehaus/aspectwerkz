@@ -16,83 +16,83 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  */
 public class TestAspect {
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.A())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.A())
+     */
     Pointcut A;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.B())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.B())
+     */
     Pointcut B;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.C())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.C())
+     */
     Pointcut C;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.D())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.D())
+     */
     Pointcut D;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.E())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.E())
+     */
     Pointcut E;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.F())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.F())
+     */
     Pointcut F;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.G())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.G())
+     */
     Pointcut G;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.H())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.H())
+     */
     Pointcut H;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.I())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.I())
+     */
     Pointcut I;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.J())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.J())
+     */
     Pointcut J;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.K())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.K())
+     */
     Pointcut K;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.L())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.L())
+     */
     Pointcut L;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.M())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.M())
+     */
     Pointcut M;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.N())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.N())
+     */
     Pointcut N;
 
     /**
-    * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.O())
-    */
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.O())
+     */
     Pointcut O;
 
     /**
-    * @Around B || C
-    */
+     * @Around B || C
+     */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
         final Object result = joinPoint.proceed();
@@ -101,8 +101,8 @@ public class TestAspect {
     }
 
     /**
-    * @Around D && !E
-    */
+     * @Around D && !E
+     */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
         final Object result = joinPoint.proceed();
@@ -111,8 +111,8 @@ public class TestAspect {
     }
 
     /**
-    * @Around (F || G) && H
-    */
+     * @Around (F || G) && H
+     */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
         final Object result = joinPoint.proceed();
@@ -121,8 +121,8 @@ public class TestAspect {
     }
 
     /**
-    * @Around (I || J)
-    */
+     * @Around (I || J)
+     */
     public Object advice4(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
         final Object result = joinPoint.proceed();
@@ -131,8 +131,8 @@ public class TestAspect {
     }
 
     /**
-    * @Around !K && !(L || M) && N
-    */
+     * @Around !K && !(L || M) && N
+     */
     public Object advice5(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
         final Object result = joinPoint.proceed();
@@ -141,8 +141,8 @@ public class TestAspect {
     }
 
     /**
-    * @Around O
-    */
+     * @Around O
+     */
     public Object advice6(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
         final Object result = joinPoint.proceed();

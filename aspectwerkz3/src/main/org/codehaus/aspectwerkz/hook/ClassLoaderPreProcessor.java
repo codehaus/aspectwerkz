@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.hook;
 
-
 /**
  * Implement to be the java.lang.ClassLoader pre processor.
  * <p/>
@@ -21,7 +20,7 @@ package org.codehaus.aspectwerkz.hook;
  */
 public interface ClassLoaderPreProcessor {
     /**
-    * instruments the java.lang.ClassLoader bytecode
-    */
+     * instruments the java.lang.ClassLoader bytecode
+     */
     public byte[] preProcess(byte[] b);
 }

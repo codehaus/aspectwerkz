@@ -14,6 +14,7 @@ import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
+
 import java.io.File;
 
 /**
@@ -25,19 +26,19 @@ import java.io.File;
  */
 public class Utility {
     /**
-    * Ant project
-    */
+     * Ant project
+     */
     private Project project;
 
     /**
-    * Ant logger
-    */
+     * Ant logger
+     */
     private BuildLogger logger;
     private boolean verbose = false;
 
     /**
-    * Constructs a new project and attach simple logger
-    */
+     * Constructs a new project and attach simple logger
+     */
     public Utility() {
         project = new Project();
         logger = new DefaultLogger();
@@ -48,16 +49,16 @@ public class Utility {
     }
 
     /**
-    * Set verbosity
-    */
+     * Set verbosity
+     */
     public void setVerbose() {
         logger.setMessageOutputLevel(2);
         verbose = true;
     }
 
     /**
-    * Delete recursively a directory and the directory itself
-    */
+     * Delete recursively a directory and the directory itself
+     */
     public void deleteDir(File dir) {
         Delete task = new Delete();
         task.setProject(project);
@@ -74,8 +75,8 @@ public class Utility {
     }
 
     /**
-    * Copy a file or directory recursively
-    */
+     * Copy a file or directory recursively
+     */
     public void backupFile(File source, File dest) {
         Copy task = new Copy();
         task.setProject(project);

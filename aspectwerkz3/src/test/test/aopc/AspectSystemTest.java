@@ -8,6 +8,7 @@
 package test.aopc;
 
 import junit.framework.TestCase;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -20,19 +21,23 @@ import java.net.URLClassLoader;
  */
 public class AspectSystemTest extends TestCase {
     public void testDoubleHierarchyMethodExecution() {
-        ClassLoader myCL = new URLClassLoader(new URL[] {
-                                                  ClassCreator.getPathFor(Callable.class.getResource("META-INF/aop.xml"))
-                                              }, ClassLoader.getSystemClassLoader());
+        ClassLoader myCL = new URLClassLoader(
+                new URL[]{
+                    ClassCreator.getPathFor(Callable.class.getResource("META-INF/aop.xml"))
+                }, ClassLoader.getSystemClassLoader()
+        );
 
         //TODO if CLA is runned, CLB fails. Might be related to metadata/TF/jpindex (see TF verbose)
-        ClassLoader mySubCLA = new URLClassLoader(new URL[] {
-                                                      ClassCreator.getPathFor(Callable.class.getResource("a/META-INF/aop.xml"))
-                                                  }, myCL);
+        ClassLoader mySubCLA = new URLClassLoader(
+                new URL[]{
+                    ClassCreator.getPathFor(Callable.class.getResource("a/META-INF/aop.xml"))
+                }, myCL
+        );
         Callable ca = (Callable)ClassCreator.createInstance("test.aopc.a.Callee", mySubCLA);
         ca.methodAround();
         ca.debug();
         assertEquals("beforeAround beforeAround methodAround afterAround afterAround ", ca.getLogString());
-        ClassLoader mySubCLB = new URLClassLoader(new URL[] {  }, myCL);
+        ClassLoader mySubCLB = new URLClassLoader(new URL[]{}, myCL);
         Callable cb = (Callable)ClassCreator.createInstance("test.aopc.b.Callee", mySubCLB);
         cb.methodAround();
         cb.debug();

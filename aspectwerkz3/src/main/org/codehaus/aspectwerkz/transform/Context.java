@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.transform;
 
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,40 +21,40 @@ import java.util.Map;
  */
 public class Context {
     /**
-    * The class loader for the class being transformed.
-    */
+     * The class loader for the class being transformed.
+     */
     private final ClassLoader m_loader;
 
     /**
-    * Marks the class being transformed as advised.
-    */
+     * Marks the class being transformed as advised.
+     */
     private boolean m_advised = false;
 
     /**
-    * Marks the class being transformed as advised.
-    */
+     * Marks the class being transformed as advised.
+     */
     private boolean m_prepared = false;
 
     /**
-    * Marks the context as read-only.
-    */
+     * Marks the context as read-only.
+     */
     private boolean m_readOnly = false;
 
     /**
-    * Meta-data for the transformation.
-    */
+     * Meta-data for the transformation.
+     */
     private Map m_metaData = new HashMap();
 
     /**
-    * The contextual list of SystemDefinitions
-    */
+     * The contextual list of SystemDefinitions
+     */
     private final List m_definitions;
 
     /**
-    * Creates a new context.
-    *
-    * @param loader the class loader
-    */
+     * Creates a new context.
+     *
+     * @param loader the class loader
+     */
     public Context(final ClassLoader loader) {
         m_loader = loader;
 
@@ -62,93 +63,94 @@ public class Context {
     }
 
     /**
-    * Returns the class loader.
-    *
-    * @return the class loader
-    */
+     * Returns the class loader.
+     *
+     * @return the class loader
+     */
     public ClassLoader getLoader() {
         return m_loader;
     }
 
     /**
-    * The definitions context (with hierarchical structure)
-    * @return
-    */
+     * The definitions context (with hierarchical structure)
+     *
+     * @return
+     */
     public List getDefinitions() {
         return m_definitions;
     }
 
     /**
-    * Marks the class being transformed as advised. The marker can at most be set once per class per transformer
-    */
+     * Marks the class being transformed as advised. The marker can at most be set once per class per transformer
+     */
     public void markAsAdvised() {
         m_advised = true;
     }
 
     /**
-    * Marks the class as prepared.
-    */
+     * Marks the class as prepared.
+     */
     public void markAsPrepared() {
         m_prepared = true;
     }
 
     /**
-    * Resets the isAdviced flag.
-    */
+     * Resets the isAdviced flag.
+     */
     public void resetAdvised() {
         m_advised = false;
     }
 
     /**
-    * Checks if the class being transformed has beed advised.
-    *
-    * @return boolean
-    */
+     * Checks if the class being transformed has beed advised.
+     *
+     * @return boolean
+     */
     public boolean isAdvised() {
         return m_advised;
     }
 
     /**
-    * Checks if the class is prepared.
-    *
-    * @return
-    */
+     * Checks if the class is prepared.
+     *
+     * @return
+     */
     public boolean isPrepared() {
         return m_prepared;
     }
 
     /**
-    * Marks the context as read-only.
-    */
+     * Marks the context as read-only.
+     */
     public void markAsReadOnly() {
         m_readOnly = true;
     }
 
     /**
-    * Checks if the context is read-only.
-    *
-    * @return boolean
-    */
+     * Checks if the context is read-only.
+     *
+     * @return boolean
+     */
     public boolean isReadOnly() {
         return m_readOnly;
     }
 
     /**
-    * Returns meta-data for the transformation.
-    *
-    * @param key the key
-    * @return the value
-    */
+     * Returns meta-data for the transformation.
+     *
+     * @param key the key
+     * @return the value
+     */
     public Object getMetaData(final Object key) {
         return m_metaData.get(key);
     }
 
     /**
-    * Adds new meta-data for the transformation.
-    *
-    * @param key   the key
-    * @param value the value
-    */
+     * Adds new meta-data for the transformation.
+     *
+     * @param key   the key
+     * @param value the value
+     */
     public void addMetaData(final Object key, final Object value) {
         if (m_readOnly) {
             throw new IllegalStateException("context is read only");

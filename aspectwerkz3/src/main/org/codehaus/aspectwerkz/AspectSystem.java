@@ -20,6 +20,7 @@ import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -51,42 +52,46 @@ import java.util.Properties;
  */
 public final class AspectSystem {
     /**
-    * The path to the remote proxy server config file.
-    */
-    private static final boolean START_REMOTE_PROXY_SERVER = "true".equals(java.lang.System.getProperty("aspectwerkz.remote.server.run",
-                                                                                                        "false"));
+     * The path to the remote proxy server config file.
+     */
+    private static final boolean START_REMOTE_PROXY_SERVER = "true".equals(
+            java.lang.System.getProperty(
+                    "aspectwerkz.remote.server.run",
+                    "false"
+            )
+    );
 
     /**
-    * ClassLoader defining this AspectSystem
-    */
+     * ClassLoader defining this AspectSystem
+     */
     private final ClassLoader m_classLoader;
 
     /**
-    * The aspect managers in the order of the hierarchy
-    */
+     * The aspect managers in the order of the hierarchy
+     */
     private AspectManager[] m_aspectManagers;
 
     /**
-    * Holds a list of the cflow join points passed by the control flow of the current thread.
-    *
-    * @TODO: I think we need to use a static TL - need test coverage
-    */
+     * Holds a list of the cflow join points passed by the control flow of the current thread.
+     *
+     * @TODO: I think we need to use a static TL - need test coverage
+     */
     private final ThreadLocal m_cflowStack = new ThreadLocal();
 
     /**
-    * The remote proxy server instance.
-    */
+     * The remote proxy server instance.
+     */
     private RemoteProxyServer m_remoteProxyServer = null;
 
     /**
-    * Should NEVER be invoked by the user. Use <code>SystemLoader.getSystem(uuid)</code> to retrieve the system.
-    * <p/>
-    * Creates a new AspectWerkz AOPC system instance.
-    * <p/>
-    *
-    * @param loader      the classloader defining the system
-    * @param definitions the ordered SystemDefinitions for the system (whole hierarchy)
-    */
+     * Should NEVER be invoked by the user. Use <code>SystemLoader.getSystem(uuid)</code> to retrieve the system.
+     * <p/>
+     * Creates a new AspectWerkz AOPC system instance.
+     * <p/>
+     *
+     * @param loader      the classloader defining the system
+     * @param definitions the ordered SystemDefinitions for the system (whole hierarchy)
+     */
     AspectSystem(ClassLoader loader, final List definitions) {
         m_classLoader = loader;
         m_aspectManagers = new AspectManager[definitions.size()];
@@ -129,32 +134,32 @@ public final class AspectSystem {
     }
 
     /**
-    * Returns the classloader which defines this AspectSystem
-    *
-    * @return the classloader which defines this AspectSystem
-    */
+     * Returns the classloader which defines this AspectSystem
+     *
+     * @return the classloader which defines this AspectSystem
+     */
     public ClassLoader getDefiningClassLoader() {
         return m_classLoader;
     }
 
     /**
-    * Returns an AspectManager by its index. The index are stable when the ClassLoader hierarchy is crossed from top to
-    * bottom
-    *
-    * @param aspectManagerIndex
-    * @return AspectManager, or throw an IndexOutOfBoundException
-    */
+     * Returns an AspectManager by its index. The index are stable when the ClassLoader hierarchy is crossed from top to
+     * bottom
+     *
+     * @param aspectManagerIndex
+     * @return AspectManager, or throw an IndexOutOfBoundException
+     */
     public AspectManager getAspectManager(int aspectManagerIndex) {
         return m_aspectManagers[aspectManagerIndex];
     }
 
     /**
-    * Returns an AspectManager by its uuid
-    *
-    * @param uuid
-    * @return AspectManager
-    * @throws DefinitionException (runtime exception) if not found
-    */
+     * Returns an AspectManager by its uuid
+     *
+     * @param uuid
+     * @return AspectManager
+     * @throws DefinitionException (runtime exception) if not found
+     */
     public AspectManager getAspectManager(final String uuid) {
         // Note: uuid is assumed to be unique within an AspectSystem
         for (int i = 0; i < m_aspectManagers.length; i++) {
@@ -169,9 +174,9 @@ public final class AspectSystem {
     }
 
     /**
-    * Initializes the system. The initialization needs to be separated from the construction of the manager, and is
-    * triggered by the runtime system
-    */
+     * Initializes the system. The initialization needs to be separated from the construction of the manager, and is
+     * triggered by the runtime system
+     */
     public void initialize() {
         for (int i = 0; i < m_aspectManagers.length; i++) {
             m_aspectManagers[i].initialize();
@@ -179,23 +184,24 @@ public final class AspectSystem {
     }
 
     /**
-    * Returns the aspect managers for this system.
-    *
-    * @return the aspect managers
-    */
+     * Returns the aspect managers for this system.
+     *
+     * @return the aspect managers
+     */
     public AspectManager[] getAspectManagers() {
         return m_aspectManagers;
     }
 
     /**
-    * Registers entering of a control flow join point.
-    *
-    * @param pointcutType the pointcut type
-    * @param methodInfo   the method info
-    * @param withinInfo   the within info
-    */
-    public void enteringControlFlow(final PointcutType pointcutType, final MethodInfo methodInfo,
-                                    final ClassInfo withinInfo) {
+     * Registers entering of a control flow join point.
+     *
+     * @param pointcutType the pointcut type
+     * @param methodInfo   the method info
+     * @param withinInfo   the within info
+     */
+    public void enteringControlFlow(
+            final PointcutType pointcutType, final MethodInfo methodInfo,
+            final ClassInfo withinInfo) {
         if (pointcutType == null) {
             throw new IllegalArgumentException("pointcut type can not be null");
         }
@@ -212,14 +218,15 @@ public final class AspectSystem {
     }
 
     /**
-    * Registers exiting from a control flow join point.
-    *
-    * @param pointcutType the pointcut type
-    * @param methodInfo   the method info
-    * @param withinInfo   the within info
-    */
-    public void exitingControlFlow(final PointcutType pointcutType, final MethodInfo methodInfo,
-                                   final ClassInfo withinInfo) {
+     * Registers exiting from a control flow join point.
+     *
+     * @param pointcutType the pointcut type
+     * @param methodInfo   the method info
+     * @param withinInfo   the within info
+     */
+    public void exitingControlFlow(
+            final PointcutType pointcutType, final MethodInfo methodInfo,
+            final ClassInfo withinInfo) {
         if (pointcutType == null) {
             throw new IllegalArgumentException("pointcut type can not be null");
         }
@@ -236,13 +243,14 @@ public final class AspectSystem {
     }
 
     /**
-    * Checks if we are in the control flow of a join point picked out by a specific pointcut expression.
-    *
-    * @param expression the cflow expression runtime visitor
-    * @param expressionContext the join point expression context whose pointcut contains cflows sub expression(s)
-    * @return boolean
-    */
-    public boolean isInControlFlowOf(final CflowExpressionVisitorRuntime expression, ExpressionContext expressionContext) {
+     * Checks if we are in the control flow of a join point picked out by a specific pointcut expression.
+     *
+     * @param expression        the cflow expression runtime visitor
+     * @param expressionContext the join point expression context whose pointcut contains cflows sub expression(s)
+     * @return boolean
+     */
+    public boolean isInControlFlowOf(
+            final CflowExpressionVisitorRuntime expression, ExpressionContext expressionContext) {
         if (expression == null) {
             throw new IllegalArgumentException("expression can not be null");
         }
@@ -258,20 +266,20 @@ public final class AspectSystem {
     }
 
     /**
-    * Starts up the remote proxy server.
-    *
-    * @TODO: option to shut down in a nice way?
-    */
+     * Starts up the remote proxy server.
+     *
+     * @TODO: option to shut down in a nice way?
+     */
     private void startRemoteProxyServer() {
         m_remoteProxyServer = new RemoteProxyServer(ContextClassLoader.getLoader(), getInvoker());
         m_remoteProxyServer.start();
     }
 
     /**
-    * Returns the Invoker instance to use.
-    *
-    * @return the Invoker
-    */
+     * Returns the Invoker instance to use.
+     *
+     * @return the Invoker
+     */
     private Invoker getInvoker() {
         Invoker invoker;
         try {
@@ -286,33 +294,34 @@ public final class AspectSystem {
     }
 
     /**
-    * Returns the default Invoker.
-    *
-    * @return the default invoker
-    */
+     * Returns the default Invoker.
+     *
+     * @return the default invoker
+     */
     private Invoker getDefaultInvoker() {
         return new Invoker() {
-                public Object invoke(final String handle, final String methodName, final Class[] paramTypes,
-                                     final Object[] args, final Object context) {
-                    Object result;
-                    try {
-                        final Object instance = RemoteProxy.getWrappedInstance(handle);
-                        final Method method = instance.getClass().getMethod(methodName, paramTypes);
-                        result = method.invoke(instance, args);
-                    } catch (Exception e) {
-                        throw new WrappedRuntimeException(e);
-                    }
-                    return result;
+            public Object invoke(
+                    final String handle, final String methodName, final Class[] paramTypes,
+                    final Object[] args, final Object context) {
+                Object result;
+                try {
+                    final Object instance = RemoteProxy.getWrappedInstance(handle);
+                    final Method method = instance.getClass().getMethod(methodName, paramTypes);
+                    result = method.invoke(instance, args);
+                } catch (Exception e) {
+                    throw new WrappedRuntimeException(e);
                 }
-            };
+                return result;
+            }
+        };
     }
 
     /**
-    * Checks uuid unicity within the list. Throw a DefinitionException on failure.
-    *
-    * @param definitions
-    * @TODO AVAOPC algo is crapped, check earlier and avoid exception but do a WARN (in SysDefContainer)
-    */
+     * Checks uuid unicity within the list. Throw a DefinitionException on failure.
+     *
+     * @param definitions
+     * @TODO AVAOPC algo is crapped, check earlier and avoid exception but do a WARN (in SysDefContainer)
+     */
     private static void assertUuidUniqueWithinHierarchy(final List definitions) {
         for (int i = 0; i < definitions.size(); i++) {
             SystemDefinition systemDefinition = (SystemDefinition)definitions.get(i);
@@ -322,25 +331,29 @@ public final class AspectSystem {
                 }
                 SystemDefinition systemDefinition2 = (SystemDefinition)definitions.get(j);
                 if (systemDefinition2.getUuid().equals(systemDefinition.getUuid())) {
-                    throw new DefinitionException("UUID is not unique within hierarchy: " + systemDefinition.getUuid());
+                    throw new DefinitionException(
+                            "UUID is not unique within hierarchy: " + systemDefinition.getUuid()
+                    );
                 }
             }
         }
     }
 
     /**
-    * Propagates the aspect managers.
-    *
-    * @param block
-    * @param blockSizeBefore
-    */
+     * Propagates the aspect managers.
+     *
+     * @param block
+     * @param blockSizeBefore
+     */
     public void propagateAspectManagers(final AspectManager[] block, final int blockSizeBefore) {
         AspectManager[] newAspectManagers = new AspectManager[m_aspectManagers.length
-                                            + (block.length - blockSizeBefore)];
+                                                              + (block.length - blockSizeBefore)];
         System.arraycopy(block, 0, newAspectManagers, 0, block.length);
         if (blockSizeBefore < m_aspectManagers.length) {
-            System.arraycopy(m_aspectManagers, blockSizeBefore, newAspectManagers, block.length + 1,
-                             m_aspectManagers.length - blockSizeBefore);
+            System.arraycopy(
+                    m_aspectManagers, blockSizeBefore, newAspectManagers, block.length + 1,
+                    m_aspectManagers.length - blockSizeBefore
+            );
         }
         m_aspectManagers = newAspectManagers;
     }

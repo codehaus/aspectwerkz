@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.joinpoint.impl;
 
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
+
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 
@@ -18,7 +19,7 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class MethodRttiImpl implements MethodRtti {
-    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[] {  };
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
     private final MethodSignatureImpl m_signature;
     private final WeakReference m_thisRef;
     private final WeakReference m_targetRef;
@@ -26,12 +27,12 @@ public class MethodRttiImpl implements MethodRtti {
     private Object m_returnValue;
 
     /**
-    * Creates a new method RTTI.
-    *
-    * @param signature
-    * @param thisInstance
-    * @param targetInstance
-    */
+     * Creates a new method RTTI.
+     *
+     * @param signature
+     * @param thisInstance
+     * @param targetInstance
+     */
     public MethodRttiImpl(final MethodSignatureImpl signature, final Object thisInstance, final Object targetInstance) {
         m_signature = signature;
         m_thisRef = new WeakReference(thisInstance);
@@ -39,142 +40,142 @@ public class MethodRttiImpl implements MethodRtti {
     }
 
     /**
-    * Returns the target instance.
-    *
-    * @return the target instance
-    */
+     * Returns the target instance.
+     *
+     * @return the target instance
+     */
     public Object getTarget() {
         return m_targetRef.get();
     }
 
     /**
-    * Returns the instance currently executing.
-    *
-    * @return the instance currently executing
-    */
+     * Returns the instance currently executing.
+     *
+     * @return the instance currently executing
+     */
     public Object getThis() {
         return m_thisRef.get();
     }
 
     /**
-    * Returns the method tuple.
-    *
-    * @return the method tuple
-    */
+     * Returns the method tuple.
+     *
+     * @return the method tuple
+     */
     public MethodTuple getMethodTuple() {
         return m_signature.getMethodTuple();
     }
 
     /**
-    * Returns the method.
-    *
-    * @return the method
-    */
+     * Returns the method.
+     *
+     * @return the method
+     */
     public Method getMethod() {
         return m_signature.getMethod();
     }
 
     /**
-    * Returns the declaring class.
-    *
-    * @return the declaring class
-    */
+     * Returns the declaring class.
+     *
+     * @return the declaring class
+     */
     public Class getDeclaringType() {
         return m_signature.getDeclaringType();
     }
 
     /**
-    * Returns the modifiers for the signature.
-    * <p/>
-    * Could be used like this:
-    * <pre>
-    *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
-    * </pre>
-    *
-    * @return the mofifiers
-    */
+     * Returns the modifiers for the signature.
+     * <p/>
+     * Could be used like this:
+     * <pre>
+     *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
+     * </pre>
+     *
+     * @return the mofifiers
+     */
     public int getModifiers() {
         return m_signature.getModifiers();
     }
 
     /**
-    * Returns the name (f.e. name of method of field).
-    *
-    * @return
-    */
+     * Returns the name (f.e. name of method of field).
+     *
+     * @return
+     */
     public String getName() {
         return m_signature.getName();
     }
 
     /**
-    * Returns the exception types declared by the code block.
-    *
-    * @return the exception types
-    */
+     * Returns the exception types declared by the code block.
+     *
+     * @return the exception types
+     */
     public Class[] getExceptionTypes() {
         return m_signature.getExceptionTypes();
     }
 
     /**
-    * Returns the parameter types.
-    *
-    * @return the parameter types
-    */
+     * Returns the parameter types.
+     *
+     * @return the parameter types
+     */
     public Class[] getParameterTypes() {
         return m_signature.getParameterTypes();
     }
 
     /**
-    * Sets the values of the parameters.
-    *
-    * @param parameterValues
-    */
+     * Sets the values of the parameters.
+     *
+     * @param parameterValues
+     */
     public void setParameterValues(final Object[] parameterValues) {
         m_parameterValues = parameterValues;
     }
 
     /**
-    * Returns the values of the parameters.
-    *
-    * @return the values of the parameters
-    */
+     * Returns the values of the parameters.
+     *
+     * @return the values of the parameters
+     */
     public Object[] getParameterValues() {
         return m_parameterValues;
     }
 
     /**
-    * Returns the return type.
-    *
-    * @return the return type
-    */
+     * Returns the return type.
+     *
+     * @return the return type
+     */
     public Class getReturnType() {
         return m_signature.getReturnType();
     }
 
     /**
-    * Sets the return value.
-    *
-    * @param returnValue the return value
-    */
+     * Sets the return value.
+     *
+     * @param returnValue the return value
+     */
     public void setReturnValue(final Object returnValue) {
         m_returnValue = returnValue;
     }
 
     /**
-    * Returns the value of the return type.
-    *
-    * @return the value of the return type
-    */
+     * Returns the value of the return type.
+     *
+     * @return the value of the return type
+     */
     public Object getReturnValue() {
         return m_returnValue;
     }
 
     /**
-    * Returns a string representation of the signature.
-    *
-    * @return a string representation
-    * @TODO: implement toString to something meaningful
-    */
+     * Returns a string representation of the signature.
+     *
+     * @return a string representation
+     * @TODO: implement toString to something meaningful
+     */
     public String toString() {
         return super.toString();
     }

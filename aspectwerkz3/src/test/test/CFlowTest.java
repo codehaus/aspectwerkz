@@ -62,7 +62,6 @@ public class CFlowTest extends TestCase implements Loggable {
         m_logString = "";
         step1_C(); //will have "NOT cflow" and will call step2_C
         assertEquals("step1_C step2_C ", m_logString);
-
         m_logString = "";
         step2_C(); //should be advised since not in step1_C cflow
         assertEquals("advice-beforeC step2_C advice-afterC ", m_logString);

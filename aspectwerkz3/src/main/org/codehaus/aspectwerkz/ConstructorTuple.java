@@ -20,18 +20,20 @@ public class ConstructorTuple {
     private final Class m_declaringClass;
 
     /**
-    * Creates a new tuple.
-    *
-    * @param wrapperConstructor
-    * @param originalConstructor
-    */
+     * Creates a new tuple.
+     *
+     * @param wrapperConstructor
+     * @param originalConstructor
+     */
     public ConstructorTuple(Constructor wrapperConstructor, Constructor originalConstructor) {
         if (originalConstructor == null) {
             originalConstructor = wrapperConstructor;
         }
         if (wrapperConstructor.getDeclaringClass() != originalConstructor.getDeclaringClass()) {
-            throw new RuntimeException(wrapperConstructor.getName() + " and " + originalConstructor.getName()
-                                       + " does not have the same declaring class");
+            throw new RuntimeException(
+                    wrapperConstructor.getName() + " and " + originalConstructor.getName()
+                    + " does not have the same declaring class"
+            );
         }
         m_declaringClass = wrapperConstructor.getDeclaringClass();
         m_wrapperConstructor = wrapperConstructor;

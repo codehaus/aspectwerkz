@@ -18,6 +18,7 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
@@ -30,38 +31,38 @@ import java.util.List;
  */
 public class CFlowSystemAspect {
     /**
-    * The class name for the aspect.
-    */
+     * The class name for the aspect.
+     */
     public static final String CLASS_NAME = CFlowSystemAspect.class.getName();
 
     /**
-    * A unique name for the aspect.
-    */
+     * A unique name for the aspect.
+     */
     public static final String NAME = CLASS_NAME.replace('.', '$');
 
     /**
-    * The deployment model for the aspect.
-    */
+     * The deployment model for the aspect.
+     */
     public static final String DEPLOYMENT_MODEL = SystemDefinition.PER_THREAD;
 
     /**
-    * The name of the pre advice method.
-    */
+     * The name of the pre advice method.
+     */
     public static final String PRE_ADVICE = "enterControlFlow";
 
     /**
-    * The name of the post advice method.
-    */
+     * The name of the post advice method.
+     */
     public static final String POST_ADVICE = "exitControlFlow";
 
     /**
-    * Index of the pre advice method.
-    */
+     * Index of the pre advice method.
+     */
     public static final int PRE_ADVICE_INDEX;
 
     /**
-    * Index of the post advice method.
-    */
+     * Index of the post advice method.
+     */
     public static final int POST_ADVICE_INDEX;
 
     static {
@@ -85,46 +86,50 @@ public class CFlowSystemAspect {
     }
 
     /**
-    * Reference to the system.
-    */
+     * Reference to the system.
+     */
     private AspectSystem m_system = null;
 
     /**
-    * Creates a new cflow system aspect instance.
-    *
-    * @param info the cross-cutting info
-    */
+     * Creates a new cflow system aspect instance.
+     *
+     * @param info the cross-cutting info
+     */
     public CFlowSystemAspect(final CrossCuttingInfo info) {
         m_system = info.getSystem();
     }
 
     /**
-    * Registers the join point as the start of a control flow (cflow) in the system.
-    *
-    * @param joinPoint the join point
-    * @throws Throwable the exception from the invocation
-    */
+     * Registers the join point as the start of a control flow (cflow) in the system.
+     *
+     * @param joinPoint the join point
+     * @throws Throwable the exception from the invocation
+     */
     public void enterControlFlow(final JoinPoint joinPoint) throws Throwable {
-        m_system.enteringControlFlow(getPointcutType(joinPoint), createMethodInfo(joinPoint),
-                                     createWithinInfo(joinPoint));
+        m_system.enteringControlFlow(
+                getPointcutType(joinPoint), createMethodInfo(joinPoint),
+                createWithinInfo(joinPoint)
+        );
     }
 
     /**
-    * Registers the join point as the end of a control flow (cflow) in the system.
-    *
-    * @param joinPoint the join point
-    * @throws Throwable the exception from the invocation
-    */
+     * Registers the join point as the end of a control flow (cflow) in the system.
+     *
+     * @param joinPoint the join point
+     * @throws Throwable the exception from the invocation
+     */
     public void exitControlFlow(final JoinPoint joinPoint) throws Throwable {
-        m_system.exitingControlFlow(getPointcutType(joinPoint), createMethodInfo(joinPoint), createWithinInfo(joinPoint));
+        m_system.exitingControlFlow(
+                getPointcutType(joinPoint), createMethodInfo(joinPoint), createWithinInfo(joinPoint)
+        );
     }
 
     /**
-    * Returns the pointcut type for the join point.
-    *
-    * @param joinPoint the join point
-    * @return the pointcut type
-    */
+     * Returns the pointcut type for the join point.
+     *
+     * @param joinPoint the join point
+     * @return the pointcut type
+     */
     private PointcutType getPointcutType(final JoinPoint joinPoint) {
         String type = joinPoint.getType();
         if (type.equals(JoinPoint.METHOD_EXECUTION) || type.equals(JoinPoint.CONSTRUCTOR_EXECUTION)) {
@@ -145,10 +150,10 @@ public class CFlowSystemAspect {
     }
 
     /**
-    * Creates info for the method.
-    *
-    * @return the created method info
-    */
+     * Creates info for the method.
+     *
+     * @return the created method info
+     */
     private static MethodInfo createMethodInfo(final JoinPoint joinPoint) {
         MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
         Method method = rtti.getMethod();
@@ -156,10 +161,10 @@ public class CFlowSystemAspect {
     }
 
     /**
-    * Creates info for the within class.
-    *
-    * @return the created within info
-    */
+     * Creates info for the within class.
+     *
+     * @return the created within info
+     */
     private static ClassInfo createWithinInfo(final JoinPoint joinPoint) {
         Class targetClass = joinPoint.getTargetClass();
         return JavaClassInfo.getClassInfo(targetClass);

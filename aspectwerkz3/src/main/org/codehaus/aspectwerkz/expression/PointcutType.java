@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression;
 
-
 /**
  * Type-safe enum for the pointcut types.
  *

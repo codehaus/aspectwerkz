@@ -14,7 +14,6 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
      */
     public Serializable serializable;
 
-
     /**
      * @Introduce within(examples.introduction.Target) deploymentModel=perInstance
      */

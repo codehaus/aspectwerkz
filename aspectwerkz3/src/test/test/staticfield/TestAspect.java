@@ -16,73 +16,73 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  */
 public class TestAspect {
     /**
-    * @Expression set(* test.xmldef.staticfield.StaticFieldAdviceTest.s_field*)
-    */
+     * @Expression set(* test.xmldef.staticfield.StaticFieldAdviceTest.s_field*)
+     */
     Pointcut pcSet;
 
     /**
-    * @Expression set(* test.xmldef.staticfield.StaticFieldAdviceTest.m_field*)
-    */
+     * @Expression set(* test.xmldef.staticfield.StaticFieldAdviceTest.m_field*)
+     */
     Pointcut pcSetMember;
 
     /**
-    * @Expression set(* test.xmldef.staticfield.CollectionFieldTest.s_field)
-    */
+     * @Expression set(* test.xmldef.staticfield.CollectionFieldTest.s_field)
+     */
     Pointcut pcSetColl;
 
     /**
-    * @Expression set(* test.xmldef.staticfield.CollectionFieldTest.m_field)
-    */
+     * @Expression set(* test.xmldef.staticfield.CollectionFieldTest.m_field)
+     */
     Pointcut pcSetMemberColl;
 
     /**
-    * @Expression get(* test.xmldef.staticfield.CollectionFieldTest.s_field)
-    */
+     * @Expression get(* test.xmldef.staticfield.CollectionFieldTest.s_field)
+     */
     Pointcut pcGetColl;
 
     /**
-    * @Expression get(* test.xmldef.staticfield.CollectionFieldTest.m_field)
-    */
+     * @Expression get(* test.xmldef.staticfield.CollectionFieldTest.m_field)
+     */
     Pointcut pcGetMemberColl;
 
     /**
-    * @Before pcSet
-    */
+     * @Before pcSet
+     */
     public void preStaticField(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPreAdvice1 ";
     }
 
     /**
-    * @Before pcSetMember
-    */
+     * @Before pcSetMember
+     */
     public void preMemberField1(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPreAdvice2 ";
     }
 
     /**
-    * @Before pcSetColl
-    */
+     * @Before pcSetColl
+     */
     public void preStaticField2(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPreAdvice1 ";
     }
 
     /**
-    * @Before pcSetMemberColl
-    */
+     * @Before pcSetMemberColl
+     */
     public void preMemberField2(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPreAdvice2 ";
     }
 
     /**
-    * @After pcGetColl
-    */
+     * @After pcGetColl
+     */
     public void postStaticField(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPostAdvice1 ";
     }
 
     /**
-    * @After pcGetMemberColl
-    */
+     * @After pcGetMemberColl
+     */
     public void postMemberField(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPostAdvice2 ";
     }

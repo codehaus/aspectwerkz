@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,34 +21,35 @@ import java.util.List;
  */
 public class InterfaceIntroductionDefinition {
     /**
-    * The name of the interface introduction.
-    */
+     * The name of the interface introduction.
+     */
     protected final String m_name;
 
     /**
-    * The introduction expressions.
-    */
+     * The introduction expressions.
+     */
     protected ExpressionInfo[] m_expressionInfos;
 
     /**
-    * The attribute for the introduction.
-    */
+     * The attribute for the introduction.
+     */
     protected String m_attribute = "";
 
     /**
-    * The interface classes name.
-    */
+     * The interface classes name.
+     */
     protected List m_interfaceClassNames = new ArrayList();
 
     /**
-    * Creates a new introduction meta-data instance.
-    *
-    * @param name               the name of the expressionInfo
-    * @param expressionInfo     the expressionInfo
-    * @param interfaceClassName the class name of the interface
-    */
-    public InterfaceIntroductionDefinition(final String name, final ExpressionInfo expressionInfo,
-                                           final String interfaceClassName) {
+     * Creates a new introduction meta-data instance.
+     *
+     * @param name               the name of the expressionInfo
+     * @param expressionInfo     the expressionInfo
+     * @param interfaceClassName the class name of the interface
+     */
+    public InterfaceIntroductionDefinition(
+            final String name, final ExpressionInfo expressionInfo,
+            final String interfaceClassName) {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
         }
@@ -64,64 +66,64 @@ public class InterfaceIntroductionDefinition {
     }
 
     /**
-    * Returns the name of the introduction.
-    *
-    * @return the name
-    */
+     * Returns the name of the introduction.
+     *
+     * @return the name
+     */
     public String getName() {
         return m_name;
     }
 
     /**
-    * Returns the expressions.
-    *
-    * @return the expressions array
-    */
+     * Returns the expressions.
+     *
+     * @return the expressions array
+     */
     public ExpressionInfo[] getExpressionInfos() {
         return m_expressionInfos;
     }
 
     /**
-    * Returns the class name of the interface.
-    *
-    * @return the class name of the interface
-    */
+     * Returns the class name of the interface.
+     *
+     * @return the class name of the interface
+     */
     public String getInterfaceClassName() {
         return (String)m_interfaceClassNames.get(0);
     }
 
     /**
-    * Returns the class name of the interface.
-    *
-    * @return the class name of the interface
-    */
+     * Returns the class name of the interface.
+     *
+     * @return the class name of the interface
+     */
     public List getInterfaceClassNames() {
         return m_interfaceClassNames;
     }
 
     /**
-    * Returns the attribute.
-    *
-    * @return the attribute
-    */
+     * Returns the attribute.
+     *
+     * @return the attribute
+     */
     public String getAttribute() {
         return m_attribute;
     }
 
     /**
-    * Sets the attribute.
-    *
-    * @param attribute the attribute
-    */
+     * Sets the attribute.
+     *
+     * @param attribute the attribute
+     */
     public void setAttribute(final String attribute) {
         m_attribute = attribute;
     }
 
     /**
-    * Adds a new expression info.
-    *
-    * @param expression a new expression info
-    */
+     * Adds a new expression info.
+     *
+     * @param expression a new expression info
+     */
     public void addExpressionInfo(final ExpressionInfo expression) {
         final ExpressionInfo[] tmpExpressions = new ExpressionInfo[m_expressionInfos.length + 1];
         java.lang.System.arraycopy(m_expressionInfos, 0, tmpExpressions, 0, m_expressionInfos.length);
@@ -131,10 +133,10 @@ public class InterfaceIntroductionDefinition {
     }
 
     /**
-    * Adds an array with new expression infos.
-    *
-    * @param expressions an array with new expression infos
-    */
+     * Adds an array with new expression infos.
+     *
+     * @param expressions an array with new expression infos
+     */
     public void addExpressionInfos(final ExpressionInfo[] expressions) {
         final ExpressionInfo[] tmpExpressions = new ExpressionInfo[m_expressionInfos.length + expressions.length];
         java.lang.System.arraycopy(m_expressionInfos, 0, tmpExpressions, 0, m_expressionInfos.length);

@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-
 /**
  * Marker interface for all annotation proxy implementations.
  *
@@ -15,30 +14,30 @@ package org.codehaus.aspectwerkz.annotation;
  */
 public interface Annotation {
     /**
-    * Returns the name.
-    *
-    * @return the name
-    */
+     * Returns the name.
+     *
+     * @return the name
+     */
     public String getName();
 
     /**
-    * Sets the name of the annotation, the '@[name]'.
-    *
-    * @param name
-    */
+     * Sets the name of the annotation, the '@[name]'.
+     *
+     * @param name
+     */
     void setName(String name);
 
     /**
-    * Sets the full value of the annotation (including possible named parameters etc.).
-    *
-    * @param value
-    */
+     * Sets the full value of the annotation (including possible named parameters etc.).
+     *
+     * @param value
+     */
     void setValue(String value);
 
     /**
-    * Checks if the annotation is typed or not.
-    *
-    * @return boolean
-    */
+     * Checks if the annotation is typed or not.
+     *
+     * @return boolean
+     */
     boolean isTyped();
 }

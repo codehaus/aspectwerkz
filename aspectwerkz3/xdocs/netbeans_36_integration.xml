@@ -1,20 +1,18 @@
 <?xml version="1.0"?>
-
 <document>
-
     <properties>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <author email="alex at gnilux dot com">alexandre vasseur</author>
         <title>General definition issues</title>
     </properties>
-
     <body>
         <section name="Introduction">
             <p>
                 <code>AspectWerkz</code> uses a class bytecode manipulation technique for applying aspects to 
                 existing Java classes. This means there is no additional language syntax or precompiler necessary.
                 It does mean that class bytecode must be intercepted and changed some time before it gets executed.
-                Fortunately, <code>AspectWerkz</code> provides both offline and online class interception and 
+                Fortunately,
+                <code>AspectWerkz</code> provides both offline and online class interception and
                 manipulation. Offline manipulation means all class files are scanned and modified in place sometime
                 before the application gets executed. Online interception means classes are intercepted as they 
                 are loaded by a running application. Both techniques provide costs and benefits. Offline interception
@@ -25,51 +23,68 @@
                 changing the class file on every compile.
             </p>
             <p>
-                These instructions describe how to create an execution type and a debugger type in <code>NetBeans</code>
+                These instructions describe how to create an execution type and a debugger type in
+                <code>NetBeans</code>
                 to implement online interception for use during the development cycle.
             </p>
             <p>
                 Creating the execution and debugger types affects only the project you have open at the time. 
-                You must follow these instructions for each separate <code>NetBeans</code> project.
+                You must follow these instructions for each separate
+                <code>NetBeans</code> project.
             </p>
             <p>
-                The instructions have been prepared for <code>NetBeans 3.6</code>.
+                The instructions have been prepared for
+                <code>NetBeans 3.6</code>.
             </p>
         </section>
-
         <section name="Approach">
             <p>
                 These instructions demonstrate using the prepared bootclasspath approach to online weaving, by creating a
                 new execution type and debugger type. This approach works well with NetBeans.
             </p>
         </section>
-        
         <section name="Initial Setup">
             <subsection name="Install AspectWerkz">
                 <p>
-                    Install the <code>AspectWerkz</code> distribution, or copy the following jars to an accessible
+                    Install the
+                    <code>AspectWerkz</code> distribution, or copy the following jars to an accessible
                     location.
-                <ul>
-                    <li>aspectwerkz-<i>version</i>.jar</li>
-                    <li>aspectwerkz-core-<i>version</i>.jar</li>
-                    <li>bcel-<i>version</i>.jar</li>
-                    <li>javassist-<i>version</i>.jar</li>
-                    <li>jrexx-<i>version</i>.jar</li>
-                    <li>trove-<i>version</i>.jar</li>
-                </ul>
+                    <ul>
+                        <li>aspectwerkz-
+                            <i>version</i>.jar
+                        </li>
+                        <li>aspectwerkz-core-
+                            <i>version</i>.jar
+                        </li>
+                        <li>bcel-
+                            <i>version</i>.jar
+                        </li>
+                        <li>javassist-
+                            <i>version</i>.jar
+                        </li>
+                        <li>jrexx-
+                            <i>version</i>.jar
+                        </li>
+                        <li>trove-
+                            <i>version</i>.jar
+                        </li>
+                    </ul>
                 </p>
             </subsection>
             <subsection name="Create an Enhanced Class Loader Jar">
                 <p>
-                  Using instructions located <a href="online.html#Prepared%20bootclasspath">here</a> to create the
-                  enhanced class loader jar. Place the jar in a location accessible by <code>NetBeans</code>.
+                  Using instructions located
+                    <a href="online.html#Prepared%20bootclasspath">here</a> to create the
+                  enhanced class loader jar. Place the jar in a location accessible by
+                    <code>NetBeans</code>.
                 </p>
             </subsection>
         </section>
         <section name="Integrate into Project">
             <p>
                 The following instructions must be repeated for each project
-                that will use <code>AspectWerkz</code>.
+                that will use
+                <code>AspectWerkz</code>.
             </p>
         </section>
         <section name="Create an Execution Type">
@@ -80,23 +95,29 @@
                 'Finish' button.</li>
                 <li>Select the newly created execution type.</li>
                 <li>Change the External Process Arguments to the following value:
-                <source><![CDATA[
- -Xbootclasspath/p:/path/to/enhanced/class/loader.jar -Xbootclasspath/a:{bootclasspath} 
+                    <source><![CDATA[
+ -Xbootclasspath/p:/path/to/enhanced/class/loader.jar -Xbootclasspath/a:{bootclasspath}
  {assertEnabled} -cp {filesystems}{:}{classpath} {classname} {arguments}
-                 ]]></source>
-                 This should all be on one line, with a space between <code>{bootclasspath}</code> and 
-                 <code>{assertEnable}</code>.<br/>
+                     ]]></source>
+                 This should all be on one line, with a space between
+                    <code>{bootclasspath}</code> and
+                    <code>{assertEnable}</code>.
+                    <br/>
                  Note that on Windows, you'll need to surround the path to the enhanced class loader jar in double quotes if
                  there are embedded spaces in the path.
-                 </li>
-                 <li>Add the following jars to the Boot Classpath:
-                     <ul>
-                         <li>javassist-<i>version</i>.jar</li>
-                         <li>aspectwerkz-core-<i>version</i>.jar</li>
-                     </ul>
-                 </li>
-                 <li>Make any other changes to the execution type to suit your needs.</li>
-             </ul>
+                </li>
+                <li>Add the following jars to the Boot Classpath:
+                    <ul>
+                        <li>javassist-
+                            <i>version</i>.jar
+                        </li>
+                        <li>aspectwerkz-core-
+                            <i>version</i>.jar
+                        </li>
+                    </ul>
+                </li>
+                <li>Make any other changes to the execution type to suit your needs.</li>
+            </ul>
         </section>
         <section name="Create a Debugger Type">
             <ul>
@@ -106,23 +127,29 @@
                 'Finish' button.</li>
                 <li>Select the newly created debugger type.</li>
                 <li>Change the External Process Arguments to the following value:
-                <source><![CDATA[
+                    <source><![CDATA[
 -Xbootclasspath/p:/path/to/enhanced/class/loader.jar -Xbootclasspath/a:{bootclasspath}
  {classic}{assertEnabled}{debuggerOptions} -Djava.compiler=NONE -classpath {q}{filesystems}{q} {main}
-                 ]]></source>
-                 This should all be on one line, with a space between <code>{bootclasspath}</code> and 
-                 <code>{classic}</code>.<br/>
+                     ]]></source>
+                 This should all be on one line, with a space between
+                    <code>{bootclasspath}</code> and
+                    <code>{classic}</code>.
+                    <br/>
                  Note that on Windows, you'll need to surround the path to the enhanced class loader jar in double quotes if
                  there are embedded spaces in the path.
-                 </li>
-                 <li>Add the following jars to the Boot Classpath:
-                     <ul>
-                         <li>javassist-<i>version</i>.jar</li>
-                         <li>aspectwerkz-core-<i>version</i>.jar</li>
-                     </ul>
-                 </li>
-                 <li>Make any other changes to the execution type to suit your needs.</li>
-             </ul>
+                </li>
+                <li>Add the following jars to the Boot Classpath:
+                    <ul>
+                        <li>javassist-
+                            <i>version</i>.jar
+                        </li>
+                        <li>aspectwerkz-core-
+                            <i>version</i>.jar
+                        </li>
+                    </ul>
+                </li>
+                <li>Make any other changes to the execution type to suit your needs.</li>
+            </ul>
         </section>
         <section name="Activating AspectWerkz in the Project">
             <p>So far, we've only created the customized execution and debugger types. To actually use these in the
@@ -145,22 +172,31 @@
                     <p>
                         Mount the following jar files to the project:
                         <ul>
-                            <li>aspectwerkz-<i>version</i>.jar</li>
+                            <li>aspectwerkz-
+                                <i>version</i>.jar
+                            </li>
                             <li>bcel.jar</li>
-                            <li>javassist-<i>version</i>.jar</li>
-                            <li>jrexx-<i>version</i>.jar</li>
-                            <li>trove-<i>version</i>.jar</li>
+                            <li>javassist-
+                                <i>version</i>.jar
+                            </li>
+                            <li>jrexx-
+                                <i>version</i>.jar
+                            </li>
+                            <li>trove-
+                                <i>version</i>.jar
+                            </li>
                         </ul>
                     </p>
                 </subsection>
                 <subsection name="Configure aspectwerkz.xml">
                     <p>
-                        Place the <code>aspectwerkz.xml</code> into a filesystem mounted in the project. When a Java
-                        program is run, all filesystems are placed onto the classpath by <code>NetBeans</code>.
+                        Place the
+                        <code>aspectwerkz.xml</code> into a filesystem mounted in the project. When a Java
+                        program is run, all filesystems are placed onto the classpath by
+                        <code>NetBeans</code>.
                     </p>
                 </subsection>
             </p>
         </section>
     </body>
-
 </document>

@@ -26,9 +26,9 @@ public interface ExpressionParserTreeConstants {
     public int JJTATTRIBUTE = 21;
     public int JJTMODIFIER = 22;
     public String[] jjtNodeName = {
-                                      "Root", "void", "And", "Or", "Not", "PointcutReference", "Execution", "Call",
-                                      "Set", "Get", "Handler", "Within", "WithinCode", "StaticInitialization", "Cflow",
-                                      "CflowBelow", "ClassPattern", "MethodPattern", "ConstructorPattern",
-                                      "FieldPattern", "Parameter", "Attribute", "Modifier",
-                                  };
+        "Root", "void", "And", "Or", "Not", "PointcutReference", "Execution", "Call",
+        "Set", "Get", "Handler", "Within", "WithinCode", "StaticInitialization", "Cflow",
+        "CflowBelow", "ClassPattern", "MethodPattern", "ConstructorPattern",
+        "FieldPattern", "Parameter", "Attribute", "Modifier",
+    };
 }

@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
+
 import java.io.Serializable;
 
 /**
@@ -17,47 +18,47 @@ import java.io.Serializable;
  */
 public class ControllerDefinition implements Serializable {
     /**
-    * The pointcut expression.
-    */
+     * The pointcut expression.
+     */
     private ExpressionVisitor m_expression;
 
     /**
-    * The controller class name.
-    */
+     * The controller class name.
+     */
     private String m_className;
 
     /**
-    * Returns the expression.
-    *
-    * @return the expression
-    */
+     * Returns the expression.
+     *
+     * @return the expression
+     */
     public ExpressionVisitor getExpression() {
         return m_expression;
     }
 
     /**
-    * Sets the expression. Substitutes all "AND" to "&&" and all "OR" to "||".
-    *
-    * @param expression the expression
-    */
+     * Sets the expression. Substitutes all "AND" to "&&" and all "OR" to "||".
+     *
+     * @param expression the expression
+     */
     public void setExpression(final ExpressionVisitor expression) {
         m_expression = expression;
     }
 
     /**
-    * Returns the class name.
-    *
-    * @return the class name
-    */
+     * Returns the class name.
+     *
+     * @return the class name
+     */
     public String getClassName() {
         return m_className;
     }
 
     /**
-    * Sets the controller class name
-    *
-    * @param className
-    */
+     * Sets the controller class name
+     *
+     * @param className
+     */
     public void setClassName(final String className) {
         m_className = className;
     }

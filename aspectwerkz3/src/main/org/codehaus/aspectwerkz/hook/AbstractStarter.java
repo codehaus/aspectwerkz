@@ -27,8 +27,8 @@ abstract class AbstractStarter {
     }
 
     /**
-    * return command line that launched the target process
-    */
+     * return command line that launched the target process
+     */
     public String getCommandLine() {
         StringBuffer command = new StringBuffer();
         command.append(System.getProperty("java.home"));
@@ -39,8 +39,8 @@ abstract class AbstractStarter {
     }
 
     /**
-    * launchs target process
-    */
+     * launchs target process
+     */
     public Process launchVM() throws IOException {
         System.out.println(getCommandLine());
         return Runtime.getRuntime().exec(getCommandLine());

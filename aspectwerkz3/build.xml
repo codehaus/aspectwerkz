@@ -124,21 +124,20 @@
             </classpath>
         </javac>
     </target>
-
     <target name="aspectwerkz:jdk15:compile" if="jdk15">
         <echo message="** Found jdk15 specific compilation..."/>
-            <javac destdir="${main.classes}" deprecation="true"
-                debug="true" optimize="false">
-                <src>
-                    <pathelement location="src/jdk15"></pathelement>
-                </src>
-                <classpath>
-                    <pathelement path="${main.classes}"/>
-                    <fileset dir="${lib.dir}">
-                        <include name="*.jar"></include>
-                    </fileset>
-                </classpath>
-            </javac>
+        <javac destdir="${main.classes}" deprecation="true"
+            debug="true" optimize="false">
+            <src>
+                <pathelement location="src/jdk15"></pathelement>
+            </src>
+            <classpath>
+                <pathelement path="${main.classes}"/>
+                <fileset dir="${lib.dir}">
+                    <include name="*.jar"></include>
+                </fileset>
+            </classpath>
+        </javac>
     </target>
 
     <!-- =================================================== -->
@@ -371,7 +370,7 @@
             </classpath>
             <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml"/>
         </java>
-     </target>
+    </target>
 
     <!-- =================================================== -->
     <!--  runs the logging test -->
