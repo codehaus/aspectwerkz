@@ -133,4 +133,106 @@ public interface TransformationConstants {
 
     public static final byte EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY = Byte.MIN_VALUE;
     public static final byte EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY = Byte.MAX_VALUE;
+
+    // JoinPointCompiler stuff
+
+    public static final boolean STATIC_JOIN_POINT = true;
+    public static final boolean NON_STATIC_JOIN_POINT = false;
+
+    // static and member field names
+    public static final String SIGNATURE_FIELD_NAME = "SIGNATURE";
+    public static final String META_DATA_FIELD_NAME = "META_DATA";
+    public static final String STATIC_JOIN_POINT_INSTANCE_FIELD_NAME = "STATIC_JOIN_POINT";
+    public static final String AROUND_ADVICE_FIELD_PREFIX = "AROUND_";
+    public static final String BEFORE_ADVICE_FIELD_PREFIX = "BEFORE_";
+    public static final String AFTER_FINALLY_ADVICE_FIELD_PREFIX = "AFTER_FINALLY_";
+    public static final String AFTER_RETURNING_ADVICE_FIELD_PREFIX = "AFTER_RETURNING_";
+    public static final String AFTER_THROWING_ADVICE_FIELD_PREFIX = "AFTER_THROWING_";
+    public static final String STACK_FRAME_FIELD_NAME = "STACK_FRAME_COUNTER";
+    public static final String CALLEE_INSTANCE_FIELD_NAME = "CALLEE";
+    public static final String CALLER_INSTANCE_FIELD_NAME = "CALLER";
+    public static final String ARGUMENT_FIELD = "ARGUMENT_";
+    public static final String RTTI_INSTANCE_FIELD_NAME = "RTTI";
+
+    // runtime system signatures and types
+    public static final String METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/MethodSignatureImpl;";
+    public static final String CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/ConstructorSignatureImpl;";
+    public static final String FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/FieldSignatureImpl;";
+    public static final String HANDLER_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/CatchClauseSignatureImpl;";
+    public static final String NEW_METHOD_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;I)Lorg/codehaus/aspectwerkz/joinpoint/impl/MethodSignatureImpl;";
+    public static final String NEW_CONSTRUCTOR_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;I)Lorg/codehaus/aspectwerkz/joinpoint/impl/ConstructorSignatureImpl;";
+    public static final String NEW_FIELD_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;I)Lorg/codehaus/aspectwerkz/joinpoint/impl/FieldSignatureImpl;";
+    public static final String NEW_HANDLER_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;I)Lorg/codehaus/aspectwerkz/joinpoint/impl/CatchClauseSignatureImpl;";
+    public static final String SIGNATURE_FACTORY_CLASS = "org/codehaus/aspectwerkz/joinpoint/management/SignatureFactory";
+    public static final String ASPECTS_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/Aspects";
+    public static final String ASPECT_OF_METHOD_NAME = "aspectOf";
+    public static final String ASPECT_OF_PER_JVM_METHOD_SIGNATURE = "(Ljava/lang/String;)Ljava/lang/Object;";
+    public static final String ASPECT_OF_PER_CLASS_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;";
+    public static final String GET_CFLOW_STACK_METHOD_NAME = "getCflowStack";
+    public static final String GET_CFLOW_STACK_METHOD_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/CflowStack;";
+    public static final String GET_SIGNATURE_METHOD_NAME = "getSignature";
+    public static final String GET_SIGNATURE_METHOD_SIGNATURE = "()Lorg/codehaus/aspectwerkz/joinpoint/Signature;";
+    public static final String GET_RTTI_METHOD_NAME = "getRtti";
+    public static final String GET_RTTI_METHOD_SIGNATURE = "()Lorg/codehaus/aspectwerkz/joinpoint/Rtti;";
+    public static final String PROCEED_METHOD_NAME = "proceed";
+    public static final String PROCEED_METHOD_SIGNATURE = "()Ljava/lang/Object;";
+    public static final String COPY_METHOD_NAME = "copy";
+    public static final String COPY_METHOD_SIGNATURE = "()Lorg/codehaus/aspectwerkz/joinpoint/StaticJoinPoint;";
+    public static final String ADD_META_DATA_METHOD_NAME = "addMetaData";
+    public static final String ADD_META_DATA_METHOD_SIGNATURE = "(Ljava/lang/Object;Ljava/lang/Object;)V";
+    public static final String MAP_CLASS_SIGNATURE = "Ljava/util/Map;";
+    public static final String MAP_CLASS_NAME = "java/util/Map";
+    public static final String PUT_METHOD_NAME = "put";
+    public static final String PUT_METHOD_SIGNATURE = "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;";
+    public static final String GET_META_DATA_METHOD_NAME = "getMetaData";
+    public static final String GET_TARGET_METHOD_NAME = "getTarget";
+    public static final String GET_THIS_METHOD_NAME = "getThis";
+    public static final String GET_CALLER_METHOD_NAME = "getCaller";
+    public static final String GET_CALLEE_METHOD_NAME = "getCallee";
+    public static final String GET_METHOD_NAME = "get";
+    public static final String GET_METHOD_SIGNATURE = "(Ljava/lang/Object;)Ljava/lang/Object;";
+    public static final String GET_META_DATA_METHOD_SIGNATURE = "(Ljava/lang/Object;)Ljava/lang/Object;";
+    public static final String NEW_METHOD_SIGNATURE_METHOD_NAME = "newMethodSignature";
+    public static final String NEW_CONSTRUCTOR_SIGNATURE_METHOD_NAME = "newConstructorSignature";
+    public static final String NEW_FIELD_SIGNATURE_METHOD_NAME = "newFieldSignature";
+    public static final String NEW_CATCH_CLAUSE_SIGNATURE_METHOD_NAME = "newCatchClauseSignature";
+    public static final String HASH_MAP_CLASS_NAME = "java/util/HashMap";
+    public static final String NO_PARAM_RETURN_VOID_SIGNATURE = "()V";
+    public static final String CLASS_NOT_FOUND_EXCEPTION_CLASS_NAME = "java/lang/ClassNotFoundException";
+    public static final String GET_CALLER_CLASS_METHOD_NAME = "getCallerClass";
+    public static final String GET_CALLER_CLASS_METHOD_SIGNATURE = "()Ljava/lang/Class;";
+    public static final String GET_TARGET_CLASS_METHOD_NAME = "getTargetClass";
+    public static final String GET_TARGET_CLASS_METHOD_SIGNATURE = "()Ljava/lang/Class;";
+    public static final String GET_TYPE_METHOD_NAME = "getType";
+    public static final String GET_TYPE_METHOD_SIGNATURE = "()Ljava/lang/String;";
+    public static final String RESET_METHOD_NAME = "reset";
+    public static final String RUNTIME_EXCEPTION_CLASS_NAME = "java/lang/RuntimeException";
+    public static final String RUNTIME_EXCEPTION_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;)V";
+    public static final String IS_IN_CFLOW_METOD_NAME = "isInCflow";
+    public static final String IS_IN_CFLOW_METOD_SIGNATURE = "()Z";
+    public static final String STATIC_JOIN_POINT_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/StaticJoinPoint";
+    public static final String JOIN_POINT_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/JoinPoint";
+    public static final String JOIN_POINT_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;";
+    public static final String NO_PARAMS_SIGNATURE = "()";
+
+    public static final String METHOD_RTTI_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/MethodRttiImpl;";
+    public static final String METHOD_RTTI_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/MethodRttiImpl";
+    public static final String METHOD_RTTI_IMPL_INIT_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/impl/MethodSignatureImpl;Ljava/lang/Object;Ljava/lang/Object;)V";
+    public static final String CONSTRUCTOR_RTTI_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/ConstructorRttiImpl;";
+    public static final String CONSTRUCTOR_RTTI_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/ConstructorRttiImpl";
+    public static final String CONSTRUCTOR_RTTI_IMPL_INIT_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/impl/ConstructorSignatureImpl;Ljava/lang/Object;Ljava/lang/Object;)V";
+    public static final String FIELD_RTTI_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/FieldRttiImpl;";
+    public static final String FIELD_RTTI_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/FieldRttiImpl";
+    public static final String FIELD_RTTI_IMPL_INIT_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/impl/FieldSignatureImpl;Ljava/lang/Object;Ljava/lang/Object;)V";
+    public static final String HANDLER_RTTI_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/CatchClauseRttiImpl;";
+    public static final String HANDLER_RTTI_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/CatchClauseRttiImpl";
+    public static final String HANDLER_RTTI_IMPL_INIT_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/impl/CatchClauseSignatureImpl;Ljava/lang/Object;Ljava/lang/Object;)V";
+    public static final String SET_PARAMETER_VALUES_METHOD_NAME = "setParameterValues";
+    public static final String SET_PARAMETER_VALUES_METHOD_SIGNATURE = "([Ljava/lang/Object;)V";
+    public static final String SET_PARAMETER_VALUE_METHOD_NAME = "setParameterValue";
+    public static final String SET_PARAMETER_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
+    public static final String SET_FIELD_VALUE_METHOD_NAME = "setFieldValue";
+    public static final String SET_FIELD_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
+    public static final String SET_RETURN_VALUE_METHOD_NAME = "setReturnValue";
+    public static final String SET_RETURN_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
 }
