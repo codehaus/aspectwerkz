@@ -34,6 +34,16 @@ public class WithincodeStaticinitializationAspect {
     Pointcut withincodeTarget;
     
     /**
+     * @Expression withincode(staticinitialization(@WithincodeClinit))
+     */
+    Pointcut withincodeClinit;
+    
+    /**
+     * @Expression withincode(staticinitialization(@WithincodeClinit test.withincode.*))
+     */
+    Pointcut withincodeClinitPattern;
+    
+    /**
      * @Expression set(test.withincode.Target$CtorCallTarget test.withincode.Target.s_field)
      */
     Pointcut set;
@@ -66,19 +76,47 @@ public class WithincodeStaticinitializationAspect {
 	}
 
 	/**
+	 * @Before ctorCall && withincodeClinit
+	 */
+	public void beforeWithincodeClinitCtorCall() {
+	    WithincodeClinitTest.addMessage("beforeWithincodeClinitCtorCall");
+	}
+	
+	/**
+	 * @Before ctorCall && withincodeClinitPattern
+	 */
+	public void beforeWithincodeClinitPatternCtorCall() {
+	    WithincodeClinitTest.addMessage("beforeWithincodeClinitPatternCtorCall");
+	}
+	
+	/**
+	 * @After ctorCall && withincodeClinitPattern
+	 */
+	public void afterWithincodeClinitPatternCtorCall() {
+	    WithincodeClinitTest.addMessage("afterWithincodeClinitPatternCtorCall");
+	}
+	
+	/**
+	 * @After ctorCall && withincodeClinit
+	 */
+	public void afterWithincodeClinitCtorCall() {
+	    WithincodeClinitTest.addMessage("afterWithincodeClinitCtorCall");
+	}
+
+	/**
 	 * @After ctorCall && withincode(staticinitialization(test.withincode.Target))
 	 */
 	public void afterCtorCall() {
 	    WithincodeClinitTest.addMessage("afterCtorCall");
 	}
-	
+		
 	/**
 	 * @AfterReturning ctorCall && withincode(staticinitialization(test.withincode.Target))
 	 */
 	public void afterReturningCtorCall() {
 	    WithincodeClinitTest.addMessage("afterReturningCtorCall");
 	}
-
+	
     /**
      * @Before getset && withincode(staticinitialization(test.withincode.Target))
      */
@@ -92,6 +130,7 @@ public class WithincodeStaticinitializationAspect {
 	public void afterGetSet() {
 	    WithincodeClinitTest.addMessage("afterGetSet");
 	}
+	
 	
     /**
      * @AfterReturning getset && withincode(staticinitialization(test.withincode.Target))

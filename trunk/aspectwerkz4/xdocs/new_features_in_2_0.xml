@@ -1173,7 +1173,7 @@ callee.adviseWithAround(1);
 // and for the given method
 // Note that the change will affect both call and execution side if the advisable definition
 // was pointcut-type="call|execution"
-((Advisable) callee).aw$addAdvice(
+((Advisable) callee).aw_addAdvice(
         "* test.intercept.call.Callee.adviseWithAround(..)",
         // we use an anonymous inner class here
         new AroundAdvice() {
@@ -1202,7 +1202,7 @@ callee2.adviseWithAround();
 // thus cannot really be used when an anonymous class has been used,
 // but using the interface enables us to remove ALL around advice.
 // Again we narrow the pointcut
-((Advisable) callee).aw$removeAdvice("* test.intercept.call.Callee.adviseWithAround(int)", AroundAdvice.class);
+((Advisable) callee).aw_removeAdvice("* test.intercept.call.Callee.adviseWithAround(int)", AroundAdvice.class);
 
 // will still have the interceptor
 callee.adviseWithAround();

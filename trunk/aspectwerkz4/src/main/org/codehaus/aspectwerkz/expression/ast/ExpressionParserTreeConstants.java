@@ -18,8 +18,8 @@ public interface ExpressionParserTreeConstants
   public int JJTHANDLER = 11;
   public int JJTWITHIN = 12;
   public int JJTWITHINCODE = 13;
-  public int JJTCLASSPATTERN = 14;
-  public int JJTSTATICINITIALIZATION = 15;
+  public int JJTSTATICINITIALIZATION = 14;
+  public int JJTCLASSPATTERN = 15;
   public int JJTCFLOW = 16;
   public int JJTCFLOWBELOW = 17;
   public int JJTARGS = 18;
@@ -51,8 +51,8 @@ public interface ExpressionParserTreeConstants
     "Handler",
     "Within",
     "WithinCode",
-    "ClassPattern",
     "StaticInitialization",
+    "ClassPattern",
     "Cflow",
     "CflowBelow",
     "Args",

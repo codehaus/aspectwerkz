@@ -179,7 +179,7 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
         if(checkPattern) {
             if (context.hasWithinPointcut() || context.hasGetPointcut()) {
                 if (context.hasReflectionInfo()) {
-                        return patternNode.jjtAccept(this, context.getReflectionInfo());
+                	return patternNode.jjtAccept(this, context.getReflectionInfo());
                 } else {
                     return null;
                 }
@@ -197,10 +197,21 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
 
     public Object visit(ASTStaticInitialization node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        if (context.hasWithinPointcut() || context.hasStaticInitializationPointcut()) {
-            return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
+        final boolean checkPattern = !(patternNode instanceof ASTAttribute);
+        
+        if(checkPattern) {
+	        if (context.hasWithinPointcut() || context.hasStaticInitializationPointcut()) {
+	        	if(context.hasWithinReflectionInfo()) {
+	        		return patternNode.jjtAccept(this, context.getReflectionInfo());
+	        	} else {
+	        		return null;
+	        	}
+	        } else {
+	            return Boolean.FALSE;
+	        }
         } else {
-            return Boolean.FALSE;
+        	return null;
         }
     }
 
@@ -234,7 +245,15 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
 
         if(node.isStaticInitializer()) {
             if(null != withinInfo) {
-            	return node.jjtGetChild(0).jjtAccept(this, withinInfo);
+            	Node astStatic = node.jjtGetChild(0);
+            	Node patternNode = astStatic.jjtGetChild(astStatic.jjtGetNumChildren() - 1);
+            	boolean checkPattern = !(patternNode instanceof ASTAttribute);
+
+            	if(checkPattern) {
+            		return patternNode.jjtAccept(this, withinInfo);
+            	} else {
+            		return null;
+            	}
             } else {
                 return null;
             }

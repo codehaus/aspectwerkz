@@ -12,9 +12,15 @@ package test.staticinitialization;
  * Target for staticinitialization pointcuts.
  * 
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
+ * 
+ * @StaticInitializationService
  */
 public class ClinitTarget {
 	static {
 		StaticInitializationTest.s_messages.add(StaticInitializationTest.CLINIT_EXECUTION_MESSAGE);
+	}
+	
+	public static interface IServiceAnnotation {
+		String value();
 	}
 }

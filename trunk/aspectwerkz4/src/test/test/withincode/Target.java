@@ -14,6 +14,8 @@ import test.handler.HandlerTestBeforeException;
  * Target for test with withincode(staticinitialization)
  * 
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
+ * 
+ * @WithincodeClinit
  */
 public class Target {
     private static CtorCallTarget s_field;
@@ -39,5 +41,9 @@ public class Target {
 	private static class CtorCallTarget {
 	    public CtorCallTarget() {
 	    }
+	}
+	
+	public static interface IWithincodeClinitAnnotation {
+		String value();
 	}
 }
