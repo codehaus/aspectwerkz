@@ -964,7 +964,8 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                                 final MethodMetaData methodMetaData,
                                 final Method method) {
         String uuid = null;
-        if (method.getName().equals("<init>") ||
+        if (    method.isAbstract() ||
+                method.getName().equals("<init>") ||
                 method.getName().equals("<clinit>") ||
                 method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
                 method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
