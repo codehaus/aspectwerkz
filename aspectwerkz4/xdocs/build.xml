@@ -3,7 +3,6 @@
     <properties>
         <title>Build</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
-        <author email="vmassol@apache.org">Vincent Massol</author>
     </properties>
     <body>
         <section name="Building from sources">
@@ -14,17 +13,12 @@
                 <a href="http://ant.apache.org/">Ant</a>.
             </p>
             <p>
-                Note: If you're using Ant, make sure you don't have a BCEL jar
-                nor a Xalan jar in your
-                <code>[ANT_HOME]/lib</code> directory.
-            </p>
-            <p>
                 Useful goals:
                 <ul>
                     <li>
                         build distribution including sample jars:
                         <p/>
-                        <code>ant jars</code>.
+                        <code>ant dist</code>.
                     </li>
                     <br/>
                     <li>
