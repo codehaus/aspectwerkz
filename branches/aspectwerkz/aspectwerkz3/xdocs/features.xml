@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+
+<document>
+
+    <properties>
+        <title>AspectWerkz</title>
+        <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
+    </properties>
+
+    <body>
+
+        <section name="Features">
+
+            <subsection name="AspectWerkz supports the following features">
+                <p>
+                    This is a very incomplete list, see the documentation for all features.
+                </p>
+                <ul>
+                    <li>
+                        Runtime and load time bytecode modification (weaving).
+                        Hooks in and transforms classes loaded by
+                        <b>any</b> class loader
+                        except the bootstrap class loader. Which basically means that
+                        you can easily transform any (legacy) application or external
+                        library apart from rt.jar both at runtime and compile time.
+                    </li>
+                    <br/>
+                    <li>
+                        The join point model supports: method execution and call, constructor execution and call,
+                        field access, field modification, catch handlers and cflow. All advice works with all join points.
+                    </li>
+                    <br/>
+                    <li>
+                        Introductions (Mixins/Open Classes), i.e. the possibility
+                        to add interfaces and implementations to existing classes.
+                    </li>
+                    <br/>
+                    <li>
+                        Attributes definition. Define your aspects using runtime attributes (ready for JSR-175).
+                    </li>
+                    <br/>
+                    <li>
+                        XML definition. Define your aspects using XML. The XML definition can also be used to refine,
+                        override and resolve the attribute definition.
+                    </li>
+                    <br/>
+                    <li>
+                        Four different deployment models (scope) for both advices
+                        and introductions: perJVM (singleton), perClass, perInstance
+                        and perThread.
+                    </li>
+                    <br/>
+                    <li>
+                        Hot deployment, advices and introductions can be
+                        dynamically deployed, undeployed or rearranged (without
+                        reloading or retransforming the target classes).
+                    </li>
+                    <br/>
+                    <li>
+                        Very high-performant. An
+                        <code>advice</code> adds an overhead of only ~0.000009 ms/call
+                        (on my Intel Pentium 4 Mobile 1.6 Mhz).
+                    </li>
+                    <br/>
+                    <li>
+                        Fine-grained pattern language for selecting the join points.
+                    </li>
+                    <br/>
+                    <li>
+                        Highly orthogonal underlying model. All advice works with all join points and pointcut composition
+                        supports mixing all kinds of pointcuts. Largely inspired by AspectJ.
+                    </li>
+                    <br/>
+                    <li>
+                        "Offline" transformation (can be used as a post-processor).
+                    </li>
+                    <br/>
+                    <li>
+                        Aspects, advices and introductions are written in plain old
+                        Java code. I.e. no new language to learn, no new compilation
+                        phases, no need to tell your manager ;-)
+                    </li>
+                    <br/>
+                    <li>
+                        The target classes can be regular POJOs (Plain Old Java
+                        Objects), i.e. do not need to have an interface.
+                    </li>
+                    <br/>
+                    <li>
+                        Support for passing parameters to the advices through
+                        the definition and for defining advice stacks which can
+                        be reused.
+                    </li>
+                    <br/>
+                    <!--                    <li>-->
+                    <!--                        Multiple AspectWerkz systems can be used in the same JVM concurrently.-->
+                    <!--                    </li>-->
+                    <br/>
+                    <li>
+                        Meta-data additions to classes. Possibilities to add meta-data to all loaded classes.
+                    </li>
+                    <br/>
+                    <li>
+                        Simple usage and configuration.
+                    </li>
+                    <br/>
+                </ul>
+            </subsection>
+        </section>
+
+    </body>
+</document>
+
