@@ -7,12 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
-import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 
 /**
  * Contains advice info, like indexes describing the aspect and a method (advice or introduced),
@@ -22,25 +22,16 @@ import java.io.Serializable;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AdviceInfo implements Serializable {
-    /**
-     * Index for the aspect.
-     */
-    private int m_aspectIndex;
 
     /**
-     * Index for the advice method.
+     * The advice method.
      */
-    private int m_methodIndex;
+    private Method m_method;
 
     /**
-     * The uuid - informational purpose
+     * The aspect context.
      */
-    private String m_uuid;
-
-    /**
-     * The aspect manager
-     */
-    private transient AspectManager m_aspectManager;
+    private AspectContext m_aspectContext;
 
     /**
      * The advice method arg index mapped to the target method arg index
@@ -60,49 +51,57 @@ public class AdviceInfo implements Serializable {
     /**
      * Creates a new advice info.
      *
-     * @param aspectIndex         the aspect index
-     * @param methodIndex         the method index
-     * @param aspectManager       the aspectManager
+     * @param aspectContext         the aspect context
+     * @param method         the method
      * @param type                the advice type
      * @param specialArgumentType the special arg type
      */
-    public AdviceInfo(final int aspectIndex,
-                      final int methodIndex,
-                      final AspectManager aspectManager,
+    public AdviceInfo(final AspectContext aspectContext,
+                      final Method method,
                       final AdviceType type,
                       final String specialArgumentType) {
-        m_aspectIndex = aspectIndex;
-        m_methodIndex = methodIndex;
-        m_aspectManager = aspectManager;
+        m_aspectContext = aspectContext;
+        m_method = method;
         m_type = type;
         m_specialArgumentType = AsmHelper.convertReflectDescToTypeDesc(specialArgumentType);
     }
 
     /**
-     * Return the aspect index.
+     * Returns the name of the advice.
      *
-     * @return the aspect index
+     * @param aspectName
+     * @param adviceName
+     * @return the name
      */
-    public int getAspectIndex() {
-        return m_aspectIndex;
+    public static String createAdviceName(final String aspectName, final String adviceName) {
+        return new StringBuffer().append(aspectName).append('/').append(adviceName).toString();
     }
 
     /**
-     * Return the method index.
+     * Returns the aspect context.
      *
-     * @return the method index
+     * @return the aspect context
      */
-    public int getMethodIndex() {
-        return m_methodIndex;
+    public AspectContext getAspectContext() {
+        return m_aspectContext;
     }
 
     /**
-     * Return the aspectManager.
+     * Returns the name of the advice.
      *
-     * @return the aspect manager
+     * @return
      */
-    public AspectManager getAspectManager() {
-        return m_aspectManager;
+    public String getName() {
+        return createAdviceName(m_aspectContext.getName(), m_method.getName());
+    }
+
+    /**
+     * Return the method.
+     *
+     * @return the method
+     */
+    public Method getMethod() {
+        return m_method;
     }
 
     /**
@@ -144,9 +143,8 @@ public class AdviceInfo implements Serializable {
     public String toString() {
         StringBuffer sb = new StringBuffer("AdviceInfo[");
         sb.append(m_type).append(',');
-        sb.append(m_aspectManager).append(',');
-        sb.append(m_aspectIndex).append(',');
-        sb.append(m_methodIndex).append(',');
+        sb.append(m_aspectContext.getName()).append(',');
+        sb.append(m_method.getName()).append(',');
         sb.append(m_specialArgumentType).append(']');
         sb.append(hashCode());
         return sb.toString();
@@ -160,15 +158,10 @@ public class AdviceInfo implements Serializable {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_uuid = (String) fields.get("m_uuid", null);
+        m_aspectContext = (AspectContext) fields.get("m_aspectContext", null);
         m_type = (AdviceType) fields.get("m_type", null);
-        m_methodIndex = fields.get("m_methodIndex", 0);
-        m_aspectIndex = fields.get("m_aspectIndex", 0);
+        m_method = (Method)fields.get("m_method", null);
         m_methodToArgIndexes = (int[]) fields.get("m_methodToArgIndexes", null);
         m_specialArgumentType = (String) fields.get("m_specialArgumentType", null);
-        m_aspectManager = SystemLoader.getSystem(
-                Thread.currentThread().
-                getContextClassLoader()
-        ).getAspectManager(m_uuid);
     }
 }

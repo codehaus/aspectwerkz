@@ -7,13 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.AspectContext;
+import org.codehaus.aspectwerkz.AdviceInfo;
+import org.codehaus.aspectwerkz.definition.AdviceDefinition;
+import org.codehaus.aspectwerkz.aspect.management.PointcutManager;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.List;
+import java.util.*;
 import java.lang.reflect.Method;
 
 /**
@@ -21,19 +21,18 @@ import java.lang.reflect.Method;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @FIXME remove the prototype pattern impl
- * @FIXME rename createAspect methods to getAspect or aspectOf(..)
  */
 public abstract class AbstractAspectContainer implements AspectContainer {
 
     public static final int ASPECT_CONSTRUCTION_TYPE_UNKNOWN = 0;
     public static final int ASPECT_CONSTRUCTION_TYPE_DEFAULT = 1;
-    public static final int ASPECT_CONSTRUCTION_TYPE_CROSS_CUTTING_INFO = 2;
+    public static final int ASPECT_CONSTRUCTION_TYPE_ASPECT_CONTEXT = 2;
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
 
     /**
-     * An array with the single cross-cutting info, needed to save one array creation per invocation.
+     * An array with the single aspect context, needed to save one array creation per invocation.
      */
-    protected final Object[] ARRAY_WITH_SINGLE_CROSS_CUTTING_INFO = new Object[1];
+    protected final Object[] ARRAY_WITH_SINGLE_ASPECT_CONTEXT = new Object[1];
 
     /**
      * The aspect construction type.
@@ -46,9 +45,9 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     protected final Map m_introductionContainers = new HashMap();
 
     /**
-     * The cross-cutting info prototype.
+     * The aspect context prototype.
      */
-    protected final CrossCuttingInfo m_infoPrototype;
+    protected final AspectContext m_contextPrototype;
 
     /**
      * The aspect instance prototype.
@@ -76,32 +75,50 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     protected final Map m_perThread = new WeakHashMap();
 
     /**
-     * The advice repository.
+     * Maps the advice infos to the hash codes of the the matching advice method.
      */
-    protected Method[] m_adviceRepository = new Method[0];
+    protected final Map m_adviceInfos = new HashMap();
+
+    /**
+     * The pointcut manager.
+     */
+    protected final PointcutManager m_pointcutManager;
 
     /**
      * Creates a new aspect container strategy.
      *
-     * @param crossCuttingInfo the cross-cutting info
+     * @param aspectContext the context
      */
-    public AbstractAspectContainer(final CrossCuttingInfo crossCuttingInfo) {
-        if (crossCuttingInfo == null) {
+    public AbstractAspectContainer(final AspectContext aspectContext) {
+        if (aspectContext == null) {
             throw new IllegalArgumentException("cross-cutting info can not be null");
         }
-        m_infoPrototype = crossCuttingInfo;
-        ARRAY_WITH_SINGLE_CROSS_CUTTING_INFO[0] = m_infoPrototype;
+        m_contextPrototype = aspectContext;
+        ARRAY_WITH_SINGLE_ASPECT_CONTEXT[0] = m_contextPrototype;
         m_aspectPrototype = createAspect();
-        createAdviceRepository();
+        m_pointcutManager = new PointcutManager(
+                aspectContext.getName(),
+                aspectContext.getDeploymentModel()
+        );
+        buildAdviceInfoList();
     }
 
     /**
-     * Returns the cross-cutting info.
+     * Returns the context.
      *
-     * @return the cross-cutting info
+     * @return the context
      */
-    public CrossCuttingInfo getCrossCuttingInfo() {
-        return m_infoPrototype;
+    public AspectContext getContext() {
+        return m_contextPrototype;
+    }
+
+    /**
+     * Returns the pointcut manager for the aspect.
+     *
+     * @return the pointcut manager
+     */
+    public PointcutManager getPointcutManager() {
+        return m_pointcutManager;
     }
 
     /**
@@ -109,7 +126,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      *
      * @return the cross-cutting instance
      */
-    public Object createPerJvmAspect() {
+    public Object aspectOf() {
         if (m_perJvm == null) {
             m_perJvm = createAspect();
         }
@@ -122,7 +139,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @param callingClass
      * @return the cross-cutting instance
      */
-    public Object createPerClassAspect(final Class callingClass) {
+    public Object aspectOf(final Class callingClass) {
         synchronized (m_perClass) {
             if (!m_perClass.containsKey(callingClass)) {
                 m_perClass.put(callingClass, createAspect());
@@ -137,7 +154,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @param callingInstance
      * @return the cross-cutting instance
      */
-    public Object createPerInstanceAspect(final Object callingInstance) {
+    public Object aspectOf(final Object callingInstance) {
         if (callingInstance == null) {
             return m_perJvm;
         }
@@ -155,7 +172,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @param thread the thread for the aspect
      * @return the cross-cutting instance
      */
-    public Object createPerThreadAspect(final Thread thread) {
+    public Object aspectOf(final Thread thread) {
         synchronized (m_perThread) {
             if (!m_perThread.containsKey(thread)) {
                 m_perThread.put(thread, createAspect());
@@ -181,33 +198,51 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @return introduction container
      */
     public IntroductionContainer getIntroductionContainer(final String name) {
-        return (IntroductionContainer) m_introductionContainers.get(name);
+        return (IntroductionContainer)m_introductionContainers.get(name);
     }
 
     /**
-     * Returns a specific advice by index.
+     * Returns the advice info for the advice with the name specified.
      *
-     * @param index the index
-     * @return the advice
+     * @param name the name of the advice
+     * @return the advice info
      */
-    public Method getAdviceMethod(final int index) {
-        if (index < 0) {
-            throw new IllegalArgumentException("advice index can not be less than 0");
-        }
-        return m_adviceRepository[index];
+    public AdviceInfo getAdviceInfo(final String name) {
+//        System.out.println("get advice info for = " + name);
+        return (AdviceInfo)m_adviceInfos.get(name);
     }
 
     /**
-     * Creates a repository for the advice methods.
+     * Builds up the advice info list.
      */
-    protected void createAdviceRepository() {
-        synchronized (m_adviceRepository) {
-            List methodList = ReflectHelper.createSortedMethodList(m_infoPrototype.getAspectClass());
-            m_adviceRepository = new Method[methodList.size()];
-            for (int i = 0; i < m_adviceRepository.length; i++) {
-                Method method = (Method) methodList.get(i);
-                method.setAccessible(true);
-                m_adviceRepository[i] = method;
+    protected void buildAdviceInfoList() {
+        System.out.println("AbstractAspectContainer.buildAdviceInfoList");
+        synchronized (m_adviceInfos) {
+            List methodList = ReflectHelper.createSortedMethodList(m_contextPrototype.getAspectClass());
+            System.out.println("methodList.size() = " + methodList.size());
+            for (Iterator advices = m_contextPrototype.getAspectDefinition().getAdviceDefinitions().iterator();
+                 advices.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)advices.next();
+                for (Iterator it = methodList.iterator(); it.hasNext();) {
+                    Method method = (Method)it.next();
+                    System.out.println("method.getName() = " + method.getName());
+                    System.out.println("adviceDef.getName() = " + adviceDef.getName());
+                    if (method.getName().equals(adviceDef.getName())) {
+                        AdviceInfo adviceInfo = new AdviceInfo(
+                                m_contextPrototype,
+                                method,
+                                adviceDef.getType(),
+                                adviceDef.getSpecialArgumentType()
+                        );
+                        // prefix advice name with aspect name to allow aspect reuse
+                        String adviceName = AdviceInfo.createAdviceName(
+                                m_contextPrototype.getName(),
+                                adviceDef.getName()
+                        );
+                        System.out.println("adviceName = " + adviceName);
+                        m_adviceInfos.put(adviceName, adviceInfo);
+                    }
+                }
             }
         }
     }

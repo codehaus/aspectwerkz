@@ -38,7 +38,7 @@ public class DefinitionParserHelper {
                                                           final String expression,
                                                           final AspectDefinition aspectDef) {
         PointcutDefinition pointcutDef = new PointcutDefinition(expression);
-        aspectDef.addPointcut(pointcutDef);
+        aspectDef.addPointcutDefinition(pointcutDef);
 
         // name can be the "pcName(paramType paramName)"
         // extract the parameter name to type map
@@ -97,7 +97,7 @@ public class DefinitionParserHelper {
 
         // check doublons - TODO change ArrayList to HashMap since NAME is a key
         IntroductionDefinition doublon = null;
-        for (Iterator intros = aspectDef.getIntroductions().iterator(); intros.hasNext();) {
+        for (Iterator intros = aspectDef.getIntroductionDefinitions().iterator(); intros.hasNext();) {
             IntroductionDefinition intro = (IntroductionDefinition) intros.next();
             if (intro.getName().equals(introDef.getName())) {
                 doublon = intro;
@@ -106,7 +106,7 @@ public class DefinitionParserHelper {
             }
         }
         if (doublon == null) {
-            aspectDef.addIntroduction(introDef);
+            aspectDef.addIntroductionDefinition(introDef);
         }
     }
 
@@ -128,7 +128,7 @@ public class DefinitionParserHelper {
                 interfaceClassName,
                 aspectDef
         );
-        aspectDef.addInterfaceIntroduction(introDef);
+        aspectDef.addInterfaceIntroductionDefinition(introDef);
     }
 
     /**

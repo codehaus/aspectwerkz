@@ -8,15 +8,15 @@
 package test.aopc;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.AspectContext;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class BaseAspect {
-    private CrossCuttingInfo m_cci;
+    private AspectContext m_cci;
 
-    public BaseAspect(CrossCuttingInfo cci) {
+    public BaseAspect(AspectContext cci) {
         m_cci = cci;
     }
 

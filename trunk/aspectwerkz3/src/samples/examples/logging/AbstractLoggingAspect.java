@@ -9,7 +9,7 @@ package examples.logging;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.AspectContext;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -18,9 +18,9 @@ public abstract class AbstractLoggingAspect {
 
     private int m_level = 0;
 
-    private CrossCuttingInfo m_info;
+    private AspectContext m_info;
 
-    public AbstractLoggingAspect(CrossCuttingInfo info) {
+    public AbstractLoggingAspect(AspectContext info) {
         m_info = info;
     }
 

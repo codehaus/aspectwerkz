@@ -7,7 +7,7 @@
  **************************************************************************************/
 package test.mixindeployment;
 
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.AspectContext;
 
 /**
  * The aspect mixin is deployed as perInstance
@@ -27,7 +27,7 @@ public class IntroductionDeploymentAspect {
         /**
          * The cross-cutting info.
          */
-        private final CrossCuttingInfo m_info;
+        private final AspectContext m_info;
 
         /**
          * We are interested in cross-cutting info, therefore we have added a constructor that takes
@@ -35,7 +35,7 @@ public class IntroductionDeploymentAspect {
          * 
          * @param info the cross-cutting info
          */
-        public MarkerImpl(final CrossCuttingInfo info) {
+        public MarkerImpl(final AspectContext info) {
             m_info = info;
         }
 
@@ -58,7 +58,7 @@ public class IntroductionDeploymentAspect {
         /**
          * The cross-cutting info.
          */
-        private final CrossCuttingInfo m_info;
+        private final AspectContext m_info;
 
         /**
          * We are interested in cross-cutting info, therefore we have added a constructor that takes
@@ -66,7 +66,7 @@ public class IntroductionDeploymentAspect {
          * 
          * @param info the cross-cutting info
          */
-        public AnotherMarkerImpl(final CrossCuttingInfo info) {
+        public AnotherMarkerImpl(final AspectContext info) {
             m_info = info;
         }
 

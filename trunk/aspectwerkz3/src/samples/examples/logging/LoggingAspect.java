@@ -8,14 +8,14 @@
 package examples.logging;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.AspectContext;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class LoggingAspect extends AbstractLoggingAspect {
 
-    public LoggingAspect(CrossCuttingInfo info) {
+    public LoggingAspect(AspectContext info) {
         super(info);
         //        System.out.println("\t\tLoggingAspect UUID: " + info.getUuid());
         //        System.out.println("I AM PROTO " + info.isPrototype());

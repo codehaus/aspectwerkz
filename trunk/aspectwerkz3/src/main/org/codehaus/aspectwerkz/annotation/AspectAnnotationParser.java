@@ -237,7 +237,7 @@ public class AspectAnnotationParser {
                                 methodIndex,
                                 aspectDef
                         );
-                        aspectDef.addAroundAdvice(adviceDef);
+                        aspectDef.addAroundAdviceDefinition(adviceDef);
                     }
                 }
                 List beforeAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_BEFORE, method);
@@ -259,7 +259,7 @@ public class AspectAnnotationParser {
                                 methodIndex,
                                 aspectDef
                         );
-                        aspectDef.addBeforeAdvice(adviceDef);
+                        aspectDef.addBeforeAdviceDefinition(adviceDef);
                     }
                 }
                 List afterAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_AFTER, method);
@@ -281,7 +281,7 @@ public class AspectAnnotationParser {
                                 methodIndex,
                                 aspectDef
                         );
-                        aspectDef.addAfterAdvice(adviceDef);
+                        aspectDef.addAfterAdviceDefinition(adviceDef);
                     }
                 }
             } catch (DefinitionException e) {

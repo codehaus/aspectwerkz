@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.aspect;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.AspectContext;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
@@ -65,7 +65,7 @@ public class Introduction implements Mixin {
     /**
      * The cross-cutting info for the mixin.
      */
-    private CrossCuttingInfo m_crossCuttingInfo;
+    private AspectContext m_aspectContext;
 
     /**
      * Defintion to which this mixin relates
@@ -88,19 +88,19 @@ public class Introduction implements Mixin {
      * 
      * @param name of this introduction - by convention the AspectClassFQN $ InnerClass
      * @param implClass
-     * @param crossCuttingInfo which defines this mixin
+     * @param aspectContext which defines this mixin
      * @param definition
      */
     public Introduction(final String name,
                         final Class implClass,
-                        final CrossCuttingInfo crossCuttingInfo,
+                        final AspectContext aspectContext,
                         final IntroductionDefinition definition) {
         m_name = name;
-        m_crossCuttingInfo = crossCuttingInfo;
+        m_aspectContext = aspectContext;
         m_definition = definition;
         m_mixinImplClass = implClass;
         m_mixinConstructor = findConstructor();
-        ARRAY_WITH_CROSS_CUTTING_INFO[0] = m_crossCuttingInfo;
+        ARRAY_WITH_CROSS_CUTTING_INFO[0] = m_aspectContext;
 
         // handle deploymentModel dependancies
         // defaults to Aspect deploymentModel
@@ -115,16 +115,16 @@ public class Introduction implements Mixin {
         // aspects without source
         // code)
         if (definition.getDeploymentModel() == null) {
-            m_deploymentModel = m_crossCuttingInfo.getDeploymentModel();
+            m_deploymentModel = m_aspectContext.getDeploymentModel();
         } else {
             int model = DeploymentModel.getDeploymentModelAsInt(definition.getDeploymentModel());
-            if (DeploymentModel.isMixinDeploymentModelCompatible(model, m_crossCuttingInfo.getDeploymentModel())) {
+            if (DeploymentModel.isMixinDeploymentModelCompatible(model, m_aspectContext.getDeploymentModel())) {
                 m_deploymentModel = model;
             } else {
                 throw new RuntimeException("could no create mixin from aspect: incompatible deployment models : mixin "
                     + DeploymentModel.getDeploymentModelAsString(model)
                     + " with aspect "
-                    + DeploymentModel.getDeploymentModelAsString(m_crossCuttingInfo.getDeploymentModel()));
+                    + DeploymentModel.getDeploymentModelAsString(m_aspectContext.getDeploymentModel()));
             }
         }
     }
@@ -133,14 +133,14 @@ public class Introduction implements Mixin {
      * Clone the prototype Introduction.
      * 
      * @param prototype introduction
-     * @param crossCuttingInfo the cross-cutting info
+     * @param aspectContext the cross-cutting info
      * @return new introduction instance
      */
-    public static Introduction newInstance(final Introduction prototype, final CrossCuttingInfo crossCuttingInfo) {
+    public static Introduction newInstance(final Introduction prototype, final AspectContext aspectContext) {
         Introduction introduction = new Introduction(
             prototype.m_name,
             prototype.m_mixinImplClass,
-            crossCuttingInfo,
+            aspectContext,
             prototype.m_definition);
 
         //AW-207//introduction.createMixin();
@@ -163,7 +163,7 @@ public class Introduction implements Mixin {
                     throw new RuntimeException(
                         "mixin ["
                             + m_mixinImplClass.getName()
-                            + "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)");
+                            + "] does not have a valid constructor (either default no-arg or one that takes a AspectContext type as its only parameter)");
             }
         } catch (InstantiationException e) {
             throw new WrappedRuntimeException(e);
@@ -188,8 +188,8 @@ public class Introduction implements Mixin {
      * 
      * @return the cross-cutting info.
      */
-    public CrossCuttingInfo getCrossCuttingInfo() {
-        return m_crossCuttingInfo;
+    public AspectContext getCrossCuttingInfo() {
+        return m_aspectContext;
     }
 
     /**
@@ -264,7 +264,7 @@ public class Introduction implements Mixin {
                 result = m_container.invokeIntroductionPerThread(methodIndex, parameters);
                 break;
             default:
-                throw new RuntimeException("invalid deployment model: " + m_crossCuttingInfo.getDeploymentModel());
+                throw new RuntimeException("invalid deployment model: " + m_aspectContext.getDeploymentModel());
         }
         return result;
     }
@@ -331,7 +331,7 @@ public class Introduction implements Mixin {
                 m_mixinConstructionType = MIXIN_CONSTRUCTION_TYPE_DEFAULT;
                 mixinConstructor = constructor;
             } else if ((parameterTypes.length == 1)
-                && parameterTypes[0].getName().equals(CrossCuttingInfo.class.getName())) {
+                && parameterTypes[0].getName().equals(AspectContext.class.getName())) {
                 m_mixinConstructionType = MIXIN_CONSTRUCTION_TYPE_CROSS_CUTTING_INFO;
                 mixinConstructor = constructor;
                 break;
@@ -341,7 +341,7 @@ public class Introduction implements Mixin {
             throw new RuntimeException(
                 "mixin ["
                     + m_mixinImplClass.getName()
-                    + "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)");
+                    + "] does not have a valid constructor (either default no-arg or one that takes a AspectContext type as its only parameter)");
         }
         return mixinConstructor;
     }

@@ -105,7 +105,7 @@ public class SystemDefinition {
         AspectDefinition systemAspect = new AspectDefinition(
                 CFlowSystemAspect.CLASS_NAME,
                 CFlowSystemAspect.CLASS_NAME,
-                m_uuid
+                this
         );
         systemAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
         m_aspectMap.put(CFlowSystemAspect.CLASS_NAME, systemAspect);
@@ -182,9 +182,9 @@ public class SystemDefinition {
         final Collection adviceDefs = new ArrayList();
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition) it.next();
-            adviceDefs.addAll(aspectDef.getAroundAdvices());
-            adviceDefs.addAll(aspectDef.getBeforeAdvices());
-            adviceDefs.addAll(aspectDef.getAfterAdvices());
+            adviceDefs.addAll(aspectDef.getAroundAdviceDefinitions());
+            adviceDefs.addAll(aspectDef.getBeforeAdviceDefinitions());
+            adviceDefs.addAll(aspectDef.getAfterAdviceDefinitions());
         }
         return adviceDefs;
     }
@@ -520,7 +520,7 @@ public class SystemDefinition {
         }
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition) it.next();
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+            for (Iterator it2 = aspectDef.getAdviceDefinitions().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 ExpressionVisitor expression = adviceDef.getExpressionInfo().getExpression();
 
@@ -544,7 +544,7 @@ public class SystemDefinition {
         }
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition) it.next();
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+            for (Iterator it2 = aspectDef.getAdviceDefinitions().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
                 if (expressionInfo.hasCflowPointcut() && expressionInfo.getCflowExpression().match(ctx)) {
@@ -567,7 +567,7 @@ public class SystemDefinition {
         }
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition) it.next();
-            List advices = aspectDef.getAllAdvices();
+            List advices = aspectDef.getAdviceDefinitions();
             for (Iterator it2 = advices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 for (int i = 0; i < ctxs.length; i++) {
@@ -594,7 +594,7 @@ public class SystemDefinition {
         }
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition) it.next();
-            List advices = aspectDef.getAllAdvices();
+            List advices = aspectDef.getAdviceDefinitions();
             for (Iterator it2 = advices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 if (adviceDef.getExpressionInfo().getAdvisedClassFilterExpression().match(ctx)
@@ -678,12 +678,13 @@ public class SystemDefinition {
     }
 
     /**
+     * @TODO XXX move to the aspect def instead of being separated from the aspect def concept
+     *
      * Adds a new parameter for the aspect.
      *
      * @param aspectName the name of the aspect
      * @param key        the key
      * @param value      the value
-     * @TODO: should perhaps move to the aspect def instead of being separated from the aspect def concept?
      */
     public void addParameter(final String aspectName, final String key, final String value) {
         Map parameters;

@@ -9,7 +9,9 @@ package org.codehaus.aspectwerkz.aspect;
 
 import java.lang.reflect.Method;
 
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.AspectContext;
+import org.codehaus.aspectwerkz.AdviceInfo;
+import org.codehaus.aspectwerkz.aspect.management.PointcutManager;
 
 /**
  * Interface for that all aspect container implementations must implement.
@@ -23,7 +25,7 @@ public interface AspectContainer {
      *
      * @return the cross-cutting instance
      */
-    Object createPerJvmAspect();
+    Object aspectOf();
 
     /**
      * Creates a new perClass cross-cutting instance, if it already exists then return it.
@@ -31,7 +33,7 @@ public interface AspectContainer {
      * @param callingClass
      * @return the cross-cutting instance
      */
-    Object createPerClassAspect(Class callingClass);
+    Object aspectOf(Class callingClass);
 
     /**
      * Creates a new perInstance cross-cutting instance, if it already exists then return it.
@@ -39,7 +41,7 @@ public interface AspectContainer {
      * @param callingInstance
      * @return the cross-cutting instance
      */
-    Object createPerInstanceAspect(Object callingInstance);
+    Object aspectOf(Object callingInstance);
 
     /**
      * Creates a new perThread cross-cutting instance, if it already exists then return it.
@@ -47,22 +49,29 @@ public interface AspectContainer {
      * @param thread the thread for the aspect
      * @return the cross-cutting instance
      */
-    Object createPerThreadAspect(Thread thread);
+    Object aspectOf(Thread thread);
 
     /**
-     * Returns the cross-cutting info.
+     * Returns the context.
      *
-     * @return the cross-cutting info
+     * @return the context
      */
-    CrossCuttingInfo getCrossCuttingInfo();
+    AspectContext getContext();
 
     /**
-     * Returns a specific advice method by index.
+     * Returns the pointcut manager for the aspect.
      *
-     * @param index the index
-     * @return the advice
+     * @return the pointcut manager
      */
-    Method getAdviceMethod(int index);
+    PointcutManager getPointcutManager();
+
+    /**
+     * Returns the advice info for the advice with the name specified.
+     *
+     * @param name the name of the advice
+     * @return the advice info
+     */
+    AdviceInfo getAdviceInfo(String name);
 
     /**
      * Attach the introduction container to this aspect container to mirror the "aspect contains 0-n introduction"

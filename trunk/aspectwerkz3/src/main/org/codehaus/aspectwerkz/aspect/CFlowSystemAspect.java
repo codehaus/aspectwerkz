@@ -8,7 +8,9 @@
 package org.codehaus.aspectwerkz.aspect;
 
 import org.codehaus.aspectwerkz.AspectSystem;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.AspectContext;
+import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
@@ -95,8 +97,9 @@ public class CFlowSystemAspect {
      *
      * @param info the cross-cutting info
      */
-    public CFlowSystemAspect(final CrossCuttingInfo info) {
-        m_system = info.getSystem();
+    public CFlowSystemAspect(final AspectContext info) {
+        // FIXME XXX is the context CL the correct one?
+        m_system = SystemLoader.getSystem(ContextClassLoader.getLoader());
     }
 
     /**

@@ -237,7 +237,7 @@ public class DocumentParser {
             }
 
             // create the aspect definition
-            AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName, definition.getUuid());
+            AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName, definition);
             Class aspectClass;
             try {
                 aspectClass = loadAspectClass(loader, aspectClassName);
@@ -281,10 +281,10 @@ public class DocumentParser {
             parseIntroductionElements(aspect, aspectDef, aspectClass, packageName);
 
             // register introduction of aspect into the system
-            for (Iterator mixins = aspectDef.getInterfaceIntroductions().iterator(); mixins.hasNext();) {
+            for (Iterator mixins = aspectDef.getInterfaceIntroductionDefinitions().iterator(); mixins.hasNext();) {
                 definition.addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition) mixins.next());
             }
-            for (Iterator mixins = aspectDef.getIntroductions().iterator(); mixins.hasNext();) {
+            for (Iterator mixins = aspectDef.getIntroductionDefinitions().iterator(); mixins.hasNext();) {
                 definition.addIntroductionDefinition((IntroductionDefinition) mixins.next());
             }
             definition.addAspect(aspectDef);
@@ -517,7 +517,7 @@ public class DocumentParser {
                         methodIndex,
                         aspectDef
                 );
-                aspectDef.addAroundAdvice(adviceDef);
+                aspectDef.addAroundAdviceDefinition(adviceDef);
 
             } else if (type.equalsIgnoreCase("before")) {
                 final String aspectName = aspectDef.getName();
@@ -532,7 +532,7 @@ public class DocumentParser {
                         methodIndex,
                         aspectDef
                 );
-                aspectDef.addBeforeAdvice(adviceDef);
+                aspectDef.addBeforeAdviceDefinition(adviceDef);
 
             } else if (type.startsWith("after")) {
                 String specialArgumentType = null;
@@ -568,7 +568,7 @@ public class DocumentParser {
                         aspectDef
                 );
 
-                aspectDef.addAfterAdvice(adviceDef);
+                aspectDef.addAfterAdviceDefinition(adviceDef);
             }
         } catch (DefinitionException e) {
             System.err.println(

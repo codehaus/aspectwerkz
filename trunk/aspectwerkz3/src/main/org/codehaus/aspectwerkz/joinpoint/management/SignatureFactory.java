@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
-import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
@@ -22,25 +21,30 @@ import java.lang.reflect.Constructor;
 /**
  * Factory class for the signature hierarchy.
  *
+ * FIXME XXX handle method tuples etc.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class SignatureFactory {
     public static final MethodSignatureImpl newMethodSignature(final Class declaringClass,
                                                                final int joinPointHash) {
-        MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
-        return new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
+//        MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
+//        return new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
+    return null;
     }
 
     public static final FieldSignatureImpl newFieldSignature(final Class declaringClass,
                                                              final int joinPointHash) {
-        Field field = AspectRegistry.getField(declaringClass, joinPointHash);
-        return new FieldSignatureImpl(field.getDeclaringClass(), field);
+//        Field field = AspectRegistry.getField(declaringClass, joinPointHash);
+//        return new FieldSignatureImpl(field.getDeclaringClass(), field);
+    return null;
     }
 
     public static final ConstructorSignatureImpl newConstructorSignature(final Class declaringClass,
                                                                                 final int joinPointHash) {
-        Constructor constructor = AspectRegistry.getConstructor(declaringClass, joinPointHash);
-        return new ConstructorSignatureImpl(constructor.getDeclaringClass(), constructor);
+//        Constructor constructor = AspectRegistry.getConstructor(declaringClass, joinPointHash);
+//        return new ConstructorSignatureImplInlined(constructor.getDeclaringClass(), constructor);
+    return null;
     }
 
     public static final CatchClauseSignatureImpl newCatchClauseSignature(final Class declaringClass,
