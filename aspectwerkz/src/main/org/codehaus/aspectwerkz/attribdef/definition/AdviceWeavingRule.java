@@ -20,7 +20,6 @@ import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 
-import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.regexp.FieldPattern;
 import org.codehaus.aspectwerkz.regexp.ThrowsPattern;
@@ -74,34 +73,39 @@ public class AdviceWeavingRule implements WeavingRule {
     private String m_pointcutType = "N/A";
 
     /**
-     * The method pointcut definitions referenced in the m_expression.
+     * The method pointcut definitions referenced in the expression.
      * Mapped to the name of the pointcut definition.
      */
     private Map m_methodPointcutPatterns = new HashMap();
 
     /**
-     * The set field pointcut definitions referenced in the m_expression.
+     * The set field pointcut definitions referenced in the expression.
      * Mapped to the name of the pointcut definition.
      */
     private Map m_setFieldPointcutPatterns = new HashMap();
 
     /**
-     * The get field pointcut definitions referenced in the m_expression.
+     * The get field pointcut definitions referenced in the expression.
      * Mapped to the name of the pointcut definition.
      */
     private Map m_getFieldPointcutPatterns = new HashMap();
 
     /**
-     * The throws pointcut definitions referenced in the m_expression.
+     * The throws pointcut definitions referenced in the expression.
      * Mapped to the name of the pointcut definition.
      */
     private Map m_throwsPointcutPatterns = new HashMap();
 
     /**
-     * The caller side pointcut definitions referenced in the m_expression.
+     * The caller side pointcut definitions referenced in the expression.
      * Mapped to the name of the pointcut definition.
      */
     private Map m_callerSidePointcutPatterns = new HashMap();
+
+    /**
+     * If nested, this map holds the nested weaving rules.
+     */
+    private Map m_weavingRules = new HashMap();
 
     /**
      * Returns the expression.
@@ -193,11 +197,7 @@ public class AdviceWeavingRule implements WeavingRule {
      * @param pointcut the pointcut definition
      */
     public void addMethodPointcutPattern(final PointcutDefinition pointcut) {
-        m_methodPointcutPatterns.put(pointcut.getName(),
-                new PointcutPatternTuple(
-                        pointcut.getRegexpClassPattern(),
-                        pointcut.getRegexpPattern(),
-                        pointcut.isHierarchical()));
+        m_methodPointcutPatterns.put(pointcut.getName(), pointcut);
     }
 
     /**
@@ -206,11 +206,7 @@ public class AdviceWeavingRule implements WeavingRule {
      * @param pointcut the pointcut definition
      */
     public void addSetFieldPointcutPattern(final PointcutDefinition pointcut) {
-        m_setFieldPointcutPatterns.put(pointcut.getName(),
-                new PointcutPatternTuple(
-                        pointcut.getRegexpClassPattern(),
-                        pointcut.getRegexpPattern(),
-                        pointcut.isHierarchical()));
+        m_setFieldPointcutPatterns.put(pointcut.getName(), pointcut);
     }
 
     /**
@@ -219,11 +215,7 @@ public class AdviceWeavingRule implements WeavingRule {
      * @param pointcut the pointcut definition
      */
     public void addGetFieldPointcutPattern(final PointcutDefinition pointcut) {
-        m_getFieldPointcutPatterns.put(pointcut.getName(),
-                new PointcutPatternTuple(
-                        pointcut.getRegexpClassPattern(),
-                        pointcut.getRegexpPattern(),
-                        pointcut.isHierarchical()));
+        m_getFieldPointcutPatterns.put(pointcut.getName(), pointcut);
     }
 
     /**
@@ -232,11 +224,7 @@ public class AdviceWeavingRule implements WeavingRule {
      * @param pointcut the pointcut definition
      */
     public void addThrowsPointcutPattern(final PointcutDefinition pointcut) {
-        m_throwsPointcutPatterns.put(pointcut.getName(),
-                new PointcutPatternTuple(
-                        pointcut.getRegexpClassPattern(),
-                        pointcut.getRegexpPattern(),
-                        pointcut.isHierarchical()));
+        m_throwsPointcutPatterns.put(pointcut.getName(), pointcut);
     }
 
     /**
@@ -245,11 +233,18 @@ public class AdviceWeavingRule implements WeavingRule {
      * @param pointcut the pointcut definition
      */
     public void addCallerSidePointcutPattern(final PointcutDefinition pointcut) {
-        m_callerSidePointcutPatterns.put(pointcut.getName(),
-                new PointcutPatternTuple(
-                        pointcut.getRegexpClassPattern(),
-                        pointcut.getRegexpPattern(),
-                        pointcut.isHierarchical()));
+        m_callerSidePointcutPatterns.put(pointcut.getName(), pointcut);
+    }
+
+    /**
+     * Adds a nested weaving rule.
+     *
+     * @param name the pointcut name matching the nested weaving rule
+     * @param weavingRule the nested weaving rule
+     */
+    public void addCallerSidePointcutPattern(final String name,
+                                             final AdviceWeavingRule weavingRule) {
+        m_weavingRules.put(name, weavingRule);
     }
 
     /**
@@ -265,17 +260,17 @@ public class AdviceWeavingRule implements WeavingRule {
             for (Iterator it = m_methodPointcutPatterns.entrySet().iterator(); it.hasNext();) {
                 Map.Entry entry = (Map.Entry)it.next();
                 String name = (String)entry.getKey();
-                PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
+                PointcutDefinition pointcutDef = (PointcutDefinition)entry.getValue();
                 // try to find a match somewhere in the class hierarchy
                 // (interface or super class)
-                if (pointcutPattern.isHierarchical()) {
+                if (pointcutDef.isHierarchical()) {
                     if (MethodPointcut.matchMethodPointcutSuperClasses(
-                            name, classMetaData, pointcutPattern)) {
+                            name, classMetaData, pointcutDef)) {
                         return true;
                     }
                 }
                 // match the single class only
-                else if (pointcutPattern.getClassPattern().matches(classMetaData.getName())) {
+                else if (pointcutDef.getRegexpClassPattern().matches(classMetaData.getName())) {
                     return true;
                 }
             }
@@ -600,24 +595,34 @@ public class AdviceWeavingRule implements WeavingRule {
                                              final MethodMetaData methodMetaData) {
         for (Iterator it = m_methodPointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
+
             String name = (String)entry.getKey();
+            PointcutDefinition pointcutDef = (PointcutDefinition)entry.getValue();
 
-            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
-
-            // try to find a match somewhere in the class hierarchy (interface or super class)
-            if (pointcutPattern.isHierarchical()) {
-                jexlContext.getVars().put(name, Boolean.FALSE);
-                MethodPointcut.matchMethodPointcutSuperClasses(
-                        jexlContext, name, classMetaData, methodMetaData, pointcutPattern);
-            }
-            // match the single class only
-            else if (pointcutPattern.getClassPattern().matches(classMetaData.getName()) &&
-                    ((MethodPattern)pointcutPattern.getPattern()).matches(methodMetaData)) {
-                jexlContext.getVars().put(name, Boolean.TRUE);
-            }
-            else {
-                jexlContext.getVars().put(name, Boolean.FALSE);
-            }
+//            if (pointcutDef.isNested()) {
+//                if (pointcutDef.matchNestedPointcutPattern(classMetaData, methodMetaData)) {
+//                    jexlContext.getVars().put(name, Boolean.TRUE);
+//                }
+//                else {
+//                    jexlContext.getVars().put(name, Boolean.FALSE);
+//                }
+//            }
+//            else {
+                // try to find a match somewhere in the class hierarchy (interface or super class)
+                if (pointcutDef.isHierarchical()) {
+                    jexlContext.getVars().put(name, Boolean.FALSE);
+                    MethodPointcut.matchMethodPointcutSuperClasses(
+                            jexlContext, name, classMetaData, methodMetaData, pointcutDef);
+                }
+                // match the single class only
+                else if (pointcutDef.getRegexpClassPattern().matches(classMetaData.getName()) &&
+                        ((MethodPattern)pointcutDef.getRegexpPattern()).matches(methodMetaData)) {
+                    jexlContext.getVars().put(name, Boolean.TRUE);
+                }
+                else {
+                    jexlContext.getVars().put(name, Boolean.FALSE);
+                }
+//            }
         }
     }
 
@@ -633,16 +638,16 @@ public class AdviceWeavingRule implements WeavingRule {
         for (Iterator it = m_setFieldPointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
-            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
+            PointcutDefinition pointcutDef = (PointcutDefinition)entry.getValue();
 
             // try to find a match somewhere in the class hierarchy (interface or super class)
-            if (pointcutPattern.isHierarchical()) {
+            if (pointcutDef.isHierarchical()) {
                 jexlContext.getVars().put(name, Boolean.FALSE);
                 FieldPointcut.matchFieldPointcutSuperClasses(
-                        jexlContext, name, classMetaData, pointcutPattern);
+                        jexlContext, name, classMetaData, pointcutDef);
             }
             // match the single class only
-            else if (pointcutPattern.getClassPattern().matches(classMetaData.getName())) {
+            else if (pointcutDef.getRegexpClassPattern().matches(classMetaData.getName())) {
                 jexlContext.getVars().put(name, Boolean.TRUE);
             }
             else {
@@ -664,17 +669,17 @@ public class AdviceWeavingRule implements WeavingRule {
         for (Iterator it = m_setFieldPointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
-            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
+            PointcutDefinition pointcutDef = (PointcutDefinition)entry.getValue();
 
             // try to find a match somewhere in the class hierarchy (interface or super class)
-            if (pointcutPattern.isHierarchical()) {
+            if (pointcutDef.isHierarchical()) {
                 jexlContext.getVars().put(name, Boolean.FALSE);
                 FieldPointcut.matchFieldPointcutSuperClasses(
-                        jexlContext, name, classMetaData, fieldMetaData, pointcutPattern);
+                        jexlContext, name, classMetaData, fieldMetaData, pointcutDef);
             }
             // match the single class only
-            else if (pointcutPattern.getClassPattern().matches(classMetaData.getName()) &&
-                    ((FieldPattern)pointcutPattern.getPattern()).matches(fieldMetaData)) {
+            else if (pointcutDef.getRegexpClassPattern().matches(classMetaData.getName()) &&
+                    ((FieldPattern)pointcutDef.getRegexpPattern()).matches(fieldMetaData)) {
                 jexlContext.getVars().put(name, Boolean.TRUE);
             }
             else {
@@ -695,16 +700,16 @@ public class AdviceWeavingRule implements WeavingRule {
         for (Iterator it = m_getFieldPointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
-            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
+            PointcutDefinition pointcutDef = (PointcutDefinition)entry.getValue();
 
             // try to find a match somewhere in the class hierarchy (interface or super class)
-            if (pointcutPattern.isHierarchical()) {
+            if (pointcutDef.isHierarchical()) {
                 jexlContext.getVars().put(name, Boolean.FALSE);
                 FieldPointcut.matchFieldPointcutSuperClasses(
-                        jexlContext, name, classMetaData, pointcutPattern);
+                        jexlContext, name, classMetaData, pointcutDef);
             }
             // match the single class only
-            else if (pointcutPattern.getClassPattern().matches(classMetaData.getName())) {
+            else if (pointcutDef.getRegexpClassPattern().matches(classMetaData.getName())) {
                 jexlContext.getVars().put(name, Boolean.TRUE);
             }
             else {
@@ -726,17 +731,17 @@ public class AdviceWeavingRule implements WeavingRule {
         for (Iterator it = m_getFieldPointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
-            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
+            PointcutDefinition pointcutDef = (PointcutDefinition)entry.getValue();
 
             // try to find a match somewhere in the class hierarchy (interface or super class)
-            if (pointcutPattern.isHierarchical()) {
+            if (pointcutDef.isHierarchical()) {
                 jexlContext.getVars().put(name, Boolean.FALSE);
                 FieldPointcut.matchFieldPointcutSuperClasses(
-                        jexlContext, name, classMetaData, fieldMetaData, pointcutPattern);
+                        jexlContext, name, classMetaData, fieldMetaData, pointcutDef);
             }
             // match the single class only
-            else if (pointcutPattern.getClassPattern().matches(classMetaData.getName()) &&
-                    ((FieldPattern)pointcutPattern.getPattern()).matches(fieldMetaData)) {
+            else if (pointcutDef.getRegexpClassPattern().matches(classMetaData.getName()) &&
+                    ((FieldPattern)pointcutDef.getRegexpPattern()).matches(fieldMetaData)) {
                 jexlContext.getVars().put(name, Boolean.TRUE);
             }
             else {
@@ -757,16 +762,16 @@ public class AdviceWeavingRule implements WeavingRule {
         for (Iterator it = m_throwsPointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
-            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
+            PointcutDefinition pointcutDef = (PointcutDefinition)entry.getValue();
 
             // try to find a match somewhere in the class hierarchy (interface or super class)
-            if (pointcutPattern.isHierarchical()) {
+            if (pointcutDef.isHierarchical()) {
                 jexlContext.getVars().put(name, Boolean.FALSE);
                 ThrowsPointcut.matchThrowsPointcutSuperClasses(
-                        jexlContext, name, classMetaData, pointcutPattern);
+                        jexlContext, name, classMetaData, pointcutDef);
             }
             // match the single class only
-            else if (pointcutPattern.getClassPattern().matches(classMetaData.getName())) {
+            else if (pointcutDef.getRegexpClassPattern().matches(classMetaData.getName())) {
                 jexlContext.getVars().put(name, Boolean.TRUE);
             }
             else {
@@ -788,17 +793,17 @@ public class AdviceWeavingRule implements WeavingRule {
         for (Iterator it = m_throwsPointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
-            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
+            PointcutDefinition pointcutDef = (PointcutDefinition)entry.getValue();
 
             // try to find a match somewhere in the class hierarchy (interface or super class)
-            if (pointcutPattern.isHierarchical()) {
+            if (pointcutDef.isHierarchical()) {
                 jexlContext.getVars().put(name, Boolean.FALSE);
                 ThrowsPointcut.matchThrowsPointcutSuperClasses(
-                        jexlContext, name, classMetaData, methodMetaData, pointcutPattern);
+                        jexlContext, name, classMetaData, methodMetaData, pointcutDef);
             }
             // match the single class only
-            else if (pointcutPattern.getClassPattern().matches(classMetaData.getName()) &&
-                    ((ThrowsPattern)pointcutPattern.getPattern()).matches(methodMetaData)) {
+            else if (pointcutDef.getRegexpClassPattern().matches(classMetaData.getName()) &&
+                    ((ThrowsPattern)pointcutDef.getRegexpPattern()).matches(methodMetaData)) {
                 jexlContext.getVars().put(name, Boolean.TRUE);
             }
             else {
@@ -818,15 +823,15 @@ public class AdviceWeavingRule implements WeavingRule {
         for (Iterator it = m_callerSidePointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
-            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
+            PointcutDefinition pointcutDef = (PointcutDefinition)entry.getValue();
 
-            if (pointcutPattern.isHierarchical()) {
+            if (pointcutDef.isHierarchical()) {
                 jexlContext.getVars().put(name, Boolean.FALSE);
                 CallerSidePointcut.matchCallerSidePointcutSuperClasses(
-                        jexlContext, name, classMetaData, pointcutPattern);
+                        jexlContext, name, classMetaData, pointcutDef);
             }
             // match the single class only
-            else if (pointcutPattern.getClassPattern().matches(classMetaData.getName())) {
+            else if (pointcutDef.getRegexpClassPattern().matches(classMetaData.getName())) {
                 jexlContext.getVars().put(name, Boolean.TRUE);
             }
             else {
@@ -848,15 +853,15 @@ public class AdviceWeavingRule implements WeavingRule {
         for (Iterator it = m_callerSidePointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
-            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
+            PointcutDefinition pointcutDef = (PointcutDefinition)entry.getValue();
 
-            if (pointcutPattern.isHierarchical()) {
+            if (pointcutDef.isHierarchical()) {
                 jexlContext.getVars().put(name, Boolean.FALSE);
                 CallerSidePointcut.matchCallerSidePointcutSuperClasses(
-                        jexlContext, name, classMetaData, methodMetaData, pointcutPattern);
+                        jexlContext, name, classMetaData, methodMetaData, pointcutDef);
             }
             // match the single class only
-            else if (((CallerSidePattern)pointcutPattern.getPattern()).
+            else if (((CallerSidePattern)pointcutDef.getRegexpPattern()).
                     matches(classMetaData.getName(), methodMetaData)) {
                 jexlContext.getVars().put(name, Boolean.TRUE);
             }

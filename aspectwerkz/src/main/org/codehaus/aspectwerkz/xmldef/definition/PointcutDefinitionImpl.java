@@ -7,12 +7,17 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.xmldef.definition;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
 import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * Holds the pointcut definition.
@@ -60,6 +65,11 @@ public class PointcutDefinitionImpl implements PointcutDefinition {
      * Marks the pointcut as reentrant.
      */
     private String m_isNonReentrant = "false";
+
+    /**
+     * The pointcut definition references.
+     */
+    private List m_pointcutRefs = null;
 
     /**
      * Returns the name of the pointcut.
@@ -289,4 +299,22 @@ public class PointcutDefinitionImpl implements PointcutDefinition {
     public boolean isThrowsPointcut() {
         return m_type == THROWS;
     }
+
+    /**
+     * Checks if the pointcut is nested.
+     *
+     * @return boolean
+     */
+    public boolean isNested() {
+        throw new UnsupportedOperationException("not supported by the xmldef model, to be implemented");
+    }
+
+    /**
+      * Returns a list with the pointcut references.
+      *
+      * @return the pointcut references
+      */
+     public List getPointcutRefs() {
+        throw new UnsupportedOperationException("not supported by the xmldef model, to be implemented");
+     }
 }

@@ -19,12 +19,7 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Class examples.attribdef.introduction.Target
-     */
-    Pointcut classes;
-
-    /**
-     * @Introduction classes
+     * @Introduce mixinInterface
      */
     public String sayHello2() {
         return "Hello World! Hello World!";

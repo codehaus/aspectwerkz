@@ -19,7 +19,7 @@ import org.codehaus.aspectwerkz.attribdef.definition.attribute.AspectAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.AroundAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.AfterAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.BeforeAttribute;
-import org.codehaus.aspectwerkz.attribdef.definition.attribute.IntroductionAttribute;
+import org.codehaus.aspectwerkz.attribdef.definition.attribute.IntroduceAttribute;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
@@ -215,8 +215,8 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     );
                     break;
                 }
-                else if (methodAttr instanceof IntroductionAttribute) {
-                    String expression = ((IntroductionAttribute)methodAttr).getExpression();
+                else if (methodAttr instanceof IntroduceAttribute) {
+                    String expression = ((IntroduceAttribute)methodAttr).getExpression();
                     createAndAddIntroductionDefToAspectDef(
                             expression, adviceName, aspectName,
                             aspectClassName, method, methodIndex, aspectDef
