@@ -48,6 +48,8 @@
         <aspect class="test.aspectutilmethodbug.DemoAspect" deployment-model="perThread"/>
         <aspect class="test.ComplexCFlowTest$Aspect"/>
         <aspect class="test.advisetostringbug.Aspect"/>
+        <aspect class="test.rtti.RttiTarget$TestAspect"/>
+
         <aspect class="test.args.ArgsAspect">
             <!-- This an annotation def aspect, with some extension in XML -->
             <pointcut name="xml_matchAll"

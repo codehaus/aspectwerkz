@@ -33,10 +33,6 @@ import java.util.List;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class DocumentParser {
-    /**
-     * The annotation parser, retrieves the custom attributes from the bytecode of the classes.
-     */
-    private static final AspectAnnotationParser s_annotationParser = new AspectAnnotationParser();
 
     /**
      * Parses aspect class names.
@@ -271,7 +267,7 @@ public class DocumentParser {
             }
             parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut
             // in Attributes AW-152
-            s_annotationParser.parse(aspectClass, aspectDef, definition);
+            AspectAnnotationParser.parse(aspectClass, aspectDef, definition);
 
             // XML definition settings always overrides attribute definition settings
             aspectDef.setDeploymentModel(deploymentModel);

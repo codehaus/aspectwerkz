@@ -42,6 +42,7 @@ public class AllTestsInlined extends TestCase {
         suite.addTestSuite(StringsTest.class);
         suite.addTestSuite(test.SerialVerUidTest.class);
         suite.addTestSuite(test.expression.ExpressionTest.class);
+        suite.addTestSuite(test.rtti.RttiTest.class);
 
         // NOT YET COMPLETED
         //suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal

@@ -18,6 +18,4 @@ public class MemberStruct {
     public String name;
 
     public String desc;
-
-    public Attribute attrs;
 }

@@ -15,6 +15,7 @@ import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfoRepository;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -25,6 +26,9 @@ import java.util.Iterator;
 
 /**
  * Utility class for annotation retrieval.
+ * <br/>Note: Annotations are extracted out of ASMClassInfo
+ * <br/>Note: caution when changing that to use reflection, since it might lead to load target class during aspect
+ * system startup.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -38,14 +42,7 @@ public final class Annotations {
      */
     public static Annotation getAnnotation(final String annotationName, final Class klass) {
         ClassInfo classInfo = AsmClassInfo.getClassInfo(klass.getName(), klass.getClassLoader());
-        List annotations = classInfo.getAnnotations();
-        for (Iterator it = annotations.iterator(); it.hasNext();) {
-            AnnotationInfo annotationInfo = (AnnotationInfo)it.next();
-            if (annotationInfo.getName().equals(annotationName)) {
-                return annotationInfo.getAnnotation();
-            }
-        }
-        return null;
+        return AsmAnnotations.getAnnotation(annotationName, classInfo);
     }
 
     /**
@@ -59,14 +56,7 @@ public final class Annotations {
         ClassLoader loader = method.getDeclaringClass().getClassLoader();
         ClassInfo classInfo = AsmClassInfo.getClassInfo(method.getDeclaringClass().getName(), loader);
         MethodInfo methodInfo = classInfo.getMethod(ReflectHelper.calculateHash(method));
-        List annotations = methodInfo.getAnnotations();
-        for (Iterator it = annotations.iterator(); it.hasNext();) {
-            AnnotationInfo annotationInfo = (AnnotationInfo)it.next();
-            if (annotationInfo.getName().equals(annotationName)) {
-                return annotationInfo.getAnnotation();
-            }
-        }
-        return null;
+        return AsmAnnotations.getAnnotation(annotationName, methodInfo);
     }
 
     /**
@@ -80,14 +70,7 @@ public final class Annotations {
         ClassLoader loader = constructor.getDeclaringClass().getClassLoader();
         ClassInfo classInfo = AsmClassInfo.getClassInfo(constructor.getDeclaringClass().getName(), loader);
         ConstructorInfo constructorInfo = classInfo.getConstructor(ReflectHelper.calculateHash(constructor));
-        List annotations = constructorInfo.getAnnotations();
-        for (Iterator it = annotations.iterator(); it.hasNext();) {
-            AnnotationInfo annotationInfo = (AnnotationInfo)it.next();
-            if (annotationInfo.getName().equals(annotationName)) {
-                return annotationInfo.getAnnotation();
-            }
-        }
-        return null;
+        return AsmAnnotations.getAnnotation(annotationName, constructorInfo);
     }
 
     /**
@@ -101,14 +84,7 @@ public final class Annotations {
         ClassLoader loader = field.getDeclaringClass().getClassLoader();
         ClassInfo classInfo = AsmClassInfo.getClassInfo(field.getDeclaringClass().getName(), loader);
         FieldInfo fieldInfo = classInfo.getField(ReflectHelper.calculateHash(field));
-        List annotations = fieldInfo.getAnnotations();
-        for (Iterator it = annotations.iterator(); it.hasNext();) {
-            AnnotationInfo annotationInfo = (AnnotationInfo)it.next();
-            if (annotationInfo.getName().equals(annotationName)) {
-                return annotationInfo.getAnnotation();
-            }
-        }
-        return null;
+        return AsmAnnotations.getAnnotation(annotationName, fieldInfo);
     }
 
     /**
@@ -119,15 +95,8 @@ public final class Annotations {
      * @return the annotations in a list (can be empty)
      */
     public static List getAnnotations(final String annotationName, final Class klass) {
-        List annotations = new ArrayList();
         ClassInfo classInfo = AsmClassInfo.getClassInfo(klass.getName(), klass.getClassLoader());
-        for (Iterator it = classInfo.getAnnotations().iterator(); it.hasNext();) {
-            AnnotationInfo annotationInfo = (AnnotationInfo)it.next();
-            if (annotationInfo.getName().equals(annotationName)) {
-                annotations.add(annotationInfo.getAnnotation());
-            }
-        }
-        return annotations;
+        return AsmAnnotations.getAnnotations(annotationName, classInfo);
     }
 
     /**
@@ -138,17 +107,10 @@ public final class Annotations {
      * @return the annotations in a list (can be empty)
      */
     public static List getAnnotations(final String annotationName, final Method method) {
-        List annotations = new ArrayList();
         ClassLoader loader = method.getDeclaringClass().getClassLoader();
         ClassInfo classInfo = AsmClassInfo.getClassInfo(method.getDeclaringClass().getName(), loader);
         MethodInfo methodInfo = classInfo.getMethod(ReflectHelper.calculateHash(method));
-        for (Iterator it = methodInfo.getAnnotations().iterator(); it.hasNext();) {
-            AnnotationInfo annotationInfo = (AnnotationInfo)it.next();
-            if (annotationInfo.getName().equals(annotationName)) {
-                annotations.add(annotationInfo.getAnnotation());
-            }
-        }
-        return annotations;
+        return AsmAnnotations.getAnnotations(annotationName, methodInfo);
     }
 
     /**
@@ -159,17 +121,10 @@ public final class Annotations {
      * @return the annotations in a list (can be empty)
      */
     public static List getAnnotations(final String annotationName, final Constructor constructor) {
-        List annotations = new ArrayList();
         ClassLoader loader = constructor.getDeclaringClass().getClassLoader();
         ClassInfo classInfo = AsmClassInfo.getClassInfo(constructor.getDeclaringClass().getName(), loader);
         ConstructorInfo constructorInfo = classInfo.getConstructor(ReflectHelper.calculateHash(constructor));
-        for (Iterator it = constructorInfo.getAnnotations().iterator(); it.hasNext();) {
-            AnnotationInfo annotationInfo = (AnnotationInfo)it.next();
-            if (annotationInfo.getName().equals(annotationName)) {
-                annotations.add(annotationInfo.getAnnotation());
-            }
-        }
-        return annotations;
+        return AsmAnnotations.getAnnotations(annotationName, constructorInfo);
     }
 
     /**
@@ -180,17 +135,10 @@ public final class Annotations {
      * @return the annotations in a list (can be empty)
      */
     public static List getAnnotations(final String annotationName, final Field field) {
-        List annotations = new ArrayList();
         ClassLoader loader = field.getDeclaringClass().getClassLoader();
         ClassInfo classInfo = AsmClassInfo.getClassInfo(field.getDeclaringClass().getName(), loader);
         FieldInfo fieldInfo = classInfo.getField(ReflectHelper.calculateHash(field));
-        for (Iterator it = fieldInfo.getAnnotations().iterator(); it.hasNext();) {
-            AnnotationInfo annotationInfo = (AnnotationInfo)it.next();
-            if (annotationInfo.getName().equals(annotationName)) {
-                annotations.add(annotationInfo.getAnnotation());
-            }
-        }
-        return annotations;
+        return AsmAnnotations.getAnnotations(annotationName, fieldInfo);
     }
 
     /**

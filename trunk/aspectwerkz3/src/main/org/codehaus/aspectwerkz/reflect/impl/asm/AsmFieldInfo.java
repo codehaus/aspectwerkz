@@ -10,8 +10,14 @@ package org.codehaus.aspectwerkz.reflect.impl.asm;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
 
 import org.objectweb.asm.Type;
+import org.objectweb.asm.ClassReader;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.io.IOException;
 
 /**
  * ASM implementation of the FieldInfo interface.
@@ -75,6 +81,31 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
             m_type = AsmClassInfo.getClassInfo(m_typeName, (ClassLoader) m_loaderRef.get());
         }
         return m_type;
+    }
+
+    /**
+     * Returns the annotations.
+     *
+     * @return the annotations
+     */
+    public List getAnnotations() {
+        if (m_annotations == null) {
+            try {
+                ClassReader cr = new ClassReader(((ClassLoader)m_loaderRef.get()).getResourceAsStream(m_declaringTypeName.replace('.','/')+".class"));
+                List annotations = new ArrayList();
+                cr.accept(
+                        new AsmAnnotationHelper.FieldAnnotationExtractor(annotations, m_member.name, (ClassLoader)m_loaderRef.get()),
+                        AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES,
+                        true
+                );
+                m_annotations = annotations;
+            } catch (IOException e) {
+                // unlikely to occur since ClassInfo relies on getResourceAsStream
+                System.err.println("WARN - could not load " + m_declaringTypeName + " as a resource to retrieve annotations");
+                m_annotations = AsmClassInfo.EMPTY_LIST;
+            }
+        }
+        return m_annotations;
     }
 
     public boolean equals(Object o) {

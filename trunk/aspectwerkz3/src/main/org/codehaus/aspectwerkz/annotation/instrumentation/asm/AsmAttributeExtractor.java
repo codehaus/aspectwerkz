@@ -18,6 +18,9 @@ import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.attrs.*;
 
 import java.io.ByteArrayInputStream;
@@ -27,42 +30,30 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Iterator;
+import java.lang.reflect.Method;
 
 /**
  * Extracts attributes from the class bytecode using the ASM library.
- *
- * FIXME - remove
+ * <p/>
+ * Note: this class is parsing the bytecode at every single call. It does not cache anything
+ * and should be used with caution.
+ * <br/>For faster access, consider using ClassInfo.
+ * <br/>We are using it when registering an aspect, to avoid any side effect that would lead to loading
+ * a related class (f.e. outer class when aspect is inner class).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AsmAttributeExtractor /*implements AttributeExtractor*/ {
+//
+//    private static final String INIT_METHOD_NAME = "<init>";
+//
 //    /**
 //     * The class reader.
 //     */
 //    private ClassReader m_reader = null;
 //
-//    /**
-//     * The class writer.
-//     */
-//    private ClassWriter m_writer = null;
-//    private static final String INIT_METHOD_NAME = "<init>";
-//
-//    /**
-//     * The attributes of interest.
-//     */
-//    public static final Attribute[] ATTRIBUTES = new Attribute[]{
-//        new AnnotationDefaultAttribute(),
-//        new RuntimeInvisibleAnnotations(),
-//        new RuntimeInvisibleParameterAnnotations(),
-//        new RuntimeVisibleAnnotations(),
-//        new RuntimeVisibleParameterAnnotations(),
-//        new StackMapAttribute(),
-//        new SourceDebugExtensionAttribute(),
-//        new SignatureAttribute(),
-//        new EnclosingMethodAttribute()
-//    };
-//
+//    private ClassLoader m_loader;///TODO weak ?
 //
 //    /**
 //     * Open the classfile and parse it in to the ASM library.
@@ -77,11 +68,12 @@ public class AsmAttributeExtractor /*implements AttributeExtractor*/ {
 //            InputStream classStream = loader.getResourceAsStream(classFileName);
 //            if (classStream != null) {
 //                m_reader = new ClassReader(classStream);
-//                m_writer = AsmHelper.newClassWriter(false);
+//                m_loader = loader;
 //            } else {
 //                return false;
 //            }
 //        } catch (IOException e) {
+//            //TODO - is that good ?
 //            throw new WrappedRuntimeException(e);
 //        }
 //        return true;
@@ -98,83 +90,37 @@ public class AsmAttributeExtractor /*implements AttributeExtractor*/ {
 //        }
 //        final List classAttributes = new ArrayList();
 //        m_reader.accept(
-//                new ClassAdapter(m_writer) {
-//                    public void visitAttribute(final Attribute attribute) {
-//                        if (attribute instanceof RuntimeVisibleAnnotations) {
-//                            for (Iterator it = ((RuntimeVisibleAnnotations)attribute).annotations.iterator();
-//                                 it.hasNext();) {
-//                                Object a = it.next();
-//                                System.out.println(a);
-////                            Annotation annotation = (Annotation)it.next();
-////                            // FIXME annotation is null
-////                            m_annotations.add(new AnnotationInfo(annotation.type, null));
-//                            }
-//                            RuntimeVisibleAnnotations runtimeVisibleAnnotation = (RuntimeVisibleAnnotations)attribute;
-//                        } else if (attribute instanceof RuntimeInvisibleAnnotations) {
-//                            for (Iterator it = ((RuntimeInvisibleAnnotations)attribute).annotations.iterator();
-//                                 it.hasNext();) {
-//                                Annotation annotation = (Annotation)it.next();
-//                                if (CustomAttribute.TYPE.equals(annotation.type)) {
-//                                    classAttributes.add(CustomAttributeHelper.extractCustomAnnotation(annotation));
-//                                } else {
-//                                    //TODO
-//                                }
-//                            }
-//                        }
-//                    }
-//                }, ATTRIBUTES, false
+//                new AsmAnnotationHelper.ClassAnnotationExtractor(classAttributes, m_loader),
+//                AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES,
+//                true
 //        );
 //        return classAttributes.toArray();
+//    }
+//
+//    public Object[] getMethodAttributes(final Method method) {
+//        return getMethodAttributes(method.getName(), Type.getMethodDescriptor(method));
+//    }
+//
+//    public Object[] getMethodAttributes(final String methodName, String[] types) {
+//       throw new RuntimeException("TODO");
 //    }
 //
 //    /**
 //     * Return all the attributes associated with a method that have a particular method signature.
 //     *
 //     * @param methodName       The name of the method.
-//     * @param methodParamTypes An array of parameter types as given by the reflection api.
+//     * @param desc An array of parameter types as given by the reflection api.
 //     * @return the method attributes.
 //     */
-//    public Object[] getMethodAttributes(final String methodName, final String[] methodParamTypes) {
+//    public Object[] getMethodAttributes(final String methodName, final String desc) {
 //        if (m_reader == null) {
 //            throw new IllegalStateException("attribute extractor is not initialized");
 //        }
 //        final List methodAttributes = new ArrayList();
 //        m_reader.accept(
-//                new ClassAdapter(m_writer) {
-//                    public CodeVisitor visitMethod(
-//                            final int access,
-//                            final String name,
-//                            final String desc,
-//                            final String[] exceptions,
-//                            final Attribute attribute) {
-//                        if (name.equals(methodName) &&
-//                            Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
-//                            Attribute current = attribute;
-//                            while (current != null) {
-//                                if (attribute instanceof RuntimeVisibleAnnotations) {
-//                                    for (Iterator it = ((RuntimeVisibleAnnotations)attribute).annotations.iterator();
-//                                         it.hasNext();) {
-//                                        Object a = it.next();
-//
-//                                    }
-//                                    RuntimeVisibleAnnotations runtimeVisibleAnnotation = (RuntimeVisibleAnnotations)attribute;
-//                                } else if (attribute instanceof RuntimeInvisibleAnnotations) {
-//                                    for (Iterator it = ((RuntimeInvisibleAnnotations)attribute).annotations.iterator();
-//                                         it.hasNext();) {
-//                                        Annotation annotation = (Annotation)it.next();
-//                                        if (CustomAttribute.TYPE.equals(annotation.type)) {
-//                                            methodAttributes.add(CustomAttributeHelper.extractCustomAnnotation(annotation));
-//                                        } else {
-//                                            //TODO
-//                                        }
-//                                    }
-//                                }
-//                                current = current.next;
-//                            }
-//                        }
-//                        return null;
-//                    }
-//                }, ATTRIBUTES, false
+//                new AsmAnnotationHelper.MethodAnnotationExtractor(methodAttributes, methodName, desc, m_loader),
+//                AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES,
+//                true
 //        );
 //        return methodAttributes.toArray();
 //    }
@@ -189,38 +135,7 @@ public class AsmAttributeExtractor /*implements AttributeExtractor*/ {
 //        if (m_reader == null) {
 //            throw new IllegalStateException("attribute extractor is not initialized");
 //        }
-//        final List constructorAttributes = new ArrayList();
-//        m_reader.accept(
-//                new ClassAdapter(m_writer) {
-//                    public CodeVisitor visitMethod(
-//                            final int access,
-//                            final String name,
-//                            final String desc,
-//                            final String[] exceptions,
-//                            final Attribute attribute) {
-//                        if (name.equals(INIT_METHOD_NAME) &&
-//                            Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(desc))) {
-//                            Attribute current = attribute;
-//                            while (current != null) {
-//                                if (attribute instanceof RuntimeInvisibleAnnotations) {
-//                                    for (Iterator it = ((RuntimeInvisibleAnnotations)attribute).annotations.iterator();
-//                                         it.hasNext();) {
-//                                        Annotation annotation = (Annotation)it.next();
-//                                        if (CustomAttribute.TYPE.equals(annotation.type)) {
-//                                            constructorAttributes.add(CustomAttributeHelper.extractCustomAnnotation(annotation));
-//                                        } else {
-//                                            //TODO
-//                                        }
-//                                    }
-//                                }
-//                                current = current.next;
-//                            }
-//                        }
-//                        return null;
-//                    }
-//                }, ATTRIBUTES, false
-//        );
-//        return constructorAttributes.toArray();
+//        return getMethodAttributes(INIT_METHOD_NAME, constructorParamTypes);
 //    }
 //
 //    /**
@@ -235,33 +150,13 @@ public class AsmAttributeExtractor /*implements AttributeExtractor*/ {
 //        }
 //        final List fieldAttributes = new ArrayList();
 //        m_reader.accept(
-//                new ClassAdapter(m_writer) {
-//                    public void visitField(
-//                            final int access,
-//                            final String name,
-//                            final String desc,
-//                            final Object value,
-//                            final Attribute attribute) {
-//                        if (name.equals(fieldName)) {
-//                            Attribute current = attribute;
-//                            while (current != null) {
-//                                if (attribute instanceof RuntimeInvisibleAnnotations) {
-//                                    for (Iterator it = ((RuntimeInvisibleAnnotations)attribute).annotations.iterator();
-//                                         it.hasNext();) {
-//                                        Annotation annotation = (Annotation)it.next();
-//                                        if (CustomAttribute.TYPE.equals(annotation.type)) {
-//                                            fieldAttributes.add(CustomAttributeHelper.extractCustomAnnotation(annotation));
-//                                        } else {
-//                                            //TODO
-//                                        }
-//                                    }
-//                                }
-//                                current = current.next;
-//                            }
-//                        }
-//                    }
-//                }, ATTRIBUTES, false
+//                new AsmAnnotationHelper.FieldAnnotationExtractor(fieldAttributes, fieldName, m_loader),
+//                AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES,
+//                true
 //        );
 //        return fieldAttributes.toArray();
 //    }
+//
+
+
 }

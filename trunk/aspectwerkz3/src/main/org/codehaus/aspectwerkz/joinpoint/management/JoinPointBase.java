@@ -532,5 +532,5 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      *
      * @param rtti
      */
-    public abstract void setRtti(Rtti rtti);
+    abstract void setRtti(Rtti rtti);
 }

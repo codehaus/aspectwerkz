@@ -118,7 +118,7 @@ class FieldJoinPoint extends JoinPointBase {
      *
      * @param rtti
      */
-    public void setRtti(Rtti rtti) {
+    void setRtti(Rtti rtti) {
         m_rtti = (FieldRtti)rtti;
     }
 }

@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.reflect.impl.asm;
 import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttribute;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttributeHelper;
+import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
@@ -49,20 +50,14 @@ import java.util.Iterator;
  */
 public class AsmClassInfo implements ClassInfo {
 
-    /**
-     * The bytecode for the class.
-     */
-    private final byte[] m_bytecode;
+    protected final static List EMPTY_LIST = new ArrayList();
+
+    private final static Attribute[] NO_ATTRIBUTES = new Attribute[0];
 
     /**
      * The class loader wrapped in a weak ref.
      */
     private final WeakReference m_loaderRef;
-
-    /**
-     * The ASM type.
-     */
-    private Type m_type;
 
     /**
      * The name of the class.
@@ -126,8 +121,9 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * The annotations.
+     * Lasily populated.
      */
-    private List m_annotations = new ArrayList();
+    private List m_annotations = null;
 
     /**
      * The component type name if array type.
@@ -154,14 +150,34 @@ public class AsmClassInfo implements ClassInfo {
         if (bytecode == null) {
             throw new IllegalArgumentException("bytecode can not be null");
         }
-        m_bytecode = bytecode;
         m_loaderRef = new WeakReference(loader);
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
         try {
             ClassReader cr = new ClassReader(bytecode);
-            ClassWriter cw = new ClassWriter(true);
-            ClassInfoClassAdapter visitor = new ClassInfoClassAdapter(cw);
-            cr.accept(visitor, Attributes.getDefaultAttributes(), false);
+            ClassInfoClassAdapter visitor = new ClassInfoClassAdapter(AsmAnnotationHelper.NULL_CLASS_VISITOR);
+            cr.accept(visitor, NO_ATTRIBUTES, true);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        m_classInfoRepository.addClassInfo(this);
+    }
+
+    /**
+     * Creates a new ClassInfo instance.
+     *
+     * @param resourceStream
+     * @param loader
+     */
+    AsmClassInfo(final InputStream resourceStream, final ClassLoader loader) {
+        if (resourceStream == null) {
+            throw new IllegalArgumentException("resource stream can not be null");
+        }
+        m_loaderRef = new WeakReference(loader);
+        m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
+        try {
+            ClassReader cr = new ClassReader(resourceStream);
+            ClassInfoClassAdapter visitor = new ClassInfoClassAdapter(AsmAnnotationHelper.NULL_CLASS_VISITOR);
+            cr.accept(visitor, NO_ATTRIBUTES, true);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -193,7 +209,6 @@ public class AsmClassInfo implements ClassInfo {
         m_superClassName = m_superClass.getName();
         m_interfaceClassNames = new String[0];
         m_interfaces = new ClassInfo[0];
-        m_bytecode = null;
         m_classInfoRepository.addClassInfo(this);
     }
 
@@ -240,14 +255,17 @@ public class AsmClassInfo implements ClassInfo {
     public static ClassInfo getClassInfo(final InputStream stream, final ClassLoader loader) {
         try {
             ClassReader cr = new ClassReader(stream);
-            ClassWriter cw = new ClassWriter(true);
-            ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter(cw);
-            cr.accept(visitor, Attributes.getDefaultAttributes(), false);
+            // keep a copy of the bytecode, since me way want to "reuse the stream"
+            byte[] bytes = cr.b;
+            ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter(
+                    AsmAnnotationHelper.NULL_CLASS_VISITOR
+            );
+            cr.accept(visitor, NO_ATTRIBUTES, true);
             String className = visitor.getClassName();
             AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
             ClassInfo classInfo = repository.getClassInfo(className);
             if (classInfo == null) {
-                classInfo = new AsmClassInfo(cw.toByteArray(), loader);
+                classInfo = new AsmClassInfo(bytes, loader);
             }
             return classInfo;
         } catch (IOException e) {
@@ -272,9 +290,10 @@ public class AsmClassInfo implements ClassInfo {
      */
     public static String retrieveClassNameFromBytecode(final byte[] bytecode) {
         ClassReader cr = new ClassReader(bytecode);
-        ClassWriter cw = new ClassWriter(true);
-        ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter(cw);
-        cr.accept(visitor, Attributes.getDefaultAttributes(), false);
+        ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter(
+                AsmAnnotationHelper.NULL_CLASS_VISITOR
+        );
+        cr.accept(visitor, NO_ATTRIBUTES, true);
         return visitor.getClassName();
     }
 
@@ -309,20 +328,31 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
-     * Returns the bytecode for the class.
-     *
-     * @return Returns the bytecode.
-     */
-    public byte[] getBytecode() {
-        return m_bytecode;
-    }
-
-    /**
      * Returns the annotations infos.
      *
      * @return the annotations infos
      */
     public List getAnnotations() {
+        if (m_annotations == null) {
+            if (isPrimitive() || isArray()) {
+                m_annotations = EMPTY_LIST;
+            } else {
+                try {
+                    ClassReader cr = new ClassReader(((ClassLoader)m_loaderRef.get()).getResourceAsStream(m_name.replace('.','/')+".class"));
+                    List annotations = new ArrayList();
+                    cr.accept(
+                            new AsmAnnotationHelper.ClassAnnotationExtractor(annotations, (ClassLoader)m_loaderRef.get()),
+                            AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES,
+                            true
+                    );
+                    m_annotations = annotations;
+                } catch (IOException e) {
+                    // unlikely to occur since ClassInfo relies on getResourceAsStream
+                    System.err.println("WARN - could not load " + m_name + " as a resource to retrieve annotations");
+                    m_annotations = EMPTY_LIST;
+                }
+            }
+        }
         return m_annotations;
     }
 
@@ -557,7 +587,13 @@ public class AsmClassInfo implements ClassInfo {
         }
 
         // non primitive type
-        InputStream componentClassAsStream = loader.getResourceAsStream(componentName + ".class");
+        InputStream componentClassAsStream = null;
+        if (loader != null) {
+            componentClassAsStream = loader.getResourceAsStream(componentName + ".class");
+        } else {
+            // boot class loader, fall back to system classloader that will see it anyway
+            componentClassAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream(componentName + ".class");
+        }
         if (componentClassAsStream == null) {
             new RuntimeException(
                     "could not load class ["
@@ -569,6 +605,7 @@ public class AsmClassInfo implements ClassInfo {
             return new ClassInfo.NullClassInfo();
         }
         ClassInfo componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader);
+                                         
         if (dimension <= 1) {
             return componentInfo;
         } else {
@@ -714,7 +751,6 @@ public class AsmClassInfo implements ClassInfo {
             struct.name = name;
             struct.desc = desc;
             struct.value = value;
-            struct.attrs = attrs;
             AsmFieldInfo fieldInfo = new AsmFieldInfo(struct, m_name, (ClassLoader)m_loaderRef.get());
             m_fields.put(AsmHelper.calculateFieldHash(name, desc), fieldInfo);
             super.visitField(access, name, desc, value, attrs);
@@ -731,7 +767,6 @@ public class AsmClassInfo implements ClassInfo {
             struct.name = name;
             struct.desc = desc;
             struct.exceptions = exceptions;
-            struct.attrs = attrs;
             int hash = AsmHelper.calculateMethodHash(name, desc);
             if (name.equals(CLINIT_METHOD_NAME)) {
                 // skip <clinit>
@@ -745,36 +780,5 @@ public class AsmClassInfo implements ClassInfo {
             return super.visitMethod(access, name, desc, exceptions, attrs);
         }
 
-        public void visitAttribute(final Attribute attrs) {
-            Attribute attributes = attrs;
-            while (attributes != null) {
-                if (attributes instanceof RuntimeInvisibleAnnotations) {
-                    for (Iterator it = ((RuntimeInvisibleAnnotations)attributes).annotations.iterator();
-                         it.hasNext();) {
-                        Annotation annotation = (Annotation)it.next();
-                        if (CustomAttribute.TYPE.equals(annotation.type)) {
-                            m_annotations.add(CustomAttributeHelper.extractCustomAnnotation(annotation));
-                        } else {
-                            AnnotationInfo annotationInfo = AsmClassInfo.getAnnotationInfo(
-                                    annotation,
-                                    (ClassLoader)m_loaderRef.get()
-                            );
-                            m_annotations.add(annotationInfo);
-                        }
-                    }
-                }
-                if (attributes instanceof RuntimeVisibleAnnotations) {
-                    for (Iterator it = ((RuntimeVisibleAnnotations)attributes).annotations.iterator(); it.hasNext();) {
-                        Annotation annotation = (Annotation)it.next();
-                        AnnotationInfo annotationInfo = AsmClassInfo.getAnnotationInfo(
-                                annotation,
-                                (ClassLoader)m_loaderRef.get()
-                        );
-                        m_annotations.add(annotationInfo);
-                    }
-                }
-                attributes = attributes.next;
-            }
-        }
     }
 }

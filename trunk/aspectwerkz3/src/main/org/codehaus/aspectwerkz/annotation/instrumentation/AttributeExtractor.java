@@ -7,6 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation;
 
+import java.lang.reflect.Method;
+
 /**
  * Methods that should be implemented in order to extract attributes associate with a class. <p/>An implementation this
  * class needs to be provided for each bytecode manipulation library or other meta-data storage mechanism that is
@@ -33,6 +35,8 @@ public interface AttributeExtractor {
      * @return An array of custom attributes. Null if there are no attributes.
      */
     Object[] getMethodAttributes(String methodName, String[] methodParamTypes);
+
+//    Object[] getMethodAttributes(Method method);
 
     /**
      * Return all the attributes associated with a constructor that have a particular method signature.

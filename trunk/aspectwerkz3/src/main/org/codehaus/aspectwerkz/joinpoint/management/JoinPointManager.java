@@ -1190,13 +1190,18 @@ public class JoinPointManager {
     }
 
     /**
-     * Helper method, pop the rtti from the stack and reset the JP with it
+     * Helper method, pop the rtti from the stack and reset the JP with the next on stack
      *
      * @param joinPointInfo
      */
     private static void unsetRtti(final JoinPointInfo joinPointInfo) {
         JoinPoint joinPoint = joinPointInfo.joinPoint;
-        ((JoinPointBase)joinPoint).setRtti((Rtti)joinPointInfo.rttiStack.pop());
+        // pop the old RTTI from the stack
+        joinPointInfo.rttiStack.pop();
+        // and peek the next one to pass it back to the joinpoint if there is one (else it means out of cflow)
+        if (!joinPointInfo.rttiStack.isEmpty()) {
+            ((JoinPointBase)joinPoint).setRtti((Rtti)joinPointInfo.rttiStack.peek());
+        }
     }
 
     /**
