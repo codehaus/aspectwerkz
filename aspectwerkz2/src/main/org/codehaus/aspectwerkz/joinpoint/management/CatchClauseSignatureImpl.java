@@ -11,9 +11,11 @@ import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 
 /**
+ * Implementation for the catch clause signature.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-class CatchClauseSignatureImpl implements CatchClauseSignature {
+public class CatchClauseSignatureImpl implements CatchClauseSignature {
 
     private final Class m_declaringType;
     private final int m_modifiers;
