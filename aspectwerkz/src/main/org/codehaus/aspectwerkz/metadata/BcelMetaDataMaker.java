@@ -35,7 +35,6 @@ import org.apache.bcel.generic.Type;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
- * @version $Id: BcelMetaDataMaker.java,v 1.4 2003-07-22 14:03:17 jboner Exp $
  */
 public class BcelMetaDataMaker extends MetaDataMaker {
 

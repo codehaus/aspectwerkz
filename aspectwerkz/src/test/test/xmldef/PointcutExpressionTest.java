@@ -6,7 +6,6 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: PointcutExpressionTest.java,v 1.2 2003-07-22 14:03:18 jboner Exp $
  */
 public class PointcutExpressionTest extends TestCase implements Loggable {
 

@@ -21,7 +21,7 @@ package test;
 /**
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DummyInterface3.java,v 1.1 2003-07-19 20:36:17 jboner Exp $
+ * @version $Id: DummyInterface3.java,v 1.2 2003-07-23 14:20:32 avasseur Exp $
  */
 public interface DummyInterface3 {
     void testMethod3();

@@ -24,7 +24,6 @@ import java.io.Serializable;
  * Holds meta-data for a method.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodMetaData.java,v 1.5 2003-07-22 14:03:17 jboner Exp $
  */
 public class MethodMetaData implements MetaData, Serializable {
 

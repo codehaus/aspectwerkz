@@ -35,7 +35,6 @@ import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
  * join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberFieldGetJoinPoint.java,v 1.9 2003-07-19 20:36:16 jboner Exp $
  */
 public class MemberFieldGetJoinPoint extends FieldJoinPoint {
 

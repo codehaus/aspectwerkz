@@ -46,7 +46,6 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.14 2003-07-22 14:03:17 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 

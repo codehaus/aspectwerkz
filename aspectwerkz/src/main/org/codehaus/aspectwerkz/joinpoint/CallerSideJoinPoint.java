@@ -41,7 +41,6 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSideJoinPoint.java,v 1.12 2003-07-19 20:36:16 jboner Exp $
  */
 public class CallerSideJoinPoint implements JoinPoint {
 

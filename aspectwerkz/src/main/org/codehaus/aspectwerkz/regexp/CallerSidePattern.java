@@ -29,7 +29,6 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  *  in AspectWerkz.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSidePattern.java,v 1.6 2003-07-22 14:03:18 jboner Exp $
  */
 public class CallerSidePattern extends Pattern {
 

@@ -49,7 +49,6 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodJoinPoint.java,v 1.13 2003-07-19 20:36:16 jboner Exp $
  */
 public abstract class MethodJoinPoint implements JoinPoint {
 

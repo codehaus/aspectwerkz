@@ -39,7 +39,6 @@ import org.codehaus.aspectwerkz.regexp.MethodPattern;
  * defined by this aspect.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Aspect.java,v 1.10 2003-07-22 14:03:17 jboner Exp $
  */
 public class Aspect {
 

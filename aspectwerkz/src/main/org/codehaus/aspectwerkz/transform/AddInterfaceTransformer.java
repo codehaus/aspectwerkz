@@ -28,10 +28,6 @@ import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantUtf8;
 
-import org.cs3.jmangler.bceltransformer.AbstractInterfaceTransformer;
-import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
-import org.cs3.jmangler.bceltransformer.ExtensionSet;
-
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
@@ -39,9 +35,8 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an interfaces to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddInterfaceTransformer.java,v 1.15 2003-07-22 14:03:18 jboner Exp $
  */
-public final class AddInterfaceTransformer extends AbstractInterfaceTransformer {
+public final class AddInterfaceTransformer extends AspectWerkzAbstractInterfaceTransformer {
     ///CLOVER:OFF
     /**
      * Holds references to the classes that have already been transformed.
@@ -76,8 +71,8 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
      * @param es the extension set
      * @param cs the unextendable class set
      */
-    public void transformInterface(final ExtensionSet es,
-                                   final UnextendableClassSet cs) {
+    public void transformInterface(final AspectWerkzExtensionSet es,
+                                   final AspectWerkzUnextendableClassSet cs) {
         Iterator it = cs.getIteratorForTransformableClasses();
         while (it.hasNext()) {
 
@@ -114,7 +109,7 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
                     if (interfaceName == null || interfaceName.equals("")) {
                         throw new DefinitionException("trying to weave null interface to " + cg.getClassName() + ": definition file is not consistentadd");
                     }
-                    es.addInterfaceToClass(cg.getClassName(), interfaceName);
+                    es.addInterfaceToClass(cg, interfaceName);
                 }
             }
         }

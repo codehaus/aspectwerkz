@@ -20,7 +20,6 @@ package examples.logging;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Target.java,v 1.13 2003-07-19 20:36:17 jboner Exp $
  */
 public class Target {
 

@@ -42,7 +42,6 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.18 2003-07-22 14:03:17 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 

@@ -47,7 +47,6 @@ import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldPointcut.java,v 1.10 2003-07-22 14:03:18 jboner Exp $
  */
 public class FieldPointcut implements Pointcut {
 

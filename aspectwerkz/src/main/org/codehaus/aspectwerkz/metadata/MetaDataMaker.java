@@ -24,7 +24,7 @@ import java.util.WeakHashMap;
 /**
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MetaDataMaker.java,v 1.1 2003-07-19 20:36:16 jboner Exp $
+ * @version $Id: MetaDataMaker.java,v 1.2 2003-07-23 14:20:31 avasseur Exp $
  */
 public class MetaDataMaker {
     /**

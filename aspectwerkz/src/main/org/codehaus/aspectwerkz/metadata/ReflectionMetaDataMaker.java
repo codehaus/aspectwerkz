@@ -29,7 +29,6 @@ import java.util.List;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
- * @version $Id: ReflectionMetaDataMaker.java,v 1.4 2003-07-19 20:36:16 jboner Exp $
  */
 public class ReflectionMetaDataMaker extends MetaDataMaker {
 

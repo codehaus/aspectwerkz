@@ -47,7 +47,6 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSidePointcut.java,v 1.10 2003-07-22 14:03:18 jboner Exp $
  */
 public class CallerSidePointcut implements Pointcut {
 

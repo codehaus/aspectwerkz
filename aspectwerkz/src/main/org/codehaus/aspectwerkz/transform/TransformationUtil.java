@@ -43,7 +43,6 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
  * Holds the constants and utility method used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: TransformationUtil.java,v 1.14 2003-07-19 20:36:17 jboner Exp $
  */
 public final class TransformationUtil {
 
@@ -419,7 +418,12 @@ public final class TransformationUtil {
      */
     public static boolean isSerializable(final ClassGen cg) {
         boolean isSerializable = false;
-        JavaClass[] allInterfaces = cg.getJavaClass().getAllInterfaces();
+        //@todo alex
+        JavaClass alex = cg.getJavaClass();
+        System.out.println("****** CL = " + AspectWerkzPreProcessor.alexContextGet());
+        alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
+        JavaClass[] allInterfaces = alex.getAllInterfaces();
+        //JavaClass[] allInterfaces = cg.getJavaClass().getAllInterfaces();
         for (int i = 0; i < allInterfaces.length; i++) {
             JavaClass anInterface = allInterfaces[i];
             if (anInterface.getClassName().equals("java.io.Serializable")) {

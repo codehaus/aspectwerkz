@@ -29,7 +29,6 @@ import java.io.Serializable;
  * Holds the aspect definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectDefinition.java,v 1.8 2003-07-14 15:02:48 jboner Exp $
  */
 public class AspectDefinition implements Serializable {
 

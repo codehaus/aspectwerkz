@@ -6,7 +6,7 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: HierachicalPatternTest.java,v 1.1 2003-07-19 20:36:17 jboner Exp $
+ * @version $Id: HierachicalPatternTest.java,v 1.2 2003-07-23 14:20:32 avasseur Exp $
  */
 public class HierachicalPatternTest extends TestCase implements Loggable, DummyInterface1 {
 
