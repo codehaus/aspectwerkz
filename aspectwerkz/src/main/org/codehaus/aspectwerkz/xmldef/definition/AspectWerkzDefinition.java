@@ -106,7 +106,7 @@ public class AspectWerkzDefinition implements Serializable {
     /**
      * Marks the definition as initialized.
      */
-    private boolean m_initialized = false;
+    private boolean m_aspectsLoaded = false;
 
     /**
      * Creates, caches and returns new definition. Loads the definition in the file specified.
@@ -467,13 +467,13 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
-     * Initializes the definition.
+     * Loads the aspects.
      *
      * @param loader the class loader to use to load the aspects
      */
-    public void initialize(final ClassLoader loader) {
-        if (m_initialized) return;
-        m_initialized = true;
+    public void loadAspects(final ClassLoader loader) {
+        if (m_aspectsLoaded) return;
+        m_aspectsLoaded = true;
         for (Iterator it = getAspectClassNames().iterator(); it.hasNext();) {
             loadAspect((String)it.next(), loader);
         }
@@ -494,7 +494,6 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the UUID
      */
     public String getUuid() {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
         return m_uuid;
     }
 
@@ -504,7 +503,6 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the transformation scopes
      */
     public Set getTransformationScopes() {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
         return m_transformationScopeSet;
     }
 
@@ -514,7 +512,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the aspect definitions
      */
     public Collection getAspectDefinitions() {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         return m_aspectMap.values();
     }
 
@@ -524,7 +522,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the introduction definitions
      */
     public Collection getIntroductionDefinitions() {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         final Collection introductionDefs = new ArrayList();
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
@@ -539,7 +537,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the advice definitions
      */
     public Collection getAdviceDefinitions() {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         final Collection adviceDefs = new ArrayList();
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
@@ -557,7 +555,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the aspect definition
      */
     public AspectDefinition getAspectDefinition(final String name) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         return (AspectDefinition)m_aspectMap.get(name);
     }
 
@@ -568,7 +566,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the advice definition
      */
     public AdviceDefinition getAdviceDefinition(final String name) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         Collection adviceDefs = getAdviceDefinitions();
         for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
             AdviceDefinition adviceDef = (AdviceDefinition)it.next();
@@ -586,7 +584,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the name of the advice
      */
 //    public String getAdviceNameByAttribute(final String attribute) {
-//    if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+//    if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
 //        if (attribute == null) return null;
 //        for (Iterator it = m_adviceMap.values().iterator(); it.hasNext();) {
 //            AdviceDefinition adviceDefinition = (AdviceDefinition)it.next();
@@ -604,7 +602,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the name of the introduction
      */
 //    public String getIntroductionNameByAttribute(final String attribute) {
-//    if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+//    if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
 //        if (attribute == null) {
 //            return null;
 //        }
@@ -626,7 +624,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the name of the interface
      */
     public String getIntroductionInterfaceName(final String introductionName) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
 
         return null;
     }
@@ -638,7 +636,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the name of the interface
      */
     public String getIntroductionImplName(final String introductionName) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -663,7 +661,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the introduction definition
      */
     public IntroductionDefinition getIntroductionDefinition(final String introductionName) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
@@ -685,6 +683,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return a list with the introduction definitions
      */
     public List getIntroductionDefinitionsForClass(final ClassMetaData classMetaData) {
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         final List introDefs = new ArrayList();
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
@@ -705,7 +704,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the index
      */
     public int getAspectIndexByName(final String aspectName) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (aspectName == null) throw new IllegalArgumentException("aspect name can not be null");
         return m_aspectIndexes.get(aspectName);
     }
@@ -716,7 +715,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the indexes
      */
     public TObjectIntHashMap getAspectIndexes() {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         return m_aspectIndexes;
     }
 
@@ -729,7 +728,7 @@ public class AspectWerkzDefinition implements Serializable {
      */
     public String getJoinPointController(final ClassMetaData classMetaData,
                                          final MethodMetaData methodMetaData) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
@@ -752,7 +751,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the aspects to use
      */
     public Set getAspectClassNames() {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         return m_aspectClassNames;
     }
 
@@ -823,6 +822,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return boolean
      */
     public boolean hasIntroduction(final String name) {
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         return m_aspectMap.containsKey(name);
     }
 
@@ -853,6 +853,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return boolean
      */
     public boolean hasIntroductions(final ClassMetaData classMetaData) {
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -875,7 +876,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return boolean
      */
     public boolean hasMethodPointcut(final ClassMetaData classMetaData) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -900,7 +901,7 @@ public class AspectWerkzDefinition implements Serializable {
      */
     public boolean hasMethodPointcut(final ClassMetaData classMetaData,
                                      final MethodMetaData methodMetaData) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
@@ -926,7 +927,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return boolean
      */
     public boolean hasGetFieldPointcut(final ClassMetaData classMetaData) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -952,7 +953,7 @@ public class AspectWerkzDefinition implements Serializable {
      */
     public boolean hasGetFieldPointcut(final ClassMetaData classMetaData,
                                        final FieldMetaData fieldMetaData) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
@@ -978,7 +979,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return boolean
      */
     public boolean hasSetFieldPointcut(final ClassMetaData classMetaData) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -1004,7 +1005,7 @@ public class AspectWerkzDefinition implements Serializable {
      */
     public boolean hasSetFieldPointcut(final ClassMetaData classMetaData,
                                        final FieldMetaData fieldMetaData) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
@@ -1028,7 +1029,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return boolean
      */
     public boolean hasThrowsPointcut(final ClassMetaData classMetaData) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -1052,7 +1053,7 @@ public class AspectWerkzDefinition implements Serializable {
      */
     public boolean hasThrowsPointcut(final ClassMetaData classMetaData,
                                      final MethodMetaData methodMetaData) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
@@ -1075,7 +1076,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return boolean
      */
     public boolean hasCallerSidePointcut(final ClassMetaData classMetaData) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -1102,7 +1103,7 @@ public class AspectWerkzDefinition implements Serializable {
      */
     public boolean isCallerSideMethod(final ClassMetaData classMetaData,
                                       final MethodMetaData methodMetaData) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
@@ -1127,7 +1128,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @return the names
      */
     public List getIntroductionNamesForClass(final String className) {
-        if (!m_initialized) throw new IllegalStateException("definition is not initialized");
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         throw new UnsupportedOperationException("method not support by this definition implementation");
 //        if (className == null) throw new IllegalArgumentException("class name can not be null");
 //        List introductionNames = new ArrayList();
@@ -1168,7 +1169,7 @@ public class AspectWerkzDefinition implements Serializable {
      */
     public static void main(String[] args) {
         AspectWerkzDefinition definition = XmlDefinitionParser.parse(new File("src/samples/samples.xml"));
-        definition.initialize(Thread.currentThread().getContextClassLoader());
+        definition.loadAspects(Thread.currentThread().getContextClassLoader());
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
             AspectDefinition aspectMetaData = (AspectDefinition)it.next();
             System.out.println("aspectMetaData = " + aspectMetaData);
