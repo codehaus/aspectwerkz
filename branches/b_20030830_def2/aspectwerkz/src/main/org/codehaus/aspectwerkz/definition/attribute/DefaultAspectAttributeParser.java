@@ -15,9 +15,9 @@ import java.util.List;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.AroundAdviceAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.PostAdviceAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.PreAdviceAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.AroundAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.PostAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.PreAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.IntroductionAttribute;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -192,24 +192,24 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
             for (int j = 0; j < methodAttributes.length; j++) {
                 Object methodAttr = methodAttributes[j];
 
-                if (methodAttr instanceof AroundAdviceAttribute) {
-                    String expression = ((AroundAdviceAttribute)methodAttr).getExpression();
+                if (methodAttr instanceof AroundAttribute) {
+                    String expression = ((AroundAttribute)methodAttr).getExpression();
                     createAndAddAroundAdviceDefToAspectDef(
                             expression, adviceName, aspectName,
                             aspectClassName, method, methodIndex, aspectDef
                     );
                     break;
                 }
-                else if (methodAttr instanceof PreAdviceAttribute) {
-                    String expression = ((PreAdviceAttribute)methodAttr).getExpression();
+                else if (methodAttr instanceof PreAttribute) {
+                    String expression = ((PreAttribute)methodAttr).getExpression();
                     createAndAddPreAdviceDefToAspectDef(
                             expression, adviceName, aspectName,
                             aspectClassName, method, methodIndex, aspectDef
                     );
                     break;
                 }
-                else if (methodAttr instanceof PostAdviceAttribute) {
-                    String expression = ((PostAdviceAttribute)methodAttr).getExpression();
+                else if (methodAttr instanceof PostAttribute) {
+                    String expression = ((PostAttribute)methodAttr).getExpression();
                     createAndAddPostAdviceDefToAspectDef(
                             expression, adviceName, aspectName,
                             aspectClassName, method, methodIndex, aspectDef

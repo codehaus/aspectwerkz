@@ -241,9 +241,8 @@
     <goal name="aspectwerkz:samples:caching">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.caching.CacheTest"/>
+            <arg line="-cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.caching.CacheTest"/>
         </exec>
     </goal>
 
@@ -279,7 +278,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.cflow.Target"/>
+            <arg line="-cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
         </exec>
     </goal>
 

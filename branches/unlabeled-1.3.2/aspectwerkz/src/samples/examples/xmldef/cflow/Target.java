@@ -12,17 +12,11 @@ package examples.cflow;
  */
 public class Target {
 
-    /**
-     * @aspectwerkz.cflow cflowtest
-     */
     public void step1() {
         System.out.println("  --> invoking step1");
         step2();
     }
 
-    /**
-     * @aspectwerkz.advice.method cflow cflow=cflowtest
-     */
     public void step2() {
         System.out.println("  --> invoking step2");
     }

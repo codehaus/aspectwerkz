@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 
 import org.codehaus.aspectwerkz.regexp.Pattern;
@@ -20,7 +19,8 @@ import org.codehaus.aspectwerkz.Pointcut;
 /**
  * Holds the meta-data for the pointcuts.
  *
- * @TODO: now the def. only supports 'single level' expressions, e.g. NOT an expression of pointcuts. this must be solved. The pointcut should be able to contain an expression build up with other pointcuts. and should be able to resolve the full pattern. E.g. evaluate the AST.
+ * @TODO: now the def. only supports 'one level deep' expressions, e.g. NOT an
+ * expression containing other pointcuts. this must be solved. The pointcut should be able to contain an expression build up with other pointcuts. and should be able to resolve the full pattern. E.g. evaluate the AST.
  *
  * @TODO fix '+' patterns
  *
@@ -89,6 +89,8 @@ public class PointcutDefinition {
     /**
      * Creates a new pointcut meta-data instance.
      *
+     * @TODO: the pointcut mismatch needs to be corrected. i.e. the Execution/MethodPointcut Call/CallerSidePointcut etc.
+     *
      * @param type the pointcut type (execution, call, set, get ..)
      * @param expression the expression for the pointcut
      * @param method the method representing the pointcut
@@ -101,38 +103,41 @@ public class PointcutDefinition {
         m_field = field;
         m_name = field.getName();
 
-        if (isMethodPointcut()) {
+        if (type.equals(Pointcut.EXECUTION)) {
             AspectWerkzDefinition.createMethodPattern(m_expression, this);
             m_regexpPattern = Pattern.compileMethodPattern(m_pattern);
             m_type = TYPE_METHOD;
         }
-        else if (isFieldPointcut()) {
+        else if (type.equals(Pointcut.SET)) {
             AspectWerkzDefinition.createFieldPattern(m_expression, this);
             m_regexpPattern = Pattern.compileFieldPattern(m_pattern);
-            if (type.equals(Pointcut.SET)) {
-                m_type = TYPE_SET_FIELD;
-            }
-            else if (type.equals(Pointcut.GET)) {
-                m_type = TYPE_GET_FIELD;
-            }
+            m_type = TYPE_SET_FIELD;
         }
-        else if (isClassPointcut()) {
+        else if (type.equals(Pointcut.GET)) {
+            AspectWerkzDefinition.createFieldPattern(m_expression, this);
+            m_regexpPattern = Pattern.compileFieldPattern(m_pattern);
+            m_type = TYPE_GET_FIELD;
+        }
+        else if (type.equals(Pointcut.CLASS)) {
             AspectWerkzDefinition.createClassPattern(m_expression, this);
             m_regexpPattern = Pattern.compileClassPattern(m_pattern);
             m_type = TYPE_CLASS;
         }
-//        else if (m_type.equalsIgnoreCase(TYPE_THROWS)) {
-//            AspectWerkzDefinition.createThrowsPattern(m_expression, this);
-//            m_regexpPattern = Pattern.compileThrowsPattern(m_pattern);
-//        }
-//        else if (m_type.equalsIgnoreCase(TYPE_CALLER_SIDE)) {
-//            AspectWerkzDefinition.createCallerSidePattern(m_expression, this);
-//            m_regexpPattern = Pattern.compileCallerSidePattern(m_pattern);
-//        }
-//        else if (m_type.equalsIgnoreCase(TYPE_CFLOW)) {
+        else if (type.equals(Pointcut.THROWS)) {
+            AspectWerkzDefinition.createThrowsPattern(m_expression, this);
+            m_regexpPattern = Pattern.compileThrowsPattern(m_pattern);
+            m_type = TYPE_METHOD;
+        }
+        else if (type.equals(Pointcut.CALL)) {
+            AspectWerkzDefinition.createCallerSidePattern(m_expression, this);
+            m_regexpPattern = Pattern.compileCallerSidePattern(m_pattern);
+            m_type = TYPE_CALLER_SIDE;
+        }
+        else if (type.equals(Pointcut.CFLOW)) {
+            throw new UnsupportedOperationException("cflow is not implemented yet");
 //            AspectWerkzDefinition.create(m_expression, this);
 //            m_regexpPattern = Pattern.compile(m_pattern);
-//        }
+        }
         else {
             throw new DefinitionException("pointcut expression is not valid [" + m_expression + "] for pointcut with name [" + getName() + "]");
         }

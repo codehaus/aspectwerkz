@@ -222,7 +222,10 @@ public class CallerSideJoinPoint implements JoinPoint {
         }
         for (int i = 0, j = m_preAdvices.length; i < j; i++) {
             try {
-//                m_system.getAspect(m_preAdvices[i]).doExecute(this);
+                IndexTuple index = m_preAdvices[i];
+                int aspectIndex = index.getAspectIndex();
+                int methodIndex = index.getMethodIndex();
+                m_system.getAspect(aspectIndex).___AW_invokeAdvice(methodIndex, this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
@@ -239,7 +242,10 @@ public class CallerSideJoinPoint implements JoinPoint {
         }
         for (int i = m_postAdvices.length - 1; i >= 0; i--) {
             try {
-//                m_system.getAspect(m_postAdvices[i]).doExecute(this);
+                IndexTuple index = m_postAdvices[i];
+                int aspectIndex = index.getAspectIndex();
+                int methodIndex = index.getMethodIndex();
+                m_system.getAspect(aspectIndex).___AW_invokeAdvice(methodIndex, this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());

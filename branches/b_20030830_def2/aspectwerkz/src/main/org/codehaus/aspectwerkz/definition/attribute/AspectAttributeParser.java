@@ -196,7 +196,6 @@ public abstract class AspectAttributeParser {
                 adviceName, aspectName, aspectClassName,
                 expression, method, methodIndex, aspectDef.getDeploymentModel()
         );
-
         try {
             final AdviceWeavingRule adviceWeavingRule = new AdviceWeavingRule();
             adviceWeavingRule.setExpression(expression);
@@ -212,6 +211,7 @@ public abstract class AspectAttributeParser {
             adviceDef.setWeavingRule(adviceWeavingRule); // TODO: always just one?
         }
         catch (Exception e) {
+            System.out.println("e = " + e);
             throw new DefinitionException("definition for advice [" + adviceDef.getName() + "] in aspect [" + aspectDef.getName() + "] is not valid: " + e.getMessage());
         }
         return adviceDef;

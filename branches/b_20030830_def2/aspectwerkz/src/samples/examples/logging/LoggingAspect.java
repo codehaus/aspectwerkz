@@ -42,5 +42,4 @@ public class LoggingAspect extends AbstractLoggingAspect {
      * @Set int examples.logging.Target.m_counter2
      */
     Pointcut logSet;
-
 }

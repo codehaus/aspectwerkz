@@ -14,9 +14,9 @@ import com.thoughtworks.qdox.model.JavaField;
 
 import org.codehaus.aspectwerkz.metadata.QDoxParser;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.AroundAdviceAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.PreAdviceAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.PostAdviceAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.AroundAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.PreAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.PostAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.IntroductionAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.AttributeEnhancer;
 import org.codehaus.aspectwerkz.definition.attribute.ExecutionAttribute;
@@ -44,9 +44,9 @@ public class AspectC {
     public static final String ATTR_GET = "Get";
     public static final String ATTR_THROWS = "Throws";
     public static final String ATTR_CFLOW = "CFlow";
-    public static final String ATTR_AROUND_ADVICE = "AroundAdvice";
-    public static final String ATTR_PRE_ADVICE = "PreAdvice";
-    public static final String ATTR_POST_ADVICE = "PostAdvice";
+    public static final String ATTR_AROUND = "Around";
+    public static final String ATTR_PRE = "Pre";
+    public static final String ATTR_POST = "Post";
     public static final String ATTR_INTRODUCTION = "Introduction";
     public static final String ATTR_IMPLEMENTS = "Implements";
 
@@ -325,7 +325,7 @@ public class AspectC {
      */
     private static void parseAroundAdvice(final JavaMethod javaMethod,
                                           final AttributeEnhancer enhancer) {
-        DocletTag[] aroundAdviceTags = javaMethod.getTagsByName(ATTR_AROUND_ADVICE);
+        DocletTag[] aroundAdviceTags = javaMethod.getTagsByName(ATTR_AROUND);
         StringBuffer aroundAdviceExpr = new StringBuffer();
         for (int k = 0; k < aroundAdviceTags.length; k++) {
             aroundAdviceExpr.append(aroundAdviceTags[k].getValue());
@@ -334,7 +334,7 @@ public class AspectC {
             String expression = aroundAdviceExpr.toString();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new AroundAdviceAttribute(expression)
+                    new AroundAttribute(expression)
             );
             log("\taround advice [" + javaMethod.getName() + "::" + expression + "]");
         }
@@ -348,7 +348,7 @@ public class AspectC {
      */
     private static void parsePreAdvice(final JavaMethod javaMethod,
                                        final AttributeEnhancer enhancer) {
-        DocletTag[] preAdviceTags = javaMethod.getTagsByName(ATTR_PRE_ADVICE);
+        DocletTag[] preAdviceTags = javaMethod.getTagsByName(ATTR_PRE);
         StringBuffer preAdviceExpr = new StringBuffer();
         for (int k = 0; k < preAdviceTags.length; k++) {
             preAdviceExpr.append(preAdviceTags[k].getValue());
@@ -357,7 +357,7 @@ public class AspectC {
             String expression = preAdviceExpr.toString();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new PreAdviceAttribute(expression)
+                    new PreAttribute(expression)
             );
             log("\tpre advice [" + javaMethod.getName() + "::" + expression + "]");
         }
@@ -371,7 +371,7 @@ public class AspectC {
      */
     private static void parsePostAdvice(final JavaMethod javaMethod,
                                         final AttributeEnhancer enhancer) {
-        DocletTag[] postAdviceTags = javaMethod.getTagsByName(ATTR_POST_ADVICE);
+        DocletTag[] postAdviceTags = javaMethod.getTagsByName(ATTR_POST);
         StringBuffer postAdviceExpr = new StringBuffer();
         for (int k = 0; k < postAdviceTags.length; k++) {
             postAdviceExpr.append(postAdviceTags[k].getValue());
@@ -380,7 +380,7 @@ public class AspectC {
             String expression = postAdviceExpr.toString();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new PostAdviceAttribute(expression)
+                    new PostAttribute(expression)
             );
             log("\tpost advice [" + javaMethod.getName() + "::" + expression + "]");
         }
