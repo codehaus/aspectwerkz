@@ -16,15 +16,15 @@ import org.codehaus.aspectwerkz.Pointcut;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class CFlowAspect extends AbstractAspect {
+public class CFlowAspect extends AbstractAspect {
 
     /**
-     * @CFlow void examples.logging.Target.step1()
+     * @CFlow void examples.cflow.Target.step1()
      */
     Pointcut cflowPointcut;
 
     /**
-     * @Execution void examples.logging.Target.step2()
+     * @Execution void examples.cflow.Target.step2()
      */
     Pointcut methodsToLog;
 
@@ -32,8 +32,8 @@ public abstract class CFlowAspect extends AbstractAspect {
      * @Around cflowPointcut && methodsToLog
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
-          Object result = joinPoint.proceed();
-          System.out.println("  --> invoking advice triggered by step2");
-          return result;
-      }
+        Object result = joinPoint.proceed();
+        System.out.println("  --> invoking advice triggered by step2");
+        return result;
+    }
 }

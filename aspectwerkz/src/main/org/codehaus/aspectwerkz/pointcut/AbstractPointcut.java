@@ -37,6 +37,11 @@ public abstract class AbstractPointcut {
     protected String m_expression;
 
     /**
+     * The cflow pointcut expression.
+     */
+    protected String m_cflowExpression;
+
+    /**
      * The Jexl expression.
      */
     protected transient Expression m_jexlExpr;
@@ -194,6 +199,24 @@ public abstract class AbstractPointcut {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns the cflow expression.
+     *
+     * @return the cflow expression
+     */
+    public String getCFlowExpression() {
+        return m_cflowExpression;
+    }
+
+    /**
+     * Sets the cflow expression.
+     *
+     * @param cflowExpression the cflow expression
+     */
+    public void setCFlowExpression(final String cflowExpression) {
+        m_cflowExpression = cflowExpression;
     }
 
     /**

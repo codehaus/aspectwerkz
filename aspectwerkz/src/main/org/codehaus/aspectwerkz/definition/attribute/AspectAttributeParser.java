@@ -194,24 +194,30 @@ public abstract class AspectAttributeParser {
 
         final AdviceDefinition adviceDef = new AdviceDefinition(
                 adviceName, aspectName, aspectClassName,
-                expression, method, methodIndex, aspectDef.getDeploymentModel()
+                expression, method, methodIndex, aspectDef
         );
         try {
             final AdviceWeavingRule adviceWeavingRule = new AdviceWeavingRule();
             adviceWeavingRule.setExpression(expression);
-//            adviceWeavingRule.setCFlowExpression(value); // TODO: how to handle cflow in attributes?
-//            adviceWeavingRule.addAdviceRef(value); // TODO: needed?
 
             for (Iterator it2 = adviceDef.getPointcutRefs().iterator(); it2.hasNext();) {
                 String pointcutName = (String)it2.next();
-                PointcutDefinition pointcutDef = aspectDef.getPointcut(pointcutName);
+                PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
+
+                // if cflow pointcut set the cflow expression
+                if (pointcutDef.isCFlowPointcut()) {
+                    adviceWeavingRule.setCFlowExpression(pointcutDef.getName());
+                }
+                else {
+                    // set the pointcut type
+                    adviceWeavingRule.setPointcutType(pointcutDef.getType());
+                }
+
                 addPointcutPattern(adviceWeavingRule, pointcutDef);
             }
-
-            adviceDef.setWeavingRule(adviceWeavingRule); // TODO: always just one?
+            adviceDef.setWeavingRule(adviceWeavingRule);
         }
         catch (Exception e) {
-            System.out.println("e = " + e);
             throw new DefinitionException("definition for advice [" + adviceDef.getName() + "] in aspect [" + aspectDef.getName() + "] is not valid: " + e.getMessage());
         }
         return adviceDef;
@@ -246,15 +252,14 @@ public abstract class AspectAttributeParser {
         try {
             final IntroductionWeavingRule introductionWeavingRule = new IntroductionWeavingRule();
             introductionWeavingRule.setExpression(expression);
-//            introductionWeavingRule.addIntroductionDef(value); // TODO: needed?
 
             for (Iterator it2 = introDef.getPointcutRefs().iterator(); it2.hasNext();) {
                 String pointcutName = (String)it2.next();
-                PointcutDefinition pointcutDef = aspectDef.getPointcut(pointcutName);
+                PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
                 addPointcutPattern(introductionWeavingRule, pointcutDef);
             }
 
-            introDef.setWeavingRule(introductionWeavingRule); // TODO: always just one?
+            introDef.setWeavingRule(introductionWeavingRule);
         }
         catch (Exception e) {
             throw new DefinitionException("definition for introduction [" + introDef.getName() + "] in aspect [" + aspectDef.getName() + "] is not valid: " + e.getMessage());
@@ -286,15 +291,14 @@ public abstract class AspectAttributeParser {
         try {
             final IntroductionWeavingRule introductionWeavingRule = new IntroductionWeavingRule();
             introductionWeavingRule.setExpression(expression);
-//            introductionWeavingRule.addIntroductionDef(value); // TODO: needed?
 
             for (Iterator it2 = introDef.getPointcutRefs().iterator(); it2.hasNext();) {
                 String pointcutName = (String)it2.next();
-                PointcutDefinition pointcutDef = aspectDef.getPointcut(pointcutName);
+                PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
                 addPointcutPattern(introductionWeavingRule, pointcutDef);
             }
 
-            introDef.setWeavingRule(introductionWeavingRule); // TODO: always just one?
+            introDef.setWeavingRule(introductionWeavingRule);
         }
         catch (Exception e) {
             throw new DefinitionException("definition for introduction [" + introDef.getName() + "] in aspect [" + aspectDef.getName() + "] is not valid: " + e.getMessage());
@@ -310,22 +314,22 @@ public abstract class AspectAttributeParser {
      */
     private static void addPointcutPattern(final AdviceWeavingRule adviceWeavingRule,
                                            final PointcutDefinition pointcutDef) {
-        if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.TYPE_METHOD)) {
+        if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.METHOD)) {
             adviceWeavingRule.addMethodPointcutPattern(pointcutDef);
         }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.TYPE_SET_FIELD)) {
+        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
             adviceWeavingRule.addSetFieldPointcutPattern(pointcutDef);
         }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.TYPE_GET_FIELD)) {
+        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.GET_FIELD)) {
             adviceWeavingRule.addGetFieldPointcutPattern(pointcutDef);
         }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.TYPE_THROWS)) {
+        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.THROWS)) {
             adviceWeavingRule.addThrowsPointcutPattern(pointcutDef);
         }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.TYPE_CALLER_SIDE)) {
+        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
             adviceWeavingRule.addCallerSidePointcutPattern(pointcutDef);
         }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.TYPE_CFLOW)) {
+        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) {
             adviceWeavingRule.addCallerSidePointcutPattern(pointcutDef);
         }
     }
@@ -338,7 +342,7 @@ public abstract class AspectAttributeParser {
      */
     private static void addPointcutPattern(final IntroductionWeavingRule introWeavingRule,
                                            final PointcutDefinition pointcutDef) {
-        if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.TYPE_CLASS)) {
+        if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CLASS)) {
             introWeavingRule.addClassPointcutPattern(pointcutDef);
         }
     }

@@ -45,6 +45,11 @@ public class CallerSidePointcut {
     protected String m_expression;
 
     /**
+     * The cflow pointcut expression.
+     */
+    protected String m_cflowExpression;
+
+    /**
      * The Jexl expression.
      */
     protected transient Expression m_jexlExpr;
@@ -353,6 +358,24 @@ public class CallerSidePointcut {
     }
 
     /**
+     * Returns the cflow expression.
+     *
+     * @return the cflow expression
+     */
+    public String getCFlowExpression() {
+        return m_cflowExpression;
+    }
+
+    /**
+     * Sets the cflow expression.
+     *
+     * @param cflowExpression the cflow expression
+     */
+    public void setCFlowExpression(final String cflowExpression) {
+        m_cflowExpression = cflowExpression;
+    }
+
+    /**
      * Returns the advices in the form of an array with advice/index tuples.
      * To be used when a reordering of the advices is necessary.
      *
@@ -512,6 +535,12 @@ public class CallerSidePointcut {
                            final MethodMetaData methodMetaData) {
         try {
             JexlContext jexlContext = JexlHelper.createContext();
+
+            // if we have a cflow expression as part of the expression set it to true
+            // to make the expression evaluate to true
+            if (m_cflowExpression != null) {
+                jexlContext.getVars().put(m_cflowExpression, Boolean.TRUE);
+            }
 
             matchPointcutPatterns(jexlContext, className, methodMetaData);
 

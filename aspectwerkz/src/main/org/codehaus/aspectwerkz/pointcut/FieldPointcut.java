@@ -45,6 +45,11 @@ public class FieldPointcut {
     protected String m_expression;
 
     /**
+     * The cflow pointcut expression.
+     */
+    protected String m_cflowExpression;
+
+    /**
      * The Jexl expression.
      */
     protected transient Expression m_jexlExpr;
@@ -423,6 +428,24 @@ public class FieldPointcut {
     }
 
     /**
+     * Returns the cflow expression.
+     *
+     * @return the cflow expression
+     */
+    public String getCFlowExpression() {
+        return m_cflowExpression;
+    }
+
+    /**
+     * Sets the cflow expression.
+     *
+     * @param cflowExpression the cflow expression
+     */
+    public void setCFlowExpression(final String cflowExpression) {
+        m_cflowExpression = cflowExpression;
+    }
+
+    /**
      * Returns a list with the indexes for the pre advices for the pointcut.
      *
      * @return the pre advice indexes
@@ -508,9 +531,15 @@ public class FieldPointcut {
      */
     public boolean matches(final ClassMetaData classMetaData,
                            final FieldMetaData fieldMetaData) {
-        JexlContext jexlContext = JexlHelper.createContext();
-
         try {
+            JexlContext jexlContext = JexlHelper.createContext();
+
+            // if we have a cflow expression as part of the expression set it to true
+            // to make the expression evaluate to true
+            if (m_cflowExpression != null) {
+                jexlContext.getVars().put(m_cflowExpression, Boolean.TRUE);
+            }
+
             matchPointcutPatterns(jexlContext, classMetaData, fieldMetaData);
 
             // evaluate expression

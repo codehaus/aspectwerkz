@@ -272,8 +272,7 @@ public class AspectMetaData {
      */
     public void addMethodToCFlowMethodMap(final PointcutPatternTuple patternTuple,
                                           final PointcutPatternTuple cflowPatternTuple) {
-        List cflowPatterns = (List)m_methodToCFlowMethodsMap.
-                get(patternTuple);
+        List cflowPatterns = (List)m_methodToCFlowMethodsMap.get(patternTuple);
         if (cflowPatterns != null) {
             cflowPatterns.add(cflowPatternTuple);
         }

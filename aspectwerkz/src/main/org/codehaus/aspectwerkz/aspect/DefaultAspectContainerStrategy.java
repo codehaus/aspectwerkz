@@ -170,7 +170,8 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                     m_perThread.put(currentThread, AbstractAspect.newInstance(m_prototype));
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(
+            Method method = m_methodRepository[methodIndex];
+            result = method.invoke(
                     m_perThread.get(currentThread),
                     new Object[]{joinPoint}
             );
