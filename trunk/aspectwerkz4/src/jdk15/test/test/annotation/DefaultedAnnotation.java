@@ -22,7 +22,7 @@ public @interface DefaultedAnnotation {
 
     public Class klass() default ReferencedClass.class;
 
-    public Class[] klass2() default {ReferencedClass.class, ReferencedClass.class};
+    public Class[] klass2() default {ReferencedClass[].class, ReferencedClass.class};
 
     public NestedDefaultedAnnotation nested() default @NestedDefaultedAnnotation(s="default_const");
 

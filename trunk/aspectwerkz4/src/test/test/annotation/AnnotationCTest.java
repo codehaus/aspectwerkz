@@ -35,6 +35,7 @@ import java.lang.reflect.Method;
  * @Untyped ("hello2")
  * @Untyped "(hello) - see the space here !"
  * @Untyped("preserved hello")
+ * @ComplexNested(nesteds={@Simple(val="foo"), @Simple(val="bar")})
  */
 public class AnnotationCTest extends TestCase {
 
@@ -173,6 +174,19 @@ public class AnnotationCTest extends TestCase {
             if (all.toString().indexOf(s) < 0) {
                 fail("could not find " + lookFor[i] + " in " + all.toString());
             }
+        }
+    }
+
+    public void testNestedAnnotation() throws Throwable {
+        Class me = AnnotationCTest.class;
+        AnnotationParserTest.ComplexNested ann = (AnnotationParserTest.ComplexNested) Annotations.getAnnotation("ComplexNested", me);
+        AnnotationParserTest.Simple ann1 = ann.nesteds()[0];
+        AnnotationParserTest.Simple ann2 = ann.nesteds()[1];
+        String ann12 = ann1.val()+"."+ann2.val();
+        if (ann12.equals("foo.bar") || ann12.equals("bar.foo")) {
+            ;//ok
+        } else {
+            fail("Annotation is not correct " + ann.toString());
         }
     }
 

@@ -14,11 +14,11 @@ public class AnnotationLoadingTarget {
 
     public static final int FIELD = 1;
 
-
     /**
      * @Complex(
-     *  klass=test.annotation.AnnotationLoadingTarget.class
-     *  field=test.annotation.AnnotationLoadingTarget.FIELD
+     *  klass=test.annotation.AnnotationLoadingTarget.class,
+     *  field=test.annotation.AnnotationLoadingTarget.FIELD,
+     *  klass2={test.annotation.AnnotationLoadingTarget[].class, test.annotation.AnnotationLoadingTarget.class}
      * )
      */
     public void annotatedMethod() {

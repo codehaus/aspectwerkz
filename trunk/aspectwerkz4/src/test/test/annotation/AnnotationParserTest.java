@@ -10,6 +10,7 @@ package test.annotation;
 import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
 import org.codehaus.aspectwerkz.annotation.expression.AnnotationVisitor;
 import org.codehaus.aspectwerkz.annotation.Java5AnnotationInvocationHandler;
+import org.codehaus.aspectwerkz.annotation.AnnotationElement;
 import junit.framework.TestCase;
 
 import java.util.Map;
@@ -23,7 +24,7 @@ public class AnnotationParserTest extends TestCase {
     protected static final AnnotationParser s_parser = Helper.getAnnotationParser();
 
     private Object getElementValue(Object o) {
-        Java5AnnotationInvocationHandler.AnnotationElement element = (Java5AnnotationInvocationHandler.AnnotationElement) o;
+        AnnotationElement element = (AnnotationElement) o;
         return element.resolveValueHolderFrom(AnnotationParserTest.class.getClassLoader());
 
     }
@@ -69,6 +70,29 @@ public class AnnotationParserTest extends TestCase {
         }
     }
 
+    public void testSimpleNested() {
+        try {
+            Map elements = new HashMap();
+            AnnotationVisitor.parse(elements, "@SimpleNested(nested=@Simple(val=\"foo\"))", SimpleNested.class);
+            Simple nested = (Simple) getElementValue(elements.get("nested"));
+            assertEquals("foo", nested.val());
+        } catch (Throwable t) {
+            fail(t.toString());
+        }
+    }
+
+    public void testComplexNested() {
+        try {
+            Map elements = new HashMap();
+            AnnotationVisitor.parse(elements, "@ComplexNested(nesteds={@Simple(val=\"foo\"), @Simple(val=\"bar\")})", ComplexNested.class);
+            Simple[] nesteds = (Simple[]) getElementValue(elements.get("nesteds"));
+            assertEquals("foo", nesteds[0].val());
+            assertEquals("bar", nesteds[1].val());
+        } catch (Throwable t) {
+            fail(t.toString());
+        }
+    }
+
     public void testDefault() {
         try {
             Map elements = new HashMap();
@@ -88,7 +112,7 @@ public class AnnotationParserTest extends TestCase {
         try {
             Map elements = new HashMap();
             AnnotationVisitor.parse(
-                    elements, "@Complex(i=3  ls={1l,2l,6L}  klass=java.lang.String.class)", Complex.class
+                    elements, "@Complex(i=3,  ls={1l,2l,6L},  klass=java.lang.String.class)", Complex.class
             );
             check(elements, "i", new Integer(3));
             long[] ls = new long[]{1L, 2L, 6L};
@@ -106,7 +130,7 @@ public class AnnotationParserTest extends TestCase {
     public void testStringArray() {
         try {
             Map elements = new HashMap();
-            AnnotationVisitor.parse(elements, "@StringArray(i=3  ss={\"hello\", \"foo\"})", StringArray.class);
+            AnnotationVisitor.parse(elements, "@StringArray(i=3,  ss={\"hello\", \"foo\"})", StringArray.class);
             check(elements, "i", new Integer(3));
             String[] ss = new String[]{"hello", "foo"};
             String[] ssGet = (String[]) getElementValue(elements.get("ss"));
@@ -138,6 +162,16 @@ public class AnnotationParserTest extends TestCase {
         public String s();
     }
 
+    public static interface SimpleNested {
+
+        public Simple nested();
+    }
+
+    public static interface ComplexNested {
+
+        public Simple[] nesteds();
+    }
+
     public static interface DefaultString {
 
         public String value();
@@ -156,6 +190,8 @@ public class AnnotationParserTest extends TestCase {
         public long[] ls();
 
         public Class klass();
+
+        public Class[] klass2();
 
         public int field();
 
