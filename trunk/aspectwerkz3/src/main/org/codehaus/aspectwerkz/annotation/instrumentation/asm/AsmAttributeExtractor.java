@@ -116,15 +116,22 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                 final Attribute attribute) {
                 if (name.equals(methodName)
                     && Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
-                    if (attribute instanceof CustomAttribute) {
-                        CustomAttribute customAttribute = (CustomAttribute) attribute;
-                        byte[] bytes = customAttribute.getBytes();
-                        try {
-                            methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(
-                                bytes)).readObject());
-                        } catch (Exception e) {
-                            throw new WrappedRuntimeException(e);
+                    Attribute current = attribute;
+                    while (current != null) {
+                        if (current instanceof CustomAttribute) {
+                            CustomAttribute customAttribute = (CustomAttribute) current;
+                            byte[] bytes = customAttribute.getBytes();
+                            try {
+                                methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(
+                                    bytes)).readObject());
+
+                                System.out.println(" got one " + name + " " + desc);
+
+                            } catch (Exception e) {
+                                throw new WrappedRuntimeException(e);
+                            }
                         }
+                        current = current.next;
                     }
                 }
 
@@ -157,15 +164,19 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                 final Attribute attribute) {
                 if (name.equals("<init>")
                     && Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(desc))) {
-                    if (attribute instanceof CustomAttribute) {
-                        CustomAttribute customAttribute = (CustomAttribute) attribute;
-                        byte[] bytes = customAttribute.getBytes();
-                        try {
-                            methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(
-                                bytes)).readObject());
-                        } catch (Exception e) {
-                            throw new WrappedRuntimeException(e);
+                    Attribute current = attribute;
+                    while (current != null) {
+                        if (attribute instanceof CustomAttribute) {
+                            CustomAttribute customAttribute = (CustomAttribute) attribute;
+                            byte[] bytes = customAttribute.getBytes();
+                            try {
+                                methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(
+                                    bytes)).readObject());
+                            } catch (Exception e) {
+                                throw new WrappedRuntimeException(e);
+                            }
                         }
+                        current = current.next;
                     }
                 }
                 return null;
@@ -195,15 +206,19 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                 final Object value,
                 final Attribute attribute) {
                 if (name.equals(fieldName)) {
-                    if (attribute instanceof CustomAttribute) {
-                        CustomAttribute customAttribute = (CustomAttribute) attribute;
-                        byte[] bytes = customAttribute.getBytes();
-                        try {
-                            fieldAttributes.add(new ObjectInputStream(new ByteArrayInputStream(
-                                bytes)).readObject());
-                        } catch (Exception e) {
-                            throw new WrappedRuntimeException(e);
+                    Attribute current = attribute;
+                    while (current != null) {
+                        if (attribute instanceof CustomAttribute) {
+                            CustomAttribute customAttribute = (CustomAttribute) attribute;
+                            byte[] bytes = customAttribute.getBytes();
+                            try {
+                                fieldAttributes.add(new ObjectInputStream(new ByteArrayInputStream(
+                                    bytes)).readObject());
+                            } catch (Exception e) {
+                                throw new WrappedRuntimeException(e);
+                            }
                         }
+                        current = current.next;
                     }
                 }
             }

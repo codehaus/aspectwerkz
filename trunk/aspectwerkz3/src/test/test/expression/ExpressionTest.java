@@ -27,63 +27,63 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class ExpressionTest extends TestCase {
-    protected static final String NAMESPACE = "TESTING";
+    private static final String NAMESPACE = "TESTING";
 
-    protected static ExpressionNamespace s_namespace = ExpressionNamespace.getNamespace(NAMESPACE);
+    private static ExpressionNamespace s_namespace = ExpressionNamespace.getNamespace(NAMESPACE);
 
-    protected static ClassInfo s_declaringType = JavaClassInfo.getClassInfo(Target.class);
+    private static ClassInfo s_declaringType = JavaClassInfo.getClassInfo(Target.class);
 
-    protected static MethodInfo modifiers1;
+    private static MethodInfo modifiers1;
 
-    protected static MethodInfo modifiers2;
+    private static MethodInfo modifiers2;
 
-    protected static MethodInfo modifiers3;
+    private static MethodInfo modifiers3;
 
-    protected static MethodInfo modifiers4;
+    private static MethodInfo modifiers4;
 
-    protected static MethodInfo parameters1;
+    private static MethodInfo parameters1;
 
-    protected static MethodInfo parameters2;
+    private static MethodInfo parameters2;
 
-    protected static MethodInfo parameters3;
+    private static MethodInfo parameters3;
 
-    protected static MethodInfo parameters4;
+    private static MethodInfo parameters4;
 
-    protected static MethodInfo parameters5;
+    private static MethodInfo parameters5;
 
-    protected static MethodInfo returnType1;
+    private static MethodInfo returnType1;
 
-    protected static MethodInfo returnType2;
+    private static MethodInfo returnType2;
 
-    protected static MethodInfo returnType3;
+    private static MethodInfo returnType3;
 
-    protected static MethodInfo returnType4;
+    private static MethodInfo returnType4;
 
-    protected static MethodInfo returnType5;
+    private static MethodInfo returnType5;
 
-    protected static MethodInfo _method$Name1;
+    private static MethodInfo _method$Name1;
 
-    protected static MethodInfo attributes1;
+    private static MethodInfo attributes1;
 
-    protected static ConstructorInfo constructor;
+    private static ConstructorInfo constructor;
 
-    protected static FieldInfo modifier1;
+    private static FieldInfo modifier1;
 
-    protected static FieldInfo modifier2;
+    private static FieldInfo modifier2;
 
-    protected static FieldInfo modifier3;
+    private static FieldInfo modifier3;
 
-    protected static FieldInfo type1;
+    private static FieldInfo type1;
 
-    protected static FieldInfo type2;
+    private static FieldInfo type2;
 
-    protected static FieldInfo type3;
+    private static FieldInfo type3;
 
-    protected static FieldInfo type4;
+    private static FieldInfo type4;
 
-    protected static FieldInfo _field$Name1;
+    private static FieldInfo _field$Name1;
 
-    protected static FieldInfo attribute1;
+    private static FieldInfo attribute1;
 
     // ============ setup =============
     static {

@@ -8,13 +8,11 @@
 package org.codehaus.aspectwerkz.annotation;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * Holds the annotation proxy instance and the name of the annotation.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AnnotationInfo implements Serializable {
     private final String m_name;

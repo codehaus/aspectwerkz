@@ -62,9 +62,9 @@ public final class ExpressionNamespace {
      * @param expressionInfo the expression info to add
      */
     public void addExpressionInfo(final String name, final ExpressionInfo expressionInfo) {
-                System.out.println("name map to in " + name + " = " +
-         expressionInfo.getExpressionAsString() + " : " +
-         m_namespace );
+//                System.out.println("name map to in " + name + " = " +
+//         expressionInfo.getExpressionAsString() + " : " +
+//         m_namespace );
         //        if (name == expressionInfo.getExpressionAsString()) {
         //            if (m_expressions.get(name)!=null) {
         //                System.out.println("skip " + m_expressions.get(name));
