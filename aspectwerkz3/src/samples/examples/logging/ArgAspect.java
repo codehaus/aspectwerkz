@@ -16,10 +16,17 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class ArgAspect {
 
     /**
-     * @Before methodsToLogPC(s)
+     * @Before methodsToLogPC(as, ai)
      */
-    public void beforeWithArgs(final JoinPoint joinPoint, String s) throws Throwable {
-        //FIXME
+    public void beforeWithArgs(final JoinPoint joinPoint, int ai, String as) throws Throwable {
+        System.out.println("== ==> ArgAspect.beforeWithArgs " + joinPoint + ", "+ai + ", "+as);
+    }
+
+    /**
+     * @Before methodsToLogPC(as, ai)
+     */
+    public void beforeWithArgs2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
+        System.out.println("== ==> ArgAspect.beforeWithArgs2 " + joinPoint + ", "+as + ", "+ai);
     }
 
 //    /**
@@ -30,9 +37,9 @@ public class ArgAspect {
 //    }
 
     /**
-     * @Expression execution(* *..*(..)) && args(int, s)
+     * @Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(int, s, i)
      */
-    /*abstract*/ Pointcut methodsToLogPC(String s) {return null;}
+    /*abstract*/ Pointcut methodsToLogPC(int i, String s) {return null;}
     //TODO if not abstract, then must be "void"
     //TODO: decide - should we ignore abstract marked pc annotation ??
     //FOR NOW: grab em all, ignore return type, and abstract or not.

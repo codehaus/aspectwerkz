@@ -10,9 +10,11 @@ package org.codehaus.aspectwerkz.expression;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
 import org.codehaus.aspectwerkz.expression.ast.ExpressionParser;
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Abstraction that holds info about the expression and the different visitors.
@@ -37,7 +39,9 @@ public class ExpressionInfo {
 
     private final boolean m_hasCflowPointcut;
 
-    private final Map m_argsTypeByName = new HashMap();
+    private final Map m_argsTypeByName = new SequencedHashMap();
+
+    public boolean m_isAdviceBindingWithArgs = false;//XXXARGS
 
     /**
      * Creates a new expression info instance.
@@ -48,13 +52,14 @@ public class ExpressionInfo {
     public ExpressionInfo(final String expression, final String namespace) {
         try {
             ASTRoot root = s_parser.parse(expression);
-            m_expression = new ExpressionVisitor(expression, namespace, root);
+            m_expression = new ExpressionVisitor(this, expression, namespace, root);
             m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(
                 expression,
                 namespace,
                 root);
-            m_cflowExpression = new CflowExpressionVisitor(expression, namespace, root);
+            m_cflowExpression = new CflowExpressionVisitor(this, expression, namespace, root);
             m_cflowExpressionRuntime = new CflowExpressionVisitorRuntime(
+                this,
                 expression,
                 namespace,
                 root);
@@ -148,5 +153,18 @@ public class ExpressionInfo {
     public void addArgument(String name, String className) {
         m_argsTypeByName.put(name, className);
     }
+
+    public String getArgumentType(String parameterName) {
+        return (String)m_argsTypeByName.get(parameterName);
+    }
+
+    public int getArgumentIndex(String parameterName) {
+        return ((SequencedHashMap)m_argsTypeByName).indexOf(parameterName);
+    }
+
+    public Set getArgumentNames() {
+        return m_argsTypeByName.keySet();
+    }
+
 }
 

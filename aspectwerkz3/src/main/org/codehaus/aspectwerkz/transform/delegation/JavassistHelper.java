@@ -592,6 +592,8 @@ public class JavassistHelper {
             AttributeInfo attributeInfo = (AttributeInfo) iterator.next();
             if (attributeInfo.getName().startsWith(AttributeEnhancer.CUSTOM_ATTRIBUTE)) {
                 copyTo.setAttribute(attributeInfo.getName(), attributeInfo.get());
+                //FIXME bug here 
+                //System.out.println("JavassistHelper.copyCustomAttributes " + copyFrom.getName() + " to " + copyTo.getName() + " " + attributeInfo.getName());
             }
         }
     }

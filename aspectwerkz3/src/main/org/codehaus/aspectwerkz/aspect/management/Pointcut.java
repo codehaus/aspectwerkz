@@ -22,7 +22,7 @@ import java.util.List;
  * in the program. <p/>Could matches one or many as long at it is well defined. <br/>Stores the
  * advices for the specific pointcut. <p/>
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @TODO change addXXAdvice to allow 'aspectName, adviceName' params
  */
@@ -562,6 +562,15 @@ public class Pointcut implements Serializable {
     public IndexTuple[] getBeforeAdviceIndexes() {
         return m_beforeAdviceIndexes;
     }
+
+    /**
+      * Returns the before advice name at the given index
+      *
+      * @return the advice name
+      */
+     public String getBeforeAdviceName(int index) {
+         return m_beforeAdviceNames[index];
+     }
 
     /**
      * Returns a list with the indexes for the after advices for the pointcut.

@@ -44,16 +44,19 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
+import org.codehaus.aspectwerkz.util.Strings;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The expression visitor.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class ExpressionVisitor implements ExpressionParserVisitor {
     protected ASTRoot m_root;
@@ -63,16 +66,24 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     protected String m_namespace;
 
     /**
+     * The expressionInfo this visitor is built on for expression with signature
+     * Caution: Can be null for visitor that don't need this information.
+     */
+    protected ExpressionInfo m_expressionInfo;
+
+    /**
      * Creates a new expression.
      * 
+     * @param expressionInfo the expressionInfo this visitor is built on for expression with signature
      * @param expression the expression as a string
      * @param namespace the namespace
      * @param root the AST root
      */
-    public ExpressionVisitor(final String expression, final String namespace, final ASTRoot root) {
-        m_root = root;
+    public ExpressionVisitor(final ExpressionInfo expressionInfo, final String expression, final String namespace, final ASTRoot root) {
+        m_expressionInfo = expressionInfo;
         m_expression = expression;
         m_namespace = namespace;
+        m_root = root;
     }
 
     /**
@@ -140,7 +151,40 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         ExpressionVisitor expression = namespace.getExpression(node.getName());
-        return new Boolean(expression.match(context));
+
+        Boolean match =  new Boolean(expression.match(context));
+
+        // update the context mapping from this last visit
+        if ( ! context.m_exprIndexToTargetIndex.isEmpty()) {
+            int index = 0;
+            gnu.trove.TIntIntHashMap sourceToTargetArgIndexes = new gnu.trove.TIntIntHashMap();
+            for (Iterator it = m_expressionInfo.getArgumentNames().iterator(); it.hasNext(); index++) {
+                String adviceParamName = (String)it.next();
+                //look for adviceParamName in the expression name and get its index
+                int exprArgIndex = ExpressionVisitor.getExprArgIndex(m_expression, adviceParamName);
+                if (exprArgIndex < 0) {
+                    //param of advice not found in pc signature
+                    continue;
+                }
+                int adviceArgIndex = m_expressionInfo.getArgumentIndex(adviceParamName);
+                int targetArgIndex = context.m_exprIndexToTargetIndex.get(exprArgIndex);
+                System.out.println(" transitive arg" + adviceArgIndex + " " + adviceParamName + " -> " + exprArgIndex + " -> " + targetArgIndex);
+                sourceToTargetArgIndexes.put(adviceArgIndex, targetArgIndex);
+            }
+            context.m_exprIndexToTargetIndex = sourceToTargetArgIndexes;
+            //debug:
+            if (m_expressionInfo.m_isAdviceBindingWithArgs) {
+                System.out.println("XXXARGS transitive map for an advice is @ " +
+                        m_expression + " for " + context.getReflectionInfo().getName());
+                for (int i = 0; i < sourceToTargetArgIndexes.keys().length; i++) {
+                    int adviceArgIndex = sourceToTargetArgIndexes.keys()[i];
+                    int targetMethodIndex = sourceToTargetArgIndexes.get(adviceArgIndex);
+                    System.out.println("   " + adviceArgIndex + " - " + targetMethodIndex);
+                }
+            }
+        }
+
+        return match;
     }
 
     public Object visit(ASTExecution node, Object data) {
@@ -319,7 +363,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 if (contextParametersCount >= expressionParameterCount) {
                     // do a match from last to first, break when args() nodes are exhausted
                     for (int i = 0; (i < contextParametersCount) && (expressionParameterCount-i>=0); i++) {
-                        ctx.setArgsIndex(contextParametersCount-1-i);
+                        ctx.setCurrentTargetArgsIndex(contextParametersCount-1-i);
                         if (Boolean.TRUE.equals((Boolean)node.jjtGetChild(expressionParameterCount-i).jjtAccept(this, ctx))) {
                             ;//go on with "next" arg
                         } else {
@@ -336,7 +380,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 if (contextParametersCount >= expressionParameterCount) {
                     // do a match from first to last, break when args() nodes are exhausted
                     for (int i = 0; (i < contextParametersCount) && (i<expressionParameterCount); i++) {
-                        ctx.setArgsIndex(i);
+                        ctx.setCurrentTargetArgsIndex(i);
                         if (Boolean.TRUE.equals((Boolean)node.jjtGetChild(i).jjtAccept(this, ctx))) {
                             ;//go on with next arg
                         } else {
@@ -352,8 +396,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 // check that args length are equals
                 if (expressionParameterCount == contextParametersCount) {
                     for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-                        //FIXME enhance data with "i" or change the data ?
-                        ctx.setArgsIndex(i);
+                        ctx.setCurrentTargetArgsIndex(i);
                         if (Boolean.TRUE.equals((Boolean)node.jjtGetChild(i).jjtAccept(this, ctx))) {
                             ;//go on with next arg
                         } else {
@@ -370,23 +413,41 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTArgParameter node, Object data) {
         TypePattern typePattern = node.getTypePattern();
-        // check if the arg is in the pointcut signature. In such a case, use the declared type
         TypePattern realPattern = typePattern;
+        // check if the arg is in the pointcut signature. In such a case, use the declared type
+        //TODO can we improve that with a lazy attach of the realTypePattern to the node
+        // and a method that always return the real pattern
+        // It must be lazy since args are not added at info ctor time [can be refactored..]
+        // do some filtering first to avoid unnecessary map lookup
+        int pointcutArgIndex = -1;
+        if (typePattern.getPattern().indexOf(".") < 0) {
+            String boundedType = m_expressionInfo.getArgumentType(typePattern.getPattern());
+            if (boundedType != null) {
+                pointcutArgIndex = m_expressionInfo.getArgumentIndex(typePattern.getPattern());
+                realPattern = TypePattern.compileTypePattern(boundedType, SubtypePatternType.NOT_HIERARCHICAL);
+            }
+        }
         // grab parameter from context
         ExpressionContext ctx = (ExpressionContext)data;
         ClassInfo argInfo = null;
         try {
             if (ctx.getReflectionInfo() instanceof MethodInfo) {
-                argInfo = ((MethodInfo)ctx.getReflectionInfo()).getParameterTypes()[ctx.getArgsIndex()];
+                argInfo = ((MethodInfo)ctx.getReflectionInfo()).getParameterTypes()[ctx.getCurrentTargetArgsIndex()];
             } else if (ctx.getReflectionInfo() instanceof ConstructorInfo) {
-                argInfo = ((ConstructorInfo)ctx.getReflectionInfo()).getParameterTypes()[ctx.getArgsIndex()];
+                argInfo = ((ConstructorInfo)ctx.getReflectionInfo()).getParameterTypes()[ctx.getCurrentTargetArgsIndex()];
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             // ExpressionContext args are exhausted
             return Boolean.FALSE;
         }
         // do the match
-        if (ClassInfoHelper.matchType(typePattern, argInfo)) {
+        if (ClassInfoHelper.matchType(realPattern, argInfo)) {
+            // remember the target arg index if the poincut has a signature
+            if (pointcutArgIndex >= 0) {
+//                System.out.println("XXXARGS targetArg " + ctx.getCurrentTargetArgsIndex() + " is pc expr arg " + pointcutArgIndex
+//                    + " @ " + m_expressionInfo.getExpressionAsString());
+                ctx.m_exprIndexToTargetIndex.put(pointcutArgIndex, ctx.getCurrentTargetArgsIndex());
+            }
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;
@@ -625,4 +686,33 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             return -1;
         }
     }
+
+    /**
+     * Get the parameter index from a "call side" like signature like pc(a, b) => index(a) = 0, or -1 if not found
+     *
+     * @param expression
+     * @param adviceParamName
+     * @return
+     */
+    private static int getExprArgIndex(String expression,  String adviceParamName) {
+        //TODO - support for anonymous pointcut with args
+        int paren = expression.indexOf('(');
+        if (paren > 0) {
+            String params = expression.substring(paren+1, expression.lastIndexOf(')')).trim();
+            String[] parameters = Strings.splitString(params, ",");
+            int paramIndex = 0;
+            for (int i = 0; i < parameters.length; i++) {
+                String parameter = parameters[i].trim();
+                if (parameter.length() > 0) {
+                    if (adviceParamName.equals(parameter)) {
+                        return paramIndex;
+                    } else {
+                        paramIndex++;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
 }

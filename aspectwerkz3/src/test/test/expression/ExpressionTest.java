@@ -1607,6 +1607,10 @@ public class ExpressionTest extends TestCase {
             "call(void test.expression.Target.parameters3(String, StringBuffer, String))",
             NAMESPACE).getExpression().match(
             new ExpressionContext(PointcutType.CALL, parameters3, null)));
+        assertTrue(new ExpressionInfo(
+            "call(void test.expression.Target.parameters3(String, java.io.Serializable+, String))",
+            NAMESPACE).getExpression().match(
+            new ExpressionContext(PointcutType.CALL, parameters3, null)));
         assertFalse(new ExpressionInfo(
             "call(void test.expression.Target.parameters3(String, StringBuffer, String, *))",
             NAMESPACE).getExpression().match(
@@ -1646,6 +1650,33 @@ public class ExpressionTest extends TestCase {
             "call(void test.expression.Target.parameters5(..)) && args(int[])",
             NAMESPACE).getExpression().match(
             new ExpressionContext(PointcutType.CALL, parameters5, null)));
+    }
+
+    public void testMethodArgsBinding() throws Exception {
+        ExpressionInfo info = null;
+
+        info = new ExpressionInfo(
+            "call(void test.expression.Target.parameters2(..)) && args(i, f, b)",
+            NAMESPACE);
+        info.addArgument("i", "int");
+        info.addArgument("f", "float");
+        info.addArgument("b", "byte");
+        assertTrue(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
+
+        info = new ExpressionInfo(
+            "call(void test.expression.Target.parameters2(..)) && args(i, f, byte)",
+            NAMESPACE);
+        info.addArgument("i", "int");
+        info.addArgument("f", "float");
+        assertTrue(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
+
+        info = new ExpressionInfo(
+            "call(void test.expression.Target.parameters2(..)) && args(i, f, b)",
+            NAMESPACE);
+        info.addArgument("i", "int");
+        info.addArgument("f", "WRONG");
+        // b will be considered as a type
+        assertFalse(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
     }
 
 
