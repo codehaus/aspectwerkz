@@ -79,7 +79,19 @@
         <contributor>
             <name>Ron Bodkin</name>
             <roles>
-                <role>Original idea of Self-Defined Aspects</role>
+                <role>Original idea of Annotation Defined Aspects</role>
+            </roles>
+        </contributor>
+        <contributor>
+            <name>Michael Nascimento</name>
+            <roles>
+                <role>hasMethod and hasField implementation</role>
+            </roles>
+        </contributor>
+        <contributor>
+            <name>Allan Jones</name>
+            <roles>
+                <role>Serialization issue feedback</role>
             </roles>
         </contributor>
     </contributors>

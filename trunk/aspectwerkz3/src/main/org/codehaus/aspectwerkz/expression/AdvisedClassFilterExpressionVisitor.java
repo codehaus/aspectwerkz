@@ -56,6 +56,7 @@ import java.util.Iterator;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
+ * @author Michael Nascimento
  */
 public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisitor {
     protected final ASTRoot m_root;
