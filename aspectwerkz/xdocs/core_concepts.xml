@@ -1056,8 +1056,9 @@ public class MyAspect extends Aspect {
 
         <section name="Model 2 - Introductions">
             <p>
-                The Introduction class implements the concept of Mixins/Open Classes.
-                I.e. an Introduction makes it possible to extend a class with a new interface and/or a new implementation (methods and fields).
+                The Introduction class implements the concept of Mixins or Open Classes.
+                I.e. an Introduction makes it possible to extend a class with a new interface
+                and/or a new implementation (methods and fields).
             </p>
             <p>
                 In model 2, introductions are defined as
@@ -1074,15 +1075,17 @@ public class MyAspect extends Aspect {
             </p>
             <subsection name="Pure Interface introduction">
                 <p>
-                    Interface introductions (marker interface) are defined as fields in the aspect class.
+                    Interface introductions (introduction of marker interfaces) are defined as fields in the aspect class.
                     The type of the field is the interface to introduce.<br/>
-                    The field is marked with metadata <code>@Implements &lt;classPattern&gt;</code> to specify to which classes the introduction applies.<br/>
+                    The field is marked with metadata <code>@Implements &lt;classPattern&gt;</code> to specify to which
+                    classes the introduction applies.<br/>
                     The name of the introduction is the field name.
                 </p>
                 <p>
-                    When using abstract aspect or aspect inheritance, the aspect super class can define such introductions without
-                    specifying a <code>classPattern</code> thru metadata.
-                    The concrete aspect should thus override the fields to specify thru metadata to which classes the introduction applies.
+                    When using abstract aspects or aspect inheritance, the aspect's super class can define interface
+                    introductions without specifying a <code>@Implements &lt;classPattern&gt;</code> metadata.
+                    The concrete aspect should thus override the fields and specify the metadata defining to which
+                    classes the introduction applies.
                 </p>
                 <p>
                     <source><![CDATA[
@@ -1091,12 +1094,15 @@ public class MyAspect extends Aspect {
  */
 public MyAspect extends Aspect {
 
-    /** @Implements com.package.* */
-    protected Serializable introduce1;
+    /**
+     * @Implements com.package.*
+     */
+    protected Serializable introduction1;
 
-    /** @Implements com.package.* */
-    public OtherMarkerInterface introduce2;
-
+    /**
+     * @Implements com.package.*
+     */
+    public OtherMarkerInterface introduction2;
  }
                     ]]></source>
                 </p>
@@ -1104,16 +1110,21 @@ public MyAspect extends Aspect {
             </subsection>
             <subsection name="Implementation introduction">
                 <p>
-                    Implementation introductions (interface with concrete implementation) are defined as public inner class of the aspect class.
-                    It is mandatory for the inner class to be accessible with a no-arg constructor, thus to be public or to explicitly have a no-arg constructor.
-                    The inner class implements the interface(s) to introduce.<br/>
-                    The inner class is marked with metadata <code>@Introduce &lt;classPattern&gt;</code> to specify to which classes the introduction applies.<br/>
-                    The name of the introduction is the full qualified inner class name (thus like <code>&lt;aspectClassName&gt;$&lt;innerClassName&gt;</code>).
+                    Implementation introductions (interface with concrete implementation), also known as mixins, are defined
+                    as public inner class of the aspect class.
+                    It is mandatory for the inner class to be accessible with a no-arg constructor, thus to be public or
+                    to explicitly have a no-arg constructor.
+                    The inner class implements the interface(s) to introduce on the target class.<br/>
+                    The inner class is marked with metadata <code>@Introduce &lt;classPattern&gt;</code> to specify to which
+                    classes the introduction applies.<br/>
+                    The name of the introduction is the fully qualified inner class name e.g.
+                    <code>&lt;aspectClassName&gt;$&lt;innerClassName&gt;</code>.
                 </p>
                 <p>
-                    When using abstract aspect or aspect inheritance, the aspect super class can define such introductions without
-                    specifying a <code>classPattern</code> thru metadata.
-                    The concrete aspect should thus declare an inner class that extends the super class aspect one's and specify thru metadata to which classes the introduction applies.
+                    When using abstract aspects or aspect inheritance, the aspect's super class can define introductions without
+                    specifying a <code>@Introduce &lt;classPattern&gt;</code> metadata.
+                    The concrete aspect should thus declare an inner class that extends the super class aspect one's and
+                    specify thru metadata to which classes the introduction applies.
                 </p>
                 <p>
                     <source><![CDATA[
@@ -1122,26 +1133,30 @@ public MyAspect extends Aspect {
  */
 public MyAspect extends Aspect {
 
-    // anonymous pointcut
-    /** @Introduce com.package.* */
+    /**
+     * Anonymous pointcut.
+     *
+     * @Introduce com.package.*
+     */
     public class MyIntroduction extends SuperIntroduction implements ToBeIntroduced {
-
         // introduced methods implementation
         ...
     }
 
-    /** @Class com.package.Foo */
+    /**
+     * @Class com.package.Foo
+     */
     Pointcut pc1;
 
-    // named pointcut(s) in expression
-    /** @Introduce pc1 */
+    /**
+     * Named pointcut(s) in expression.
+     *
+     * @Introduce pc1
+     */
     public class AnotherIntroduction implements AnotherToBeIntroduced {
-
         // introduced methods implementation
         ...
     }
-
-
  }
                     ]]></source>
                 </p>
@@ -1151,12 +1166,12 @@ public MyAspect extends Aspect {
                 <p>
                     It is possible to replace the introduction implementation at runtime using a call like
                     <source><![CDATA[
-    SystemLoader.getSystem("tests").getMixin("test.attribdef.aspect.IntroductionTestAspect$MyImpl").
-        ___AW_swapImplementation("test.attribdef.aspect.IntroductionTestAspectMyImplReplacement");
+SystemLoader.getSystem("systemId").getMixin("test.attribdef.aspect.IntroductionTestAspect$MyImpl").
+    ___AW_swapImplementation("test.attribdef.aspect.IntroductionTestAspectMyImplReplacement");
                     ]]></source>
                 </p>
                 <p>
-                    The swapped implementation must implements the introduced interfaces, but can be an autonomous class
+                    The swapped implementation must implement the introduced interfaces, but can be an autonomous class
                     or an aspect inner class. Only the default introduced implementation must be an inner class.
                 </p>
             </subsection>
@@ -1249,7 +1264,14 @@ public MyAspect extends Aspect {
                         <td>name [0:&lt;aspectClassName&gt;.&lt;methodName&gt;</td>
                     </tr>
                     <tr>
-                        <td>@Pre / @Post</td>
+                        <td>@Before</td>
+                        <td>Method</td>
+                        <td>Advice for @Call, @Set, @Get</td>
+                        <td>&lt;expression&gt;</td>
+                        <td>name [0:&lt;aspectClassName&gt;.&lt;methodName&gt;</td>
+                    </tr>
+                    <tr>
+                        <td>@After</td>
                         <td>Method</td>
                         <td>Advice for @Call, @Set, @Get</td>
                         <td>&lt;expression&gt;</td>
@@ -1273,25 +1295,28 @@ public MyAspect extends Aspect {
             </p>
         </section>
 
-        <section name="Model 2 - Aspect post compilation">
+        <section name="Model 2 - Aspect post-compilation">
             <p>
-                The model 2 - self defined Aspects have to be post compiled to incorporate the metadata into the class file bybtecode.
-                This post compilation will not be needed with java 1.5 and JSR-175. For now you need to first compile the aspect classes with javac compiler
-                and thus post compile the <code>.class</code> files with the aspect source code as inputs.<br/>
+                The model 2 - self-defined Aspects have to be post-compiled to incorporate the metadata into the class file bytecode.
+                This post-compilation step will not be needed with java 1.5 and JSR-175. For now you need to first compile
+                the aspect classes with javac compiler and then post compile the <code>.class</code> files with the aspect
+                source code as input.<br/>
                 See <a href="definition_issues.html#Model 2 - Aspects compilation">specific part</a>
             </p>
         </section>
 
         <section name="Choosing a model">
             <p>
-                The model 1 - XML centric allows to define the pointcuts expression in an external file. It can be thus used
-                to provide aspects that needs to be tuned without extra development phase except editing an XML file.
+                The model 1 - XML centric model allows to define the pointcut expressions in an external file. It can be used
+                to provide aspects that needs to be tuned without an extra development phase (apart from editing an XML file).
                 This model leads to a more exploded aspect since several classes are needed (one per Advice).
+                The main disadvantage with this approach is that the implementation is separated from the definition which
+                makes the code harder to refactor, maintain and reuse.
             </p>
             <p>
-                The model 2 - Self defined aspect allows to have self contained aspect. Those are easier to maintain, but requires
-                a small development phase to extend them and specify the binding as metadata.
-                The self defined aspect requires and extra post compilation phase (until java 1.5).
+                The model 2 - Self-defined aspect allows you to have truly self-contained aspect components.
+                Those are easier to maintain, refactor and reuse as well as build libraries upon. The drawback is that it
+                requires an additional post-compilation step (until java 1.5) to annotate them with the metadata.
             </p>
         </section>
     </body>
