@@ -485,7 +485,7 @@ public final class TransformationUtil {
                 boolean match = true;
                 for (int j = 0; j < parameterTypes.length; j++) {
                     String withinMethodParameterName = JavassistHelper
-                                                       .convertJavassistTypeSignatureToReflectTypeSignature(withinMethodParameterNames[i]);
+                       .convertJavassistTypeSignatureToReflectTypeSignature(withinMethodParameterNames[j]);
                     if (!parameterTypes[j].getName().equals(withinMethodParameterName)) {
                         match = false;
                         break;
