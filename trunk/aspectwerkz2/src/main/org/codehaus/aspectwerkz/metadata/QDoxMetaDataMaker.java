@@ -31,13 +31,13 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
      * @return a <code>ClassMetaData</code> instance.
      */
-    public static ClassMetaData createClassMetaData(final JavaClass javaClass) {
+    public ClassMetaData createClassMetaData(final JavaClass javaClass) {
         if (javaClass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
 
-        if (s_classMetaDataCache.containsKey(javaClass.getName())) {
-            return (ClassMetaData)s_classMetaDataCache.get(javaClass.getName());
+        if (m_classMetaDataCache.containsKey(javaClass.getName())) {
+            return (ClassMetaData)m_classMetaDataCache.get(javaClass.getName());
         }
 
         ClassMetaDataImpl classMetaData = new ClassMetaDataImpl();
@@ -91,8 +91,8 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
             classMetaData.setSuperClass(superClassMetaData);
         }
 
-        synchronized (s_classMetaDataCache) {
-            s_classMetaDataCache.put(classMetaData.getName(), classMetaData);
+        synchronized (m_classMetaDataCache) {
+            m_classMetaDataCache.put(classMetaData.getName(), classMetaData);
         }
         return classMetaData;
     }
@@ -104,13 +104,13 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
      * @return a <code>InterfaceMetaData</code> instance.
      * @todo add the interface's interfaces to the InterfaceMetaData (if needed)
      */
-    public static InterfaceMetaData createInterfaceMetaData(final Type type) {
+    public InterfaceMetaData createInterfaceMetaData(final Type type) {
         if (type == null) {
             throw new IllegalArgumentException("interface can not be null");
         }
 
-        if (s_interfaceMetaDataCache.containsKey(type.getValue())) {
-            return (InterfaceMetaData)s_interfaceMetaDataCache.get(type.getValue());
+        if (m_interfaceMetaDataCache.containsKey(type.getValue())) {
+            return (InterfaceMetaData)m_interfaceMetaDataCache.get(type.getValue());
         }
 
         InterfaceMetaDataImpl interfaceMetaData = new InterfaceMetaDataImpl();
@@ -124,8 +124,8 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
 //        }
 //        interfaceMetaData.setInterfaces(interfaceList);
 
-        synchronized (s_interfaceMetaDataCache) {
-            s_interfaceMetaDataCache.put(interfaceMetaData.getName(), interfaceMetaData);
+        synchronized (m_interfaceMetaDataCache) {
+            m_interfaceMetaDataCache.put(interfaceMetaData.getName(), interfaceMetaData);
         }
         return interfaceMetaData;
     }

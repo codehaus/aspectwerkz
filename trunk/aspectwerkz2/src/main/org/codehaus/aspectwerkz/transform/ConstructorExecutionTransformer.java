@@ -59,7 +59,7 @@ public class ConstructorExecutionTransformer implements Transformer {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            ClassMetaData classMetaData = context.getMetaDataMaker().createClassMetaData(ctClass);
             if (classFilter(definition, classMetaData, ctClass)) {
                 continue;
             }

@@ -60,7 +60,7 @@ public class MethodCallTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            ClassMetaData classMetaData = context.getMetaDataMaker().createClassMetaData(ctClass);
 
             // filter caller classes
             if (classFilter(definition, classMetaData, ctClass)) {
@@ -102,7 +102,7 @@ public class MethodCallTransformer implements Transformer {
                                 ClassMetaData calleeSideClassMetaData;
                                 try {
                                     calleeSideClassMetaData =
-                                    JavassistMetaDataMaker.createClassMetaData(
+                                    context.getMetaDataMaker().createClassMetaData(
                                             context.getClassPool().get(calleeClassName)
                                     );
                                 }

@@ -57,7 +57,7 @@ public class HandlerTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            final ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            final ClassMetaData classMetaData = context.getMetaDataMaker().createClassMetaData(ctClass);
 
             if (classFilter(definition, classMetaData, ctClass)) {
                 continue;
@@ -86,7 +86,7 @@ public class HandlerTransformer implements Transformer {
 
                                 MethodMetaData methodMetaData = null; //JavassistMetaDataMaker.createMethodMetaData(...);
 
-                                ClassMetaData exceptionClassMetaData = JavassistMetaDataMaker.createClassMetaData(
+                                ClassMetaData exceptionClassMetaData = context.getMetaDataMaker().createClassMetaData(
                                         exceptionClass
                                 );
 

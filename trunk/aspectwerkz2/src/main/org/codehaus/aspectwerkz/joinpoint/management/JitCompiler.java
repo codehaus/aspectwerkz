@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 import org.codehaus.aspectwerkz.*;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.MetaDataMaker;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.transform.AsmHelper;
 import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
@@ -1755,7 +1756,7 @@ public class JitCompiler {
                 tuple.cflowExpressions = new ArrayList();
                 for (int i = 0; i < system.getAspectManagers().length; i++) {
                     tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
-                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+                        MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createClassMetaData(declaringClass),
                         ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
                         null, PointcutType.EXECUTION //TODO CAN BE @CALL - see proceedWithCallJoinPoint
                     ));
@@ -1770,8 +1771,8 @@ public class JitCompiler {
                 tuple.cflowExpressions = new ArrayList();
                 for (int i = 0; i < system.getAspectManagers().length; i++) {
                     tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
-                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-                        ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
+                        MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createClassMetaData(declaringClass),
+                        MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createMethodMetaData(methodTuple.getWrapperMethod()),
                         null, PointcutType.CALL //TODO CAN BE @CALL - see proceedWithCallJoinPoint
                     ));
                 }
@@ -1789,8 +1790,8 @@ public class JitCompiler {
                 tuple.cflowExpressions = new ArrayList();
                 for (int i = 0; i < system.getAspectManagers().length; i++) {
                     tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
-                            ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-                            ReflectionMetaDataMaker.createConstructorMetaData(constructorTuple.getWrapperConstructor()),
+                            MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createClassMetaData(declaringClass),
+                            MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createConstructorMetaData(constructorTuple.getWrapperConstructor()),
                             null, PointcutType.CALL
                     ));
                 }
@@ -1806,8 +1807,8 @@ public class JitCompiler {
                 tuple.cflowExpressions = new ArrayList();
                 for (int i = 0; i < system.getAspectManagers().length; i++) {
                     tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
-                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-                        ReflectionMetaDataMaker.createConstructorMetaData(constructorTuple.getWrapperConstructor()),
+                        MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createClassMetaData(declaringClass),
+                        MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createConstructorMetaData(constructorTuple.getWrapperConstructor()),
                         null, PointcutType.EXECUTION
                     ));
                 }
@@ -1821,8 +1822,8 @@ public class JitCompiler {
                 tuple.cflowExpressions = new ArrayList();
                 for (int i = 0; i < system.getAspectManagers().length; i++) {
                     tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
-                            ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-                            ReflectionMetaDataMaker.createFieldMetaData(field),
+                            MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createClassMetaData(declaringClass),
+                            MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createFieldMetaData(field),
                             null, PointcutType.SET
                     ));
                 }
@@ -1836,8 +1837,8 @@ public class JitCompiler {
                 tuple.cflowExpressions = new ArrayList();
                 for (int i = 0; i < system.getAspectManagers().length; i++) {
                     tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
-                            ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-                            ReflectionMetaDataMaker.createFieldMetaData(field),
+                            MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createClassMetaData(declaringClass),
+                            MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createFieldMetaData(field),
                             null, PointcutType.GET
                     ));
                 }
