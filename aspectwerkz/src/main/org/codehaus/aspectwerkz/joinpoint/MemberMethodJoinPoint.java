@@ -59,7 +59,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
         m_targetObjectReference = new SoftReference(targetObject);
 
         try {
-            m_targetClass = Thread.currentThread().getContextClassLoader().loadClass(targetClassName);
+            m_targetClass = targetObject.getClass().getClassLoader().loadClass(targetClassName);
         }
         catch (ClassNotFoundException e) {
             throw new WrappedRuntimeException(e);

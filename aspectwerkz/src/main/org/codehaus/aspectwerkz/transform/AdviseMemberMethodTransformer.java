@@ -217,13 +217,12 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
                 if (methodName.equals(mg.getMethod().getName()) &&
                         className.equals(superClassName)) {
-
                     JavaClass superClass = context.getSuperClass(cg);
                     Method[] methods = superClass.getMethods();
                     MethodMetaData methodMetaData = null;
                     for (int i = 0; i < methods.length; i++) {
                         Method method = methods[i];
-                        if (method.getSignature().equals(signature)) {
+                        if (method.getSignature().equals(signature) && method.getName().equals(methodName)) {
                             methodMetaData = BcelMetaDataMaker.createMethodMetaData(method);
                             break;
                         }
@@ -233,6 +232,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                     }
 
                     ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(superClass);
+
                     if (m_definition.hasMethodPointcut(classMetaData, methodMetaData)) {
                         StringBuffer prefixedOriginalMethod = new StringBuffer();
                         prefixedOriginalMethod.append(TransformationUtil.ORIGINAL_METHOD_PREFIX);
