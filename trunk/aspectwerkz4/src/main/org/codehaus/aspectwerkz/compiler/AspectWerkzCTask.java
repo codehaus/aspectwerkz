@@ -1,6 +1,6 @@
 /*
- * $Id: AspectWerkzCTask.java,v 1.5 2005-01-07 12:09:09 avasseur Exp $
- * $Date: 2005-01-07 12:09:09 $
+ * $Id: AspectWerkzCTask.java,v 1.6 2005-01-07 12:14:20 avasseur Exp $
+ * $Date: 2005-01-07 12:14:20 $
  */
 package org.codehaus.aspectwerkz.compiler;
 
@@ -22,6 +22,7 @@ import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
  * Use the following parameters to configure the task:
  * <ul>
  * <li>verbose: [optional] flag marking the weaver verbosity [true / false]</li>
+ * <li>keepjp: [optional] flag marking the need to keep the generated jp classes [true / false]</li>
  * <li>taskverbose: [optional] flag marking the task verbose [true / false]</li>
  * <li>definition: [optional] path to aspect definition xml file (optional, can be found on the path as META-INF/aop.xml - even several)</li>
  * <li>aspectmodels: [optional] models FQN list separated by ":" (see AspectModelManager)</li>
