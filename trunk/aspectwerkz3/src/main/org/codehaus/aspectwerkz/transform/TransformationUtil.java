@@ -9,6 +9,8 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.lang.reflect.Modifier;
 
+import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
+
 /**
  * Utility method used by the transformers.
  *
@@ -170,5 +172,36 @@ public final class TransformationUtil {
         sig.append(";");
         sig.append(ctorDesc.substring(1));
         return sig.toString();
+    }
+
+    /**
+     * Computes the joinpoint classname : "caller/class_type_hash_suffix"
+     * For constructor call joinpoints, the hash of callee name is used as well.
+     *
+     * @param thisClassName
+     * @param targetClassName
+     * @param joinPointType
+     * @param joinPointHash
+     * @return the JIT joinpoint classname
+     */
+    public static String getJoinPointClassName(final String thisClassName,
+                                               final String targetClassName,
+                                               final int joinPointType,
+                                               final int joinPointHash) {
+        StringBuffer classNameBuf = new StringBuffer(thisClassName);
+        // TODO: INNER CLASS OR NOT?
+//        classNameBuf.append("$");
+        classNameBuf.append('_');
+        classNameBuf.append(joinPointType);
+        classNameBuf.append('_');
+        classNameBuf.append(joinPointHash);
+        //FIXME needed for method call jp ?
+        if (joinPointType == JoinPointType.CONSTRUCTOR_CALL) {
+            classNameBuf.append('_').append(targetClassName.hashCode());
+        }
+        classNameBuf.append(TransformationConstants.JOIN_POINT_CLASS_SUFFIX);
+
+        //replace minus signs on m_joinPointHash
+        return classNameBuf.toString().replace('-', '_').replace('.', '/');
     }
 }
