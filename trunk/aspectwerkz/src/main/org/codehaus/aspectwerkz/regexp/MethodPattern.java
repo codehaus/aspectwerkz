@@ -171,7 +171,7 @@ public class MethodPattern extends Pattern {
             parseMethodNamePattern(pattern);
             parserParameterTypesPattern(pattern);
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             throw new DefinitionException("method pattern is not well formed: " + pattern);
         }
     }
@@ -206,14 +206,14 @@ public class MethodPattern extends Pattern {
         //AW-91:check array type
         int arraySize = 0;
         while (returnTypePattern.endsWith("[]")) {
-            returnTypePattern = returnTypePattern.substring(0, returnTypePattern.length()-2);
+            returnTypePattern = returnTypePattern.substring(0, returnTypePattern.length() - 2);
             arraySize++;
         }
         if (m_abbreviations.containsKey(returnTypePattern)) {
             returnTypePattern = (String)m_abbreviations.get(returnTypePattern);
         }
         //AW-91:rebuild array types
-        for (int i = arraySize; i>0; i--) {
+        for (int i = arraySize; i > 0; i--) {
             returnTypePattern += "[]";
         }
         if (returnTypePattern.equals(SINGLE_WILDCARD)) {
@@ -233,13 +233,11 @@ public class MethodPattern extends Pattern {
     protected void parserParameterTypesPattern(final String pattern) {
         final int startIndexParameterTypes = pattern.indexOf('(') + 1;
         final int endIndexParameterTypes = pattern.indexOf(')');
-        String parameterTypesPattern =
-                pattern.substring(startIndexParameterTypes, endIndexParameterTypes);
+        String parameterTypesPattern = pattern.substring(startIndexParameterTypes, endIndexParameterTypes);
 
         m_parameterTypePatterns = new ArrayList();
 
-        final StringTokenizer tokenizer =
-                new StringTokenizer(parameterTypesPattern, ",");
+        final StringTokenizer tokenizer = new StringTokenizer(parameterTypesPattern, ",");
 
         if (tokenizer.hasMoreTokens()) {
             // if the first parameter is (..) set it and return
@@ -247,14 +245,14 @@ public class MethodPattern extends Pattern {
             //AW-91:check array type
             int arraySize = 0;
             while (firstParameter.endsWith("[]")) {
-                firstParameter = firstParameter.substring(0, firstParameter.length()-2);
+                firstParameter = firstParameter.substring(0, firstParameter.length() - 2);
                 arraySize++;
             }
             if (m_abbreviations.containsKey(firstParameter)) {
                 firstParameter = (String)m_abbreviations.get(firstParameter);
             }
             //AW-91:rebuild array types
-            for (int i = arraySize; i>0; i--) {
+            for (int i = arraySize; i > 0; i--) {
                 firstParameter += "[]";
             }
             if (firstParameter.equals(SINGLE_WILDCARD)) {
@@ -291,7 +289,7 @@ public class MethodPattern extends Pattern {
     /**
      * Escapes the string.
      *
-     * @param str
+     * @param oldString
      * @return
      */
     protected static String escapeString(final String oldString) {

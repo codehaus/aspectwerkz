@@ -14,8 +14,7 @@ import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
- * Implements the regular expression pattern matcher for caller side methods
- *  in AspectWerkz.
+ * Implements the regular expression pattern matcher for caller side methods in AspectWerkz.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -27,9 +26,14 @@ public class CallerSidePattern extends Pattern {
     protected String m_pattern;
 
     /**
-     * The class pattern part of the pattern.
+     * The caller class pattern part of the pattern.
      */
-    protected ClassPattern m_classPattern;
+    protected ClassPattern m_callerClassPattern;
+
+    /**
+     * The callee class pattern part of the pattern.
+     */
+    protected ClassPattern m_calleeClassPattern;
 
     /**
      * The method pattern part of the pattern.
@@ -43,12 +47,18 @@ public class CallerSidePattern extends Pattern {
      * @return true if we have a matches
      */
     public boolean matches(final String className) {
-        if (m_classPattern.matches(className)) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return m_calleeClassPattern.matches(className);
+    }
+
+    /**
+     * Matches a caller side pointcut.
+     *
+     * @param className the class name
+     * @param methodMetaData the method meta-data
+     * @return true if we have a matches
+     */
+    public boolean matches(final MethodMetaData methodMetaData) {
+        return m_methodPattern.matches(methodMetaData);
     }
 
     /**
@@ -59,12 +69,7 @@ public class CallerSidePattern extends Pattern {
      * @return true if we have a matches
      */
     public boolean matches(final String className, final MethodMetaData methodMetaData) {
-        if (m_classPattern.matches(className) && m_methodPattern.matches(methodMetaData)) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return m_calleeClassPattern.matches(className) && m_methodPattern.matches(methodMetaData);
     }
 
     /**
@@ -82,11 +87,9 @@ public class CallerSidePattern extends Pattern {
      * @param pattern the method pattern
      */
     protected void parse(final String pattern) {
-        StringTokenizer tokenizer = new StringTokenizer(
-                m_pattern,
-                AspectWerkzDefinition.CALLER_SIDE_DELIMITER);
+        StringTokenizer tokenizer = new StringTokenizer(m_pattern, AspectWerkzDefinition.CALLER_SIDE_DELIMITER);
         try {
-            m_classPattern = Pattern.compileClassPattern(tokenizer.nextToken());
+            m_calleeClassPattern = Pattern.compileClassPattern(tokenizer.nextToken());
             m_methodPattern = Pattern.compileMethodPattern(tokenizer.nextToken());
         }
         catch (Exception e) {
