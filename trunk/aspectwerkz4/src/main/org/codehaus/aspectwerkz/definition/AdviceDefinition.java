@@ -349,4 +349,30 @@ public class AdviceDefinition {
                 m_aspectDefinition
         );
     }
+
+    /**
+     * Equals and hashcode means we have the same advice if the aspect qualified name (not classname) and
+     * advice name (may include signature) are the same. [AW-439 fix]
+     *
+     * @param o
+     * @return
+     */
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AdviceDefinition)) return false;
+
+        final AdviceDefinition adviceDefinition = (AdviceDefinition) o;
+
+        if (!m_aspectName.equals(adviceDefinition.m_aspectName)) return false;
+        if (!m_name.equals(adviceDefinition.m_name)) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        result = m_name.hashCode();
+        result = 29 * result + m_aspectName.hashCode();
+        return result;
+    }
 }

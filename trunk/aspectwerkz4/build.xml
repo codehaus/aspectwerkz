@@ -544,6 +544,15 @@
     </target>
 
     <!-- =================================================== -->
+    <!--  runs the exception handling sample -->
+    <!-- =================================================== -->
+    <target name="samples:exception" depends="clean, dist, compile:samples, samples:annotationc">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
+        </exec>
+    </target>
+
+    <!-- =================================================== -->
     <!--  runs the proxy sample -->
     <!-- =================================================== -->
     <target name="samples:proxy" depends="clean, compile:samples, dist">
@@ -555,15 +564,6 @@
             </classpath>
             <jvmarg line="-Daspectwerkz.definition.file=${basedir}/src/samples/aop.xml"/>
         </java>
-    </target>
-
-    <!-- =================================================== -->
-    <!--  runs the exception handling sample -->
-    <!-- =================================================== -->
-    <target name="samples:exception" depends="clean, dist, compile:samples, samples:annotationc">
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
-        </exec>
     </target>
 
     <!-- =================================================== -->
@@ -598,7 +598,6 @@
             <classpath>
                 <pathelement path="${samples.classes}"/>
                 <pathelement path="${main.classes}"/>
-                <pathelement path="${java.home}/../lib/tools.jar"/>
                 <path refid="project.class.path"/>
             </classpath>
             <!-- use -Xdebug on 1.4 for HotSwap support thru native module -->
@@ -614,7 +613,34 @@
             <classpath>
                 <pathelement path="${samples.classes}"/>
                 <pathelement path="${main.classes}"/>
-                <pathelement path="${java.home}/../lib/tools.jar"/>
+                <path refid="project.class.path"/>
+            </classpath>
+            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/aop.xml"/>
+        </java>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the caching sample in offline mode -->
+    <!-- =================================================== -->
+    <target name="samples:offline:caching" depends="clean, dist, offline:samples">
+        <java classname="examples.caching.CacheTest" fork="true">
+            <classpath>
+                <pathelement path="${samples.classes}"/>
+                <pathelement path="${main.classes}"/>
+                <path refid="project.class.path"/>
+            </classpath>
+            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/aop.xml"/>
+        </java>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the cflow sample in offline mode -->
+    <!-- =================================================== -->
+    <target name="samples:offline:cflow" depends="clean, dist, offline:samples">
+        <java classname="examples.cflow.Target" fork="true">
+            <classpath>
+                <pathelement path="${samples.classes}"/>
+                <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
             <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/aop.xml"/>
@@ -629,13 +655,29 @@
             <classpath>
                 <pathelement path="${samples.classes}"/>
                 <pathelement path="${main.classes}"/>
-                <pathelement path="${java.home}/../lib/tools.jar"/>
                 <path refid="project.class.path"/>
             </classpath>
             <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/aop.xml"/>
         </java>
     </target>
 
+    <!-- =================================================== -->
+    <!--  runs the exception handling sample in offline mode -->
+    <!-- =================================================== -->
+    <target name="samples:offline:exception" depends="clean, dist, offline:samples">
+        <java classname="examples.exception.Target" fork="true">
+            <classpath>
+                <pathelement path="${samples.classes}"/>
+                <pathelement path="${main.classes}"/>
+                <path refid="project.class.path"/>
+            </classpath>
+            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/aop.xml"/>
+        </java>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the Java 5 callback sample with JVMTI agent -->
+    <!-- =================================================== -->
     <target name="samples:jdk5:callback" depends="init, clean, dist" if="jdk15" >
         <java classname="examples.callback.Callback" fork="true">
             <classpath>
@@ -648,6 +690,10 @@
         </java>
     </target>
 
+    <!-- =================================================== -->
+    <!--  runs the Java 5 callback sample with prepared CL (for Mac without JVMTI sometimes) -->
+    <!-- Ones should invoke samples:plug first to generate the prepared bootclassloader in lib/loader.jar -->
+    <!-- =================================================== -->
     <target name="samples:jdk5:callback:hook" depends="init, clean, dist" if="jdk15">
         <java classname="examples.callback.Callback" fork="true">
             <classpath>
@@ -659,6 +705,9 @@
         </java>
     </target>
 
+    <!-- =================================================== -->
+    <!--  runs the Java 5 proxy sample with weaving enabled (weaved twice issue) -->
+    <!-- =================================================== -->
     <target name="samples:jdk5:proxy" depends="init, clean, dist" if="jdk15">
         <java classname="examples.proxy.Proxy5" fork="true">
             <classpath>
@@ -671,9 +720,13 @@
         </java>
     </target>
 
+    <!-- =================================================== -->
+    <!--  all samples for dist time checkings -->
+    <!-- =================================================== -->
     <target name="samples" depends="samples:logging, samples:caching, samples:cflow,
                                     samples:exception, samples:introduction, samples:annotation,
-                                    samples:offline:logging, samples:offline:introduction, samples:offline:annotation,
+                                    samples:offline:logging, samples:offline:caching, samples:offline:cflow,
+                                    samples:offline:exception, samples:offline:introduction, samples:offline:annotation,
                                     samples:jdk5:callback, samples:jdk5:proxy"/>
 
     <!-- =================================================== -->

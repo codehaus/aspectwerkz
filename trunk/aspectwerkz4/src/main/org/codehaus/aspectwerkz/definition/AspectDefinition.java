@@ -226,7 +226,9 @@ public class AspectDefinition {
      * @param adviceDef the around advice
      */
     public void addAroundAdviceDefinition(final AdviceDefinition adviceDef) {
-        m_aroundAdviceDefinitions.add(adviceDef);
+        if (!m_aroundAdviceDefinitions.contains(adviceDef)) {
+            m_aroundAdviceDefinitions.add(adviceDef);
+        }
     }
 
     /**
@@ -244,7 +246,9 @@ public class AspectDefinition {
      * @param adviceDef the before advice
      */
     public void addBeforeAdviceDefinition(final AdviceDefinition adviceDef) {
-        m_beforeAdviceDefinitions.add(adviceDef);
+        if (!m_beforeAdviceDefinitions.contains(adviceDef)) {
+            m_beforeAdviceDefinitions.add(adviceDef);
+        }
     }
 
     /**
@@ -262,7 +266,9 @@ public class AspectDefinition {
      * @param adviceDef the after advice
      */
     public void addAfterAdviceDefinition(final AdviceDefinition adviceDef) {
-        m_afterAdviceDefinitions.add(adviceDef);
+        if (!m_afterAdviceDefinitions.contains(adviceDef)) {
+            m_afterAdviceDefinitions.add(adviceDef);
+        }
     }
 
     /**
