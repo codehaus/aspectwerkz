@@ -6,5 +6,6 @@ package test.callAndExecution;
 public interface Intf {
 
     public void called();
+
     public void called(int i);
 }
