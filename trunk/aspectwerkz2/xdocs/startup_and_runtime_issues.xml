@@ -395,12 +395,12 @@ remote.server.invoker.classname=
                     <code>RemoteProxy</code>
                     and have sent over or have other requirements on how you want to invoke you
                     objects then you can create your own implementation of the
-                    <code>org.codehaus.aspectwerkz.connectivity.Inovoker</code> interface and
+                    <code>org.codehaus.aspectwerkz.connectivity.Invoker</code> interface and
                     specify the implementation in the aspectwerkz.properties resource bundle using
                     the
                     <code>remote.server.invoker.classname=..</code> option. For an example
                     implementation see the
-                    <code>org.codehaus.aspectwerkz.AspectWerkz.getDefaultInvoker()</code> method.
+                    <code>org.codehaus.aspectwerkz.System.getDefaultInvoker()</code> method.
                 </p>
             </subsection>
 
