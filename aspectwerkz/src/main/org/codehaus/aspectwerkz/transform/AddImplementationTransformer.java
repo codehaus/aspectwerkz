@@ -45,12 +45,13 @@ import org.cs3.jmangler.bceltransformer.ExtensionSet;
 import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.3 2003-05-13 19:17:51 jboner Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.4 2003-05-15 15:47:02 jboner Exp $
  */
 public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -106,10 +107,17 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
 
             String introductionName = (String)it.next();
 
-            int introductionIndex = m_weaveModel.
-                    getIntroductionIndexFor(introductionName);
-            List methodMetaDataList = m_weaveModel.
-                    getIntroductionMethodsMetaData(introductionName);
+            int introductionIndex = 0;
+            List methodMetaDataList = null;
+            try {
+                introductionIndex = m_weaveModel.
+                        getIntroductionIndexFor(introductionName);
+                methodMetaDataList = m_weaveModel.
+                        getIntroductionMethodsMetaData(introductionName);
+            }
+            catch (Exception e) {
+                throw new DefinitionException("trying to weave introduction with null or emtpy string as name to class " + cg.getClassName() + ": definition file is not valid");
+            }
 
             if (methodMetaDataList == null) continue; // interface introduction
 
