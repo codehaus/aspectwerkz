@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.expression;
 import org.codehaus.aspectwerkz.expression.ast.ASTAnd;
 import org.codehaus.aspectwerkz.expression.ast.ASTCflow;
 import org.codehaus.aspectwerkz.expression.ast.ASTCflowBelow;
+import org.codehaus.aspectwerkz.expression.ast.ASTNot;
 import org.codehaus.aspectwerkz.expression.ast.ASTOr;
 import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
 import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
@@ -56,18 +57,13 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
     public boolean match(final ExpressionContext context) {
         Boolean match = (Boolean)visit(m_root, context);
         if (context.hasBeenVisitingCflow()) {
-            //            System.out.println("hasBeenVisitingCflow");
-            //            System.out.println("context.getCflowEvaluation() = " + context.getCflowEvaluation());
             // we have been visiting and evaluated a cflow sub expression
             m_hasCflowPointcut = true;
             return context.getCflowEvaluation();
         } else if (context.inCflowSubAST()) {
-            //            System.out.println("inCflowSubAST");
-            //            System.out.println("match.booleanValue() = " + match.booleanValue());
             // we are in a referenced expression within a cflow subtree
             return match.booleanValue();
         } else {
-            //            System.out.println("no cflow");
             // no cflow subtree has been evaluated
             return false;
         }
@@ -77,7 +73,6 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
     public Object visit(ASTOr node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
         int nrOfChildren = node.jjtGetNumChildren();
-
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
@@ -91,7 +86,6 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
     public Object visit(ASTAnd node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
         int nrOfChildren = node.jjtGetNumChildren();
-
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
@@ -99,6 +93,15 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
                 node.jjtGetChild(i).jjtAccept(this, data);
             }
             return Boolean.FALSE;
+        }
+    }
+
+    public Object visit(ASTNot node, Object data) {
+        Boolean match = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
+        if (match.equals(Boolean.TRUE)) {
+            return Boolean.FALSE;
+        } else {
+            return Boolean.TRUE;
         }
     }
 

@@ -197,7 +197,6 @@ public final class AspectSystem {
      */
     public void enteringControlFlow(final PointcutType pointcutType, final MethodInfo methodInfo,
                                     final ClassInfo withinInfo) {
-        System.out.println("AspectSystem.enteringControlFlow");
         if (pointcutType == null) {
             throw new IllegalArgumentException("pointcut type can not be null");
         }
@@ -222,7 +221,6 @@ public final class AspectSystem {
      */
     public void exitingControlFlow(final PointcutType pointcutType, final MethodInfo methodInfo,
                                    final ClassInfo withinInfo) {
-        System.out.println("AspectSystem.exitingControlFlow");
         if (pointcutType == null) {
             throw new IllegalArgumentException("pointcut type can not be null");
         }
@@ -233,8 +231,8 @@ public final class AspectSystem {
         if (cflows == null) {
             return;
         }
-        ExpressionContext expressionContext = new ExpressionContext(pointcutType, methodInfo, withinInfo);
-        cflows.remove(expressionContext.hashCode());
+        ExpressionContext ctx = new ExpressionContext(pointcutType, methodInfo, withinInfo);
+        cflows.remove(ctx.hashCode());
         m_cflowStack.set(cflows);
     }
 
@@ -245,7 +243,6 @@ public final class AspectSystem {
      * @return boolean
      */
     public boolean isInControlFlowOf(final CflowExpressionVisitor expression) {
-        System.out.println("AspectSystem.isInControlFlowOf");
         if (expression == null) {
             throw new IllegalArgumentException("expression can not be null");
         }
@@ -254,12 +251,12 @@ public final class AspectSystem {
         }
         TIntObjectHashMap cflows = (TIntObjectHashMap)m_cflowStack.get();
         if (cflows == null) {
-            cflows = new TIntObjectHashMap();
             return false;
         }
         Object[] contexts = cflows.getValues();
         for (int i = 0; i < contexts.length; i++) {
-            if (expression.match((ExpressionContext)contexts[i])) {
+            ExpressionContext ctx = (ExpressionContext)contexts[i];
+            if (expression.match(ctx)) {
                 return true;
             }
         }

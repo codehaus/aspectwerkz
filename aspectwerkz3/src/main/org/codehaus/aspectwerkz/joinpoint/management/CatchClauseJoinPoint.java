@@ -7,11 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
+import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
-import java.util.List;
 
 /**
  * Abstraction of a catch clause join point.
@@ -25,7 +25,6 @@ class CatchClauseJoinPoint extends JoinPointBase {
     /**
      * Creates a new join point.
      *
-     * @param uuid
      * @param targetClass
      * @param signature
      * @param rtti
@@ -34,11 +33,12 @@ class CatchClauseJoinPoint extends JoinPointBase {
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public CatchClauseJoinPoint(final String uuid, final Class targetClass, final Signature signature, final Rtti rtti,
-                                final List cflowExpressions, final AroundAdviceExecutor aroundAdviceExecutor,
+    public CatchClauseJoinPoint(final Class targetClass, final Signature signature, final Rtti rtti,
+                                final CflowExpressionVisitor[] cflowExpressions,
+                                final AroundAdviceExecutor aroundAdviceExecutor,
                                 final BeforeAdviceExecutor beforeAdviceExecutor,
                                 final AfterAdviceExecutor afterAdviceExecutor) {
-        super(uuid, JoinPointType.HANDLER, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor,
+        super(JoinPointType.HANDLER, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor,
               afterAdviceExecutor);
         m_signature = (CatchClauseSignature)signature;
         m_rtti = (CatchClauseRtti)rtti;
@@ -57,7 +57,6 @@ class CatchClauseJoinPoint extends JoinPointBase {
         if (m_beforeAdviceExecutor.hasAdvices()) {
             m_beforeAdviceExecutor.proceed(this);
         }
-
         return null;
     }
 

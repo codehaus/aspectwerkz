@@ -95,39 +95,37 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     // ============ Logical operators =============
     public Object visit(ASTOr node, Object data) {
         int nrOfChildren = node.jjtGetNumChildren();
-
         for (int i = 0; i < nrOfChildren; i++) {
             Boolean match = (Boolean)node.jjtGetChild(i).jjtAccept(this, data);
-
             if (match.equals(Boolean.TRUE)) {
                 return Boolean.TRUE;
             }
         }
-
         return Boolean.FALSE;
     }
 
     public Object visit(ASTAnd node, Object data) {
         int nrOfChildren = node.jjtGetNumChildren();
-
         for (int i = 0; i < nrOfChildren; i++) {
             Boolean match = (Boolean)node.jjtGetChild(i).jjtAccept(this, data);
-
             if (match.equals(Boolean.FALSE)) {
                 return Boolean.FALSE;
             }
         }
-
         return Boolean.TRUE;
     }
 
     public Object visit(ASTNot node, Object data) {
-        Boolean match = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
-
-        if (match.equals(Boolean.TRUE)) {
-            return Boolean.FALSE;
+        Node child = node.jjtGetChild(0);
+        Boolean match = (Boolean)child.jjtAccept(this, data);
+        if (child instanceof ASTCflow || child instanceof ASTCflowBelow) {
+            return match;
         } else {
-            return Boolean.TRUE;
+            if (match.equals(Boolean.TRUE)) {
+                return Boolean.FALSE;
+            } else {
+                return Boolean.TRUE;
+            }
         }
     }
 
@@ -136,13 +134,11 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         ExpressionContext context = (ExpressionContext)data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         ExpressionVisitor expression = namespace.getExpression(node.getName());
-
         return Boolean.valueOf(expression.match(context));
     }
 
     public Object visit(ASTExecution node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
-
         if (context.hasExecutionPointcut() && (context.hasMethodInfo() || context.hasConstructorInfo())) {
             return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
         } else {
@@ -152,7 +148,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTCall node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
-
         if (context.hasCallPointcut() && (context.hasMethodInfo() || context.hasConstructorInfo())) {
             return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
         } else {
@@ -162,7 +157,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTSet node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
-
         if (context.hasSetPointcut() && context.hasFieldInfo()) {
             return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
         } else {
@@ -172,7 +166,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTGet node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
-
         if (context.hasGetPointcut() && context.hasFieldInfo()) {
             return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
         } else {
@@ -182,7 +175,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTHandler node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
-
         if (context.hasHandlerPointcut() && context.hasClassInfo()) {
             return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
         } else {
@@ -192,7 +184,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTStaticInitialization node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
-
         if (context.hasStaticInitializationPointcut() && context.hasClassInfo()) {
             return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
         } else {
@@ -202,23 +193,19 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTWithin node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
-
         if (context.hasWithinReflectionInfo()) {
             ReflectionInfo withinInfo = context.getWithinReflectionInfo();
-
             if (withinInfo instanceof MemberInfo) {
                 return node.jjtGetChild(0).jjtAccept(this, ((MemberInfo)withinInfo).getDeclaringType());
             } else if (withinInfo instanceof ClassInfo) {
                 return node.jjtGetChild(0).jjtAccept(this, withinInfo);
             }
         }
-
         return Boolean.FALSE;
     }
 
     public Object visit(ASTWithinCode node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
-
         if (context.hasWithinReflectionInfo()) {
             return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
         } else {
@@ -238,7 +225,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     public Object visit(ASTClassPattern node, Object data) {
         ClassInfo classInfo = (ClassInfo)data;
         TypePattern typePattern = node.getDeclaringClassPattern();
-
         if (ClassInfoHelper.matchType(typePattern, classInfo) && visitAttributes(node, classInfo)
             && visitModifiers(node, classInfo)) {
             return Boolean.TRUE;
@@ -250,7 +236,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     public Object visit(ASTMethodPattern node, Object data) {
         if (data instanceof MethodInfo) { // TODO: is this safe check needed?
             MethodInfo methodInfo = (MethodInfo)data;
-
             if (node.getMethodNamePattern().matches(methodInfo.getName())
                 && ClassInfoHelper.matchType(node.getDeclaringTypePattern(), methodInfo.getDeclaringType())
                 && ClassInfoHelper.matchType(node.getReturnTypePattern(), methodInfo.getReturnType())
@@ -259,28 +244,24 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 return Boolean.TRUE;
             }
         }
-
         return Boolean.FALSE;
     }
 
     public Object visit(ASTConstructorPattern node, Object data) {
         if (data instanceof ConstructorInfo) { // TODO: is this safe check needed?
             ConstructorInfo constructorMetaData = (ConstructorInfo)data;
-
             if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), constructorMetaData.getDeclaringType())
                 && visitAttributes(node, constructorMetaData) && visitModifiers(node, constructorMetaData)
                 && visitParameters(node, constructorMetaData.getParameterTypes())) {
                 return Boolean.TRUE;
             }
         }
-
         return Boolean.FALSE;
     }
 
     public Object visit(ASTFieldPattern node, Object data) {
         if (data instanceof FieldInfo) { // TODO: is this safe check needed?
             FieldInfo fieldInfo = (FieldInfo)data;
-
             if (node.getFieldNamePattern().matches(fieldInfo.getName())
                 && ClassInfoHelper.matchType(node.getDeclaringTypePattern(), fieldInfo.getDeclaringType())
                 && ClassInfoHelper.matchType(node.getFieldTypePattern(), fieldInfo.getType())
@@ -288,13 +269,11 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 return Boolean.TRUE;
             }
         }
-
         return Boolean.FALSE;
     }
 
     public Object visit(ASTParameter node, Object data) {
         ClassInfo parameterType = (ClassInfo)data;
-
         if (node.getDeclaringClassPattern().matches(parameterType.getName())) {
             return Boolean.TRUE;
         } else {
@@ -304,7 +283,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTAttribute node, Object data) {
         List attributes = (List)data;
-
         for (Iterator it = attributes.iterator(); it.hasNext();) {
             String attribute = (String)it.next();
 
@@ -312,62 +290,48 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 return Boolean.TRUE;
             }
         }
-
         return Boolean.FALSE;
     }
 
     public Object visit(ASTModifier node, Object data) {
         ReflectionInfo metaData = (ReflectionInfo)data;
-
         int modifiersToMatch = metaData.getModifiers();
         int modifierPattern = node.getModifier();
-
         if (((modifierPattern & Modifier.PUBLIC) != 0) && ((modifiersToMatch & Modifier.PUBLIC) == 0)) {
             return Boolean.FALSE;
         }
-
         if (((modifierPattern & Modifier.PROTECTED) != 0) && ((modifiersToMatch & Modifier.PROTECTED) == 0)) {
             return Boolean.FALSE;
         }
-
         if (((modifierPattern & Modifier.PRIVATE) != 0) && ((modifiersToMatch & Modifier.PRIVATE) == 0)) {
             return Boolean.FALSE;
         }
-
         if (((modifierPattern & Modifier.STATIC) != 0) && ((modifiersToMatch & Modifier.STATIC) == 0)) {
             return Boolean.FALSE;
         }
-
         if (((modifierPattern & Modifier.SYNCHRONIZED) != 0) && ((modifiersToMatch & Modifier.SYNCHRONIZED) == 0)) {
             return Boolean.FALSE;
         }
-
         if (((modifierPattern & Modifier.FINAL) != 0) && ((modifiersToMatch & Modifier.FINAL) == 0)) {
             return Boolean.FALSE;
         }
-
         if (((modifierPattern & Modifier.TRANSIENT) != 0) && ((modifiersToMatch & Modifier.TRANSIENT) == 0)) {
             return Boolean.FALSE;
         }
-
         if (((modifierPattern & Modifier.VOLATILE) != 0) && ((modifiersToMatch & Modifier.VOLATILE) == 0)) {
             return Boolean.FALSE;
         }
-
         if (((modifierPattern & Modifier.STRICT) != 0) && ((modifiersToMatch & Modifier.STRICT) == 0)) {
             return Boolean.FALSE;
         }
-
         return Boolean.TRUE;
     }
 
     protected boolean visitAttributes(SimpleNode node, ReflectionInfo metaData) {
         int nrChildren = node.jjtGetNumChildren();
-
         if (nrChildren != 0) {
             for (int i = 0; i < nrChildren; i++) {
                 Node child = node.jjtGetChild(i);
-
                 if (child instanceof ASTAttribute) {
                     if (Boolean.TRUE.equals(child.jjtAccept(this, metaData.getAttributes()))) {
                         continue;
@@ -377,17 +341,14 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 }
             }
         }
-
         return true;
     }
 
     protected boolean visitModifiers(SimpleNode node, ReflectionInfo metaData) {
         int nrChildren = node.jjtGetNumChildren();
-
         if (nrChildren != 0) {
             for (int i = 0; i < nrChildren; i++) {
                 Node child = node.jjtGetChild(i);
-
                 if (child instanceof ASTModifier) {
                     if (Boolean.TRUE.equals(child.jjtAccept(this, metaData))) {
                         continue;
@@ -397,21 +358,17 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 }
             }
         }
-
         return true;
     }
 
     protected boolean visitParameters(SimpleNode node, ClassInfo[] parameterTypes) {
         int nrChildren = node.jjtGetNumChildren();
-
         if (nrChildren != 0) { // has nodes
 
             // collect the parameter nodes
             List parameterNodes = new ArrayList();
-
             for (int i = 0; i < nrChildren; i++) {
                 Node child = node.jjtGetChild(i);
-
                 if (child instanceof ASTParameter) {
                     parameterNodes.add(child); // store the parameter nodes
                 }
@@ -422,25 +379,20 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             if (parameterNodes.size() > parameterTypes.length) {
                 if (parameterNodes.size() == 1) {
                     ASTParameter param = (ASTParameter)parameterNodes.get(0);
-
                     if (param.getDeclaringClassPattern().isEagerWildCard()) {
                         return true;
                     }
                 }
-
                 return false;
             }
 
             // iterate over the parameter nodes
             int j = 0;
-
             for (Iterator iterator = parameterNodes.iterator(); iterator.hasNext();) {
                 ASTParameter parameter = (ASTParameter)iterator.next();
-
                 if (parameter.getDeclaringClassPattern().isEagerWildCard()) {
                     return true;
                 }
-
                 if (Boolean.TRUE.equals(parameter.jjtAccept(this, parameterTypes[j++]))) {
                     continue;
                 } else {
@@ -450,7 +402,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         } else if (parameterTypes.length != 0) { // no nodes but parameters to match
             return false;
         }
-
         return true;
     }
 
