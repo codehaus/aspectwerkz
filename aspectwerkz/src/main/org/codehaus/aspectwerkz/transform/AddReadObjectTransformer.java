@@ -138,7 +138,11 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
         if (cg.isInterface()) {
             return true;
         }
-        if (definition.inTransformationScope(cg.getClassName())) {
+        String className = cg.getClassName();
+        if (definition.inExcludePackage(className)) {
+            return true;
+        }
+        if (definition.inIncludePackage(className)) {
             return false;
         }
         return true;

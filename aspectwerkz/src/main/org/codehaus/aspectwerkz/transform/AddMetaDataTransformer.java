@@ -39,7 +39,6 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
  */
 public final class AddMetaDataTransformer
         implements AspectWerkzCodeTransformerComponent, AspectWerkzInterfaceTransformerComponent {
-    ///CLOVER:OFF
     /**
      * Holds references to the classes that have already been transformed by this
      * transformer.
@@ -355,7 +354,11 @@ public final class AddMetaDataTransformer
         if (cg.isInterface()) {
             return true;
         }
-        if (m_definition.inTransformationScope(cg.getClassName())) {
+        String className = cg.getClassName();
+        if (m_definition.inExcludePackage(className)) {
+            return true;
+        }
+        if (m_definition.inIncludePackage(className)) {
             return false;
         }
         return true;
@@ -382,6 +385,4 @@ public final class AddMetaDataTransformer
     public String verboseMessage() {
         return this.getClass().getName();
     }
-
-    ///CLOVER:ON
 }

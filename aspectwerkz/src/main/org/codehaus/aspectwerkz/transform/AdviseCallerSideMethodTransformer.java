@@ -49,7 +49,6 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransformerComponent {
-    ///CLOVER:OFF
 
     /**
      * The definition.
@@ -137,7 +136,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                     final String calleeMethodSignature = invokeInstruction.getSignature(cpg);
 
                     // filter callee classes
-                    if (!m_definition.inTransformationScope(calleeClassName)) {
+                    if (!m_definition.inIncludePackage(calleeClassName)) {
                         ih = ih.getNext();
                         continue;
                     }
@@ -699,7 +698,11 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         if (cg.isInterface()) {
             return true;
         }
-        if (!m_definition.inTransformationScope(cg.getClassName())) {
+        String className = cg.getClassName();
+        if (m_definition.inExcludePackage(className)) {
+            return true;
+        }
+        if (!m_definition.inIncludePackage(className)) {
             return true;
         }
         if (m_definition.hasCallerSidePointcut(classMetaData)) {
@@ -801,5 +804,4 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         joinPoint.append(methodSequence);
         return joinPoint;
     }
-    ///CLOVER:ON
 }

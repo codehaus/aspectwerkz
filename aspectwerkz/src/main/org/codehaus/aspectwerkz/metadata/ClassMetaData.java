@@ -123,7 +123,7 @@ public class ClassMetaData implements MetaData, Serializable {
     /**
      * Sets a list with <code>FieldMetaData</code> instances.
      *
-     * @param methods a list with <code>FieldMetaData</code> instances
+     * @param fields a list with <code>FieldMetaData</code> instances
      */
     public void setFields(final List fields) {
         m_fields = fields;

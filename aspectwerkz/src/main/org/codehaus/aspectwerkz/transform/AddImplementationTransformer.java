@@ -73,7 +73,6 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
 
             final ClassGen cg = klass.getClassGen();
             ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
-
             if (classFilter(cg, classMetaData, definition)) {
                 return;
             }
@@ -446,7 +445,11 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
         if (cg.isInterface()) {
             return true;
         }
-        if (definition.inTransformationScope(cg.getClassName()) &&
+        String className = cg.getClassName();
+        if (definition.inExcludePackage(className)) {
+            return true;
+        }
+        if (definition.inIncludePackage(className) &&
                 definition.hasIntroductions(classMetaData)) {
             return false;
         }
