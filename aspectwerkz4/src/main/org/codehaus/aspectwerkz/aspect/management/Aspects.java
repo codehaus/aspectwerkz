@@ -37,9 +37,11 @@ public class Aspects {
     public static final String DEFAULT_ASPECT_CONTAINER = DefaultAspectContainerStrategy.class.getName();
 
     /**
-     * Map of TIntHashMap, whose key is containerClass. The TIntHashMap maps container instance, whith qName.hashCode()
+     * Map of TIntHashMap, whose key is containerClass. The TIntHashMap maps container instance, whith
+     * CompositeVisibleFromQNameKey as a key
      * as a key.
-     * TODO: still not perfect: uuid / qName handled correctly, but when DefaultContainer is used,
+     * <p/>
+     * TODO:
      * we end up in having one entry with a list that strong refs the container instances
      * ie leaks since the DefaultContainer leaves in system CL.
      */
@@ -60,6 +62,10 @@ public class Aspects {
 
     /**
      * Returns or create the aspect container for the given container class with the given aspect qualified name
+     * <p/>
+     * We keep a weak key for the containerClass, and we then keep a list of container instance based on a composite key
+     * based on the tuple {visibleFromClassLoader.hashCode, aspectQName}, so that when hot deploying a web app, the
+     * aspects gets tied to the web app class loader even when the container class is higher up (f.e. in aw.jar)
      *
      * @param visibleFrom class loader hosting the advised class ie from where all is visible
      * @param containerClass
@@ -73,10 +79,10 @@ public class Aspects {
                 containers = new TIntObjectHashMap();
                 ASPECT_CONTAINER_LISTS.put(containerClass, containers);
             }
-            AspectContainer container = (AspectContainer) containers.get(qName.hashCode());
+            AspectContainer container = (AspectContainer) containers.get(CompositeVisibleFromQNameKey.hash(visibleFrom, qName));
             if (container == null) {
                 container = createAspectContainer(visibleFrom, containerClass, qName);
-                containers.put(qName.hashCode(), container);
+                containers.put(CompositeVisibleFromQNameKey.hash(visibleFrom, qName), container);
             }
             return container;
         }
@@ -339,5 +345,51 @@ public class Aspects {
      * Class is non-instantiable.
      */
     private Aspects() {
+    }
+
+    /**
+     * A composite key to ensure uniqueness of the container key even upon application redeployment
+     * when the classloader gets swapped.
+     *
+     * TODO: we could have a weak ref to the CL, and use it as a weak key in a map then to ensure
+     * release of any container when the visibleFromCL gets dropped (which can be different from
+     * the aspect container CL)?
+     *
+     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+     */
+    private static class CompositeVisibleFromQNameKey {
+//        private final int m_hash;
+//        private CompositeVisibleFromQNameKey(ClassLoader loader, String qName) {
+//            m_hash = hash(loader, qName);
+//        }
+//
+//        public boolean equals(Object o) {
+//            if (this == o) return true;
+//            if (!(o instanceof CompositeVisibleFromQNameKey)) return false;
+//
+//            final CompositeVisibleFromQNameKey compositeVisibleFromQNameKey = (CompositeVisibleFromQNameKey) o;
+//
+//            if (m_hash != compositeVisibleFromQNameKey.m_hash) return false;
+//
+//            return true;
+//        }
+//
+//        public int hashCode() {
+//            return m_hash;
+//        }
+
+        /**
+         * Hashing strategy
+         *
+         * @param loader
+         * @param qName
+         * @return
+         */
+        public static int hash(ClassLoader loader, String qName) {
+            int result;
+            result = (loader != null ? loader.hashCode() : 0);
+            result = 29 * result + qName.hashCode();
+            return result;
+        }
     }
 }

@@ -103,7 +103,7 @@ public final class Util {
      */
     public static String classLoaderToString(ClassLoader loader) {
         if ((loader != null) && (loader.toString().length() < 120)) {
-            return loader.toString();
+            return loader.toString() + "@" + loader.hashCode();
         } else if (loader != null) {
             return loader.getClass().getName() + "@" + loader.hashCode();
         } else {
