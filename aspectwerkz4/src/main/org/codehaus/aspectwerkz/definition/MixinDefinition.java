@@ -11,10 +11,12 @@ import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.lang.ref.WeakReference;
 
 /**
  * Definition for the mixin construct.
@@ -43,9 +45,14 @@ public class MixinDefinition {
     private final List m_interfaceClassInfos = new ArrayList();
 
     /**
-     * The class info for the mixin.
+     * The class name for the mixin impl.
      */
-    private final ClassInfo m_mixinImpl;
+    private final String m_mixinImplClassName;
+
+    /**
+     * The class loader.
+     */
+    private final WeakReference m_loaderRef;
 
     /**
      * The mixin expressions.
@@ -79,7 +86,8 @@ public class MixinDefinition {
                            final String deploymentModel,
                            final boolean isTransient,
                            final SystemDefinition systemDef) {
-        m_mixinImpl = mixinClass;
+        m_mixinImplClassName = mixinClass.getName();
+        m_loaderRef = new WeakReference(mixinClass.getClassLoader());
         m_systemDefinition = systemDef;
         m_expressionInfos = new ExpressionInfo[]{};
         List interfaceDeclaredMethods = collectMethodsFromInterfaces(mixinClass);
@@ -162,7 +170,7 @@ public class MixinDefinition {
      * @return the class info
      */
     public ClassInfo getMixinImpl() {
-        return m_mixinImpl;
+        return AsmClassInfo.getClassInfo(m_mixinImplClassName, (ClassLoader) m_loaderRef.get());
     }
 
     /**

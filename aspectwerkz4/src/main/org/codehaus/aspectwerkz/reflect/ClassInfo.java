@@ -61,6 +61,13 @@ public interface ClassInfo extends ReflectionInfo {
     FieldInfo[] getFields();
 
     /**
+     * Returns the class loader that loaded this class.
+     *
+     * @return the class loader
+     */
+    ClassLoader getClassLoader();
+
+    /**
      * Checks if the class has a static initalizer.
      *
      * @return
@@ -145,6 +152,10 @@ public interface ClassInfo extends ReflectionInfo {
 
         public ClassInfo getSuperclass() {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public ClassLoader getClassLoader() {
+            return null;
         }
 
         public ClassInfo getComponentType() {

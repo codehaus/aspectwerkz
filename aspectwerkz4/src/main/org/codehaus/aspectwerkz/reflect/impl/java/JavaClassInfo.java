@@ -213,6 +213,15 @@ public class JavaClassInfo implements ClassInfo {
     }
 
     /**
+     * Returns the class loader that loaded this class.
+     *
+     * @return the class loader
+     */
+    public ClassLoader getClassLoader() {
+        return m_class.getClassLoader();
+    }
+
+    /**
      * Returns a constructor info by its hash.
      *
      * @param hash

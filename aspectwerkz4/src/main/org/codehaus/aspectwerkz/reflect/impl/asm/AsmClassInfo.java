@@ -466,6 +466,15 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
+     * Returns the class loader that loaded this class.
+     *
+     * @return the class loader
+     */
+    public ClassLoader getClassLoader() {
+        return (ClassLoader) m_loaderRef.get();
+    }
+
+    /**
      * Checks if the class has a static initalizer.
      *
      * @return
