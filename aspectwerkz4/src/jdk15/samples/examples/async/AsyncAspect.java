@@ -17,9 +17,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
-import main.org.codehaus.aspectwerkz.*;
-
-@main.org.codehaus.aspectwerkz.Aspect
+@org.codehaus.aspectwerkz.annotation.Aspect
 public class AsyncAspect {
 
     private Executor m_threadPool = Executors.newCachedThreadPool();

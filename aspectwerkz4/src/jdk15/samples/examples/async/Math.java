@@ -18,7 +18,7 @@ public class Math {
         System.out.printf(
                 "[ %s ] %d + %d = %d\n",
                 Thread.currentThread().getName(),
-                a, b, (a + b)
+                new Integer(a), new Integer(b), new Integer(a + b)
         );
     }
 
@@ -27,7 +27,7 @@ public class Math {
         System.out.printf(
                 "[ %s ] %d - %d = %d\n",
                 Thread.currentThread().getName(),
-                a, b, (a - b)
+                new Integer(a), new Integer(b), new Integer(a - b)
         );
     }
 

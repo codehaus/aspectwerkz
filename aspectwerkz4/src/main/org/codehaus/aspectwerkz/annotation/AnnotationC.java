@@ -45,19 +45,6 @@ import java.util.StringTokenizer;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AnnotationC {
-    public static final String ANNOTATION_ASPECT = "Aspect";
-    public static final String ANNOTATION_AROUND = "Around";
-    public static final String ANNOTATION_BEFORE = "Before";
-    public static final String ANNOTATION_AFTER = "After";
-    public static final String ANNOTATION_AFTER_FINALLY = "AfterFinally";
-    public static final String ANNOTATION_AFTER_RETURNING = "AfterReturning";
-    public static final String ANNOTATION_AFTER_THROWING = "AfterThrowing";
-    public static final String ANNOTATION_EXPRESSION = "Expression";
-
-    // TODO change implements to introduce
-    public static final String ANNOTATION_IMPLEMENTS = "Implements";
-    public static final String ANNOTATION_INTRODUCE = "Introduce";
-
     private static final String COMMAND_LINE_OPTION_DASH = "-";
     private static final String COMMAND_LINE_OPTION_VERBOSE = "-verbose";
     private static final String COMMAND_LINE_OPTION_CUSTOM = "-custom";
@@ -68,9 +55,9 @@ public class AnnotationC {
     private static final String COMMAND_LINE_OPTION_DEST = "-dest";
 
     static final String[] SYSTEM_ANNOTATIONS = new String[]{
-        ANNOTATION_ASPECT, ANNOTATION_AROUND, ANNOTATION_BEFORE,
-        ANNOTATION_AFTER, ANNOTATION_AFTER_FINALLY, ANNOTATION_AFTER_RETURNING, ANNOTATION_AFTER_THROWING,
-        ANNOTATION_EXPRESSION, ANNOTATION_IMPLEMENTS, ANNOTATION_INTRODUCE
+        AOPAnnotationConstants.ANNOTATION_ASPECT, AOPAnnotationConstants.ANNOTATION_AROUND, AOPAnnotationConstants.ANNOTATION_BEFORE,
+        AOPAnnotationConstants.ANNOTATION_AFTER, AOPAnnotationConstants.ANNOTATION_AFTER_FINALLY, AOPAnnotationConstants.ANNOTATION_AFTER_RETURNING, AOPAnnotationConstants.ANNOTATION_AFTER_THROWING,
+        AOPAnnotationConstants.ANNOTATION_EXPRESSION, AOPAnnotationConstants.ANNOTATION_IMPLEMENTS, AOPAnnotationConstants.ANNOTATION_INTRODUCE
     };
 
     /**
@@ -337,11 +324,11 @@ public class AnnotationC {
     private static void parseAspectAnnotations(final JavaClass clazz,
                                                final AnnotationManager manager,
                                                final AttributeEnhancer enhancer) {
-        Annotation[] annotations = manager.getAnnotations(ANNOTATION_ASPECT, clazz);
+        Annotation[] annotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_ASPECT, clazz);
         for (int i = 0; i < annotations.length; i++) {
             Annotation annotation = annotations[i];
             if (annotation != null) {
-                enhancer.insertClassAttribute(new AnnotationInfo(ANNOTATION_ASPECT, annotation));
+                enhancer.insertClassAttribute(new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_ASPECT, annotation));
                 String name = ((Aspect) annotation).name();
                 if (name == null) {
                     name = clazz.getFullyQualifiedName();
@@ -366,7 +353,7 @@ public class AnnotationC {
     private static void parseMixinAnnotations(final JavaClass clazz,
                                               final AnnotationManager manager,
                                               final AttributeEnhancer enhancer) {
-        final Annotation[] introduceAnnotations = manager.getAnnotations(ANNOTATION_INTRODUCE, clazz);
+        final Annotation[] introduceAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_INTRODUCE, clazz);
         final String className = clazz.getFullyQualifiedName();
         for (int k = 0; k < introduceAnnotations.length; k++) {
             Annotation introduceAnnotation = introduceAnnotations[k];
@@ -397,7 +384,7 @@ public class AnnotationC {
                             "] deployment model ["
                             + introduceProxy.deploymentModel() + ']'
                     );
-                    enhancer.insertClassAttribute(new AnnotationInfo(ANNOTATION_INTRODUCE, introduceProxy));
+                    enhancer.insertClassAttribute(new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_INTRODUCE, introduceProxy));
                 }
             }
         }
@@ -414,13 +401,13 @@ public class AnnotationC {
                                                 final AttributeEnhancer enhancer,
                                                 final JavaMethod method) {
         // Pointcut with signature
-        Annotation[] expressionAnnotations = manager.getAnnotations(ANNOTATION_EXPRESSION, method);
+        Annotation[] expressionAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_EXPRESSION, method);
         for (int i = 0; i < expressionAnnotations.length; i++) {
             Annotation expressionAnnotation = expressionAnnotations[i];
             if (expressionAnnotation != null && expressionAnnotation instanceof Expression) {
                 enhancer.insertMethodAttribute(
                         method, new AnnotationInfo(
-                                ANNOTATION_EXPRESSION,
+                                AOPAnnotationConstants.ANNOTATION_EXPRESSION,
                                 expressionAnnotation
                         )
                 );
@@ -430,13 +417,13 @@ public class AnnotationC {
                 );
             }
         }
-        Annotation[] aroundAnnotations = manager.getAnnotations(ANNOTATION_AROUND, method);
+        Annotation[] aroundAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_AROUND, method);
         for (int i = 0; i < aroundAnnotations.length; i++) {
             Annotation aroundAnnotation = aroundAnnotations[i];
             if (aroundAnnotation != null && aroundAnnotation instanceof Around) {
                 enhancer.insertMethodAttribute(
                         method, new AnnotationInfo(
-                                ANNOTATION_AROUND,
+                                AOPAnnotationConstants.ANNOTATION_AROUND,
                                 aroundAnnotation
                         )
                 );
@@ -446,13 +433,13 @@ public class AnnotationC {
                 );
             }
         }
-        Annotation[] beforeAnnotations = manager.getAnnotations(ANNOTATION_BEFORE, method);
+        Annotation[] beforeAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_BEFORE, method);
         for (int i = 0; i < beforeAnnotations.length; i++) {
             Annotation beforeAnnotation = beforeAnnotations[i];
             if (beforeAnnotation != null && beforeAnnotation instanceof Before) {
                 enhancer.insertMethodAttribute(
                         method, new AnnotationInfo(
-                                ANNOTATION_BEFORE,
+                                AOPAnnotationConstants.ANNOTATION_BEFORE,
                                 beforeAnnotation
                         )
                 );
@@ -462,33 +449,33 @@ public class AnnotationC {
                 );
             }
         }
-        Annotation[] afterAnnotations = manager.getAnnotations(ANNOTATION_AFTER, method);
+        Annotation[] afterAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_AFTER, method);
         for (int i = 0; i < afterAnnotations.length; i++) {
             Annotation afterAnnotation = afterAnnotations[i];
             if (afterAnnotation != null && afterAnnotation instanceof After) {
-                enhancer.insertMethodAttribute(method, new AnnotationInfo(ANNOTATION_AFTER, afterAnnotation));
+                enhancer.insertMethodAttribute(method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER, afterAnnotation));
                 logInfo(
                         "    after advice [" + AnnotationC.getShortCallSignature(method) + " :: "
                         + ((After) afterAnnotation).value() + ']'
                 );
             }
         }
-        Annotation[] afterFinallyAnnotations = manager.getAnnotations(ANNOTATION_AFTER_FINALLY, method);
+        Annotation[] afterFinallyAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_AFTER_FINALLY, method);
         for (int i = 0; i < afterFinallyAnnotations.length; i++) {
             Annotation afterAnnotation = afterFinallyAnnotations[i];
             if (afterAnnotation != null && afterAnnotation instanceof AfterFinally) {
-                enhancer.insertMethodAttribute(method, new AnnotationInfo(ANNOTATION_AFTER_FINALLY, afterAnnotation));
+                enhancer.insertMethodAttribute(method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER_FINALLY, afterAnnotation));
                 logInfo(
                         "    after finally advice [" + AnnotationC.getShortCallSignature(method) + " :: "
                         + ((AfterFinally) afterAnnotation).value() + ']'
                 );
             }
         }
-        Annotation[] afterReturningAnnotations = manager.getAnnotations(ANNOTATION_AFTER_RETURNING, method);
+        Annotation[] afterReturningAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_AFTER_RETURNING, method);
         for (int i = 0; i < afterReturningAnnotations.length; i++) {
             Annotation afterAnnotation = afterReturningAnnotations[i];
             if (afterAnnotation != null && afterAnnotation instanceof AfterReturning) {
-                enhancer.insertMethodAttribute(method, new AnnotationInfo(ANNOTATION_AFTER_RETURNING, afterAnnotation));
+                enhancer.insertMethodAttribute(method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER_RETURNING, afterAnnotation));
                 logInfo(
                         "    after returning advice [" + AnnotationC.getShortCallSignature(method) + " :: "
                         + ((AfterReturning) afterAnnotation).value()
@@ -496,11 +483,11 @@ public class AnnotationC {
                 );
             }
         }
-        Annotation[] afterThrowingAnnotations = manager.getAnnotations(ANNOTATION_AFTER_THROWING, method);
+        Annotation[] afterThrowingAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_AFTER_THROWING, method);
         for (int i = 0; i < afterThrowingAnnotations.length; i++) {
             Annotation afterAnnotation = afterThrowingAnnotations[i];
             if (afterAnnotation != null && afterAnnotation instanceof AfterThrowing) {
-                enhancer.insertMethodAttribute(method, new AnnotationInfo(ANNOTATION_AFTER_THROWING, afterAnnotation));
+                enhancer.insertMethodAttribute(method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER_THROWING, afterAnnotation));
                 logInfo(
                         "    after throwing advice [" + AnnotationC.getShortCallSignature(method) + " :: "
                         + ((AfterThrowing) afterAnnotation).value()
@@ -568,13 +555,13 @@ public class AnnotationC {
                                                final AttributeEnhancer enhancer,
                                                final JavaField field) {
 
-        Annotation[] expressionAnnotations = manager.getAnnotations(ANNOTATION_EXPRESSION, field);
+        Annotation[] expressionAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_EXPRESSION, field);
         for (int i = 0; i < expressionAnnotations.length; i++) {
             Annotation expressionAnnotation = expressionAnnotations[i];
             if (expressionAnnotation != null && expressionAnnotation instanceof Expression) {
                 enhancer.insertFieldAttribute(
                         field, new AnnotationInfo(
-                                ANNOTATION_EXPRESSION,
+                                AOPAnnotationConstants.ANNOTATION_EXPRESSION,
                                 expressionAnnotation
                         )
                 );
@@ -584,14 +571,14 @@ public class AnnotationC {
                 );
             }
         }
-        Annotation[] implementsAnnotations = manager.getAnnotations(ANNOTATION_IMPLEMENTS, field);
+        Annotation[] implementsAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_IMPLEMENTS, field);
         for (int i = 0; i < implementsAnnotations.length; i++) {
             Annotation implementsAnnotation = implementsAnnotations[i];
             if (implementsAnnotation != null) {
                 ImplementsAnnotationProxy implementsProxy = (ImplementsAnnotationProxy) implementsAnnotation;
                 enhancer.insertFieldAttribute(
                         field, new AnnotationInfo(
-                                ANNOTATION_IMPLEMENTS,
+                                AOPAnnotationConstants.ANNOTATION_IMPLEMENTS,
                                 implementsProxy
                         )
                 );
@@ -644,17 +631,17 @@ public class AnnotationC {
      * @param manager the annotations manager
      */
     private static void registerSystemAnnotations(final AnnotationManager manager) {
-        manager.registerAnnotationProxy(Aspect.class, ANNOTATION_ASPECT);
-        manager.registerAnnotationProxy(Around.class, ANNOTATION_AROUND);
-        manager.registerAnnotationProxy(Before.class, ANNOTATION_BEFORE);
-        manager.registerAnnotationProxy(After.class, ANNOTATION_AFTER);
-        manager.registerAnnotationProxy(AfterReturning.class, ANNOTATION_AFTER_RETURNING);
-        manager.registerAnnotationProxy(AfterThrowing.class, ANNOTATION_AFTER_THROWING);
-        manager.registerAnnotationProxy(AfterFinally.class, ANNOTATION_AFTER_FINALLY);
-        manager.registerAnnotationProxy(Expression.class, ANNOTATION_EXPRESSION);
+        manager.registerAnnotationProxy(Aspect.class, AOPAnnotationConstants.ANNOTATION_ASPECT);
+        manager.registerAnnotationProxy(Around.class, AOPAnnotationConstants.ANNOTATION_AROUND);
+        manager.registerAnnotationProxy(Before.class, AOPAnnotationConstants.ANNOTATION_BEFORE);
+        manager.registerAnnotationProxy(After.class, AOPAnnotationConstants.ANNOTATION_AFTER);
+        manager.registerAnnotationProxy(AfterReturning.class, AOPAnnotationConstants.ANNOTATION_AFTER_RETURNING);
+        manager.registerAnnotationProxy(AfterThrowing.class, AOPAnnotationConstants.ANNOTATION_AFTER_THROWING);
+        manager.registerAnnotationProxy(AfterFinally.class, AOPAnnotationConstants.ANNOTATION_AFTER_FINALLY);
+        manager.registerAnnotationProxy(Expression.class, AOPAnnotationConstants.ANNOTATION_EXPRESSION);
         //FIXME change those ones as well
-        manager.registerAnnotationProxy(ImplementsAnnotationProxy.class, ANNOTATION_IMPLEMENTS);
-        manager.registerAnnotationProxy(IntroduceAnnotationProxy.class, ANNOTATION_INTRODUCE);
+        manager.registerAnnotationProxy(ImplementsAnnotationProxy.class, AOPAnnotationConstants.ANNOTATION_IMPLEMENTS);
+        manager.registerAnnotationProxy(IntroduceAnnotationProxy.class, AOPAnnotationConstants.ANNOTATION_INTRODUCE);
     }
 
     /**
