@@ -274,7 +274,7 @@
     </target>
 
     <target name="test:weave" depends="init, jars, test:annotationc">
-        <property name="weave.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/javassist-3.0RC1.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
+        <property name="weave.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
         <echo>${weave.classpath}</echo>
 
         <java classname="org.codehaus.aspectwerkz.compiler.AspectWerkzC" fork="true" classpath="${weave.classpath}">
@@ -293,7 +293,7 @@
 
 
     <target name="test:offline" depends="init, jars, test:annotationc, test:weave">
-        <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/javassist-3.0RC1.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
+        <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
         <java
             classname="test.AllTestsInlined"
             classpath="${offline.classpath}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar"

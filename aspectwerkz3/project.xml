@@ -109,10 +109,6 @@
             <version>1.5.1</version>
         </dependency>
         <dependency>
-            <id>javassist</id>
-            <version>3.0RC1</version>
-        </dependency>
-        <dependency>
             <id>trove</id>
             <version>1.0.2</version>
         </dependency>
