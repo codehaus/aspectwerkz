@@ -22,7 +22,7 @@ public class AddressBook implements Serializable {
 
     private final Set m_contacts = new HashSet();
 
-    public void addContact(final Contact contact) {
+    void addContact(final Contact contact) {
         m_contacts.add(contact);
     }
 
@@ -51,7 +51,7 @@ public class AddressBook implements Serializable {
         return Contact.NULL;
     }
 
-    public void removeContacts(Set contacts) {
+    void removeContacts(Set contacts) {
         for (Iterator it = contacts.iterator(); it.hasNext();) {
             m_contacts.remove(it.next());
         }

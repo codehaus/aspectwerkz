@@ -30,6 +30,17 @@ import java.util.Set;
 import java.util.HashSet;
 
 /**
+ * Demo app
+ *
+ * Usefull url:
+ *
+ * http://localhost:7014/aosd/demo
+ * http://localhost:7014/aosd/demo?action=LOGIN&username=alex&pwd=alex
+ * http://localhost:7014/aosd/demo?action=LIST
+ * http://localhost:7014/aosd/demo?action=ADD&fn=jonas&ln=boner&em=jonas_email
+ * http://localhost:7014/aosd/demo?action=ADD&fn=billy&ln=boy&em=billy_email
+ * http://localhost:7014/aosd/demo?action=REMOVE&ids=billy.boy&ids=jonas.boner
+ *
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -112,7 +123,7 @@ public class HomeServlet extends HttpServlet {
         ctx.put(Context.PRINCIPAL, user);
         ctx.put(Context.CREDENTIAL, pwd);
         httpServletRequest.getSession().setAttribute(SESSION_USER, ctx);
-        System.out.println("  session created" + httpServletRequest.getSession());
+        System.out.println("  session created " + httpServletRequest.getSession());
 
         // Authentication thru AOP
 
@@ -166,11 +177,8 @@ public class HomeServlet extends HttpServlet {
         String lastName = httpServletRequest.getParameter(KEY_LASTNAME);
         String email = httpServletRequest.getParameter(KEY_EMAIL);
 
-        // do that in manager
-        Contact c = new Contact(firstName, lastName);
-        c.addEmailAddress(email);
         // add to address book
-        addressBook.addContact(c);
+        Registry.getAddressBookManager().addContact(addressBook, firstName, lastName, email);
 
         // feed the view
         httpServletRequest.setAttribute(VIEW_ADRESSBOOK, addressBook);
@@ -190,7 +198,7 @@ public class HomeServlet extends HttpServlet {
             Contact c = addressBook.findContact(ids[i]);
             contacts.add(c);
         }
-        addressBook.removeContacts(contacts);
+        Registry.getAddressBookManager().removeContacts(addressBook, contacts);
 
         // feed the view
         httpServletRequest.setAttribute(VIEW_ADRESSBOOK, addressBook);

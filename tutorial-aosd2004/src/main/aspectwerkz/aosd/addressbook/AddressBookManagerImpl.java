@@ -5,28 +5,27 @@
  * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package aspectwerkz.aosd.user;
+package aspectwerkz.aosd.addressbook;
 
-import aspectwerkz.aosd.addressbook.AddressBookManager;
-import aspectwerkz.aosd.addressbook.AddressBookManagerImpl;
+import java.util.Set;
 
 /**
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class Registry {
+public class AddressBookManagerImpl implements AddressBookManager {
 
-    /**
-     * Returns the UserManager.
-     *
-     * @return the user manager
-     */
-    public static UserManager getUserManager() {
-        return new UserManagerImpl();
+    public Contact addContact(AddressBook addressBook, String firstName, String lastName, String email) {
+        Contact contact = new Contact(firstName, lastName);
+        contact.addEmailAddress(email);
+        addressBook.addContact(contact);
+        return contact;
     }
 
-    public static AddressBookManager getAddressBookManager() {
-        return new AddressBookManagerImpl();
+    public void removeContacts(AddressBook addressBook, Set contacts) {
+         addressBook.removeContacts(contacts);
     }
+
+
 
 }
