@@ -22,50 +22,50 @@ import java.lang.reflect.Method;
 
 /**
  * Utility methods for the ASM library.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AsmHelper {
     private static final String CLASS_LOADER_CLASS_NAME = "java.lang.ClassLoader";
+
     private static final String DEFINE_CLASS_METHOD_NAME = "defineClass";
 
     /**
      * Creates and adds the correct parameter index.
-     *
+     * 
      * @param cv
      * @param index
      */
     public static void setICONST_X(final CodeVisitor cv, final int index) {
         switch (index) {
-            case 0:
-                cv.visitInsn(Constants.ICONST_0);
-                break;
-            case 1:
-                cv.visitInsn(Constants.ICONST_1);
-                break;
-            case 2:
-                cv.visitInsn(Constants.ICONST_2);
-                break;
-            case 3:
-                cv.visitInsn(Constants.ICONST_3);
-                break;
-            case 4:
-                cv.visitInsn(Constants.ICONST_4);
-                break;
-            case 5:
-                cv.visitInsn(Constants.ICONST_5);
-                break;
-            default:
-                cv.visitIntInsn(Constants.LDC, index);
-                break;
+        case 0:
+            cv.visitInsn(Constants.ICONST_0);
+            break;
+        case 1:
+            cv.visitInsn(Constants.ICONST_1);
+            break;
+        case 2:
+            cv.visitInsn(Constants.ICONST_2);
+            break;
+        case 3:
+            cv.visitInsn(Constants.ICONST_3);
+            break;
+        case 4:
+            cv.visitInsn(Constants.ICONST_4);
+            break;
+        case 5:
+            cv.visitInsn(Constants.ICONST_5);
+            break;
+        default:
+            cv.visitIntInsn(Constants.LDC, index);
+            break;
         }
     }
 
     /**
-     * Creates a constructor descriptor.
-     * <p/>
-     * Parts of code in this method is taken from the ASM codebase.
-     *
+     * Creates a constructor descriptor. <p/>Parts of code in this method is
+     * taken from the ASM codebase.
+     * 
      * @param constructor
      * @return the descriptor
      */
@@ -94,7 +94,7 @@ public class AsmHelper {
                         car = 'D';
                     } else if (d == Float.TYPE) {
                         car = 'F';
-                    } else /*if (d == Long.TYPE)*/ {
+                    } else /* if (d == Long.TYPE) */{
                         car = 'J';
                     }
                     buf.append(car);
@@ -120,10 +120,9 @@ public class AsmHelper {
     }
 
     /**
-     * Gets the argument types for a constructor.
-     * <p/>
-     * Parts of code in this method is taken from the ASM codebase.
-     *
+     * Gets the argument types for a constructor. <p/>Parts of code in this
+     * method is taken from the ASM codebase.
+     * 
      * @param constructor
      * @return the argument types for the constructor
      */
@@ -138,44 +137,52 @@ public class AsmHelper {
 
     /**
      * Dumps an ASM class to disk.
-     *
+     * 
      * @param dumpDir
      * @param className
      * @param cw
      * @throws java.io.IOException
      */
-    public static void dumpClass(final String dumpDir, final String className, final ClassWriter cw)
-            throws IOException {
-        File dir = new File(dumpDir + File.separator + className.substring(0, className.lastIndexOf('/')));
+    public static void dumpClass(final String dumpDir, final String className,
+            final ClassWriter cw) throws IOException {
+        File dir = new File(dumpDir + File.separator
+                + className.substring(0, className.lastIndexOf('/')));
         dir.mkdirs();
-        FileOutputStream os = new FileOutputStream(dumpDir + File.separator + className.replace('/', '/') + ".class");
+        FileOutputStream os = new FileOutputStream(dumpDir + File.separator
+                + className.replace('/', '/') + ".class");
         os.write(cw.toByteArray());
         os.close();
     }
 
     /**
      * Adds a class to a class loader and loads it.
-     *
-     * @param loader the class loader (if null the context class loader will be used)
-     * @param bytes  the bytes for the class
-     * @param name   the name of the class
+     * 
+     * @param loader
+     *            the class loader (if null the context class loader will be
+     *            used)
+     * @param bytes
+     *            the bytes for the class
+     * @param name
+     *            the name of the class
      * @return the class
      */
-    public static Class loadClass(ClassLoader loader, final byte[] bytes, final String name) {
+    public static Class loadClass(ClassLoader loader, final byte[] bytes,
+            final String name) {
         try {
             if (loader == null) {
                 loader = ContextClassLoader.getLoader();
             }
             Class klass = loader.loadClass(CLASS_LOADER_CLASS_NAME);
-            Method method = klass.getDeclaredMethod(
-                    DEFINE_CLASS_METHOD_NAME,
-                    new Class[]{String.class, byte[].class, int.class, int.class}
-            );
+            Method method = klass.getDeclaredMethod(DEFINE_CLASS_METHOD_NAME,
+                    new Class[] { String.class, byte[].class, int.class,
+                            int.class });
 
-            // TODO: what if we don't have rights to set this method to accessible on this specific CL? Load it in System CL?
+            // TODO: what if we don't have rights to set this method to
+            // accessible on this specific CL? Load it in System CL?
             method.setAccessible(true);
-            Object[] args = new Object[]{name, bytes, new Integer(0), new Integer(bytes.length)};
-            Class clazz = (Class)method.invoke(loader, args);
+            Object[] args = new Object[] { name, bytes, new Integer(0),
+                    new Integer(bytes.length) };
+            Class clazz = (Class) method.invoke(loader, args);
             method.setAccessible(false);
             return clazz;
         } catch (Exception e) {
@@ -185,9 +192,11 @@ public class AsmHelper {
 
     /**
      * Tries to load a class if unsuccessful returns null.
-     *
-     * @param loader the class loader
-     * @param name   the name of the class
+     * 
+     * @param loader
+     *            the class loader
+     * @param name
+     *            the name of the class
      * @return the class
      */
     public static Class loadClass(ClassLoader loader, final String name) {
@@ -203,7 +212,7 @@ public class AsmHelper {
 
     /**
      * Calculates the method hash.
-     *
+     * 
      * @param name
      * @param desc
      * @return
@@ -214,7 +223,8 @@ public class AsmHelper {
         Type[] argumentTypes = Type.getArgumentTypes(desc);
         for (int i = 0; i < argumentTypes.length; i++) {
             String typeName = argumentTypes[i].toString();
-            System.out.println("calculating hash based on paramName = " + typeName);
+            System.out.println("calculating hash based on paramName = "
+                    + typeName);
             hash = (37 * hash) + typeName.hashCode();
         }
         return hash;
@@ -222,12 +232,13 @@ public class AsmHelper {
 
     /**
      * Calculates the constructor hash.
-     *
+     * 
      * @param name
      * @param desc
      * @return
      */
-    public static int calculateConstructorHash(final String name, final String desc) {
+    public static int calculateConstructorHash(final String name,
+            final String desc) {
         int hash = 17;
         hash = (37 * hash) + name.hashCode();
         Type[] argumentTypes = Type.getArgumentTypes(desc);
@@ -240,7 +251,7 @@ public class AsmHelper {
 
     /**
      * Calculates the field hash.
-     *
+     * 
      * @param name
      * @param desc
      * @return
@@ -255,7 +266,7 @@ public class AsmHelper {
 
     /**
      * Calculates the class hash.
-     *
+     * 
      * @param declaringType
      * @return
      */

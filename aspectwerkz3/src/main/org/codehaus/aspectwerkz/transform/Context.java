@@ -50,6 +50,8 @@ public class Context {
      */
     private final List m_definitions;
 
+    private byte[] m_bytecode;
+
     /**
      * Creates a new context.
      *
@@ -156,5 +158,19 @@ public class Context {
             throw new IllegalStateException("context is read only");
         }
         m_metaData.put(key, value);
+    }
+    
+    /**
+     * @return bytecode
+     */
+    public byte[] getBytecode() {
+        return m_bytecode;
+    }
+
+    /**
+     * @param bytecode
+     */
+    public void setBytecode(final byte[] bytecode) {
+        m_bytecode = bytecode;
     }
 }
