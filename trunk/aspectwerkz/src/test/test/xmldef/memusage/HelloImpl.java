@@ -20,8 +20,8 @@ public class HelloImpl implements Hello {
 
     private static byte[] sbuffer = new byte[1000];
 
-    public String sayHello() {
-        return "Hello";
+    public String sayHello0() {
+        return "sayHello0";
     }
 
     public static void main(String args[]) throws Exception {

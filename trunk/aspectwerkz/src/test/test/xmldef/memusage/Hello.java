@@ -9,6 +9,6 @@ package test.xmldef.memusage;
 
 public interface Hello {
 
-    public String sayHello();
+    public String sayHello0();
 
 }
