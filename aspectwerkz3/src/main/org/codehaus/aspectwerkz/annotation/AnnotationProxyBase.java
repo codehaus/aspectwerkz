@@ -25,7 +25,7 @@ import java.util.List;
  */
 
 //public class AnnotationProxyBase extends AnnotationProxy implements Serializable {
-public class AnnotationProxyBase extends TypedAnnotationProxyBase implements Serializable {
+public abstract class AnnotationProxyBase extends TypedAnnotationProxyBase implements Serializable {
     private List m_values;
 
     //    public JAnnotationValue[] getValues() {

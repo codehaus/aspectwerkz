@@ -21,19 +21,19 @@ public class Strings {
     }
 
     /**
-     * Removes NewLine, CarriageReturn and Tab characters from a String.
+     * Removes newline, carriage return and tab characters from a string.
      *
-     * @param s string to escape
-     * @return s the escaped string
+     * @param toBeEscaped string to escape
+     * @return the escaped string
      */
-    public static String removeFormattingCharacters(final String s) {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < s.length(); i++) {
-            if ((s.charAt(i) != '\n') && (s.charAt(i) != '\r') && (s.charAt(i) != '\t')) {
-                sb.append(s.charAt(i));
+    public static String removeFormattingCharacters(final String toBeEscaped) {
+        StringBuffer escapedBuffer = new StringBuffer();
+        for (int i = 0; i < toBeEscaped.length(); i++) {
+            if ((toBeEscaped.charAt(i) != '\n') && (toBeEscaped.charAt(i) != '\r') && (toBeEscaped.charAt(i) != '\t')) {
+                escapedBuffer.append(toBeEscaped.charAt(i));
             }
         }
-        return sb.toString();
+        return escapedBuffer.toString();
     }
 
     /**

@@ -14,7 +14,9 @@ public class Target {
 
     /**
      * log level=1  f=5.8F iconstant=org.codehaus.aspectwerkz.DeploymentModel.PER_CLASS
-     * @log
+     * @log some value that is
+     * on different line
+     * of the comment
      */
     private int m_counter1;
 
