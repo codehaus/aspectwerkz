@@ -27,8 +27,8 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.ConstantClass;
 
-import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 
 /**
  * Adds an UuidGenerator to all transformed classes.
@@ -60,7 +60,8 @@ public final class AddUuidTransformer
      */
     public AddUuidTransformer() {
         super();
-        m_definition = AbstractAspectWerkzDefinition.getDefinitionForTransformation();
+        // TODO: fix loop over definitions
+        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
     }
 
     /**
@@ -71,6 +72,8 @@ public final class AddUuidTransformer
      */
     public void transformInterface(final Context context, final Klass klass) {
         if (ADD_UUID == null) return; // do not do any transformations
+
+        m_definition.loadAspects(context.getLoader());
 
         final ClassGen cg = klass.getClassGen();
         final ConstantPoolGen cpg = cg.getConstantPool();

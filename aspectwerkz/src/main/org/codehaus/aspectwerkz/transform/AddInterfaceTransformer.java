@@ -8,17 +8,15 @@
 package org.codehaus.aspectwerkz.transform;
 
 import java.util.Set;
-import java.util.Iterator;
 import java.util.HashSet;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ClassGen;
-import org.apache.bcel.classfile.ConstantClass;
-import org.apache.bcel.classfile.ConstantUtf8;
 
-import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 
 /**
  * Adds an interfaces to classes.
@@ -26,7 +24,7 @@ import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransformerComponent {
-    ///CLOVER:OFF
+
     /**
      * Holds references to the classes that have already been transformed.
      */
@@ -42,7 +40,8 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
      */
     public AddInterfaceTransformer() {
         super();
-        m_definition = AbstractAspectWerkzDefinition.getDefinitionForTransformation();
+        // TODO: fix loop over definitions
+        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
     }
 
     /**
@@ -52,8 +51,14 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
      * @param klass the class
      */
     public void transformInterface(final Context context, final Klass klass) {
+        m_definition.loadAspects(context.getLoader());
+
         final ClassGen cg = klass.getClassGen();
-        if (classFilter(cg)) {
+        final ConstantPoolGen cpg = cg.getConstantPool();
+
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+
+        if (classFilter(cg, classMetaData)) {
             return;
         }
         if (m_transformed.contains(cg.getClassName())) {
@@ -61,56 +66,31 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
         }
         m_transformed.add(cg.getClassName());
 
-        ConstantPoolGen cpg = cg.getConstantPool();
-        int[] interfaces = cg.getInterfaces();
-
-        for (Iterator it2 = m_definition.getIntroductionNames(cg.getClassName()).iterator(); it2.hasNext();) {
-
-            String introductionName = (String)it2.next();
-            String interfaceName = m_definition.getIntroductionInterfaceName(introductionName);
-
-            boolean addInterface = true;
-
-            for (int l = 0; l < interfaces.length; l++) {
-                ConstantClass cc = (ConstantClass)cpg.getConstant(interfaces[l]);
-                ConstantUtf8 cu = (ConstantUtf8)cpg.getConstant(cc.getNameIndex());
-
-                if (implementsInterface(cu, interfaceName)) {
-                    addInterface = false;
-                    break;
-                }
-            }
-            if (addInterface) {
-                if (interfaceName == null || interfaceName.equals("")) {
-                    throw new DefinitionException("trying to weave null interface to " + cg.getClassName() + ": definition file is not consistentadd");
-                }
-                TransformationUtil.addInterfaceToClass(cg, interfaceName);
-            }
+        if (m_definition.isAttribDef()) {
+            org.codehaus.aspectwerkz.attribdef.transform.IntroductionTransformer.addInterfaceIntroductions(
+                    m_definition, cg, cpg, classMetaData
+            );
         }
-    }
-
-    /**
-     * Checks if a class implements an interface.
-     *
-     * @param cu ConstantUtf8 constant
-     * @return true if the class implements the interface
-     */
-    private static boolean implementsInterface(final ConstantUtf8 cu, final String interfaceName) {
-        return cu.getBytes().equals(interfaceName.replace('.', '/'));
+        else if (m_definition.isXmlDef()) {
+            org.codehaus.aspectwerkz.xmldef.transform.IntroductionTransformer.addInterfaceIntroductions(
+                    m_definition, cg, cpg
+            );
+        }
     }
 
     /**
      * Filters the classes to be transformed.
      *
      * @param cg the class to filter
+     * @param classMetaData the class meta-data
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg) {
+    private boolean classFilter(final ClassGen cg, final ClassMetaData classMetaData) {
         if (cg.isInterface()) {
             return true;
         }
         if (m_definition.inTransformationScope(cg.getClassName()) &&
-                m_definition.hasIntroductions(cg.getClassName())) {
+                m_definition.hasIntroductions(classMetaData)) {
             return false;
         }
         return true;
@@ -137,6 +117,4 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
     public String verboseMessage() {
         return this.getClass().getName();
     }
-
-    ///CLOVER:ON
 }

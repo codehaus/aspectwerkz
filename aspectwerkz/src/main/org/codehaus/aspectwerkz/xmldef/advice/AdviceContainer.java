@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.xmldef.advice;
 
-import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.ContainerType;
 
 /**

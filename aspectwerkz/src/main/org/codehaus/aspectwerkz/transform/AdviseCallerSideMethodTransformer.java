@@ -40,8 +40,8 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 
 /**
  * Advises caller side method invocations.
@@ -61,7 +61,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
      */
     public AdviseCallerSideMethodTransformer() {
         super();
-        m_definition = AbstractAspectWerkzDefinition.getDefinitionForTransformation();
+        // TODO: fix loop over definitions
+        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
     }
 
     /**
@@ -71,16 +72,15 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
      * @param klass the class set.
      */
     public void transformCode(final Context context, final Klass klass) {
+        m_definition.loadAspects(context.getLoader());
 
         final ClassGen cg = klass.getClassGen();
-        ClassMetaData classMetaData = BcelMetaDataMaker.
-                createClassMetaData(context.getJavaClass(cg));
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
 
         // filter caller classes
         if (classFilter(classMetaData, cg)) {
             return;
         }
-
         final Method[] methods = cg.getMethods();
 
         // get the index for the <clinit> method (if there is one)
@@ -162,9 +162,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                             BcelMetaDataMaker.createMethodMetaData(invokeInstruction, cpg);
 
                     // is this a caller side method pointcut?
-                    if (m_definition.isCallerSideMethod(
-                            calleeSideClassMetaData,
-                            calleeSideMethodMetaData)) {
+                    if (m_definition.isCallerSideMethod(calleeSideClassMetaData, calleeSideMethodMetaData)) {
 
                         // get the caller method name and signature
                         Method method = mg.getMethod();
@@ -186,8 +184,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                         else {
                             methodSequences.put(calleeMethodName, new Integer(1));
                         }
-                        final int methodSequence =
-                                ((Integer)methodSequences.get(calleeMethodName)).intValue();
+                        int methodSequence = ((Integer)methodSequences.get(calleeMethodName)).intValue();
 
                         isClassAdvised = true;
                         isMethodChanged = true;
@@ -445,8 +442,9 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         final String className = cg.getClassName();
 
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
-        final StringBuffer joinPoint =
-                getJoinPointName(joinPointPrefix, calleeMethodName, methodSequence);
+        final StringBuffer joinPoint = getJoinPointName(
+                joinPointPrefix, calleeMethodName, methodSequence
+        );
 
         StringBuffer fullCalleeMethodName = new StringBuffer();
         fullCalleeMethodName.append(calleeClassName);

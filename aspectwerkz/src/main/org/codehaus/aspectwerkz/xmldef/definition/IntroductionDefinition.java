@@ -8,6 +8,14 @@
 package org.codehaus.aspectwerkz.xmldef.definition;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+import org.codehaus.aspectwerkz.attribdef.definition.MethodIntroductionDefinition;
+import org.codehaus.aspectwerkz.attribdef.definition.InterfaceIntroductionDefinition;
+import org.codehaus.aspectwerkz.MethodComparator;
 
 /**
  * Holds the introduction definition.
@@ -16,12 +24,33 @@ import java.io.Serializable;
  */
 public class IntroductionDefinition implements Serializable {
 
+    /**
+     * The name of the introduction.
+     */
     private String m_name;
+
     private String m_interface;
     private String m_implementation;
+
+    /**
+     * The deployment model.
+     */
     private String m_deploymentModel;
-    private String m_isPersistent;
+
+    /**
+     * The attribute.
+     */
     private String m_attribute = "";
+
+    /**
+     * The method introductions.
+     */
+    private final List m_methodIntroductions = new ArrayList();
+
+    /**
+     * The interface introductions.
+     */
+    private final List m_interfaceIntroductions = new ArrayList();
 
     /**
      * Returns the name or the introduction.
@@ -96,24 +125,6 @@ public class IntroductionDefinition implements Serializable {
     }
 
     /**
-     * Sets the persistent attribute.
-     *
-     * @param isPersistent the persistent attribute
-     */
-    public void setIsPersistent(final String isPersistent) {
-        m_isPersistent = isPersistent;
-    }
-
-    /**
-     * Gets the persistent attribute.
-     *
-     * @return the persistent attribute
-     */
-    public String getIsPersistent() {
-        return m_isPersistent;
-    }
-
-    /**
      * Returns the attribute.
      *
      * @return the attribute
@@ -132,18 +143,59 @@ public class IntroductionDefinition implements Serializable {
     }
 
     /**
-     * Checks if the introduction is persistent.
+     * Adds a new method introduction.
      *
-     * @return true if introduction is persistent
+     * @param introductionMetaData the introduction
      */
-    public boolean isPersistent() {
-        if (m_isPersistent != null &&
-                (m_isPersistent.equalsIgnoreCase("true") ||
-                m_isPersistent.equalsIgnoreCase("yes"))) {
-            return true;
-        }
-        else {
-            return false;
-        }
+    public void addMethodIntroduction(final MethodIntroductionDefinition introductionMetaData) {
+        m_methodIntroductions.add(introductionMetaData);
+    }
+
+    /**
+     * Adds a new interface introduction.
+     *
+     * @param interfaceIntroDef the introduction
+     */
+    public void addInterfaceIntroduction(final InterfaceIntroductionDefinition introductionMetaData) {
+        m_interfaceIntroductions.add(introductionMetaData);
+    }
+
+    /**
+     * Returns the method introductions.
+     *
+     * @TODO: gets sorted every time, have a flag?
+     *
+     * @return the introductions
+     */
+    public List getMethodIntroductions() {
+        return sortMethodIntroductions(m_methodIntroductions);
+    }
+
+    /**
+     * Returns the interface introductions.
+     *
+     * @return the introductions
+     */
+    public List getInterfaceIntroductions() {
+        return m_interfaceIntroductions;
+    }
+
+    /**
+     * Sorts the introductions by method.
+     *
+     * @param introductions a list with the introductions to sort
+     * @return a sorted list with the introductions
+     */
+    public static List sortMethodIntroductions(final List introductions) {
+        Collections.sort(introductions, new Comparator() {
+            private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
+
+            public int compare(final Object obj1, final Object obj2) {
+                MethodIntroductionDefinition introduction1 = (MethodIntroductionDefinition)obj1;
+                MethodIntroductionDefinition introduction2 = (MethodIntroductionDefinition)obj2;
+                return m_comparator.compare(introduction1.getMethod(), introduction2.getMethod());
+            }
+        });
+        return introductions;
     }
 }

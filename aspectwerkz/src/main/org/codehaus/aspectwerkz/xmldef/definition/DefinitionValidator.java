@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
 /**
  * Validates an AspectWerkz definition, looking for:
@@ -121,7 +122,6 @@ public class DefinitionValidator {
     private void validatePointcuts(Collection pointcutDefs) {
         for (Iterator i = pointcutDefs.iterator(); i.hasNext();) {
             PointcutDefinition def = (PointcutDefinition)i.next();
-
             checkDuplicateName(def.getName());
         }
     }

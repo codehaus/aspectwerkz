@@ -13,10 +13,11 @@ import java.util.HashMap;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.ContainerType;
-import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
+import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.xmldef.definition.StartupManager;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * Abstract base class for all advice classes.
@@ -73,7 +74,7 @@ public abstract class AbstractAdvice implements Advice {
     /**
      * A reference to the AspectWerkz system housing this advice.
      */
-    private AspectWerkz m_system;
+    private System m_system;
 
     /**
      * Creates a new abstract advice.
@@ -107,9 +108,9 @@ public abstract class AbstractAdvice implements Advice {
      *
      * @return the system
      */
-    public AspectWerkz getSystem() {
+    public System getSystem() {
         if (m_system == null) {
-            m_system = AspectWerkz.getSystem(m_uuid);
+            m_system = SystemLoader.getSystem(m_uuid);
             m_system.initialize();
         }
         return m_system;

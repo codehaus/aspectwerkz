@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.xmldef.definition;
 
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -58,7 +59,6 @@ public class AspectDefinition implements Serializable {
      */
     private boolean isAbstract = false;
 
-
     /**
      * Returns the pattern for the aspect
      * @return the pattern
@@ -95,31 +95,31 @@ public class AspectDefinition implements Serializable {
     }
 
     /**
-      * Returns a list with the pointcuts.
-      *
-      * @return the pointcuts
-      */
-     public Collection getPointcutDefs() {
-         return m_pointcutDefs.values();
-     }
-
-     /**
-      * Adds a new pointcut.
-      *
-      * @param pointcut a pointcut
-      */
-     public void addPointcutDef(final PointcutDefinition pointcut) {
-         m_pointcutDefs.put(pointcut.getName(), pointcut);
-     }
+     * Returns a list with the pointcuts.
+     *
+     * @return the pointcuts
+     */
+    public Collection getPointcutDefs() {
+        return m_pointcutDefs.values();
+    }
 
     /**
-      * Returns a list with the controllers.
-      *
-      * @return the controllers
-      */
-     public Collection getControllerDefs() {
-         return m_controllerDefs.values();
-     }
+     * Adds a new pointcut.
+     *
+     * @param pointcut a pointcut
+     */
+    public void addPointcutDef(final PointcutDefinition pointcut) {
+        m_pointcutDefs.put(pointcut.getName(), pointcut);
+    }
+
+    /**
+     * Returns a list with the controllers.
+     *
+     * @return the controllers
+     */
+    public Collection getControllerDefs() {
+        return m_controllerDefs.values();
+    }
 
     /**
      * Adds a new controller definition.
@@ -131,40 +131,40 @@ public class AspectDefinition implements Serializable {
     }
 
     /**
-      * Returns a list with the introduction weaving rules.
-      *
-      * @return the introduction weaving rules
-      */
-     public List getIntroductionWeavingRules() {
-         return m_introductionWeavingRules;
-     }
-
-     /**
-      * Adds a new introduction weaving rule.
-      *
-      * @param weavingRule an introduction weaving rule
-      */
-     public void addIntroductionWeavingRule(final IntroductionWeavingRule weavingRule) {
-         m_introductionWeavingRules.add(weavingRule);
-     }
+     * Returns a list with the introduction weaving rules.
+     *
+     * @return the introduction weaving rules
+     */
+    public List getIntroductionWeavingRules() {
+        return m_introductionWeavingRules;
+    }
 
     /**
-      * Returns a list with the advice weaving rules.
-      *
-      * @return the advice weaving rules
-      */
-     public List getAdviceWeavingRules() {
-         return m_adviceWeavingRules;
-     }
+     * Adds a new introduction weaving rule.
+     *
+     * @param weavingRule an introduction weaving rule
+     */
+    public void addIntroductionWeavingRule(final IntroductionWeavingRule weavingRule) {
+        m_introductionWeavingRules.add(weavingRule);
+    }
 
-     /**
-      * Adds a new advice weaving rule.
-      *
-      * @param weavingRule an advice weaving rule
-      */
-     public void addAdviceWeavingRule(final AdviceWeavingRule weavingRule) {
-         m_adviceWeavingRules.add(weavingRule);
-     }
+    /**
+     * Returns a list with the advice weaving rules.
+     *
+     * @return the advice weaving rules
+     */
+    public List getAdviceWeavingRules() {
+        return m_adviceWeavingRules;
+    }
+
+    /**
+     * Adds a new advice weaving rule.
+     *
+     * @param weavingRule an advice weaving rule
+     */
+    public void addAdviceWeavingRule(final AdviceWeavingRule weavingRule) {
+        m_adviceWeavingRules.add(weavingRule);
+    }
 
     /**
      * Returns the pointcut definition by its name.

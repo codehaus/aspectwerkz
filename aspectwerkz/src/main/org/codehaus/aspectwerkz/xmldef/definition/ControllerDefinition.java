@@ -28,6 +28,7 @@ import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
 /**
  * Holds the controller definition.

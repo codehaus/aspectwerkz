@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.xmldef.advice;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * Abstract base class for the pre A post advice classes.

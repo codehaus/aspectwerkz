@@ -8,12 +8,7 @@
 package org.codehaus.aspectwerkz.transform;
 
 import java.util.Set;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.ArrayList;
 
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -28,12 +23,11 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.Constants;
 
-import org.codehaus.aspectwerkz.MethodComparator;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 
 /**
  * Adds an Introductions to classes.
@@ -41,7 +35,6 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AddImplementationTransformer implements AspectWerkzInterfaceTransformerComponent {
-    ///CLOVER:OFF
 
     /**
      * The references to the classes that have already been transformed.
@@ -58,18 +51,26 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
      */
     public AddImplementationTransformer() {
         super();
-        m_definition = AbstractAspectWerkzDefinition.getDefinitionForTransformation();
+
+        // TODO: fix loop over definitions
+        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
     }
 
     /**
      * Adds introductions to a class.
      *
+     * @TODO: handle both definition types (ver1 and ver2)
+     *
      * @param context the transformation context
      * @param klass the class
      */
     public void transformInterface(final Context context, final Klass klass) {
+        m_definition.loadAspects(context.getLoader());
+
         final ClassGen cg = klass.getClassGen();
-        if (classFilter(cg)) {
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+
+        if (classFilter(cg, classMetaData)) {
             return;
         }
         if (m_transformed.contains(cg.getClassName())) {
@@ -77,116 +78,18 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
         }
         m_transformed.add(cg.getClassName());
 
-        final ConstantPoolGen cpg = cg.getConstantPool();
-        final InstructionFactory factory = new InstructionFactory(cg);
-        addIntroductions(context, cg, cpg, factory);
-    }
+        ConstantPoolGen cpg = cg.getConstantPool();
+        InstructionFactory factory = new InstructionFactory(cg);
 
-    /**
-     * Adds introductions to the class.
-     *
-     * @param context the transformation context
-     * @param cg the class gen
-     * @param cpg the constant pool gen
-     * @param factory the instruction objectfactory
-     */
-    private void addIntroductions(final Context context,
-                                  final ClassGen cg,
-                                  final ConstantPoolGen cpg,
-                                  final InstructionFactory factory) {
-
-        for (Iterator it = m_definition.getIntroductionNames(cg.getClassName()).iterator(); it.hasNext();) {
-
-            String introductionName = (String)it.next();
-            String introductionImplName = m_definition.getIntroductionImplName(introductionName);
-
-            if (introductionImplName == null) {
-                continue;
-            }
-
-            int introductionIndex = 0;
-            List methodMetaDataList = Collections.synchronizedList(new ArrayList());
-            try {
-                introductionIndex = m_definition.getIntroductionIndex(introductionName);
-
-                // get the method meta-data for the class
-                boolean match = false;
-                Map metaDataRepository = context.getMetaDataRepository();
-                for (Iterator it2 = metaDataRepository.values().iterator(); it2.hasNext();) {
-                    if (match) break;
-                    Set metaDataSet = (Set)it2.next();
-                    for (Iterator it3 = metaDataSet.iterator(); it3.hasNext();) {
-                        ClassMetaData classMetaData = (ClassMetaData)it3.next();
-                        if (classMetaData.getName().equals(introductionImplName)) {
-                            methodMetaDataList = classMetaData.getMethods();
-                            match = true;
-                            break;
-                        }
-                    }
-                }
-                if (methodMetaDataList == null) {
-                    throw new RuntimeException("no meta-data for introduction " + introductionImplName + " could be found in repository");
-                }
-            }
-            catch (Exception e) {
-                throw new DefinitionException("trying to weave introduction with null or empty string as name to class " + cg.getClassName() + ": definition file is not consistent");
-            }
-
-            if (methodMetaDataList == null) {
-                continue; // interface introduction
-            }
-
-            // the iterator is on a list and the loop body does list.remove
-            // which is forbidden
-            List methodMetaDataListFiltered = new ArrayList();
-            for (Iterator it2 = methodMetaDataList.iterator(); it2.hasNext();) {
-                MethodMetaData methodMetaData = (MethodMetaData)it2.next();
-
-                // remove the ___AW_getUuid, ___AW_getMetaData, ___AW_addMetaData and class$ methods
-                // as well as some other methods before sorting the method list
-                if (!(
-                        methodMetaData.getName().equals("equals") ||
-                        methodMetaData.getName().equals("hashCode") ||
-                        methodMetaData.getName().equals("getClass") ||
-                        methodMetaData.getName().equals("toString") ||
-                        methodMetaData.getName().equals("wait") ||
-                        methodMetaData.getName().equals("notify") ||
-                        methodMetaData.getName().equals("notifyAll") ||
-                        methodMetaData.getName().equals(
-                                TransformationUtil.GET_UUID_METHOD) ||
-                        methodMetaData.getName().equals(
-                                TransformationUtil.GET_UUID_METHOD) ||
-                        methodMetaData.getName().equals(
-                                TransformationUtil.GET_META_DATA_METHOD) ||
-                        methodMetaData.getName().equals(
-                                TransformationUtil.SET_META_DATA_METHOD) ||
-                        methodMetaData.getName().equals(
-                                TransformationUtil.CLASS_LOOKUP_METHOD) ||
-                        methodMetaData.getName().startsWith(
-                                TransformationUtil.ORIGINAL_METHOD_PREFIX))) {
-                    methodMetaDataListFiltered.add(methodMetaData);
-                }
-            }
-
-            // sort the list so that we can enshure that the indexes are in synch
-            // see AbstractIntroductionContainerStrategy#AbstractIntroductionContainerStrategy
-            Collections.sort(methodMetaDataListFiltered, MethodComparator.
-                    getInstance(MethodComparator.METHOD_META_DATA));
-
-            int methodIndex = -1; // start with -1 since the method array is 0 indexed
-            for (Iterator it2 = methodMetaDataListFiltered.iterator(); it2.hasNext();) {
-                MethodMetaData methodMetaData = (MethodMetaData)it2.next();
-                if (methodMetaData.getReturnType() == null || methodMetaData.getName().equals("<init>")) {
-                    continue;
-                }
-                methodIndex++;
-                createProxyMethod(
-                        cg, cpg, factory,
-                        methodMetaData,
-                        introductionIndex,
-                        methodIndex,
-                        m_definition.getUuid());
-            }
+        if (m_definition.isAttribDef()) {
+            org.codehaus.aspectwerkz.attribdef.transform.IntroductionTransformer.addMethodIntroductions(
+                    m_definition, context, classMetaData, cg, cpg, factory, this
+            );
+        }
+        else if (m_definition.isXmlDef()) {
+            org.codehaus.aspectwerkz.xmldef.transform.IntroductionTransformer.addMethodIntroductions(
+                    m_definition, context, cg, cpg, factory, this
+            );
         }
     }
 
@@ -197,17 +100,17 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
      * @param cpg the constant pool gen
      * @param factory the instruction objectfactory
      * @param methodMetaData the meta-data for the method
-     * @param introductionIndex the introduction index
+     * @param mixinIndex the mixin index
      * @param methodIndex the method index
      * @param uuid the uuid for the weave model
      */
-    private void createProxyMethod(final ClassGen cg,
-                                   final ConstantPoolGen cpg,
-                                   final InstructionFactory factory,
-                                   final MethodMetaData methodMetaData,
-                                   final int introductionIndex,
-                                   final int methodIndex,
-                                   final String uuid) {
+    public void createProxyMethod(final ClassGen cg,
+                                  final ConstantPoolGen cpg,
+                                  final InstructionFactory factory,
+                                  final MethodMetaData methodMetaData,
+                                  final int mixinIndex,
+                                  final int methodIndex,
+                                  final String uuid) {
         InstructionList il = new InstructionList();
 
         String methodName = methodMetaData.getName();
@@ -344,20 +247,20 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
             // get the aspectwerkz system
             il.append(new PUSH(cpg, uuid));
             il.append(factory.createInvoke(
-                    TransformationUtil.ASPECT_WERKZ_CLASS,
-                    "getSystem",
-                    new ObjectType(TransformationUtil.ASPECT_WERKZ_CLASS),
+                    TransformationUtil.SYSTEM_LOADER_CLASS,
+                    TransformationUtil.RETRIEVE_SYSTEM_METHOD,
+                    new ObjectType(TransformationUtil.SYSTEM_CLASS),
                     new Type[]{Type.STRING},
                     Constants.INVOKESTATIC));
 
-            // get the introduction
-            il.append(new PUSH(cpg, introductionIndex));
+            // get the mixin
+            il.append(new PUSH(cpg, mixinIndex));
             il.append(factory.createInvoke(
-                    TransformationUtil.ASPECT_WERKZ_CLASS,
-                    "getIntroduction",
-                    new ObjectType(TransformationUtil.INTRODUCTION_CLASS),
+                    TransformationUtil.SYSTEM_CLASS,
+                    TransformationUtil.RETRIEVE_MIXIN_METHOD,
+                    new ObjectType(TransformationUtil.MIXIN_CLASS),
                     new Type[]{Type.INT},
-                    Constants.INVOKEVIRTUAL));
+                    Constants.INVOKEINTERFACE));
 
             il.append(new PUSH(cpg, methodIndex));
 
@@ -365,40 +268,40 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
             il.append(factory.createLoad(Type.OBJECT, 0));
 
             il.append(factory.createInvoke(
-                    TransformationUtil.INTRODUCTION_CLASS,
-                    "invoke",
+                    TransformationUtil.MIXIN_CLASS,
+                    TransformationUtil.INVOKE_MIXIN_METHOD,
                     Type.OBJECT,
                     new Type[]{Type.INT, new ArrayType(Type.OBJECT, 1), Type.OBJECT},
-                    Constants.INVOKEVIRTUAL));
+                    Constants.INVOKEINTERFACE));
         }
         else {
             // get the aspectwerkz system
             il.append(new PUSH(cpg, uuid));
             il.append(factory.createInvoke(
-                    TransformationUtil.ASPECT_WERKZ_CLASS,
-                    "getSystem",
-                    new ObjectType(TransformationUtil.ASPECT_WERKZ_CLASS),
+                    TransformationUtil.SYSTEM_LOADER_CLASS,
+                    TransformationUtil.RETRIEVE_SYSTEM_METHOD,
+                    new ObjectType(TransformationUtil.SYSTEM_CLASS),
                     new Type[]{Type.STRING},
                     Constants.INVOKESTATIC));
 
             // no parameters
-            il.append(new PUSH(cpg, introductionIndex));
+            il.append(new PUSH(cpg, mixinIndex));
             il.append(factory.createInvoke(
-                    TransformationUtil.ASPECT_WERKZ_CLASS,
-                    "getIntroduction",
-                    new ObjectType(TransformationUtil.INTRODUCTION_CLASS),
+                    TransformationUtil.SYSTEM_CLASS,
+                    TransformationUtil.RETRIEVE_MIXIN_METHOD,
+                    new ObjectType(TransformationUtil.MIXIN_CLASS),
                     new Type[]{Type.INT},
-                    Constants.INVOKEVIRTUAL));
+                    Constants.INVOKEINTERFACE));
 
             il.append(new PUSH(cpg, methodIndex));
             il.append(factory.createLoad(Type.OBJECT, 0));
 
             il.append(factory.createInvoke(
-                    TransformationUtil.INTRODUCTION_CLASS,
-                    "invoke",
+                    TransformationUtil.MIXIN_CLASS,
+                    TransformationUtil.INVOKE_MIXIN_METHOD,
                     Type.OBJECT,
                     new Type[]{Type.INT, Type.OBJECT},
-                    Constants.INVOKEVIRTUAL));
+                    Constants.INVOKEINTERFACE));
         }
 
         // take care of the return type
@@ -528,14 +431,15 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
      * Filters the classes to be transformed.
      *
      * @param cg the class to filter
+     * @param classMetaData the class meta-data
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg) {
+    private boolean classFilter(final ClassGen cg, final ClassMetaData classMetaData) {
         if (cg.isInterface()) {
             return true;
         }
         if (m_definition.inTransformationScope(cg.getClassName()) &&
-                m_definition.hasIntroductions(cg.getClassName())) {
+                m_definition.hasIntroductions(classMetaData)) {
             return false;
         }
         return true;
@@ -562,5 +466,4 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
     public String verboseMessage() {
         return this.getClass().getName();
     }
-    ///CLOVER:ON
 }

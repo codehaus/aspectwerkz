@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.security.MessageDigest;
 
 import org.apache.bcel.Constants;
@@ -27,6 +28,7 @@ import org.apache.bcel.generic.ClassGen;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.MethodComparator;
 
 /**
  * Contains constants and utility method used by the transformers.
@@ -65,30 +67,34 @@ public final class TransformationUtil {
     public static final String SET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "addMetaData";
     public static final String CLASS_LOOKUP_METHOD = "class$";
 
-    public static final String ASPECT_WERKZ_CLASS = "org.codehaus.aspectwerkz.xmldef.AspectWerkz";
-    public static final String INTRODUCTION_CLASS = "org.codehaus.aspectwerkz.xmldef.introduction.Introduction";
+    public static final String SYSTEM_CLASS = "org.codehaus.aspectwerkz.System";
+    public static final String SYSTEM_LOADER_CLASS = "org.codehaus.aspectwerkz.SystemLoader";
+    public static final String MIXIN_CLASS = "org.codehaus.aspectwerkz.Mixin";
     public static final String THREAD_LOCAL_CLASS = "org.codehaus.aspectwerkz.util.SerializableThreadLocal";
-    public static final String MEMBER_METHOD_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.xmldef.joinpoint.MemberMethodJoinPoint";
-    public static final String STATIC_METHOD_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.xmldef.joinpoint.StaticMethodJoinPoint";
-    public static final String MEMBER_FIELD_GET_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.xmldef.joinpoint.MemberFieldGetJoinPoint";
-    public static final String MEMBER_FIELD_SET_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.xmldef.joinpoint.MemberFieldSetJoinPoint";
-    public static final String STATIC_FIELD_GET_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.xmldef.joinpoint.StaticFieldGetJoinPoint";
-    public static final String STATIC_FIELD_SET_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.xmldef.joinpoint.StaticFieldSetJoinPoint";
-    public static final String CALLER_SIDE_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.xmldef.joinpoint.CallerSideJoinPoint";
-    public static final String CONSTRUCTOR_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.xmldef.joinpoint.ConstructorJoinPoint";
+    public static final String MEMBER_METHOD_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.MemberMethodJoinPoint";
+    public static final String STATIC_METHOD_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.StaticMethodJoinPoint";
+    public static final String MEMBER_FIELD_GET_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.MemberFieldGetJoinPoint";
+    public static final String MEMBER_FIELD_SET_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.MemberFieldSetJoinPoint";
+    public static final String STATIC_FIELD_GET_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.StaticFieldGetJoinPoint";
+    public static final String STATIC_FIELD_SET_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.StaticFieldSetJoinPoint";
+    public static final String CALLER_SIDE_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint";
+    public static final String CONSTRUCTOR_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.ConstructorJoinPoint";
     public static final String IDENTIFIABLE_INTERFACE = "org.codehaus.aspectwerkz.Identifiable";
     public static final String META_DATA_INTERFACE = "org.codehaus.aspectwerkz.MetaDataEnhanceable";
     public static final String UUID_CLASS = "org.codehaus.aspectwerkz.util.UuidGenerator";
     public static final String SERIAL_VERSION_UID_FIELD = "serialVersionUID";
+    public static final String RETRIEVE_SYSTEM_METHOD = "getSystem";
+    public static final String RETRIEVE_MIXIN_METHOD = "getMixin";
+    public static final String INVOKE_MIXIN_METHOD = "___AW_invokeMixin";
 
-    public static final ObjectType MEMBER_METHOD_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.xmldef.joinpoint.MemberMethodJoinPoint");
-    public static final ObjectType STATIC_METHOD_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.xmldef.joinpoint.StaticMethodJoinPoint");
-    public static final ObjectType MEMBER_FIELD_GET_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.xmldef.joinpoint.MemberFieldGetJoinPoint");
-    public static final ObjectType MEMBER_FIELD_SET_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.xmldef.joinpoint.MemberFieldSetJoinPoint");
-    public static final ObjectType STATIC_FIELD_GET_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.xmldef.joinpoint.StaticFieldGetJoinPoint");
-    public static final ObjectType STATIC_FIELD_SET_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.xmldef.joinpoint.StaticFieldSetJoinPoint");
-    public static final ObjectType CALLER_SIDE_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.xmldef.joinpoint.CallerSideJoinPoint");
-    public static final ObjectType CONSTRUCTOR_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.xmldef.joinpoint.ConstructorJoinPoint");
+    public static final ObjectType MEMBER_METHOD_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.MemberMethodJoinPoint");
+    public static final ObjectType STATIC_METHOD_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.StaticMethodJoinPoint");
+    public static final ObjectType MEMBER_FIELD_GET_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.MemberFieldGetJoinPoint");
+    public static final ObjectType MEMBER_FIELD_SET_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.MemberFieldSetJoinPoint");
+    public static final ObjectType STATIC_FIELD_GET_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.StaticFieldGetJoinPoint");
+    public static final ObjectType STATIC_FIELD_SET_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.StaticFieldSetJoinPoint");
+    public static final ObjectType CALLER_SIDE_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint");
+    public static final ObjectType CONSTRUCTOR_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.ConstructorJoinPoint");
 
     /**
      * Converts String access types to BCEL access types.
@@ -475,7 +481,6 @@ public final class TransformationUtil {
      * @param method method implementation
      */
     public static void addMethod(final ClassGen cg, final Method method) {
-
         //@todo review log
         AspectWerkzPreProcessor.log("adding method to " + cg.getClassName() + ": " + method.toString());
 
@@ -492,7 +497,6 @@ public final class TransformationUtil {
      * @param field field implementation
      */
     public static void addField(final ClassGen cg, final Field field) {
-
         //@todo review log
         AspectWerkzPreProcessor.log("adding field to " + cg.getClassName() + ": " + field.toString());
 
@@ -500,5 +504,42 @@ public final class TransformationUtil {
         if (!cg.containsField(field)) {
             cg.addField(field);
         }
+    }
+
+    /**
+     * Creates a sorted method list of all the public methods in the class and super classes.
+     *
+     * @param klass the class with the methods
+     * @return the sorted method list
+     */
+    public static List createSortedMethodList(final Class klass) {
+        if (klass == null) throw new IllegalArgumentException("class to sort method on can not be null");
+
+        // get all public methods including the inherited methods
+        java.lang.reflect.Method[] methods = klass.getMethods();
+
+        List methodList = new ArrayList(methods.length);
+        for (int i = 0; i < methods.length; i++) {
+            java.lang.reflect.Method method = methods[i];
+            if (!method.getName().equals("equals") ||
+                    !method.getName().equals("hashCode") ||
+                    !method.getName().equals("getClass") ||
+                    !method.getName().equals("toString") ||
+                    !method.getName().equals("wait") ||
+                    !method.getName().equals("notify") ||
+                    !method.getName().equals("notifyAll") ||
+                    !method.getName().startsWith(CLASS_LOOKUP_METHOD) &&
+                    !method.getName().startsWith(GET_UUID_METHOD) &&
+                    !method.getName().startsWith(GET_META_DATA_METHOD) &&
+                    !method.getName().startsWith(SET_META_DATA_METHOD) &&
+                    !method.getName().startsWith(ORIGINAL_METHOD_PREFIX)) {
+                methodList.add(method);
+            }
+        }
+        Collections.sort(
+                methodList,
+                MethodComparator.getInstance(MethodComparator.NORMAL_METHOD)
+        );
+        return methodList;
     }
 }

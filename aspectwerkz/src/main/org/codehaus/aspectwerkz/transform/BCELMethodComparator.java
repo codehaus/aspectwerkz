@@ -69,7 +69,8 @@ public final class BCELMethodComparator implements java.util.Comparator {
                 int result = args1[i].toString().compareTo(args2[i].toString());
                 if (result != 0) return result;
             }
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
         throw new Error("classes can only be transformed once");

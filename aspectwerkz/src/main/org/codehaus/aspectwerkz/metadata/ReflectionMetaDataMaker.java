@@ -87,7 +87,6 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
         return classMetaData;
     }
 
-
     /**
      * Construct interface meta-data from a <code>Class</code> object.
      *

@@ -46,7 +46,7 @@ public class ClassPreProcessorHelper {
      */
     public static synchronized void initializePreProcessor() {
         //@todo review log statement according to log layer
-        if(preProcessorInitialized)
+        if (preProcessorInitialized)
             return;
         preProcessorInitialized = true;
         Class klass = null;
@@ -56,7 +56,8 @@ public class ClassPreProcessorHelper {
             // force loading thru System class loader to allow
             // preprocessor implementation to be in standard classpath
             klass = Class.forName(s, true, ClassLoader.getSystemClassLoader());
-        } catch (ClassNotFoundException _ex) {
+        }
+        catch (ClassNotFoundException _ex) {
             System.err.println("AspectWerkz - WARN - Pre-processor class '" + s + "' not found");
         }
         if (klass != null)
@@ -64,7 +65,8 @@ public class ClassPreProcessorHelper {
                 preProcessor = (ClassPreProcessor)klass.newInstance();
                 preProcessor.initialize(null);
                 System.out.println("AspectWerkz - INFO - Pre-processor " + s + " loaded and initialized");
-            } catch(Throwable throwable) {
+            }
+            catch (Throwable throwable) {
                 System.err.println("AspectWerkz - WARN - Error initializing pre-processor class " + s + ":");
                 throwable.printStackTrace();
             }
@@ -81,14 +83,16 @@ public class ClassPreProcessorHelper {
             byte[] obyte = new byte[len];
             System.arraycopy(b, off, obyte, 0, len);
             return obyte;
-        } else {
+        }
+        else {
             try {
                 byte[] ibyte = new byte[len];
                 byte[] obyte = new byte[]{};
                 System.arraycopy(b, off, ibyte, 0, len);
                 obyte = preProcessor.preProcess(name, ibyte, caller);
                 return obyte;
-            } catch (Throwable throwable) {
+            }
+            catch (Throwable throwable) {
                 System.err.println("AspectWerkz - WARN - Error pre-processing class " + name + " in " + Thread.currentThread());
                 throwable.printStackTrace();
                 byte[] obyte = new byte[len];

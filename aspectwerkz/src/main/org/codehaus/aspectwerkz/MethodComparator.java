@@ -99,9 +99,12 @@ public final class MethodComparator implements java.util.Comparator {
                 int result = args1[i].getName().compareTo(args2[i].getName());
                 if (result != 0) return result;
             }
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
+        java.lang.System.err.println(m1.getName());
+        java.lang.System.err.println(m2.getName());
         throw new Error("should be unreachable");
     }
 
@@ -135,11 +138,12 @@ public final class MethodComparator implements java.util.Comparator {
                 int result = args1[i].getName().compareTo(args2[i].getName());
                 if (result != 0) return result;
             }
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
-        System.err.println(m1.getName());
-        System.err.println(m2.getName());
+        java.lang.System.err.println(m1.getName());
+        java.lang.System.err.println(m2.getName());
         throw new Error("should be unreachable");
     }
 
@@ -169,9 +173,12 @@ public final class MethodComparator implements java.util.Comparator {
                 int result = args1[i].compareTo(args2[i]);
                 if (result != 0) return result;
             }
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
+        java.lang.System.err.println(m1.getName());
+        java.lang.System.err.println(m2.getName());
         throw new Error("should be unreachable");
     }
 

@@ -23,7 +23,7 @@ public interface Mixin {
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
-    Object ___AW_invokeIntroduction(int methodIndex, Object callingObject);
+    Object ___AW_invokeMixin(int methodIndex, Object callingObject);
 
     /**
      * Invokes an introduced method with the index specified.
@@ -34,5 +34,5 @@ public interface Mixin {
      * @return the result from the invocation
      */
 
-    Object ___AW_invokeIntroduction(int methodIndex, Object[] parameters, Object callingObject);
+    Object ___AW_invokeMixin(int methodIndex, Object[] parameters, Object callingObject);
 }

@@ -135,7 +135,7 @@ public class RemoteProxyServerThread implements Runnable {
             throws IOException, ClassNotFoundException,
             InstantiationException, IllegalAccessException {
 
-        final String className = (String) m_in.readObject();
+        final String className = (String)m_in.readObject();
         Class klass = m_loader.loadClass(className);
 
         final Object instance = klass.newInstance();
@@ -154,11 +154,11 @@ public class RemoteProxyServerThread implements Runnable {
     private void handleInvocationCommand()
             throws IOException, ClassNotFoundException {
 
-        final Object context =  m_in.readObject();
-        final String handle = (String) m_in.readObject();
-        final String methodName = (String) m_in.readObject();
-        final Class[] paramTypes = (Class[]) m_in.readObject();
-        final Object[] args = (Object[]) m_in.readObject();
+        final Object context = m_in.readObject();
+        final String handle = (String)m_in.readObject();
+        final String methodName = (String)m_in.readObject();
+        final Class[] paramTypes = (Class[])m_in.readObject();
+        final Object[] args = (Object[])m_in.readObject();
 
         Object result = null;
         try {

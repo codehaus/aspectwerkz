@@ -9,8 +9,8 @@ package org.codehaus.aspectwerkz.xmldef.advice;
 
 import org.codehaus.aspectwerkz.xmldef.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinitionImpl;
-import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.xmldef.joinpoint.CallerSideJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;

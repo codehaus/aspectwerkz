@@ -19,8 +19,8 @@ import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.Constants;
 
-import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 
 /**
  * Adds a <code>private void readObject(final ObjectInputStream stream) throws Exception</code>
@@ -47,7 +47,8 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
      */
     public AddReadObjectTransformer() {
         super();
-        m_definition = AbstractAspectWerkzDefinition.getDefinitionForTransformation();
+        // TODO: fix loop over definitions
+        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
     }
 
     /**
@@ -57,21 +58,23 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
      * @param klass the class
      */
     public void transformInterface(final Context context, final Klass klass) {
+        m_definition.loadAspects(context.getLoader());
+
         final ClassGen cg = klass.getClassGen();
-            final ConstantPoolGen cpg = cg.getConstantPool();
-            final InstructionFactory factory = new InstructionFactory(cg);
+        final ConstantPoolGen cpg = cg.getConstantPool();
+        final InstructionFactory factory = new InstructionFactory(cg);
 
-            if (classFilter(cg)) {
-                return;
-            }
-            if (m_hasBeenTransformed.contains(cg.getClassName())) {
-                return;
-            }
+        if (classFilter(cg)) {
+            return;
+        }
+        if (m_hasBeenTransformed.contains(cg.getClassName())) {
+            return;
+        }
 
-            // mark the class as transformed
-            m_hasBeenTransformed.add(cg.getClassName());
+        // mark the class as transformed
+        m_hasBeenTransformed.add(cg.getClassName());
 
-            addReadObjectMethod(cg, cpg, factory);
+        addReadObjectMethod(cg, cpg, factory);
     }
 
     /**

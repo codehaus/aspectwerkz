@@ -29,8 +29,8 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.ConstantClass;
 
-import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 
 /**
  * Adds meta-data storage for the target classes.
@@ -61,7 +61,8 @@ public final class AddMetaDataTransformer
      */
     public AddMetaDataTransformer() {
         super();
-        m_definition = AbstractAspectWerkzDefinition.getDefinitionForTransformation();
+        // TODO: fix loop over definitions
+        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
     }
 
     /**
@@ -72,6 +73,8 @@ public final class AddMetaDataTransformer
      */
     public void transformInterface(final Context context, final Klass klass) {
         if (ADD_METADATA == null) return; // do not do any transformations
+
+        m_definition.loadAspects(context.getLoader());
 
         final ClassGen cg = klass.getClassGen();
         final ConstantPoolGen cpg = cg.getConstantPool();

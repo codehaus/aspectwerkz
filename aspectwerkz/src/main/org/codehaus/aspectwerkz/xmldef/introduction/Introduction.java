@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.ContainerType;
 import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
@@ -31,7 +32,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class Introduction implements Serializable {
+public class Introduction implements Serializable, Mixin {
 
     /**
      * An empty <code>Object</code> array.
@@ -114,8 +115,8 @@ public class Introduction implements Serializable {
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
-    public Object invoke(final int methodIndex, final Object callingObject) {
-        return invoke(methodIndex, EMPTY_OBJECT_ARRAY, callingObject);
+    public Object ___AW_invokeMixin(final int methodIndex, final Object callingObject) {
+        return ___AW_invokeMixin(methodIndex, EMPTY_OBJECT_ARRAY, callingObject);
     }
 
     /**
@@ -127,9 +128,9 @@ public class Introduction implements Serializable {
      * @return the result from the invocation
      */
 
-    public Object invoke(final int methodIndex,
-                         final Object[] parameters,
-                         final Object callingObject) {
+    public Object ___AW_invokeMixin(final int methodIndex,
+                                    final Object[] parameters,
+                                    final Object callingObject) {
         try {
             Object result = null;
             switch (m_deploymentModel) {

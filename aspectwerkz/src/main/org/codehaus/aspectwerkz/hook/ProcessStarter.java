@@ -87,7 +87,7 @@ public class ProcessStarter {
     /** option for classloader preprocessor target */
     final static String CL_PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.clpreprocessor";
     /** default dir when -Xbootclasspath is forced or used (java 1.3) */
-    private final static String CL_BOOTCLASSPATH_FORCE_DEFAULT = "."+File.separatorChar+"_boot";
+    private final static String CL_BOOTCLASSPATH_FORCE_DEFAULT = "." + File.separatorChar + "_boot";
     /** option for target dir when -Xbootclasspath is forced or used (java 1.3) */
     private final static String CL_BOOTCLASSPATH_FORCE_PROPERTY = "aspectwerkz.classloader.clbootclasspath";
     /** option for seconds to wait before connecting */
@@ -105,14 +105,14 @@ public class ProcessStarter {
     /** thread to redirect streams of target VM in launching VM */
     private Thread errThread;
 
-
     /**
      * Test if current java installation supports HotSwap
      */
     private static boolean hasCanRedefineClass() {
         try {
             VirtualMachine.class.getMethod("canRedefineClasses", new Class[]{});
-        } catch (NoSuchMethodException e) {
+        }
+        catch (NoSuchMethodException e) {
             return false;
         }
         return true;
@@ -130,20 +130,23 @@ public class ProcessStarter {
                 if (!("-cp".equals(args[i])) && !("-classpath").equals(args[i])) {
                     optionsArgB.append(args[i]).append(" ");
                 }
-            } else if (!foundMain && ("-cp".equals(previous) || "-classpath".equals(previous))) {
-                if (cpOptionsArgB.length()>0)
-                    cpOptionsArgB.append((System.getProperty("os.name","").toLowerCase().indexOf("windows")>=0)?";":":");
+            }
+            else if (!foundMain && ("-cp".equals(previous) || "-classpath".equals(previous))) {
+                if (cpOptionsArgB.length() > 0)
+                    cpOptionsArgB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) ? ";" : ":");
                 cpOptionsArgB.append(args[i]);
-            } else {
-                foundMain=true;
+            }
+            else {
+                foundMain = true;
                 mainArgB.append(args[i]).append(" ");
             }
             previous = args[i];
         }
         String opt = null;
-        if (System.getProperty("os.name", "").toLowerCase().indexOf("windows")>=0) {
+        if (System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) {
             opt = optionsArgB.append(" -cp \"").append(cpOptionsArgB.toString()).append("\"").toString();
-        } else {
+        }
+        else {
             opt = optionsArgB.append("-cp ").append(escapeWhiteSpace(cpOptionsArgB.toString())).toString();
         }
         String main = mainArgB.toString();
@@ -151,9 +154,9 @@ public class ProcessStarter {
 
         // if java version does not support method "VirtualMachine.canRedefineClass"
         // or if bootclasspath is forced, transform optionsArg
-        if (!hasCanRedefineClass() || System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY)!=null) {
+        if (!hasCanRedefineClass() || System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY) != null) {
             String bootDir = System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY, CL_BOOTCLASSPATH_FORCE_DEFAULT);
-            if (System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY)!=null)
+            if (System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY) != null)
                 System.out.println("HotSwap deactivated, using bootclasspath: " + bootDir);
             else
                 System.out.println("HotSwap not supported by this java version, using bootclasspath: " + bootDir);
@@ -163,7 +166,8 @@ public class ProcessStarter {
             BootClasspathStarter starter = new BootClasspathStarter(opt, main, bootDir);
             try {
                 process = starter.launchVM();
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 System.err.println("failed to launch process :" + starter.getCommandLine());
                 e.printStackTrace();
                 return -1;
@@ -172,12 +176,14 @@ public class ProcessStarter {
             // attach stdout VM streams to this streams
             // this is needed early to support -verbose:class like options
             redirectStdoutStreams();
-        } else {
+        }
+        else {
             // lauch VM in suspend mode
             JDWPStarter starter = new JDWPStarter(opt, main, "dt_socket", "9300");
             try {
                 process = starter.launchVM();
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 System.err.println("failed to launch process :" + starter.getCommandLine());
                 e.printStackTrace();
                 return -1;
@@ -191,16 +197,18 @@ public class ProcessStarter {
             int secondsToWait = 0;
             try {
                 secondsToWait = Integer.parseInt(System.getProperty(CONNECTION_WAIT_PROPERTY, "0"));
-            } catch (NumberFormatException nfe) {
+            }
+            catch (NumberFormatException nfe) {
                 ;
             }
             VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(clp, starter.getTransport(), starter.getAddress(), secondsToWait);
             if (vm == null) {
                 process.destroy();
-            } else {
-            	vm.resume();
-            	vm.dispose();
-			}
+            }
+            else {
+                vm.resume();
+                vm.dispose();
+            }
         }
 
         // attach VM other streams to this streams
@@ -217,7 +225,8 @@ public class ProcessStarter {
             int exitCode = process.waitFor();
             executeShutdownHook = false;
             return exitCode;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             executeShutdownHook = false;
             e.printStackTrace();
             return -1;
@@ -229,14 +238,15 @@ public class ProcessStarter {
      */
     private void shutdown() {
         if (executeShutdownHook) {
-			process.destroy();
+            process.destroy();
         }
-		try {
+        try {
             outThread.join();
-			errThread.join();
-		} catch (InterruptedException e) {
-			;
-		}
+            errThread.join();
+        }
+        catch (InterruptedException e) {
+            ;
+        }
     }
 
     /**
@@ -253,7 +263,7 @@ public class ProcessStarter {
     private void redirectOtherStreams() {
         inThread = new StreamRedirectThread("in.redirect", System.in, process.getOutputStream());
         inThread.setDaemon(true);
-        errThread = new StreamRedirectThread("err.redirect", process.getErrorStream(),  System.err);
+        errThread = new StreamRedirectThread("err.redirect", process.getErrorStream(), System.err);
 
         inThread.start();
         errThread.start();
@@ -264,7 +274,7 @@ public class ProcessStarter {
     }
 
     private static String escapeWhiteSpace(String s) {
-        if (s.indexOf(' ')>0) {
+        if (s.indexOf(' ') > 0) {
             StringBuffer sb = new StringBuffer();
             StringTokenizer st = new StringTokenizer(s, " ", true);
             String current = null;
@@ -276,7 +286,8 @@ public class ProcessStarter {
                     sb.append(current);
             }
             return sb.toString();
-        } else {
+        }
+        else {
             return s;
         }
     }
