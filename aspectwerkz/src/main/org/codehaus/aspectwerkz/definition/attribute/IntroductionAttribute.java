@@ -16,10 +16,12 @@ import attrib4j.Attribute;
  */
 public class IntroductionAttribute implements Attribute {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * The expression for the introduction.
      */
-    private String m_expression;
+    private final String m_expression;
 
     /**
      * Create an Introduction attribute.

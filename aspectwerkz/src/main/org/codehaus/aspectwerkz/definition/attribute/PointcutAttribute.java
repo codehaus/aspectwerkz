@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.definition.attribute;
 
 import attrib4j.Attribute;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * Attribute for the Pointcut construct.
@@ -16,19 +17,44 @@ import attrib4j.Attribute;
  */
 public class PointcutAttribute implements Attribute {
 
+    private static final long serialVersionUID = 1L;
+
+    public static final String PC_EXECUTION = "execution";
+    public static final String PC_CALL = "call";
+    public static final String PC_SET = "set";
+    public static final String PC_GET = "get";
+    public static final String PC_THROWS = "throws";
+    public static final String PC_CFLOW = "cflow";
+
+    /**
+     * An array with all the valid pointcut types.
+     */
+    public static final String[] POINTCUT_TYPES = new String[] {
+        PC_EXECUTION, PC_CALL, PC_SET, PC_GET, PC_THROWS, PC_CFLOW
+    };
+
     /**
      * The expression for the pointcut.
      */
-    private String m_expression;
+    private final String m_expression;
+
+    /**
+     * The type of pointcut.
+     */
+    private final String m_type;
 
     /**
      * Create an Pointcut attribute.
      *
-     * @param expression the expression for the pointcut
+     * @param pointcut the pointcut expression
      */
-    public PointcutAttribute(final String expression) {
-        if (expression == null) throw new IllegalArgumentException("pointcut expression is not valid");
-        m_expression = expression;
+    public PointcutAttribute(final String pointcut) {
+        if (pointcut == null) throw new IllegalArgumentException("pointcut expression is not valid");
+        int index = pointcut.indexOf('(');
+        String type = pointcut.substring(0, index);
+        validateType(type);
+        m_type = type;
+        m_expression = pointcut.substring(index + 1, pointcut.length());
     }
 
     /**
@@ -38,5 +64,31 @@ public class PointcutAttribute implements Attribute {
      */
     public String getExpression() {
         return m_expression;
+    }
+
+    /**
+     * Returns the type of the pointcut.
+     *
+     * @return the type of the pointcut
+     */
+    public String getType() {
+        return m_type;
+    }
+
+    /**
+     * Validates the pointcut type.
+     *
+     * @param type the type
+     */
+    private void validateType(final String type) {
+        boolean valid = false;
+        for (int i = 0; i < POINTCUT_TYPES.length; i++) {
+            if (POINTCUT_TYPES[i].equals(type)) {
+                valid = true;
+            }
+        }
+        if (!valid) {
+            throw new DefinitionException("pointcut type [" + type + "] is not a valid type");
+        }
     }
 }

@@ -23,7 +23,7 @@ public class AspectAttribute implements Attribute {
     /**
      * The deployment model of the aspect.
      */
-    private String m_deploymentModel;
+    private final String m_deploymentModel;
 
     /**
      * Create an Aspect attribute.

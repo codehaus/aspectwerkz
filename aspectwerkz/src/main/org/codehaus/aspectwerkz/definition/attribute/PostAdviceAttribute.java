@@ -16,10 +16,12 @@ import attrib4j.Attribute;
  */
 public class PostAdviceAttribute implements Attribute {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * The expression for the advice.
      */
-    private String m_expression;
+    private final String m_expression;
 
     /**
      * Create an PostAdvice attribute.
