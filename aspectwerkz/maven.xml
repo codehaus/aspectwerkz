@@ -160,7 +160,7 @@
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.xmldef.AllTests"/>
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.AllTests"/>
         </exec>
     </goal>
 
@@ -171,7 +171,7 @@
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.xmldef.AllPerfTests"/>
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.AllPerfTests"/>
         </exec>
     </goal>
 
@@ -184,7 +184,7 @@
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
         <!-- run the application in regular mode -->
-        <java classname="test.xmldef.clapp.CrazyClassLoaderApp" fork="true">
+        <java classname="test.clapp.CrazyClassLoaderApp" fork="true">
             <classpath>
                 <pathelement path="${test.classes}"/>
             </classpath>
@@ -192,7 +192,7 @@
         </java>
         <!-- run the application thru AspectWerkz -->
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="true">
-            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.xmldef.clapp.CrazyClassLoaderApp"/>
+            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp"/>
         </exec>
     </goal>
 
@@ -213,14 +213,25 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the logging test, tests to have the def on the classpath -->
+    <!--  compiles aspects for the samples -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:samples:aspectc">
+        <attainGoal name="clean"/>
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <exec executable="java">
+            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.definition.AspectC ${basedir}/src/samples ${basedir}/target/samples-classes"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  runs the logging test -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:logging">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${src.dir}/samples${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* examples.xmldef.logging.Target"/>
+            <arg line="-cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.logging.Target"/>
         </exec>
     </goal>
 
@@ -230,9 +241,8 @@
     <goal name="aspectwerkz:samples:caching">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.caching.CacheTest"/>
+            <arg line="-cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.caching.CacheTest"/>
         </exec>
     </goal>
 
@@ -242,9 +252,8 @@
     <goal name="aspectwerkz:samples:asynchronous">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.asynchronous.Target"/>
+            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.asynchronous.Target"/>
         </exec>
     </goal>
 
@@ -254,9 +263,8 @@
     <goal name="aspectwerkz:samples:synchronization">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.synchronization.Target"/>
+            <arg line="-cp ${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.synchronization.Target"/>
         </exec>
     </goal>
 
@@ -266,9 +274,8 @@
     <goal name="aspectwerkz:samples:cflow">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.cflow.Target"/>
+            <arg line="-cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
         </exec>
     </goal>
 
@@ -280,7 +287,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:attributes:extensions"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="false">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml examples.xmldef.transparentpersistence.Client"/>
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml examples.transparentpersistence.Client"/>
         </exec>
     </goal>
 
@@ -290,9 +297,9 @@
     <goal name="aspectwerkz:samples:introduction">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.introduction.Target"/>
+            <arg line="-verify -cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
+<!--            <arg line="-offline ${src.dir}/samples/samples.xml -verbose -verify -cp ${pathseparator}${target.dir}/samples-classes"/>-->
         </exec>
     </goal>
 
@@ -302,8 +309,8 @@
     <goal name="aspectwerkz:samples:remote:client">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <exec executable="java">
-            <arg line="-cp ${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${dist.dir}/samples.jar examples.connectivity.Client"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Client"/>
         </exec>
     </goal>
 
@@ -313,9 +320,19 @@
     <goal name="aspectwerkz:samples:remote:server">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.remote.server.run=true -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Server"/>
+            <arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Server"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  runs the exception test -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:samples:exception">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${basedir}${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml examples.exception.Target"/>
         </exec>
     </goal>
 
