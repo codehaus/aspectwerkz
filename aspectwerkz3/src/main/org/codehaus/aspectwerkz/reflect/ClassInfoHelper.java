@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
+import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 
 /**
@@ -23,7 +24,8 @@ public class ClassInfoHelper {
      * @return
      */
     public static boolean matchType(final TypePattern typePattern, final ClassInfo classInfo) {
-        if (typePattern.isHierarchical()) {
+        SubtypePatternType type = typePattern.getSubtypePatternType();
+        if (type.equals(SubtypePatternType.MATCH_ON_ALL_METHODS)) {
             return matchSuperClasses(classInfo, typePattern);
         } else {
             return typePattern.matches(classInfo.getName());
