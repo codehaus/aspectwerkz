@@ -22,35 +22,35 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Type;
 
+import java.util.Set;
+
 /**
  * Adds a "proxy method" to the <tt>&lt;clinit&gt;</tt> that matches an 
  * <tt>staticinitialization</tt> pointcut as well as prefixing the "original method" 
  * (see {@link org.codehaus.aspectwerkz.transform.TransformationUtil#getPrefixedOriginalClinitName(String)}).
  * <br/>
  *
- * TODO multiweaving checks
- *
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
  */
 public class StaticInitializationVisitor extends ClassAdapter implements TransformationConstants {
 
-	private final ClassInfo m_classInfo;
 	private final ContextImpl m_ctx;
 	private String m_declaringTypeName;
+    private final Set m_addedMethods;
 
 	/**
 	 * Creates a new class adapter.
 	 * 
 	 * @param cv
-	 * @param classInfo
 	 * @param ctx
+     * @param addedMethods already added methods by AW
 	 */
 	public StaticInitializationVisitor(	final ClassVisitor cv,
-										final ClassInfo classInfo,
-										final Context ctx) {
+										final Context ctx,
+                                        final Set addedMethods) {
 		super(cv);
-		m_classInfo = classInfo;
 		m_ctx = (ContextImpl) ctx;
+        m_addedMethods = addedMethods;
 	}
 
 	/**
@@ -88,10 +88,13 @@ public class StaticInitializationVisitor extends ClassAdapter implements Transfo
 									final String[] exceptions,
 									final Attribute attrs) {
 		if(!CLINIT_METHOD_NAME.equals(name)) {
-			return cv.visitMethod(access, name, desc, exceptions, attrs);
+			return super.visitMethod(access, name, desc, exceptions, attrs);
 		}
 
 		String prefixedOriginalName = TransformationUtil.getPrefixedOriginalClinitName(m_declaringTypeName);
+        if (m_addedMethods.contains(AlreadyAddedMethodAdapter.getMethodKey(prefixedOriginalName, CLINIT_METHOD_SIGNATURE))) {
+            return super.visitMethod(access, name, desc, exceptions, attrs);
+        }
 
 		m_ctx.markAsAdvised();
 
