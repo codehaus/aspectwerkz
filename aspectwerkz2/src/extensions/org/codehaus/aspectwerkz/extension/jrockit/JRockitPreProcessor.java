@@ -22,10 +22,12 @@ import com.jrockit.management.rmp.RmpSocketListener;
  * party jars CAN reside in the standard classpath.
  * <p/>
  * The command line tool will look like: <code>"%JAVA_COMMAND%" -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor
- * -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\target\extensions.jar;%ASPECTWERKZ_HOME%\lib\bcel-patch.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%"
- * -cp "%CP%;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%"
+ * -cp "%ASPECTWERKZ_HOME%\target\extensions.jar;%ASPECTWERKZ_HOME%\lib\javassist-2.6.jar;%ASPECTWERKZ_HOME%\lib\bcel-patch.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%"
  * -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -Daspectwerkz.transform.verbose=yes %*</code> Note: there can be some
  * NoClassDefFoundError due to classpath limitation - as described in http://edocs.bea.com/wls/docs81/adminguide/winservice.html
+ * <p/>
+ * In order to use the BEA JRockit management server (for further connection of management console or runtime analyzer), the regular option
+ * -Xmanagement will not have any effect. Instead, use <code>-Dmanagement</code>.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>

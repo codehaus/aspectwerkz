@@ -238,7 +238,7 @@ public class MethodCallTransformer implements Transformer {
                     ctClass
             );
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
-            ctClass.addField(field, "java.lang.Class.forName(\"" + ctMethod.getDeclaringClass().getName().replace('/', '.') + "\")");
+            ctClass.addField(field, "java.lang.Class#forName(\"" + ctMethod.getDeclaringClass().getName().replace('/', '.') + "\")");
         }
         return fieldName;
     }

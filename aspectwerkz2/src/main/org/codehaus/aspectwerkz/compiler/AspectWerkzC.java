@@ -524,10 +524,7 @@ public class AspectWerkzC {
         System.out.println("--- AspectWerkzC compiler ---");
         System.out.println("Usage:");
         System.out.println(
-                "java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify] <ClassPreProcessorImpl> <target 1> .. <target n>"
-        );
-        System.out.println(
-                "  <ClassPreProcessorImpl> : full qualified name of the ClassPreProcessor implementation (must be in classpath)"
+                "java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify]  <target 1> .. <target n>"
         );
         System.out.println("  <target i> : exploded dir, jar, zip files to compile");
     }
@@ -535,6 +532,7 @@ public class AspectWerkzC {
     public static void main(String args[]) {
         if (args.length <= 0) {
             doHelp();
+            return;//stop here
         }
 
         AspectWerkzC compiler = new AspectWerkzC();

@@ -82,7 +82,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
                 ctClass
         );
         field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
-        ctClass.addField(field, "java.lang.Class.forName(\"" + ctClass.getName().replace('/', '.') + "\")");
+        ctClass.addField(field, "java.lang.Class#forName(\"" + ctClass.getName().replace('/', '.') + "\")");
     }
 
     /**
@@ -102,7 +102,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
         field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
         StringBuffer body = new StringBuffer();
         body.append(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
-        body.append('.');
+        body.append('#');
         body.append(TransformationUtil.GET_JOIN_POINT_MANAGER);
         body.append('(');
         body.append(TransformationUtil.STATIC_CLASS_FIELD);
