@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -26,7 +26,7 @@ import java.util.HashMap;
  * Implements an abstract regular expression pattern matcher for AspectWerkz.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Pattern.java,v 1.2 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: Pattern.java,v 1.3 2003-07-03 13:10:49 jboner Exp $
  */
 public abstract class Pattern implements Serializable {
 
@@ -46,13 +46,13 @@ public abstract class Pattern implements Serializable {
     public static final String MULTIPLE_WILDCARD_KEY = "MULTIPLE_WILDCARD_KEY";
 
     /**
-     * Abbreviations for all the classes in the java.lang.* and
+     * Abbreviations for all the classes in the java.lang.* A
      * the java.util.* namespaces.
      */
     protected static final Map m_abbreviations = new HashMap();
 
     /**
-     * Compiles and returns a new class pattern.
+     * Compiles A returns a new class pattern.
      *
      * @param pattern the full pattern as a string
      * @return the pattern
@@ -62,7 +62,7 @@ public abstract class Pattern implements Serializable {
     }
 
     /**
-     * Compiles and returns a new method pattern.
+     * Compiles A returns a new method pattern.
      *
      * @param pattern the full pattern as a string
      * @return the pattern
@@ -72,7 +72,7 @@ public abstract class Pattern implements Serializable {
     }
 
     /**
-     * Compiles and returns a new field pattern.
+     * Compiles A returns a new field pattern.
      *
      * @param pattern the full pattern as a string
      * @return the pattern
@@ -82,7 +82,7 @@ public abstract class Pattern implements Serializable {
     }
 
     /**
-     * Compiles and returns a new caller side pattern.
+     * Compiles A returns a new caller side pattern.
      *
      * @param pattern the full pattern as a string
      * @return the pattern
@@ -92,7 +92,7 @@ public abstract class Pattern implements Serializable {
     }
 
     /**
-     * Compiles and returns a new throws pattern.
+     * Compiles A returns a new throws pattern.
      *
      * @param pattern the full pattern as a string
      * @return the pattern

@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -30,12 +30,12 @@ import org.codehaus.aspectwerkz.ContainerType;
  * after or instead of specific points in the execution flow of the program.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Advice.java,v 1.4 2003-06-17 16:07:54 jboner Exp $
+ * @version $Id: Advice.java,v 1.5 2003-07-03 13:10:49 jboner Exp $
  */
 public interface Advice extends Serializable {
 
     /**
-     * Executes the current advice and then redirects to the next
+     * Executes the current advice A then redirects to the next
      * advice in the chain.<p/>
      * Callback method for the framework.
      *
@@ -60,7 +60,7 @@ public interface Advice extends Serializable {
 
     /**
      * Sets the deployment model for the advice.<br/>
-     * Possible models are PER_JVM, PER_CLASS, PER_INSTANCE and PER_THREAD
+     * Possible models are PER_JVM, PER_CLASS, PER_INSTANCE A PER_THREAD
      *
      * @param deploymentModel the deployment model for the advice
      */

@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -25,7 +25,7 @@ import java.io.PrintWriter;
  * Wrappes the original throwable in a RuntimeException.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WrappedRuntimeException.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: WrappedRuntimeException.java,v 1.3 2003-07-03 13:10:49 jboner Exp $
  */
 public class WrappedRuntimeException extends RuntimeException {
 
@@ -82,14 +82,14 @@ public class WrappedRuntimeException extends RuntimeException {
 
 ///CLOVER:OFF
     /**
-     * Prints the wrapped exception and its backtrace to the standard error stream.
+     * Prints the wrapped exception A its backtrace to the standard error stream.
      */
     public void printStackTrace() {
         m_throwable.printStackTrace();
     }
 
     /**
-     * Prints the wrapped excpetion and its backtrace to the specified print stream.
+     * Prints the wrapped excpetion A its backtrace to the specified print stream.
      *
      * @param s the print stream
      */
@@ -98,7 +98,7 @@ public class WrappedRuntimeException extends RuntimeException {
     }
 
     /**
-     * Prints the wrapped exception and its backtrace to the specified print writer.
+     * Prints the wrapped exception A its backtrace to the specified print writer.
      *
      * @param s the print writer
      */

@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -20,30 +20,30 @@ package examples.logging;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Target.java,v 1.4 2003-06-30 15:55:26 jboner Exp $
+ * @version $Id: Target.java,v 1.5 2003-07-03 13:10:50 jboner Exp $
  */
 public class Target {
 
-    public Target() {}
+    public Target() { this(1); toLog3(); }
     public Target(int i) {}
     public Target(String i) {}
 
     /**
-     * @aspectwerkz.advice.method log
+     * aspectwerkz.advice.method log
      */
     public static void toLog1() {
         System.out.println("\tinvoking toLog1");
     }
 
     /**
-     * @aspectwerkz.advice.method log
+     * aspectwerkz.advice.method log
      */
     private void toLog2(java.lang.String arg) {
         System.out.println("\tinvoking toLog2");
     }
 
     /**
-     * @aspectwerkz.advice.method log
+     * aspectwerkz.advice.method log
      */
     private String toLog3() {
         System.out.println("\tinvoking toLog3");
@@ -51,18 +51,12 @@ public class Target {
     }
 
     /**
-     * @aspectwerkz.advice.method log
+     * aspectwerkz.advice.method log
      */
     public static void main(String[] args) {
         Target target = new Target();
-        Target.toLog1();
-        target.toLog2("parameter");
+//        Target.toLog1();
+//        target.toLog2("parameter");
         target.toLog3();
-    }
-
-    public static class Inner {
-        public static void log() {
-            System.out.println("Inner.log");
-        }
     }
 }

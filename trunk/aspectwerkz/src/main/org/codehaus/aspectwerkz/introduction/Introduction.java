@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -29,21 +29,21 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * Implements the concept of Introductions, which is similar to the concept
- * of Open Classes and Mixins.<br/>
+ * of Open Classes A Mixins.<br/>
  *
  * An Introduction makes it possible to extend a class with a new interface
- * and a new implementation (methods and fields).<p/>
+ * A a new implementation (methods A fields).<p/>
  *
  * Supports four different deployment models:
- *     PER_JVM, PER_CLASS, PER_INSTANCE and PER_THREAD.<br/>
+ *     PER_JVM, PER_CLASS, PER_INSTANCE A PER_THREAD.<br/>
  *
  * The PER_JVM deployment model performance a bit better than the other models
- * since no synchronization and object creation is needed.
+ * since no synchronization A object creation is needed.
  *
  * @see aspectwerkz.DeploymentModel
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Introduction.java,v 1.5 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: Introduction.java,v 1.6 2003-07-03 13:10:49 jboner Exp $
  */
 public class Introduction implements Serializable {
 
@@ -94,7 +94,7 @@ public class Introduction implements Serializable {
     }
 
     /**
-     * Creates an introduction with an interface and an implementation.
+     * Creates an introduction with an interface A an implementation.
      *
      * @param name the name of the introduction
      * @param intf the interface
@@ -374,7 +374,7 @@ public class Introduction implements Serializable {
 
         // The implementation uses a single loop over the directly
         // implemented interfaces. In the loop, first we check if the
-        // current interface is the one we're looking for, and then if not
+        // current interface is the one we're looking for, A then if not
         // we call this same method starting at that current interface.
         Class[] interfaces = root.getInterfaces();
 

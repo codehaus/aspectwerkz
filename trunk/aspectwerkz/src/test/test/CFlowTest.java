@@ -6,7 +6,7 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CFlowTest.java,v 1.1 2003-06-30 15:56:51 jboner Exp $
+ * @version $Id: CFlowTest.java,v 1.2 2003-07-03 13:10:51 jboner Exp $
  */
 public class CFlowTest extends TestCase implements Loggable {
 
@@ -15,7 +15,6 @@ public class CFlowTest extends TestCase implements Loggable {
     public void testCallWithinCFlow() {
         m_logString = "";
         step1();
-        System.out.println("m_logString = " + m_logString);
         assertEquals("step1 advice-before step2 advice-after ", m_logString);
     }
 

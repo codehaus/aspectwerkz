@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -29,11 +29,11 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 /**
  * Matches well defined point of execution in the program where a field is set
  * or accessed. Stores meta data from the join point. I.e. a reference to
- * original object and method, name and type of the field etc. Handles the
+ * original object A method, name A type of the field etc. Handles the
  * invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldJoinPoint.java,v 1.6 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: FieldJoinPoint.java,v 1.7 2003-07-03 13:10:49 jboner Exp $
  */
 public abstract class FieldJoinPoint implements JoinPoint {
 

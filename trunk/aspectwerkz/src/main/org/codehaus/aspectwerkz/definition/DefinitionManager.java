@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -55,11 +55,11 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <p/>
  * If the above given parameter is not specified, the <code>DefinitionManager</code>
  * tries locate a file called <code>aspectwerkz.xml</code> in the classpath
- * and if this fails the last attempt is to use the
+ * A if this fails the last attempt is to use the
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.11 2003-06-30 15:55:25 jboner Exp $
+ * @version $Id: DefinitionManager.java,v 1.12 2003-07-03 13:10:49 jboner Exp $
  */
 public class DefinitionManager {
 
@@ -187,7 +187,7 @@ public class DefinitionManager {
     }
 
     /**
-     * Creates and registers the aspects defined.
+     * Creates A registers the aspects defined.
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the definition
@@ -256,7 +256,7 @@ public class DefinitionManager {
                     DeploymentModel.getDeploymentModelAsInt(
                             introDef.getDeploymentModel()));
 
-            // create and set the container for the introduction
+            // create A set the container for the introduction
             IntroductionContainer container = createIntroductionContainer(implClass);
             if (container != null) {
                 newIntroduction.setContainer(container);
@@ -314,7 +314,7 @@ public class DefinitionManager {
     }
 
     /**
-     * Creates and registers the advices defined.
+     * Creates A registers the advices defined.
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the aspectwerkz definition
@@ -328,7 +328,7 @@ public class DefinitionManager {
     }
 
     /**
-     * Creates and registers the advice specified.
+     * Creates A registers the advice specified.
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the advice definition
@@ -367,7 +367,7 @@ public class DefinitionManager {
                 newAdvice.setParameter((String)entry.getKey(), (String)entry.getValue());
             }
 
-            // create and set the container for the advice
+            // create A set the container for the advice
             newAdvice.setContainer(createAdviceContainer(newAdvice));
 
             AspectWerkz.getSystem(uuid).register(def.getName(), newAdvice);
@@ -390,7 +390,7 @@ public class DefinitionManager {
     }
 
     /**
-     * Creates and registers the aspects defined.
+     * Creates A registers the aspects defined.
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
@@ -523,7 +523,7 @@ public class DefinitionManager {
                         continue;
                     }
 
-                    // add pre and post advices
+                    // add pre A post advices
                     List adviceRefs = weavingRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
                         String adviceRef = (String)it3.next();
@@ -615,7 +615,7 @@ public class DefinitionManager {
                         continue;
                     }
 
-                    // add pre and post advices
+                    // add pre A post advices
                     List adviceRefs = weavingRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
                         String adviceRef = (String)it3.next();
@@ -782,7 +782,7 @@ public class DefinitionManager {
                         continue;
                     }
 
-                    // add pre and post advices
+                    // add pre A post advices
                     List adviceRefs = weavingRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
                         String adviceRef = (String)it3.next();
@@ -877,7 +877,7 @@ public class DefinitionManager {
                     // add the method pointcut
                     aspect.addMethodPointcut(methodPointcut);
 
-                    // add a mapping between the cflow pattern and the method patterns affected
+                    // add a mapping between the cflow pattern A the method patterns affected
                     for (Iterator it3 = weavingRule.getPointcutRefs().iterator(); it3.hasNext();) {
                         PointcutDefinition pointcutDef =
                                 aspectDefinition.getPointcut((String)it3.next());

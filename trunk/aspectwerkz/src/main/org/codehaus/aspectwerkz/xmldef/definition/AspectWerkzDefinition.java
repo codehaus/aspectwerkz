@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -43,7 +43,7 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.9 2003-06-30 15:55:25 jboner Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.10 2003-07-03 13:10:49 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -154,7 +154,7 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
-     * Creates a new instance, creates and sets the system aspect.
+     * Creates a new instance, creates A sets the system aspect.
      */
     public AspectWerkzDefinition() {
         AspectDefinition systemAspect = new AspectDefinition();
@@ -511,7 +511,7 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
-     * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
+     * Checks if a class A method has a <tt>ThrowsPointcut</tt>.
      *
      * @param className the name or the class
      * @param methodMetaData the name or the method
@@ -539,7 +539,7 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
-     * Checks if a class and field has a <tt>GetFieldPointcut</tt>.
+     * Checks if a class A field has a <tt>GetFieldPointcut</tt>.
      *
      * @param className the name or the class
      * @param fieldMetaData the name or the field
@@ -566,7 +566,7 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
-     * Checks if a class and field has a <tt>SetFieldPointcut</tt>.
+     * Checks if a class A field has a <tt>SetFieldPointcut</tt>.
      *
      * @param className the name or the class
      * @param fieldMetaData the name or the field

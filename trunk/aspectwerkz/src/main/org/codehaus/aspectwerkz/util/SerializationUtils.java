@@ -4,16 +4,16 @@
  * Copyright (c) 2002-2003 The Apache Software Foundation.  All rights
  * reserved.
  *
- * Redistribution and use in source and binary forms, with or without
+ * Redistribution A use in source A binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ *    notice, this list of conditions A the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
+ *    notice, this list of conditions A the following disclaimer in
+ *    the documentation A/or other materials provided with the
  *    distribution.
  *
  * 3. The end-user documentation included with the redistribution, if
@@ -21,9 +21,9 @@
  *       "This product includes software developed by the
  *        Apache Software Foundation (http://www.apache.org/)."
  *    Alternately, this acknowlegement may appear in the software itself,
- *    if and wherever such third-party acknowlegements normally appear.
+ *    if A wherever such third-party acknowlegements normally appear.
  *
- * 4. The names "The Jakarta Project", "Commons", and "Apache Software
+ * 4. The names "The Jakarta Project", "Commons", A "Apache Software
  *    Foundation" must not be used to endorse or promote products derived
  *    from this software without prior written permission. For written
  *    permission, please contact apache@apache.org.
@@ -69,8 +69,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * serialization process, or perform additional functionality based on serialization.</p>
  * <ul>
  * <li>Deep clone using serialization
- * <li>Serialize managing finally and IOException
- * <li>Deserialize managing finally and IOException
+ * <li>Serialize managing finally A IOException
+ * <li>Deserialize managing finally A IOException
  * </ul>
  *
  * @author <a href="mailto:nissim@nksystems.com">Nissim Karpenstein</a>
@@ -79,7 +79,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * @author Stephen Colebourne
  * @author Jeff Varszegi
  * @since 1.0
- * @version $Id: SerializationUtils.java,v 1.1 2003-06-05 09:37:03 jboner Exp $
+ * @version $Id: SerializationUtils.java,v 1.2 2003-07-03 13:10:50 jboner Exp $
  */
 public class SerializationUtils {
 
@@ -115,7 +115,7 @@ public class SerializationUtils {
      * <p>Serializes an <code>Object</code> to the specified stream.</p>
      *
      * <p>The stream will be closed once the object is written.
-     * This avoids the need for a finally clause, and maybe also exception
+     * This avoids the need for a finally clause, A maybe also exception
      * handling, in the application code.</p>
      *
      * <p>The stream passed in is not buffered internally within this method.
@@ -165,7 +165,7 @@ public class SerializationUtils {
      * <p>Deserializes an <code>Object</code> from the specified stream.</p>
      *
      * <p>The stream will be closed once the object is written. This
-     * avoids the need for a finally clause, and maybe also exception
+     * avoids the need for a finally clause, A maybe also exception
      * handling, in the application code.</p>
      *
      * <p>The stream passed in is not buffered internally within this method.

@@ -26,6 +26,7 @@
     <advice-def name="methodAdvice3" advice="test.MyMemberMethodAdvice3" deployment-model="perInstance"/>
     <advice-def name="methodAdvice4" advice="test.MyMemberMethodAdvice4" deployment-model="perThread"/>
     <advice-def name="methodAdvice5" advice="test.MyMemberMethodAdvice5" deployment-model="perJVM"/>
+    <advice-def name="methodAdvice7" advice="test.MyMemberMethodAdvice7" deployment-model="perJVM"/>
     <advice-def name="staticMethodAdvice1" advice="test.MyMemberMethodAdvice1" deployment-model="perJVM"/>
     <advice-def name="staticMethodAdvice2" advice="test.MyStaticMethodAdvice2" deployment-model="perClass"/>
     <advice-def name="staticMethodAdvice3" advice="test.MyStaticMethodAdvice3" deployment-model="perJVM"/>
@@ -85,6 +86,8 @@
         <pointcut-def name="pc9" type="method" pattern="* test.MemberMethodAdviceTest.multipleChainedMethodAdvicedMethod(..)"/>
         <pointcut-def name="pc10" type="method" pattern="* test.MemberMethodAdviceTest.joinPointMetaData(..)"/>
         <pointcut-def name="pc11" type="method" pattern="void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..)"/>
+        <pointcut-def name="pc12" type="method" pattern="void test.MemberMethodAdviceTest.multiplePointcutsMethod(..)"/>
+        <pointcut-def name="pc13" type="method" pattern="void test.MemberMethodAdviceTest.multiplePointcutsMethod(..)"/>
         <advice pointcut="pc1 OR pc2 OR pc3 OR pc4">
             <advice-ref name="methodAdvice1"/>
         </advice>
@@ -113,6 +116,14 @@
         <advice pointcut="pc11">
             <advice-ref name="methodAdvice6"/>
         </advice>
+        <advice pointcut="pc12">
+            <advice-ref name="methodAdvice2"/>
+            <advice-ref name="methodAdvice2"/>
+        </advice>
+        <advice pointcut="pc13">
+            <advice-ref name="methodAdvice3"/>
+            <advice-ref name="methodAdvice3"/>
+        </advice>
     </aspect>
 
     <aspect name="StaticMethodAdviceTest">
@@ -125,6 +136,8 @@
         <pointcut-def name="pc7" type="method" pattern="* test.StaticMethodAdviceTest.multipleMethodAdvicedMethod(..)"/>
         <pointcut-def name="pc8" type="method" pattern="* test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..)"/>
         <pointcut-def name="pc9" type="method" pattern="* test.StaticMethodAdviceTest.joinPointMetaData(..)"/>
+        <pointcut-def name="pc10" type="method" pattern="void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)"/>
+        <pointcut-def name="pc11" type="method" pattern="void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)"/>
         <advice pointcut="pc1">
             <advice-ref name="staticMethodAdvice1"/>
         </advice>
@@ -156,6 +169,14 @@
         </advice>
         <advice pointcut="pc9">
             <advice-ref name="staticMethodAdvice4"/>
+        </advice>
+        <advice pointcut="pc10">
+            <advice-ref name="staticMethodAdvice2"/>
+            <advice-ref name="staticMethodAdvice2"/>
+        </advice>
+        <advice pointcut="pc11">
+            <advice-ref name="staticMethodAdvice3"/>
+            <advice-ref name="staticMethodAdvice3"/>
         </advice>
     </aspect>
 
@@ -360,6 +381,50 @@
         <advice cflow="step1" pointcut="step2">
             <advice-ref name="cflowLogger"/>
         </advice>
+    </aspect>
+
+    <aspect name="PointcutExpressionTest">
+        <pointcut-def name="expressionTestMethods" type="method" pattern="* test.PointcutExpressionTest.*(..)"/>
+        <pointcut-def name="generic" type="method" pattern="* test.PointcutExpressionTest.*(..)"/>
+        <pointcut-def name="testMethods" type="method" pattern="* test.PointcutExpressionTest.test*(..)"/>
+        <pointcut-def name="logMethod" type="method" pattern="* test.PointcutExpressionTest.log*(..)"/>
+        <pointcut-def name="A" type="method" pattern="* test.PointcutExpressionTest.A()"/>
+        <pointcut-def name="B" type="method" pattern="* test.PointcutExpressionTest.B()"/>
+        <pointcut-def name="C" type="method" pattern="* test.PointcutExpressionTest.C()"/>
+        <pointcut-def name="D" type="method" pattern="* test.PointcutExpressionTest.D()"/>
+        <pointcut-def name="E" type="method" pattern="* test.PointcutExpressionTest.E()"/>
+        <pointcut-def name="F" type="method" pattern="* test.PointcutExpressionTest.F()"/>
+        <pointcut-def name="G" type="method" pattern="* test.PointcutExpressionTest.G()"/>
+        <pointcut-def name="H" type="method" pattern="* test.PointcutExpressionTest.H()"/>
+        <pointcut-def name="I" type="method" pattern="* test.PointcutExpressionTest.I()"/>
+        <pointcut-def name="J" type="method" pattern="* test.PointcutExpressionTest.J()"/>
+        <pointcut-def name="K" type="method" pattern="* test.PointcutExpressionTest.K()"/>
+        <pointcut-def name="L" type="method" pattern="* test.PointcutExpressionTest.L()"/>
+        <pointcut-def name="M" type="method" pattern="* test.PointcutExpressionTest.M()"/>
+        <pointcut-def name="N" type="method" pattern="* test.PointcutExpressionTest.N()"/>
+
+        <advice pointcut="!A AND !testMethods AND !logMethod AND expressionTestMethods">
+            <advice-ref name="methodAdvice7"/>
+        </advice>
+        <advice pointcut="B OR C">
+            <advice-ref name="methodAdvice2"/>
+        </advice>
+        <advice pointcut="D AND !E">
+            <advice-ref name="methodAdvice2"/>
+        </advice>
+
+        <advice pointcut="(F OR G) AND H">
+            <advice-ref name="methodAdvice2"/>
+        </advice>
+
+        <advice pointcut="(I OR J) AND generic">
+            <advice-ref name="methodAdvice2"/>
+        </advice>
+
+        <advice pointcut="!K AND !(L OR M) AND N">
+            <advice-ref name="methodAdvice2"/>
+        </advice>
+
     </aspect>
 
 </aspectwerkz>

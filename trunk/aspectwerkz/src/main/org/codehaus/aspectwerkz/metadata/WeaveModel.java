@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -46,7 +46,7 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.6 2003-06-27 09:26:10 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.7 2003-07-03 13:10:49 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -99,7 +99,7 @@ public class WeaveModel implements Serializable {
     private final String m_uuid;
 
     /**
-     * Loads and returns all weave models.
+     * Loads A returns all weave models.
      *
      * @todo timestamp handling is not implemented for this method
      * @return a list with all the weave models
@@ -113,14 +113,14 @@ public class WeaveModel implements Serializable {
             weaveModels.add(createModel());
         }
         else if (META_DATA_DIR == null) {
-            // no definition file and no meta-data dir =>
+            // no definition file A no meta-data dir =>
             // try to locate the default weave model as a resource on the classpath
             weaveModels.add(loadModelAsResource(AspectWerkz.DEFAULT_SYSTEM));
         }
         else {
             // we have a meta-data dir => read in all weave models
             File metaDataDir = new File(META_DATA_DIR);
-            if (!metaDataDir.exists()) throw new RuntimeException(META_DATA_DIR + " meta-data directory does not exist. Create a meta-data dir and specify it with the -Daspectwerkz.metadata.dir=... option (or remove the option completely)");
+            if (!metaDataDir.exists()) throw new RuntimeException(META_DATA_DIR + " meta-data directory does not exist. Create a meta-data dir A specify it with the -Daspectwerkz.metadata.dir=... option (or remove the option completely)");
 
             FileFilter fileFilter = new FileFilter() {
                 public boolean accept(File file) {
@@ -155,7 +155,7 @@ public class WeaveModel implements Serializable {
      * Only loads from the disk if the timestamp for the latest parsing is
      * older than the timestamp for the weave model.
      *
-     * @todo does the lazy loading and timestamp stuff really work? In all cases?
+     * @todo does the lazy loading A timestamp stuff really work? In all cases?
      *
      * @param uuid the uuid for the weave model to load (null is allowed if only
      *             XML definition is used)
@@ -220,7 +220,7 @@ public class WeaveModel implements Serializable {
 
         synchronized (s_weaveModels) {
             InputStream in = ContextClassLoader.getResourceAsStream(weaveModelName.toString());
-            if (in == null) throw new RuntimeException("weave model with UUID <" + uuid + "> could not be found on classpath");
+            if (in == null) throw new RuntimeException("either you have to specify an XML definition (using the -Daspectwerkz.definition.file=... option) or you have to specify a meta-data dir (using the -Daspectwerkz.metadata.dir=... option) with the weave model (with the UUID <" + uuid + ">) alt. put it on the classpath");
 
             try {
                 ObjectInputStream oin = new ObjectInputStream(in);
@@ -244,7 +244,7 @@ public class WeaveModel implements Serializable {
      * @return the weave model
      */
     public static WeaveModel loadModelFromSpecificMetaDataDir(final String uuid) {
-        if (!new File(META_DATA_DIR).exists()) throw new RuntimeException(META_DATA_DIR + " meta-data directory does not exist. Create a meta-data dir and specify it with the -Daspectwerkz.metadata.dir=... option (or remove the option completely)");
+        if (!new File(META_DATA_DIR).exists()) throw new RuntimeException(META_DATA_DIR + " meta-data directory does not exist. Create a meta-data dir A specify it with the -Daspectwerkz.metadata.dir=... option (or remove the option completely)");
 
         final StringBuffer weaveModelPath = new StringBuffer();
         weaveModelPath.append(META_DATA_DIR);
@@ -422,7 +422,7 @@ public class WeaveModel implements Serializable {
             StringBuffer cause = new StringBuffer();
             cause.append("meta-data for introduction ");
             cause.append(introductionName);
-            cause.append(" could not be found (have you compiled and specified a weave model?)");
+            cause.append(" could not be found (have you compiled A specified a weave model?)");
             throw new DefinitionException(cause.toString());
         }
         return methodMetaDataList;
@@ -465,7 +465,7 @@ public class WeaveModel implements Serializable {
     }
 
     /**
-     * Checks if a class and field has a <tt>GetFieldPointcut</tt>.
+     * Checks if a class A field has a <tt>GetFieldPointcut</tt>.
      *
      * @param className the name or the class
      * @param fieldMetaData the meta-data for the field
@@ -479,7 +479,7 @@ public class WeaveModel implements Serializable {
     }
 
     /**
-     * Checks if a class and field has a <tt>SetFieldPointcut</tt>.
+     * Checks if a class A field has a <tt>SetFieldPointcut</tt>.
      *
      * @param className the name or the class
      * @param fieldMetaData the meta-data for the field
@@ -493,7 +493,7 @@ public class WeaveModel implements Serializable {
     }
 
     /**
-     * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
+     * Checks if a class A method has a <tt>ThrowsPointcut</tt>.
      *
      * @param className the name or the class
      * @param methodMetaData the meta-data for the method
@@ -519,7 +519,7 @@ public class WeaveModel implements Serializable {
     }
 
     /**
-     * Checks if a class and field has a <tt>ConstructorPointcut</tt>.
+     * Checks if a class A field has a <tt>ConstructorPointcut</tt>.
      *
      * @param className the name or the class
      * @param methodMetaData the meta-data for the constructor

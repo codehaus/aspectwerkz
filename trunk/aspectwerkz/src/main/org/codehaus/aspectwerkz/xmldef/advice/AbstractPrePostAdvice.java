@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -22,19 +22,19 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * Abstract base class for the pre and post advice classes.
+ * Abstract base class for the pre A post advice classes.
  * Is invoked after that a specific join point has been executed.
  * <p/>
  * Supports four different deployment models:
- *     PER_JVM, PER_CLASS, PER_INSTANCE and PER_THREAD.<br/>
+ *     PER_JVM, PER_CLASS, PER_INSTANCE A PER_THREAD.<br/>
  *
  * The PER_JVM deployment model performance a bit better than the other models
- * since no synchronization and object creation is needed.
+ * since no synchronization A object creation is needed.
  *
  * @see aspectwerkz.DeploymentModel
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractPrePostAdvice.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: AbstractPrePostAdvice.java,v 1.3 2003-07-03 13:10:49 jboner Exp $
  */
 abstract class AbstractPrePostAdvice extends AbstractAdvice {
 
@@ -54,7 +54,7 @@ abstract class AbstractPrePostAdvice extends AbstractAdvice {
     public abstract void execute(final JoinPoint joinPoint) throws Throwable;
 
     /**
-     * Executes the current advice and then redirects to the next advice in the chain.
+     * Executes the current advice A then redirects to the next advice in the chain.
      * Callback method for the framework.
      *
      * @param joinPoint the join point the advice is executing at

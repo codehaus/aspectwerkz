@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Parses the XML definition file using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParser.java,v 1.5 2003-06-30 15:55:25 jboner Exp $
+ * @version $Id: XmlDefinitionParser.java,v 1.6 2003-07-03 13:10:49 jboner Exp $
  */
 public class XmlDefinitionParser {
 
@@ -387,7 +387,7 @@ public class XmlDefinitionParser {
             }
         }
 
-        // handle the pointcut pattern, split the pattern in a class and
+        // handle the pointcut pattern, split the pattern in a class A
         // a method/field/throws/callerside pattern
         String pattern = element.attributeValue("pattern");
         try {
@@ -556,7 +556,7 @@ public class XmlDefinitionParser {
     }
 
     /**
-     * Parses the nested <tt>introduction-ref</tt> and <tt>advice-ref</tt> elements.
+     * Parses the nested <tt>introduction-ref</tt> A <tt>advice-ref</tt> elements.
      *
      * @param introductionElement the root introduction element
      * @param introWeavingRule the IntroducutionWeavingRule definition

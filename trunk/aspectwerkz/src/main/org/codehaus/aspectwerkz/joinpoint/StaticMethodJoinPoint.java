@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -21,22 +21,20 @@ package org.codehaus.aspectwerkz.joinpoint;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Iterator;
-import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 
 /**
  * Mathes well defined point of execution in the program where a static method
  * is executed.<br/>Stores meta data from the join point. I.e. a reference to
- * original object and method, the parameters to and the result from the
+ * original object A method, the parameters to A the result from the
  * original method invocation etc.<br/>Handles the invocation of the advices
  * added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticMethodJoinPoint.java,v 1.7 2003-06-30 15:55:25 jboner Exp $
+ * @version $Id: StaticMethodJoinPoint.java,v 1.8 2003-07-03 13:10:49 jboner Exp $
  */
 public class StaticMethodJoinPoint extends MethodJoinPoint {
 
@@ -65,8 +63,7 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
         createMetaData();
 
         // get all the pointcuts for this class
-        List pointcuts = m_system.getMethodPointcuts(
-                getTargetClass().getName(), m_metadata);
+        List pointcuts = m_system.getMethodPointcuts(getTargetClass().getName(), m_metadata);
 
         // put the pointcuts in the pointcut array
         m_pointcuts = new MethodPointcut[pointcuts.size()];
@@ -98,7 +95,7 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
     }
 
     /**
-     * Walks through the pointcuts and invokes all its advices. When the last
+     * Walks through the pointcuts A invokes all its advices. When the last
      * advice of the last pointcut has been invoked, the original method is
      * invoked. Is called recursively.
      *
@@ -112,11 +109,13 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
             return invokeOriginalMethod();
         }
 
+        // check for cflow pointcut dependencies
         if (m_cflowPointcuts.size() != 0) {
             // we must check if we are in the correct control flow
             boolean isInCFlow = false;
             for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
-                if (m_system.isInControlFlowOf((PointcutPatternTuple)it.next())) {
+                PointcutPatternTuple patternTuple = (PointcutPatternTuple)it.next();
+                if (m_system.isInControlFlowOf(patternTuple)) {
                     isInCFlow = true;
                     break;
                 }
@@ -127,7 +126,7 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
             }
         }
 
-        // we are in the correct control flow and we have advices to execute
+        // we are in the correct control flow A we have advices to execute
 
         Object result = null;
         boolean pointcutSwitch = false;
@@ -138,24 +137,16 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
                 getAdviceIndexes().length &&
                 m_currentPointcutIndex < m_pointcuts.length - 1) {
             m_currentPointcutIndex++;
-            m_currentAdviceIndex = 0; // start with the first advice again
+            m_currentAdviceIndex = 0; // start with the first advice in the chain
             pointcutSwitch = true; // mark this call as a pointcut switch
         }
 
-        // if we are out of advices and pointcuts; invoke the original method
         if (m_currentAdviceIndex == m_pointcuts[m_currentPointcutIndex].
                 getAdviceIndexes().length &&
                 m_currentPointcutIndex == m_pointcuts.length - 1) {
 
+            // we are out of advices A pointcuts; invoke the original method
             result = invokeOriginalMethod();
-
-            if (pointcutSwitch) {
-                m_currentPointcutIndex--; // switch back to the previous pointcut
-                m_currentAdviceIndex = 0; // start with the first advice
-            }
-            m_currentAdviceIndex--;
-
-            return result;
         }
         else {
             // invoke the next advice in the current pointcut
@@ -168,15 +159,18 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
             catch (ArrayIndexOutOfBoundsException ex) {
                 throw new RuntimeException(createAdviceNotCorrectlyMappedMessage());
             }
-
-            if (pointcutSwitch) {
-                m_currentPointcutIndex--; // switch back to the previous pointcut
-                m_currentAdviceIndex = 0; // start with the first advice
-            }
-            m_currentAdviceIndex--;
-
-            return result;
         }
+
+        if (pointcutSwitch) {
+            // switch back to the previous pointcut A start with the last advice in the chain
+            m_currentPointcutIndex--;
+            m_currentAdviceIndex =
+                    m_pointcuts[m_currentPointcutIndex].
+                    getAdviceIndexes().length;
+        }
+        m_currentAdviceIndex--;
+
+        return result;
     }
 
     /**

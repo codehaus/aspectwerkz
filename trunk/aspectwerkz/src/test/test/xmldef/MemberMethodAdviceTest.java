@@ -6,7 +6,7 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberMethodAdviceTest.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: MemberMethodAdviceTest.java,v 1.3 2003-07-03 13:10:51 jboner Exp $
  */
 public class MemberMethodAdviceTest extends TestCase implements Loggable {
 
@@ -40,6 +40,12 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         m_logString = "";
         multipleChainedMethodAdvicedMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
+    }
+
+    public void testMultiplePointcuts() {
+        m_logString = "";
+        multiplePointcutsMethod();
+        assertEquals("before2 before2 before1 before1 invocation after1 after1 after2 after2 ", m_logString);
     }
 
     public void testGetJoinPointMetaData() {
@@ -185,6 +191,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         return new junit.framework.TestSuite(MemberMethodAdviceTest.class);
     }
 
+    public MemberMethodAdviceTest() {}
     public MemberMethodAdviceTest(String name) {
         super(name);
         AspectWerkz.getSystem("tests").initialize();
@@ -215,6 +222,10 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public void multipleChainedMethodAdvicedMethod() {
+        log("invocation ");
+    }
+
+    public void multiplePointcutsMethod() {
         log("invocation ");
     }
 
