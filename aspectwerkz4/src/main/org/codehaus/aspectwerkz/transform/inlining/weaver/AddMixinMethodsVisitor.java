@@ -39,7 +39,8 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
     private final Set m_addedMethods;
     private ExpressionContext m_expressionContext;
     private boolean m_hasClinit = false;
-    private final Map m_mixinFields = new HashMap();
+    private Map m_mixinFields;
+    private boolean m_isAdvised = false;
 
     /**
      * Creates a new class adapter.
@@ -75,98 +76,68 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                       final String superName,
                       final String[] interfaces,
                       final String sourceFile) {
-        m_declaringTypeName = name;
-        addMixinFields();
-        addMixinMethods();
+        ExpressionContext ctx = new ExpressionContext(PointcutType.WITHIN, m_classInfo, m_classInfo);
+        if (!classFilter(m_classInfo, ctx, m_ctx.getDefinitions())) {
+            m_declaringTypeName = name;
+            m_mixinFields = new HashMap();
+            addMixinMembers();
+        }
         super.visit(version, access, name, superName, interfaces, sourceFile);
     }
 
     /**
-     * Adds mixin fields to the target class.
+     * TODO refactor some
+     * 
+     * Adds mixin fields and methods to the target class.
      */
-    private void addMixinFields() {
+    private void addMixinMembers() {
         int index = 0;
         for (Iterator it = m_ctx.getDefinitions().iterator(); it.hasNext();) {
             List mixinDefs = ((SystemDefinition) it.next()).getMixinDefinitions(m_expressionContext);
             for (Iterator it2 = mixinDefs.iterator(); it2.hasNext();) {
                 final MixinDefinition mixinDef = (MixinDefinition) it2.next();
-                final String mixinClassName = mixinDef.getClassName().replace('.', '/');
+                final ClassInfo mixinImpl = mixinDef.getMixinImpl();
                 final int deploymentModel = DeploymentModel.getDeploymentModelAsInt(mixinDef.getDeploymentModel());
-
-                for (Iterator it3 = mixinDef.getInterfaces().iterator(); it3.hasNext();) {
-                    ClassInfo mixinInterfaceClassInfo = (ClassInfo) it3.next();
-                    if (m_mixinFields.containsKey(mixinInterfaceClassInfo)) {
-                        continue;
-                    }
-                    final String fieldName = MIXIN_FIELD_NAME + index;
-                    MixinFieldInfo fieldInfo = new MixinFieldInfo();
-                    fieldInfo.fieldName = fieldName;
-                    fieldInfo.mixinImplClassName = mixinClassName;
-                    fieldInfo.mixinInterfaceClassInfo = mixinInterfaceClassInfo;
-                    final String signature = mixinInterfaceClassInfo.getSignature();
-
-                    if (deploymentModel == DeploymentModel.PER_CLASS) {
-                        fieldInfo.isStatic = true;
-                        cv.visitField(
-                                ACC_PRIVATE + ACC_FINAL + ACC_STATIC,
-                                fieldName,
-                                signature,
-                                null, null
-                        );
-                    } else if (deploymentModel == DeploymentModel.PER_INSTANCE) {
-                        fieldInfo.isStatic = false;
-                        cv.visitField(
-                                ACC_PRIVATE + ACC_FINAL,
-                                fieldName,
-                                signature,
-                                null, null
-                        );
-                    }
-                    m_mixinFields.put(mixinInterfaceClassInfo, fieldInfo);
-                    index++;
+                if (m_mixinFields.containsKey(mixinImpl)) {
+                    continue;
                 }
-            }
-        }
-    }
+                final String fieldName = MIXIN_FIELD_NAME + index;
+                MixinFieldInfo fieldInfo = new MixinFieldInfo();
+                fieldInfo.fieldName = fieldName;
+                fieldInfo.mixinClassInfo = mixinImpl;
+                final String signature = mixinImpl.getSignature();
 
-    /**
-     * Adds mixin methods to the target class.
-     */
-    private void addMixinMethods() {
-        for (Iterator it = m_ctx.getDefinitions().iterator(); it.hasNext();) {
-            List mixinDefs = ((SystemDefinition) it.next()).getMixinDefinitions(m_expressionContext);
-            for (Iterator it2 = mixinDefs.iterator(); it2.hasNext();) {
-                final MixinDefinition mixinDef = (MixinDefinition) it2.next();
-                final String mixinClassName = mixinDef.getClassName().replace('.', '/');
-                final String mixinClassSignature = L + mixinClassName + SEMICOLON;
+                if (deploymentModel == DeploymentModel.PER_CLASS) {
+                    fieldInfo.isStatic = true;
+                    cv.visitField(
+                            ACC_PRIVATE + ACC_FINAL + ACC_STATIC,
+                            fieldName,
+                            signature,
+                            null, null
+                    );
+                } else if (deploymentModel == DeploymentModel.PER_INSTANCE) {
+                    fieldInfo.isStatic = false;
+                    cv.visitField(
+                            ACC_PRIVATE + ACC_FINAL,
+                            fieldName,
+                            signature,
+                            null, null
+                    );
+                }
+
+                m_mixinFields.put(mixinImpl, fieldInfo);
+                index++;
+                m_isAdvised = true;
 
                 for (Iterator it3 = mixinDef.getMethodsToIntroduce().iterator(); it3.hasNext();) {
                     MethodInfo methodInfo = (MethodInfo) it3.next();
                     final String methodName = methodInfo.getName();
                     final String methodSignature = methodInfo.getSignature();
 
-                    MixinFieldInfo mixinFieldInfo = null;
-                    for (Iterator i4 = m_mixinFields.values().iterator(); i4.hasNext();) {
-                        if (mixinFieldInfo != null) {
-                            break;
-                        }
-                        MixinFieldInfo fieldInfo = (MixinFieldInfo) i4.next();
-                        MethodInfo[] methods = fieldInfo.mixinInterfaceClassInfo.getMethods();
-                        for (int i = 0; i < methods.length; i++) {
-                            MethodInfo method = methods[i];
-                            if (method.getName().equals(methodName) &&
-                                method.getSignature().equals(methodSignature)) {
-                                mixinFieldInfo = fieldInfo;
-                                break;
-                            }
-                        }
-                    }
-                    if (mixinFieldInfo == null) {
-                        continue;
-                    }
                     if (m_addedMethods.contains(AlreadyAddedMethodVisitor.getMethodKey(methodName, methodSignature))) {
                         continue;
                     }
+
                     CodeVisitor mv = cv.visitMethod(
                             ACC_PUBLIC | ACC_FINAL,
                             methodName,
@@ -174,26 +145,26 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                             null,
                             null
                     );
-                    if (mixinFieldInfo.isStatic) {
+                    if (fieldInfo.isStatic) {
                         mv.visitFieldInsn(
                                 GETSTATIC,
                                 m_declaringTypeName,
-                                mixinFieldInfo.fieldName,
-                                mixinFieldInfo.mixinInterfaceClassInfo.getSignature()
+                                fieldInfo.fieldName,
+                                fieldInfo.mixinClassInfo.getSignature()
                         );
                     } else {
                         mv.visitVarInsn(ALOAD, 0);
                         mv.visitFieldInsn(
                                 GETFIELD,
                                 m_declaringTypeName,
-                                mixinFieldInfo.fieldName,
-                                mixinFieldInfo.mixinInterfaceClassInfo.getSignature()
+                                fieldInfo.fieldName,
+                                fieldInfo.mixinClassInfo.getSignature()
                         );
                     }
                     AsmHelper.loadArgumentTypes(mv, Type.getArgumentTypes(methodSignature), false);
                     mv.visitMethodInsn(
-                            INVOKEINTERFACE,
-                            mixinFieldInfo.mixinInterfaceClassInfo.getName().replace('.', '/'),
+                            INVOKEVIRTUAL,
+                            fieldInfo.mixinClassInfo.getName().replace('.', '/'),
                             methodName,
                             methodSignature
                     );
@@ -219,19 +190,21 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                                    final String desc,
                                    final String[] exceptions,
                                    final Attribute attrs) {
-        if (name.equals(CLINIT_METHOD_NAME)) {
-            m_hasClinit = true;
-            CodeVisitor mv = new PrependToClinitMethodCodeAdapter(
-                    cv.visitMethod(access, name, desc, exceptions, attrs)
-            );
-            mv.visitMaxs(0, 0);
-            return mv;
-        } else if (name.equals(INIT_METHOD_NAME)) {
-            CodeVisitor mv = new AppendToInitMethodCodeAdapter(
-                    cv.visitMethod(access, name, desc, exceptions, attrs)
-            );
-            mv.visitMaxs(0, 0);
-            return mv;
+        if (m_isAdvised) {
+            if (name.equals(CLINIT_METHOD_NAME)) {
+                m_hasClinit = true;
+                CodeVisitor mv = new PrependToClinitMethodCodeAdapter(
+                        cv.visitMethod(access, name, desc, exceptions, attrs)
+                );
+                mv.visitMaxs(0, 0);
+                return mv;
+            } else if (name.equals(INIT_METHOD_NAME)) {
+                CodeVisitor mv = new AppendToInitMethodCodeAdapter(
+                        cv.visitMethod(access, name, desc, exceptions, attrs)
+                );
+                mv.visitMaxs(0, 0);
+                return mv;
+            }
         }
         return super.visitMethod(access, name, desc, exceptions, attrs);
     }
@@ -240,7 +213,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
      * Creates a new clinit method and adds mixin instantiation if it does not exist.
      */
     public void visitEnd() {
-        if (!m_hasClinit) {
+        if (m_isAdvised && !m_hasClinit) {
             // add the <clinit> method
             CodeVisitor mv = cv.visitMethod(
                     ACC_STATIC, CLINIT_METHOD_NAME, NO_PARAM_RETURN_VOID_SIGNATURE, null, null
@@ -265,7 +238,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
      * @param fieldInfo
      */
     private void initializeStaticMixinField(final CodeVisitor mv, final MixinFieldInfo fieldInfo) {
-        mv.visitLdcInsn(fieldInfo.mixinImplClassName.replace('/', '.'));
+        mv.visitLdcInsn(fieldInfo.mixinClassInfo.getName().replace('/', '.'));
         mv.visitFieldInsn(
                 GETSTATIC,
                 m_declaringTypeName,
@@ -278,12 +251,12 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                 MIXIN_OF_METHOD_NAME,
                 MIXIN_OF_METHOD_PER_CLASS_SIGNATURE
         );
-        mv.visitTypeInsn(CHECKCAST, fieldInfo.mixinInterfaceClassInfo.getName().replace('.', '/'));
+        mv.visitTypeInsn(CHECKCAST, fieldInfo.mixinClassInfo.getName().replace('.', '/'));
         mv.visitFieldInsn(
                 PUTSTATIC,
                 m_declaringTypeName,
                 fieldInfo.fieldName,
-                fieldInfo.mixinInterfaceClassInfo.getSignature()
+                fieldInfo.mixinClassInfo.getSignature()
         );
     }
 
@@ -295,7 +268,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
      */
     private void initializeMemberMixinField(final CodeVisitor mv, final MixinFieldInfo fieldInfo) {
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitLdcInsn(fieldInfo.mixinImplClassName.replace('/', '.'));
+        mv.visitLdcInsn(fieldInfo.mixinClassInfo.getName().replace('/', '.'));
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(
                 INVOKESTATIC,
@@ -303,38 +276,41 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                 MIXIN_OF_METHOD_NAME,
                 MIXIN_OF_METHOD_PER_INSTANCE_SIGNATURE
         );
-        mv.visitTypeInsn(CHECKCAST, fieldInfo.mixinInterfaceClassInfo.getName().replace('.', '/'));
+        mv.visitTypeInsn(CHECKCAST, fieldInfo.mixinClassInfo.getName().replace('.', '/'));
         mv.visitFieldInsn(
                 PUTFIELD,
                 m_declaringTypeName,
                 fieldInfo.fieldName,
-                fieldInfo.mixinInterfaceClassInfo.getSignature()
+                fieldInfo.mixinClassInfo.getSignature()
         );
     }
 
     /**
      * Filters the classes to be transformed.
      *
-     * @param classInfo  the class to filter
-     * @param ctx        the context
-     * @param definition the definition
+     * @param classInfo   the class to filter
+     * @param ctx         the context
+     * @param definitions a set with the definitions
      * @return boolean true if the method should be filtered away
      */
     public static boolean classFilter(final ClassInfo classInfo,
                                       final ExpressionContext ctx,
-                                      final SystemDefinition definition) {
-        if (classInfo.isInterface()) {
-            return true;
-        }
-        String className = classInfo.getName().replace('/', '.');
-        if (definition.inExcludePackage(className)) {
-            return true;
-        }
-        if (!definition.inIncludePackage(className)) {
-            return true;
-        }
-        if (definition.hasMixin(ctx)) {
-            return false;
+                                      final Set definitions) {
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
+            SystemDefinition systemDef = (SystemDefinition) it.next();
+            if (classInfo.isInterface()) {
+                return true;
+            }
+            String className = classInfo.getName().replace('/', '.');
+            if (systemDef.inExcludePackage(className)) {
+                return true;
+            }
+            if (!systemDef.inIncludePackage(className)) {
+                return true;
+            }
+            if (systemDef.hasMixin(ctx)) {
+                return false;
+            }
         }
         return true;
     }
@@ -383,8 +359,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
 
     private static class MixinFieldInfo {
         private String fieldName;
-        private String mixinImplClassName;
-        private ClassInfo mixinInterfaceClassInfo;
+        private ClassInfo mixinClassInfo;
         private boolean isStatic;
     }
 }

@@ -7,8 +7,7 @@
  **************************************************************************************/
 package test.mixin.perinstance;
 
-import test.mixin.perinstance.Introductions;
-
+import java.io.Serializable;
 
 /**
  * Here we use an expression
@@ -17,10 +16,7 @@ import test.mixin.perinstance.Introductions;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class MyImpl implements Introductions {
-
-    public MyImpl(Class targetClass) {
-    }
+public class MyImpl implements Introductions, Serializable {
 
     public MyImpl(Object targetInstance) {
     }

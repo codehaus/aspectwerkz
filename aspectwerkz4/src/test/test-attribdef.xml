@@ -1,21 +1,20 @@
 <!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
 <aspectwerkz>
     <system id="tests">
-        <!--        <pointcut name="handler" expression="handler(test.handler.HandlerTestBeforeException) AND within(test.handler.*)"/>-->
+        <exclude package="test.attribdeff"/>
         <pointcut name="handler">
             handler(test.handler.HandlerTestBeforeException)
             AND
             within(test.handler.*)
         </pointcut>
-        <exclude package="test.attribdeff"/>
         <mixin class="test.mixin.perinstance.MyImpl"
-            deployment-model="perInstance"
-            bind-to="within(test.mixin.perinstance.ToBeIntroduced) or hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique_perinstance)"/>
+             deployment-model="perInstance"
+            bind-to="within(test.mixin.perinstance.ToBeIntroduced) OR hasfield(int test.mixin.perinstance.*.thisFieldNameShouldHopefullyBeUnique_perinstance) OR hasmethod(void test.mixin.perinstance.*.thisMethodNameShouldHopefullyBeUnique_perinstance(..))"/>
         <aspect class="test.mixin.perinstance.IntroductionTestAspect"/>
         <mixin class="test.mixin.perclass.MyImpl"
-            deployment-model="perClass"
-            bind-to="within(test.mixin.perclass.ToBeIntroduced) or hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique_perclass)"/>
-        <aspect class="test.mixin.perclass.IntroductionTestAspect"/>
+             deployment-model="perClass"
+             bind-to="within(test.mixin.perclass.ToBeIntroduced) OR hasfield(int test.mixin.perclass.*.thisFieldNameShouldHopefullyBeUnique_perclass) OR hasmethod(void test.mixin.perclass.*.thisMethodNameShouldHopefullyBeUnique_perclass(..))"/>
+         <aspect class="test.mixin.perclass.IntroductionTestAspect"/>
         <package name="test.aspect">
             <aspect class="MemberMethodTestAspect" deployment-model="perInstance"/>
             <aspect class="StaticMethodTestAspect" deployment-model="perClass" />
@@ -30,7 +29,6 @@
             <aspect class="PerInstancePerformanceAspect" deployment-model="perInstance"/>
             <aspect class="PerThreadPerformanceAspect" deployment-model="perThread"/>
         </package>
-        <aspect class="test.mixin.perinstance.IntroductionTestAspect"/>
         <aspect class="test.mixindeployment.IntroductionDeploymentAspect"/>
         <aspect class="test.abstractclass.TestAspect"/>
         <aspect class="test.hierarchicalpattern.TestAspect"/>
@@ -69,7 +67,6 @@
         <aspect class="test.optimizations.OptimizeAspect"/>
 
         <aspect class="test.args.ArgsAspect">
-            <!-- This an annotation def aspect, with some extension in XML -->
             <pointcut name="xml_matchAll"
                 expression="within(test.args.ArgsAdviceTest) AND execution(* matchAllXML(..)) AND args(String, String, long)"/>
             <advice type="before" bind-to="xml_matchAll" name="matchAllBefore"/>
@@ -77,17 +74,8 @@
             <advice type="after" bind-to="xml_matchAll" name="matchAllAfter"/>
             <pointcut name="xml_getFirst(String s)"
                 expression="within(test.args.ArgsAdviceTest) AND execution(* getFirstXML(..)) AND args(s, ..)"/>
-            <!-- we can make use of abbreviations for JP and java.lang.* -->
-            <!-- todo: test for array params -->
-            <advice type="before" bind-to="xml_getFirst(as)" name="getFirstBefore(JoinPoint jp, String as)"/>
             <advice type="around" bind-to="xml_getFirst(as)" name="getFirstAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,java.lang.String as)"/>
             <advice type="after" bind-to="xml_getFirst(as)" name="getFirstAfter(String as, JoinPoint jp)"/>
-            <!-- anonymous pointcut IS NOT (yet) SUPPORTED IN XML -->
-            <!-- since we can not figure in args(s) if s is a type or links to a String -->
-            <!-- we could fix it using something like args(String s) but this is not a common syntax -->
-            <!--<advice type="before" bind-to="execution(* test.args.*.getFirstXML(..)) AND args(s, ..)" name="getFirstAnonymousBefore(JoinPoint jp, String as)"/>-->
-            <!--<advice type="around" bind-to="execution(* test.args.*.getFirstXML(..)) AND args(s, ..)" name="getFirstAnonymousAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,java.lang.String as)"/>-->
-            <!--<advice type="after" bind-to="execution(* test.args.*.getFirstXML(..)) AND args(s, ..)" name="getFirstAnonymousAfter(String as, JoinPoint jp)"/>-->
             <pointcut name="xml_orderChangedInPointcutAndAdviceSignature(String s1, String s0)"
                 expression="within(test.args.ArgsAdviceTest) AND execution(* orderChangedInPointcutAndAdviceSignatureXML(..)) AND args(s0, s1, Object[])"/>
             <advice type="before" bind-to="xml_orderChangedInPointcutAndAdviceSignature(a1, a0)"
@@ -96,7 +84,6 @@
                 name="orderChangedInPointcutAndAdviceSignatureAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,java.lang.String a0, String a1)"/>
             <advice type="after" bind-to="xml_orderChangedInPointcutAndAdviceSignature(a1, a0)"
                 name="orderChangedInPointcutAndAdviceSignatureAfter(JoinPoint jp, String a0, String a1)"/>
-            <!-- method call pointcut -->
             <pointcut name="xml_callGetFirstAndSecond(long l, String[] s)"
                 expression="within(test.args.ArgsAdviceTest) AND call(* callGetFirstAndSecondXML(..)) AND args(l, s, String[])"/>
             <advice type="before" bind-to="xml_callGetFirstAndSecond(a0, a1)"
@@ -105,7 +92,6 @@
                 name="callGetFirstAndSecondAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,long a0, java.lang.String[] a1)"/>
             <advice type="after" bind-to="xml_callGetFirstAndSecond(a0, a1)"
                 name="callGetFirstAndSecondAfter(JoinPoint jp, long a0, String[] a1)"/>
-            <!-- ctor execution pointcut -->
             <pointcut name="xml_ctorExecutionGetFirst(String s)"
                 expression="execution(test.args.ArgsAdviceTest$CtorExecutionXML.new(..)) AND args(test.args.ArgsAdviceTest,s)"/>
             <advice type="before" bind-to="xml_ctorExecutionGetFirst(a0)"
@@ -114,7 +100,6 @@
                 name="ctorExecutionGetFirstAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,java.lang.String a0)"/>
             <advice type="after" bind-to="xml_ctorExecutionGetFirst(a0)"
                 name="ctorExecutionGetFirstAfter(JoinPoint jp, String a0)"/>
-            <!-- ctor call pointcut -->
             <pointcut name="xml_ctorCallGetFirst(String s)"
                 expression="within(test.args.ArgsAdviceTest) AND call(test.args.ArgsAdviceTest$CtorCallXML.new(..)) AND args(test.args.ArgsAdviceTest, s)"/>
             <advice type="before" bind-to="xml_ctorCallGetFirst(a0)"
@@ -126,12 +111,6 @@
 
         </aspect>
 
-        <!-- The following tests different forms of precedence -->
-        <!-- * advice order -->
-        <!-- * pointcut order -->
-        <!-- * aspect order -->
-        <!-- Nomenclature: A and RA: RA is the reversed precedence of A -->
-        <!-- Binding syntax - two advices. Precdence differs in both aspects -->
         <aspect class="test.bindingsyntax.TestAspect" name="BindingSyntaxA">
             <pointcut name="test" expression="execution(* test.bindingsyntax.*.doA*(..))"/>
             <advice bind-to="test" type="around" name="advice1"/>
@@ -173,8 +152,6 @@
 
     </system>
 
-    <!--    The advices below are using Rtti, so the name must reflect that (can use abbreviations)-->
-    <!--    and advice parameter name is optional if not used for a binding-->
     <system id="polymorphic">
         <aspect class="test.polymorphic.PolymorphicTest$TestAspect">
             <pointcut name="in" expression="within(test.polymorphic..*)"/>

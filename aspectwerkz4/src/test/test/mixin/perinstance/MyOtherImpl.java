@@ -9,16 +9,13 @@ package test.mixin.perinstance;
 
 import java.io.Serializable;
 
-import test.mixin.perinstance.Introductions;
-import test.mixin.perinstance.MyImpl;
-
 /**
  * Other implementation For now explicit implements is needed (extends is not enough - bug in
  * swapping)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class MyOtherImpl extends MyImpl implements Introductions, Serializable {
+public class MyOtherImpl extends MyImpl {
 
     public MyOtherImpl(Class targetClass) {
         super(targetClass);

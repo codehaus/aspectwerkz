@@ -304,12 +304,12 @@ public class SystemDefinition {
             throw new IllegalArgumentException("mixin definition can not be null");
         }
         synchronized (m_mixinMap) {
-            if (m_mixinMap.containsKey(introDef.getClassName())) {
-                MixinDefinition def = (MixinDefinition) m_mixinMap.get(introDef.getClassName());
+            if (m_mixinMap.containsKey(introDef.getMixinImpl())) {
+                MixinDefinition def = (MixinDefinition) m_mixinMap.get(introDef.getMixinImpl());
                 def.addExpressionInfos(introDef.getExpressionInfos());
                 return;
             }
-            m_mixinMap.put(introDef.getClassName(), introDef);
+            m_mixinMap.put(introDef.getMixinImpl(), introDef);
         }
     }
 

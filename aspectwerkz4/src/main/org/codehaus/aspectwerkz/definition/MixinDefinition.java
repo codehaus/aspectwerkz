@@ -38,9 +38,9 @@ public class MixinDefinition {
     private final List m_interfaceClassInfos = new ArrayList();
 
     /**
-     * The name of the interface mixin.
+     * The class info for the mixin.
      */
-    private final String m_className;
+    private final ClassInfo m_mixinImpl;
 
     /**
      * The mixin expressions.
@@ -67,11 +67,11 @@ public class MixinDefinition {
     public MixinDefinition(final ClassInfo mixinClass,
                            final ExpressionInfo expressionInfo,
                            final String deploymentModel) {
-        m_className = mixinClass.getName();
+        m_mixinImpl = mixinClass;
         m_expressionInfos = new ExpressionInfo[]{
             expressionInfo
         };
-        List interfaceDeclaredMethods = collectInterfaces(mixinClass);
+        List interfaceDeclaredMethods = collectMethodsFromInterfaces(mixinClass);
         List sortedMethodList = ClassInfoHelper.createInterfaceDefinedSortedMethodList(
                 mixinClass, interfaceDeclaredMethods
         );
@@ -126,12 +126,12 @@ public class MixinDefinition {
     }
 
     /**
-     * Returns the name of the mixin.
+     * Returns the class info for the mixin impl.
      *
-     * @return the name
+     * @return the class info
      */
-    public String getClassName() {
-        return m_className;
+    public ClassInfo getMixinImpl() {
+        return m_mixinImpl;
     }
 
     /**
@@ -202,16 +202,23 @@ public class MixinDefinition {
      * @param mixinClass
      * @return list of methods declared in given class interfaces
      */
-    private List collectInterfaces(final ClassInfo mixinClass) {
+    private List collectMethodsFromInterfaces(final ClassInfo mixinClass) {
         List interfaceDeclaredMethods = new ArrayList();
         ClassInfo[] interfaces = mixinClass.getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
             m_interfaceClassInfos.add(interfaces[i]);
-            interfaceDeclaredMethods.addAll(ClassInfoHelper.createSortedMethodList(interfaces[i]));//FIXME redundant since goes in hierarchy there as well
+            final List sortedMethodList = ClassInfoHelper.createSortedMethodList(interfaces[i]);
+            for (Iterator it = sortedMethodList.iterator(); it.hasNext();) {
+                MethodInfo methodInfo = (MethodInfo) it.next();
+                if (methodInfo.getDeclaringType().getName().equals("java.lang.Object")) {
+                    continue;
+                }
+                interfaceDeclaredMethods.add(methodInfo);//FIXME redundant since goes in hierarchy there as well
+            }
         }
         ClassInfo superClass = mixinClass.getSuperclass();
-        if (superClass != null) {
-            interfaceDeclaredMethods.addAll(collectInterfaces(superClass));
+        if (superClass != null && !superClass.getName().equals("java.lang.Object")) {
+            interfaceDeclaredMethods.addAll(collectMethodsFromInterfaces(superClass));
         }
         return interfaceDeclaredMethods;
     }
