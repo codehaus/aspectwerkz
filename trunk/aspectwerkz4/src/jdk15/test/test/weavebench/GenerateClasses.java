@@ -74,7 +74,8 @@ public class GenerateClasses implements Constants {
 
             for (int m = 0; m < m_count; m++) {
                 mv = cv.visitMethod(
-                        ACC_PUBLIC,
+                        (m==0)?ACC_PUBLIC:
+                        ACC_PRIVATE,//TODO change to private to have wrapper, public for no wrappers
                         "method_" + m,
                         "()I",
                         new String[0],
@@ -98,8 +99,8 @@ public class GenerateClasses implements Constants {
     }
 
     public static void main(String args[]) throws Throwable {
-        int CLASS_COUNT = 160;
-        int METHOD_COUNT = 50;
+        int CLASS_COUNT = 100;
+        int METHOD_COUNT = 100;
         int JP_COUNT = (METHOD_COUNT*2 -1/*last method has no call jp*/ + 1/*init exec*/)*CLASS_COUNT;
         GenerateClasses me = new GenerateClasses(CLASS_COUNT, METHOD_COUNT);
 
