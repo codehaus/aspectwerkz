@@ -418,7 +418,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      */
     public void addIncludePackage(final String includePackage) {
         synchronized (m_includePackages) {
-            m_includePackages.add(includePackage);
+            m_includePackages.add(includePackage+".");
         }
     }
 
@@ -429,7 +429,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      */
     public void addExcludePackage(final String excludePackage) {
         synchronized (m_excludePackages) {
-            m_excludePackages.add(excludePackage);
+            m_excludePackages.add(excludePackage+".");
         }
     }
 
