@@ -303,7 +303,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.introduction.Target"/>
+            <arg line="-cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
         </exec>
     </goal>
 

@@ -277,7 +277,7 @@ public final class AspectWerkz {
         if (aspectMetaData == null) throw new IllegalArgumentException("aspect meta-data can not be null");
 
         synchronized (m_aspectMetaDataMap) {
-            m_aspectMetaDataMap.put(aspect.getName(), aspectMetaData);
+            m_aspectMetaDataMap.put(aspect.___AW_getName(), aspectMetaData);
         }
         synchronized (m_aspects) {
             synchronized (m_aspectIndexes) {
@@ -285,7 +285,7 @@ public final class AspectWerkz {
                     synchronized (m_introductionIndexes) {
                         try {
                             final int indexAspect = m_aspects.length + 1;
-                            m_aspectIndexes.put(aspect.getName(), indexAspect);
+                            m_aspectIndexes.put(aspect.___AW_getName(), indexAspect);
 
                             final AbstractAspect[] tmpAspects = new AbstractAspect[m_aspects.length + 1];
                             System.arraycopy(m_aspects, 0, tmpAspects, 0, m_aspects.length);
@@ -296,7 +296,7 @@ public final class AspectWerkz {
                             System.arraycopy(tmpAspects, 0, m_aspects, 0, tmpAspects.length);
 
                             // retrieve a sorted advices list => matches the sorted method list in the container
-                            List advices = aspect.getAspectDef().getAllAdvices();
+                            List advices = aspect.___AW_getAspectDef().getAllAdvices();
                             for (Iterator it = advices.iterator(); it.hasNext(); ) {
                                 final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
                                 m_adviceIndexes.put(
@@ -307,7 +307,7 @@ public final class AspectWerkz {
 
                             // retrieve a sorted introduction list => matches the sorted method list in the container
                             int introMethodIndex = 0;
-                            List introductions = aspect.getAspectDef().getIntroductions();
+                            List introductions = aspect.___AW_getAspectDef().getIntroductions();
                             for (Iterator it = introductions.iterator(); it.hasNext(); introMethodIndex++) {
                                 final IntroductionDefinition introductionDef = (IntroductionDefinition)it.next();
                                 m_introductionIndexes.put(
@@ -317,7 +317,7 @@ public final class AspectWerkz {
                             }
                         }
                         catch (Exception e) {
-                            throw new DefinitionException("could not register aspect [" + aspect.getName() + "]");
+                            throw new DefinitionException("could not register aspect [" + aspect.___AW_getName() + "]");
                         }
                     }
                 }
@@ -494,8 +494,6 @@ public final class AspectWerkz {
 
     /**
      * Returns the aspect meta-data for the name specified.
-     *
-     * @TODO: needed?
      *
      * @param name the name of the aspect
      * @return the aspect

@@ -6,6 +6,7 @@
 
     <package name="examples">
         <use-aspect class="logging.LoggingAspect"/>
+        <use-aspect class="introduction.IntroductionAspect"/>
     </package>
 
 </aspectwerkz>

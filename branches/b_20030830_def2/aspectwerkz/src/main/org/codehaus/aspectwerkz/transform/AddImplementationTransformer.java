@@ -73,6 +73,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
      * @param klass the class
      */
     public void transformInterface(final Context context, final Klass klass) {
+        m_definition.loadAspects(context.getLoader());
 
         final ClassGen cg = klass.getClassGen();
         ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));

@@ -20,7 +20,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 /**
  * Matches well defined point of execution in the program where a field is set
  * or accessed. Stores meta data from the join point. I.e. a reference to
- * original object A method, name A type of the field etc. Handles the
+ * original object and method, name and type of the field etc. Handles the
  * invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -34,6 +34,7 @@ public abstract class FieldJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
+     * @TODO: recalculate
      */
     private static final long serialVersionUID = 3860645288055327581L;
 
@@ -96,7 +97,6 @@ public abstract class FieldJoinPoint implements JoinPoint {
     public FieldJoinPoint(final String uuid, final String signature) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (signature == null) throw new IllegalArgumentException("signature can not be null");
-
         m_system = AspectWerkz.getSystem(uuid);
         m_system.initialize();
 
@@ -145,7 +145,10 @@ public abstract class FieldJoinPoint implements JoinPoint {
         }
         for (int i = 0, j = m_preAdvices.length; i < j; i++) {
             try {
-//                m_system.getAspect(m_preAdvices[i]).doExecute(this);
+                IndexTuple index = m_preAdvices[i];
+                int aspectIndex = index.getAspectIndex();
+                int methodIndex = index.getMethodIndex();
+                m_system.getAspect(aspectIndex).___AW_invokeAdvice(methodIndex, this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
@@ -162,7 +165,10 @@ public abstract class FieldJoinPoint implements JoinPoint {
         }
         for (int i = m_postAdvices.length - 1; i >= 0; i--) {
             try {
-//                m_system.getAspect(m_postAdvices[i]).doExecute(this);
+                IndexTuple index = m_postAdvices[i];
+                int aspectIndex = index.getAspectIndex();
+                int methodIndex = index.getMethodIndex();
+                m_system.getAspect(aspectIndex).___AW_invokeAdvice(methodIndex, this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());

@@ -451,7 +451,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      */
     private void createMethodRepository() {
         synchronized (m_methodRepository) {
-            List methodList = TransformationUtil.createSortedMethodList(m_prototype.getAspectClass());
+            List methodList = TransformationUtil.createSortedMethodList(m_prototype.___AW_getAspectClass());
             m_methodRepository = new Method[methodList.size()];
             for (int i = 0; i < m_methodRepository.length; i++) {
                 Method method = (Method)methodList.get(i);

@@ -93,7 +93,7 @@ public abstract class AbstractAspect implements Serializable {
             return clone;
         }
         catch (Exception e) {
-            throw new RuntimeException("could not clone aspect called " + prototype.getName());
+            throw new RuntimeException("could not clone aspect called " + prototype.___AW_getName());
         }
     }
 
@@ -102,7 +102,7 @@ public abstract class AbstractAspect implements Serializable {
      *
      * @return the system
      */
-    public AspectWerkz getSystem() {
+    public AspectWerkz ___AW_getSystem() {
         if (m_system == null) {
             m_system = AspectWerkz.getSystem(m_uuid);
             m_system.initialize();
@@ -117,25 +117,25 @@ public abstract class AbstractAspect implements Serializable {
      * @param joinPoint the join point
      * @return the result from the invocation
      */
-    public Object invokeAdvice(final int methodIndex, final JoinPoint joinPoint) {
+    public Object ___AW_invokeAdvice(final int methodIndex, final JoinPoint joinPoint) {
         try {
             Object result = null;
             switch (m_deploymentModel) {
 
                 case DeploymentModel.PER_JVM:
-                    result = invokeAdvicePerJvm(methodIndex, joinPoint);
+                    result = ___AW_invokeAdvicePerJvm(methodIndex, joinPoint);
                     break;
 
                 case DeploymentModel.PER_CLASS:
-                    result = invokeAdvicePerClass(methodIndex, joinPoint);
+                    result = ___AW_invokeAdvicePerClass(methodIndex, joinPoint);
                     break;
 
                 case DeploymentModel.PER_INSTANCE:
-                    result = invokeAdvicePerInstance(methodIndex, joinPoint);
+                    result = ___AW_invokeAdvicePerInstance(methodIndex, joinPoint);
                     break;
 
                 case DeploymentModel.PER_THREAD:
-                    result = invokeAdvicePerThread(methodIndex, joinPoint);
+                    result = ___AW_invokeAdvicePerThread(methodIndex, joinPoint);
                     break;
 
                 default:
@@ -157,8 +157,8 @@ public abstract class AbstractAspect implements Serializable {
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
-    public Object invokeIntroduction(final int methodIndex, final Object callingObject) {
-        return invokeIntroduction(methodIndex, EMPTY_OBJECT_ARRAY, callingObject);
+    public Object ___AW_invokeIntroduction(final int methodIndex, final Object callingObject) {
+        return ___AW_invokeIntroduction(methodIndex, EMPTY_OBJECT_ARRAY, callingObject);
     }
 
     /**
@@ -170,27 +170,31 @@ public abstract class AbstractAspect implements Serializable {
      * @return the result from the invocation
      */
 
-    public Object invokeIntroduction(final int methodIndex,
-                                     final Object[] parameters,
-                                     final Object callingObject) {
+    public Object ___AW_invokeIntroduction(final int methodIndex,
+                                           final Object[] parameters,
+                                           final Object callingObject) {
         try {
             Object result = null;
             switch (m_deploymentModel) {
 
                 case DeploymentModel.PER_JVM:
-                    result = invokeIntroductionPerJvm(methodIndex, parameters);
+                    result = ___AW_invokeIntroductionPerJvm(methodIndex, parameters);
                     break;
 
                 case DeploymentModel.PER_CLASS:
-                    result = invokeIntroductionPerClass(callingObject, methodIndex, parameters);
+                    result = ___AW_invokeIntroductionPerClass(
+                            callingObject, methodIndex, parameters
+                    );
                     break;
 
                 case DeploymentModel.PER_INSTANCE:
-                    result = invokeIntroductionPerInstance(callingObject, methodIndex, parameters);
+                    result = ___AW_invokeIntroductionPerInstance(
+                            callingObject, methodIndex, parameters
+                    );
                     break;
 
                 case DeploymentModel.PER_THREAD:
-                    result = invokeIntroductionPerThread(methodIndex, parameters);
+                    result = ___AW_invokeIntroductionPerThread(methodIndex, parameters);
                     break;
 
                 default:
@@ -210,7 +214,7 @@ public abstract class AbstractAspect implements Serializable {
      * @param joinPoint the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerJvm(final int methodIndex, final JoinPoint joinPoint) {
+    private Object ___AW_invokeAdvicePerJvm(final int methodIndex, final JoinPoint joinPoint) {
         return m_container.invokeAdvicePerJvm(methodIndex, joinPoint);
     }
 
@@ -221,7 +225,7 @@ public abstract class AbstractAspect implements Serializable {
      * @param joinPoint the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) {
+    private Object ___AW_invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) {
         return m_container.invokeAdvicePerClass(methodIndex, joinPoint);
     }
 
@@ -232,7 +236,7 @@ public abstract class AbstractAspect implements Serializable {
      * @param joinPoint the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerInstance(final int methodIndex, final JoinPoint joinPoint) {
+    private Object ___AW_invokeAdvicePerInstance(final int methodIndex, final JoinPoint joinPoint) {
         return m_container.invokeAdvicePerInstance(methodIndex, joinPoint);
     }
 
@@ -243,7 +247,7 @@ public abstract class AbstractAspect implements Serializable {
      * @param joinPoint the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint) {
+    private Object ___AW_invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint) {
         return m_container.invokeAdvicePerThread(methodIndex, joinPoint);
     }
 
@@ -254,7 +258,7 @@ public abstract class AbstractAspect implements Serializable {
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    private Object invokeIntroductionPerJvm(final int methodIndex, final Object[] parameters) {
+    private Object ___AW_invokeIntroductionPerJvm(final int methodIndex, final Object[] parameters) {
         return m_container.invokeIntroductionPerJvm(methodIndex, parameters);
     }
 
@@ -266,9 +270,9 @@ public abstract class AbstractAspect implements Serializable {
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    private Object invokeIntroductionPerClass(final Object callingObject,
-                                              final int methodIndex,
-                                              final Object[] parameters) {
+    private Object ___AW_invokeIntroductionPerClass(final Object callingObject,
+                                                    final int methodIndex,
+                                                    final Object[] parameters) {
         return m_container.invokeIntroductionPerClass(callingObject, methodIndex, parameters);
     }
 
@@ -280,9 +284,9 @@ public abstract class AbstractAspect implements Serializable {
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    private Object invokeIntroductionPerInstance(final Object callingObject,
-                                                 final int methodIndex,
-                                                 final Object[] parameters) {
+    private Object ___AW_invokeIntroductionPerInstance(final Object callingObject,
+                                                       final int methodIndex,
+                                                       final Object[] parameters) {
         return m_container.invokeIntroductionPerInstance(callingObject, methodIndex, parameters);
     }
 
@@ -293,7 +297,8 @@ public abstract class AbstractAspect implements Serializable {
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    private Object invokeIntroductionPerThread(final int methodIndex, final Object[] parameters) {
+    private Object ___AW_invokeIntroductionPerThread(final int methodIndex,
+                                                     final Object[] parameters) {
         return m_container.invokeIntroductionPerThread(methodIndex, parameters);
     }
 
@@ -302,7 +307,7 @@ public abstract class AbstractAspect implements Serializable {
      *
      * @param name the name of the advice
      */
-    public void setName(final String name) {
+    public void ___AW_setName(final String name) {
         m_name = name;
     }
 
@@ -311,7 +316,7 @@ public abstract class AbstractAspect implements Serializable {
      *
      * @return the name of the advice
      */
-    public String getName() {
+    public String ___AW_getName() {
         return m_name;
     }
 
@@ -320,7 +325,7 @@ public abstract class AbstractAspect implements Serializable {
      *
      * @param the deployment model
      */
-    public void setDeploymentModel(final int deploymentModel) {
+    public void ___AW_setDeploymentModel(final int deploymentModel) {
         m_deploymentModel = deploymentModel;
     }
 
@@ -329,7 +334,7 @@ public abstract class AbstractAspect implements Serializable {
      *
      * @return the deployment model
      */
-    public int getDeploymentModel() {
+    public int ___AW_getDeploymentModel() {
         return m_deploymentModel;
     }
 
@@ -338,7 +343,7 @@ public abstract class AbstractAspect implements Serializable {
      *
      * @return the aspect class
      */
-    public Class getAspectClass() {
+    public Class ___AW_getAspectClass() {
         return m_aspectClass;
     }
 
@@ -347,7 +352,7 @@ public abstract class AbstractAspect implements Serializable {
      *
      * @param aspectClass the aspect class
      */
-    public void setAspectClass(final Class aspectClass) {
+    public void ___AW_setAspectClass(final Class aspectClass) {
         m_aspectClass = aspectClass;
     }
 
@@ -356,7 +361,7 @@ public abstract class AbstractAspect implements Serializable {
      *
      * @param container the container
      */
-    public void setContainer(final AspectContainer container) {
+    public void ___AW_setContainer(final AspectContainer container) {
         m_container = container;
     }
 
@@ -365,7 +370,7 @@ public abstract class AbstractAspect implements Serializable {
      *
      * @return the container
      */
-    public AspectContainer getContainer() {
+    public AspectContainer ___AW_getContainer() {
         return m_container;
     }
 
@@ -374,7 +379,7 @@ public abstract class AbstractAspect implements Serializable {
      *
      * @return the container type
      */
-    public ContainerType getContainerType() {
+    public ContainerType ___AW_getContainerType() {
         return m_container.getContainerType();
     }
 
@@ -383,7 +388,7 @@ public abstract class AbstractAspect implements Serializable {
      *
      * @return the aspect definition
      */
-    public AspectDefinition getAspectDef() {
+    public AspectDefinition ___AW_getAspectDef() {
         return m_aspectDef;
     }
 
@@ -392,7 +397,7 @@ public abstract class AbstractAspect implements Serializable {
      *
      * @param the aspect definition
      */
-    public void setAspectDef(final AspectDefinition aspectDef) {
+    public void ___AW_setAspectDef(final AspectDefinition aspectDef) {
         m_aspectDef = aspectDef;
     }
 

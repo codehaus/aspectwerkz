@@ -12,10 +12,15 @@ package examples.logging;
  */
 public class Target {
 
-    private int m_counter = 0;
+    private int m_counter1 = 0;
+    private int m_counter2 = 0;
+
+    public int getCounter() {
+        return m_counter1;
+    }
 
     public void increment() {
-        m_counter++;
+        m_counter2 = m_counter2 + 1;
     }
 
     public static void toLog1() {
@@ -32,5 +37,8 @@ public class Target {
 
     public static void main(String[] args) {
         Target.toLog1();
+        Target target = new Target();
+        target.increment();
+        target.getCounter();
     }
 }

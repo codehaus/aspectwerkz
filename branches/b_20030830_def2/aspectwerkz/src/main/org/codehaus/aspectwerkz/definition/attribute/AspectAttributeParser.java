@@ -37,14 +37,16 @@ public abstract class AspectAttributeParser {
     /**
      * Creates and add pointcut definition to aspect definition.
      *
+     * @param type
      * @param expression
      * @param aspectDef
      * @param method
      */
-    protected void createAndAddPointcutDefToAspectDef(final String expression,
+    protected void createAndAddPointcutDefToAspectDef(final String type,
+                                                      final String expression,
                                                       final AspectDefinition aspectDef,
                                                       final Method method) {
-        aspectDef.addPointcut(new PointcutDefinition(expression, method));
+        aspectDef.addPointcut(new PointcutDefinition(type, expression, method));
     }
 
     /**

@@ -95,8 +95,7 @@ public class FieldPointcut implements Pointcut {
      * @param uuid the UUID for the AspectWerkz system
      * @param pattern the pattern for the pointcut
      */
-    public FieldPointcut(final String uuid,
-                         final String pattern) {
+    public FieldPointcut(final String uuid, final String pattern) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (pattern == null || pattern.trim().length() == 0) throw new IllegalArgumentException("pattern of pointcut can not be null or an empty string");
         m_uuid = uuid;
@@ -166,8 +165,7 @@ public class FieldPointcut implements Pointcut {
 
                 m_postIndexes = new IndexTuple[m_postNames.length];
                 for (int i = 0, j = m_postNames.length; i < j; i++) {
-                    m_postIndexes[i] = AspectWerkz.getSystem(m_uuid).
-                            getAdviceIndexFor(m_postNames[i]);
+                    m_postIndexes[i] = AspectWerkz.getSystem(m_uuid).getAdviceIndexFor(m_postNames[i]);
                 }
             }
         }
@@ -198,8 +196,7 @@ public class FieldPointcut implements Pointcut {
 
                 m_preIndexes = new IndexTuple[m_preNames.length];
                 for (int j = 0; j < m_preNames.length; j++) {
-                    m_preIndexes[j] = AspectWerkz.getSystem(m_uuid).
-                            getAdviceIndexFor(m_preNames[j]);
+                    m_preIndexes[j] = AspectWerkz.getSystem(m_uuid).getAdviceIndexFor(m_preNames[j]);
                 }
             }
         }
@@ -229,8 +226,7 @@ public class FieldPointcut implements Pointcut {
 
                 m_postIndexes = new IndexTuple[m_postNames.length];
                 for (int j = 0; j < m_postNames.length; j++) {
-                    m_postIndexes[j] = AspectWerkz.getSystem(m_uuid).
-                            getAdviceIndexFor(m_postNames[j]);
+                    m_postIndexes[j] = AspectWerkz.getSystem(m_uuid).getAdviceIndexFor(m_postNames[j]);
                 }
             }
         }
