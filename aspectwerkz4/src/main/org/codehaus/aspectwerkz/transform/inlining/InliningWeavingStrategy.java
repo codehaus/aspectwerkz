@@ -197,7 +197,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                 final ClassWriter writerPhase3 = AsmHelper.newClassWriter(true);
                 ClassReader readerPhase3 = new ClassReader(bytesPhase2);
                 ClassVisitor reversedChainPhase3 = writerPhase3;
-                reversedChainPhase3 = new SerialVersionUidVisitor.Add(reversedChainPhase3, context);
+                reversedChainPhase3 = new SerialVersionUidVisitor.Add(reversedChainPhase3, context, classInfo);
                 reversedChainPhase3 = new JoinPointInitVisitor(reversedChainPhase3, context);
                 readerPhase3.accept(reversedChainPhase3, Attributes.getDefaultAttributes(), false);
                 final byte[] bytesPhase3 = writerPhase3.toByteArray();
