@@ -308,10 +308,13 @@ public class PointcutManager {
             throw new IllegalArgumentException("member meta-data can not be null");
         }
 //
+        //System.out.println("getExe pc PCManager " + classMetaData.getName() +" "+memberMetaData.getName() );//ALEX
         List pointcutList = new ArrayList();
         for (Iterator it = m_executionPointcuts.iterator(); it.hasNext();) {
             ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
+            //System.out.println("TEST MATCH " + pointcut.getExpression().getExpression());//ALEX
             if (pointcut.getExpression().match(classMetaData, memberMetaData)) {
+                //System.out.println("MATCH " + pointcut.getExpression().getName());//ALEX
                 pointcutList.add(pointcut);
             }
         }

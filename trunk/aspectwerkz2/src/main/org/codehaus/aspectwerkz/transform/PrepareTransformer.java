@@ -188,6 +188,10 @@ public class PrepareTransformer extends MethodExecutionTransformer implements Tr
             method.setModifiers(accessFlags);
         }
 
+        // add a method level attribute so that we remember it is an empty method
+        method.setAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE,
+                TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE);
+
         return method;
     }
 

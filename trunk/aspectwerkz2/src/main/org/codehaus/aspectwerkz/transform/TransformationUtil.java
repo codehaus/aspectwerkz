@@ -123,6 +123,10 @@ public final class TransformationUtil {
     public static final String META_DATA_INTERFACE = "org.codehaus.aspectwerkz.MetaDataEnhanceable";
     public static final String UUID_CLASS = "org.codehaus.aspectwerkz.util.UuidGenerator";
 
+    public static final String EMPTY_WRAPPER_ATTRIBUTE = ASPECTWERKZ_PREFIX + "empty";
+    public static final byte[] EMPTY_WRAPPER_ATTRIBUTE_VALUE = new byte[]{Byte.MIN_VALUE};
+
+
     /**
      * Creates a sorted method list of all the public methods in the class and super classes.
      *
