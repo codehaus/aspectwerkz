@@ -17,6 +17,15 @@
                         <a href="#Note on previous releases">Note on previous releases</a>
                     </li>
                     <li>
+                        <a href="#Overview">Overview</a>
+                    </li>
+                    <li>
+                        <a href="#How to choose the right option">How to choose the right option</a>
+                    </li>
+                    <li>
+                        <a href="#General rules">General rules</a>
+                    </li>
+                    <li>
                         <a href="#HotSwap">HotSwap</a>
                     </li>
                     <li>
@@ -32,9 +41,6 @@
                         <a href="#Prepared bootclasspath">Prepared bootclasspath</a>
                     </li>
                     <li>
-                        <a href="#How to choose one">How to choose one</a>
-                    </li>
-                    <li>
                         <a href="#Released native HotSwap modules">Released native HotSwap modules</a>
                     </li>
                 </ol>
@@ -43,7 +49,7 @@
 
         <section name="Introduction">
             <p>
-                This document explains the different options provided to enable AspectWerkz online mode,
+                This document explains the different options provided to enable AspectWerkz online mode
                 (on the fly weaving).<br/>
             </p>
             <p>
@@ -58,7 +64,7 @@
             <p>
                 All options are described in term of architecture and impact, and a sample is given on how
                 to startup an application with this option.<br/>
-                Choosing the best option depends of your needs. Refer to the <a href="#How to choose one">comparison matrix</a> for a quick view.<br/>
+                Choosing the best option depends of your needs. Refer to the <a href="#How to choose the right option">comparison matrix</a> for a quick view.<br/>
                 For a more schematic view about this architecture, refer to <a href="#">official slides</a>.<!--@todo add slides link-->
             </p>
         </section>
@@ -68,7 +74,7 @@
                 The releases prior to 0.8 where using <a href="http://javalab.cs.uni-bonn.de/research/jmangler/">JMangler</a>
                 to plug in the class loading hierarchy. JMangler is a very innovative solution, but starting with 0.8, AspectWerkz
                 uses its own architecture, having full control over it.<br/>
-                The core <i>theoretical concept</i> of hooking in the class loader hierarchy is inspired by the JMangler project.<br/>
+                The core <i>theoretical concept</i> of hooking in the class loader hierarchy is inspired from the JMangler project.<br/>
             </p>
             <p>
                 Having full control over this low level architecture was a crucial point to achieve for AspectWerkz.<br/>
@@ -78,6 +84,168 @@
             </p>
         </section>
 
+        <section name="Overview">
+            <p>
+                This part describes the main concept of each option. For a detailled understanding, refer to the option section.<br/>
+                Some options are suitable for java 1.4 only. Refer to the <a href="#How to choose the right option">comparison matrix</a> section.
+            </p>
+            <p>
+                <ul>
+                    <li><b>Command line tool</b><br/>
+                        The command line tool <code>bin/aspectwerkz</code> is an unification of <a href="#HotSwap">HotSwap</a> and <a href="#Transparent bootclasspath">Transparent bootclasspath</a>.
+                        It sets all classpath and path required and is thus the easiest way to start with, though it might not allow for advanced use.
+                        The command line tool allows auto detection of java 1.3 and java 1.4.<br/>
+                    </li>
+                    <li>
+                        <a href="#HotSwap"><b>HotSwap</b></a><br/>
+                        A first JVM launchs your target application in a second JVM.
+                        The first JVM hooks AspectWerkz in the second one just before the <i>main class</i> (and all dependencies) gets loaded,
+                        and then connects to the stdout / stderr / stdin stream ot the
+                        second JVM to make them appear as usual thru the first JVM.<br/>
+                    </li>
+                    <li>
+                        <a href="#Transparent bootclasspath"><b>Transparent bootclasspath</b></a><br/>
+                        For JVM or java version like 1.3 which don't support <i>class replacement at runtime (HotSwap)</i>, this option
+                        allows for same mechanism by putting an enhanced class loader in the target
+                        application VM bootclasspath.<br/>
+                    </li>
+                    <li>
+                        <a href="#Native HotSwap"><b>Native HotSwap</b></a><br/>
+                        A native C JVM extension running in the target application VM handles the replacement of the
+                        class loader by the enhanced one.<br/>
+                    </li>
+                    <li>
+                        <a href="#Remote HotSwap"><b>Remote HotSwap</b></a><br/>
+                        The application VM is launched <i>suspended</i>. The replacement of the enhanced class loader is done
+                        thru a separate manual process, which can easily be scripted.<br/>
+                    </li>
+                    <li>
+                        <a href="#Prepared bootclasspath"><b>Prepared bootclasspath</b></a><br/>
+                        The enhanced class loader is builded and packaged as a jar file in a first separate manual process, which can easily be scripted.
+                        The application VM is launched with options to use this enhanced class loader.<br/>
+                    </li>
+                </ul>
+            </p>
+        </section>
+
+        <section name="How to choose the right option">
+            <subsection name="Comparison matrix">
+                <p>
+                    <table>
+                        <tr>
+                            <th>Option</th>
+                            <th>Java version<br/>supported</th>
+                            <th>Number of JVM<br/>running</th>
+                            <th>Notes</th>
+                        </tr>
+                        <tr>
+                            <td><a href="#HotSwap">HotSwap</a></td>
+                            <td>1.4 + HotSwap</td>
+                            <td>2</td>
+                            <td>bin/aspectwerkz or ProcessStarter<br/>Autodetection mechanism</td>
+                        </tr>
+                        <tr>
+                            <td><a href="#Transparent bootclasspath">Transparent bootclasspath</a></td>
+                            <td>1.3 and later</td>
+                            <td>2</td>
+                            <td>bin/aspectwerkz or ProcessStarter<br/>Autodetection mechanism<br/><code>-Daspectwerk.classloader.clbootclasspath=...</code> option in first VM</td>
+                        </tr>
+                        <tr>
+                            <td><a href="#Native HotSwap">Native HotSwap</a></td>
+                            <td>1.4 + HotSwap</td>
+                            <td>1</td>
+                            <td><code>-Xrunaspectwerkz</code> JVM native extension<br/><b>Recommanded for java 1.4 advanced usage</b></td>
+                        </tr>
+                        <tr>
+                            <td><a href="#Remote HotSwap">Remote HotSwap</a></td>
+                            <td>1.4 + HotSwap</td>
+                            <td>1</td>
+                            <td>Two step process</td>
+                        </tr>
+                        <tr>
+                            <td><a href="#Prepared bootclasspath">Prepared bootclasspath</a></td>
+                            <td>1.3 and later</td>
+                            <td>1</td>
+                            <td>Two step process for the first use</td>
+                        </tr>
+                    </table>
+                </p>
+            </subsection>
+            <subsection name="Note on java 1.3 support">
+                <p>
+                    java 1.3 support is achieved thru two options:
+                    <ul>
+                        <li>
+                            <a href="#Transparent bootclasspath">Transparent bootclasspath</a>
+                        </li>
+                        <li>
+                            <a href="#Prepared bootclasspath">Prepared bootclasspath</a>
+                        </li>
+                    </ul>
+                    Both options put the enhanced class loader in the <code>-Xbootclasspath/p:</code> option, whether
+                    programmatically (2 JVM), whether manually (1 JVM, two step process). This means that a Sun provided
+                    class of <code>rt.jar</code> is overriden by a custom one, which contravenes the <i>Java 2 Runtime Environment
+                    binary code license</i> as stated in <a href="http://java.sun.com/j2se/1.3/docs/tooldocs/win32/java.html#nonstandard">Sun documentation</a>.<br/>
+                    On the same topic, the following <a href="http://java.sun.com/products/jdk/1.2/docs/tooldocs/solaris/migration.html#bootcp">Sun statement</a> is contradictory.<br/>
+                    Due to these legal issues, AspectWerkz does not shipped neither release the overriden class.<br/>
+                    java 1.3 support is provided for educational purpose and you application using this option <i>should not be
+                    deployed as doing so would contravene the Java 2 Runtime Environment binary code license.</i>
+                    As a side note, you will note that overriding a class of <code>rt.jar</code> is possible thru HotSwap Sun technology with
+                    java 1.4, or with <a href="http://java.sun.com/products/jdk/1.2/docs/guide/jvmpi/jvmpi.html#class_hook">JVMPI CLASS_LOAD_HOOK event</a> since java 1.2.
+                </p>
+            </subsection>
+            <subsection name="Note on HotSwap support">
+                <p>
+                    HotSwap is available on Sun JVM since java 1.4. It requires the JVM with <code>-Xdebug</code> option, to allow
+                    recording of method call dependancies, in order to reorganize them when a method is replaced at runtime thru
+                    HotSwap.<br/>
+                    With <code>-client</code> JVM option, the overhead of -Xdebug is almost null on java 1.4.<br/>
+                    With <code>-server</code> JVM option, the overhead is stated to be from 5 to 10%, since HotSpot optimizations cannot be all set up.<br/>
+                </p>
+                <p>
+                    A work is in progress to provide an enhanced native HotSwap module that will not require the JVM to run with -Xdebug. Note that the existing
+                    native HotSwap module does not requires the JVM to run in <code>-Xdebug</code> mode under java 1.4.0, but requires it under java 1.4.1 or 1.4.2
+                    due to JVMPI API changes.
+                 </p>
+            </subsection>
+        </section>
+
+        <section name="General rules">
+            <p>
+                No matter the option used to enable online mode, some general rules must be respected.
+            </p>
+            <subsection name="Released jar organization">
+                <p>
+                    <ul>
+                        <li>aspectwerkz-core.jar and bcel.jar must always be in the bootclasspath of the JVM. Use <code>-Xbootclasspath/p:</code> JVM option.</li>
+                        <li>when HotSwap (excepted native HotSwap) is used, JAVA_HOME/jre/bin must be in the PATH, and JAVA_HOME/lib/tools.jar must be in the bootclasspath of the JVM.</li>
+                        <li>aspectwerkz.jar and all dependancies must be in regular classpath</li>
+                    </ul>
+                </p>
+            </subsection>
+            <subsection name="Weaver options">
+                <p>
+                    The online mode supports the following options:
+                    <ul>
+                        <li><code>-Daspectwerkz.definition.file=...</code> should point to a valid XML definition file. If not
+                        specified, the first aspectwerkz.xml file found in the classpath will be used.</li>
+                        <li><code>-Daspectwerkz.transform.verbose=true</code> (or =yes) turns on verbose mode</li>
+                        <li><code>-Daspectwerkz.transform.dump=...</code> will dumps loaded class in <code>./_dump/</code> directory. If the value is <code>*</code> it will dump all classes.
+                        If the value is <code>my.package.</code> it will dump only <code>my.package</code> classes and classes of subpackages.</li>
+                    </ul>
+                </p>
+            </subsection>
+            <subsection name="Command line tool">
+                <p>
+                    The command line tool <code>bin/aspectwerkz</code> allow for basic use of the options <a href="#HotSwap">HotSwap</a>
+                    and <a href="#Transparent bootclasspath">Transparent bootclasspath</a> thru an autodetection mechanism.<br/>
+                    It sets all classpath and path for you.<br/>
+                    The command line tool also allow for offline mode compilation, though it can be achieve by direct java
+                    invocation as described <a href="#">here</a>.<!--@todo add offline mode link -->
+                </p>
+            </subsection>
+        </section>
+
         <section name="HotSwap">
             <subsection name="Description">
                 <p>
@@ -85,7 +253,7 @@
                     Not all JVM supports it, thought it is standardized by Sun in the <a href="http://java.sun.com/products/jpda/">JPDA architecture</a>.
                 </p>
                 <p>
-                    A first tiny JVM launchs your target application in a second JVM. The second JVM is launched with -Xdebug and -Xrunjdwp option to allow HotSwap.
+                    A first tiny JVM launchs your target application in a second JVM. The second JVM is launched with <code>-Xdebug</code> and <code>-Xrunjdwp</code> options to allow HotSwap.
                     The first JVM hooks AspectWerkz in the second one just before the <i>main class</i> (and all dependencies) gets loaded,
                     and then connects to the stdout / stderr / stdin stream ot the
                     second JVM to make them appear as usual thru the first JVM.<br/>
@@ -96,8 +264,8 @@
             </subsection>
             <subsection name="Usage">
                 <p>
-                    This option can be used out of the box with the command line tool <i>bin/aspectwerkz</i>. Use <i>bin/aspectwerkz</i> as a replacement
-                    to <i>JAVA_HOME/bin/java</i>.<br/>
+                    This option can be used out of the box with the command line tool <code>bin/aspectwerkz</code>. Use <code>bin/aspectwerkz</code> as a replacement
+                    of <code>JAVA_HOME/bin/java</code>.<br/>
 <source>
 set JAVA_HOME=...
 set ASPECTWERKZ_HOME=...
@@ -110,7 +278,7 @@ $ASPECTWERKZ_HOME/bin/aspectwerkz -cp myJar.jar -Daspectwerkz.definition.file=..
 </source>
                 </p>
                 <p>
-                    For more advanced usage and fine tuning, you can avoid using the <i>bin/aspectwerkz</i>. Use <i>org.codehaus.aspectwerkz.hook.ProcessStarter</i> instead.<br/>
+                    For more advanced usage and fine tuning, you should avoid using the <code>bin/aspectwerkz</code>. Use <code>org.codehaus.aspectwerkz.hook.ProcessStarter</code> instead.<br/>
                     Requirements:
                     <ul>
                         <li>have java 1.4</li>
@@ -146,15 +314,15 @@ java -cp $CLASSPATH_1 org.codehaus.aspectwerkz.ProcessStarter ..
 </source>
                 </p>
                 <p>
-                    <i>ProcessStarter</i> is used as a replacement of a <i>JAVA_HOME/bin/java</i> and some
+                    <code>ProcessStarter</code> is used as a replacement of a <code>JAVA_HOME/bin/java</code> and some
                     additional jars are added to the application VM classpath.<br/>
-                    The script described above is basically <i>bin/aspectwerkz</i>, but you can now add more options.<br/>
+                    The script described above is basically <code>bin/aspectwerkz</code>, but you can now add more options.<br/>
                     Use the following options as regular java options <b>after ProcessStarter</b>:
                     <ul>
-                        <li><i>-Daspectwerkz.transform.verbose=yes</i> turns on verbose output on class being weaved. You can
-                        also set the value to <i>true</i></li>
-                        <li><i>-Daspectwerkz.transform.dump=my.</i> will dumps the weaved class of package "my." (eg my.App) in
-                        the directory <i>./_dump/</i>. In the previous sample, the file <i>./_dump/my/App.class</i> will be written.
+                        <li><code>-Daspectwerkz.transform.verbose=yes</code> turns on verbose output on class being weaved. You can
+                        also set the value to <code>true</code></li>
+                        <li><code>-Daspectwerkz.transform.dump=my.</code> will dumps the weaved class of package "my." (eg my.App) in
+                        the directory <code>./_dump/</code>. In the previous sample, the file <code>./_dump/my/App.class</code> will be written.
                         </li>
                     </ul>
 <source>
@@ -166,15 +334,15 @@ java ... org.codehaus.aspectwerkz.ProcessStarter -Daspectwerkz.transform.verbose
                 </p>
                 <p>
                     If you want to connect to your remote application, the default JDWP configuration is
-                    <i>transport=dt_socket,address=9300</i>. You can override this defaults one with your
-                    favorite one by specifying the <i>-Xrunjdwp:...</i> option in the target application VM section (after <i>ProcessStarter</i>).<br/>
+                    <code>transport=dt_socket,address=9300</code>. You can override this defaults one with your
+                    favorite one by specifying the <code>-Xrunjdwp:...</code> option in the target application VM section (after <code>ProcessStarter</code>).<br/>
                     For more information about JDWP option, read <a href="http://java.sun.com/j2se/1.4.2/docs/guide/jpda/conninv.html#Invocation">Sun JDWP documentation</a>.
                 </p>
             </subsection>
             <subsection name="Key advantages">
                 <p>
-                    Using HotSwap thru <i>bin/aspectwerkz</i> or <i>ProcessStarter</i> is very convenient
-                    since it can be used as <i>JAVA_HOME/bin/java</i> replacement.<br/>
+                    Using HotSwap thru <code>bin/aspectwerkz</code> or <code>ProcessStarter</code> is very convenient
+                    since it can be used as <code>JAVA_HOME/bin/java</code> replacement.<br/>
                     A key advantage is that it autodetects HotSwap support (and thus java 1.3) and transparently
                     behaves as the <a href="#Transparent bootclasspath">transparent bootclasspath</a> option.
                 </p>
@@ -195,15 +363,15 @@ java ... org.codehaus.aspectwerkz.ProcessStarter -Daspectwerkz.transform.verbose
         </subsection>
         <subsection name="Usage">
             <p>
-                For java 1.3, use the <i>bin/aspectwerkz</i> script as described <a href="#HotSwap">here</a>.<br/>
-                It will create a temporary <i>./_boot/</i> directory, which will be automatically added in the <i>-Xbootclasspath/p:</i>
+                For java 1.3, use the <code>bin/aspectwerkz</code> script as described <a href="#HotSwap">here</a>.<br/>
+                It will create a temporary <code>./_boot/</code> directory, which will be automatically added in the <code>-Xbootclasspath/p:</code>
                 section of the target application VM.
             </p>>
             <p>
                 To force the use of this option (especially with java 1.4), you must specify the temporary boot directory thru
-                the <i>-Daspectwerkz.classloader.clbootclasspath=_boot</i> option. Specify as value a path
+                the <code>-Daspectwerkz.classloader.clbootclasspath=_boot</code> option. Specify as value a path
                 which will be used (created if necessary) as temporary directory.<br/>
-                This option must be set for the first VM (before <i>ProcessStarter</i>):
+                This option must be set for the first VM (before <code>ProcessStarter</code>):
 <source>
 java -Daspectwerkz.classloader.clbootclasspath=/temp/_boot ... org.codehaus.aspectwerkz.ProcessStarter ...
 </source>
@@ -213,7 +381,7 @@ java -Daspectwerkz.classloader.clbootclasspath=/temp/_boot ... org.codehaus.aspe
             <p>
                 Forcing the use of this options is not really necessary, unless specific needs, since it is
                 used thru the autodetection mechanism of HotSwap support (and thus java 1.3) and thus transparently
-                invocated when using <i>bin/aspectwerkz</i> or <i>ProcessStarter</i>.
+                invocated when using <code>bin/aspectwerkz</code> or <code>ProcessStarter</code>.
             </p>
         </subsection>
     </section>
@@ -236,9 +404,9 @@ java -Daspectwerkz.classloader.clbootclasspath=/temp/_boot ... org.codehaus.aspe
                 <ul>
                     <li>java 1.4 HotSwap supporting JVM</li>
                     <li>add in PATH the directory where native HotSwap module aspectwerkz.dll or libaspectwerkz.so resides</li>
-                    <li>turn on <i>-Xdebug</i> option</li>
-                    <li>turn on the AspectWerkz native HotSwap module thru <i>-Xrunaspectwerkz</i></li>
-                    <li>add aspectwerkz-core.jar, bcel.jar and JAVA_HOME/lib/tools.jar in <i>-Xbootclasspath/a</i></li>
+                    <li>turn on <code>-Xdebug</code> option</li>
+                    <li>turn on the AspectWerkz native HotSwap module thru <code>-Xrunaspectwerkz</code></li>
+                    <li>add aspectwerkz-core.jar, bcel.jar and JAVA_HOME/lib/tools.jar in <code>-Xbootclasspath/a</code></li>
                     <li>add aspectwerkz.jar and dependancies in the regular classpath</li>
                 </ul>
 <source>
@@ -261,14 +429,7 @@ java -Xdebug -Xrunaspectwerkz -Xbootclasspath/a:$BOOT_PATH ..
 </source>
             </p>
             <p>
-                The regular AspectWerkz weaver options can be used:
-                <ul>
-                    <li><i>-Daspectwerkz.transform.verbose=yes</i> turns on verbose output on class beeing weaved. You can
-                    also set the value to <i>true</i></li>
-                    <li><i>-Daspectwerkz.transform.dump=my.</i> will dumps the weaved class of package "my." (eg my.App) in
-                    the directory <i>./_dump/</i>. In the previous sample, the file <i>./_dump/my/App.class</i> will be written.
-                    </li>
-                </ul>
+                The regular AspectWerkz weaver options <code>-Daspectwerkz.transform.verbose=true</code> and <code>-Daspectwerkz.transform.dump=...</code>can be used.
             </p>
         </subsection>
         <subsection name="Key advantages">
@@ -296,11 +457,11 @@ java -Xdebug -Xrunaspectwerkz -Xbootclasspath/a:$BOOT_PATH ..
                 Requirements:
                 <ul>
                     <li>java 1.4 HotSwap supporting JVM</li>
-                    <li>turn on JDWP listening connection with <i>-Xrunjdwp:...</i></li>
-                    <li>be sure to use <i>server=y</i> JDWP option</li>
-                    <li>for JVM wide weaving, be sure to set <i>suspend=y</i> as a JDWP option</li>
+                    <li>turn on JDWP listening connection with <code>-Xrunjdwp:...</code></li>
+                    <li>be sure to use <code>server=y</code> JDWP option</li>
+                    <li>for JVM wide weaving, be sure to set <code>suspend=y</code> as a JDWP option</li>
                     <li>add JAVA_HOME/jre/bin to your PATH to allow jdwp</li>
-                    <li>add aspectwerkz-core.jar, bcel.jar and JAVA_HOME/lib/tools.jar to the <i>-Xbootclasspath/a:</i></li>
+                    <li>add aspectwerkz-core.jar, bcel.jar and JAVA_HOME/lib/tools.jar to the <code>-Xbootclasspath/a:</code></li>
                     <li>add aspectwerkz.jar and dependancies in regular classpath</li>
                 </ul>
                 For more information about JDWP option refer to <a href="http://java.sun.com/j2se/1.4.2/docs/guide/jpda/conninv.html#Invocation">Sun JDWP documentation</a>.
@@ -345,7 +506,7 @@ java -cp $CLASSPATH org.codehaus.aspectwerkz.hook.Plug -hotswap transport=dt_soc
 </source>
             </p>
             <p>
-                Some other <i>Plug</i> argument can be passed thru. Try the -help option to learn more.
+                Some other <code>org.codehaus.aspectwerkz.hook.Plug</code> argument can be passed thru. Try the <code>-help</code> option to learn more.
             </p>
         </subsection>
         <subsection name="Key advantages">
@@ -363,14 +524,14 @@ java -cp $CLASSPATH org.codehaus.aspectwerkz.hook.Plug -hotswap transport=dt_soc
         <subsection name="Description">
             <p>
                 With this option, a single JVM is running. The enhanced class loader is builded and packaged
-                as a jar filein a first separated manual process, which can easily be scripted.<br/>
-                It can then be added in the <i>-Xbootclasspath/p:</i> option.<br/>
+                as a jar file in a first separate manual process, which can easily be scripted.<br/>
+                It can then be added in the <code>-Xbootclasspath/p:</code> option.<br/>
                 This options does not uses HotSwap and is thus java 1.3 compatible.
             </p>
         </subsection>
         <subsection name="Usage - step 1: preparation">
             <p>
-                Invoque <i>org.codehaus.aspectwerkz.hook.Plug -target</i> to generate the jar file
+                Invoque <code>org.codehaus.aspectwerkz.hook.Plug -target</code> to generate the jar file
                 containing the enhanced class loader.<br/>
                 This step can be scripted, or done once for your java environment.
 <source>
@@ -387,9 +548,9 @@ java -cp $CLASSPATH org.codehaus.aspectwerkz.hook.Plug -target /path/to/enhanced
         </subsection>
         <subsection name="Usage - step 1: startup">
             <p>
-                Start your application by adding the generated jar to the <i>-Xbootclasspath/p:</i>
-                option. <b>Note the /p: flag instead of the previously used /a: flag</b>.<br/>
-                Add all needed jar in the <i>-Xbootclasspath/p:</i> or regular classpath as usual.
+                Start your application by adding the generated jar to the <code>-Xbootclasspath/p:</code>
+                option. Note the <b>/p:</b> flag instead of the previously used <b>/a:</b> flag.<br/>
+                Add all needed jar in the <code>-Xbootclasspath/p:</code> or regular classpath as usual.
 <source>
 # set AspectWerkz version and libs dependancies
 set VERSION=0.8
@@ -406,82 +567,12 @@ java -Xbootclasspath/p:/path/to/enhanced.jar -Xbootclasspath/a:$BOOT_PATH ..
         <subsection name="Key advantages">
             <p>
                 This options works both for java 1.3 and java 1.4. It starts a single JVM
-                and runs it without -Xdebug option.<br/>
-                For a complete discussion on when to use this option read the <a href="#How to choose one">next section</a>.
+                and runs it without <code>-Xdebug</code> option.<br/>
+                For a complete discussion on when to use this option read the <a href="#How to choose the right option">next section</a>.
             </p>
         </subsection>
     </section>
 
-    <section name="How to choose one">
-        <subsection name="Comparison matrix">
-            <p>
-                <table>
-                    <tr>
-                        <th>Option</th>
-                        <th>Java version<br/>supported</th>
-                        <th>Number of JVM<br/>running</th>
-                        <th>Notes</th>
-                    </tr>
-                    <tr>
-                        <td><a href="#HotSwap">HotSwap</a></td>
-                        <td>1.4 + HotSwap</td>
-                        <td>2</td>
-                        <td>bin/aspectwerkz or ProcessStarter<br/>Autodetection mechanism</td>
-                    </tr>
-                    <tr>
-                        <td><a href="#Transparent bootclasspath">Transparent bootclasspath</a></td>
-                        <td>1.3 and later</td>
-                        <td>2</td>
-                        <td>bin/aspectwerkz or ProcessStarter<br/>Autodetection mechanism<br/>-Daspectwerk.classloader.clbootclasspath=.. option in first VM</td>
-                    </tr>
-                    <tr>
-                        <td><a href="#Native HotSwap">Native HotSwap</a></td>
-                        <td>1.4 + HotSwap</td>
-                        <td>1</td>
-                        <td>-Xrunaspectwerkz JVM native extension<br/><b>Recommanded for java 1.4 advanced usage</b></td>
-                    </tr>
-                    <tr>
-                        <td><a href="#Remote HotSwap">Remote HotSwap</a></td>
-                        <td>1.4 + HotSwap</td>
-                        <td>1</td>
-                        <td>Two step process</td>
-                    </tr>
-                    <tr>
-                        <td><a href="#Prepared bootclasspath">Prepared bootclasspath</a></td>
-                        <td>1.3 and later</td>
-                        <td>1</td>
-                        <td>Two step process for the first use</td>
-                    </tr>
-                </table>
-            </p>
-        </subsection>
-        <subsection name="Note on java 1.3 support">
-            <p>
-                java 1.3 support is achieved thru two options:
-                <ul>
-                    <li>
-                        <a href="#Transparent bootclasspath">Transparent bootclasspath</a>
-                    </li>
-                    <li>
-                        <a href="#Prepared bootclasspath">Prepared bootclasspath</a>
-                    </li>
-                </ul>
-                Both options put the enhanced class loader in the <i>-Xbootclasspath/p:</i> option, whether
-                prorammatically (2 jvm), whether manually (1 jvm, two step process). This means that a Sun provided
-                class of <i>rt.jar</i> is overriden by a custom one, which contravenes the Java 2 Runtime Environment
-                binary code license as stated in <a href="http://java.sun.com/j2se/1.3/docs/tooldocs/win32/java.html#nonstandard">Sun documentation</a>.<br/>
-                On the same topic, the following <a href="http://java.sun.com/products/jdk/1.2/docs/tooldocs/solaris/migration.html#bootcp">Sun statement</a> is contradictory.<br/>
-                Due to these legal issues, AspectWerkz does not shipped neither release the overriden class.<br/>
-                java 1.3 support is provided for educational purpose and you application using this option <i>should not be
-                deployed as doing so would contravene the Java 2 Runtime Environment binary code license.</i>
-                As a side note, you will note that overriding a class of <i>rt.jar</i> is possible thru HotSwap Sun technology with
-                java 1.4, or with <a href="http://java.sun.com/products/jdk/1.2/docs/guide/jvmpi/jvmpi.html#class_hook">JVMPI CLASS_LOAD_HOOK event</a> since java 1.2.
-            </p>
-        </subsection>
-        <subsection name="Note on HotSwap support">
-
-        </subsection>
-    </section>
 
     <section name="Released native HotSwap modules">
         <p>
