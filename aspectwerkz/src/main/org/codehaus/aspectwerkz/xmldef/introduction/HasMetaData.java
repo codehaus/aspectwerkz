@@ -5,9 +5,9 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.introduction;
+package org.codehaus.aspectwerkz.xmldef.introduction;
 
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
 
 /**
  * Mixin that is applied to all Introductions. Enables the retrieval of

@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz;
+package org.codehaus.aspectwerkz.xmldef;
 
 import java.util.Map;
 import java.util.List;
@@ -23,11 +23,11 @@ import java.io.FileInputStream;
 
 import gnu.trove.TObjectIntHashMap;
 
-import org.codehaus.aspectwerkz.advice.Advice;
-import org.codehaus.aspectwerkz.advice.AbstractAdvice;
-import org.codehaus.aspectwerkz.introduction.Introduction;
-import org.codehaus.aspectwerkz.definition.StartupManager;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.xmldef.advice.Advice;
+import org.codehaus.aspectwerkz.xmldef.advice.AbstractAdvice;
+import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
+import org.codehaus.aspectwerkz.xmldef.definition.StartupManager;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
