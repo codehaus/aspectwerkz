@@ -2,7 +2,7 @@
 <document>
 
     <properties>
-        <title>Examples</title>
+        <title>Model 1 - XML centric examples</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
     </properties>
 
@@ -24,7 +24,7 @@
                         <a href="#Synchronization">Synchronization</a>
                     </li>
                     <li>
-                        <a href="#Logging + runtime attributes + parameterized advices + join point controller">Logging + runtime attributes + parameterized advices + join point controller</a>
+                        <a href="#Logging + Doclet attributes + parameterized advices + join point controller">Logging + Doclet attributes + parameterized advices + join point controller</a>
                     </li>
                     <li>
                         <a href="#Introductions and Mixins">Introductions and Mixins</a>
@@ -33,7 +33,7 @@
                         <a href="#Caller side pointcuts">Caller side pointcuts</a>
                     </li>
                     <li>
-                        <a href="#Control flow (cflow) pointcuts + runtime attributes">Control flow (cflow) pointcuts + runtime attributes</a>
+                        <a href="#Control flow (cflow) pointcuts + Doclet attributes">Control flow (cflow) pointcuts + Doclet attributes</a>
                     </li>
                     <li>
                         <a href="#XML definition file for the examples">XML definition file for the examples</a>
@@ -47,10 +47,11 @@
 
         <section name="Introduction">
             <p>
-                Here are some simple examples to get you going. All examples
+                Here are some simple examples to get you going with the Model 1 - XML centric approach.
+                All examples
                 together with ready to execute tests are to be found in the
                 source distribution under <code>src/samples/examples/xmldef</code>. They are
-                all defined using the same definition file;
+                all defined using the same definition file
                 <code>samples-xmldef.xml</code>
             </p>
             <p>
@@ -59,7 +60,7 @@
                 files to generate or merge the XML definition file before running it.
                 You can generate or merge the XML definition file from doclets in source files with the
                 provided utility <code>AttributeC</code>. See the
-                TODO section. This is done automatically in these examples.
+                <a href="definition_issues.html#Model 1 - Doclets compilation">related section</a>. This is done automatically in these examples.
             </p>
         </section>
 
@@ -78,7 +79,7 @@
                 understanding.
             </p>
             <p>
-                To run the example type: <code>maven aspectwerkz:samples:caching</code>
+                To run the example type: <code>maven aspectwerkz:xmldef:samples:caching</code>
             </p>
 <source><![CDATA[
 public class CachingAdvice extends AroundAdvice {
@@ -125,7 +126,7 @@ public class CachingAdvice extends AroundAdvice {
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:samples:asynchronous</code>
+                <code>maven aspectwerkz:xmldef:samples:asynchronous</code>
             </p>
 <source><![CDATA[
 public class AsynchronousAdvice extends AroundAdvice {
@@ -163,7 +164,7 @@ public class AsynchronousAdvice extends AroundAdvice {
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:samples:synchronization</code>
+                <code>maven aspectwerkz:xmldef:samples:synchronization</code>
             </p>
 <source><![CDATA[
 public class SynchronizationAdvice extends AroundAdvice {
@@ -185,7 +186,7 @@ public class SynchronizationAdvice extends AroundAdvice {
 }]]></source>
         </section>
 
-        <section name="Logging + runtime attributes + parameterized advices + join point controller">
+        <section name="Logging + Doclet attributes + parameterized advices + join point controller">
             <p>
                 This advice implements a simple logging service.
                 It logs the entry and exit of the methods that are picked
@@ -195,17 +196,17 @@ public class SynchronizationAdvice extends AroundAdvice {
             </p>
             <p>
                 This example is defined using
-                <a href="/documentation.html#Runtime attributes">runtime attributes</a>.
+                <a href="definition_issues.html#Model 1 - Doclets">Doclets</a>.
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:samples:logging</code>
+                <code>maven aspectwerkz:xmldef:samples:logging</code>
             </p>
             <p>
                 Here is the <code>advice</code> that does the logging. Here yoe can see
-                that I have defined it using runtime attributes (written as JavaDoc tags).
+                that I have defined it using Doclet attributes (written as JavaDoc tags).
                 I have also defined a parameter name:value tuple. This parameter can be read
-                in the advice at runtime using the <code>getParameter(..)</code> method.
+                in the advice at Doclet using the <code>getParameter(..)</code> method.
             </p>
 <source><![CDATA[
 /**
@@ -246,7 +247,7 @@ public class SynchronizationAdvice extends AroundAdvice {
 }]]></source>
             <p>
                 This is the code for the target class that wants to be logged. As we can see
-                here we have defined <a href="/documentation.html#Runtime attributes">runtime attributes</a>
+                here we have defined <a href="definition_issues.html#Model 1 - Doclets">Doclet attributes</a>
                 at each method that we want to be logged. This is done by using the
                 <code>@aspectwerkz.advice.method</code> tag and after this tag referring to the attribute
                 name of the advices that we want to be applied to this join point (method).
@@ -301,7 +302,7 @@ public class Target {
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:samples:introduction</code><br/>
+                <code>maven aspectwerkz:xmldef:samples:introduction</code><br/>
             </p>
             <p>
                 Note: if you add more than one <code>Introduction</code> to a class
@@ -397,17 +398,17 @@ public class InvocationCounterAdvice extends PreAdvice {
             </p>
         </section>
 
-        <section name="Control flow (cflow) pointcuts + runtime attributes">
+        <section name="Control flow (cflow) pointcuts + Doclet attributes">
             <p>
                 This example shows how control flow (cflow) pointcuts are implemented.
             </p>
             <p>
                 This example is defined using
-                <a href="/documentation.html#Runtime attributes">runtime attributes</a>.
+                <a href="definition_issues.html#Model 1 - Doclets">Doclet attributes</a>.
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:samples:cflow</code><br/>
+                <code>maven aspectwerkz:xmldef:samples:cflow</code><br/>
             </p>
             <p>
                 In this example we have two methods <code>step1</code> and <code>step2</code>
@@ -555,7 +556,7 @@ public class Target {
 
         <section name="Field interception - Transparent persistence of POJOs">
             <p>
-                In the <code>src/samples/transparentpersistence</code> directory
+                In the <code>src/extensions</code> directory
                 you will find an example how to implement transparent persistence
                 for POJOs.
             </p>
