@@ -23,6 +23,8 @@ import org.dom4j.io.SAXReader;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.AspectWerkz;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 
 /**
  * Parses the XML definition file using <tt>dom4j</tt>.
@@ -30,6 +32,11 @@ import org.codehaus.aspectwerkz.AspectWerkz;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class XmlDefinitionParser {
+
+    /**
+     * The current DTD public id. The matching dtd will be searched as a resource.
+     */
+    private final static String DTD_PUBLIC_ID = "-//AspectWerkz//DTD 0.8//EN";
 
     /**
      * The timestamp, holding the last time that the definition was parsed.
@@ -83,7 +90,9 @@ public class XmlDefinitionParser {
             throw new DefinitionException(definitionFile + " does not exist");
         }
         catch (DocumentException e) {
+            e.printStackTrace();
             throw new DefinitionException("XML definition file <" + definitionFile + "> has errors: " + e.getMessage());
+
         }
     }
 
@@ -193,6 +202,16 @@ public class XmlDefinitionParser {
      */
     public static Document createDocument(final URL url) throws DocumentException {
         SAXReader reader = new SAXReader();
+        EntityResolver resolver = new EntityResolver() {
+            public InputSource resolveEntity(String publicId, String systemId) {
+                if ( publicId.equals(DTD_PUBLIC_ID) ) {
+                    InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
+                    return new InputSource(in);
+                }
+                return null;
+            }
+        };
+        reader.setEntityResolver(resolver);
         return reader.read(url);
     }
 
@@ -206,6 +225,16 @@ public class XmlDefinitionParser {
      */
     public static Document createDocument(final InputStream stream) throws DocumentException {
         SAXReader reader = new SAXReader();
+        EntityResolver resolver = new EntityResolver() {
+            public InputSource resolveEntity(String publicId, String systemId) {
+                if ( publicId.equals(DTD_PUBLIC_ID) ) {
+                    InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
+                    return new InputSource(in);
+                }
+                return null;
+            }
+        };
+        reader.setEntityResolver(resolver);
         return reader.read(stream);
     }
 
