@@ -15,7 +15,7 @@ import test.WeavedTestCase;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ConstructorAdviceTest extends TestCase {
+public class ConstructorAdviceTest extends WeavedTestCase {
                                                                
     private static String s_logCall = "";
     private static String s_logExecution = "";
@@ -23,6 +23,7 @@ public class ConstructorAdviceTest extends TestCase {
     public void testCallAroundAdvice() {
         s_logCall = "";
         TestAroundAdvice test = new TestAroundAdvice(1L, new Object(), new String[]{});
+        //System.out.println(test);
         assertEquals("beforeCall init afterCall ", s_logCall);
         assertNotNull(test);
         assertTrue(test instanceof TestAroundAdvice);
@@ -67,6 +68,7 @@ public class ConstructorAdviceTest extends TestCase {
     public void testExecutionAroundAdvice() {
         s_logExecution = "";
         TestAroundAdvice test = new TestAroundAdvice(1L, new Object(), new String[]{});
+        //System.out.println(test);
         assertEquals("beforeExecution init afterExecution ", s_logExecution);
         assertNotNull(test);
         assertTrue(test instanceof TestAroundAdvice);

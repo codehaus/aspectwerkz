@@ -161,6 +161,16 @@ public class AspectDefinition {
     }
 
     /**
+     * Remove an around advice.
+     * Experimental
+     *
+     * @param adviceMetaData the around advice
+     */
+    public void removeAroundAdvice(final AdviceDefinition adviceMetaData) {
+        m_aroundAdvices.remove(adviceMetaData);
+    }
+
+    /**
      * Returns the around advices.
      *
      * @return the around advices

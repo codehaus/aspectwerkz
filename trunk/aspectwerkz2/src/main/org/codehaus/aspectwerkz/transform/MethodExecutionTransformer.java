@@ -39,6 +39,12 @@ import gnu.trove.TObjectIntHashMap;
  */
 public class MethodExecutionTransformer implements Transformer {
 
+    //TODO refactor in type pattern
+    public final static int STATUS_SKIP = 1;
+    public final static int STATUS_HASNOPOINTCUT = 2;
+    public final static int STATUS_HASPOINTCUT = 3;
+
+
     /**
      * List with the definitions.
      */
@@ -82,9 +88,8 @@ public class MethodExecutionTransformer implements Transformer {
             final List sortedMethods = Arrays.asList(methods);
             Collections.sort(sortedMethods, JavassistMethodComparator.getInstance());
 
-            // In the same step, build the method lookup list (advised methods)
             final TObjectIntHashMap methodSequences = new TObjectIntHashMap();
-            final List methodLookupList = new ArrayList();
+            final List sorteMethodTuples = new ArrayList(sortedMethods.size());
             for (Iterator methodsIt = sortedMethods.iterator(); methodsIt.hasNext();) {
                 CtMethod method = (CtMethod)methodsIt.next();
                 MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(method);
@@ -97,32 +102,22 @@ public class MethodExecutionTransformer implements Transformer {
                 }
                 methodSequences.put(method.getName(), sequence);
 
-                if (methodFilter(definition, classMetaData, methodMetaData, method)) {
-                    continue;
-                }
-                methodLookupList.add(new MethodSequenceTuple(method, sequence));
+                MethodSequenceTuple tuple = new MethodSequenceTuple(method, sequence);
+                tuple.setStatus(methodFilter(definition, classMetaData, methodMetaData, method));
+                // todo filter out "skip" status
+                sorteMethodTuples.add(tuple);
             }
 
             final List wrapperMethods = new ArrayList();
             boolean isClassAdvised = false;
-            for (Iterator i = methodLookupList.iterator(); i.hasNext();) {
+            for (Iterator i = sorteMethodTuples.iterator(); i.hasNext();) {
                 MethodSequenceTuple tuple = (MethodSequenceTuple)i.next();
+                if (tuple.getStatus() != STATUS_HASPOINTCUT) {
+                    continue;
+                }
                 CtMethod method = tuple.getMethod();
 
-                isClassAdvised = true;//TODO refine
-
-//                // take care of identification of overloaded methods by inserting a sequence number
-//                if (methodSequences.containsKey(method.getName())) {
-//                    int sequence = ((Integer)methodSequences.get(method.getName())).intValue();
-//                    methodSequences.remove(method.getName());
-//                    sequence++;
-//                    methodSequences.put(method.getName(), new Integer(sequence));
-//                }
-//                else {
-//                    methodSequences.put(method.getName(), new Integer(1));
-//                }
-//
-                final int methodSequence = tuple.getSequence();//((Integer)methodSequences.get(method.getName())).intValue();
+                final int methodSequence = tuple.getSequence();
                 final int methodHash = TransformationUtil.calculateHash(method);
 
                 // there was no empty method already
@@ -131,11 +126,13 @@ public class MethodExecutionTransformer implements Transformer {
                 );
                 if (JavassistHelper.hasMethod(ctClass, prefixedMethodName)) {
                     CtMethod wrapperMethod = ctClass.getDeclaredMethod(prefixedMethodName);
-                    if (wrapperMethod.getAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE) != null) {
+                    if (JavassistHelper.isAnnotatedEmpty(wrapperMethod)) {
+                        // create the non empty wrapper to access its body
                         CtMethod nonEmptyWrapper = createWrapperMethod(ctClass, method, methodHash);
-                        wrapperMethod.setBody(nonEmptyWrapper, null);
-                        // swap wrapper and original bodies
-                        JavassistHelper.swapBodies(wrapperMethod, method);
+                        wrapperMethod.setBody(method, null);
+                        method.setBody(nonEmptyWrapper, null);
+                        JavassistHelper.setAnnotatedNotEmpty(wrapperMethod);
+                        isClassAdvised = true;
                     }
                     else {
                         // multi weaving
@@ -144,11 +141,10 @@ public class MethodExecutionTransformer implements Transformer {
                 }
                 else {
                     // new execution pointcut
-
                     CtMethod wrapperMethod = createWrapperMethod(ctClass, method, methodHash);
                     wrapperMethods.add(wrapperMethod);
-
                     addPrefixToMethod(ctClass, method, methodSequence);
+                    isClassAdvised = true;
                 }
             }
 
@@ -162,21 +158,31 @@ public class MethodExecutionTransformer implements Transformer {
             }
 
             // handles pointcut unweaving
-            //TODO optimize algorithm
-            final List unweavableMethodList = new ArrayList();
-            for (int i = 0; i < methods.length; i++) {
-                MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(methods[i]);
-                if (methodHasNoPointcut(definition, classMetaData, methodMetaData, methods[i])) {
-                    //System.out.println("FOUND NOPC " + methodMetaData.getName());
-                    // do we have a wrapper method that is NOT marked empty with attribute ?
-                    // better to crawl for proceedWithxxx caller side ?
-                    // then "where" is the original method
-                    // and given we can compute the methodSequence again (is bogus for RW i think)
-                    // thus have the wrapper method name
-                    // and swap bodies
-                    // and push empty body in wrapper method
+            // looping on the original methods is enough since we will look for method with no pc
+            // thus that have not been changed in the previous transformation steps
+            for (Iterator i = sorteMethodTuples.iterator(); i.hasNext();) {
+                MethodSequenceTuple tuple = (MethodSequenceTuple)i.next();
+                if (tuple.getStatus() != STATUS_HASNOPOINTCUT) {
+                    continue;
+                }
+                CtMethod method = tuple.getMethod();
 
-                    //unweavableMethodList.add(methods[i]);
+                final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
+                        method, tuple.getSequence(), ctClass.getName()
+                );
+                // do we have a wrapper method, which is NOT marked empty
+                if (JavassistHelper.hasMethod(ctClass, prefixedMethodName)) {
+                    CtMethod wrapperMethod = ctClass.getDeclaredMethod(prefixedMethodName);
+                    if (JavassistHelper.isAnnotatedNotEmpty(wrapperMethod)) {
+                        //System.out.println("FOUND A real  Wrapper but NO PC = " + method.getName());
+                        CtMethod emptyWrapperMethod = JavassistHelper.createEmptyWrapperMethod(
+                                ctClass, method, tuple.getSequence()
+                        );
+                        method.setBody(wrapperMethod, null);
+                        wrapperMethod.setBody(emptyWrapperMethod, null);
+                        JavassistHelper.setAnnotatedEmpty(wrapperMethod);
+                        context.markAsAdvised();
+                    }
                 }
             }
 
@@ -274,6 +280,7 @@ public class MethodExecutionTransformer implements Transformer {
         }
 
         m_joinPointIndex++;
+        JavassistHelper.setAnnotatedNotEmpty(method);
 
         return method;
     }
@@ -334,7 +341,7 @@ public class MethodExecutionTransformer implements Transformer {
      * @param method        the method to filter
      * @return boolean
      */
-    private boolean methodFilter(
+    private int methodFilter(
             final SystemDefinition definition,
             final ClassMetaData classMetaData,
             final MethodMetaData methodMetaData,
@@ -348,13 +355,13 @@ public class MethodExecutionTransformer implements Transformer {
             method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
             method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
             method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
-            return true;
+            return STATUS_SKIP;
         }
         else if (definition.hasExecutionPointcut(classMetaData, methodMetaData)) {
-            return false;
+            return STATUS_HASPOINTCUT;
         }
         else {
-            return true;
+            return STATUS_HASNOPOINTCUT;
         }
     }
 
@@ -395,6 +402,7 @@ public class MethodExecutionTransformer implements Transformer {
 class MethodSequenceTuple {
     private CtMethod m_method;
     private int m_sequence;
+    private int m_status = MethodExecutionTransformer.STATUS_SKIP;
     public MethodSequenceTuple(CtMethod method, int sequence) {
         m_method = method;
         m_sequence = sequence;
@@ -405,4 +413,11 @@ class MethodSequenceTuple {
     public int getSequence() {
         return m_sequence;
     }
+    public void setStatus(int status) {
+        m_status = status;
+    }
+    public int getStatus() {
+        return m_status;
+    }
+
 }

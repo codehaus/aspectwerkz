@@ -20,6 +20,9 @@ class MethodJoinPoint extends JoinPointBase {
 
     private final MethodSignatureImpl m_signature;
 
+    private int stackIndex = -1;
+    private Object result = null;
+
     /**
      * Creates a new join point.
      *
@@ -53,17 +56,34 @@ class MethodJoinPoint extends JoinPointBase {
      * @throws Throwable
      */
     public Object proceed() throws Throwable {
-        if (m_beforeAdviceExecutor.hasAdvices()) {
-            m_beforeAdviceExecutor.proceed(this);
-        }
+        //System.out.println("proceed() " + this + " " + stackIndex);
 
-        final Object result = m_aroundAdviceExecutor.proceed(this);
-        m_signature.setReturnValue(result);
+//        stackIndex++;
+//        try {
+//            if (stackIndex == 0) {
+//                if (m_beforeAdviceExecutor.hasAdvices()) {
+//                    m_beforeAdviceExecutor.proceed(this);
+//                }
 
-        if (m_afterAdviceExecutor.hasAdvices()) {
-            m_afterAdviceExecutor.proceed(this);
-        }
-        return result;
+
+            /*final Object */result = m_aroundAdviceExecutor.proceed(this);
+                            m_signature.setReturnValue(result);
+//        }
+//
+//         if (stackIndex == 1)
+//                if (m_afterAdviceExecutor.hasAdvices()) {
+//                    m_afterAdviceExecutor.proceed(this);
+//                }
+//        } finally {
+//            stackIndex = -1;
+//        }
+
+
+
+         return result;
+
+
+
     }
 
     /**

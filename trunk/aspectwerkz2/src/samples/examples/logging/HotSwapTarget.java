@@ -20,8 +20,11 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -58,7 +61,7 @@ public class HotSwapTarget {
     }
 
     private String toLog3(int a) {
-        System.out.println("    toLog3(int)");
+        System.out.println("      toLog3(int)");
         return "result";
     }
 
@@ -82,7 +85,12 @@ public class HotSwapTarget {
         target.getCounter();
 
         // add new pointcuts
-        addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog3(int)", "runtimePCToLog2");
+        //addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog3(int)", "runtimePCToLog3b");
+        addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog2(..)", "runtimePCToLog2");
+
+        // remove
+        removePointcutForLoggingAdvice("","runtimePCToLog3");
+
         // call HotSwap for runtime weaving
         HotSwapClient.hotswap(HotSwapTarget.class);
 
@@ -136,5 +144,33 @@ public class HotSwapTarget {
                 getAspectManager().getPointcutManager(aspectName);
         pointcutManager.addExecutionPointcut(pointcutInstance);
         pointcutInstance.addAroundAdvice(aspectName+".logMethod");
+    }
+
+    /**
+     * A damned complicated API to
+     * - alter the def so that pc is removed
+     * - alter the internal aspect repr. so that pointcut struct is released (TODO)
+     *
+     * @param pointcut
+     * @param pointcutName
+     */
+    private static void removePointcutForLoggingAdvice(String pointcut, String pointcutName) {
+        final String aspectName = "examples.logging.LoggingAspect";
+
+        SystemDefinition sysDef = DefinitionLoader.getDefinition(HotSwapTarget.class.getClassLoader(), "samples");
+        AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
+
+        List removedAdviceDefs = new ArrayList();
+        for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
+            AdviceDefinition around = (AdviceDefinition) arounds.next();
+            if (pointcutName.equals(around.getExpression().getName())) {
+                System.out.println("<removing> " + around.getName());
+                removedAdviceDefs.add(around);
+            }
+        }
+        for (Iterator arounds = removedAdviceDefs.iterator(); arounds.hasNext();) {
+            aspectDef.removeAroundAdvice((AdviceDefinition)arounds.next());
+        }
+        //TODO remove from PointcutManager as well for mem safety
     }
 }

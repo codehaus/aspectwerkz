@@ -23,6 +23,8 @@ class AroundAdviceExecutor {
      */
     private int m_currentAdviceIndex = -1;
 
+    private int m_stackIndex = -1;
+
     /**
      * The advices indexes.
      */
@@ -70,6 +72,16 @@ class AroundAdviceExecutor {
         if (!joinPoint.isInCflow()) {
             return JoinPointBase.invokeJoinPoint(joinPoint, m_joinPointType);
         }
+
+        //java.lang.System.out.println("around exe");
+        m_stackIndex++;
+        try {
+            if (m_stackIndex == 0) {
+                if (joinPoint.m_beforeAdviceExecutor.hasAdvices()) {
+                    joinPoint.m_beforeAdviceExecutor.proceed(joinPoint);
+                }
+            }
+
         Object result = null;
         if (m_currentAdviceIndex == m_adviceIndexes.length - 1) {
             m_currentAdviceIndex = -1;
@@ -91,7 +103,17 @@ class AroundAdviceExecutor {
                 m_currentAdviceIndex--;
             }
         }
+
+        if (m_stackIndex == 0) {
+            if (joinPoint.m_afterAdviceExecutor.hasAdvices()) {
+                joinPoint.m_afterAdviceExecutor.proceed(joinPoint);
+            }
+        }
+
         return result;
+        } finally {
+            m_stackIndex--;
+        }
     }
 
     /**

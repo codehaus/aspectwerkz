@@ -203,13 +203,12 @@ public class ExpressionExpression extends Expression {
      * @return
      */
     public boolean match(final ClassMetaData classMetaData) {
-        if (m_types.size() > 1) {
-            return false;
-            //throw new RuntimeException("Composed expression must be matched with an assumed type");//AVO
+        for (Iterator types = m_types.iterator(); types.hasNext();) {
+            if (match(classMetaData, (PointcutType)types.next())) {
+                return true;
+            }
         }
-        else {
-            return match(classMetaData, (PointcutType)m_types.toArray()[0]);
-        }
+        return false;
     }
 
     /**
@@ -320,7 +319,18 @@ public class ExpressionExpression extends Expression {
      */
     public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         if (m_types.size() > 1) {
-            return false;
+            if (m_types.size() == 2 && m_types.contains(PointcutType.CFLOW)) {
+                PointcutType type = null;
+                for (Iterator types = m_types.iterator(); types.hasNext();) {
+                    type = (PointcutType)types.next();
+                    if (! type.equals(PointcutType.CFLOW)) {
+                        break;
+                    }
+                }
+                return match(classMetaData, memberMetaData, type);
+            } else {
+                return false; // composite type
+            }
             //throw new RuntimeException("Composed expression must be matched with an assumed type");//AVO
         }
         else {
