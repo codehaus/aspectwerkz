@@ -53,10 +53,13 @@
                         <a href="#Loading the definition">Loading the definition</a>
                     </li>
                     <li>
-                        <a href="#Weave model compilation">Weave model compilation</a>
+                        <a href="#Validate definition">Validate definition</a>
                     </li>
                     <li>
                         <a href="#Runtime attributes">Runtime attributes</a>
+                    </li>
+                    <li>
+                        <a href="#Attribute compilation">Attribute compilation</a>
                     </li>
                     <li>
                         <a href="#Hot deployment and reconfiguration">Hot deployment and reconfiguration</a>
@@ -67,15 +70,15 @@
                     <li>
                         <a href="#Thread safety">Thread safety</a>
                     </li>
-                    <li>
-                        <a href="#Meta data for the target objects">Meta data for the target objects</a>
-                    </li>
-                    <li>
-                        <a href="#UUID for the target objects">UUID for the target objects</a>
-                    </li>
-                    <li>
-                        <a href="#Multiple weave models in one JVM">Multiple weave models in one JVM</a>
-                    </li>
+<!--                    <li>-->
+<!--                        <a href="#Meta data for the target objects">Meta data for the target objects</a>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                        <a href="#UUID for the target objects">UUID for the target objects</a>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                        <a href="#Multiple weave models in one JVM">Multiple weave models in one JVM</a>-->
+<!--                    </li>-->
                     <li>
                         <a href="#Pluggable container implementation">Pluggable container implementation</a>
                     </li>
@@ -1237,26 +1240,27 @@ String timeOut = getParameter("timeout");
                     <ul>
                         <li>
                             Starting up an application:<br/>
-                            <code>aspectwerkz [-options] &lt;mainclass&gt; [args...]</code>
+                            <code>aspectwerkz [-options] &lt;main class&gt; [args...]</code>
                         </li><br/>
                         <li>
                             Starting up an application using an executable jar file:<br/>
-                            <code>aspectwerkz [-options] -jar &lt;jarfile&gt; [args...]</code>
-                            <br/>(experimental)
+                            <code>aspectwerkz [-options] -jar &lt;jar file&gt; [args...]</code>
                         </li><br/>
                         <li>
                             Post-process all class files in a specific directory
                             (recursively):<br/>
-                            <code>aspectwerkz -offline &lt;class_path&gt; &lt;definition_file&gt; &lt;weave_model_dir&gt;</code>
+                            <code>aspectwerkz -offline &lt;definition file&gt; [-cp &lt;classpath&gt;]* &lt;classes to transform&gt;</code>
                             <p/>
-                            The class_path option is the path to the root
-                            directory of the classes you want to transform.
-                            <p/>
-                            The definition_file option is the path to the
+                            The 'definition file' option is the path to the
                             definition file.
                             <p/>
-                            The weave_model_dir option is the path to the dir
-                            containing the compiled weave model.
+                            The 'classpath' option is the classpath needed for
+                            compilation but not to be transformed (eg
+                            <code>-cp myAspects.jar;servletAPI.jar</code>)
+                            <p/>
+                            The 'classes to transform' option specifies the classes to transform.
+                            The class_path option is the path to the root
+                            directory of the classes you want to transform.
                             <p/>
                             Note: when you then are running the application
                             (without using the <code>aspectwerkz</code> command)
@@ -1305,8 +1309,8 @@ String timeOut = getParameter("timeout");
     <offlineTransformation
         aspectWerkzHome="${basedir}"
         definitionFile="${basedir}/src/samples/samples.xml"
-        classesDir="${basedir}/target/samples-classes"
-        metaDataDir="${basedir}/_metaData"/>
+        classesToTransform="${basedir}/target/samples-classes"
+        classPath="${basedir}/lib"/>
 </target>
 
 <taskdef name="offlineTransformation"
@@ -1315,19 +1319,6 @@ String timeOut = getParameter("timeout");
 ]]></source>
                 </p>
             </subsection>
-
-            <subsection name="Compile a weave model">
-                 <p>
-                     If you are using <code>Introductions</code> and/or runtime
-                     attributes then you <b>have</b> to compile a weave model for
-                     your code before executing the <code>aspectwerkz</code> tool.
-                     This weave model is then read in when the system starts up.
-                     You can compile the weave model with one of the meta-data
-                     compilers. See the
-                     <a href="#Weave model compilation">Weave model compilation</a>
-                     section for a detailed description.
-                 </p>
-             </subsection>
 
         </section>
 
@@ -1342,201 +1333,53 @@ String timeOut = getParameter("timeout");
                 <ul>
                     <li>
                         <p>
-                            If you are using either <code>Introductions</code>
-                            or runtime attributes then you have to compile
-                            a weave model for your application.
-                        </p>
-                        <p>
-                            This weave model is then read in when the system starts up.
-                            You can compile the weave model with one of the meta-data
-                            compilers. (See the
-                            <a href="#Weave model compilation">Weave model compilation</a>
-                            section for a detailed description.)
-                        </p>
-                        <p>
-                            The compiler will produce a file with the weave model
-                            called <code>weaveModel.ser</code> and you have two
-                            options of feeding this file to the system:
-                            <ul>
-                                <li>
-                                   Specify the path to the directory containing
-                                   the weave model using the: <br/>
-                                   <code>-Daspectwerkz.metadata.dir=&lt;path_to_meta_data_dir&gt;</code>
-                                   command line option.
-                                </li><br/>
-                                <li>
-                                    Put the path to the directory containing
-                                    the weave model on the class path.
-                                </li><br/>
-                            </ul>
-                            (When you are using the weave model you don't have to
-                            care about the XML definition.)
-                        </p>
-                    </li><br/>
-                    <li>
-                        <p>
-                            If you are only using <code>Advices</code> (no
-                            <code>Introductions</code> and no runtime attributes)
-                            then you don't have to compile a weave model for your
-                            application.
-                        </p>
-                        <p>
-                            You can just feed the system with the XML definition
-                            using the:<br/>
+                            Feed the system with the XML definition using the: <br/>
                             <code>-Daspectwerkz.definition.file=&lt;path_to_definition_file&gt;</code>
                             command line option.
                         </p>
+                    </li><br/>
+                    <li>
                         <p>
-                            If the this option is not specified then it the
-                            system will try to locate the definition as a resource
-                            called <code>aspectwerkz.xml</code> on the class path.
-                        </p>
-                        <p>
-                            You can of course compile the weave model anyway
-                            and feed it to the system as outlined above.
-                        </p>
-                        <p>
-                            When you are using the XML definition you don't have to
-                            care about the weave model.
-                        </p>
-                        <p>
-                            You can still validate the definition by defining the:
-                            <br/>
-                            <code>-Daspectwerkz.definition.validate=true</code> option.
-                        </p>
-                        <p>
-                            See the section called <code>Validate the definition</code>
-                            in the <a href="#Weave model compilation">Weave model compilation</a>
-                            section for details.
+                            Put the definition in a file called exactly
+                            <code>aspectwerkz.xml</code> and put it on the
+                            class path. Then the system will try to load the
+                            definition as a resource.
                         </p>
                     </li><br/>
 
                 </ul>
+            </p>
+            <p>
+                You can validate the definition at runtime by defining the:
+                <br/>
+                <code>-Daspectwerkz.definition.validate=true</code> option.
+            </p>
+            <p>
+                See the <a href="#Validate definition">Validate definition</a>
+                section for details.
             </p>
         </section>
 
-        <section name="Weave model compilation">
+        <section name="Validate definition">
             <p>
-                If you are using <code>Introductions</code> and/or runtime
-                attributes then you have to compile a weave model for your
-                code before running it. This weave model is then read in when the
-                system starts up.
+                <code>AspectWerkz</code> has a build in definition validator that can help you
+                catch errors in the XML definition as well as in the attributes at compile time.
             </p>
             <p>
-                There are two different compilers that you can use to compile the
-                weave model:
-                <ul>
-                    <li>
-                        <code>SourceFileMetaDataCompiler</code> - compiles from
-                        the source files. (The only option if you are using
-                        runtime attributes.)
-                    </li><br/>
-                    <li>
-                        <code>ClassFileMetaDataCompiler</code> - compiles from
-                        the class files or a jar file. (For example if you have your
-                        <code>Introductions</code> already compiled.)
-                    </li><br/>
-                </ul>
+                This feature is turned off by default and you can switch it on by defining the:
+                <br/>
+                <code>-Daspectwerkz.definition.validate=true</code> option.
             </p>
-            <subsection name="Validate the definition">
-                <p>
-                    <code>AspectWerkz</code> has a build in definition validator that can help you
-                    catch errors in the XML definition as well as in the attributes at compile time.
-                </p>
-                <p>
-                    This feature is turned off by default and you can switch it on by defining the:
-                    <br/>
-                    <code>-Daspectwerkz.definition.validate=true</code> option.
-                </p>
-                <p>
-                    To be able to validate when compiling with the <code>SourceFileMetaDataCompiler</code>
-                    or the <code>ClassFileMetaDataCompiler</code> you have to put all the advices
-                    and introductions on the classpath. This is needed since the definition validator
-                    checks if the classes defined actually exists.
-                </p>
-                <p>
-                    Even if you don't compile a weave model before starting up the system you can
-                    use the definition validator which will then validate the XML definition at
-                    runtime before proceeding (but it will not abort on errors).
-                </p>
-            </subsection>
-
-            <subsection name="Compile from command line">
-                <p>
-                    You can run both of these compilers from the command line.
-                    (It might be useful to run the
-                    <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)
-                </p>
-                <p>
-                    <ul>
-                        <li>
-                            <code>java [options...] org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler &lt;definitionFile&gt; &lt;srcDir&gt; &lt;metaDataDir&gt; &lt;uuidForWeaveModel&gt;</code>
-                        </li><br/>
-                        <li>
-                            <code>java [options...] org.codehaus.aspectwerkz.metadata.ClassFileMetaDataCompiler &lt;definitionFile&gt; &lt;classesDirOrJarFile&gt; &lt;metaDataDir&gt; &lt;uuidForWeaveModel&gt;</code>
-                        </li><br/>
-                    </ul>
-                    The <code>metaDataDir</code> is the directory where you want
-                    the weave model to be compiled to.
-                    <br/>
-                    The <code>uuidForWeaveModel</code> is the UUID that you want to have
-                    for your the weave model (AspectWerkz system). The UUID can be any
-                    kind of string (as long as it is unique within the JVM that your
-                    application will run in). This is an optional parameter, if you
-                    don't specify a UUID one will be generated for you.
-                </p>
-            </subsection>
-
-            <subsection name="Compile using the Ant task">
-                <p>
-                    Both of the compilers can also be executed using an
-                    <a href="http://ant.apache.org/">Ant</a> task. (It might be
-                    useful to run the
-                    <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)
-                </p>
-                <p>
-                    In order to use the Ant task you have to first define the
-                    task and then create a target that invokes the task.
-                </p>
-                <p>
-                    <b>Examples:</b>
-<source><![CDATA[
-<target name="compileWeaveModel" depends="init">
-    <compileWeaveModelFromSources
-        definitionFile="${basedir}/src/samples/sample.xml"
-        sourceDir="${basedir}/src/samples"
-        metaDataDir="${basedir}/_metaData"
-        uuid="test"/>
-</target>
-
-<taskdef name="compileWeaveModelFromSources"
-    classname="org.codehaus.aspectwerkz.task.SourceFileMetaDataCompilerTask"
-    classpath="${aspectwerkz.classpath}"/>
-]]></source>
-
-<source><![CDATA[
-<target name="compileWeaveModel" depends="init">
-    <compileWeaveModelFromClasses
-        definitionFile="${basedir}/src/samples/sample.xml"
-        repository="${basedir}/target/samples-classes"
-        metaDataDir="${basedir}/_metaData"
-        uuid="test"/>
-</target>
-
-<taskdef name="compileWeaveModelFromClasses"
-    classname="org.codehaus.aspectwerkz.task.ClassFileMetaDataCompilerTask"
-    classpath="${aspectwerkz.classpath}"/>
-]]></source>
-                    The <code>metaDataDir</code> is the directory where you want
-                    the weave model to be compiled to.
-                    <br/>
-                    The <code>uuid</code> is the UUID that you want to have for your
-                    the weave model (AspectWerkz system). The UUID can be any
-                    kind of string (as long as it is unique within the JVM that your
-                    application will run in). This is an optional parameter, if you
-                    don't specify a UUID one will be generated for you.
-                </p>
-            </subsection>
+            <p>
+                To be able to validate you have to have all the advices and introductions on
+                the classpath. This is needed since the definition validator checks if the
+                classes defined actually exists.
+            </p>
+            <p>
+                Even if you don't compile a weave model before starting up the system you can
+                use the definition validator which will then validate the XML definition at
+                runtime before proceeding (but it will not abort on errors).
+            </p>
         </section>
 
         <section name="Runtime attributes">
@@ -1554,8 +1397,8 @@ String timeOut = getParameter("timeout");
             </p>
             <p>
                 You compile you attributes using the
-                <code>SourceFileMetaDataCompiler</code>. (See the
-                <a href="#Weave model compilation">Weave model compilation</a>
+                <code>AttributeC</code> compiler. (See the
+                <a href="#Attribute compilation">Attribute compilation</a>
                 section for a detailed description on how to use the compiler.)
             </p>
             <p>
@@ -1762,124 +1605,101 @@ public Object someMethod(..) {..}
 
         </section>
 
-<!--        <section name="Persistence">-->
-<!--            <p>-->
-<!--                <code>AspectWerkz</code> supports transparent persistence of both-->
-<!--                <code>Advice</code>s and <code>Introduction</code>s. If an-->
-<!--                <code>Advice</code> or <code>Introduction</code> is marked as-->
-<!--                persistent, <code>AspectWerkz</code> will transparently persist-->
-<!--                it when one of it's fields becomes "dirty". The persistence manager-->
-<!--                implementation is pluggable, so it is possible to extend it with-->
-<!--                a custom implementation (the default implementation uses-->
-<!--                <a href="http://www.prevayler.com">Prevayler</a>).-->
-<!--            </p>-->
-<!---->
-<!--            <subsection name="Definition">-->
+        <section name="Attribute compilation">
+            <p>
+                If you are using runtime attributes then you have to compile a
+                the attributes to an XML definition. You can choose to compile a
+                standalone XML definition file or merge with an existing definition.
+            </p>
+            <p>
+                To compile the attributes you have to use the <code>AttributeC</code>
+                compiler.
+            </p>
+
+            <subsection name="Compile from command line">
+                <p>
+                    You can run the <code>AttributeC</code> from the command line.
+                    (It might be useful to run the
+                    <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)
+                </p>
+                <p>
+                    <code>java [options...] org.codehaus.aspectwerkz.metadata.AttributeC &lt;path to src dir&gt; &lt;file name&gt; -m &lt;file name to merge with&gt; -u &lt;uuid for definition&gt;</code>
+                </p>
+                <p>
+                    <ul>
+                        <li>
+                            <code>&lt;path to src dir&gt;</code> - the path to the root directory
+                            for the sources
+                        </li><br/>
+                        <li>
+                            <code>&lt;file name&gt;</code> - the name of the new XML definition
+                            file to compile the attributes to
+                        </li><br/>
+                        <li>
+                            <code>-m &lt;file name to merge with&gt;</code> - the name of the file
+                            to merge the compiled attributes with
+                        </li><br/>
+                        <li>
+                            <code>-u &lt;uuid for definition&gt;</code> - the UUID for the
+                            definition. (Is optional and if not specified one will
+                            be generated)
+                        </li>
+                    </ul>
+                </p>
+            </subsection>
+
+            <subsection name="Compile using the Ant task">
+                TODO
 <!--                <p>-->
-<!--                    To make an <code>Introduction</code> and/or <code>Advice</code>-->
-<!--                    persistable you have to mark it as persistent when defining it.-->
-<!--                    This is done by adding the <code>peristent</code> attribute and-->
-<!--                    setting the value to <code>true</code>.-->
+<!--                    Both of the compilers can also be executed using an-->
+<!--                    <a href="http://ant.apache.org/">Ant</a> task. (It might be-->
+<!--                    useful to run the-->
+<!--                    <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)-->
 <!--                </p>-->
-<!---->
 <!--                <p>-->
-<!--                    <b>XML definition</b><br/>-->
+<!--                    In order to use the Ant task you have to first define the-->
+<!--                    task and then create a target that invokes the task.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    <b>Examples:</b>-->
 <!--<source><![CDATA[-->
-<!--<introduction ... persistent="true"/>-->
+<!--<target name="compileWeaveModel" depends="init">-->
+<!--    <compileWeaveModelFromSources-->
+<!--        definitionFile="${basedir}/src/samples/sample.xml"-->
+<!--        sourceDir="${basedir}/src/samples"-->
+<!--        metaDataDir="${basedir}/_metaData"-->
+<!--        uuid="test"/>-->
+<!--</target>-->
 <!---->
-<!--<advice ... persistent="true"/>-->
+<!--<taskdef name="compileWeaveModelFromSources"-->
+<!--    classname="org.codehaus.aspectwerkz.task.SourceFileMetaDataCompilerTask"-->
+<!--    classpath="${aspectwerkz.classpath}"/>-->
 <!--]]></source>-->
-<!--            </p>-->
-<!--            </subsection>-->
 <!---->
-<!--            <subsection name="UUID">-->
-<!--                <p>-->
-<!--                    To be able to retrieve the correct <code>Advice</code>s and-->
-<!--                    <code>Introduction</code>s for a specific instance/class the-->
-<!--                    system needs a unique handle to the specific instance/class.-->
-<!--                    <code>AspectWerkz</code> solves this by adding a UUID-->
-<!--                    (Universal Unique Identifier) to all the target objects.-->
-<!--                    This is done during the transformation process.-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    The only thing that you have to do is to ensure that this UUID-->
-<!--                    is being persisted along with the target instance/class and is-->
-<!--                    read back into the instance/class (after a restart or a crash)-->
-<!--                    before use. The generated UUID is of course not available at-->
-<!--                    compile time but can be retrieved during runtime using the-->
-<!--                    <code>aspectwerkz.Identifiable</code> interface which all target-->
-<!--                    objects are transformed to implement:-->
-<!--                </p>-->
-<!--                <p>-->
 <!--<source><![CDATA[-->
-<!--String uuid = ((Identifiable)targetObject).___AW_getUuid();-->
-<!--]]></source>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    For those who needs to   access the UUID using reflection-->
-<!--                    (perhaps using some kind of mapping tool or similar), the UUID-->
-<!--                    is internally stored in a private member field with the signature-->
-<!--                    <code>private String ___uuid</code>.-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    There is a possibility for you to explicitly add the UUID to-->
-<!--                    your target classes. The target class has to implement the-->
-<!--                    <code>aspecwerkz.Identifiable</code> interface and implements-->
-<!--                    it's <code>getUuid()</code> method, then a new UUID will not be-->
-<!--                    generated but the user defined will be used. You just have to-->
-<!--                    make shure that the UUID is really unique throughout the system.-->
-<!--                    (The <code>org.codehaus.aspectwerkz.util.UuidGenerator</code> class might-->
-<!--                    come in handy here.)-->
-<!--                </p>-->
-<!--            </subsection>-->
+<!--<target name="compileWeaveModel" depends="init">-->
+<!--    <compileWeaveModelFromClasses-->
+<!--        definitionFile="${basedir}/src/samples/sample.xml"-->
+<!--        repository="${basedir}/target/samples-classes"-->
+<!--        metaDataDir="${basedir}/_metaData"-->
+<!--        uuid="test"/>-->
+<!--</target>-->
 <!---->
-<!--            <subsection name="Prevayler">-->
-<!--                <p>-->
-<!--                    The default implemententation of the <code>PersistenceManager</code>-->
-<!--                    uses <a href="http://www.prevayler.org">Prevayler</a> as backend.-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <b>Log directory</b>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    The default transaction log directory is-->
-<!--                    <code>./txLogs</code>. To choose another one-->
-<!--                    you have to specify the-->
-<!--                    <code>-Daspectwerkz.persistence.txLogDir=&lt;my_log_dir&gt;</code>-->
-<!--                    option when starting up the system.-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <b>ClockActor daemon</b>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    A prevalent system is totally dependent on that the "time"-->
-<!--                    is in synch throughout the system. (For more information about-->
-<!--                    this see the <a href="http://www.prevayler.org">Prevayler</a>-->
-<!--                    home page.) To ensure that the system starts up a ClockActor-->
-<!--                    daemon thread. This thread takes care of advancing the time-->
-<!--                    in the system.-->
+<!--<taskdef name="compileWeaveModelFromClasses"-->
+<!--    classname="org.codehaus.aspectwerkz.task.ClassFileMetaDataCompilerTask"-->
+<!--    classpath="${aspectwerkz.classpath}"/>-->
+<!--]]></source>-->
+<!--                    The <code>metaDataDir</code> is the directory where you want-->
+<!--                    the weave model to be compiled to.-->
 <!--                    <br/>-->
-<!--                    This thread is by default turned off but if you want to run-->
-<!--                    it you have to specify the-->
-<!--                    <code>-Daspectwerkz.persistence.clockactor.thread=true</code>-->
-<!--                    option when starting up the system.-->
-<!--               </p>-->
-<!--                <p>-->
-<!--                    <b>Snapshot settings</b>-->
+<!--                    The <code>uuid</code> is the UUID that you want to have for your-->
+<!--                    the weave model (AspectWerkz system). The UUID can be any-->
+<!--                    kind of string (as long as it is unique within the JVM that your-->
+<!--                    application will run in). This is an optional parameter, if you-->
+<!--                    don't specify a UUID one will be generated for you.-->
 <!--                </p>-->
-<!--                <p>-->
-<!--                    The <code>PersistenceManager</code> starts up a thread that-->
-<!--                    takes snapshots of the whole system at regular intervals.-->
-<!--                    The default settings are one snapshot every night at 03:00.-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    If you prefer not running the snapshot scheduler daemon you-->
-<!--                    can specify the-->
-<!--                    <code>-Daspectwerkz.persistence.snapshot.thread=false</code>-->
-<!--                    option when starting up the system.-->
-<!--                </p>-->
-<!--            </subsection>-->
-<!--        </section>-->
+            </subsection>
+        </section>
 
         <section name="Hot deployment and reconfiguration">
             <p>
@@ -2046,136 +1866,136 @@ public Object execute(final JoinPoint joinPoint) throws Throwable {
             </p>
         </section>
 
-        <section name="Meta data for the target objects">
-            <p>
-                Internally <code>AspectWerkz</code> makes use of instance and
-                class meta-data when handling different concerns. During the
-                transformation process it adds capabilities for storing
-                meta-data directly in the target objects. These possibilites
-                could of course also be used by the user of the framework.
-            </p>
-            <p>
-                To use the meta-data facilities you just have to cast the target
-                object to the <code>org.codehaus.aspectwerkz.MetaDataEnhanceable</code>
-                interface and invoke it's <code>___AW_addMetaData</code> and
-                <code>___AW_getMetaData</code> methods.
-            </p>
-            <p>
-                The meta-data can be any kind of object (not just strings).
-            </p>
-            <p>
-                <b>Example:</b><br/>
-<source><![CDATA[
-((MetaDataEnhanceable)targetObject).___AW_addMetaData(someKey, someValue);
+<!--        <section name="Meta data for the target objects">-->
+<!--            <p>-->
+<!--                Internally <code>AspectWerkz</code> makes use of instance and-->
+<!--                class meta-data when handling different concerns. During the-->
+<!--                transformation process it adds capabilities for storing-->
+<!--                meta-data directly in the target objects. These possibilites-->
+<!--                could of course also be used by the user of the framework.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                To use the meta-data facilities you just have to cast the target-->
+<!--                object to the <code>org.codehaus.aspectwerkz.MetaDataEnhanceable</code>-->
+<!--                interface and invoke it's <code>___AW_addMetaData</code> and-->
+<!--                <code>___AW_getMetaData</code> methods.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                The meta-data can be any kind of object (not just strings).-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                <b>Example:</b><br/>-->
+<!--<source><![CDATA[-->
+<!--((MetaDataEnhanceable)targetObject).___AW_addMetaData(someKey, someValue);-->
+<!---->
+<!--Object someValue = ((MetaDataEnhanceable)targetObject).___AW_getMetaData(someKey);-->
+<!--]]></source>-->
+<!--            </p>-->
+<!--        </section>-->
+<!---->
+<!--        <section name="UUID for the target objects">-->
+<!--            <p>-->
+<!--                In all <code>AspectWerkz</code> all target objects (meaning all objects-->
+<!--                that are transformed) gets a UUID. This is done during the transformation process.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                This UUID can be used for many purposes.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                For example:-->
+<!--                <ul>-->
+<!--                    <li>-->
+<!--                        It can be used as a reliable identifier to all the objects you are working with.-->
+<!--                    </li><br/>-->
+<!--                    <li>-->
+<!--                        It can for example in combination with the-->
+<!--                        <a href="#Pluggable container implementation">pluggable container</a>-->
+<!--                        be used to implement a persistence mechanism for the advices and-->
+<!--                        introductions. In which all advices and introduction get the UUID of-->
+<!--                        the object to which it "belongs". This UUID will then work as a handle to-->
+<!--                        the advices and introductions (see old implementation of this in the-->
+<!--                        ./sandbox folder for an idea of how this could be done).-->
+<!--                    </li><br/>-->
+<!--                    <li>-->
+<!--                        It can be used to implement lazy loading using a similar approach as-->
+<!--                        the one outlined above.-->
+<!--                    </li>-->
+<!--                </ul>-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                The generated UUID is of course not available at-->
+<!--                compile time but can be retrieved during runtime using the-->
+<!--                <code>org.codehaus.aspectwerkz.Identifiable</code> interface which all target-->
+<!--                objects are transformed to implement:-->
+<!--            </p>-->
+<!--            <p>-->
+<!--<source><![CDATA[-->
+<!--String uuid = ((Identifiable)targetObject).___AW_getUuid();-->
+<!--]]></source>-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                For those who needs to access the UUID using reflection-->
+<!--                (perhaps using some kind of mapping tool or similar), the UUID-->
+<!--                is internally stored in a private member field with the signature-->
+<!--                <code>private String ___AW_uuid</code>.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                There is a possibility for you to explicitly add the UUID to-->
+<!--                your target classes. The target class has to implement the-->
+<!--                <code>org.codehaus.aspecwerkz.Identifiable</code> interface and implements-->
+<!--                it's <code>___AW_getUuid()</code> method, then a new UUID will not be-->
+<!--                generated but the user defined will be used. You just have to-->
+<!--                make shure that the UUID is really unique throughout the system.-->
+<!--                (The <code>org.codehaus.aspectwerkz.util.UuidGenerator</code> class might-->
+<!--                come in handy here.)-->
+<!--            </p>-->
+<!--        </section>-->
 
-Object someValue = ((MetaDataEnhanceable)targetObject).___AW_getMetaData(someKey);
-]]></source>
-            </p>
-        </section>
-
-        <section name="UUID for the target objects">
-            <p>
-                In all <code>AspectWerkz</code> all target objects (meaning all objects
-                that are transformed) gets a UUID. This is done during the transformation process.
-            </p>
-            <p>
-                This UUID can be used for many purposes.
-            </p>
-            <p>
-                For example:
-                <ul>
-                    <li>
-                        It can be used as a reliable identifier to all the objects you are working with.
-                    </li><br/>
-                    <li>
-                        It can for example in combination with the
-                        <a href="#Pluggable container implementation">pluggable container</a>
-                        be used to implement a persistence mechanism for the advices and
-                        introductions. In which all advices and introduction get the UUID of
-                        the object to which it "belongs". This UUID will then work as a handle to
-                        the advices and introductions (see old implementation of this in the
-                        ./sandbox folder for an idea of how this could be done).
-                    </li><br/>
-                    <li>
-                        It can be used to implement lazy loading using a similar approach as
-                        the one outlined above.
-                    </li>
-                </ul>
-            </p>
-            <p>
-                The generated UUID is of course not available at
-                compile time but can be retrieved during runtime using the
-                <code>org.codehaus.aspectwerkz.Identifiable</code> interface which all target
-                objects are transformed to implement:
-            </p>
-            <p>
-<source><![CDATA[
-String uuid = ((Identifiable)targetObject).___AW_getUuid();
-]]></source>
-            </p>
-            <p>
-                For those who needs to access the UUID using reflection
-                (perhaps using some kind of mapping tool or similar), the UUID
-                is internally stored in a private member field with the signature
-                <code>private String ___AW_uuid</code>.
-            </p>
-            <p>
-                There is a possibility for you to explicitly add the UUID to
-                your target classes. The target class has to implement the
-                <code>org.codehaus.aspecwerkz.Identifiable</code> interface and implements
-                it's <code>___AW_getUuid()</code> method, then a new UUID will not be
-                generated but the user defined will be used. You just have to
-                make shure that the UUID is really unique throughout the system.
-                (The <code>org.codehaus.aspectwerkz.util.UuidGenerator</code> class might
-                come in handy here.)
-            </p>
-        </section>
-
-        <section name="Multiple weave models in one JVM">
-            <p>
-                <code>AspectWerkz</code> supports using multiple weave model which means
-                that you can have multiple <code>AspectWerkz</code> system instances
-                running concurrently within the same JVM. This can be very useful in
-                for example application server environments since each WAR or JAR file
-                in an application server can have its own definition and its own system
-                running.
-            </p>
-            <p>
-                This feature is based on the concept that each weave model has its own
-                UUID (Unique Universal Identifier), which is a string that must be unique
-                throughout the whole system (JVM or cluster).
-            </p>
-            <p>
-                When you are compiling the weave model you can choose to provide your
-                own UUID (see the <a href="#Weave model compilation">Weave model compilation</a>
-                section), otherwise a UUID will be generated for you. You can read the generated
-                UUID in the filename of the weave model: <code>weaveModel_&lt;theUUID&gt;.ser</code>.
-            </p>
-            <p>
-                The UUID (the generated or the custom) is needed when you need to get a reference
-                to the system, for example when doing hot deploy. Then you can retrieve the
-                system like this:
-                <br/><code>AspectWerkz system = AspectWerkz.getSystem(uuid);</code>
-            </p>
-            <p>
-                If you are not compiling a weave model but feeding the JVM with an XML definition
-                at startup, then a default UUID will be used (<code>AspectWerkz.DEFAULT_SYSTEM</code>)
-            </p>
-            <p>
-                Then you can retrieve a reference to the system using:
-                <br/><code>AspectWerkz system = AspectWerkz.getDefaultSystem();</code>
-                <br/>
-                The drawback is that you can only have one single default system running.
-            </p>
-            <p>
-                If you are using the offline transformation then it is sufficient to put the
-                pre-compiled weave model somewhere on the classpath (f.e. in the WAR/JAR).
-                But if you are using the online classloader interception mechanism then all
-                all the weave model used must be in one single directory and this directory
-                must be fed to the JVM using the <code>aspectwerkz.metadata.dir=...</code>
-                option.
-            </p>
-        </section>
+<!--        <section name="Multiple weave models in one JVM">-->
+<!--            <p>-->
+<!--                <code>AspectWerkz</code> supports using multiple weave model which means-->
+<!--                that you can have multiple <code>AspectWerkz</code> system instances-->
+<!--                running concurrently within the same JVM. This can be very useful in-->
+<!--                for example application server environments since each WAR or JAR file-->
+<!--                in an application server can have its own definition and its own system-->
+<!--                running.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                This feature is based on the concept that each weave model has its own-->
+<!--                UUID (Unique Universal Identifier), which is a string that must be unique-->
+<!--                throughout the whole system (JVM or cluster).-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                When you are compiling the weave model you can choose to provide your-->
+<!--                own UUID (see the <a href="#Weave model compilation">Weave model compilation</a>-->
+<!--                section), otherwise a UUID will be generated for you. You can read the generated-->
+<!--                UUID in the filename of the weave model: <code>weaveModel_&lt;theUUID&gt;.ser</code>.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                The UUID (the generated or the custom) is needed when you need to get a reference-->
+<!--                to the system, for example when doing hot deploy. Then you can retrieve the-->
+<!--                system like this:-->
+<!--                <br/><code>AspectWerkz system = AspectWerkz.getSystem(uuid);</code>-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                If you are not compiling a weave model but feeding the JVM with an XML definition-->
+<!--                at startup, then a default UUID will be used (<code>AspectWerkz.DEFAULT_SYSTEM</code>)-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                Then you can retrieve a reference to the system using:-->
+<!--                <br/><code>AspectWerkz system = AspectWerkz.getDefaultSystem();</code>-->
+<!--                <br/>-->
+<!--                The drawback is that you can only have one single default system running.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                If you are using the offline transformation then it is sufficient to put the-->
+<!--                pre-compiled weave model somewhere on the classpath (f.e. in the WAR/JAR).-->
+<!--                But if you are using the online classloader interception mechanism then all-->
+<!--                all the weave model used must be in one single directory and this directory-->
+<!--                must be fed to the JVM using the <code>aspectwerkz.metadata.dir=...</code>-->
+<!--                option.-->
+<!--            </p>-->
+<!--        </section>-->
 
         <section name="Pluggable container implementation">
             <p>
@@ -2310,4 +2130,123 @@ public void someMethod() {
 
 </document>
 
+
+<!--        <section name="Persistence">-->
+<!--            <p>-->
+<!--                <code>AspectWerkz</code> supports transparent persistence of both-->
+<!--                <code>Advice</code>s and <code>Introduction</code>s. If an-->
+<!--                <code>Advice</code> or <code>Introduction</code> is marked as-->
+<!--                persistent, <code>AspectWerkz</code> will transparently persist-->
+<!--                it when one of it's fields becomes "dirty". The persistence manager-->
+<!--                implementation is pluggable, so it is possible to extend it with-->
+<!--                a custom implementation (the default implementation uses-->
+<!--                <a href="http://www.prevayler.com">Prevayler</a>).-->
+<!--            </p>-->
+<!---->
+<!--            <subsection name="Definition">-->
+<!--                <p>-->
+<!--                    To make an <code>Introduction</code> and/or <code>Advice</code>-->
+<!--                    persistable you have to mark it as persistent when defining it.-->
+<!--                    This is done by adding the <code>peristent</code> attribute and-->
+<!--                    setting the value to <code>true</code>.-->
+<!--                </p>-->
+<!---->
+<!--                <p>-->
+<!--                    <b>XML definition</b><br/>-->
+<!--<source><![CDATA[-->
+<!--<introduction ... persistent="true"/>-->
+<!---->
+<!--<advice ... persistent="true"/>-->
+<!--]]></source>-->
+<!--            </p>-->
+<!--            </subsection>-->
+<!---->
+<!--            <subsection name="UUID">-->
+<!--                <p>-->
+<!--                    To be able to retrieve the correct <code>Advice</code>s and-->
+<!--                    <code>Introduction</code>s for a specific instance/class the-->
+<!--                    system needs a unique handle to the specific instance/class.-->
+<!--                    <code>AspectWerkz</code> solves this by adding a UUID-->
+<!--                    (Universal Unique Identifier) to all the target objects.-->
+<!--                    This is done during the transformation process.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    The only thing that you have to do is to ensure that this UUID-->
+<!--                    is being persisted along with the target instance/class and is-->
+<!--                    read back into the instance/class (after a restart or a crash)-->
+<!--                    before use. The generated UUID is of course not available at-->
+<!--                    compile time but can be retrieved during runtime using the-->
+<!--                    <code>aspectwerkz.Identifiable</code> interface which all target-->
+<!--                    objects are transformed to implement:-->
+<!--                </p>-->
+<!--                <p>-->
+<!--<source><![CDATA[-->
+<!--String uuid = ((Identifiable)targetObject).___AW_getUuid();-->
+<!--]]></source>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    For those who needs to   access the UUID using reflection-->
+<!--                    (perhaps using some kind of mapping tool or similar), the UUID-->
+<!--                    is internally stored in a private member field with the signature-->
+<!--                    <code>private String ___uuid</code>.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    There is a possibility for you to explicitly add the UUID to-->
+<!--                    your target classes. The target class has to implement the-->
+<!--                    <code>aspecwerkz.Identifiable</code> interface and implements-->
+<!--                    it's <code>getUuid()</code> method, then a new UUID will not be-->
+<!--                    generated but the user defined will be used. You just have to-->
+<!--                    make shure that the UUID is really unique throughout the system.-->
+<!--                    (The <code>org.codehaus.aspectwerkz.util.UuidGenerator</code> class might-->
+<!--                    come in handy here.)-->
+<!--                </p>-->
+<!--            </subsection>-->
+<!---->
+<!--            <subsection name="Prevayler">-->
+<!--                <p>-->
+<!--                    The default implemententation of the <code>PersistenceManager</code>-->
+<!--                    uses <a href="http://www.prevayler.org">Prevayler</a> as backend.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    <b>Log directory</b>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    The default transaction log directory is-->
+<!--                    <code>./txLogs</code>. To choose another one-->
+<!--                    you have to specify the-->
+<!--                    <code>-Daspectwerkz.persistence.txLogDir=&lt;my_log_dir&gt;</code>-->
+<!--                    option when starting up the system.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    <b>ClockActor daemon</b>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    A prevalent system is totally dependent on that the "time"-->
+<!--                    is in synch throughout the system. (For more information about-->
+<!--                    this see the <a href="http://www.prevayler.org">Prevayler</a>-->
+<!--                    home page.) To ensure that the system starts up a ClockActor-->
+<!--                    daemon thread. This thread takes care of advancing the time-->
+<!--                    in the system.-->
+<!--                    <br/>-->
+<!--                    This thread is by default turned off but if you want to run-->
+<!--                    it you have to specify the-->
+<!--                    <code>-Daspectwerkz.persistence.clockactor.thread=true</code>-->
+<!--                    option when starting up the system.-->
+<!--               </p>-->
+<!--                <p>-->
+<!--                    <b>Snapshot settings</b>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    The <code>PersistenceManager</code> starts up a thread that-->
+<!--                    takes snapshots of the whole system at regular intervals.-->
+<!--                    The default settings are one snapshot every night at 03:00.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    If you prefer not running the snapshot scheduler daemon you-->
+<!--                    can specify the-->
+<!--                    <code>-Daspectwerkz.persistence.snapshot.thread=false</code>-->
+<!--                    option when starting up the system.-->
+<!--                </p>-->
+<!--            </subsection>-->
+<!--        </section>-->
 

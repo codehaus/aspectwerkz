@@ -282,33 +282,36 @@ public final class TransformationUtil {
 
             // interfaces.
             JavaClass[] interfaces = klass.getInterfaces();
-            String[] interfaceNames = new String[interfaces.length];
-            for (int i = 0; i < interfaces.length; i++) {
-                interfaceNames[i] = interfaces[i].getClassName();
+            if (interfaces != null) {
+                String[] interfaceNames = new String[interfaces.length];
+                for (int i = 0; i < interfaces.length; i++) {
+                    interfaceNames[i] = interfaces[i].getClassName();
+                }
+                Arrays.sort(interfaceNames);
+                for (int i = 0; i < interfaces.length; i++) {
+                    out.writeUTF(interfaceNames[i]);
+                }
             }
-            Arrays.sort(interfaceNames);
-            for (int i = 0; i < interfaces.length; i++) {
-                out.writeUTF(interfaceNames[i]);
-            }
-
             // fields.
             Field[] fields = klass.getFields();
-            Arrays.sort(fields, new Comparator() {
-                public int compare(Object o1, Object o2) {
-                    Field field1 = (Field)o1;
-                    Field field2 = (Field)o2;
-                    return field1.getName().compareTo(field2.getName());
-                }
-            });
-            for (int i = 0; i < fields.length; i++) {
-                Field field = fields[i];
-                int mods = field.getModifiers();
-                if (((mods & Constants.ACC_PRIVATE) == 0) ||
-                        ((mods & (Constants.ACC_STATIC |
-                        Constants.ACC_TRANSIENT)) == 0)) {
-                    out.writeUTF(field.getName());
-                    out.writeInt(mods);
-                    out.writeUTF(field.getSignature());
+            if (fields != null) {
+                Arrays.sort(fields, new Comparator() {
+                    public int compare(Object o1, Object o2) {
+                        Field field1 = (Field)o1;
+                        Field field2 = (Field)o2;
+                        return field1.getName().compareTo(field2.getName());
+                    }
+                });
+                for (int i = 0; i < fields.length; i++) {
+                    Field field = fields[i];
+                    int mods = field.getModifiers();
+                    if (((mods & Constants.ACC_PRIVATE) == 0) ||
+                            ((mods & (Constants.ACC_STATIC |
+                            Constants.ACC_TRANSIENT)) == 0)) {
+                        out.writeUTF(field.getName());
+                        out.writeInt(mods);
+                        out.writeUTF(field.getSignature());
+                    }
                 }
             }
 
@@ -316,19 +319,21 @@ public final class TransformationUtil {
             // static intializer in different lists
             List constructorList = new ArrayList();
             List regularMethodList = new ArrayList();
-            for (int i = 0; i < methods.length; i++) {
-                Method method = methods[i];
-                if (method.getName().equals("<clinit>")) {
-                    // handle static intiailization.
-                    out.writeUTF("<clinit>");
-                    out.writeInt(Constants.ACC_STATIC);
-                    out.writeUTF("()V");
-                }
-                else if (method.getName().equals("<init>")) {
-                    constructorList.add(method);
-                }
-                else {
-                    regularMethodList.add(method);
+            if (methods != null) {
+                for (int i = 0; i < methods.length; i++) {
+                    Method method = methods[i];
+                    if (method.getName().equals("<clinit>")) {
+                        // handle static intiailization.
+                        out.writeUTF("<clinit>");
+                        out.writeInt(Constants.ACC_STATIC);
+                        out.writeUTF("()V");
+                    }
+                    else if (method.getName().equals("<init>")) {
+                        constructorList.add(method);
+                    }
+                    else {
+                        regularMethodList.add(method);
+                    }
                 }
             }
 
@@ -452,7 +457,7 @@ public final class TransformationUtil {
         AspectWerkzPreProcessor.log("adding interface to " + cg.getClassName() + ": " + interf);
 
         //@todo: check for readonly class ??
-        if ( ! Arrays.asList(cg.getInterfaceNames()).contains(interf)) {
+        if (!Arrays.asList(cg.getInterfaceNames()).contains(interf)) {
             cg.addInterface(interf);
         }
     }
@@ -486,7 +491,7 @@ public final class TransformationUtil {
         AspectWerkzPreProcessor.log("adding field to " + cg.getClassName() + ": " + field.toString());
 
         //@todo: check for read only ??
-        if ( ! cg.containsField(field)) {
+        if (!cg.containsField(field)) {
             cg.addField(field);
         }
     }

@@ -74,7 +74,8 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
             return;
         }
 
-        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+        ClassMetaData classMetaData = BcelMetaDataMaker.
+                createClassMetaData(context.getJavaClass(cg));
 
         final Method[] methods = cg.getMethods();
 

@@ -178,7 +178,7 @@ public class AttributeC {
      */
     public static void writeDocumentToFile(final Document document, final String fileName) {
         try {
-            // write to a file
+            // write the document to file
             OutputFormat format = OutputFormat.createPrettyPrint();
             XMLWriter writer = new XMLWriter(new FileWriter(fileName), format);
             writer.write(document);
