@@ -49,7 +49,7 @@ public abstract class AbstractLoggingAspect {
     /**
      * @Before logSet
      */
-    public void logEntry(final JoinPoint joinPoint, int a, String s) throws Throwable {
+    public void logEntry(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println("ENTER: "
             + joinPoint.getTargetClass().getName()
