@@ -258,10 +258,12 @@ public class JoinPointManager {
         if (parameters != null) {
             ((CodeRtti)joinPoint.getRtti()).setParameterValues(parameters);
         }
-        exitCflow(joinPointInfo);
-        final Object result = joinPoint.proceed();
         enterCflow(joinPointInfo);
-        return result;
+        try {
+            return joinPoint.proceed();
+        } finally {
+            exitCflow(joinPointInfo);
+        }
     }
 
     /**
@@ -358,10 +360,12 @@ public class JoinPointManager {
         if (parameters != null) {
             ((CodeRtti)joinPoint.getRtti()).setParameterValues(parameters);
         }
-        exitCflow(joinPointInfo);
-        final Object result = joinPoint.proceed();
         enterCflow(joinPointInfo);
-        return result;
+        try {
+            return joinPoint.proceed();
+        } finally {
+            exitCflow(joinPointInfo);
+        }
     }
 
     /**
@@ -434,9 +438,12 @@ public class JoinPointManager {
         if (fieldValue[0] != null) {
             ((FieldRtti)joinPoint.getRtti()).setFieldValue(fieldValue[0]); // array due to sucky javassist field handling
         }
-        exitCflow(joinPointInfo);
-        joinPoint.proceed();
         enterCflow(joinPointInfo);
+        try {
+            joinPoint.proceed();
+        } finally {
+            exitCflow(joinPointInfo);
+        }
     }
 
     /**
@@ -505,10 +512,12 @@ public class JoinPointManager {
 
         // intialize the join point before each usage
         joinPoint.setTargetInstance(targetInstance);
-        exitCflow(joinPointInfo);
-        final Object result = joinPoint.proceed();
         enterCflow(joinPointInfo);
-        return result;
+        try {
+            return joinPoint.proceed();
+        } finally {
+            exitCflow(joinPointInfo);
+        }
     }
 
     /**
@@ -579,9 +588,12 @@ public class JoinPointManager {
         // intialize the join point before each usage
         joinPoint.setTargetInstance(targetInstance);
         ((CatchClauseRtti)joinPoint.getRtti()).setParameterValue(exceptionInstance);
-        exitCflow(joinPointInfo);
-        joinPoint.proceed();
         enterCflow(joinPointInfo);
+        try {
+            joinPoint.proceed();
+        } finally {
+            exitCflow(joinPointInfo);
+        }
     }
 
     /**
@@ -872,7 +884,7 @@ public class JoinPointManager {
      * @param joinPointInfo
      */
     private void enterCflow(final JoinPointInfo joinPointInfo) throws Throwable {
-        IndexTuple enter = joinPointInfo.exitCflow;
+        IndexTuple enter = joinPointInfo.enterCflow;
         if (enter != null) {
             enter.getAspectManager().getAspectContainer(enter.getAspectIndex()).invokeAdvice(enter.getMethodIndex(),
                                                                                              joinPointInfo.joinPoint);
@@ -885,7 +897,7 @@ public class JoinPointManager {
      * @param joinPointInfo
      */
     private void exitCflow(final JoinPointInfo joinPointInfo) throws Throwable {
-        IndexTuple exit = joinPointInfo.enterCflow;
+        IndexTuple exit = joinPointInfo.exitCflow;
         if (exit != null) {
             exit.getAspectManager().getAspectContainer(exit.getAspectIndex()).invokeAdvice(exit.getMethodIndex(),
                                                                                            joinPointInfo.joinPoint);
