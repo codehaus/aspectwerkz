@@ -228,7 +228,7 @@
     <goal name="aspectwerkz:samples:hotswaplogging">
         <attainGoal name="aspectwerkz:samples:aspectc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-Daspectwerkz.transform.verbose=false -Daspectwerkz.jit.off=true -cp ${samples.classes} -cp ${lib.dir}/aspectwerkz-extensions-${pom.currentVersion}.jar -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.logging.HotSwapTarget"/>
+            <arg line="-Daspectwerkz.transform.verbose=false -Daspectwerkz.jit.off=true -cp ${samples.classes} -cp ${lib.dir}/aspectwerkz-extensions-${pom.currentVersion}.jar -Daspectwerkz.definition.file=${src.dir}/samples/samples-hotswap.xml -Daspectwerkz.transform.dump=* examples.logging.HotSwapTarget"/>
         </exec>
     </goal>
     <goal name="aa">
