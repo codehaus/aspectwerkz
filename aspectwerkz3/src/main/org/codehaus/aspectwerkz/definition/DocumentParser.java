@@ -302,8 +302,6 @@ public class DocumentParser {
     private static Class loadAspectClass(final ClassLoader loader, final String aspectClassName) {
         Class aspectClass;
         try {
-            System.out.println("loader = " + loader);
-            System.out.println("aspectClassName = " + aspectClassName);
             aspectClass = loader.loadClass(aspectClassName);
         } catch (Exception e) {
             e.printStackTrace();
