@@ -6,7 +6,7 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberMethodAdviceTest.java,v 1.4 2003-07-04 08:45:27 jboner Exp $
+ * @version $Id: MemberMethodAdviceTest.java,v 1.4.2.1 2003-07-20 10:38:38 avasseur Exp $
  */
 public class MemberMethodAdviceTest extends TestCase implements Loggable {
 
@@ -183,6 +183,11 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
                 variousParams2(2.3F, 1, "dummy", this, 34L, "test"));
     }
 
+    public void testVariousArguments4() {
+        assertEquals("dummy", takesArrayAsArgument(new String[]{"dummy", "test"})[0]);
+        assertEquals("test", takesArrayAsArgument(new String[]{"dummy", "test"})[1]);
+    }
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
@@ -328,6 +333,10 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
 
     public float variousParams3(String s, long y, String t, String r, String e, int w, String q) {
         return 2.5F;
+    }
+
+    public static String[] takesArrayAsArgument(String[] arr) {
+        return arr;
     }
 
     public void getVoid() throws RuntimeException {
