@@ -56,6 +56,39 @@ public class CflowBelowTest extends TestCase {
         }
     }
 
+    public void testWithincodeAndCflowRuntimeTestOnEnclosingJP() {
+        s_inAspectCount = 0;
+        startCflowWithinCode();
+        assertEquals(1, s_inAspectCount);
+
+        s_inAspectCount = 0;
+        startCflowNotWithinCode();
+        assertEquals(0, s_inAspectCount);
+    }
+
+    public void startCflowWithinCode() {
+        withinCode();
+    }
+
+    public void startCflowNotWithinCode() {
+        notWithinCode();
+    }
+
+    public void withinCode() {
+        targetCall();// call of this method advised by withincode && cflow
+    }
+
+    public void notWithinCode() {
+        targetCall();// call of this method advised by withincode && cflow but don't match
+    }
+
+    public void targetCall() {
+        ;
+    }
+
+
+    //--- JUnit
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
@@ -86,5 +119,20 @@ public class CflowBelowTest extends TestCase {
         public void beforeCflowBelow() {
             s_inAspectCount++;
         }
+
+        @Before("call(* test.CflowBelowTest.targetCall())" +
+                " && withincode(* test.CflowBelowTest.withinCode())" +
+                " && cflow(execution(* test.CflowBelowTest.startCflowWithinCode()))")
+        public void withinCodeAndCflow() {
+            s_inAspectCount++;
+        }
+
+        @Before("call(* test.CflowBelowTest.targetCall())" +
+                " && withincode(* test.CflowBelowTest.withinCode())" +
+                " && cflow(execution(* test.CflowBelowTest.startCflowNotWithinCode()))")
+        public void notWithinCodeAndCflow() {
+            s_inAspectCount++;
+        }
+
     }
 }
