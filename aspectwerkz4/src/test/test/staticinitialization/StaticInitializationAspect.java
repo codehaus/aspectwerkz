@@ -26,12 +26,12 @@ public class StaticInitializationAspect {
 	Pointcut staticInitialization;
 	
 	/**
-	 * @Expression staticinitialization(@StaticInitializationService)
+	 * @Expression staticinitialization(@test.staticinitialization.StaticInitializationService)
 	 */
 	Pointcut staticServiceInitialization;
 	
 	/**
-	 * @Expression staticinitialization(@StaticInitializationService test.staticinitialization.*)
+	 * @Expression staticinitialization(@test.staticinitialization.StaticInitializationService test.staticinitialization.*)
 	 */
 	Pointcut staticPatternInitialization;
 	

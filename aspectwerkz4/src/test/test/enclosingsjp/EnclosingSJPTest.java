@@ -104,7 +104,7 @@ public class EnclosingSJPTest extends TestCase {
 		      s_enclosingStaticJPList);
 		
 		Constructor ctor = et.getClass().getConstructor(new Class[] {int.class});
-		Method		meth = getClass().getMethod("testHandlerEnclosing", null);
+		Method		meth = getClass().getMethod("testHandlerEnclosing", (Class[])null);
 
 		assertTrue(
 				meth.toString(),
@@ -165,7 +165,7 @@ public class EnclosingSJPTest extends TestCase {
 		
 		Constructor ctor = et.getClass().getConstructor(new Class[] {Object.class});
 		Method setMethod = PointcutTarget.class.getMethod("setFieldValue", new Class[] {Object.class});
-		Method getMethod = PointcutTarget.class.getMethod("getFieldValue", null);
+		Method getMethod = PointcutTarget.class.getMethod("getFieldValue", (Class[])null);
 		
 		for(int i = 0; i < 3; i++) {
 			EnclosingStaticJoinPoint esjp = (EnclosingStaticJoinPoint) s_enclosingStaticJPList.get(i);

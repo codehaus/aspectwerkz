@@ -237,6 +237,11 @@ public class AnnotationParserTest extends TestCase {
 		public String value();
 	}
 
+    public static interface PackagedDefaultString {
+
+        public String value();
+    }
+
 	public static interface DefaultInt {
 
 		public int value();

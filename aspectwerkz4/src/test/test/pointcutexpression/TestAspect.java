@@ -112,7 +112,7 @@ public class TestAspect {
     }
 
     /**
-     * @Around (F || G) && H
+     * @Around "(F || G) && H"
      */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
@@ -122,7 +122,7 @@ public class TestAspect {
     }
 
     /**
-     * @Around (I || J)
+     * @Around "(I || J)"
      */
     public Object advice4(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");

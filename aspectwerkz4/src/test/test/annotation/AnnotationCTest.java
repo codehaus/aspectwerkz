@@ -8,191 +8,258 @@
 package test.annotation;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.annotation.Annotations;
-import org.codehaus.aspectwerkz.annotation.UntypedAnnotation;
 
 import java.util.List;
 import java.lang.reflect.Method;
+
+import org.codehaus.backport175.reader.Annotations;
+import org.codehaus.backport175.reader.Annotation;
 
 /**
  * Note: when using untyped annotation, then the first space character(s) in the value part will be
  * resumed to only one space (untyped     type -> untyped type), due to QDox doclet handling.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @BeforeAction some untype that starts with Before
- * @BeforeAction (other   untyped)
- * @BeforeAction("yet another untyped")
- * @packaged.BeforeAction
- * @Void
- * @Void()
- * @Simple()
- * @Simple(val="foo", s="foo")
- * @DefaultString("hello")
- * @packaged.DefaultString("hello")
+ *
  * @Complex(i=3, ls={1l,2l,6L},  klass=java.lang.String.class)
- * @Untyped
- * @Untyped "hello"
- * @Untyped ("hello2")
- * @Untyped "(hello) - see the space here !"
- * @Untyped("preserved hello")
  * @ComplexNested(nesteds={@Simple(val="foo"), @Simple(val="bar")})
  */
 public class AnnotationCTest extends TestCase {
 
+    /**
+     * @BeforeAction some untype that starts with Before
+     */
+    static class A1 {}
+    /**
+     * @BeforeAction ("other   untyped")
+     */
+    static class A2 {}
+    /**
+     * @BeforeAction("yet another untyped")
+     */
+    static class A3 {}
+    /**
+     * @packaged.BeforeAction
+     */
+    static class A4 {}
+    /**
+     * @Void
+     * @Simple()
+     * @DefaultString("hello")
+     */
+    static class B1{}
+    /**
+     * @Void()
+     * @Simple(val="foo", s="bar")
+     * @packaged.DefaultString("hello")
+     */
+    static class B2{}
+    /**
+     * @Untyped
+     */
+    static class C1 {}
+    /**
+     * @Untyped "hello"
+     */
+    static class C2 {}
+    /**
+     * @Untyped ("hello2")
+     */
+    static class C3 {}
+    /**
+     * @Untyped "(hello) - see the space here !"
+     */
+    static class C4 {}
+    /**
+     * @Untyped("preserved hello")
+     */
+    static class C5 {}
+
     public void testClassAnnotation() {
-        Class me = AnnotationCTest.class;
+        // Void
+        Annotation at = Annotations.getAnnotation(AnnotationParserTest.VoidTyped.class, B1.class);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.VoidTyped);
+        at = Annotations.getAnnotation(AnnotationParserTest.VoidTyped.class, B2.class);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.VoidTyped);
 
-        List voids = Annotations.getAnnotations("Void", me);
-        assertEquals(2, voids.size());
+        // Simple
+        at = Annotations.getAnnotation(AnnotationParserTest.Simple.class, B1.class);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Simple);
+        at = Annotations.getAnnotation(AnnotationParserTest.Simple.class, B2.class);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Simple);
+        assertEquals("foo", ((AnnotationParserTest.Simple)at).val());
+        assertEquals("bar", ((AnnotationParserTest.Simple)at).s());
 
-        List simples = Annotations.getAnnotations("Simple", me);
-        assertEquals(2, simples.size());
+        // BeforeAction
+        at = Annotations.getAnnotation(BeforeAction.class, A1.class);
+        assertNotNull(at);
+        assertTrue(at instanceof BeforeAction);
+        assertEquals("some untype that starts with Before", ((BeforeAction)at).value());
+        at = Annotations.getAnnotation(BeforeAction.class, A2.class);
+        assertNotNull(at);
+        assertTrue(at instanceof BeforeAction);
+        assertEquals("other untyped", ((BeforeAction)at).value());//See space munging here... QDox issue.
+        at = Annotations.getAnnotation(BeforeAction.class, A3.class);
+        assertNotNull(at);
+        assertTrue(at instanceof BeforeAction);
+        assertEquals("yet another untyped", ((BeforeAction)at).value());
+        at = Annotations.getAnnotation(PackagedBeforeAction.class, A4.class);
+        assertNotNull(at);
+        assertTrue(at instanceof PackagedBeforeAction);
+        assertEquals(null, ((PackagedBeforeAction)at).value());
 
-        StringBuffer all = new StringBuffer();
-        for (int i = 0; i < simples.size(); i++) {
-            all.append("[").append(((AnnotationParserTest.Simple) simples.get(i)).s()).append("]");
-        }
-        String[] lookFor = new String[]{
-            "[null]",
-            "[foo]"
-        };
-        for (int i = 0; i < lookFor.length; i++) {
-            String s = lookFor[i];
-            if (all.toString().indexOf(s) < 0) {
-                fail("could not find " + lookFor[i] + " in " + all.toString());
-            }
-        }
+        // DefaultString
+        at = Annotations.getAnnotation(AnnotationParserTest.DefaultString.class, B1.class);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.DefaultString);
+        assertEquals("hello", ((AnnotationParserTest.DefaultString)at).value());
+        at = Annotations.getAnnotation(AnnotationParserTest.PackagedDefaultString.class, B2.class);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.PackagedDefaultString);
+        assertEquals("hello", ((AnnotationParserTest.PackagedDefaultString)at).value());
 
-        List beforeActions = Annotations.getAnnotations("BeforeAction", me);
-        assertEquals(3, beforeActions.size());
-        all = new StringBuffer();
-        for (int i = 0; i < beforeActions.size(); i++) {
-            all.append("[").append(((UntypedAnnotation)beforeActions.get(i)).value()).append("]");
-        }
-        lookFor = new String[]{
-            "[some untype that starts with Before]",
-            "[other untyped]",
-            "[yet another untyped]",
 
-        };
-        for (int i = 0; i < lookFor.length; i++) {
-            String s = lookFor[i];
-            if (all.toString().indexOf(s) < 0) {
-                fail("could not find " + lookFor[i] + " in " + all.toString());
-            }
-        }
+        // Complex
+        at = Annotations.getAnnotation(AnnotationParserTest.Complex.class, this.getClass());
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Complex);
+        assertEquals(String.class, ((AnnotationParserTest.Complex)at).klass());
+        assertEquals(3, ((AnnotationParserTest.Complex)at).i());
+        assertEquals(3, ((AnnotationParserTest.Complex)at).ls().length);
+        assertEquals(1l, ((AnnotationParserTest.Complex)at).ls()[0]);
+        assertEquals(2l, ((AnnotationParserTest.Complex)at).ls()[1]);
+        assertEquals(6L, ((AnnotationParserTest.Complex)at).ls()[2]);
 
-        assertEquals(
-                "hello",
-                ((AnnotationParserTest.DefaultString) Annotations.getAnnotation("DefaultString", me)).value()
-        );
-
-        assertEquals(
-                String.class, ((AnnotationParserTest.Complex) Annotations.getAnnotation("Complex", me)).klass()
-        );
-
-        List untypeds = Annotations.getAnnotations("Untyped", me);
-        assertEquals(5, untypeds.size());
-        all = new StringBuffer();
-        for (int i = 0; i < untypeds.size(); i++) {
-            all.append("[").append(((AnnotationParserTest.Untyped) untypeds.get(i)).value()).append("]");
-        }
-        lookFor = new String[]{
-            "[]",
-            "[hello]",
-            "[(hello) - see the space here !]",
-            "[hello2]",
-            "[preserved hello]"
-        };
-        for (int i = 0; i < lookFor.length; i++) {
-            String s = lookFor[i];
-            if (all.toString().indexOf(s) < 0) {
-                fail("could not find " + lookFor[i] + " in " + all.toString());
-            }
-        }
+        // Untyped
+        at = Annotations.getAnnotation(AnnotationParserTest.Untyped.class, C1.class);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Untyped);
+        assertEquals("", ((AnnotationParserTest.Untyped)at).value());
+        at = Annotations.getAnnotation(AnnotationParserTest.Untyped.class, C3.class);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Untyped);
+        assertEquals("hello", ((AnnotationParserTest.Untyped)at).value());
+        at = Annotations.getAnnotation(AnnotationParserTest.Untyped.class, C3.class);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Untyped);
+        assertEquals("hello2", ((AnnotationParserTest.Untyped)at).value());
+        at = Annotations.getAnnotation(AnnotationParserTest.Untyped.class, C4.class);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Untyped);
+        assertEquals("(hello) - see the space here !", ((AnnotationParserTest.Untyped)at).value());
+        at = Annotations.getAnnotation(AnnotationParserTest.Untyped.class, C5.class);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Untyped);
+        assertEquals("preserved hello", ((AnnotationParserTest.Untyped)at).value());
     }
 
     /**
      * @Void
-     * @Void()
      * @Simple()
-     * @Simple(val="foo", s="foo")
      * @DefaultString("hello")
      * @Complex(i=3, ls={1l,2l,6L},  klass=java.lang.String.class)
+     */
+    void mA1() {}
+    /**
+     * @Void()
+     * @Simple(val="foo", s="bar")
+     */
+    void mA2() {}
+    /**
      * @Untyped
+     */
+    void mB1() {}
+    /**
      * @Untyped "hello"
+     */
+    void mB2() {}
+    /**
      * @Untyped "hello"
+     */
+    void mB3() {}
+    /**
      * @Untyped "(hello) - see the space here !"
      */
+    void mB4() {}
+
     public void testMethodAnnotation() throws Throwable {
         Class me = test.annotation.AnnotationCTest.class;
-        Method m = me.getDeclaredMethod("testMethodAnnotation", new Class[0]);
+        Method mA1 = me.getDeclaredMethod("mA1", new Class[0]);
+        Method mA2 = me.getDeclaredMethod("mA2", new Class[0]);
+        Method mB1 = me.getDeclaredMethod("mB1", new Class[0]);
+        Method mB2 = me.getDeclaredMethod("mB2", new Class[0]);
+        Method mB3 = me.getDeclaredMethod("mB3", new Class[0]);
+        Method mB4 = me.getDeclaredMethod("mB4", new Class[0]);
 
-        //QDOX bug..
-//        * @Around execution(* test.customproceed.CustomProceedTest.setInt(int)) && args(i)
-//        *
-//        * @Around("execution(* test.customproceed.CustomProceedTest.setInt(int)) && args(i)")
-//        List around = Annotations.getAnnotations(Around.class, m);
-//        assertEquals(2, around.size());
-//        assertEquals(((Around)around.get(0)).value(), "execution(* test.customproceed.CustomProceedTest.setInt(int)) && args(i)");
-//        assertEquals(((Around)around.get(1)).value(), "execution(* test.customproceed.CustomProceedTest.setInt(int)) && args(i)");
+        // Void
+        Annotation at = Annotations.getAnnotation(AnnotationParserTest.VoidTyped.class, mA1);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.VoidTyped);
+        at = Annotations.getAnnotation(AnnotationParserTest.VoidTyped.class, mA2);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.VoidTyped);
 
+        // Simple
+        at = Annotations.getAnnotation(AnnotationParserTest.Simple.class, mA1);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Simple);
+        at = Annotations.getAnnotation(AnnotationParserTest.Simple.class, mA2);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Simple);
+        assertEquals("foo", ((AnnotationParserTest.Simple)at).val());
+        assertEquals("bar", ((AnnotationParserTest.Simple)at).s());
 
-        List voids = Annotations.getAnnotations("Void", me);
-        assertEquals(2, voids.size());
+        // DefaultString
+        at = Annotations.getAnnotation(AnnotationParserTest.DefaultString.class, mA1);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.DefaultString);
+        assertEquals("hello", ((AnnotationParserTest.DefaultString)at).value());
 
-        List simples = Annotations.getAnnotations("Simple", me);
-        assertEquals(2, simples.size());
-        StringBuffer all = new StringBuffer();
-        for (int i = 0; i < simples.size(); i++) {
-            all.append("[").append(((AnnotationParserTest.Simple) simples.get(i)).s()).append("]");
-        }
-        String[] lookFor = new String[]{
-            "[null]",
-            "[foo]"
-        };
-        for (int i = 0; i < lookFor.length; i++) {
-            String s = lookFor[i];
-            if (all.toString().indexOf(s) < 0) {
-                fail("could not find " + lookFor[i] + " in " + all.toString());
-            }
-        }
+        // Complex
+        at = Annotations.getAnnotation(AnnotationParserTest.Complex.class, mA1);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Complex);
+        assertEquals(String.class, ((AnnotationParserTest.Complex)at).klass());
+        assertEquals(3, ((AnnotationParserTest.Complex)at).i());
+        assertEquals(3, ((AnnotationParserTest.Complex)at).ls().length);
+        assertEquals(1l, ((AnnotationParserTest.Complex)at).ls()[0]);
+        assertEquals(2l, ((AnnotationParserTest.Complex)at).ls()[1]);
+        assertEquals(6L, ((AnnotationParserTest.Complex)at).ls()[2]);
 
-        assertEquals(
-                "hello",
-                ((AnnotationParserTest.DefaultString) Annotations.getAnnotation("DefaultString", me)).value()
-        );
-
-        assertEquals(
-                String.class, ((AnnotationParserTest.Complex) Annotations.getAnnotation("Complex", me)).klass()
-        );
-
-        List untypeds = Annotations.getAnnotations("Untyped", m);
-        assertEquals(4, untypeds.size());
-        all = new StringBuffer();
-        for (int i = 0; i < untypeds.size(); i++) {
-            all.append("[").append(((AnnotationParserTest.Untyped) untypeds.get(i)).value()).append("]");
-        }
-        lookFor = new String[]{
-            "[]",
-            "[hello]",
-            "[(hello) - see the space here !]"
-        };
-        for (int i = 0; i < lookFor.length; i++) {
-            String s = lookFor[i];
-            if (all.toString().indexOf(s) < 0) {
-                fail("could not find " + lookFor[i] + " in " + all.toString());
-            }
-        }
+        // Untyped
+        at = Annotations.getAnnotation(AnnotationParserTest.Untyped.class, mB1);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Untyped);
+        assertEquals(null, ((AnnotationParserTest.Untyped)at).value());
+        at = Annotations.getAnnotation(AnnotationParserTest.Untyped.class, mB2);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Untyped);
+        assertEquals("hello", ((AnnotationParserTest.Untyped)at).value());
+        at = Annotations.getAnnotation(AnnotationParserTest.Untyped.class, mB3);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Untyped);
+        assertEquals("hello", ((AnnotationParserTest.Untyped)at).value());
+        at = Annotations.getAnnotation(AnnotationParserTest.Untyped.class, mB4);
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.Untyped);
+        assertEquals("(hello) - see the space here !", ((AnnotationParserTest.Untyped)at).value());
     }
 
     public void testNestedAnnotation() throws Throwable {
-        Class me = AnnotationCTest.class;
-        AnnotationParserTest.ComplexNested ann = (AnnotationParserTest.ComplexNested) Annotations.getAnnotation("ComplexNested", me);
+        // ComplexNested
+        Annotation at = Annotations.getAnnotation(AnnotationParserTest.ComplexNested.class, this.getClass());
+        assertNotNull(at);
+        assertTrue(at instanceof AnnotationParserTest.ComplexNested);
+        assertEquals(2, ((AnnotationParserTest.ComplexNested)at).nesteds().length);
+        AnnotationParserTest.ComplexNested ann = (AnnotationParserTest.ComplexNested)at;
         AnnotationParserTest.Simple ann1 = ann.nesteds()[0];
         AnnotationParserTest.Simple ann2 = ann.nesteds()[1];
         String ann12 = ann1.val()+"."+ann2.val();
-        if (ann12.equals("foo.bar") || ann12.equals("bar.foo")) {
+        if (ann12.equals("foo.bar")) {
             ;//ok
         } else {
             fail("Annotation is not correct " + ann.toString());

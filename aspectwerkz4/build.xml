@@ -347,7 +347,7 @@
     </target>
 
     <target name="test:weave" depends="init, dist, test:annotationc">
-        <property name="weave.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-jdk14-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
+        <property name="weave.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-jdk14-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar"/>
         <echo>${weave.classpath}</echo>
 
         <java classname="org.codehaus.aspectwerkz.compiler.AspectWerkzC" fork="true" classpath="${weave.classpath}">
@@ -370,10 +370,10 @@
     <!--  tests that have been weaved offline -->
     <!-- =================================================== -->
     <target name="test:offline" depends="init, dist, test:annotationc, test:weave">
-        <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-jdk14-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
+        <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-jdk14-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar"/>
         <java
             classname="test.AllTests"
-            classpath="${offline.classpath}${pathseparator}${extensions.classes}${pathseparator}${test.classes}${pathseparator}${testdata.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar"
+            classpath="${offline.classpath}${pathseparator}${extensions.classes}${pathseparator}${test.classes}${pathseparator}${testdata.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar"
             fork="true">
             <jvmarg value="-Daspectwerkz.transform.dump=*"/>
             <jvmarg value="-Daspectwerkz.definition.file=${src.dir}/test/aop.xml"/>
@@ -388,10 +388,10 @@
         <antcall target="test:offline:jdk15"/>
     </target>
     <target name="test:offline:jdk15" depends="init, dist, test:annotationc, test:weave" if="jdk15">
-        <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-jdk5-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
+        <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-jdk5-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar"/>
         <java
             classname="test.AllJdk5Tests"
-            classpath="${offline.classpath}${pathseparator}${extensions.classes}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar"
+            classpath="${offline.classpath}${pathseparator}${extensions.classes}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar"
             fork="true">
             <jvmarg value="-Daspectwerkz.transform.dump=*"/>
             <jvmarg value="-Daspectwerkz.definition.file=${src.dir}/jdk15/test/aop.xml"/>
@@ -401,26 +401,27 @@
     <!-- =================================================== -->
     <!--  compiles aspects for the tests -->
     <!-- =================================================== -->
-    <target name="test:annotationc">
-        <java fork="true" classname="org.codehaus.aspectwerkz.annotation.AnnotationC">
+    <target name="test:annotationc" depends="init">
+        <java fork="true" classname="org.codehaus.backport175.compiler.AnnotationC">
             <classpath>
                 <path refid="project.class.path"/>
                 <pathelement path="${test.classes}"/>
             </classpath>
-            <arg line="-verbose -src ${basedir}/src/test -classes ${basedir}/target/test-classes -custom ${basedir}/src/test/annotation.properties"/>
+            <!-- -verbose -ignoreUnknown  -->
+            <arg line="-src ${basedir}/src/test -classes ${basedir}/target/test-classes -config ${basedir}/annotation.properties${pathseparator}${basedir}/src/test/annotation.properties"/>
         </java>
     </target>
 
     <!-- =================================================== -->
     <!--  compiles aspects for the samples -->
     <!-- =================================================== -->
-    <target name="samples:annotationc">
-        <java fork="true" classname="org.codehaus.aspectwerkz.annotation.AnnotationC">
+    <target name="samples:annotationc" depends="init">
+        <java fork="true" classname="org.codehaus.backport175.compiler.AnnotationC">
             <classpath>
                 <path refid="project.class.path"/>
                 <pathelement path="${samples.classes}"/>
             </classpath>
-            <arg line="-verbose -src ${basedir}/src/samples -classes ${basedir}/target/samples-classes -custom ${basedir}/src/samples/annotation.properties"/>
+            <arg line="-verbose -ignoreUnknown -src ${basedir}/src/samples -classes ${basedir}/target/samples-classes -config ${basedir}/annotation.properties${pathseparator}${basedir}/src/samples/annotation.properties"/>
         </java>
     </target>
 
@@ -438,7 +439,7 @@
     <!-- =================================================== -->
     <target name="test" depends="clean, dist, test:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${basedir}/lib/aspectwerkz-extensions-${version}.jar${pathseparator}${test.src.dir}${pathseparator}${test.classes}${pathseparator}${testdata.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/aop.xml test.AllTests"/>
+            <arg line="-cp ${basedir}/lib/aspectwerkz-extensions-${version}.jar${pathseparator}${test.src.dir}${pathseparator}${test.classes}${pathseparator}${testdata.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/aop.xml test.AllTests"/>
         </exec>
         <antcall target="test:jdk15:call"/>
     </target>
@@ -466,7 +467,7 @@
     <!-- =================================================== -->
     <target name="test:perf" depends="clean, dist, test:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aop.xml test.xmldef.AllPerfTests"/>
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar -Daspectwerkz.definition.file=${src.dir}/test/aop.xml test.xmldef.AllPerfTests"/>
         </exec>
     </target>
 
@@ -772,14 +773,14 @@
     <!-- =================================================== -->
     <target name="samples:task:annotationc" depends="init, compile:all">
         <taskdef name="annotationc"
-            classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask"
+            classname="org.codehaus.backport175.compiler.AnnotationCTask"
             classpathref="project.class.path"/>
         <annotationc
             verbose="true"
             destdir="${basedir}/target/samples-classes"
             properties="${basedir}/src/samples/annotation.properties"
             copytodest="**/*.RESIDUALPROPS">
-            <properties path="${basedir}/src/samples/annotation.properties"/>
+            <properties path="${basedir}/src/samples/annotation.properties${pathseparator}${basedir}/annotation.properties"/>
             <src path="${basedir}/src/samples"/>
             <!--            <src path="${basedir}/src/test"/>-->
             <classpath path="${basedir}/target/samples-classes"/>

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -7,16 +7,8 @@
  **************************************************************************************/
 package test.staticinitialization;
 
-
 /**
- * Target for staticinitialization pointcuts.
- * 
- * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
- * 
- * @test.staticinitialization.StaticInitializationService
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class ClinitTarget {
-	static {
-		StaticInitializationTest.s_messages.add(StaticInitializationTest.CLINIT_EXECUTION_MESSAGE);
-	}
+public interface StaticInitializationService {
 }
