@@ -7,8 +7,9 @@
  **************************************************************************************/
 package aspectwerkz.aosd.unitofwork;
 
-import aspectwerkz.aosd.unitofwork.PersistableUnitOfWork;
 import aspectwerkz.aosd.unitofwork.UnitOfWork;
+import aspectwerkz.aosd.unitofwork.jisp.JispAwareUnitOfWork;
+import aspectwerkz.aosd.unitofwork.jta.JtaAwareUnitOfWork;
 
 /**
  * Factory for the UnitOfWork implementations.
@@ -27,8 +28,8 @@ public class UnitOfWorkFactory {
         if (type.equals(UnitOfWorkType.DEFAULT)) {
             return new UnitOfWork();
         }
-        else if (type.equals(UnitOfWorkType.PERSISTABLE)) {
-            return new PersistableUnitOfWork();
+        else if (type.equals(UnitOfWorkType.JISP_AWARE)) {
+            return new JispAwareUnitOfWork();
         }
         else if (type.equals(UnitOfWorkType.JTA_AWARE)) {
             return new JtaAwareUnitOfWork();

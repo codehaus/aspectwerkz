@@ -7,6 +7,8 @@
  **************************************************************************************/
 package aspectwerkz.aosd;
 
+import aspectwerkz.aosd.addressbook.AddressBook;
+
 /**
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -15,6 +17,7 @@ public class User {
 
     private final String m_username;
     private final String m_password;
+    private final AddressBook m_addressBook = new AddressBook();
 
     public User(final String username, final String password) {
         m_username = username;
@@ -29,4 +32,11 @@ public class User {
         return m_password;
     }
 
+    public AddressBook getAddressBook() {
+        return m_addressBook;
+    }
+
+    public String getKey() {
+        return m_username + m_password;
+    }
 }
