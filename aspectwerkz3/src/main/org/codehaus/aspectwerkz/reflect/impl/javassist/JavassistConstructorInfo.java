@@ -16,6 +16,7 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 
 import java.util.List;
 
+import javassist.CtBehavior;
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.NotFoundException;
@@ -137,19 +138,21 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
         if (m_attributeExtractor == null) {
             return;
         }
-        if (m_parameterTypes == null) {
-            getParameterTypes();
-        }
-        String[] parameterNames = new String[m_parameterTypes.length];
-        for (int i = 0; i < m_parameterTypes.length; i++) {
-            parameterNames[i] = m_parameterTypes[i].getName();
-        }
-        Object[] attributes = m_attributeExtractor.getConstructorAttributes(parameterNames);
-        for (int i = 0; i < attributes.length; i++) {
-            Object attribute = attributes[i];
-            if (attribute instanceof AnnotationInfo) {
-                m_annotations.add(attribute);
+        try {
+            CtClass[] parameterTypes = ((CtBehavior) m_member).getParameterTypes();
+            String[] parameterNames = new String[parameterTypes.length];
+            for (int i = 0; i < parameterTypes.length; i++) {
+                parameterNames[i] = parameterTypes[i].getName();
             }
+            Object[] attributes = m_attributeExtractor.getConstructorAttributes(parameterNames);
+            for (int i = 0; i < attributes.length; i++) {
+                Object attribute = attributes[i];
+                if (attribute instanceof AnnotationInfo) {
+                    m_annotations.add(attribute);
+                }
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
         }
     }
 }
