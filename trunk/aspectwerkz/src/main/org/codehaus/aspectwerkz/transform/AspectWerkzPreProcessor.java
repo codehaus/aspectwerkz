@@ -109,7 +109,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
     private Map m_definitionRepository;
 
     /**
-     * Initializes the transformer m_stack
+     * Initializes the transformer stack.
      *
      * @param params not used
      */
@@ -118,19 +118,19 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         m_definitionRepository = new WeakHashMap();
         m_stack = new ArrayList();
         m_stack.add(new AddSerialVersionUidTransformer());
+        m_stack.add(new AddInterfaceTransformer());
+        m_stack.add(new AddImplementationTransformer());
         m_stack.add(new AdviseMemberFieldTransformer());
         m_stack.add(new AdviseStaticFieldTransformer());
         m_stack.add(new AdviseCallerSideMethodTransformer());
         m_stack.add(new AdviseMemberMethodTransformer());
         m_stack.add(new AdviseStaticMethodTransformer());
-        m_stack.add(new AddInterfaceTransformer());
-        m_stack.add(new AddImplementationTransformer());
 //        m_stack.add(new AddMetaDataTransformer());
 //        m_stack.add(new AddUuidTransformer());
     }
 
     /**
-     * Transform bytecode going thru the interface transformation first
+     * Transform bytecode going thru the interface transformation first.
      *
      * @param className class name
      * @param bytecode bytecode to transform

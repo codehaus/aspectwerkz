@@ -11,8 +11,8 @@ import junit.framework.TestCase;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.codehaus.aspectwerkz.AspectWerkz;
-import com.clarkware.junitperf.LoadTest;
-import com.clarkware.junitperf.TestFactory;
+//import com.clarkware.junitperf.LoadTest;
+//import com.clarkware.junitperf.TestFactory;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -22,7 +22,7 @@ public class AllPerfTests extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("All perf tests");
 
-        suite.addTest(asLoadTest(test.clapp.CustomClassLoaderTest.class, 4, 6));
+//        suite.addTest(asLoadTest(test.clapp.CustomClassLoaderTest.class, 4, 6));
         return suite;
     }
 
@@ -35,7 +35,7 @@ public class AllPerfTests extends TestCase {
         AspectWerkz.getSystem("tests").initialize();
     }
 
-    private static Test asLoadTest(Class testClass, int thread, int loops) {
-        return new LoadTest(new TestFactory(testClass), thread, loops);
-    }
+//    private static Test asLoadTest(Class testClass, int thread, int loops) {
+//        return new LoadTest(new TestFactory(testClass), thread, loops);
+//    }
 }

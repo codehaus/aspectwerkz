@@ -19,7 +19,6 @@ import org.dom4j.Element;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXWriter;
 
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
@@ -381,6 +380,9 @@ public class AttributeC {
                 String methodName = pattern.substring(space + 1);
                 fullPattern.append(returnType);
                 fullPattern.append(classPattern);
+                if (pointcutDef.isHierarchical()) {
+                    fullPattern.append('+');
+                }
                 fullPattern.append('.');
                 fullPattern.append(methodName);
             }
