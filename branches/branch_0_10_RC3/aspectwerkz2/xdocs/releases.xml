@@ -74,9 +74,6 @@
                         features as compared to 0.9.
                         <ul>
                             <li>
-                                <code>JoinPoint</code> and related information attached to a weaved class is serializable.
-                            </li>
-                            <li>
                                 A thread safe issue has been fixed in the join point execution model.
                             </li>
                             <li>
