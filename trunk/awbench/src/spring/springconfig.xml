@@ -156,13 +156,25 @@
         </property>
     </bean>
 
+
+    <!------------------------------------------------------>
+    <!--
+            Make use of the AspectWerkz pointcut integration
+            in Spring.
+
+            Commented is the regular Spring syntax
+    -->
+    <!------------------------------------------------------>
     <bean id="theMethodExecutionAfterThrowingAdvisor"
-        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        class="awbench.spring.AspectWerkzPointcutAdvisor">
+        <!--org.springframework.aop.support.RegexpMethodPointcutAdvisor">-->
         <property name="advice">
             <ref local="theMethodExecutionAfterThrowingAdvice"/>
         </property>
-        <property name="pattern">
-            <value>.*afterThrowingRTE_IGNORE</value>
+        <!--<property name="pattern">-->
+        <property name="expression">
+            <!--<value>.*afterThrowingRTE_IGNORE</value>-->
+            <value>execution(* *..*.afterThrowingRTE_IGNORE(..))</value>
         </property>
     </bean>
 
