@@ -23,5 +23,5 @@ public class ImplementsAnnotationProxy extends AnnotationProxyBase {
 
     public void setvalue(String value) {
         m_expression = Strings.removeFormattingCharacters(value);
-   }
+    }
 }

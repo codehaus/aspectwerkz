@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
+
 /**
  * The 'Before' annotation proxy.
  *

@@ -9,7 +9,7 @@ package test.expression;
 
 
 /**
- * @@Serializable
+ * @Serializable
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -32,7 +32,7 @@ public final class Target {
     // ============ field attribute test =============
 
     /**
-     * @@ReadOnly
+     * @ReadOnly
      */
     int attribute1;
 
@@ -91,7 +91,7 @@ public final class Target {
     // ============ method attribute test =============
 
     /**
-     * @@Requires
+     * @Requires
      */
     public void attributes1() {
     }

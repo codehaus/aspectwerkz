@@ -90,11 +90,12 @@ public class DumpVisitor implements ExpressionParserVisitor {
         return data;
     }
 
-   public Object visit(ASTChar node, Object data){
+    public Object visit(ASTChar node, Object data) {
         System.out.println(indentString() + node);
         return data;
     }
-  public Object visit(ASTString node, Object data){
+
+    public Object visit(ASTString node, Object data) {
         System.out.println(indentString() + node);
         return data;
     }

@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.expression;
 
-import org.codehaus.aspectwerkz.annotation.expression.ast.ExpressionParser;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ASTRoot;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ExpressionParser;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>

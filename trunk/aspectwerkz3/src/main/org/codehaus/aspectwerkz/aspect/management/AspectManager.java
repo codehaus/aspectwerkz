@@ -60,7 +60,8 @@ public final class AspectManager {
     /**
      * The annotation parser to parse the definitions for the hot deployed aspects.
      */
-//    private AspectAttributeParser m_annotationParser = new AspectAttributeParser();
+
+    //    private AspectAttributeParser m_annotationParser = new AspectAttributeParser();
     private AspectAnnotationParser m_annotationParser = new AspectAnnotationParser();
 
     /**

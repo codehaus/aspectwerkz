@@ -261,7 +261,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTFieldPattern node, Object data) {
-        if (data instanceof FieldInfo) { 
+        if (data instanceof FieldInfo) {
             FieldInfo fieldInfo = (FieldInfo)data;
             if (node.getFieldNamePattern().matches(fieldInfo.getName())
                 && ClassInfoHelper.matchType(node.getDeclaringTypePattern(), fieldInfo.getDeclaringType())
