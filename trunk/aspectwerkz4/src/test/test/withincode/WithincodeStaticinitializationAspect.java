@@ -34,12 +34,12 @@ public class WithincodeStaticinitializationAspect {
     Pointcut withincodeTarget;
     
     /**
-     * @Expression withincode(staticinitialization(@WithincodeClinit))
+     * @Expression withincode(staticinitialization(@test.withincode.WithincodeClinit))
      */
     Pointcut withincodeClinit;
     
     /**
-     * @Expression withincode(staticinitialization(@WithincodeClinit test.withincode.*))
+     * @Expression withincode(staticinitialization(@test.withincode.WithincodeClinit test.withincode.*))
      */
     Pointcut withincodeClinitPattern;
     

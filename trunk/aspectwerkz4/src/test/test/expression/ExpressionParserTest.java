@@ -238,8 +238,8 @@ public class ExpressionParserTest extends TestCase {
 			"public foo.bar.*",
 			"@Session foo.bar.*",
 			"@Session",
-			"@Session @Service foo....bar.*",
-			"@Session @Service public abstract foo....bar.*"
+			"@Session @test.expression.IService foo....bar.*",
+			"@Session @test.expression.IService public abstract foo....bar.*"
 			
 	};
 	

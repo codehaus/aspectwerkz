@@ -31,7 +31,7 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
  * Unit test for annotation matching.
  * 
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AnnotationExpressionTest extends TestCase {
 	protected static final String NAMESPACE = "TESTING";
@@ -60,40 +60,40 @@ public class AnnotationExpressionTest extends TestCase {
 
 	public void testConstructor() {
 		assertTrue(
-				new ExpressionInfo("call(@DefaultConstructor)", NAMESPACE).getExpression()
+				new ExpressionInfo("call(@test.expression.IConstructor)", NAMESPACE).getExpression()
 				.match(
 						new ExpressionContext(PointcutType.CALL, s_constructor, null)
 				)
 		);
 		
 		assertTrue(
-				new ExpressionInfo("call(@DefaultConstructor new())", NAMESPACE).getExpression()
+				new ExpressionInfo("call(@test.expression.IConstructor new())", NAMESPACE).getExpression()
 						.match(
 								new ExpressionContext(PointcutType.CALL, s_constructor, null)
 								));
 
 		assertTrue(
-				new ExpressionInfo("call(@DefaultConstructor new(..))", NAMESPACE).getExpression()
+				new ExpressionInfo("call(@test.expression.IConstructor new(..))", NAMESPACE).getExpression()
 						.match(
 								new ExpressionContext(PointcutType.CALL, s_constructor, null)
 								));
 
 		assertTrue(
-				new ExpressionInfo("call(@DefaultConstructor *.new())", NAMESPACE).getExpression()
+				new ExpressionInfo("call(@test.expression.IConstructor *.new())", NAMESPACE).getExpression()
 				.match(
 						new ExpressionContext(PointcutType.CALL, s_constructor, null)
 				)
 		);
 		
 		assertTrue(
-				new ExpressionInfo("call(@DefaultConstructor test.*.AnnotationTarget.new())", NAMESPACE)
+				new ExpressionInfo("call(@test.expression.IConstructor test.*.AnnotationTarget.new())", NAMESPACE)
 					.getExpression().match(
 							new ExpressionContext(PointcutType.CALL, s_constructor, null)
 							)
 		);
 
 		assertTrue(
-				new ExpressionInfo("call(@DefaultConstructor test.expression.AnnotationTarget.new())", NAMESPACE)
+				new ExpressionInfo("call(@test.expression.IConstructor test.expression.AnnotationTarget.new())", NAMESPACE)
 					.getExpression().match(
 							new ExpressionContext(PointcutType.CALL, s_constructor, null)
 							)
@@ -104,12 +104,12 @@ public class AnnotationExpressionTest extends TestCase {
 						new ExpressionContext(PointcutType.CALL, s_constructor, null)));
 		
 		assertFalse(
-				new ExpressionInfo("call(@DefaultConstructor new(*))", NAMESPACE).getExpression()
+				new ExpressionInfo("call(@test.expression.IConstructor new(*))", NAMESPACE).getExpression()
 				.match(
 						new ExpressionContext(PointcutType.CALL, s_constructor, null)));
 		
 		assertFalse(
-				new ExpressionInfo("call(@DefaultConstructor test.expression.AnnotationTargetWRONG.new())", NAMESPACE)
+				new ExpressionInfo("call(@test.expression.IConstructor test.expression.AnnotationTargetWRONG.new())", NAMESPACE)
 					.getExpression().match(
 							new ExpressionContext(PointcutType.CALL, s_constructor, null)
 							)
@@ -117,21 +117,21 @@ public class AnnotationExpressionTest extends TestCase {
 
 		assertTrue(
 				new ExpressionInfo(
-						"within(test.expression.AnnotationTarget) && execution(@DefaultConstructor)",
+						"within(test.expression.AnnotationTarget) && execution(@test.expression.IConstructor)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.EXECUTION, s_constructor, s_declaringType))
 				);
 		
 		assertTrue(
 				new ExpressionInfo(
-						"within(test.expression.*) && execution(@DefaultConstructor)",
+						"within(test.expression.*) && execution(@test.expression.IConstructor)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.EXECUTION, s_constructor, s_declaringType))
 				);
 		
 		assertTrue(
 				new ExpressionInfo(
-						"within(@Service) && execution(@DefaultConstructor)",
+						"within(@test.expression.IService) && execution(@test.expression.IConstructor)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.EXECUTION, s_innerConstructor, s_innerType))
 				);
@@ -139,36 +139,36 @@ public class AnnotationExpressionTest extends TestCase {
 		// HINT: constructor on AnnotationTarget
 		assertTrue(
 				new ExpressionInfo(
-						"!within(@Service) && execution(@DefaultConstructor)",
+						"!within(@test.expression.IService) && execution(@test.expression.IConstructor)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.EXECUTION, s_constructor, s_declaringType))
 				);
 		
-		// HINT: constructor of inner (@Service)
+		// HINT: constructor of inner (@test.expression.IService)
 		assertFalse(
 				new ExpressionInfo(
-						"!within(@Service) && execution(@DefaultConstructor)",
+						"!within(@test.expression.IService) && execution(@test.expression.IConstructor)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.EXECUTION, s_innerConstructor, s_innerType))
 				);
 				
 		assertTrue(
 				new ExpressionInfo(
-						"withincode(@DefaultConstructor)",
+						"withincode(@test.expression.IConstructor)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.WITHIN, s_constructor, s_constructor))
 				);
 		
 		assertTrue(
 				new ExpressionInfo(
-						"withincode(@DefaultConstructor test.expression.AnnotationTarget.new())",
+						"withincode(@test.expression.IConstructor test.expression.AnnotationTarget.new())",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.WITHIN, s_constructor, s_constructor))
 				);
 		
 		assertTrue(
 				new ExpressionInfo(
-						"call(@Asynch) && withincode(@DefaultConstructor)",
+						"call(@test.expression.IAsynchronous) && withincode(@test.expression.IConstructor)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.CALL, s_innerMethod, s_innerConstructor))
 				);
@@ -178,14 +178,14 @@ public class AnnotationExpressionTest extends TestCase {
 	public void testHasMethod() {
         assertTrue(
                 new ExpressionInfo(
-                        "hasmethod(@Asynch)",
+                        "hasmethod(@test.expression.IAsynchronous)",
                         NAMESPACE
                 ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, s_method, null))
         );
         
         assertTrue(
                 new ExpressionInfo(
-                        "hasmethod(@Asynch void methodOneAsynch())",
+                        "hasmethod(@test.expression.IAsynchronous void methodOneAsynch())",
                         NAMESPACE
                 ).getExpression().match(new ExpressionContext(PointcutType.CALL, s_method, s_method))
         );
@@ -193,14 +193,14 @@ public class AnnotationExpressionTest extends TestCase {
         // HINT hasmethod on constructor
         assertTrue(
         		new ExpressionInfo(
-        				"hasmethod(@DefaultConstructor)",
+        				"hasmethod(@test.expression.IConstructor)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.EXECUTION, s_constructor, null))
 				);
 
         assertTrue(
         		new ExpressionInfo(
-        				"hasmethod(@DefaultConstructor new())",
+        				"hasmethod(@test.expression.IConstructor new())",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.CALL, s_constructor, s_constructor)
 				)
@@ -210,35 +210,35 @@ public class AnnotationExpressionTest extends TestCase {
     public void testHasField() throws Exception {
         assertTrue(
                 new ExpressionInfo(
-                        "hasfield(@Persistable)",
+                        "hasfield(@test.expression.IPersistable)",
                         NAMESPACE).getExpression().match(
                 new ExpressionContext(PointcutType.EXECUTION, s_field, null))
         );
         
         assertTrue(
                 new ExpressionInfo(
-                        "hasfield(@Persistable)",
+                        "hasfield(@test.expression.IPersistable)",
                         NAMESPACE).getExpression().match(
                 new ExpressionContext(PointcutType.CALL, s_field, s_field))
         );
         
         assertTrue(
                 new ExpressionInfo(
-                        "hasfield(@Persistable) && !within(@Service)",
+                        "hasfield(@test.expression.IPersistable) && !within(@test.expression.IService)",
                         NAMESPACE).getExpression().match(
                 new ExpressionContext(PointcutType.CALL, s_field, s_declaringType))
         );
         
         assertFalse(
                 new ExpressionInfo(
-                        "hasfield(@Persistable) && !within(@Service)",
+                        "hasfield(@test.expression.IPersistable) && !within(@test.expression.IService)",
                         NAMESPACE).getExpression().match(
                 new ExpressionContext(PointcutType.CALL, s_field, s_innerType))
         );
         
         assertTrue(
                 new ExpressionInfo(
-                        "hasfield(@Persistable) && within(@Service)",
+                        "hasfield(@test.expression.IPersistable) && within(@test.expression.IService)",
                         NAMESPACE).getExpression().match(
                 new ExpressionContext(PointcutType.CALL, s_innerField, s_innerType))
         );        
@@ -247,35 +247,35 @@ public class AnnotationExpressionTest extends TestCase {
     public void testFieldAttributes() {
     	assertTrue(
                 new ExpressionInfo(
-                		"set(@Persistable)", 
+                		"set(@test.expression.IPersistable)",
 						NAMESPACE).getExpression().match(
                 new ExpressionContext(PointcutType.SET, s_field, null))
         );
     	
     	assertTrue(
     			new ExpressionInfo(
-    					"get(@Persistable) && !within(@Service)",
+    					"get(@test.expression.IPersistable) && !within(@test.expression.IService)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.GET, s_field, s_declaringType))
 				);
     	
     	assertTrue(
     			new ExpressionInfo(
-    					"set(@Persistable) && within(@Service)",
+    					"set(@test.expression.IPersistable) && within(@test.expression.IService)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.SET, s_innerField, s_innerType))
 				);
     	
     	assertFalse(
     			new ExpressionInfo(
-    					"get(@Persistable) && !within(@Service)",
+    					"get(@test.expression.IPersistable) && !within(@test.expression.IService)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.GET, s_field, s_innerType))
 				);
     	
     	assertFalse(
     			new ExpressionInfo(
-    					"get(@Persistable) && !within(@Service)",
+    					"get(@test.expression.IPersistable) && !within(@test.expression.IService)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.GET, s_innerField, s_innerType))
 				);

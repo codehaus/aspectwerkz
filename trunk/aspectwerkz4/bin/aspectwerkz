@@ -8,8 +8,8 @@
 # a copy of which has been included with this distribution in the license.txt file.
 # ----------------------------------------------------------------------------------
 
-ASPECTWERKZ_VERSION=2.0.RC3
-ASPECTWERKZ_LIBS=$ASPECTWERKZ_HOME/lib/dom4j-1.4.jar:$ASPECTWERKZ_HOME/lib/qdox-1.4.jar:$ASPECTWERKZ_HOME/lib/concurrent-1.3.1.jar:$ASPECTWERKZ_HOME/lib/trove-1.0.2.jar:$ASPECTWERKZ_HOME/lib/jrexx-1.1.1.jar
+ASPECTWERKZ_VERSION=2.0
+ASPECTWERKZ_LIBS=$ASPECTWERKZ_HOME/lib/dom4j-1.4.jar:$ASPECTWERKZ_HOME/lib/qdox-1.4.jar:$ASPECTWERKZ_HOME/lib/concurrent-1.3.1.jar:$ASPECTWERKZ_HOME/lib/trove-1.0.2.jar:$ASPECTWERKZ_HOME/lib/jrexx-1.1.1.jar:$ASPECTWERKZ_HOME/lib/backport175-1.0.RC1.jar
 
 usage() {
 	if [ -z "$ASPECTWERKZ_HOME" ]; then

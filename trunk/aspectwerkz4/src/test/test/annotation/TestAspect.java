@@ -19,91 +19,91 @@ public class TestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression call(@AnnotationPrivateMethod * test.annotation.*.*(..)) &&
+     * @Expression call(@test.annotation.PrivateMethodAnnotationProxy * test.annotation.*.*(..)) &&
      * within(test.annotation.*)
      */
     Pointcut call_privateMethod;
 
     /**
-     * @Expression execution(@AnnotationPrivateMethod * test.annotation.*.*(..))
+     * @Expression execution(@test.annotation.PrivateMethodAnnotationProxy * test.annotation.*.*(..))
      */
     Pointcut execution_privateMethod;
 
     /**
-     * @Expression call(@AnnotationProtectedMethod * test.annotation.*.*(..)) &&
+     * @Expression call(@test.annotation.ProtectedMethodAnnotationProxy * test.annotation.*.*(..)) &&
      * within(test.annotation.*)
      */
     Pointcut call_protectedMethod;
 
     /**
-     * @Expression execution(@AnnotationProtectedMethod * test.annotation.*.*(..))
+     * @Expression execution(@test.annotation.ProtectedMethodAnnotationProxy * test.annotation.*.*(..))
      */
     Pointcut execution_protectedMethod;
 
     /**
-     * @Expression call(@AnnotationPackagePrivateMethod * test.annotation.*.*(..)) &&
+     * @Expression call(@test.annotation.PackagePrivateMethodAnnotationProxy * test.annotation.*.*(..)) &&
      * within(test.annotation.*)
      */
     Pointcut call_packagePrivateMethod;
 
     /**
-     * @Expression execution(@AnnotationPackagePrivateMethod * test.annotation.*.*(..))
+     * @Expression execution(@test.annotation.PackagePrivateMethodAnnotationProxy * test.annotation.*.*(..))
      */
     Pointcut execution_packagePrivateMethod;
 
     /**
-     * @Expression call(@AnnotationPublicMethod * test.annotation.*.*(..)) &&
+     * @Expression call(@test.annotation.PublicMethodAnnotationProxy * test.annotation.*.*(..)) &&
      * within(test.annotation.*)
      */
     Pointcut call_publicMethod;
 
     /**
-     * @Expression execution(@AnnotationPublicMethod * test.annotation.*.*(..))
+     * @Expression execution(@test.annotation.PublicMethodAnnotationProxy * test.annotation.*.*(..))
      */
     Pointcut execution_publicMethod;
 
     /**
-     * @Expression execution(@AnnotationPublicMethod2 * test.annotation.*.*(..))
+     * @Expression execution(@test.annotation.PublicMethodAnnotationProxy2 * test.annotation.*.*(..))
      */
     Pointcut execution_publicMethod2;
 
     /**
-     * @Expression get(@AnnotationPrivateField * test.annotation.*.*) && within(test.annotation.*)
+     * @Expression get(@test.annotation.PrivateFieldAnnotationProxy * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut get_privateField;
 
     /**
-     * @Expression set(@AnnotationPrivateField * test.annotation.*.*) && within(test.annotation.*)
+     * @Expression set(@test.annotation.PrivateFieldAnnotationProxy * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut set_privateField;
 
     /**
-     * @Expression get(@AnnotationProtectedField * test.annotation.*.*) && within(test.annotation.*)
+     * @Expression get(@test.annotation.ProtectedFieldAnnotationProxy * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut get_protectedField;
 
     /**
-     * @Expression set(@AnnotationProtectedField * test.annotation.*.*) && within(test.annotation.*)
+     * @Expression set(@test.annotation.ProtectedFieldAnnotationProxy * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut set_protectedField;
 
     /**
-     * @Expression get(@AnnotationPackagePrivateField * test.annotation.*.*) && within(test.annotation.*)
+     * @Expression get(@test.annotation.PackagePrivateFieldAnnotationProxy * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut get_packagePrivateField;
 
     /**
-     * @Expression set(@AnnotationPackagePrivateField * test.annotation.*.*) && within(test.annotation.*)
+     * @Expression set(@test.annotation.PackagePrivateFieldAnnotationProxy * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut set_packagePrivateField;
 
     /**
-     * @Expression get(@AnnotationPublicField * test.annotation.*.*) && within(test.annotation.*)
+     * @Expression get(@test.annotation.PublicFieldAnnotationProxy * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut get_publicField;
 
     /**
-     * @Expression set(@AnnotationPublicField * test.annotation.*.*) && within(test.annotation.*)
+     * @Expression set(@test.annotation.PublicFieldAnnotationProxy * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut set_publicField;
 

@@ -263,7 +263,7 @@ public class ExpressionTest extends TestCase {
     //  ============ constructor annotations test =============
     public void testConstructorAnnotations1() throws Exception {
         assertTrue(
-                new ExpressionInfo("call(@Requires test.expression.Target.new())", NAMESPACE).getExpression().match(
+                new ExpressionInfo("call(@test.expression.RequiresAnnotationProxy test.expression.Target.new())", NAMESPACE).getExpression().match(
                         new ExpressionContext(PointcutType.CALL, constructorNoArgPublic, null)
                 )
         );
@@ -272,7 +272,7 @@ public class ExpressionTest extends TestCase {
                 .match(new ExpressionContext(PointcutType.CALL, constructorNoArgPublic, null))
         );
         assertTrue(
-                new ExpressionInfo("execution(@Requires test.expression.Target.new())", NAMESPACE).getExpression()
+                new ExpressionInfo("execution(@test.expression.RequiresAnnotationProxy test.expression.Target.new())", NAMESPACE).getExpression()
                 .match(new ExpressionContext(PointcutType.EXECUTION, constructorNoArgPublic, null))
         );
         assertFalse(
@@ -283,14 +283,14 @@ public class ExpressionTest extends TestCase {
 
     public void testConstructorAnnotations2() throws Exception {
         assertTrue(
-                new ExpressionInfo("execution(@Requires *..*.new(..))", NAMESPACE).getExpression().match(
+                new ExpressionInfo("execution(@test.expression.RequiresAnnotationProxy *..*.new(..))", NAMESPACE).getExpression().match(
                         new ExpressionContext(PointcutType.EXECUTION, constructorNoArgPublic, null)
                 )
         );
         try {
             // should fail - we are specifying a return type for ctor
             assertTrue(
-                    new ExpressionInfo("execution(@Requires * new(..))", NAMESPACE).getExpression().match(
+                    new ExpressionInfo("execution(@test.expression.RequiresAnnotationProxy * new(..))", NAMESPACE).getExpression().match(
                             new ExpressionContext(PointcutType.EXECUTION, constructorNoArgPublic, null)
                     )
             );
@@ -305,7 +305,7 @@ public class ExpressionTest extends TestCase {
                 )
         );
         assertTrue(
-                new ExpressionInfo("call(@Requires *..*.new(..))", NAMESPACE).getExpression().match(
+                new ExpressionInfo("call(@test.expression.RequiresAnnotationProxy *..*.new(..))", NAMESPACE).getExpression().match(
                         new ExpressionContext(PointcutType.CALL, constructorNoArgPublic, null)
                 )
         );
@@ -846,7 +846,7 @@ public class ExpressionTest extends TestCase {
                 .match(new ExpressionContext(PointcutType.CALL, attributes1, null))
         );
         assertTrue(
-                new ExpressionInfo("call(@Requires void test.expression.Target.attributes1())", NAMESPACE)
+                new ExpressionInfo("call(@test.expression.RequiresAnnotationProxy void test.expression.Target.attributes1())", NAMESPACE)
                 .getExpression().match(new ExpressionContext(PointcutType.CALL, attributes1, null))
         );
         assertFalse(
@@ -855,7 +855,7 @@ public class ExpressionTest extends TestCase {
         );
         assertFalse(
                 new ExpressionInfo(
-                        "call(@Requires @RequiresNew void test.expression.Target.attributes1())",
+                        "call(@test.expression.RequiresAnnotationProxy @RequiresNew void test.expression.Target.attributes1())",
                         NAMESPACE
                 ).getExpression().match(new ExpressionContext(PointcutType.CALL, attributes1, null))
         );
@@ -1151,7 +1151,7 @@ public class ExpressionTest extends TestCase {
                 )
         );
         assertTrue(
-                new ExpressionInfo("set(@ReadOnly int test.expression.Target.attribute1)", NAMESPACE)
+                new ExpressionInfo("set(@test.expression.ReadOnlyAnnotationProxy int test.expression.Target.attribute1)", NAMESPACE)
                 .getExpression().match(new ExpressionContext(PointcutType.SET, attribute1, null))
         );
         assertFalse(
@@ -1159,7 +1159,7 @@ public class ExpressionTest extends TestCase {
                 .match(new ExpressionContext(PointcutType.SET, attribute1, null))
         );
         assertFalse(
-                new ExpressionInfo("set(@ReadOnly @ReadWrite int test.expression.Target.attribute1)", NAMESPACE)
+                new ExpressionInfo("set(@test.expression.ReadOnlyAnnotationProxy @ReadWrite int test.expression.Target.attribute1)", NAMESPACE)
                 .getExpression().match(new ExpressionContext(PointcutType.SET, attribute1, null))
         );
     }
@@ -1296,12 +1296,12 @@ public class ExpressionTest extends TestCase {
                 )
         );
         assertTrue(
-                new ExpressionInfo("within(@Serializable test.expression.Target)", NAMESPACE).getExpression().match(
+                new ExpressionInfo("within(@test.expression.SerializableAnnotationProxy test.expression.Target)", NAMESPACE).getExpression().match(
                         new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType)
                 )
         );
         assertFalse(
-                new ExpressionInfo("within(!@Serializable test.expression.Target)", NAMESPACE).getExpression().match(
+                new ExpressionInfo("within(!@test.expression.SerializableAnnotationProxy test.expression.Target)", NAMESPACE).getExpression().match(
                         new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType)
                 )
         );
@@ -1310,11 +1310,11 @@ public class ExpressionTest extends TestCase {
                 .match(new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType))
         );
         assertTrue(
-                new ExpressionInfo("within(@Serializable public final test.expression.Target)", NAMESPACE)
+                new ExpressionInfo("within(@test.expression.SerializableAnnotationProxy public final test.expression.Target)", NAMESPACE)
                 .getExpression().match(new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType))
         );
         assertFalse(
-                new ExpressionInfo("within(@Serializable @Dummy test.expression.Target)", NAMESPACE)
+                new ExpressionInfo("within(@test.expression.SerializableAnnotationProxy @Dummy test.expression.Target)", NAMESPACE)
                 .getExpression().match(new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType))
         );
     }
@@ -1324,7 +1324,7 @@ public class ExpressionTest extends TestCase {
         MethodInfo method = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers1", new Class[]{}));
         assertTrue(
                 new ExpressionInfo(
-                        "execution(void test.expression.*.*(..)) AND within(@Serializable *..*)", NAMESPACE
+                        "execution(void test.expression.*.*(..)) AND within(@test.expression.SerializableAnnotationProxy *..*)", NAMESPACE
                 ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method, s_declaringType))
         );
         assertFalse(
@@ -2176,14 +2176,14 @@ public class ExpressionTest extends TestCase {
                 )
         );
         assertTrue(
-                new ExpressionInfo("execution(void *..*.modifiers1()) AND within(@Serializable *..*)", NAMESPACE)
+                new ExpressionInfo("execution(void *..*.modifiers1()) AND within(@test.expression.SerializableAnnotationProxy *..*)", NAMESPACE)
                 .getAdvisedClassFilterExpression().match(
                         new ExpressionContext(PointcutType.EXECUTION, method, s_declaringType)
                 )
         );
         assertFalse(
                 new ExpressionInfo(
-                        "execution(void *..*.modifiers1()) AND !within(@Serializable *..*)",
+                        "execution(void *..*.modifiers1()) AND !within(@test.expression.SerializableAnnotationProxy *..*)",
                         NAMESPACE
                 ).getAdvisedClassFilterExpression().match(
                         new ExpressionContext(PointcutType.EXECUTION, method, s_declaringType)

@@ -13,14 +13,10 @@ package test.staticinitialization;
  * 
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
  * 
- * @StaticInitializationService
+ * @test.staticinitialization.StaticInitializationService
  */
 public class ClinitTarget {
 	static {
 		StaticInitializationTest.s_messages.add(StaticInitializationTest.CLINIT_EXECUTION_MESSAGE);
-	}
-	
-	public static interface IServiceAnnotation {
-		String value();
 	}
 }

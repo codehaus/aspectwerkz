@@ -1,6 +1,6 @@
 /*
- * $Id: AdvisedClassFilterExpressionTest.java,v 1.2 2004-12-20 13:14:21 avasseur Exp $
- * $Date: 2004-12-20 13:14:21 $
+ * $Id: AdvisedClassFilterExpressionTest.java,v 1.3 2005-03-24 14:51:20 avasseur Exp $
+ * $Date: 2005-03-24 14:51:20 $
  */
 package test.expression;
 
@@ -23,7 +23,7 @@ import junit.framework.TestSuite;
  * Test unit for AdvisedClassFilterExpressionVisitor
  * 
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 
@@ -38,7 +38,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 	public void testAdvisedConstructor() {
 		assertTrue(
 				new ExpressionInfo(
-						"call(@DefaultConstructor test.*.AnnotationTarget.new())", 
+						"call(@test.expression.IConstructor test.*.AnnotationTarget.new())",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.CALL, s_constructor, null)
 				)
@@ -62,7 +62,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 		
 		assertTrue(
 				new ExpressionInfo(
-						"call(@DefaultConstructor test.expression.AnnotationTarget.new())", 
+						"call(@test.expression.IConstructor test.expression.AnnotationTarget.new())",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.CALL, s_constructor, null)
 				)
@@ -103,7 +103,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 		
 		assertFalse(
 				new ExpressionInfo(
-						"call(@DefaultConstructor test.expression.AnnotationTargetWRONG.new())", 
+						"call(@test.expression.IConstructor test.expression.AnnotationTargetWRONG.new())",
 						NAMESPACE).getAdvisedClassFilterExpression().match(
 				new ExpressionContext(PointcutType.CALL, s_constructor, null)
 				)
@@ -111,7 +111,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 
 		assertTrue(
 				new ExpressionInfo(
-						"within(test.expression.AnnotationTarget) && execution(@DefaultConstructor)",
+						"within(test.expression.AnnotationTarget) && execution(@test.expression.IConstructor)",
 						NAMESPACE).getAdvisedClassFilterExpression().match(
 				new ExpressionContext(PointcutType.EXECUTION, s_constructor, s_declaringType)
 				)
@@ -135,7 +135,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 		
 		assertFalse(
 				new ExpressionInfo(
-						"within(test.expressionFAKE.*) && execution(@DefaultConstructor)",
+						"within(test.expressionFAKE.*) && execution(@test.expression.IConstructor)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.EXECUTION, s_constructor, s_declaringType)
 				)
@@ -143,7 +143,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 		
 		assertFalse(
 				new ExpressionInfo(
-						"within(test.expressionFAKE.*) && execution(@DefaultConstructor)",
+						"within(test.expressionFAKE.*) && execution(@test.expression.IConstructor)",
 						NAMESPACE).getAdvisedClassFilterExpression().match(
 				new ExpressionContext(PointcutType.EXECUTION, s_constructor, s_declaringType)
 				)
@@ -152,7 +152,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 		
 		assertTrue(
 				new ExpressionInfo(
-						"within(@Service test.expression.*) && execution(@DefaultConstructor test.expression.*.new())",
+						"within(@test.expression.IService test.expression.*) && execution(@test.expression.IConstructor test.expression.*.new())",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.EXECUTION, s_innerConstructor, s_innerType)
 				)
@@ -160,7 +160,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 		
 		assertFalse(
 				new ExpressionInfo(
-						"within(!@Service test.expression.*) && execution(@DefaultConstructor test.expression.*.new())",
+						"within(!@test.expression.IService test.expression.*) && execution(@test.expression.IConstructor test.expression.*.new())",
 						NAMESPACE).getAdvisedClassFilterExpression().match(
 				new ExpressionContext(PointcutType.EXECUTION, s_innerConstructor, s_innerType)
 				)
@@ -168,7 +168,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 
 		assertTrue(
 				new ExpressionInfo(
-						"withincode(@DefaultConstructor test.expression.AnnotationTarget$ClassLevelAnnotation.new())",
+						"withincode(@test.expression.IConstructor test.expression.AnnotationTarget$ClassLevelAnnotation.new())",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.WITHIN, s_innerConstructor, s_innerConstructor)
 				)
@@ -178,7 +178,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 	public void testAdvisedMethod() {
 		assertTrue(
 				new ExpressionInfo(
-						"call(@Asynch void test.*.AnnotationTarget.methodOneAsynch())", 
+						"call(@test.expression.IAsynchronous void test.*.AnnotationTarget.methodOneAsynch())",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.CALL, s_method, null)
 				)
@@ -219,7 +219,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 		
 		assertFalse(
 				new ExpressionInfo(
-						"call(@Asynch * test.expression.AnnotationTargetWRONG.methodOneAsynch())", 
+						"call(@test.expression.IAsynchronous * test.expression.AnnotationTargetWRONG.methodOneAsynch())",
 						NAMESPACE).getAdvisedClassFilterExpression().match(
 				new ExpressionContext(PointcutType.CALL, s_method, null)
 				)
@@ -244,7 +244,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 		
 		assertTrue(
 				new ExpressionInfo(
-						"within(@Service test.expression.AnnotationTarget$ClassLevelAnnotation) && execution(@Asynch void innerMethodAsynch())",
+						"within(@test.expression.IService test.expression.AnnotationTarget$ClassLevelAnnotation) && execution(@test.expression.IAsynchronous void innerMethodAsynch())",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.EXECUTION, s_innerMethod, s_innerType)
 				)
@@ -252,7 +252,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 		
 		assertFalse(
 				new ExpressionInfo(
-						"within(!@Service test.expression.AnnotationTarget$ClassLevelAnnotation) && execution(@Asynch void innerMethodAsynch())",
+						"within(!@test.expression.IService test.expression.AnnotationTarget$ClassLevelAnnotation) && execution(@test.expression.IAsynchronous void innerMethodAsynch())",
 						NAMESPACE).getAdvisedClassFilterExpression().match(
 				new ExpressionContext(PointcutType.EXECUTION, s_innerMethod, s_innerType)
 				)
@@ -260,7 +260,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 		
 		assertTrue(
 				new ExpressionInfo(
-						"withincode(@Asynch void test.expression.AnnotationTarget$ClassLevelAnnotation.innerMethodAsynch())",
+						"withincode(@test.expression.IAsynchronous void test.expression.AnnotationTarget$ClassLevelAnnotation.innerMethodAsynch())",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.WITHIN, s_innerMethod, s_innerMethod)
 				)
@@ -269,7 +269,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 		// HINT annotation and return not considered
 		assertTrue(
 				new ExpressionInfo(
-						"withincode(!@Asynch int test.expression.AnnotationTarget$ClassLevelAnnotation.innerMethodAsynch())",
+						"withincode(!@test.expression.IAsynchronous int test.expression.AnnotationTarget$ClassLevelAnnotation.innerMethodAsynch())",
 						NAMESPACE).getAdvisedClassFilterExpression().match(
 				new ExpressionContext(PointcutType.WITHIN, s_innerMethod, s_innerMethod)
 				)
@@ -279,7 +279,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 	public void testAdvisedHasMethod() {
         assertTrue(
                 new ExpressionInfo(
-                        "hasmethod(@Asynch void test.expression.AnnotationTarget.methodOneAsynch())",
+                        "hasmethod(@test.expression.IAsynchronous void test.expression.AnnotationTarget.methodOneAsynch())",
                         NAMESPACE).getExpression().match(
                 new ExpressionContext(PointcutType.EXECUTION, s_method, null)
 				)
@@ -287,7 +287,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
         
         assertFalse(
                 new ExpressionInfo(
-                        "hasmethod(!@Asynch int test.expression.AnnotationTarget.methodOneAsynch())",
+                        "hasmethod(!@test.expression.IAsynchronous int test.expression.AnnotationTarget.methodOneAsynch())",
                         NAMESPACE).getAdvisedClassFilterExpression().match(
                 new ExpressionContext(PointcutType.EXECUTION, s_method, null)
 				)
@@ -295,7 +295,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
         
         assertTrue(
                 new ExpressionInfo(
-                        "hasmethod(@DefaultConstructor test.expression.*.new())",
+                        "hasmethod(@test.expression.IConstructor test.expression.*.new())",
                         NAMESPACE).getExpression().match(
                 new ExpressionContext(PointcutType.EXECUTION, s_innerConstructor, null)
 				)
@@ -303,7 +303,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
         
         assertFalse(
                 new ExpressionInfo(
-                        "hasmethod(!@DefaultConstructor test.expression.*.new())",
+                        "hasmethod(!@test.expression.IConstructor test.expression.*.new())",
                         NAMESPACE).getAdvisedClassFilterExpression().match(
                 new ExpressionContext(PointcutType.EXECUTION, s_innerConstructor, null)
 				)
@@ -313,7 +313,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
     public void testAdvisedHasField() throws Exception {
         assertTrue(
                 new ExpressionInfo(
-                        "hasfield(@Persistable java.lang.Object+ test.expression.AnnotationTarget.m_annotatedField)",
+                        "hasfield(@test.expression.IPersistable java.lang.Object+ test.expression.AnnotationTarget.m_annotatedField)",
                         NAMESPACE).getExpression().match(
                 new ExpressionContext(PointcutType.GET, s_field, s_declaringType)
 				)
@@ -321,7 +321,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
         
         assertFalse(
                 new ExpressionInfo(
-                        "hasfield(!@Persistable int test.expression.AnnotationTarget.m_annotatedField)",
+                        "hasfield(!@test.expression.IPersistable int test.expression.AnnotationTarget.m_annotatedField)",
                         NAMESPACE).getAdvisedClassFilterExpression().match(
                 new ExpressionContext(PointcutType.GET, s_field, s_declaringType)
 				)
@@ -331,7 +331,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
     public void testAdvisedFieldAttributes() {
     	assertTrue(
                 new ExpressionInfo(
-                		"set(@Persistable java.lang.Object+ test.expression.AnnotationTarget.m_annotatedField)", 
+                		"set(@test.expression.IPersistable java.lang.Object+ test.expression.AnnotationTarget.m_annotatedField)",
 						NAMESPACE).getExpression().match(
                 new ExpressionContext(PointcutType.SET, s_field, null)
 				)
@@ -339,7 +339,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
     	
     	assertTrue(
                 new ExpressionInfo(
-                		"set(!@Persistable int test.expression.AnnotationTarget.m_annotatedField)", 
+                		"set(!@test.expression.IPersistable int test.expression.AnnotationTarget.m_annotatedField)",
 						NAMESPACE).getAdvisedClassFilterExpression().match(
                 new ExpressionContext(PointcutType.SET, s_field, null)
 				)
@@ -348,7 +348,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
     	// HINT wrong field type
     	assertFalse(
     			new ExpressionInfo(
-    					"get(@Persistable int test.expression.AnnotationTarget.m_annotatedField) && !within(@Service)",
+    					"get(@test.expression.IPersistable int test.expression.AnnotationTarget.m_annotatedField) && !within(@test.expression.IService)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.GET, s_field, s_declaringType)
 				)
@@ -357,7 +357,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
     	// HINT field type ignored
     	assertTrue(
     			new ExpressionInfo(
-    					"get(@Persistable int test.expression.AnnotationTarget.m_annotatedField) && !within(@Service)",
+    					"get(@test.expression.IPersistable int test.expression.AnnotationTarget.m_annotatedField) && !within(@test.expression.IService)",
 						NAMESPACE).getAdvisedClassFilterExpression().match(
 				new ExpressionContext(PointcutType.GET, s_field, s_declaringType)
 				)
@@ -365,7 +365,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
 
     	assertFalse(
     			new ExpressionInfo(
-    					"get(@Persistable java.lang.Object m_innerField) && within(!@Service test.expression.*)",
+    					"get(@test.expression.IPersistable java.lang.Object m_innerField) && within(!@test.expression.IService test.expression.*)",
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.GET, s_innerField, s_innerType)
 				)
@@ -374,7 +374,7 @@ public class AdvisedClassFilterExpressionTest extends AnnotationExpressionTest {
     	// HINT annotations and types ignored
     	assertTrue(
     			new ExpressionInfo(
-    					"get(!@Persistable String m_innerField) && within(@Service test.expression.*)",
+    					"get(!@test.expression.IPersistable String m_innerField) && within(@test.expression.IService test.expression.*)",
 						NAMESPACE).getAdvisedClassFilterExpression().match(
 				new ExpressionContext(PointcutType.GET, s_innerField, s_innerType)
 				)

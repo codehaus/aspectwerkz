@@ -70,16 +70,16 @@ public class OptimizeAspect {
     /** @Expression withincode(* test.optimizations.OptimizeTest.testJoinPoint(..)) && target(test.optimizations.OptimizeTest$OptimizeJoinPoint) */
     Pointcut pc_in;
 
-    /** @Before (call(* test.optimizations.OptimizeTest$IOptimize.before())
+    /** @Before "(call(* test.optimizations.OptimizeTest$IOptimize.before())
      *          || call(* test.optimizations.OptimizeTest$IOptimize.beforeAround())
-     *          ) && pc_in
+     *          ) && pc_in"
      */
     public void beforeJoinPoint(JoinPoint jp) {
         OptimizeTest.log("beforeJP-" + jp.getSignature().getName() + "-" + jp.getCallee().toString() + "-" + jp.getCaller().toString());
     }
-    /** @Around (call(* test.optimizations.OptimizeTest$IOptimize.around())
+    /** @Around "(call(* test.optimizations.OptimizeTest$IOptimize.around())
      *          || call(* test.optimizations.OptimizeTest$IOptimize.beforeAround())
-     *          ) && pc_in
+     *          ) && pc_in"
      */
     public Object aroundJoinPoint(JoinPoint jp) throws Throwable {
         OptimizeTest.log("aroundJP-" + jp.getSignature().getName() + "-" + jp.getCallee().toString() + "-" + jp.getCaller().toString());
