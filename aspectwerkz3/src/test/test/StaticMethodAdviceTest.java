@@ -46,19 +46,13 @@ public class StaticMethodAdviceTest extends TestCase {
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
     }
 
-    //    public void testGetJoinPointMetaData() {
-    //        String param = "parameter";
-    //        String pointcutName = joinPointMetaData(param);
-    //        assertEquals(
-    //                getClass().getName() +
-    //                "___AW_$_AW_$joinPointMetaData$_AW_$1$_AW_$test_StaticMethodAdviceTest" +
-    //                param +
-    //                param.getClass().getName() +
-    //                "java.lang.String" +
-    //                "result",
-    //                pointcutName
-    //        );
-    //    }
+    public void testGetJoinPointMetaData() {
+        String param = "parameter";
+        String pointcutName = joinPointMetaData(param);
+        assertEquals(getClass().getName() + "___AW_$_AW_$joinPointMetaData$_AW_$1$_AW_$test_StaticMethodAdviceTest"
+                     + param + param.getClass().getName() + "java.lang.String" + "result", pointcutName);
+    }
+
     public void testHasPointcutButNoAdvice() {
         try {
             hasPointcutButNoAdvice();
@@ -91,6 +85,7 @@ public class StaticMethodAdviceTest extends TestCase {
         assertEquals(1L, getLong());
     }
 
+    //
     public void testReturnInt() {
         assertEquals(1, getInt());
     }
