@@ -52,8 +52,7 @@ public class ConstructorCallTransformer implements Transformer {
      * @param context the transformation context
      * @param klass the class set.
      */
-    public void transform(final Context context, final Klass klass) throws NotFoundException,
-            CannotCompileException {
+    public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
 
         //AXm_joinPointIndex =
@@ -63,10 +62,7 @@ public class ConstructorCallTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
-            if (classFilter(definition, new ExpressionContext(
-                PointcutType.CALL,
-                classInfo,
-                classInfo), ctClass)) {
+            if (classFilter(definition, new ExpressionContext(PointcutType.CALL, classInfo, classInfo), ctClass)) {
                 continue;
             }
             ctClass.instrument(new ExprEditor() {
@@ -101,9 +97,7 @@ public class ConstructorCallTransformer implements Transformer {
                         MemberInfo withinMethodInfo = null;
                         boolean isWithinInfoAMethod = true;
                         if (where instanceof CtMethod) {
-                            withinMethodInfo = JavassistMethodInfo.getMethodInfo(
-                                (CtMethod) where,
-                                context.getLoader());
+                            withinMethodInfo = JavassistMethodInfo.getMethodInfo((CtMethod) where, context.getLoader());
                         } else if (where instanceof CtConstructor) {
                             withinMethodInfo = JavassistConstructorInfo.getConstructorInfo(
                                 (CtConstructor) where,
@@ -113,8 +107,9 @@ public class ConstructorCallTransformer implements Transformer {
 
                         // create the constructor info
                         CtConstructor constructor = newExpr.getConstructor();
-                        ConstructorInfo calleeSideConstructorInfo = JavassistConstructorInfo
-                                .getConstructorInfo(constructor, context.getLoader());
+                        ConstructorInfo calleeSideConstructorInfo = JavassistConstructorInfo.getConstructorInfo(
+                            constructor,
+                            context.getLoader());
                         ExpressionContext ctx = new ExpressionContext(
                             PointcutType.CALL,
                             calleeSideConstructorInfo,
@@ -130,9 +125,7 @@ public class ConstructorCallTransformer implements Transformer {
                             CtClass declaringClass = ctConstructor.getDeclaringClass();
                             if (!declaringClass.getName().replace('/', '.').equals(
                                 where.getDeclaringClass().getName().replace('/', '.'))) {
-                                declaringClassMethodName = addCalleeMethodDeclaringClassField(
-                                    ctClass,
-                                    ctConstructor);
+                                declaringClassMethodName = addCalleeMethodDeclaringClassField(ctClass, ctConstructor);
                             }
 
                             // call the wrapper method instead of the callee
@@ -197,9 +190,8 @@ public class ConstructorCallTransformer implements Transformer {
      * @param ctConstructor the constructor
      * @return the name of the field
      */
-    private String addCalleeMethodDeclaringClassField(
-        final CtClass ctClass,
-        final CtConstructor ctConstructor) throws NotFoundException, CannotCompileException {
+    private String addCalleeMethodDeclaringClassField(final CtClass ctClass, final CtConstructor ctConstructor) throws NotFoundException,
+            CannotCompileException {
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD
             + TransformationUtil.DELIMITER
             + "init"
@@ -215,10 +207,7 @@ public class ConstructorCallTransformer implements Transformer {
             }
         }
         if (!hasField) {
-            CtField field = new CtField(
-                ctClass.getClassPool().get("java.lang.Class"),
-                fieldName,
-                ctClass);
+            CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"), fieldName, ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class#forName(\""
                 + ctConstructor.getDeclaringClass().getName().replace('/', '.')
@@ -235,10 +224,7 @@ public class ConstructorCallTransformer implements Transformer {
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(
-        final SystemDefinition definition,
-        final ExpressionContext ctx,
-        final CtClass cg) {
+    public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }

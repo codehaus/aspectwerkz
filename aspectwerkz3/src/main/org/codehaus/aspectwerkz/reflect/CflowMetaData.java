@@ -70,16 +70,7 @@ public class CflowMetaData {
 
     // --- over-ridden methods ---
     public String toString() {
-        return '['
-            + super.toString()
-            + ": "
-            + ','
-            + m_className
-            + ','
-            + m_classMetaData
-            + ','
-            + m_methodMetaData
-            + ']';
+        return '[' + super.toString() + ": " + ',' + m_className + ',' + m_classMetaData + ',' + m_methodMetaData + ']';
     }
 
     public int hashCode() {

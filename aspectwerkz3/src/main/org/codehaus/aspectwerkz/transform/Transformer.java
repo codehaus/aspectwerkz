@@ -10,13 +10,13 @@ package org.codehaus.aspectwerkz.transform;
 import org.codehaus.aspectwerkz.transform.delegation.Klass;
 
 /**
- * Component for class transformation At load time / post compilation time: transform At runtime to
- * activate prepared declarations: activate
+ * Component for class transformation At load time / post compilation time: transform At runtime to activate prepared
+ * declarations: activate
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public interface Transformer {
-    
+
     public final static int STATUS_SKIP = 1;
 
     public final static int STATUS_HAS_NO_POINTCUT = 2;

@@ -98,9 +98,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         } else if (isJavaReferenceType(identifier)) {
             return handleReferenceIdentifier(identifier);
         } else {
-            throw new RuntimeException("unsupported format for java type or reference ["
-                + identifier
-                + "]");
+            throw new RuntimeException("unsupported format for java type or reference [" + identifier + "]");
         }
     }
 
@@ -182,10 +180,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         return methodInfo;
     }
 
-    private void invokeSetterMethod(
-        final MethodInfo methodInfo,
-        final Object typedValue,
-        final String valueName) {
+    private void invokeSetterMethod(final MethodInfo methodInfo, final Object typedValue, final String valueName) {
         try {
             methodInfo.setterMethod.invoke(m_annotationProxy, new Object[] {
                 typedValue
@@ -295,9 +290,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         int index = identifier.lastIndexOf('.');
         String className = identifier.substring(0, index);
         if (className.endsWith("[]")) {
-            throw new UnsupportedOperationException("does currently not support array types ["
-                + identifier
-                + "]");
+            throw new UnsupportedOperationException("does currently not support array types [" + identifier + "]");
         }
         if (className.equals("long")) {
             return long.class;
@@ -319,10 +312,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             try {
                 return Thread.currentThread().getContextClassLoader().loadClass(className);
             } catch (Exception e) {
-                throw new RuntimeException("could not load class ["
-                    + className
-                    + "] due to: "
-                    + e.toString());
+                throw new RuntimeException("could not load class [" + className + "] due to: " + e.toString());
             }
         }
     }
@@ -336,10 +326,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             Field field = clazz.getDeclaredField(fieldName);
             return field.get(null);
         } catch (Exception e) {
-            throw new RuntimeException("could not access reference field ["
-                + identifier
-                + "] due to: "
-                + e.toString());
+            throw new RuntimeException("could not access reference field [" + identifier + "] due to: " + e.toString());
         }
     }
 

@@ -43,8 +43,7 @@ public class QDoxParser {
     private String m_className;
 
     /**
-     * Transforms the QDox JavaMethod parameters to a String array with the types represented as
-     * strings.
+     * Transforms the QDox JavaMethod parameters to a String array with the types represented as strings.
      * 
      * @param method the JavaMethod
      * @return an array with the types as strings

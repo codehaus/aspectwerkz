@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * A repository for the class info hierarchy. Is class loader aware. <p/>TODO refactor some with
- * JavaClassInfoRepository but keep em separate for system runtime sake in AOPC (WLS)
+ * A repository for the class info hierarchy. Is class loader aware. <p/>TODO refactor some with JavaClassInfoRepository
+ * but keep em separate for system runtime sake in AOPC (WLS)
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -125,8 +125,8 @@ public class JavassistClassInfoRepository {
      * @param className
      * @param loader
      * @return the class info
-     * @TODO might clash for specific class loader lookup algorithms, user need to override this
-     *       class and implement this method
+     * @TODO might clash for specific class loader lookup algorithms, user need to override this class and implement
+     *       this method
      */
     public ClassInfo checkParentClassRepository(final String className, final ClassLoader loader) {
         if (loader == null) {

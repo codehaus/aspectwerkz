@@ -19,10 +19,9 @@ import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
 /**
- * Instruments the java.lang.ClassLoader to plug in the Class PreProcessor mechanism using
- * Javassist. <p/>We are using a lazy initialization of the class preprocessor to allow all class
- * pre processor logic to be in system classpath and not in bootclasspath. <p/>This implementation
- * should support IBM custom JRE
+ * Instruments the java.lang.ClassLoader to plug in the Class PreProcessor mechanism using Javassist. <p/>We are using a
+ * lazy initialization of the class preprocessor to allow all class pre processor logic to be in system classpath and
+ * not in bootclasspath. <p/>This implementation should support IBM custom JRE
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */

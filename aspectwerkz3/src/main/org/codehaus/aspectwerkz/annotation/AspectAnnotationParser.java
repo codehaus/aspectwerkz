@@ -19,8 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Extracts the aspects annotations from the class files and creates a meta-data representation of
- * them.
+ * Extracts the aspects annotations from the class files and creates a meta-data representation of them.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
@@ -33,10 +32,7 @@ public class AspectAnnotationParser {
      * @param aspectDef the aspect definition
      * @param definition the aspectwerkz definition
      */
-    public void parse(
-        final Class klass,
-        final AspectDefinition aspectDef,
-        final SystemDefinition definition) {
+    public void parse(final Class klass, final AspectDefinition aspectDef, final SystemDefinition definition) {
         if (klass == null) {
             throw new IllegalArgumentException("class to parse can not be null");
         }
@@ -75,9 +71,7 @@ public class AspectAnnotationParser {
         Field[] fieldList = klass.getDeclaredFields();
         for (int i = 0; i < fieldList.length; i++) {
             Field field = fieldList[i];
-            List expressionAnnotations = Annotations.getAnnotations(
-                AnnotationC.ANNOTATION_EXPRESSION,
-                field);
+            List expressionAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_EXPRESSION, field);
             for (Iterator iterator = expressionAnnotations.iterator(); iterator.hasNext();) {
                 ExpressionAnnotationProxy annotation = (ExpressionAnnotationProxy) iterator.next();
                 if (annotation != null) {
@@ -87,9 +81,7 @@ public class AspectAnnotationParser {
                         aspectDef);
                 }
             }
-            List implementsAnnotations = Annotations.getAnnotations(
-                AnnotationC.ANNOTATION_IMPLEMENTS,
-                field);
+            List implementsAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_IMPLEMENTS, field);
             for (Iterator iterator = implementsAnnotations.iterator(); iterator.hasNext();) {
                 ImplementsAnnotationProxy annotation = (ImplementsAnnotationProxy) iterator.next();
                 if (annotation != null) {
@@ -144,10 +136,8 @@ public class AspectAnnotationParser {
                 ExpressionAnnotationProxy annotation = (ExpressionAnnotationProxy) iterator.next();
                 if (annotation != null) {
 
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                        AspectAnnotationParser.getMethodPointcutCallSignature(method, annotation),
-                        annotation.expression(),
-                        aspectDef);
+                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(AspectAnnotationParser
+                            .getMethodPointcutCallSignature(method, annotation), annotation.expression(), aspectDef);
                 }
             }
         }
@@ -158,9 +148,7 @@ public class AspectAnnotationParser {
             Method method = (Method) it.next();
 
             // create the advice name out of the class and method name, <classname>.<methodname>
-            List aroundAnnotations = Annotations.getAnnotations(
-                AnnotationC.ANNOTATION_AROUND,
-                method);
+            List aroundAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_AROUND, method);
             for (Iterator iterator = aroundAnnotations.iterator(); iterator.hasNext();) {
                 AroundAnnotationProxy aroundAnnotation = (AroundAnnotationProxy) iterator.next();
                 if (aroundAnnotation != null) {
@@ -174,9 +162,7 @@ public class AspectAnnotationParser {
                         aspectDef);
                 }
             }
-            List beforeAnnotations = Annotations.getAnnotations(
-                AnnotationC.ANNOTATION_BEFORE,
-                method);
+            List beforeAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_BEFORE, method);
             for (Iterator iterator = beforeAnnotations.iterator(); iterator.hasNext();) {
                 BeforeAnnotationProxy beforeAnnotation = (BeforeAnnotationProxy) iterator.next();
                 if (beforeAnnotation != null) {
@@ -190,8 +176,7 @@ public class AspectAnnotationParser {
                         aspectDef);
                 }
             }
-            List afterAnnotations = Annotations
-                    .getAnnotations(AnnotationC.ANNOTATION_AFTER, method);
+            List afterAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_AFTER, method);
             for (Iterator iterator = afterAnnotations.iterator(); iterator.hasNext();) {
                 AfterAnnotationProxy afterAnnotation = (AfterAnnotationProxy) iterator.next();
                 if (afterAnnotation != null) {
@@ -209,9 +194,8 @@ public class AspectAnnotationParser {
     }
 
     /**
-     * Looks for
+     * Looks for "@Introduce IntroduceAttribute" defined at aspect inner class level
      * 
-     * "@Introduce IntroduceAttribute" defined at aspect inner class level
      * @param klass of aspect
      * @param aspectDef
      */
@@ -229,18 +213,19 @@ public class AspectAnnotationParser {
                 } catch (ClassNotFoundException e) {
                     throw new WrappedRuntimeException(e);
                 }
-                DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(mixin, annotation
-                        .expression(), annotation.deploymentModel(), aspectDef);
+                DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
+                    mixin,
+                    annotation.expression(),
+                    annotation.deploymentModel(),
+                    aspectDef);
             }
         }
     }
 
     /**
-     * Returns the call signature of a Pointcut or advice with signature
-     * methodName(paramType paramName, ...)  [we ignore the return type]
-     *
-     * If there is no parameters, the call signature is not "name()" but just "name"
-     *
+     * Returns the call signature of a Pointcut or advice with signature methodName(paramType paramName, ...) [we ignore
+     * the return type] If there is no parameters, the call signature is not "name()" but just "name"
+     * 
      * @param method
      * @return annotationProxy that contains the ordered map of call parameters
      */
@@ -249,7 +234,7 @@ public class AspectAnnotationParser {
         if (annotationProxy.getArgumentNames().size() > 0) {
             buffer.append("(");
             for (Iterator it = annotationProxy.getArgumentNames().iterator(); it.hasNext();) {
-                String parameter = (String)it.next();
+                String parameter = (String) it.next();
                 buffer.append(annotationProxy.getArgumentType(parameter));
                 buffer.append(" ").append(parameter);
                 if (it.hasNext()) {
@@ -260,6 +245,5 @@ public class AspectAnnotationParser {
         }
         return buffer.toString();
     }
-
 
 }

@@ -29,8 +29,7 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
     private List m_stack;
 
     /**
-     * The transformer to add serial ver uid Out of the transformation stack to be applied only if
-     * class is weaved
+     * The transformer to add serial ver uid Out of the transformation stack to be applied only if class is weaved
      */
     private Transformer m_addSerialVerUidTransformer;
 
@@ -101,10 +100,7 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
                     advisedAtLeastOnce = true;
                 }
                 if (context.isAdvised()) {
-                    AspectWerkzPreProcessor.log(" "
-                        + className
-                        + " <- "
-                        + transformer.getClass().getName());
+                    AspectWerkzPreProcessor.log(" " + className + " <- " + transformer.getClass().getName());
                 }
             }
         }

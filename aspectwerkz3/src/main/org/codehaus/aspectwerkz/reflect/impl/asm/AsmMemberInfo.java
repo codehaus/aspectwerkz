@@ -99,9 +99,8 @@ public abstract class AsmMemberInfo implements MemberInfo {
      */
     public ClassInfo getDeclaringType() {
         if (m_declaringType == null) {
-            m_declaringType = AsmClassInfo.createClassInfoFromStream(
-                m_declaringTypeName,
-                (ClassLoader) m_loaderRef.get());
+            m_declaringType = AsmClassInfo.createClassInfoFromStream(m_declaringTypeName, (ClassLoader) m_loaderRef
+                    .get());
         }
         return m_declaringType;
     }
@@ -131,11 +130,9 @@ public abstract class AsmMemberInfo implements MemberInfo {
                 CustomAttribute customAttribute = (CustomAttribute) attributes;
                 byte[] bytes = customAttribute.getBytes();
                 try {
-                    m_annotations.add(new ObjectInputStream(new ByteArrayInputStream(bytes))
-                            .readObject());
+                    m_annotations.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
                 } catch (Exception e) {
-                    System.err.println("WARNING: could not deserialize annotation due to: "
-                        + e.toString());
+                    System.err.println("WARNING: could not deserialize annotation due to: " + e.toString());
                 }
             }
             attributes = attributes.next;

@@ -10,16 +10,14 @@ package org.codehaus.aspectwerkz.transform;
 import java.util.List;
 
 /**
- * Interface for the different transformation context implementations.
- *
- * FIXME crap: abstract method on an interface. Refactor some in between if we are sure to keep the delegation model
+ * Interface for the different transformation context implementations. FIXME crap: abstract method on an interface.
+ * Refactor some in between if we are sure to keep the delegation model
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface Context {
 
     public String getClassName();
-
 
     /**
      * Sets the current bytecode.
@@ -64,8 +62,7 @@ public interface Context {
     public abstract List getDefinitions();
 
     /**
-     * Marks the class being transformed as advised. The marker can at most be set once per class
-     * per transformer
+     * Marks the class being transformed as advised. The marker can at most be set once per class per transformer
      */
     public abstract void markAsAdvised();
 

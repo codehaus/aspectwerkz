@@ -3,17 +3,16 @@
 package org.codehaus.aspectwerkz.expression.ast;
 
 public class ASTExecution extends SimpleNode {
-  public ASTExecution(int id) {
-    super(id);
-  }
+    public ASTExecution(int id) {
+        super(id);
+    }
 
-  public ASTExecution(ExpressionParser p, int id) {
-    super(p, id);
-  }
+    public ASTExecution(ExpressionParser p, int id) {
+        super(p, id);
+    }
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+    /** Accept the visitor. * */
+    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

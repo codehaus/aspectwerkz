@@ -84,8 +84,8 @@ public class AddImplementationTransformer implements Transformer {
                 if (methodToIntroduce == null) {
                     continue;
                 }
-                transformer.createProxyMethod(ctClass, methodToIntroduce, definition
-                        .getMixinIndexByName(introDef.getName()), methodIndex, definition, context);
+                transformer.createProxyMethod(ctClass, methodToIntroduce, definition.getMixinIndexByName(introDef
+                        .getName()), methodIndex, definition, context);
                 isClassAdvised = true;
             }
         }
@@ -176,10 +176,7 @@ public class AddImplementationTransformer implements Transformer {
      * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(
-        final CtClass cg,
-        final ExpressionContext ctx,
-        final SystemDefinition definition) {
+    public static boolean classFilter(final CtClass cg, final ExpressionContext ctx, final SystemDefinition definition) {
         if (cg.isInterface()) {
             return true;
         }

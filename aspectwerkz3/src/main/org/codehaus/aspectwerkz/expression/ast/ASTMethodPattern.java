@@ -37,18 +37,14 @@ public class ASTMethodPattern extends SimpleNode {
     public void setReturnTypePattern(String pattern) {
         if (pattern.endsWith("+")) {
             pattern = pattern.substring(0, pattern.length() - 1);
-            m_returnTypePattern = Pattern.compileTypePattern(
-                pattern,
-                SubtypePatternType.MATCH_ON_ALL_METHODS);
+            m_returnTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.MATCH_ON_ALL_METHODS);
         } else if (pattern.endsWith("#")) {
             pattern = pattern.substring(0, pattern.length() - 1);
             m_returnTypePattern = Pattern.compileTypePattern(
                 pattern,
                 SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY);
         } else {
-            m_returnTypePattern = Pattern.compileTypePattern(
-                pattern,
-                SubtypePatternType.NOT_HIERARCHICAL);
+            m_returnTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.NOT_HIERARCHICAL);
         }
     }
 
@@ -57,18 +53,14 @@ public class ASTMethodPattern extends SimpleNode {
         String classPattern = pattern.substring(0, index);
         if (classPattern.endsWith("+")) {
             classPattern = classPattern.substring(0, classPattern.length() - 1);
-            m_declaringTypePattern = Pattern.compileTypePattern(
-                classPattern,
-                SubtypePatternType.MATCH_ON_ALL_METHODS);
+            m_declaringTypePattern = Pattern.compileTypePattern(classPattern, SubtypePatternType.MATCH_ON_ALL_METHODS);
         } else if (classPattern.endsWith("#")) {
             classPattern = classPattern.substring(0, classPattern.length() - 1);
             m_declaringTypePattern = Pattern.compileTypePattern(
                 classPattern,
                 SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY);
         } else {
-            m_declaringTypePattern = Pattern.compileTypePattern(
-                classPattern,
-                SubtypePatternType.NOT_HIERARCHICAL);
+            m_declaringTypePattern = Pattern.compileTypePattern(classPattern, SubtypePatternType.NOT_HIERARCHICAL);
         }
         String methodNamePattern = pattern.substring(index + 1, pattern.length());
         m_methodNamePattern = Pattern.compileNamePattern(methodNamePattern);

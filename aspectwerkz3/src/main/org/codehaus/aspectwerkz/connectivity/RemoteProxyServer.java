@@ -20,10 +20,9 @@ import java.net.Socket;
 import java.util.Properties;
 
 /**
- * Server that listens to a specified port for client requests. <p/>The implementation is based on
- * sockets. <p/>The invoker spawns a specified number of listener threads in which each one of these
- * spawns a new RemoteProxyServerThread for each client request that comes in. <p/>Uses a thread
- * pool from util.concurrent.
+ * Server that listens to a specified port for client requests. <p/>The implementation is based on sockets. <p/>The
+ * invoker spawns a specified number of listener threads in which each one of these spawns a new RemoteProxyServerThread
+ * for each client request that comes in. <p/>Uses a thread pool from util.concurrent.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -197,10 +196,7 @@ public class RemoteProxyServer implements Runnable {
                     THREAD_POOL_KEEP_ALIVE_TIME,
                     THREAD_POOL_WAIT_WHEN_BLOCKED);
             } else {
-                createDynamicThreadPool(
-                    THREAD_POOL_MIN_SIZE,
-                    THREAD_POOL_INIT_SIZE,
-                    THREAD_POOL_KEEP_ALIVE_TIME);
+                createDynamicThreadPool(THREAD_POOL_MIN_SIZE, THREAD_POOL_INIT_SIZE, THREAD_POOL_KEEP_ALIVE_TIME);
             }
             m_listenerThreads = new Thread[NUM_LISTENER_THREADS];
             for (int i = 0; i < NUM_LISTENER_THREADS; i++) {
@@ -227,8 +223,8 @@ public class RemoteProxyServer implements Runnable {
     }
 
     /**
-     * Does the actual work of listening for a client request and spawns a new
-     * RemoteProxyServerThread to serve the client.
+     * Does the actual work of listening for a client request and spawns a new RemoteProxyServerThread to serve the
+     * client.
      */
     public void run() {
         try {

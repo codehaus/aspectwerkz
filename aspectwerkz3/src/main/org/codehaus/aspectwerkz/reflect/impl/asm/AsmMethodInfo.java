@@ -57,7 +57,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
      */
     AsmMethodInfo(final MethodStruct method, final String declaringType, final ClassLoader loader) {
         super(method, declaringType, loader);
-        
+
         m_returnTypeName = Type.getReturnType(method.desc).getClassName();
         Type[] argTypes = Type.getArgumentTypes(method.desc);
         m_parameterTypeNames = new String[argTypes.length];
@@ -98,9 +98,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
      */
     public ClassInfo getReturnType() {
         if (m_returnType == null) {
-            m_returnType = AsmClassInfo.createClassInfoFromStream(
-                m_returnTypeName,
-                (ClassLoader) m_loaderRef.get());
+            m_returnType = AsmClassInfo.createClassInfoFromStream(m_returnTypeName, (ClassLoader) m_loaderRef.get());
         }
         return m_returnType;
     }
@@ -147,8 +145,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
             return false;
         }
         MethodInfo methodInfo = (MethodInfo) o;
-        if (!m_declaringType.getName().toString().equals(
-            methodInfo.getDeclaringType().getName().toString())) {
+        if (!m_declaringType.getName().toString().equals(methodInfo.getDeclaringType().getName().toString())) {
             return false;
         }
         if (!m_member.name.equals(methodInfo.getName().toString())) {
@@ -159,8 +156,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
             return false;
         }
         for (int i = 0; i < m_parameterTypes.length; i++) {
-            if (!m_parameterTypes[i].getName().toString().equals(
-                parameterTypes[i].getName().toString())) {
+            if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
                 return false;
             }
         }

@@ -11,8 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 /**
- * Untyped annotation proxy. <p/>To be used with JavDoc-style, pure string based, one value only
- * type of annotations
+ * Untyped annotation proxy. <p/>To be used with JavDoc-style, pure string based, one value only type of annotations
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */

@@ -27,18 +27,13 @@ public class ASTFieldPattern extends SimpleNode {
     public void setFieldTypePattern(String pattern) {
         if (pattern.endsWith("+")) {
             pattern = pattern.substring(0, pattern.length() - 1);
-            m_fieldTypePattern = Pattern.compileTypePattern(
-                pattern,
-                SubtypePatternType.MATCH_ON_ALL_METHODS);
+            m_fieldTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.MATCH_ON_ALL_METHODS);
         } else if (pattern.endsWith("#")) {
             pattern = pattern.substring(0, pattern.length() - 1);
-            m_fieldTypePattern = Pattern.compileTypePattern(
-                pattern,
-                SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY);
+            m_fieldTypePattern = Pattern
+                    .compileTypePattern(pattern, SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY);
         } else {
-            m_fieldTypePattern = Pattern.compileTypePattern(
-                pattern,
-                SubtypePatternType.NOT_HIERARCHICAL);
+            m_fieldTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.NOT_HIERARCHICAL);
         }
     }
 
@@ -47,18 +42,14 @@ public class ASTFieldPattern extends SimpleNode {
         String classPattern = pattern.substring(0, index);
         if (classPattern.endsWith("+")) {
             classPattern = classPattern.substring(0, classPattern.length() - 1);
-            m_declaringTypePattern = Pattern.compileTypePattern(
-                classPattern,
-                SubtypePatternType.MATCH_ON_ALL_METHODS);
+            m_declaringTypePattern = Pattern.compileTypePattern(classPattern, SubtypePatternType.MATCH_ON_ALL_METHODS);
         } else if (classPattern.endsWith("#")) {
             classPattern = classPattern.substring(0, classPattern.length() - 1);
             m_declaringTypePattern = Pattern.compileTypePattern(
                 classPattern,
                 SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY);
         } else {
-            m_declaringTypePattern = Pattern.compileTypePattern(
-                classPattern,
-                SubtypePatternType.NOT_HIERARCHICAL);
+            m_declaringTypePattern = Pattern.compileTypePattern(classPattern, SubtypePatternType.NOT_HIERARCHICAL);
         }
         String namePattern = pattern.substring(index + 1, pattern.length());
         m_fieldNamePattern = Pattern.compileNamePattern(namePattern);

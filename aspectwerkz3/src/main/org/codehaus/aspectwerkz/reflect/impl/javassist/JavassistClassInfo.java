@@ -137,22 +137,28 @@ public class JavassistClassInfo implements ClassInfo {
             m_name = klass.getName();
             CtMethod[] methods = m_class.getDeclaredMethods();
             for (int i = 0; i < methods.length; i++) {
-                m_methods.put(
-                    JavassistMethodInfo.calculateHash(methods[i]),
-                    new JavassistMethodInfo(methods[i], this, loader, m_attributeExtractor));
+                m_methods.put(JavassistMethodInfo.calculateHash(methods[i]), new JavassistMethodInfo(
+                    methods[i],
+                    this,
+                    loader,
+                    m_attributeExtractor));
             }
             CtConstructor[] constructors = m_class.getDeclaredConstructors();
             for (int i = 0; i < constructors.length; i++) {
                 CtConstructor constructor = constructors[i];
-                m_constructors.put(
-                    JavassistConstructorInfo.calculateHash(constructor),
-                    new JavassistConstructorInfo(constructor, this, loader, m_attributeExtractor));
+                m_constructors.put(JavassistConstructorInfo.calculateHash(constructor), new JavassistConstructorInfo(
+                    constructor,
+                    this,
+                    loader,
+                    m_attributeExtractor));
             }
             if (m_class.getClassInitializer() != null) {
                 CtConstructor constructor = m_class.getClassInitializer();
-                m_constructors.put(
-                    JavassistConstructorInfo.calculateHash(constructor),
-                    new JavassistConstructorInfo(constructor, this, loader, m_attributeExtractor));
+                m_constructors.put(JavassistConstructorInfo.calculateHash(constructor), new JavassistConstructorInfo(
+                    constructor,
+                    this,
+                    loader,
+                    m_attributeExtractor));
             }
             CtField[] fields = m_class.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
@@ -176,8 +182,7 @@ public class JavassistClassInfo implements ClassInfo {
      * @return the class info
      */
     public static ClassInfo getClassInfo(final CtClass clazz, final ClassLoader loader) {
-        JavassistClassInfoRepository repository = JavassistClassInfoRepository
-                .getRepository(loader);
+        JavassistClassInfoRepository repository = JavassistClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(clazz.getName());
         if (classInfo == null) {
             classInfo = new JavassistClassInfo(clazz, loader);
@@ -296,9 +301,7 @@ public class JavassistClassInfo implements ClassInfo {
                 m_interfaces = new ClassInfo[interfaces.length];
                 for (int i = 0; i < interfaces.length; i++) {
                     CtClass anInterface = interfaces[i];
-                    ClassInfo classInfo = JavassistClassInfo.getClassInfo(
-                        anInterface,
-                        (ClassLoader) m_loaderRef.get());
+                    ClassInfo classInfo = JavassistClassInfo.getClassInfo(anInterface, (ClassLoader) m_loaderRef.get());
                     m_interfaces[i] = classInfo;
                     if (!m_classInfoRepository.hasClassInfo(anInterface.getName())) {
                         m_classInfoRepository.addClassInfo(classInfo);
@@ -324,9 +327,7 @@ public class JavassistClassInfo implements ClassInfo {
                     if (m_classInfoRepository.hasClassInfo(superclass.getName())) {
                         m_superClass = m_classInfoRepository.getClassInfo(superclass.getName());
                     } else {
-                        m_superClass = JavassistClassInfo.getClassInfo(
-                            superclass,
-                            (ClassLoader) m_loaderRef.get());
+                        m_superClass = JavassistClassInfo.getClassInfo(superclass, (ClassLoader) m_loaderRef.get());
                         m_classInfoRepository.addClassInfo(m_superClass);
                     }
                 }

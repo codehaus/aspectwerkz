@@ -15,8 +15,7 @@ import javassist.CtClass;
 import javassist.LoaderClassPath;
 
 /**
- * The AspectWerkz class concept. <p/>Contains informations and data about the class being
- * transformed.
+ * The AspectWerkz class concept. <p/>Contains informations and data about the class being transformed.
  * 
  * @TODO: contains javassist specific stuff, refactor out and use an abstraction
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -39,8 +38,7 @@ public class Klass {
     private CtClass m_ctClass;
 
     /**
-     * The Javassist initial class gen to calculate serial ver uid based on initial bytecode Lazily
-     * initialized
+     * The Javassist initial class gen to calculate serial ver uid based on initial bytecode Lazily initialized
      */
     private CtClass m_initialCtClass;
 
@@ -118,10 +116,7 @@ public class Klass {
      * @param bytecode the byte code
      * @return the Javassist class gen
      */
-    public static CtClass fromByte(
-        final String name,
-        final byte[] bytecode,
-        final ClassLoader loader) {
+    public static CtClass fromByte(final String name, final byte[] bytecode, final ClassLoader loader) {
         try {
             ClassPool cp = new ClassPool(null);
             cp.insertClassPath(new ByteArrayClassPath(name, bytecode));

@@ -97,8 +97,8 @@ public final class CrossCuttingInfo implements Serializable {
     }
 
     /**
-     * Copy constructor - creates a clone of the cross-cutting info. Creates a new instance of the
-     * cross-cutting class it holds.
+     * Copy constructor - creates a clone of the cross-cutting info. Creates a new instance of the cross-cutting class
+     * it holds.
      * 
      * @return a clone of the cross-cutting info
      */
@@ -248,8 +248,8 @@ public final class CrossCuttingInfo implements Serializable {
     }
 
     /**
-     * Returns the target instance for the mixin of given name which is defined from within this
-     * aspect (mixin can have different deployment model from aspect)
+     * Returns the target instance for the mixin of given name which is defined from within this aspect (mixin can have
+     * different deployment model from aspect)
      * 
      * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
      * @return the target instance or null if not compliant deployment model
@@ -259,8 +259,8 @@ public final class CrossCuttingInfo implements Serializable {
     }
 
     /**
-     * Returns the target class for the mixin of given name which is defined from within this aspect
-     * (mixin can have different deployment model from aspect)
+     * Returns the target class for the mixin of given name which is defined from within this aspect (mixin can have
+     * different deployment model from aspect)
      * 
      * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
      * @return the target class or null if not compliant deployment model
@@ -270,8 +270,8 @@ public final class CrossCuttingInfo implements Serializable {
     }
 
     /**
-     * Returns the target instance for the mixin of given name which is defined from within this
-     * aspect (mixin can have different deployment model from aspect)
+     * Returns the target instance for the mixin of given name which is defined from within this aspect (mixin can have
+     * different deployment model from aspect)
      * 
      * @param mixinName of the mixin
      * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
@@ -282,8 +282,8 @@ public final class CrossCuttingInfo implements Serializable {
     }
 
     /**
-     * Returns the target class for the mixin of given name which is defined from within this aspect
-     * (mixin can have different deployment model from aspect)
+     * Returns the target class for the mixin of given name which is defined from within this aspect (mixin can have
+     * different deployment model from aspect)
      * 
      * @param mixinName of the mixin
      * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
@@ -294,8 +294,8 @@ public final class CrossCuttingInfo implements Serializable {
     }
 
     /**
-     * Return true if the CrossCuttingInfo has not yet the AspectContainer set, that means this is
-     * the prototype init time
+     * Return true if the CrossCuttingInfo has not yet the AspectContainer set, that means this is the prototype init
+     * time
      */
     public boolean isPrototype() {
         return (m_container == null);

@@ -2,14 +2,14 @@
 package org.codehaus.aspectwerkz.annotation.expression.ast;
 
 /*
- * All AST nodes must implement this interface. It provides basic machinery for constructing the
- * parent and child relationships between nodes.
+ * All AST nodes must implement this interface. It provides basic machinery for constructing the parent and child
+ * relationships between nodes.
  */
 
 public interface Node {
     /**
-     * This method is called after the node has been made the current node. It indicates that child
-     * nodes can now be added to it.
+     * This method is called after the node has been made the current node. It indicates that child nodes can now be
+     * added to it.
      */
     public void jjtOpen();
 

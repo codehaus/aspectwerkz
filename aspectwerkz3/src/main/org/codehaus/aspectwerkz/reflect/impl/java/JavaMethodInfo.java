@@ -54,8 +54,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
      */
     public static MethodInfo getMethodInfo(final Method method) {
         Class declaringClass = method.getDeclaringClass();
-        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass
-                .getClassLoader());
+        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass.getClassLoader());
         ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
@@ -73,13 +72,12 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
         //FIXME: do the same for all HASH around the code base.
         // we need one single computation be it from ASM, reflect, or Info.
         return ReflectHelper.calculateHash(method);
-//        int hash = method.getName().hashCode();
-//        for (int i = 0; i < method.getParameterTypes().length; i++) {
-//            hash = (17 * hash) + method.getParameterTypes()[i].getName().hashCode();
-//        }
-//        return hash;
+        //        int hash = method.getName().hashCode();
+        //        for (int i = 0; i < method.getParameterTypes().length; i++) {
+        //            hash = (17 * hash) + method.getParameterTypes()[i].getName().hashCode();
+        //        }
+        //        return hash;
     }
-
 
     /**
      * Returns the annotations.
@@ -167,8 +165,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
             return false;
         }
         MethodInfo methodInfo = (MethodInfo) o;
-        if (!m_declaringType.getName().toString().equals(
-            methodInfo.getDeclaringType().getName().toString())) {
+        if (!m_declaringType.getName().toString().equals(methodInfo.getDeclaringType().getName().toString())) {
             return false;
         }
         if (!m_member.getName().toString().equals(methodInfo.getName().toString())) {
@@ -180,8 +177,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
             return false;
         }
         for (int i = 0; i < parameterTypes1.length; i++) {
-            if (!parameterTypes1[i].getName().toString().equals(
-                parameterTypes2[i].getName().toString())) {
+            if (!parameterTypes1[i].getName().toString().equals(parameterTypes2[i].getName().toString())) {
                 return false;
             }
         }

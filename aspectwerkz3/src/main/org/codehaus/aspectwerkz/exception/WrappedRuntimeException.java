@@ -40,8 +40,7 @@ public class WrappedRuntimeException extends RuntimeException {
     }
 
     /**
-     * Returns the localized description of the wrapped exception in order to produce a
-     * locale-specific message.
+     * Returns the localized description of the wrapped exception in order to produce a locale-specific message.
      * 
      * @return the localized description of the wrapped exception.
      */

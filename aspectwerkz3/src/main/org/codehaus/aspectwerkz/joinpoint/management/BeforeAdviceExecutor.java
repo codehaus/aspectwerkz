@@ -33,8 +33,7 @@ public class BeforeAdviceExecutor implements Serializable {
     }
 
     /**
-     * Executes its advices one by one. After the last advice has been executed, the original method
-     * is invoked.
+     * Executes its advices one by one. After the last advice has been executed, the original method is invoked.
      * 
      * @param joinPoint the current join point
      * @return null
@@ -47,9 +46,7 @@ public class BeforeAdviceExecutor implements Serializable {
             IndexTuple index = m_adviceIndexes[i];
             int aspectIndex = index.getAspectIndex();
             int methodIndex = index.getMethodIndex();
-            index.getAspectManager().getAspectContainer(aspectIndex).invokeAdvice(
-                methodIndex,
-                joinPoint);
+            index.getAspectManager().getAspectContainer(aspectIndex).invokeAdvice(methodIndex, joinPoint);
         }
         return null;
     }

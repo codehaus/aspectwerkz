@@ -23,16 +23,15 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * A simple implementation of class preprocessor. <p/>It does not modify the bytecode. It just
- * prints on stdout some messages.
+ * A simple implementation of class preprocessor. <p/>It does not modify the bytecode. It just prints on stdout some
+ * messages.
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class StdoutPreProcessor implements ClassPreProcessor {
     /**
-     * Classloaders repository, based on a synchronized weak hashmap key = classloader value = List
-     * of URL[] representing the local search path for .class files of the classloader value is
-     * completed at each class loading
+     * Classloaders repository, based on a synchronized weak hashmap key = classloader value = List of URL[]
+     * representing the local search path for .class files of the classloader value is completed at each class loading
      */
     private static Map classloaders;
 
@@ -64,11 +63,11 @@ public class StdoutPreProcessor implements ClassPreProcessor {
 
         /*
          * URL uRoot = null; if (u!=null) { // u =
-         * jar:file:/C:/bea/weblogic81/server/lib/weblogic.jar!/weblogic/t3/srvr/T3Srvr.class //
-         * getPath = file:/C:/bea/weblogic81/server/lib/weblogic.jar!/weblogic/t3/srvr/T3Srvr.class //
-         * getFile = file:/C:/bea/weblogic81/server/lib/weblogic.jar!/weblogic/t3/srvr/T3Srvr.class
-         * int i = u.toString().indexOf('!'); if (i > 0) { try { uRoot = new
-         * URL(u.toString().substring(0, i)+"!/"); } catch (MalformedURLException e) { ; } } }
+         * jar:file:/C:/bea/weblogic81/server/lib/weblogic.jar!/weblogic/t3/srvr/T3Srvr.class // getPath =
+         * file:/C:/bea/weblogic81/server/lib/weblogic.jar!/weblogic/t3/srvr/T3Srvr.class // getFile =
+         * file:/C:/bea/weblogic81/server/lib/weblogic.jar!/weblogic/t3/srvr/T3Srvr.class int i =
+         * u.toString().indexOf('!'); if (i > 0) { try { uRoot = new URL(u.toString().substring(0, i)+"!/"); } catch
+         * (MalformedURLException e) { ; } } }
          */
         // register the classloader
         registerClassLoader(caller, klass);
@@ -88,8 +87,7 @@ public class StdoutPreProcessor implements ClassPreProcessor {
     }
 
     /**
-     * Register a weak reference on the classloader Looks for META-INF/manifest.mf resource and log
-     * a line
+     * Register a weak reference on the classloader Looks for META-INF/manifest.mf resource and log a line
      * 
      * @param loader
      * @param firstClassLoaded
@@ -126,13 +124,7 @@ public class StdoutPreProcessor implements ClassPreProcessor {
                 }
 
                 // register this loader
-                log("****"
-                    + loader
-                    + " ["
-                    + ((u == null) ? "?" : u.toString())
-                    + "] ["
-                    + firstClassLoaded
-                    + ']');
+                log("****" + loader + " [" + ((u == null) ? "?" : u.toString()) + "] [" + firstClassLoaded + ']');
                 classloaders.put(loader, new ArrayList());
             }
 
@@ -141,8 +133,7 @@ public class StdoutPreProcessor implements ClassPreProcessor {
     }
 
     /**
-     * Dumps on stdout the registered classloader hierarchy child of "parent" Using the depth to
-     * track recursivity level
+     * Dumps on stdout the registered classloader hierarchy child of "parent" Using the depth to track recursivity level
      */
     private void dumpHierarchy(ClassLoader parent, String depth) {
         // do a copy of the registered CL to allow access on classloaders structure

@@ -25,8 +25,7 @@ public class AddSerialVersionUidTransformer implements Transformer {
      */
     public void transform(Context context, Klass klass) throws Exception {
         if (JavassistHelper.isSerialVerUidNeeded(klass.getCtClass())) {
-            long initialSerialVerUid = JavassistHelper.calculateSerialVerUid(klass
-                    .getInitialCtClass());
+            long initialSerialVerUid = JavassistHelper.calculateSerialVerUid(klass.getInitialCtClass());
             JavassistHelper.setSerialVersionUID(klass.getCtClass(), initialSerialVerUid);
         }
     }

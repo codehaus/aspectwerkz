@@ -57,22 +57,15 @@ public class ConstructorExecutionTransformer implements Transformer {
             SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
-            if (classFilter(definition, new ExpressionContext(
-                PointcutType.EXECUTION,
-                classInfo,
-                null), ctClass)) {
+            if (classFilter(definition, new ExpressionContext(PointcutType.EXECUTION, classInfo, null), ctClass)) {
                 continue;
             }
             final CtConstructor[] constructors = ctClass.getConstructors();
             for (int i = 0; i < constructors.length; i++) {
                 CtConstructor constructor = constructors[i];
-                ConstructorInfo constructorInfo = JavassistConstructorInfo.getConstructorInfo(
-                    constructor,
-                    context.getLoader());
-                ExpressionContext ctx = new ExpressionContext(
-                    PointcutType.EXECUTION,
-                    constructorInfo,
-                    null);
+                ConstructorInfo constructorInfo = JavassistConstructorInfo.getConstructorInfo(constructor, context
+                        .getLoader());
+                ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, constructorInfo, null);
                 if (constructorFilter(definition, ctx)) {
                     continue;
                 }
@@ -90,9 +83,9 @@ public class ConstructorExecutionTransformer implements Transformer {
     }
 
     /**
-     * Creates a wrapper constructor for the original constructor specified. This constructor has
-     * the same signature as the original constructor and catches the invocation for further
-     * processing by the framework before redirecting to the original constructor.
+     * Creates a wrapper constructor for the original constructor specified. This constructor has the same signature as
+     * the original constructor and catches the invocation for further processing by the framework before redirecting to
+     * the original constructor.
      * 
      * @param originalConstructor the original constructor
      * @param constructorHash the constructor hash
@@ -158,8 +151,7 @@ public class ConstructorExecutionTransformer implements Transformer {
     //        ctClass.addMethod(method);
     //    }
     /**
-     * Adds a prefix to the original constructor. To make it callable only from within the framework
-     * itself.
+     * Adds a prefix to the original constructor. To make it callable only from within the framework itself.
      * 
      * @param ctClass the class
      * @param constructor the current method
@@ -176,9 +168,13 @@ public class ConstructorExecutionTransformer implements Transformer {
         newParameterTypes[parameterTypes.length] = ctClass.getClassPool().get(
             TransformationUtil.JOIN_POINT_MANAGER_CLASS);
         if (!JavassistHelper.hasConstructor(ctClass, newParameterTypes)) {
-            CtConstructor newConstructor = CtNewConstructor.make(newParameterTypes, constructor
-                    .getExceptionTypes(), CtNewConstructor.PASS_NONE, null, CtMethod.ConstParameter
-                    .string(constructor.getSignature()), ctClass);
+            CtConstructor newConstructor = CtNewConstructor.make(
+                newParameterTypes,
+                constructor.getExceptionTypes(),
+                CtNewConstructor.PASS_NONE,
+                null,
+                CtMethod.ConstParameter.string(constructor.getSignature()),
+                ctClass);
             newConstructor.setBody(constructor, null);
             newConstructor.setModifiers(accessFlags);
             CodeAttribute codeAttribute = newConstructor.getMethodInfo().getCodeAttribute();
@@ -225,9 +221,7 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param ctx the context
      * @return boolean
      */
-    public static boolean constructorFilter(
-        final SystemDefinition definition,
-        final ExpressionContext ctx) {
+    public static boolean constructorFilter(final SystemDefinition definition, final ExpressionContext ctx) {
         if (definition.hasPointcut(ctx)) {
             return false;
         } else {

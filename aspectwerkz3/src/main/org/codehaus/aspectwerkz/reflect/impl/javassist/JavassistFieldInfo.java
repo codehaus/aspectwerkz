@@ -54,8 +54,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      */
     public static FieldInfo getFieldInfo(final CtField field, final ClassLoader loader) {
         CtClass declaringClass = field.getDeclaringClass();
-        JavassistClassInfoRepository repository = JavassistClassInfoRepository
-                .getRepository(loader);
+        JavassistClassInfoRepository repository = JavassistClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
         if (classInfo == null) {
             classInfo = JavassistClassInfo.getClassInfo(declaringClass, loader);
@@ -112,8 +111,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
             return false;
         }
         FieldInfo fieldInfo = (FieldInfo) o;
-        if (!m_declaringType.getName().toString().equals(
-            fieldInfo.getDeclaringType().getName().toString())) {
+        if (!m_declaringType.getName().toString().equals(fieldInfo.getDeclaringType().getName().toString())) {
             return false;
         }
         if (!m_member.getName().equals(fieldInfo.getName())) {

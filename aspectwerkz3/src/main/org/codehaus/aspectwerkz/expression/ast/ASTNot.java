@@ -3,17 +3,16 @@
 package org.codehaus.aspectwerkz.expression.ast;
 
 public class ASTNot extends SimpleNode {
-  public ASTNot(int id) {
-    super(id);
-  }
+    public ASTNot(int id) {
+        super(id);
+    }
 
-  public ASTNot(ExpressionParser p, int id) {
-    super(p, id);
-  }
+    public ASTNot(ExpressionParser p, int id) {
+        super(p, id);
+    }
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+    /** Accept the visitor. * */
+    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

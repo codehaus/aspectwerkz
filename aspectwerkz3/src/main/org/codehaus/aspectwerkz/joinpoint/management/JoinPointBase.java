@@ -109,13 +109,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
                          final AroundAdviceExecutor aroundAdviceExecutor,
                          final BeforeAdviceExecutor beforeAdviceExecutor,
                          final AfterAdviceExecutor afterAdviceExecutor) {
-        this(
-            type,
-            targetClass,
-            joinPointMetaData,
-            aroundAdviceExecutor,
-            beforeAdviceExecutor,
-            afterAdviceExecutor);
+        this(type, targetClass, joinPointMetaData, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
     }
 
     /**
@@ -248,9 +242,8 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * 
      * @param joinPoint the join point instance
      * @return the newly created instance
-     * @throws Throwable the exception from the original constructor TODO: FIX BUG - When a
-     *             constructor has both a CALL and EXECUTION join point, only the CALL will be
-     *             executed, redirecting to the wrapper constructor
+     * @throws Throwable the exception from the original constructor TODO: FIX BUG - When a constructor has both a CALL
+     *             and EXECUTION join point, only the CALL will be executed, redirecting to the wrapper constructor
      */
     public static Object invokeTargetConstructorCall(final JoinPoint joinPoint) throws Throwable {
         ConstructorSignatureImpl signature = (ConstructorSignatureImpl) joinPoint.getSignature();
@@ -397,8 +390,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     }
 
     /**
-     * Returns the target instance ('this'). If the join point is executing in a static context it
-     * returns null.
+     * Returns the target instance ('this'). If the join point is executing in a static context it returns null.
      * 
      * @return the target instance
      */
@@ -441,13 +433,9 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     public boolean isInCflow() {
         if (m_checkCflow) {
             boolean isInCFlow = false;
-            for (Iterator iterator = m_joinPointMetaData.cflowExpressions.iterator(); iterator
-                    .hasNext();) {
-                CflowExpressionVisitorRuntime cflowExpressionRuntime = (CflowExpressionVisitorRuntime) iterator
-                        .next();
-                if (m_system.isInControlFlowOf(
-                    cflowExpressionRuntime,
-                    m_joinPointMetaData.expressionContext)) {
+            for (Iterator iterator = m_joinPointMetaData.cflowExpressions.iterator(); iterator.hasNext();) {
+                CflowExpressionVisitorRuntime cflowExpressionRuntime = (CflowExpressionVisitorRuntime) iterator.next();
+                if (m_system.isInControlFlowOf(cflowExpressionRuntime, m_joinPointMetaData.expressionContext)) {
                     isInCFlow = true;
                     break;
                 }
@@ -472,8 +460,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * 
      * @param stream the object input stream containing the serialized object
      * @throws Exception in case of failure
-     * @TODO: for this to work it requires that the instance is read from the same CL that it was
-     *        written in
+     * @TODO: for this to work it requires that the instance is read from the same CL that it was written in
      * @TODO: target instance is not read in
      */
     private void readObject(final ObjectInputStream stream) throws Exception {

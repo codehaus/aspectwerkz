@@ -55,8 +55,8 @@ import java.util.Map;
 /**
  * The expression visitor.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
  */
 public class ExpressionVisitor implements ExpressionParserVisitor {
     protected ASTRoot m_root;
@@ -66,8 +66,8 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     protected String m_namespace;
 
     /**
-     * The expressionInfo this visitor is built on for expression with signature
-     * Caution: Can be null for visitor that don't need this information.
+     * The expressionInfo this visitor is built on for expression with signature Caution: Can be null for visitor that
+     * don't need this information.
      */
     protected ExpressionInfo m_expressionInfo;
 
@@ -79,7 +79,10 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
      * @param namespace the namespace
      * @param root the AST root
      */
-    public ExpressionVisitor(final ExpressionInfo expressionInfo, final String expression, final String namespace, final ASTRoot root) {
+    public ExpressionVisitor(final ExpressionInfo expressionInfo,
+                             final String expression,
+                             final String namespace,
+                             final ASTRoot root) {
         m_expressionInfo = expressionInfo;
         m_expression = expression;
         m_namespace = namespace;
@@ -156,8 +159,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTExecution node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        if (context.hasExecutionPointcut()
-            && (context.hasMethodInfo() || context.hasConstructorInfo())) {
+        if (context.hasExecutionPointcut() && (context.hasMethodInfo() || context.hasConstructorInfo())) {
             return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
         } else {
             return Boolean.FALSE;
@@ -214,9 +216,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         if (context.hasWithinReflectionInfo()) {
             ReflectionInfo withinInfo = context.getWithinReflectionInfo();
             if (withinInfo instanceof MemberInfo) {
-                return node.jjtGetChild(0).jjtAccept(
-                    this,
-                    ((MemberInfo) withinInfo).getDeclaringType());
+                return node.jjtGetChild(0).jjtAccept(this, ((MemberInfo) withinInfo).getDeclaringType());
             } else if (withinInfo instanceof ClassInfo) {
                 return node.jjtGetChild(0).jjtAccept(this, withinInfo);
             }
@@ -258,10 +258,8 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         if (data instanceof MethodInfo) {
             MethodInfo methodInfo = (MethodInfo) data;
             if (node.getMethodNamePattern().matches(methodInfo.getName())
-                && ClassInfoHelper.matchType(node.getDeclaringTypePattern(), methodInfo
-                        .getDeclaringType())
-                && ClassInfoHelper.matchType(node.getReturnTypePattern(), methodInfo
-                        .getReturnType())
+                && ClassInfoHelper.matchType(node.getDeclaringTypePattern(), methodInfo.getDeclaringType())
+                && ClassInfoHelper.matchType(node.getReturnTypePattern(), methodInfo.getReturnType())
                 && visitAttributes(node, methodInfo)
                 && visitModifiers(node, methodInfo)
                 && visitParameters(node, methodInfo.getParameterTypes())) {
@@ -274,8 +272,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     public Object visit(ASTConstructorPattern node, Object data) {
         if (data instanceof ConstructorInfo) {
             ConstructorInfo constructorMetaData = (ConstructorInfo) data;
-            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), constructorMetaData
-                    .getDeclaringType())
+            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), constructorMetaData.getDeclaringType())
                 && visitAttributes(node, constructorMetaData)
                 && visitModifiers(node, constructorMetaData)
                 && visitParameters(node, constructorMetaData.getParameterTypes())) {
@@ -289,8 +286,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         if (data instanceof FieldInfo) {
             FieldInfo fieldInfo = (FieldInfo) data;
             if (node.getFieldNamePattern().matches(fieldInfo.getName())
-                && ClassInfoHelper.matchType(node.getDeclaringTypePattern(), fieldInfo
-                        .getDeclaringType())
+                && ClassInfoHelper.matchType(node.getDeclaringTypePattern(), fieldInfo.getDeclaringType())
                 && ClassInfoHelper.matchType(node.getFieldTypePattern(), fieldInfo.getType())
                 && visitAttributes(node, fieldInfo)
                 && visitModifiers(node, fieldInfo)) {
@@ -310,18 +306,19 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTArgs node, Object data) {
-        ExpressionContext ctx = (ExpressionContext)data;
-        if (node.jjtGetNumChildren()<=0) {
+        ExpressionContext ctx = (ExpressionContext) data;
+        if (node.jjtGetNumChildren() <= 0) {
             // args(EMPTY)
-            return (ExpressionVisitor.getParametersCount(ctx) == 0)?Boolean.TRUE:Boolean.FALSE;
+            return (ExpressionVisitor.getParametersCount(ctx) == 0) ? Boolean.TRUE : Boolean.FALSE;
         } else {
             // check for ".." as first node
             int expressionParameterCount = node.jjtGetNumChildren();// the number of node minus eager one.
             //TODO support several eager nodes
-            boolean isFirstArgEager = ((ASTArgParameter)node.jjtGetChild(0)).getTypePattern().isEagerWildCard();
-            boolean isLastArgEager = ((ASTArgParameter)node.jjtGetChild(node.jjtGetNumChildren()-1)).getTypePattern().isEagerWildCard();
+            boolean isFirstArgEager = ((ASTArgParameter) node.jjtGetChild(0)).getTypePattern().isEagerWildCard();
+            boolean isLastArgEager = ((ASTArgParameter) node.jjtGetChild(node.jjtGetNumChildren() - 1))
+                    .getTypePattern().isEagerWildCard();
             // args(..)
-            if (isFirstArgEager && expressionParameterCount==1) {
+            if (isFirstArgEager && expressionParameterCount == 1) {
                 return Boolean.TRUE;
             }
             int contextParametersCount = ExpressionVisitor.getParametersCount(ctx);
@@ -329,9 +326,11 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 expressionParameterCount--;
                 if (contextParametersCount >= expressionParameterCount) {
                     // do a match from last to first, break when args() nodes are exhausted
-                    for (int i = 0; (i < contextParametersCount) && (expressionParameterCount-i>=0); i++) {
-                        ctx.setCurrentTargetArgsIndex(contextParametersCount-1-i);
-                        if (Boolean.TRUE.equals((Boolean)node.jjtGetChild(expressionParameterCount-i).jjtAccept(this, ctx))) {
+                    for (int i = 0; (i < contextParametersCount) && (expressionParameterCount - i >= 0); i++) {
+                        ctx.setCurrentTargetArgsIndex(contextParametersCount - 1 - i);
+                        if (Boolean.TRUE.equals((Boolean) node.jjtGetChild(expressionParameterCount - i).jjtAccept(
+                            this,
+                            ctx))) {
                             ;//go on with "next" arg
                         } else {
                             return Boolean.FALSE;
@@ -346,9 +345,9 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 expressionParameterCount--;
                 if (contextParametersCount >= expressionParameterCount) {
                     // do a match from first to last, break when args() nodes are exhausted
-                    for (int i = 0; (i < contextParametersCount) && (i<expressionParameterCount); i++) {
+                    for (int i = 0; (i < contextParametersCount) && (i < expressionParameterCount); i++) {
                         ctx.setCurrentTargetArgsIndex(i);
-                        if (Boolean.TRUE.equals((Boolean)node.jjtGetChild(i).jjtAccept(this, ctx))) {
+                        if (Boolean.TRUE.equals((Boolean) node.jjtGetChild(i).jjtAccept(this, ctx))) {
                             ;//go on with next arg
                         } else {
                             return Boolean.FALSE;
@@ -364,7 +363,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 if (expressionParameterCount == contextParametersCount) {
                     for (int i = 0; i < node.jjtGetNumChildren(); i++) {
                         ctx.setCurrentTargetArgsIndex(i);
-                        if (Boolean.TRUE.equals((Boolean)node.jjtGetChild(i).jjtAccept(this, ctx))) {
+                        if (Boolean.TRUE.equals((Boolean) node.jjtGetChild(i).jjtAccept(this, ctx))) {
                             ;//go on with next arg
                         } else {
                             return Boolean.FALSE;
@@ -395,13 +394,14 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             }
         }
         // grab parameter from context
-        ExpressionContext ctx = (ExpressionContext)data;
+        ExpressionContext ctx = (ExpressionContext) data;
         ClassInfo argInfo = null;
         try {
             if (ctx.getReflectionInfo() instanceof MethodInfo) {
-                argInfo = ((MethodInfo)ctx.getReflectionInfo()).getParameterTypes()[ctx.getCurrentTargetArgsIndex()];
+                argInfo = ((MethodInfo) ctx.getReflectionInfo()).getParameterTypes()[ctx.getCurrentTargetArgsIndex()];
             } else if (ctx.getReflectionInfo() instanceof ConstructorInfo) {
-                argInfo = ((ConstructorInfo)ctx.getReflectionInfo()).getParameterTypes()[ctx.getCurrentTargetArgsIndex()];
+                argInfo = ((ConstructorInfo) ctx.getReflectionInfo()).getParameterTypes()[ctx
+                        .getCurrentTargetArgsIndex()];
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             // ExpressionContext args are exhausted
@@ -409,12 +409,13 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         }
         // do the match
         if (ClassInfoHelper.matchType(realPattern, argInfo)) {
-//            // remember the target arg index if the poincut has a signature
-//            if (pointcutArgIndex >= 0) {
-//                System.out.println("XXXARGS targetArg at match: " + ctx.getCurrentTargetArgsIndex() + " is pc expr arg " + pointcutArgIndex
-//                    + " @ " + m_expressionInfo.getExpressionAsString());
-//                ctx.m_exprIndexToTargetIndex.put(pointcutArgIndex, ctx.getCurrentTargetArgsIndex());
-//            }
+            //            // remember the target arg index if the poincut has a signature
+            //            if (pointcutArgIndex >= 0) {
+            //                System.out.println("XXXARGS targetArg at match: " + ctx.getCurrentTargetArgsIndex() + " is pc expr arg "
+            // + pointcutArgIndex
+            //                    + " @ " + m_expressionInfo.getExpressionAsString());
+            //                ctx.m_exprIndexToTargetIndex.put(pointcutArgIndex, ctx.getCurrentTargetArgsIndex());
+            //            }
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;
@@ -646,13 +647,12 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     private static int getParametersCount(ExpressionContext ctx) {
         ReflectionInfo reflectionInfo = ctx.getReflectionInfo();
         if (reflectionInfo instanceof MethodInfo) {
-            return ((MethodInfo)reflectionInfo).getParameterTypes().length;
+            return ((MethodInfo) reflectionInfo).getParameterTypes().length;
         } else if (reflectionInfo instanceof ConstructorInfo) {
-            return ((ConstructorInfo)reflectionInfo).getParameterTypes().length;
+            return ((ConstructorInfo) reflectionInfo).getParameterTypes().length;
         } else {
             return -1;
         }
     }
-
 
 }

@@ -39,8 +39,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     protected int m_constructionType = ASPECT_CONSTRUCTION_TYPE_UNKNOWN;
 
     /**
-     * Introduction container containing introduction declared by this aspect, keys by introduction
-     * names
+     * Introduction container containing introduction declared by this aspect, keys by introduction names
      */
     protected final Map m_introductionContainers = new HashMap();
 
@@ -50,8 +49,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     protected final CrossCuttingInfo m_infoPrototype;
 
     /**
-     * An array with the single cross-cutting info, needed to save one array creation per
-     * invocation.
+     * An array with the single cross-cutting info, needed to save one array creation per invocation.
      */
     protected final Object[] arrayWithSingleCrossCuttingInfo = new Object[1];
 
@@ -123,8 +121,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
                 result = invokeAdvicePerThread(adviceIndex, joinPoint);
                 break;
             default:
-                throw new RuntimeException("invalid deployment model: "
-                    + m_infoPrototype.getDeploymentModel());
+                throw new RuntimeException("invalid deployment model: " + m_infoPrototype.getDeploymentModel());
         }
         return result;
     }
@@ -186,11 +183,9 @@ public abstract class AbstractAspectContainer implements AspectContainer {
         Object result;
         try {
             createPerClassAspect(targetClass);
-            result = m_adviceRepository[adviceIndex].invoke(
-                m_perClass.get(targetClass),
-                new Object[] {
-                    joinPoint
-                });
+            result = m_adviceRepository[adviceIndex].invoke(m_perClass.get(targetClass), new Object[] {
+                joinPoint
+            });
         } catch (InvocationTargetException e) {
             throw e.getTargetException();
         } catch (Exception e) {
@@ -210,17 +205,15 @@ public abstract class AbstractAspectContainer implements AspectContainer {
         Object result = null;
         Object targetInstance = joinPoint.getTarget();
         if (targetInstance == null) { // can be null if f.e. an aspect has deployment model
-                                      // perInstance and has caller
+            // perInstance and has caller
             // side pointcuts defined
             return invokeAdvicePerClass(adviceIndex, joinPoint);
         }
         try {
             createPerInstanceAspect(targetInstance);
-            result = m_adviceRepository[adviceIndex].invoke(
-                m_perInstance.get(targetInstance),
-                new Object[] {
-                    joinPoint
-                });
+            result = m_adviceRepository[adviceIndex].invoke(m_perInstance.get(targetInstance), new Object[] {
+                joinPoint
+            });
         } catch (InvocationTargetException e) {
             throw e.getTargetException();
         } catch (Exception e) {
@@ -314,15 +307,12 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     }
 
     /**
-     * Attach the introduction container to this aspect container to mirror the "aspect contains 0-n
-     * introduction"
+     * Attach the introduction container to this aspect container to mirror the "aspect contains 0-n introduction"
      * 
      * @param name of the introduction
      * @param introContainer introduction container
      */
-    public void addIntroductionContainer(
-        final String name,
-        final IntroductionContainer introContainer) {
+    public void addIntroductionContainer(final String name, final IntroductionContainer introContainer) {
         m_introductionContainers.put(name, introContainer);
     }
 
@@ -341,8 +331,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      */
     protected void createAdviceRepository() {
         synchronized (m_adviceRepository) {
-            List methodList = ReflectHelper
-                    .createSortedMethodList(m_infoPrototype.getAspectClass());
+            List methodList = ReflectHelper.createSortedMethodList(m_infoPrototype.getAspectClass());
             m_adviceRepository = new Method[methodList.size()];
             for (int i = 0; i < m_adviceRepository.length; i++) {
                 Method method = (Method) methodList.get(i);

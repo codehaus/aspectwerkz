@@ -16,7 +16,7 @@ import java.util.Set;
  * The 'Expression' annotation proxy.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
  */
 public class ExpressionAnnotationProxy extends UntypedAnnotationProxy implements ParameterizedAnnotationProxy {
     String m_expression;
@@ -40,7 +40,7 @@ public class ExpressionAnnotationProxy extends UntypedAnnotationProxy implements
     }
 
     public String getArgumentType(String parameterName) {
-        return (String)m_argsTypeByName.get(parameterName);
+        return (String) m_argsTypeByName.get(parameterName);
     }
 
 }

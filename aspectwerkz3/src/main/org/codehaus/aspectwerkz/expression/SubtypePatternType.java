@@ -13,11 +13,9 @@ package org.codehaus.aspectwerkz.expression;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class SubtypePatternType {
-    public static final SubtypePatternType NOT_HIERARCHICAL = new SubtypePatternType(
-        "NOT_HIERARCHICAL");
+    public static final SubtypePatternType NOT_HIERARCHICAL = new SubtypePatternType("NOT_HIERARCHICAL");
 
-    public static final SubtypePatternType MATCH_ON_ALL_METHODS = new SubtypePatternType(
-        "MATCH_ON_ALL_METHODS");
+    public static final SubtypePatternType MATCH_ON_ALL_METHODS = new SubtypePatternType("MATCH_ON_ALL_METHODS");
 
     public static final SubtypePatternType MATCH_ON_BASE_TYPE_METHODS_ONLY = new SubtypePatternType(
         "MATCH_ON_BASE_TYPE_METHODS_ONLY");

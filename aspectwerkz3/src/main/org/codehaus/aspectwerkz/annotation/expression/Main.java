@@ -42,8 +42,7 @@ public class Main {
                             .parse("@Annotation(constant=org.codehaus.aspectwerkz.annotation.expression.Main.CONSTANT lng=54543 flt=76.7F key=FALSE)"));
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(sArr={\"hej\", \"hey\"})"));
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(bArr={TRUE, false})"));
-        AnnotationVisitor.parse(annotation, parser
-                .parse("@Annotation(klass=java.lang.String.class)"));
+        AnnotationVisitor.parse(annotation, parser.parse("@Annotation(klass=java.lang.String.class)"));
         AnnotationVisitor.parse(annotation, parser
                 .parse("@Annotation(cArr={java.lang.String.class, int.class, double.class})"));
 

@@ -313,9 +313,7 @@ public abstract class Pattern implements Serializable {
      * @param subtypePatternType the subtype pattern type
      * @return the pattern
      */
-    public static TypePattern compileTypePattern(
-        final String pattern,
-        final SubtypePatternType subtypePatternType) {
+    public static TypePattern compileTypePattern(final String pattern, final SubtypePatternType subtypePatternType) {
         return new TypePattern(pattern, subtypePatternType);
     }
 

@@ -54,22 +54,14 @@ public class ExpressionInfo {
             ASTRoot root = s_parser.parse(expression);
             m_expression = new ExpressionVisitor(this, expression, namespace, root);
             m_argsIndexMapper = new ArgsIndexVisitor(this, expression, namespace, root);
-            m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(
-                expression,
-                namespace,
-                root);
+            m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(expression, namespace, root);
             m_cflowExpression = new CflowExpressionVisitor(this, expression, namespace, root);
-            m_cflowExpressionRuntime = new CflowExpressionVisitorRuntime(
-                this,
-                expression,
-                namespace,
-                root);
+            m_cflowExpressionRuntime = new CflowExpressionVisitorRuntime(this, expression, namespace, root);
             m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(
                 expression,
                 namespace,
                 root);
-            m_hasCflowPointcut = new CflowPointcutFinderVisitor(expression, namespace, root)
-                    .hasCflowPointcut();
+            m_hasCflowPointcut = new CflowPointcutFinderVisitor(expression, namespace, root).hasCflowPointcut();
         } catch (Throwable e) {
             throw new DefinitionException("expression is not well-formed [" + expression + "]: ", e);
         }
@@ -95,7 +87,7 @@ public class ExpressionInfo {
 
     /**
      * Returns the regular expression.
-     *
+     * 
      * @return the regular expression
      */
     public ArgsIndexVisitor getArgsIndexMapper() {
@@ -165,12 +157,12 @@ public class ExpressionInfo {
     }
 
     public String getArgumentType(String parameterName) {
-        return (String)m_argsTypeByName.get(parameterName);
+        return (String) m_argsTypeByName.get(parameterName);
     }
 
     public int getArgumentIndex(String parameterName) {
         if (m_argsTypeByName.containsKey(parameterName)) {
-            return ((SequencedHashMap)m_argsTypeByName).indexOf(parameterName);
+            return ((SequencedHashMap) m_argsTypeByName).indexOf(parameterName);
         } else {
             return -1;
         }

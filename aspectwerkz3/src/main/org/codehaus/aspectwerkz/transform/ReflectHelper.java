@@ -50,9 +50,8 @@ public class ReflectHelper {
     }
 
     /**
-     * Creates a sorted method list of all the methods in the class and super classes, including
-     * package private ones.
-     *
+     * Creates a sorted method list of all the methods in the class and super classes, including package private ones.
+     * 
      * @param klass the class with the methods
      * @return the sorted method list
      */
@@ -84,6 +83,7 @@ public class ReflectHelper {
 
     /**
      * Returns true if the method is not of on java.lang.Object and is not an AW generated one
+     * 
      * @param method
      * @return
      */
@@ -202,8 +202,7 @@ public class ReflectHelper {
     }
 
     /**
-     * Checks if the class is a of a primitive type, if so create and return the class for the type
-     * else return null.
+     * Checks if the class is a of a primitive type, if so create and return the class for the type else return null.
      * 
      * @param className
      * @return the class for the primitive type or null

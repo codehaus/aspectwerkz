@@ -3,17 +3,16 @@
 package org.codehaus.aspectwerkz.expression.ast;
 
 public class ASTSet extends SimpleNode {
-  public ASTSet(int id) {
-    super(id);
-  }
+    public ASTSet(int id) {
+        super(id);
+    }
 
-  public ASTSet(ExpressionParser p, int id) {
-    super(p, id);
-  }
+    public ASTSet(ExpressionParser p, int id) {
+        super(p, id);
+    }
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+    /** Accept the visitor. * */
+    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

@@ -45,10 +45,9 @@ import java.util.Map;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @TODO Use hashes, aspect=>hashcode for class advice=>hashcode for method signature
- * @TODO Store references to all join points that uses advices from a certain aspect
- *       [aspectKey=>joinPoints]
- * @TODO Map all aspects to a key, meaning have a key that maps to a data structure that contains
- *       full info about the aspect and all its advice methods. [aspectKey=>aspectDataStructure].
+ * @TODO Store references to all join points that uses advices from a certain aspect [aspectKey=>joinPoints]
+ * @TODO Map all aspects to a key, meaning have a key that maps to a data structure that contains full info about the
+ *       aspect and all its advice methods. [aspectKey=>aspectDataStructure].
  */
 public class AspectRegistry {
     /**
@@ -62,8 +61,8 @@ public class AspectRegistry {
     private final static Map s_fields = new HashMap();
 
     /**
-     * Holds references to all the the advised constructors in the system, maps the target Class to
-     * a sorted list of all the advised constructors in the class.
+     * Holds references to all the the advised constructors in the system, maps the target Class to a sorted list of all
+     * the advised constructors in the class.
      */
     private final static Map s_constructors = new HashMap();
 
@@ -83,8 +82,8 @@ public class AspectRegistry {
     private boolean m_initialized = false;
 
     /**
-     * Sorted map with PointcutManager instance containing the pointcut instance the aspect, mapped
-     * to its name (the name of the class implementing the aspect).
+     * Sorted map with PointcutManager instance containing the pointcut instance the aspect, mapped to its name (the
+     * name of the class implementing the aspect).
      */
     private final Map m_pointcutManagerMap = new SequencedHashMap();
 
@@ -94,8 +93,8 @@ public class AspectRegistry {
     private final TObjectIntHashMap m_aspectIndexes = new TObjectIntHashMap();
 
     /**
-     * Holds the index (a tuple of the aspect index and the advice index) for the advices, mapped to
-     * its name ([fullyQualifiedClassName].[methodName]).
+     * Holds the index (a tuple of the aspect index and the advice index) for the advices, mapped to its name
+     * ([fullyQualifiedClassName].[methodName]).
      */
     private final Map m_adviceIndexes = new HashMap();
 
@@ -121,8 +120,8 @@ public class AspectRegistry {
     }
 
     /**
-     * Initializes the aspect registry. The initialization needs to be separated fromt he
-     * construction of the registry, and is triggered by the runtime system.
+     * Initializes the aspect registry. The initialization needs to be separated fromt he construction of the registry,
+     * and is triggered by the runtime system.
      */
     public void initialize() {
         synchronized (this) {
@@ -140,9 +139,7 @@ public class AspectRegistry {
      * @param aspectContainer the aspectContainer for the aspect to register
      * @param pointcutManager the pointcut manager
      */
-    public void register(
-        final AspectContainer aspectContainer,
-        final PointcutManager pointcutManager) {
+    public void register(final AspectContainer aspectContainer, final PointcutManager pointcutManager) {
         if (aspectContainer == null) {
             throw new IllegalArgumentException("aspect aspectContainer can not be null");
         }
@@ -155,11 +152,8 @@ public class AspectRegistry {
                     synchronized (m_mixins) {
                         synchronized (m_pointcutManagerMap) {
                             try {
-                                CrossCuttingInfo crossCuttingInfo = aspectContainer
-                                        .getCrossCuttingInfo();
-                                m_pointcutManagerMap.put(
-                                    crossCuttingInfo.getName(),
-                                    pointcutManager);
+                                CrossCuttingInfo crossCuttingInfo = aspectContainer.getCrossCuttingInfo();
+                                m_pointcutManagerMap.put(crossCuttingInfo.getName(), pointcutManager);
                                 final int indexAspect = m_aspectContainers.length + 1;
                                 m_aspectIndexes.put(crossCuttingInfo.getName(), indexAspect);
                                 final Object[] tmpAspects = new Object[m_aspectContainers.length + 1];
@@ -171,41 +165,33 @@ public class AspectRegistry {
                                     m_aspectContainers.length);
                                 tmpAspects[m_aspectContainers.length] = aspectContainer;
                                 m_aspectContainers = new AspectContainer[m_aspectContainers.length + 1];
-                                java.lang.System.arraycopy(
-                                    tmpAspects,
-                                    0,
-                                    m_aspectContainers,
-                                    0,
-                                    tmpAspects.length);
+                                java.lang.System.arraycopy(tmpAspects, 0, m_aspectContainers, 0, tmpAspects.length);
 
                                 // retrieve a sorted advices list => matches the sorted method list
                                 // in the
                                 // aspectContainer
-                                List advices = crossCuttingInfo.getAspectDefinition()
-                                        .getAllAdvices();
+                                List advices = crossCuttingInfo.getAspectDefinition().getAllAdvices();
                                 for (Iterator it = advices.iterator(); it.hasNext();) {
                                     final AdviceDefinition adviceDef = (AdviceDefinition) it.next();
-                                    IndexTuple tuple = new IndexTuple(indexAspect, adviceDef
-                                            .getMethodIndex(), m_aspectManager);
+                                    IndexTuple tuple = new IndexTuple(
+                                        indexAspect,
+                                        adviceDef.getMethodIndex(),
+                                        m_aspectManager);
 
                                     //prefix AdviceName with AspectName to allow AspectReuse
-                                    m_adviceIndexes.put(crossCuttingInfo.getName()
-                                        + "/"
-                                        + adviceDef.getName(), tuple);
+                                    m_adviceIndexes.put(crossCuttingInfo.getName() + "/" + adviceDef.getName(), tuple);
                                 }
 
                                 // mixins
-                                List introductions = crossCuttingInfo.getAspectDefinition()
-                                        .getIntroductions();
-                                
+                                List introductions = crossCuttingInfo.getAspectDefinition().getIntroductions();
+
                                 for (Iterator it = introductions.iterator(); it.hasNext();) {
-                                    IntroductionDefinition introDef = (IntroductionDefinition) it
-                                            .next();
+                                    IntroductionDefinition introDef = (IntroductionDefinition) it.next();
 
                                     // load default mixinPrototype impl from the aspect which
                                     // defines it
-                                    Class defaultImplClass = crossCuttingInfo.getAspectClass()
-                                            .getClassLoader().loadClass(introDef.getName());
+                                    Class defaultImplClass = crossCuttingInfo.getAspectClass().getClassLoader()
+                                            .loadClass(introDef.getName());
 
                                     Introduction mixinPrototype = new Introduction(
                                         introDef.getName(),
@@ -215,27 +201,15 @@ public class AspectRegistry {
                                     IntroductionContainer introductionContainer = new IntroductionContainer(
                                         mixinPrototype,
                                         aspectContainer);
-                                    aspectContainer.addIntroductionContainer(
-                                        introDef.getName(),
-                                        introductionContainer);
+                                    aspectContainer.addIntroductionContainer(introDef.getName(), introductionContainer);
 
                                     // prepare the aspectContainer
                                     mixinPrototype.setContainer(introductionContainer);
                                     final Mixin[] tmpMixins = new Mixin[m_mixins.length + 1];
-                                    java.lang.System.arraycopy(
-                                        m_mixins,
-                                        0,
-                                        tmpMixins,
-                                        0,
-                                        m_mixins.length);
+                                    java.lang.System.arraycopy(m_mixins, 0, tmpMixins, 0, m_mixins.length);
                                     tmpMixins[m_mixins.length] = mixinPrototype;
                                     m_mixins = new Mixin[m_mixins.length + 1];
-                                    java.lang.System.arraycopy(
-                                        tmpMixins,
-                                        0,
-                                        m_mixins,
-                                        0,
-                                        tmpMixins.length);
+                                    java.lang.System.arraycopy(tmpMixins, 0, m_mixins, 0, tmpMixins.length);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -526,8 +500,7 @@ public class AspectRegistry {
         }
         ConstructorTuple constructorTuple;
         try {
-            constructorTuple = (ConstructorTuple) ((TIntObjectHashMap) s_constructors.get(klass))
-                    .get(constructorHash);
+            constructorTuple = (ConstructorTuple) ((TIntObjectHashMap) s_constructors.get(klass)).get(constructorHash);
         } catch (Throwable e1) {
             throw new WrappedRuntimeException(e1);
         }
@@ -580,9 +553,7 @@ public class AspectRegistry {
                 for (int j = 0; j < methods.length; j++) {
                     Method method2 = methods[j];
                     if (method2.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
-                        String[] tokens = Strings.splitString(
-                            method2.getName(),
-                            TransformationUtil.DELIMITER);
+                        String[] tokens = Strings.splitString(method2.getName(), TransformationUtil.DELIMITER);
                         String methodName = tokens[1];
                         if (!methodName.equals(wrapperMethod.getName())) {
                             continue;
@@ -686,9 +657,7 @@ public class AspectRegistry {
             }
 
             // create a constructor tuple with 'wrapper constructor' and 'prefixed constructor'
-            ConstructorTuple constructorTuple = new ConstructorTuple(
-                wrapperConstructor,
-                prefixedConstructor);
+            ConstructorTuple constructorTuple = new ConstructorTuple(wrapperConstructor, prefixedConstructor);
 
             // map the tuple to the hash for the 'wrapper constructor'
             int constructorHash = ReflectHelper.calculateHash(wrapperConstructor);

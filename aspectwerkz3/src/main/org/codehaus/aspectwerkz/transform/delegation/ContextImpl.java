@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of the transformation context interface for the delegation weaving. 
- *
+ * Implementation of the transformation context interface for the delegation weaving.
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -108,9 +108,9 @@ public class ContextImpl implements Context {
      */
     public void setCurrentBytecode(final byte[] bytecode) {
         // does nothing for this context impl, is handled by the class abstraction
-    }   
-    
-  /**
+    }
+
+    /**
      * Returns the class abstraction.
      * 
      * @return clazz
@@ -138,8 +138,7 @@ public class ContextImpl implements Context {
     }
 
     /**
-     * Marks the class being transformed as advised. The marker can at most be set once per class
-     * per transformer
+     * Marks the class being transformed as advised. The marker can at most be set once per class per transformer
      */
     public void markAsAdvised() {
         m_advised = true;

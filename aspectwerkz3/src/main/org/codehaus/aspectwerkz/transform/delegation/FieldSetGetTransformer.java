@@ -48,8 +48,7 @@ public class FieldSetGetTransformer implements Transformer {
      * @param context the transformation context
      * @param klass the class set.
      */
-    public void transform(final Context context, final Klass klass) throws NotFoundException,
-            CannotCompileException {
+    public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
 
         //m_joinPointIndex =
@@ -59,16 +58,9 @@ public class FieldSetGetTransformer implements Transformer {
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
-            final ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context
-                    .getLoader());
-            if (classFilter(
-                ctClass,
-                new ExpressionContext(PointcutType.SET, classInfo, null),
-                definition)
-                && classFilter(
-                    ctClass,
-                    new ExpressionContext(PointcutType.GET, classInfo, null),
-                    definition)) {
+            final ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
+            if (classFilter(ctClass, new ExpressionContext(PointcutType.SET, classInfo, null), definition)
+                && classFilter(ctClass, new ExpressionContext(PointcutType.GET, classInfo, null), definition)) {
                 continue;
             }
             ctClass.instrument(new ExprEditor() {
@@ -89,12 +81,11 @@ public class FieldSetGetTransformer implements Transformer {
 
                         // get field accessed information
                         final String fieldName = fieldAccess.getFieldName();
-                        final String fieldSignature = fieldAccess.getField().getType().getName()
-                                .replace('/', '.')
+                        final String fieldSignature = fieldAccess.getField().getType().getName().replace('/', '.')
                             + ' '
                             + fieldName;
-                        FieldInfo fieldInfo = JavassistFieldInfo.getFieldInfo(fieldAccess
-                                .getField(), context.getLoader());
+                        FieldInfo fieldInfo = JavassistFieldInfo.getFieldInfo(fieldAccess.getField(), context
+                                .getLoader());
                         if (fieldInfo == null) {
                             // when re-weaving is done, due to Javassist CtClass
                             // behavior,
@@ -104,10 +95,10 @@ public class FieldSetGetTransformer implements Transformer {
                             return;
                         }
                         if (fieldAccess.isReader()
-                            && !getFieldFilter(definition, new ExpressionContext(
-                                PointcutType.GET,
-                                fieldInfo,
-                                classInfo), fieldInfo)) {
+                            && !getFieldFilter(
+                                definition,
+                                new ExpressionContext(PointcutType.GET, fieldInfo, classInfo),
+                                fieldInfo)) {
                             // check the declaring class for the field is not
                             // the same as target class,
                             // if that is the case then we have have class
@@ -116,9 +107,8 @@ public class FieldSetGetTransformer implements Transformer {
                             CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
                             if (!declaringClass.getName().replace('/', '.').equals(
                                 where.getDeclaringClass().getName().replace('/', '.'))) {
-                                declaringClassFieldName = addFieldAccessDeclaringClassField(
-                                    declaringClass,
-                                    fieldAccess.getField());
+                                declaringClassFieldName = addFieldAccessDeclaringClassField(declaringClass, fieldAccess
+                                        .getField());
                             }
 
                             //TODO ALEX might need to review since SET is not
@@ -154,8 +144,7 @@ public class FieldSetGetTransformer implements Transformer {
                                 body.append("if (").append(localResult).append(" != null)");
                                 body.append("$_ = ($r) ").append(localResult).append("; else ");
                                 body.append("$_ = ");
-                                body.append(JavassistHelper.getDefaultPrimitiveValue(fieldAccess
-                                        .getField().getType()));
+                                body.append(JavassistHelper.getDefaultPrimitiveValue(fieldAccess.getField().getType()));
                                 body.append("; }");
                             }
                             fieldAccess.replace(body.toString());
@@ -163,10 +152,10 @@ public class FieldSetGetTransformer implements Transformer {
                             klass.incrementJoinPointIndex();
                         }
                         if (fieldAccess.isWriter()
-                            && !setFieldFilter(definition, new ExpressionContext(
-                                PointcutType.SET,
-                                fieldInfo,
-                                classInfo), fieldInfo)) {
+                            && !setFieldFilter(
+                                definition,
+                                new ExpressionContext(PointcutType.SET, fieldInfo, classInfo),
+                                fieldInfo)) {
                             // check the declaring class for the field is not
                             // the same as target class,
                             // if that is the case then we have have class
@@ -175,9 +164,8 @@ public class FieldSetGetTransformer implements Transformer {
                             CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
                             if (!declaringClass.getName().replace('/', '.').equals(
                                 where.getDeclaringClass().getName().replace('/', '.'))) {
-                                declaringClassFieldName = addFieldAccessDeclaringClassField(
-                                    declaringClass,
-                                    fieldAccess.getField());
+                                declaringClassFieldName = addFieldAccessDeclaringClassField(declaringClass, fieldAccess
+                                        .getField());
                             }
 
                             //TODO ALEX think about null advice
@@ -215,8 +203,7 @@ public class FieldSetGetTransformer implements Transformer {
     }
 
     /**
-     * Creates a new static class field, for the declaring class of the field that is
-     * accessed/modified.
+     * Creates a new static class field, for the declaring class of the field that is accessed/modified.
      * 
      * @param ctClass the class
      * @param ctField the field
@@ -239,10 +226,7 @@ public class FieldSetGetTransformer implements Transformer {
             }
         }
         if (!hasField) {
-            CtField field = new CtField(
-                ctClass.getClassPool().get("java.lang.Class"),
-                fieldName,
-                ctClass);
+            CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"), fieldName, ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class#forName(\""
                 + ctField.getDeclaringClass().getName().replace('/', '.')
@@ -259,10 +243,7 @@ public class FieldSetGetTransformer implements Transformer {
      * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(
-        final CtClass cg,
-        final ExpressionContext ctx,
-        final SystemDefinition definition) {
+    public static boolean classFilter(final CtClass cg, final ExpressionContext ctx, final SystemDefinition definition) {
         if (cg.isInterface()) {
             return true;
         }

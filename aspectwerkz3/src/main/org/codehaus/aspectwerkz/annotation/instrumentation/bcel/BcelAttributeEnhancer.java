@@ -147,16 +147,16 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         byte[] serializedAttribute = serialize(attribute);
         String[] methodParamTypes = new String[method.getParameters().length];
         for (int i = 0; i < methodParamTypes.length; i++) {
-            methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i]
-                    .getType());
+            methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i].getType());
         }
         Method[] classfileMethod = m_classGen.getMethods();
         for (int i = 0; i < classfileMethod.length; i++) {
             if (classfileMethod[i].getName().equals(method.getName())) {
-                if (Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(classfileMethod[i]
-                        .getSignature()))) {
-                    MethodGen methodGen = new MethodGen(classfileMethod[i], m_javaClass
-                            .getClassName(), m_constantPoolGen);
+                if (Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(classfileMethod[i].getSignature()))) {
+                    MethodGen methodGen = new MethodGen(
+                        classfileMethod[i],
+                        m_javaClass.getClassName(),
+                        m_constantPoolGen);
                     Attribute attr = new Unknown(
                         m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
                         serializedAttribute.length,
@@ -183,19 +183,14 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         byte[] serializedAttribute = serialize(attribute);
         String[] methodParamTypes = new String[method.getParameters().length];
         for (int i = 0; i < methodParamTypes.length; i++) {
-            methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i]
-                    .getType());
+            methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i].getType());
         }
         Method[] classfileMethod = m_classGen.getMethods();
         for (int i = 0; i < classfileMethod.length; i++) {
             Method classFileMethod = classfileMethod[i];
             if (classFileMethod.getName().equals("<init>")) {
-                if (Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(classFileMethod
-                        .getSignature()))) {
-                    MethodGen methodGen = new MethodGen(
-                        classFileMethod,
-                        m_javaClass.getClassName(),
-                        m_constantPoolGen);
+                if (Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(classFileMethod.getSignature()))) {
+                    MethodGen methodGen = new MethodGen(classFileMethod, m_javaClass.getClassName(), m_constantPoolGen);
                     Attribute attr = new Unknown(
                         m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
                         serializedAttribute.length,
@@ -226,8 +221,9 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
                 // directory does not exist create all directories in the path
                 boolean success = parentFile.mkdirs();
                 if (!success) {
-                    throw new RuntimeException(
-                        "could not create dir structure needed to write file " + path + " to disk");
+                    throw new RuntimeException("could not create dir structure needed to write file "
+                        + path
+                        + " to disk");
                 }
             }
             FileOutputStream fout = new FileOutputStream(path);
@@ -270,9 +266,8 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
             return getNearestInterfacesInHierarchy(innerClass);
         } catch (ClassNotFoundException e) {
             // should not be raised
-            throw new RuntimeException(
-                "could not load mixin for mixin implicit interface: ClassNotFoundException : "
-                    + e.getMessage());
+            throw new RuntimeException("could not load mixin for mixin implicit interface: ClassNotFoundException : "
+                + e.getMessage());
         } catch (NoClassDefFoundError er) {
             // raised if extends / implements dependancies not found
             throw new RuntimeException("could not find dependency for mixin implicit interface: "

@@ -44,16 +44,16 @@ public class SystemDefinition {
     public static final Map EMPTY_HASH_MAP = new HashMap();
 
     /**
-     * Holds the indexes for the aspects. The aspect indexes are needed here (instead of in the
-     * AspectWerkz class like the advice indexes) since they need to be available to the
-     * transformers before the AspectWerkz system has been initialized.
+     * Holds the indexes for the aspects. The aspect indexes are needed here (instead of in the AspectWerkz class like
+     * the advice indexes) since they need to be available to the transformers before the AspectWerkz system has been
+     * initialized.
      */
     private final TObjectIntHashMap m_aspectIndexes = new TObjectIntHashMap();
 
     /**
-     * Holds the indexes for the mixins. The mixin indexes are needed here (instead of in the
-     * AspectWerkz class like the advice indexes) since they need to be available to the
-     * transformers before the AspectWerkz system has been initialized.
+     * Holds the indexes for the mixins. The mixin indexes are needed here (instead of in the AspectWerkz class like the
+     * advice indexes) since they need to be available to the transformers before the AspectWerkz system has been
+     * initialized.
      */
     private final TObjectIntHashMap m_introductionIndexes = new TObjectIntHashMap();
 
@@ -237,8 +237,8 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns the interface introductions for a certain class merged with the implementation based
-     * introductions as well.
+     * Returns the interface introductions for a certain class merged with the implementation based introductions as
+     * well.
      * 
      * @param ctx the expression context
      * @return the names
@@ -274,9 +274,7 @@ public class SystemDefinition {
         }
         int index = m_aspectIndexes.get(aspectName);
         if (index < 1) {
-            throw new RuntimeException("aspect ["
-                + aspectName
-                + "] does not exist, failed in retrieving aspect index");
+            throw new RuntimeException("aspect [" + aspectName + "] does not exist, failed in retrieving aspect index");
         }
         return index;
     }
@@ -293,9 +291,7 @@ public class SystemDefinition {
         }
         int index = m_introductionIndexes.get(mixinName);
         if (index < 1) {
-            throw new RuntimeException("mixin ["
-                + mixinName
-                + "] does not exist, failed in retrieving mixin index");
+            throw new RuntimeException("mixin [" + mixinName + "] does not exist, failed in retrieving mixin index");
         }
         return index;
     }
@@ -331,8 +327,7 @@ public class SystemDefinition {
             throw new IllegalArgumentException("introduction definition can not be null");
         }
         if (m_introductionIndexes.containsKey(introDef.getName())) {
-            IntroductionDefinition def = (IntroductionDefinition) m_introductionMap.get(introDef
-                    .getName());
+            IntroductionDefinition def = (IntroductionDefinition) m_introductionMap.get(introDef.getName());
             def.addExpressionInfos(introDef.getExpressionInfos());
             return;
         }
@@ -545,8 +540,7 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
-                if (expressionInfo.hasCflowPointcut()
-                    && expressionInfo.getCflowExpression().match(ctx)) {
+                if (expressionInfo.hasCflowPointcut() && expressionInfo.getCflowExpression().match(ctx)) {
                     return true;
                 }
             }
@@ -572,8 +566,7 @@ public class SystemDefinition {
                 for (int i = 0; i < ctxs.length; i++) {
                     ExpressionContext ctx = ctxs[i];
                     if (adviceDef.getExpressionInfo().getAdvisedClassFilterExpression().match(ctx)
-                        || adviceDef.getExpressionInfo().getAdvisedCflowClassFilterExpression()
-                                .match(ctx)) {
+                        || adviceDef.getExpressionInfo().getAdvisedCflowClassFilterExpression().match(ctx)) {
                         return true;
                     }
                 }
@@ -598,8 +591,7 @@ public class SystemDefinition {
             for (Iterator it2 = advices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 if (adviceDef.getExpressionInfo().getAdvisedClassFilterExpression().match(ctx)
-                    || adviceDef.getExpressionInfo().getAdvisedCflowClassFilterExpression().match(
-                        ctx)) {
+                    || adviceDef.getExpressionInfo().getAdvisedCflowClassFilterExpression().match(ctx)) {
                     return true;
                 }
             }
@@ -681,9 +673,7 @@ public class SystemDefinition {
     /**
      * Adds a new parameter for the aspect.
      * 
-     * @TODO: should perhaps move to the aspect def instead of being separated from the aspect def
-     *        concept?
-     * 
+     * @TODO: should perhaps move to the aspect def instead of being separated from the aspect def concept?
      * @param aspectName the name of the aspect
      * @param key the key
      * @param value the value

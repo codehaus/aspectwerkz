@@ -45,16 +45,15 @@ public class JoinPointRegistry {
     private static final List EMTPY_ARRAY_LIST = new ArrayList();
 
     /**
-     * The registry with all the classes and the index for the advices attatched to the join points
-     * in this class. <p/>Map of: the class hash => map of: join point hash => map of: join point
-     * type => array with advice indexes.
+     * The registry with all the classes and the index for the advices attatched to the join points in this class.
+     * <p/>Map of: the class hash => map of: join point hash => map of: join point type => array with advice indexes.
      */
     private static final TLongObjectHashMap m_joinPointMetaDataMap = new TLongObjectHashMap();
 
     /**
-     * The registry with all the classes and the index for the cflow expressions attatched to the
-     * join points in this class. <p/>Map of: the class hash => map of: join point hash => map of:
-     * join point type => array cflow expressions.
+     * The registry with all the classes and the index for the cflow expressions attatched to the join points in this
+     * class. <p/>Map of: the class hash => map of: join point hash => map of: join point type => array cflow
+     * expressions.
      */
     private static final TLongObjectHashMap m_joinPointCflowExpressionMap = new TLongObjectHashMap();
 
@@ -68,8 +67,7 @@ public class JoinPointRegistry {
      * @param declaringClass
      * @param withinInfo
      * @param system
-     * @TODO: cache the metadata created in the method - map it to the method hash (see pointcut for
-     *        caching)
+     * @TODO: cache the metadata created in the method - map it to the method hash (see pointcut for caching)
      */
     public void registerJoinPoint(
         final int joinPointType,
@@ -90,78 +88,38 @@ public class JoinPointRegistry {
         joinPointMetaDataMap.put(PointcutType.HANDLER, EMTPY_ARRAY_LIST);
         joinPointMetaDataMap.put(PointcutType.STATIC_INITIALIZATION, EMTPY_ARRAY_LIST);
         joinPointMetaDataMap.put(PointcutType.ATTRIBUTE, EMTPY_ARRAY_LIST);
-        ((TLongObjectHashMap) m_joinPointMetaDataMap.get(classHash)).put(
-            joinPointHash,
-            joinPointMetaDataMap);
+        ((TLongObjectHashMap) m_joinPointMetaDataMap.get(classHash)).put(joinPointHash, joinPointMetaDataMap);
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
-                Method wrapperMethod = AspectRegistry.getMethodTuple(declaringClass, joinPointHash)
-                        .getWrapperMethod();
+                Method wrapperMethod = AspectRegistry.getMethodTuple(declaringClass, joinPointHash).getWrapperMethod();
                 MethodInfo methodInfo = JavaMethodInfo.getMethodInfo(wrapperMethod);
-                registerJoinPoint(
-                    PointcutType.EXECUTION,
-                    system,
-                    methodInfo,
-                    withinInfo,
-                    joinPointMetaDataMap);
+                registerJoinPoint(PointcutType.EXECUTION, system, methodInfo, withinInfo, joinPointMetaDataMap);
                 break;
             case JoinPointType.METHOD_CALL:
-                wrapperMethod = AspectRegistry.getMethodTuple(declaringClass, joinPointHash)
-                        .getWrapperMethod();
+                wrapperMethod = AspectRegistry.getMethodTuple(declaringClass, joinPointHash).getWrapperMethod();
                 methodInfo = JavaMethodInfo.getMethodInfo(wrapperMethod);
-                registerJoinPoint(
-                    PointcutType.CALL,
-                    system,
-                    methodInfo,
-                    withinInfo,
-                    joinPointMetaDataMap);
+                registerJoinPoint(PointcutType.CALL, system, methodInfo, withinInfo, joinPointMetaDataMap);
                 break;
             case JoinPointType.CONSTRUCTOR_EXECUTION:
-                Constructor wrapperConstructor = AspectRegistry.getConstructorTuple(
-                    declaringClass,
-                    joinPointHash).getWrapperConstructor();
-                ConstructorInfo constructorInfo = JavaConstructorInfo
-                        .getConstructorInfo(wrapperConstructor);
-                registerJoinPoint(
-                    PointcutType.EXECUTION,
-                    system,
-                    constructorInfo,
-                    withinInfo,
-                    joinPointMetaDataMap);
+                Constructor wrapperConstructor = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash)
+                        .getWrapperConstructor();
+                ConstructorInfo constructorInfo = JavaConstructorInfo.getConstructorInfo(wrapperConstructor);
+                registerJoinPoint(PointcutType.EXECUTION, system, constructorInfo, withinInfo, joinPointMetaDataMap);
                 break;
             case JoinPointType.CONSTRUCTOR_CALL:
-                wrapperConstructor = AspectRegistry.getConstructorTuple(
-                    declaringClass,
-                    joinPointHash).getWrapperConstructor();
+                wrapperConstructor = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash)
+                        .getWrapperConstructor();
                 constructorInfo = JavaConstructorInfo.getConstructorInfo(wrapperConstructor);
-                registerJoinPoint(
-                    PointcutType.CALL,
-                    system,
-                    constructorInfo,
-                    withinInfo,
-                    joinPointMetaDataMap);
+                registerJoinPoint(PointcutType.CALL, system, constructorInfo, withinInfo, joinPointMetaDataMap);
                 break;
             case JoinPointType.FIELD_SET:
-                FieldInfo fieldInfo = JavaFieldInfo.getFieldInfo(AspectRegistry.getField(
-                    declaringClass,
-                    joinPointHash));
-                registerJoinPoint(
-                    PointcutType.SET,
-                    system,
-                    fieldInfo,
-                    withinInfo,
-                    joinPointMetaDataMap);
+                FieldInfo fieldInfo = JavaFieldInfo
+                        .getFieldInfo(AspectRegistry.getField(declaringClass, joinPointHash));
+                registerJoinPoint(PointcutType.SET, system, fieldInfo, withinInfo, joinPointMetaDataMap);
                 break;
             case JoinPointType.FIELD_GET:
-                fieldInfo = JavaFieldInfo.getFieldInfo(AspectRegistry.getField(
-                    declaringClass,
-                    joinPointHash));
-                registerJoinPoint(
-                    PointcutType.GET,
-                    system,
-                    fieldInfo,
-                    withinInfo,
-                    joinPointMetaDataMap);
+                fieldInfo = JavaFieldInfo.getFieldInfo(AspectRegistry.getField(declaringClass, joinPointHash));
+                registerJoinPoint(PointcutType.GET, system, fieldInfo, withinInfo, joinPointMetaDataMap);
                 break;
             case JoinPointType.HANDLER:
                 registerJoinPoint(
@@ -198,8 +156,7 @@ public class JoinPointRegistry {
      * @return the advices attached to the join point
      */
     public Map getCflowPointcutsForJoinPoint(final long classHash, final long joinPointHash) {
-        TLongObjectHashMap joinPoints = (TLongObjectHashMap) m_joinPointCflowExpressionMap
-                .get(classHash);
+        TLongObjectHashMap joinPoints = (TLongObjectHashMap) m_joinPointCflowExpressionMap.get(classHash);
         return (Map) joinPoints.get(joinPointHash);
     }
 
@@ -207,8 +164,8 @@ public class JoinPointRegistry {
      * Resets the registry.
      * 
      * @param classHash
-     * @TODO do better RW/RuW/JPredef eWorld brute force reset Needed since JoinPointRegistry is
-     *       somehow a singleton (static in JoinPointManager)
+     * @TODO do better RW/RuW/JPredef eWorld brute force reset Needed since JoinPointRegistry is somehow a singleton
+     *       (static in JoinPointManager)
      */
     public void reset(final int classHash) {
         m_joinPointMetaDataMap.remove(classHash);
@@ -222,8 +179,8 @@ public class JoinPointRegistry {
      * @return class info
      */
     private ClassInfo createClassInfo(final Class klass) {
-        ClassInfo classInfo = JavaClassInfoRepository.getRepository(klass.getClassLoader())
-                .getClassInfo(klass.getName());
+        ClassInfo classInfo = JavaClassInfoRepository.getRepository(klass.getClassLoader()).getClassInfo(
+            klass.getName());
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(klass);
         }
@@ -264,15 +221,13 @@ public class JoinPointRegistry {
             // get all matching pointcuts from all managers
             for (Iterator it = aspectManager.getPointcuts(ctx).iterator(); it.hasNext();) {
                 Pointcut pointcut = (Pointcut) it.next();
-                AdviceIndexInfo adviceIndexInfo = new AdviceIndexInfo(pointcut
-                        .getAroundAdviceIndexes(), pointcut.getBeforeAdviceIndexes(), pointcut
-                        .getAfterAdviceIndexes());
+                AdviceIndexInfo adviceIndexInfo = new AdviceIndexInfo(pointcut.getAroundAdviceIndexes(), pointcut
+                        .getBeforeAdviceIndexes(), pointcut.getAfterAdviceIndexes());
                 adviceIndexInfoList.add(adviceIndexInfo);
 
                 // collect the cflow expressions for the matching pointcuts (if they have one)
                 if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                    cflowExpressionList.add(pointcut.getExpressionInfo()
-                            .getCflowExpressionRuntime());
+                    cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpressionRuntime());
                 }
             }
         }

@@ -52,8 +52,7 @@ public abstract class JavaMemberInfo implements MemberInfo {
         }
         m_member = member;
         m_declaringType = declaringType;
-        m_classInfoRepository = JavaClassInfoRepository.getRepository(member.getDeclaringClass()
-                .getClassLoader());
+        m_classInfoRepository = JavaClassInfoRepository.getRepository(member.getDeclaringClass().getClassLoader());
     }
 
     /**

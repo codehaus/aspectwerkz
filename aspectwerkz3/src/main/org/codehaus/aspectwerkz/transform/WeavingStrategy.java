@@ -15,7 +15,7 @@ import java.util.Hashtable;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface WeavingStrategy {
-    
+
     /**
      * Defines the inlining weaving strategy.
      */
@@ -49,8 +49,5 @@ public interface WeavingStrategy {
      * @param loader
      * @return
      */
-    public abstract Context newContext(
-        final String name,
-        final byte[] bytecode,
-        final ClassLoader loader);
+    public abstract Context newContext(final String name, final byte[] bytecode, final ClassLoader loader);
 }

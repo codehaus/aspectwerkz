@@ -69,8 +69,7 @@ public class IntroductionContainer {
      * 
      * @param definingAspectContainer the aspect container
      */
-    public IntroductionContainer(final Introduction prototype,
-                                 final AspectContainer definingAspectContainer) {
+    public IntroductionContainer(final Introduction prototype, final AspectContainer definingAspectContainer) {
         if (prototype == null) {
             throw new IllegalArgumentException("introduction prototype can not be null");
         }
@@ -94,9 +93,7 @@ public class IntroductionContainer {
                 m_perJvm = Introduction.newInstance(m_prototype, m_prototype.getCrossCuttingInfo());
                 m_perJvm.createMixin();
             }
-            result = m_methodRepository[methodIndex].invoke(
-                m_perJvm.getImplementation(),
-                parameters);
+            result = m_methodRepository[methodIndex].invoke(m_perJvm.getImplementation(), parameters);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
                 System.err
@@ -127,15 +124,14 @@ public class IntroductionContainer {
             if (!m_perClass.containsKey(targetClass)) {
                 synchronized (m_perClass) {
                     // only compatible aspect deployments are perJVM and perClass
-                    Introduction perClassIntroduction = Introduction.newInstance(
-                        m_prototype,
-                        m_prototype.getCrossCuttingInfo());
+                    Introduction perClassIntroduction = Introduction.newInstance(m_prototype, m_prototype
+                            .getCrossCuttingInfo());
                     m_perClass.put(targetClass, perClassIntroduction);
                     perClassIntroduction.createMixin();
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(((Introduction) m_perClass
-                    .get(targetClass)).getImplementation(), parameters);
+            result = m_methodRepository[methodIndex].invoke(((Introduction) m_perClass.get(targetClass))
+                    .getImplementation(), parameters);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
                 System.err
@@ -165,9 +161,8 @@ public class IntroductionContainer {
             if (!m_perInstance.containsKey(targetInstance)) {
                 synchronized (m_perInstance) {
                     // only compatible aspect deployments are perJVM and perClass
-                    Introduction perInstanceIntroduction = Introduction.newInstance(
-                        m_prototype,
-                        m_prototype.getCrossCuttingInfo());
+                    Introduction perInstanceIntroduction = Introduction.newInstance(m_prototype, m_prototype
+                            .getCrossCuttingInfo());
                     m_perInstance.put(targetInstance, perInstanceIntroduction);
 
                     //TODO
@@ -183,8 +178,8 @@ public class IntroductionContainer {
                     perInstanceIntroduction.createMixin();
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(((Introduction) m_perInstance
-                    .get(targetInstance)).getImplementation(), parameters);
+            result = m_methodRepository[methodIndex].invoke(((Introduction) m_perInstance.get(targetInstance))
+                    .getImplementation(), parameters);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
                 System.err
@@ -211,15 +206,14 @@ public class IntroductionContainer {
             if (!m_perThread.containsKey(currentThread)) {
                 synchronized (m_perThread) {
                     // only compatible aspect deployments is perThread
-                    Introduction perThreadIntroduction = Introduction.newInstance(
-                        m_prototype,
-                        m_prototype.getCrossCuttingInfo());
+                    Introduction perThreadIntroduction = Introduction.newInstance(m_prototype, m_prototype
+                            .getCrossCuttingInfo());
                     m_perThread.put(currentThread, perThreadIntroduction);
                     perThreadIntroduction.createMixin();
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(((Introduction) m_perThread
-                    .get(currentThread)).getImplementation(), parameters);
+            result = m_methodRepository[methodIndex].invoke(((Introduction) m_perThread.get(currentThread))
+                    .getImplementation(), parameters);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
                 System.err
@@ -267,8 +261,8 @@ public class IntroductionContainer {
     }
 
     /**
-     * Recursively traverse the interface hierarchy implemented by the given root class in order to
-     * find one that matches the given name. Looks in the class hierarchy as well.
+     * Recursively traverse the interface hierarchy implemented by the given root class in order to find one that
+     * matches the given name. Looks in the class hierarchy as well.
      * 
      * @param root is the class or interface to start the search at.
      * @param requiredInterface that we are looking for.
@@ -296,8 +290,7 @@ public class IntroductionContainer {
      */
     private void createMethodRepository() {
         synchronized (m_methodRepository) {
-            List methodList = ReflectHelper.createSortedMethodList(m_prototype
-                    .getImplementationClass());
+            List methodList = ReflectHelper.createSortedMethodList(m_prototype.getImplementationClass());
             m_methodRepository = new Method[methodList.size()];
             for (int i = 0; i < m_methodRepository.length; i++) {
                 Method method = (Method) methodList.get(i);

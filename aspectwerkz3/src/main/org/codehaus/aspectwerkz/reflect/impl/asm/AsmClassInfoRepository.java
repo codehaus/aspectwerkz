@@ -58,9 +58,8 @@ public class AsmClassInfoRepository {
             hash = loader.hashCode();
         }
         WeakReference repositoryRef = (WeakReference) s_repositories.get(hash);
-        AsmClassInfoRepository repository = ((repositoryRef == null)
-            ? null
-            : (AsmClassInfoRepository) repositoryRef.get());
+        AsmClassInfoRepository repository = ((repositoryRef == null) ? null : (AsmClassInfoRepository) repositoryRef
+                .get());
         if (repository != null) {
             return repository;
         } else {
@@ -125,8 +124,8 @@ public class AsmClassInfoRepository {
      * @param className
      * @param loader
      * @return the class info
-     * @TODO might clash for specific class loader lookup algorithms, user need to override this
-     *       class and implement this method
+     * @TODO might clash for specific class loader lookup algorithms, user need to override this class and implement
+     *       this method
      */
     public ClassInfo checkParentClassRepository(final String className, final ClassLoader loader) {
         if (loader == null) {

@@ -48,8 +48,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
      */
     public static ConstructorInfo getConstructorInfo(final Constructor constructor) {
         Class declaringClass = constructor.getDeclaringClass();
-        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass
-                .getClassLoader());
+        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass.getClassLoader());
         ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
@@ -140,8 +139,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
             return false;
         }
         ConstructorInfo constructorInfo = (ConstructorInfo) o;
-        if (!m_declaringType.getName().toString().equals(
-            constructorInfo.getDeclaringType().getName().toString())) {
+        if (!m_declaringType.getName().toString().equals(constructorInfo.getDeclaringType().getName().toString())) {
             return false;
         }
         if (!m_member.getName().toString().equals(constructorInfo.getName().toString())) {
@@ -153,8 +151,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
             return false;
         }
         for (int i = 0; i < parameterTypes1.length; i++) {
-            if (!parameterTypes1[i].getName().toString().equals(
-                parameterTypes2[i].getName().toString())) {
+            if (!parameterTypes1[i].getName().toString().equals(parameterTypes2[i].getName().toString())) {
                 return false;
             }
         }

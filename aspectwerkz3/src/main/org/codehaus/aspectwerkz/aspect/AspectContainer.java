@@ -74,8 +74,7 @@ public interface AspectContainer {
     CrossCuttingInfo getCrossCuttingInfo();
 
     /**
-     * Attach the introduction container to this aspect container to mirror the "aspect contains 0-n
-     * introduction"
+     * Attach the introduction container to this aspect container to mirror the "aspect contains 0-n introduction"
      * 
      * @param name of the introduction
      * @param introContainer introduction container

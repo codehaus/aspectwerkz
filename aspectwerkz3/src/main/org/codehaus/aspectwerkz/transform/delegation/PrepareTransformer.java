@@ -26,8 +26,7 @@ import javassist.Modifier;
 import javassist.NotFoundException;
 
 /**
- * Prepare class for further hotswap for execution pointcut TODO support for constructor pointcuts
- * TODO AOPC def model
+ * Prepare class for further hotswap for execution pointcut TODO support for constructor pointcuts TODO AOPC def model
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -38,8 +37,7 @@ public class PrepareTransformer implements Transformer {
      * @param context the transformation context
      * @param klass the class set.
      */
-    public void transform(final Context context, final Klass klass) throws NotFoundException,
-            CannotCompileException {
+    public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
 
         // loop over all the definitions
@@ -85,8 +83,7 @@ public class PrepareTransformer implements Transformer {
                 } else {
                     methodSequences.put(method.getName(), new Integer(1));
                 }
-                final int methodSequence = ((Integer) methodSequences.get(method.getName()))
-                        .intValue();
+                final int methodSequence = ((Integer) methodSequences.get(method.getName())).intValue();
                 CtMethod wrapperMethod = createEmptyWrapperMethod(ctClass, method, methodSequence);
                 if (wrapperMethod != null) {
                     isClassAdvised = true;
@@ -116,8 +113,10 @@ public class PrepareTransformer implements Transformer {
         final CtClass ctClass,
         final CtMethod originalMethod,
         final int methodSequence) throws NotFoundException, CannotCompileException {
-        String wrapperMethodName = TransformationUtil.getPrefixedMethodName(originalMethod
-                .getName(), methodSequence, ctClass.getName().replace('/', '.'));
+        String wrapperMethodName = TransformationUtil.getPrefixedMethodName(
+            originalMethod.getName(),
+            methodSequence,
+            ctClass.getName().replace('/', '.'));
 
         // check if methods does not already exists
         if (JavassistHelper.hasMethod(ctClass, wrapperMethodName)) {
@@ -154,21 +153,11 @@ public class PrepareTransformer implements Transformer {
         }
         CtMethod method = null;
         if (Modifier.isStatic(originalMethod.getModifiers())) {
-            method = JavassistHelper.makeStatic(
-                originalMethod.getReturnType(),
-                wrapperMethodName,
-                originalMethod.getParameterTypes(),
-                originalMethod.getExceptionTypes(),
-                body.toString(),
-                ctClass);
+            method = JavassistHelper.makeStatic(originalMethod.getReturnType(), wrapperMethodName, originalMethod
+                    .getParameterTypes(), originalMethod.getExceptionTypes(), body.toString(), ctClass);
         } else {
-            method = CtNewMethod.make(
-                originalMethod.getReturnType(),
-                wrapperMethodName,
-                originalMethod.getParameterTypes(),
-                originalMethod.getExceptionTypes(),
-                body.toString(),
-                ctClass);
+            method = CtNewMethod.make(originalMethod.getReturnType(), wrapperMethodName, originalMethod
+                    .getParameterTypes(), originalMethod.getExceptionTypes(), body.toString(), ctClass);
             method.setModifiers(accessFlags);
         }
 

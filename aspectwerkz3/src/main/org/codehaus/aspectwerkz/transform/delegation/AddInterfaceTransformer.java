@@ -69,8 +69,7 @@ public final class AddInterfaceTransformer implements Transformer {
         boolean isClassAdvised = false;
         List interfaceIntroDefs = definition.getInterfaceIntroductionDefinitions(ctx);
         for (Iterator it = interfaceIntroDefs.iterator(); it.hasNext();) {
-            InterfaceIntroductionDefinition introductionDef = (InterfaceIntroductionDefinition) it
-                    .next();
+            InterfaceIntroductionDefinition introductionDef = (InterfaceIntroductionDefinition) it.next();
             List interfaceClassNames = introductionDef.getInterfaceClassNames();
             if (addInterfaces(interfaceClassNames, cg)) {
                 isClassAdvised = true;
@@ -143,10 +142,7 @@ public final class AddInterfaceTransformer implements Transformer {
      * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(
-        final CtClass cg,
-        final ExpressionContext ctx,
-        final SystemDefinition definition) {
+    public static boolean classFilter(final CtClass cg, final ExpressionContext ctx, final SystemDefinition definition) {
         if (cg.isInterface()) {
             return true;
         }

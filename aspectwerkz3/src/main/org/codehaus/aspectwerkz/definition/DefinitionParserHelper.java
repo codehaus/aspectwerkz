@@ -58,14 +58,15 @@ public class DefinitionParserHelper {
             if (pointcutCallSignature != null) {
                 String[] parameters = Strings.splitString(pointcutCallSignature, ",");
                 for (int i = 0; i < parameters.length; i++) {
-                    String[] parameterInfo = Strings.splitString(Strings.replaceSubString(parameters[i].trim(), "  "," "), " ");
+                    String[] parameterInfo = Strings.splitString(Strings.replaceSubString(
+                        parameters[i].trim(),
+                        "  ",
+                        " "), " ");
                     info.addArgument(parameterInfo[1], parameterInfo[0]);
                 }
             }
         }
-        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(
-            pointcutName,
-            info);
+        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(pointcutName, info);
 
         //                                                                                             new ExpressionInfo(expression,
         //                                                                                                                aspectDef
@@ -301,7 +302,9 @@ public class DefinitionParserHelper {
             adviceCallSignature = adviceName.substring(adviceName.indexOf("(") + 1, adviceName.lastIndexOf(")"));
             String[] parameters = Strings.splitString(adviceCallSignature, ",");
             for (int i = 0; i < parameters.length; i++) {
-                String[] parameterInfo = Strings.splitString(Strings.replaceSubString(parameters[i].trim(), "  ", " "), " ");
+                String[] parameterInfo = Strings.splitString(
+                    Strings.replaceSubString(parameters[i].trim(), "  ", " "),
+                    " ");
                 expressionInfo.addArgument(parameterInfo[1], parameterInfo[0]);
             }
         }
@@ -332,17 +335,13 @@ public class DefinitionParserHelper {
         final String expression,
         final String deploymentModel,
         final AspectDefinition aspectDef) {
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef
-                .getFullQualifiedName());
+        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
 
         // auto-name the pointcut which is anonymous for introduction
         ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(
             "AW_" + expression.hashCode(),
             expressionInfo);
-        final IntroductionDefinition introDef = new IntroductionDefinition(
-            mixinClass,
-            expressionInfo,
-            deploymentModel);
+        final IntroductionDefinition introDef = new IntroductionDefinition(mixinClass, expressionInfo, deploymentModel);
         return introDef;
     }
 
@@ -360,8 +359,7 @@ public class DefinitionParserHelper {
         final String expression,
         final String interfaceClassName,
         final AspectDefinition aspectDef) {
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef
-                .getFullQualifiedName());
+        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
 
         // auto-name the pointcut which is anonymous for introduction
         ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(

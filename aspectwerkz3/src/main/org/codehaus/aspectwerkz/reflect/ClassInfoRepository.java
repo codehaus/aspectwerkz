@@ -57,9 +57,7 @@ public class ClassInfoRepository {
             hash = loader.hashCode();
         }
         WeakReference repositoryRef = (WeakReference) s_repositories.get(hash);
-        ClassInfoRepository repository = ((repositoryRef == null)
-            ? null
-            : (ClassInfoRepository) repositoryRef.get());
+        ClassInfoRepository repository = ((repositoryRef == null) ? null : (ClassInfoRepository) repositoryRef.get());
         if (repository != null) {
             return repository;
         } else {
@@ -123,8 +121,8 @@ public class ClassInfoRepository {
      * @param className
      * @param loader
      * @return the class info
-     * @TODO might clash for specific class loader lookup algorithms, user need to override this
-     *       class and implement this method
+     * @TODO might clash for specific class loader lookup algorithms, user need to override this class and implement
+     *       this method
      */
     public ClassInfo checkParentClassRepository(final String className, final ClassLoader loader) {
         if (loader == null) {

@@ -15,9 +15,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
- * Implements a server thread. Each request from the client gets its own instance. <p/>Response to
- * three different commands: <br/>Command.CREATE, Command.INVOKE and Command.CLOSE. <p/>It redirects
- * the method invocation to the Invoker for the class.
+ * Implements a server thread. Each request from the client gets its own instance. <p/>Response to three different
+ * commands: <br/>Command.CREATE, Command.INVOKE and Command.CLOSE. <p/>It redirects the method invocation to the
+ * Invoker for the class.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */

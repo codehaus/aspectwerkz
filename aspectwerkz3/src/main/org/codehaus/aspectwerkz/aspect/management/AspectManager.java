@@ -32,13 +32,12 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * Manages the aspects. <p/>Handles deployment, redeployment, management, configuration or
- * redefinition of the aspects.
+ * Manages the aspects. <p/>Handles deployment, redeployment, management, configuration or redefinition of the aspects.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
- * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it
- *        should remove a certain advice from the pointcut - notification of the JoinPoinManager.
+ * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it should remove a
+ *        certain advice from the pointcut - notification of the JoinPoinManager.
  */
 public final class AspectManager {
     /**
@@ -65,16 +64,16 @@ public final class AspectManager {
     /**
      * Cache for the pointcuts.
      * 
-     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a
-     *        way of being invalidated.
+     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
+     *        invalidated.
      */
     private final Map m_pointcutCache = new WeakHashMap();
 
     /**
      * Cache for the cflow pointcuts.
      * 
-     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a
-     *        way of being invalidated.
+     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
+     *        invalidated.
      */
     private final Map m_cflowPointcutCache = new WeakHashMap();
 
@@ -91,8 +90,8 @@ public final class AspectManager {
     }
 
     /**
-     * Initializes the manager. The initialization needs to be separated fromt he construction of
-     * the manager, and is triggered by the runtime system.
+     * Initializes the manager. The initialization needs to be separated fromt he construction of the manager, and is
+     * triggered by the runtime system.
      */
     public void initialize() {
         m_aspectRegistry.initialize();
@@ -113,8 +112,8 @@ public final class AspectManager {
      * 
      * @param name the name of the aspect
      * @param aspectClassName the class name of the aspect
-     * @param deploymentModel the deployment model for the aspect (constants in the DeploymemtModel
-     *            class, e.g. f.e. DeploymentModel.PER_JVM)
+     * @param deploymentModel the deployment model for the aspect (constants in the DeploymemtModel class, e.g. f.e.
+     *            DeploymentModel.PER_JVM)
      * @param loader an optional class loader (if null it uses the context classloader)
      */
     public void createAspect(
@@ -129,8 +128,7 @@ public final class AspectManager {
             throw new IllegalArgumentException("class name can not be null");
         }
         if ((deploymentModel < 0) || (deploymentModel > 3)) {
-            throw new IllegalArgumentException(deploymentModel
-                + " is not a valid deployment model type");
+            throw new IllegalArgumentException(deploymentModel + " is not a valid deployment model type");
         }
         Class aspectClass = null;
         try {
@@ -151,17 +149,19 @@ public final class AspectManager {
         }
 
         // create the aspect definition
-        AspectDefinition aspectDef = new AspectDefinition(
-            aspectClassName,
-            aspectClassName,
-            m_definition.getUuid());
+        AspectDefinition aspectDef = new AspectDefinition(aspectClassName, aspectClassName, m_definition.getUuid());
         aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelAsString(deploymentModel));
 
         // parse the class attributes and create a definition
         m_annotationParser.parse(aspectClass, aspectDef, m_definition);
         m_definition.addAspect(aspectDef);
-        CrossCuttingInfo crossCuttingInfo = new CrossCuttingInfo(null, aspectClass, aspectDef
-                .getName(), deploymentModel, aspectDef, new HashMap());
+        CrossCuttingInfo crossCuttingInfo = new CrossCuttingInfo(
+            null,
+            aspectClass,
+            aspectDef.getName(),
+            deploymentModel,
+            aspectDef,
+            new HashMap());
         AspectContainer container = StartupManager.createAspectContainer(crossCuttingInfo);
         crossCuttingInfo.setContainer(container);
         m_aspectRegistry.register(container, new PointcutManager(name, deploymentModel));
@@ -290,9 +290,8 @@ public final class AspectManager {
     }
 
     /**
-     * Returns the pointcut list for the context specified. <p/>Caches the list, needed since the
-     * actual method call is expensive and is made each time a new instance of an advised class is
-     * created.
+     * Returns the pointcut list for the context specified. <p/>Caches the list, needed since the actual method call is
+     * expensive and is made each time a new instance of an advised class is created.
      * 
      * @param ctx the expression context
      * @return the pointcuts for this join point
@@ -319,9 +318,8 @@ public final class AspectManager {
     }
 
     /**
-     * Returns the cflow pointcut list for the context specified. <p/>Caches the list, needed since
-     * the actual method call is expensive and is made each time a new instance of an advised class
-     * is created.
+     * Returns the cflow pointcut list for the context specified. <p/>Caches the list, needed since the actual method
+     * call is expensive and is made each time a new instance of an advised class is created.
      * 
      * @param ctx the expression context
      * @return the pointcuts for this join point

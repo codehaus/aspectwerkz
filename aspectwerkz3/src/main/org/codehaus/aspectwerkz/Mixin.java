@@ -28,8 +28,8 @@ public interface Mixin {
     int getDeploymentModel();
 
     /**
-     * Invokes the method with the index specified. Invoked by methods without any parameters
-     * (slight performance gain since we are saving us one array creation).
+     * Invokes the method with the index specified. Invoked by methods without any parameters (slight performance gain
+     * since we are saving us one array creation).
      * 
      * @param methodIndex the method index
      * @param callingObject a reference to the calling object
