@@ -18,11 +18,19 @@
  */
 package examples.persistence;
 
-public class CounterImpl1 implements Counter1 {
+public class CounterImpl1 extends AbstractCounterImpl implements Counter1 {
 
     private static final long serialVersionUID = 1L;
 
     private int m_counter = 0;
+
+    public CounterImpl1() {
+        super();
+    }
+
+    public CounterImpl1(int i) {
+        super(i);
+    }
 
     public int getCounter1() {
         return m_counter;
