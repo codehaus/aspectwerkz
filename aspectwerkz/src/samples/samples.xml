@@ -5,10 +5,10 @@
     <!-- ============================================= -->
     <!--  Introductions                                -->
     <!-- ============================================= -->
-<!--    <introduction-def name="mixin"-->
-<!--        interface="examples.introduction.Mixin"-->
-<!--        implementation="examples.introduction.MixinImpl"-->
-<!--        deployment-model="perJVM"/>-->
+    <!--    <introduction-def name="mixin"-->
+    <!--        interface="examples.introduction.Mixin"-->
+    <!--        implementation="examples.introduction.MixinImpl"-->
+    <!--        deployment-model="perJVM"/>-->
 
     <!-- ============================================= -->
     <!--  Advices                                      -->
@@ -61,15 +61,17 @@
 
     <aspect name="Asynchronous">
         <pointcut-def name="asynchronous_calls" type="method" pattern="* examples.asynchronous.Target.toRunAsynchronously()"/>
+        <controller-def pointcut="asynchronous_calls" class="test.DummyJoinPointController"/>
+
         <advice pointcut="asynchronous_calls">
             <advice-ref name="asynchronous"/>
         </advice>
     </aspect>
 
-<!--    <aspect name="Introduction">-->
-<!--        <introduction class="examples.introduction.Target">-->
-<!--            <introduction-ref name="mixin"/>-->
-<!--        </introduction>-->
-<!--    </aspect>-->
+    <!--    <aspect name="Introduction">-->
+    <!--        <introduction class="examples.introduction.Target">-->
+    <!--            <introduction-ref name="mixin"/>-->
+    <!--        </introduction>-->
+    <!--    </aspect>-->
 
 </aspectwerkz>
