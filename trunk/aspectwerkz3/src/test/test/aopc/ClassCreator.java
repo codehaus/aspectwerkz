@@ -16,14 +16,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.LoaderClassPath;
-import javassist.Modifier;
-
 /**
  * Test helper for AspectContainer, emulates a ClassLoader hierarchy sys/sub/ sys/sub/a sys/sub/b
+ *
+ * FIXME - rewrite with ASM
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -57,15 +53,16 @@ public class ClassCreator {
     }
 
     public static Class createClass(String name, Class classPrototype, ClassLoader loader) {
-        try {
-            ClassPool cp = new ClassPool(null);
-            cp.appendClassPath(new LoaderClassPath(loader));
-            CtClass prototype = cp.get(classPrototype.getName());
-            prototype.setName(name);
-            return define(prototype.toBytecode(), name, loader);
-        } catch (Throwable throwable) {
-            throw new WrappedRuntimeException(throwable);
-        }
+        return classPrototype;
+//        try {
+//            ClassPool cp = new ClassPool(null);
+//            cp.appendClassPath(new LoaderClassPath(loader));
+//            CtClass prototype = cp.get(classPrototype.getName());
+//            prototype.setName(name);
+//            return define(prototype.toBytecode(), name, loader);
+//        } catch (Throwable throwable) {
+//            throw new WrappedRuntimeException(throwable);
+//        }
     }
 
     public static void main(String[] a) throws Throwable {
