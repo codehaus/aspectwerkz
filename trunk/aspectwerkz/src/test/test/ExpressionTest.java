@@ -44,8 +44,8 @@ public class ExpressionTest extends TestCase {
 
     public void testBuildExpressionWithTheSamePointcutTypes() {
         try {
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.EXECUTION));
             Expression root = Expression.createRootExpression("namespace", "pc1 && pc2");
         }
         catch (Exception e) {
@@ -56,8 +56,8 @@ public class ExpressionTest extends TestCase {
 
     public void testBuildExpressionWithDifferentPointcutTypes() {
         try {
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL));
             Expression root = Expression.createRootExpression("namespace", "pc1 && pc2");
             fail("expected exception");
         }
@@ -67,8 +67,8 @@ public class ExpressionTest extends TestCase {
 
     public void testBuildExpressionWithDifferentPointcutTypesButOneIsCflow() {
         try {
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createCflowExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CFLOW));
             Expression root = Expression.createRootExpression("namespace", "pc1 && pc2");
         }
         catch (Exception e) {
@@ -78,8 +78,8 @@ public class ExpressionTest extends TestCase {
 
     public void testBuildExpressionWithWrongPointcutTypeInContext() {
         try {
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL));
             Expression root = Expression.createRootExpression("namespace", "pc1 && pc2");
             fail("expected exception");
         }
@@ -108,8 +108,8 @@ public class ExpressionTest extends TestCase {
 
     public void testOneLevel_EXECUTION_OR() {
         try {
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.EXECUTION));
             Expression root = Expression.createRootExpression("namespace", "pc1 || pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -131,8 +131,8 @@ public class ExpressionTest extends TestCase {
 
     public void testOneLevel_CALL_OR() {
         try {
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "*->* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "*->* test.ExpressionTest.get(..)", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "*->* test.ExpressionTest.set(..)", "", "pc1", PointcutType.CALL));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "*->* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL));
             Expression root = Expression.createRootExpression("namespace", "pc1 || pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -152,8 +152,8 @@ public class ExpressionTest extends TestCase {
 
     public void testOneLevel_SET_OR() {
         try {
-            Expression.registerExpressionTemplate(Expression.createSetExpression("namespace", "* test.ExpressionTest.m_name", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createSetExpression("namespace", "* test.ExpressionTest.m_type", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_name", "", "pc1", PointcutType.SET));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_type", "", "pc2", PointcutType.SET));
             Expression root = Expression.createRootExpression("namespace", "pc1 || pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -173,8 +173,8 @@ public class ExpressionTest extends TestCase {
 
     public void testOneLevel_GET_OR() {
         try {
-            Expression.registerExpressionTemplate(Expression.createGetExpression("namespace", "* test.ExpressionTest.m_name", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createGetExpression("namespace", "* test.ExpressionTest.m_type", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_name", "", "pc1", PointcutType.GET));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_type", "", "pc2", PointcutType.GET));
             Expression root = Expression.createRootExpression("namespace", "pc1 || pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -194,8 +194,8 @@ public class ExpressionTest extends TestCase {
 
     public void testOneLevel_THROWS_OR() {
         try {
-            Expression.registerExpressionTemplate(Expression.createThrowsExpression("namespace", "* test.ExpressionTest.throws1(..)#java.lang.Exception", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createThrowsExpression("namespace", "* test.ExpressionTest.throws2(..)#java.lang.Exception", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.throws1(..)#java.lang.Exception", "", "pc1", PointcutType.THROWS));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.throws2(..)#java.lang.Exception", "", "pc2", PointcutType.THROWS));
             Expression root = Expression.createRootExpression("namespace", "pc1 || pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -215,8 +215,8 @@ public class ExpressionTest extends TestCase {
 
     public void testOneLevel_THROWS_OR_matchDifferentException() {
         try {
-            Expression.registerExpressionTemplate(Expression.createThrowsExpression("namespace", "* test.ExpressionTest.throws1(..)#java.lang.Exception", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createThrowsExpression("namespace", "* test.ExpressionTest.throwsError(..)#java.lang.Error", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.throws1(..)#java.lang.Exception", "", "pc1", PointcutType.THROWS));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.throwsError(..)#java.lang.Error", "", "pc2", PointcutType.THROWS));
             Expression root = Expression.createRootExpression("namespace", "pc1 || pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -236,8 +236,8 @@ public class ExpressionTest extends TestCase {
 
     public void testOneLevel_EXECUTION_AND() {
         try {
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.EXECUTION));
             Expression root = Expression.createRootExpression("namespace", "!pc1 && pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -259,8 +259,8 @@ public class ExpressionTest extends TestCase {
 
     public void testOneLevel_CALL_AND() {
         try {
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.CALL));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL));
             Expression root = Expression.createRootExpression("namespace", "!pc1 && pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -280,8 +280,8 @@ public class ExpressionTest extends TestCase {
 
     public void testOneLevel_SET_AND() {
         try {
-            Expression.registerExpressionTemplate(Expression.createSetExpression("namespace", "* test.ExpressionTest.m_name", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createSetExpression("namespace", "* test.ExpressionTest.m_type", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_name", "", "pc1", PointcutType.SET));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_type", "", "pc2", PointcutType.SET));
             Expression root = Expression.createRootExpression("namespace", "!pc1 && pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -301,8 +301,8 @@ public class ExpressionTest extends TestCase {
 
     public void testOneLevel_GET_AND() {
         try {
-            Expression.registerExpressionTemplate(Expression.createGetExpression("namespace", "* test.ExpressionTest.m_name", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createGetExpression("namespace", "* test.ExpressionTest.m_type", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_name", "", "pc1", PointcutType.GET));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_type", "", "pc2", PointcutType.GET));
             Expression root = Expression.createRootExpression("namespace", "!pc1 && pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -322,8 +322,8 @@ public class ExpressionTest extends TestCase {
 
     public void testOneLevel_THROWS_AND() {
         try {
-            Expression.registerExpressionTemplate(Expression.createThrowsExpression("namespace", "* test.ExpressionTest.throws1(..)#java.lang.Exception", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createThrowsExpression("namespace", "* test.ExpressionTest.throws2(..)#java.lang.Exception", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.throws1(..)#java.lang.Exception", "", "pc1", PointcutType.THROWS));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.throws2(..)#java.lang.Exception", "", "pc2", PointcutType.THROWS));
             Expression root = Expression.createRootExpression("namespace", "!pc1 && pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -343,8 +343,8 @@ public class ExpressionTest extends TestCase {
 
     public void testOneLevel_CFLOW_AND_EXECUTION() {
         try {
-            Expression.registerExpressionTemplate(Expression.createCflowExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.CFLOW));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.EXECUTION));
             Expression root = Expression.createRootExpression("namespace", "pc1 && pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -366,8 +366,8 @@ public class ExpressionTest extends TestCase {
 
     public void testOneLevel_CFLOW_AND_CALL() {
         try {
-            Expression.registerExpressionTemplate(Expression.createCflowExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.CFLOW));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL));
             Expression root = Expression.createRootExpression("namespace", "pc1 && pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -387,10 +387,10 @@ public class ExpressionTest extends TestCase {
 
     public void testTwoLevels_EXECUTION() {
         try {
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "pc1 || pc2", "", "pc3"));
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.suite(..)", "", "pc4"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.EXECUTION));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "pc1 || pc2", "", "pc3", PointcutType.EXECUTION));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.suite(..)", "", "pc4", PointcutType.EXECUTION));
             Expression root = Expression.createRootExpression("namespace", "pc3 && !pc4");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -413,10 +413,10 @@ public class ExpressionTest extends TestCase {
 
     public void testTwoLevels_CALL() {
         try {
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "pc1 || pc2", "", "pc3"));
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.suite(..)", "", "pc4"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.CALL));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "pc1 || pc2", "", "pc3", PointcutType.CALL));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.suite(..)", "", "pc4", PointcutType.CALL));
             Expression root = Expression.createRootExpression("namespace", "pc3 && !pc4");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -436,10 +436,10 @@ public class ExpressionTest extends TestCase {
 
     public void testTwoLevels_SET() {
         try {
-            Expression.registerExpressionTemplate(Expression.createSetExpression("namespace", "* test.ExpressionTest.m_name", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createSetExpression("namespace", "* test.ExpressionTest.m_type", "", "pc2"));
-            Expression.registerExpressionTemplate(Expression.createSetExpression("namespace", "pc1 || pc2", "", "pc3"));
-            Expression.registerExpressionTemplate(Expression.createSetExpression("namespace", "* test.ExpressionTest.m_dummy", "", "pc4"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_name", "", "pc1", PointcutType.SET));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_type", "", "pc2", PointcutType.SET));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "pc1 || pc2", "", "pc3", PointcutType.SET));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_dummy", "", "pc4", PointcutType.SET));
             Expression root = Expression.createRootExpression("namespace", "pc3 && !pc4");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -459,10 +459,10 @@ public class ExpressionTest extends TestCase {
 
     public void testTwoLevels_GET() {
         try {
-            Expression.registerExpressionTemplate(Expression.createGetExpression("namespace", "* test.ExpressionTest.m_name", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createGetExpression("namespace", "* test.ExpressionTest.m_type", "", "pc2"));
-            Expression.registerExpressionTemplate(Expression.createGetExpression("namespace", "pc1 || pc2", "", "pc3"));
-            Expression.registerExpressionTemplate(Expression.createGetExpression("namespace", "* test.ExpressionTest.m_dummy", "", "pc4"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_name", "", "pc1", PointcutType.GET));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_type", "", "pc2", PointcutType.GET));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "pc1 || pc2", "", "pc3", PointcutType.GET));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.m_dummy", "", "pc4", PointcutType.GET));
             Expression root = Expression.createRootExpression("namespace", "pc3 && !pc4");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -482,10 +482,10 @@ public class ExpressionTest extends TestCase {
 
     public void testTwoLevels_THROWS() {
         try {
-            Expression.registerExpressionTemplate(Expression.createThrowsExpression("namespace", "* test.ExpressionTest.throws1(..)#java.lang.Exception", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createThrowsExpression("namespace", "* test.ExpressionTest.throws2(..)#java.lang.Exception", "", "pc2"));
-            Expression.registerExpressionTemplate(Expression.createThrowsExpression("namespace", "pc1 || pc2", "", "pc3"));
-            Expression.registerExpressionTemplate(Expression.createThrowsExpression("namespace", "* test.ExpressionTest.throwsDummy(..)#java.lang.Exception", "", "pc4"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.throws1(..)#java.lang.Exception", "", "pc1", PointcutType.THROWS));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.throws2(..)#java.lang.Exception", "", "pc2", PointcutType.THROWS));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "pc1 || pc2", "", "pc3", PointcutType.THROWS));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.throwsDummy(..)#java.lang.Exception", "", "pc4", PointcutType.THROWS));
             Expression root = Expression.createRootExpression("namespace", "pc3 && !pc4");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -505,9 +505,9 @@ public class ExpressionTest extends TestCase {
 
     public void testComplexPattern_EXECUTION_1() {
         try {
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.suite(..)", "", "pc3"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.EXECUTION));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.suite(..)", "", "pc3", PointcutType.EXECUTION));
             Expression root = Expression.createRootExpression("namespace", "!pc3 && (pc1 || pc2)");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -527,9 +527,9 @@ public class ExpressionTest extends TestCase {
 
     public void testComplexPattern_EXECUTION_2() {
         try {
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
-            Expression.registerExpressionTemplate(Expression.createExecutionExpression("namespace", "* test.ExpressionTest.suite(..)", "", "pc3"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.EXECUTION));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.suite(..)", "", "pc3", PointcutType.EXECUTION));
             Expression root = Expression.createRootExpression("namespace", "pc1 && !(pc2 || pc3)");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -549,9 +549,9 @@ public class ExpressionTest extends TestCase {
 
     public void testComplexPattern_CALL_1() {
         try {
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.suite(..)", "", "pc3"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.CALL));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.suite(..)", "", "pc3", PointcutType.CALL));
             Expression root = Expression.createRootExpression("namespace", "!pc3 && (pc1 || pc2)");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
@@ -571,9 +571,9 @@ public class ExpressionTest extends TestCase {
 
     public void testComplexPattern_CALL_2() {
         try {
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.set(..)", "", "pc1"));
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.get(..)", "", "pc2"));
-            Expression.registerExpressionTemplate(Expression.createCallExpression("namespace", "* test.ExpressionTest.suite(..)", "", "pc3"));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.set(..)", "", "pc1", PointcutType.CALL));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL));
+            Expression.registerExpressionTemplate(Expression.createExpressionTemplate("namespace", "* test.ExpressionTest.suite(..)", "", "pc3", PointcutType.CALL));
             Expression root = Expression.createRootExpression("namespace", "pc1 && !(pc2 || pc3)");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);

@@ -19,8 +19,8 @@ import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.PatternFactory;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
-import org.codehaus.aspectwerkz.definition.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.definition.expression.ExpressionTemplate;
 
 /**
  * Parses the xmldef XML definition file using <tt>dom4j</tt>.
@@ -419,7 +419,7 @@ public class DocumentParser {
                         }
                     }
                     // create and register the expression
-                    Expression expressionTemplate =
+                    ExpressionTemplate expressionTemplate =
                             Expression.createExpressionTemplate(
                                     aspectName,
                                     expression,

@@ -10,11 +10,10 @@ package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
-import org.codehaus.aspectwerkz.definition.expression.ExpressionContext;
+import org.codehaus.aspectwerkz.definition.expression.ExpressionTemplate;
 import org.codehaus.aspectwerkz.attribdef.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.IntroductionDefinition;
@@ -22,7 +21,7 @@ import org.codehaus.aspectwerkz.attribdef.definition.InterfaceIntroductionDefini
 
 /**
  * Abstract base class for all the aspect attribute parsers to extend.
- * Extracts the aspects attributes and creates a meta-data representation of them.
+ * <p/>Extracts the aspects attributes and creates a meta-data representation of them.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -54,8 +53,8 @@ public abstract class AspectAttributeParser {
         pointcutDef.setExpression(expression);
         aspectDef.addPointcut(pointcutDef);
 
-        // create and add a new named expression
-        Expression expressionTemplate = Expression.createExpressionTemplate(
+        // create and add a new expression template
+        ExpressionTemplate expressionTemplate = Expression.createExpressionTemplate(
                 aspectDef.getName(), expression, "", name, type
         );
         Expression.registerExpressionTemplate(expressionTemplate);
@@ -80,8 +79,8 @@ public abstract class AspectAttributeParser {
                                                           final int methodIndex,
                                                           final AspectDefinition aspectDef) {
         AdviceDefinition adviceDef = createAdviceDefinition(
-                adviceName, aspectName, aspectClassName, expression,
-                method, methodIndex, aspectDef
+                adviceName, aspectName, aspectClassName,
+                expression, method, methodIndex, aspectDef
         );
         aspectDef.addAroundAdvice(adviceDef);
     }
@@ -105,8 +104,8 @@ public abstract class AspectAttributeParser {
                                                           final int methodIndex,
                                                           final AspectDefinition aspectDef) {
         AdviceDefinition adviceDef = createAdviceDefinition(
-                adviceName, aspectName, aspectClassName, expression,
-                method, methodIndex, aspectDef
+                adviceName, aspectName, aspectClassName,
+                expression, method, methodIndex, aspectDef
         );
         aspectDef.addBeforeAdvice(adviceDef);
     }
@@ -130,8 +129,8 @@ public abstract class AspectAttributeParser {
                                                          final int methodIndex,
                                                          final AspectDefinition aspectDef) {
         AdviceDefinition adviceDef = createAdviceDefinition(
-                adviceName, aspectName, aspectClassName, expression,
-                method, methodIndex, aspectDef
+                adviceName, aspectName, aspectClassName,
+                expression, method, methodIndex, aspectDef
         );
         aspectDef.addAfterAdvice(adviceDef);
     }
@@ -172,7 +171,8 @@ public abstract class AspectAttributeParser {
                                                                    final String interfaceClassName,
                                                                    final AspectDefinition aspectDef) {
         InterfaceIntroductionDefinition introDef = createInterfaceIntroductionDefinition(
-                introductionName, expression, interfaceClassName, aspectDef);
+                introductionName, expression, interfaceClassName, aspectDef
+        );
         aspectDef.addInterfaceIntroduction(introDef);
     }
 
@@ -195,8 +195,10 @@ public abstract class AspectAttributeParser {
                                                       final Method method,
                                                       final int methodIndex,
                                                       final AspectDefinition aspectDef) {
-        Expression expr = Expression.createRootExpression(aspectDef.getName(), expression);
 
+        Expression expr = Expression.createRootExpression(
+                aspectDef.getName(), expression
+        );
         final AdviceDefinition adviceDef = new AdviceDefinition(
                 adviceName, aspectName, aspectClassName,
                 expr, method, methodIndex, aspectDef
@@ -220,9 +222,7 @@ public abstract class AspectAttributeParser {
                                                                   final Method[] introducedMethods,
                                                                   final AspectDefinition aspectDef) {
         Expression expr = Expression.createRootExpression(
-                aspectDef.getName(),
-                expression,
-                PointcutType.CLASS
+                aspectDef.getName(), expression, PointcutType.CLASS
         );
         final IntroductionDefinition introDef = new IntroductionDefinition(
                 introductionName, expr, introducedInterfaceNames, introducedMethods
@@ -246,9 +246,7 @@ public abstract class AspectAttributeParser {
             final AspectDefinition aspectDef) {
 
         Expression expr = Expression.createRootExpression(
-                aspectDef.getName(),
-                expression,
-                PointcutType.CLASS
+                aspectDef.getName(), expression, PointcutType.CLASS
         );
         final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(
                 introductionName, expr, interfaceClassName

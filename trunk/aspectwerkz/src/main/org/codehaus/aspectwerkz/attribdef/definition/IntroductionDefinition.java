@@ -22,12 +22,13 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
 public class IntroductionDefinition extends InterfaceIntroductionDefinition {
 
     /**
-     * The introduced methods MetData list
+     * The introduced methods meta-data list.
      */
-    private List m_methodIntroduction = new ArrayList();
+    private final List m_methodIntroduction = new ArrayList();
 
     /**
-     * Construct a new Definition for introduction
+     * Construct a new Definition for introduction.
+     *
      * @param name of the introduction
      * @param expression
      * @param interfaceClassNames FQNs for introduced interfaces
@@ -54,5 +55,4 @@ public class IntroductionDefinition extends InterfaceIntroductionDefinition {
     public List getMethodIntroductions() {
         return m_methodIntroduction;
     }
-
 }

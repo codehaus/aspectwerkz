@@ -330,7 +330,7 @@ public class AttributeC {
     /**
      * Handles the advice parameter elements.
      *
-     * @param root the document root
+     * @param adviceElement the advice element
      * @param adviceDef the advice definition
      */
     private static void addAdviceParamElements(final Element adviceElement,
@@ -416,72 +416,6 @@ public class AttributeC {
                     pointcutType
             );
 
-//            StringBuffer fullPattern = new StringBuffer();
-//            if (pointcutType.equals(PointcutType.EXECUTION) ||
-//                    pointcutType.equals(PointcutType.SET) ||
-//                    pointcutType.equals(PointcutType.GET)) {
-//                String classPattern = pointcutDef.getCalleeClassPattern();
-//                String pattern = pointcutDef.getPattern();
-//                int space = pattern.indexOf(' ');
-//                String returnType = pattern.substring(0, space + 1);
-//                String methodName = pattern.substring(space + 1);
-//                fullPattern.append(returnType);
-//                fullPattern.append(classPattern);
-//                if (pointcutDef.isHierarchical()) {
-//                    fullPattern.append('+');
-//                }
-//                fullPattern.append('.');
-//                fullPattern.append(methodName);
-//            }
-//            else if (type.equalsIgnoreCase(PointcutDefinition.THROWS)) {
-//                String classPattern = pointcutDef.getCalleeClassPattern();
-//                String pattern = pointcutDef.getPattern();
-//                int delimiter = pattern.indexOf('#');
-//                String methodPattern = pattern.substring(0, delimiter);
-//                String exception = pattern.substring(delimiter + 1);
-//                int space = methodPattern.indexOf(' ');
-//                String returnType = methodPattern.substring(0, space + 1);
-//                String methodName = methodPattern.substring(space + 1);
-//                fullPattern.append(returnType);
-//                fullPattern.append(classPattern);
-//                fullPattern.append('.');
-//                fullPattern.append(methodName);
-//                fullPattern.append('#');
-//                fullPattern.append(exception);
-//            }
-//            else if (type.equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
-//                String callerClassPattern = pointcutDef.getCallerClassPattern();
-//                String pattern = pointcutDef.getPattern();
-//                int delimiter = pattern.indexOf('#');
-//                String calleeClassPattern = pattern.substring(0, delimiter);
-//                String methodPattern = pattern.substring(delimiter + 1);
-//                int space = methodPattern.indexOf(' ');
-//                String returnType = methodPattern.substring(0, space + 1);
-//                String methodName = methodPattern.substring(space + 1);
-//                fullPattern.append(callerClassPattern);
-//                fullPattern.append("->");
-//                fullPattern.append(returnType);
-//                fullPattern.append(calleeClassPattern);
-//                fullPattern.append(".");
-//                fullPattern.append(methodName);
-//            }
-//            else if (type.equals(PointcutDefinition.CFLOW)) {
-//                String pattern = pointcutDef.getPattern();
-//                int delimiter = pattern.indexOf('#');
-//                String classPattern = pattern.substring(0, delimiter);
-//                String methodPattern = pattern.substring(delimiter + 1);
-//                int space = methodPattern.indexOf(' ');
-//                String returnType = methodPattern.substring(0, space + 1);
-//                String methodName = methodPattern.substring(space + 1);
-//                fullPattern.append(returnType);
-//                fullPattern.append(classPattern);
-//                fullPattern.append(".");
-//                fullPattern.append(methodName);
-//            }
-//            else {
-//                throw new RuntimeException("invalid pointcut type: " + pointcutDef.getType());
-//            }
-
             pointcutDefElement.addAttribute("pattern", pointcutDef.getExpression());
         }
     }
@@ -489,7 +423,7 @@ public class AttributeC {
     /**
      * Handles the join point controllers.
      *
-     * @TODO: implement
+     * @TODO: implement controller handling
      *
      * @param aspectElement the aspect element
      * @param aspectDef the aspect definition

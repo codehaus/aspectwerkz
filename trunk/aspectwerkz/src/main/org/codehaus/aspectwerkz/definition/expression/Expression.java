@@ -30,7 +30,10 @@ import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.definition.PatternFactory;
 
 /**
- * @todo document
+ * Base class for the expression AST.
+ * <p/>Evaluates nested pointcut patterns with unlimited depth.
+ * <p/>Uses the composite pattern.
+ *
  * @TODO: implement readObject() for the subclasses
  * @TODO: add serialVersionUID field to the subclasses
  *
@@ -122,8 +125,6 @@ public abstract class Expression implements Serializable {
                                               final String packageNamespace,
                                               final String name,
                                               final PointcutType type) {
-        ExpressionContext context = new ExpressionContext(type);
-
         Expression expr = null;
         if (type.equals(PointcutType.EXECUTION)) {
             expr = Expression.createExecutionExpression(
@@ -176,11 +177,11 @@ public abstract class Expression implements Serializable {
      * @param type the type of the expression
      * @return the expression template
      */
-    public static Expression createExpressionTemplate(final String namespace,
-                                                      final String expression,
-                                                      final String packageNamespace,
-                                                      final String name,
-                                                      final PointcutType type) {
+    public static ExpressionTemplate createExpressionTemplate(final String namespace,
+                                                              final String expression,
+                                                              final String packageNamespace,
+                                                              final String name,
+                                                              final PointcutType type) {
         return new ExpressionTemplate(namespace, expression, packageNamespace, name, type);
     }
 
@@ -248,7 +249,6 @@ public abstract class Expression implements Serializable {
      * @param expression the expression string
      * @param packageNamespace the package namespace that the expression is living in
      * @param name the name of the pointcut
-     * @param context the context
      * @return the expression
      */
     public static SetExpression createSetExpression(final String namespace,
@@ -327,7 +327,7 @@ public abstract class Expression implements Serializable {
      *
      * @param expression the expression to add
      */
-    public static void registerExpressionTemplate(final Expression expression) {
+    public static void registerExpressionTemplate(final ExpressionTemplate expression) {
         String namespace = expression.getNamespace();
         if (namespace == null || namespace.equals("")) {
             namespace = DEFAULT_NAMESPACE;
@@ -351,13 +351,13 @@ public abstract class Expression implements Serializable {
      * @param namespace the namespace for the expression
      * @param expressionName the name of the expression
      */
-    public static Expression getExpressionTemplate(String namespace, final String expressionName) {
+    public static ExpressionTemplate getExpressionTemplate(String namespace, final String expressionName) {
         if (namespace == null || namespace.equals("")) {
             namespace = DEFAULT_NAMESPACE;
         }
         Map expressions = (Map)s_expressionTemplates.get(namespace);
         if (expressions != null) {
-            return (Expression)expressions.get(expressionName);
+            return (ExpressionTemplate)expressions.get(expressionName);
         }
         else {
             return null;
@@ -782,7 +782,7 @@ public abstract class Expression implements Serializable {
         while (tokenizer.hasMoreTokens()) {
 
             String pointcutRef = tokenizer.nextToken();
-            Expression template = getExpressionTemplate(m_namespace, pointcutRef);
+            ExpressionTemplate template = getExpressionTemplate(m_namespace, pointcutRef);
 
             if (template == null) {
                 throw new ExpressionException("referenced pointcut [" + pointcutRef + "] does not exist");
@@ -792,7 +792,7 @@ public abstract class Expression implements Serializable {
             if (hasTypeMisMatch(previousType, currentType)) {
                 StringBuffer msg = new StringBuffer();
                 msg.append("nested expressions needs to be of the same type: [");
-                msg.append(template.m_expression);
+                msg.append(template.getExpression());
                 msg.append("] : [");
                 msg.append(m_expression);
                 msg.append(']');
@@ -817,63 +817,63 @@ public abstract class Expression implements Serializable {
         while (tokenizer.hasMoreTokens()) {
             String pointcutRef = tokenizer.nextToken();
 
-            Expression template = getExpressionTemplate(m_namespace, pointcutRef);
+            ExpressionTemplate template = getExpressionTemplate(m_namespace, pointcutRef);
             PointcutType type = template.getType();
 
             final Expression expression;
             if (type.equals(PointcutType.EXECUTION)) {
                 expression = Expression.createExecutionExpression(
-                        m_namespace,
-                        template.m_expression,
-                        template.m_package,
+                        template.getNamespace(),
+                        template.getExpression(),
+                        template.getPackage(),
                         pointcutRef
                 );
             }
             else if (type.equals(PointcutType.CALL)) {
                 expression = Expression.createCallExpression(
-                        m_namespace,
-                        template.m_expression,
-                        template.m_package,
+                        template.getNamespace(),
+                        template.getExpression(),
+                        template.getPackage(),
                         pointcutRef
                 );
             }
             else if (type.equals(PointcutType.GET)) {
                 expression = Expression.createGetExpression(
-                        m_namespace,
-                        template.m_expression,
-                        template.m_package,
+                        template.getNamespace(),
+                        template.getExpression(),
+                        template.getPackage(),
                         pointcutRef
                 );
             }
             else if (type.equals(PointcutType.SET)) {
                 expression = Expression.createSetExpression(
-                        m_namespace,
-                        template.m_expression,
-                        template.m_package,
+                        template.getNamespace(),
+                        template.getExpression(),
+                        template.getPackage(),
                         pointcutRef
                 );
             }
             else if (type.equals(PointcutType.CFLOW)) {
                 expression = Expression.createCflowExpression(
-                        m_namespace,
-                        template.m_expression,
-                        template.m_package,
+                        template.getNamespace(),
+                        template.getExpression(),
+                        template.getPackage(),
                         pointcutRef
                 );
             }
             else if (type.equals(PointcutType.THROWS)) {
                 expression = Expression.createThrowsExpression(
-                        m_namespace,
-                        template.m_expression,
-                        template.m_package,
+                        template.getNamespace(),
+                        template.getExpression(),
+                        template.getPackage(),
                         pointcutRef
                 );
             }
             else if (type.equals(PointcutType.CLASS)) {
                 expression = Expression.createClassExpression(
-                        m_namespace,
-                        template.m_expression,
-                        template.m_package,
+                        template.getNamespace(),
+                        template.getExpression(),
+                        template.getPackage(),
                         pointcutRef
                 );
             }

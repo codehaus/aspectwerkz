@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Iterator;
 
 /**
- * Container for Introductions
+ * Container for Introductions.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -34,8 +34,10 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
 
     /**
      * Holds references to the per class introductions.
+     *
+     * @TODO shoould be weak for 0.10
      */
-    protected Map m_perClass = new HashMap();//TODO shoould be weak for 0.10
+    protected Map m_perClass = new HashMap();
 
     /**
      * Holds references to the per instance introductions.
@@ -109,8 +111,11 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
         try {
             if (!m_perClass.containsKey(targetClass)) {
                 synchronized (m_perClass) {
-                    Aspect perClassAspect = m_prototype.getAspect().___AW_getContainer().getPerClassAspect(targetClass);
-                    Introduction perClassIntroduction = Introduction.newInstance(m_prototype, perClassAspect);
+                    Aspect perClassAspect = m_prototype.getAspect().
+                            ___AW_getContainer().getPerClassAspect(targetClass);
+                    Introduction perClassIntroduction = Introduction.newInstance(
+                            m_prototype, perClassAspect
+                    );
                     m_perClass.put(targetClass, perClassIntroduction);
                 }
             }
@@ -143,8 +148,11 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
         try {
             if (!m_perInstance.containsKey(targetInstance)) {
                 synchronized (m_perInstance) {
-                    Aspect perInstanceAspect = m_prototype.getAspect().___AW_getContainer().getPerInstanceAspect(targetInstance);
-                    Introduction perInstanceIntroduction = Introduction.newInstance(m_prototype, perInstanceAspect);
+                    Aspect perInstanceAspect = m_prototype.getAspect().
+                            ___AW_getContainer().getPerInstanceAspect(targetInstance);
+                    Introduction perInstanceIntroduction = Introduction.newInstance(
+                            m_prototype, perInstanceAspect
+                    );
                     m_perInstance.put(targetInstance, perInstanceIntroduction);
                 }
             }
@@ -257,7 +265,8 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
      */
     private void createMethodRepository() {
         synchronized (m_methodRepository) {
-            List methodList = TransformationUtil.createSortedMethodList(m_prototype.___AW_getImplementation().getClass());
+            List methodList = TransformationUtil.createSortedMethodList(
+                    m_prototype.___AW_getImplementation().getClass());
             m_methodRepository = new Method[methodList.size()];
             for (int i = 0; i < m_methodRepository.length; i++) {
                 Method method = (Method)methodList.get(i);
@@ -266,6 +275,4 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             }
         }
     }
-
-
 }

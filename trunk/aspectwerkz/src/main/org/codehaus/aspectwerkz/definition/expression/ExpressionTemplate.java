@@ -7,55 +7,41 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression;
 
-import java.io.ObjectInputStream;
-
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-
 /**
  * Template for the expressions.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ExpressionTemplate extends Expression {
+public class ExpressionTemplate {
 
     /**
-     * Matches the leaf-node pattern.
-     *
-     * @param classMetaData the class meta-data
-     * @param memberMetaData the meta-data for the member
-     * @return boolean
+     * The name of the pointcut for this expression (if the expression is a top
+     * level expression, e.g. is bound to a named pointcut).
      */
-    protected boolean matchPattern(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
-        throw new UnsupportedOperationException("matchPattern not supported by expression template");
-    }
+    private final String m_name;
 
     /**
-     * Provides custom deserialization.
-     *
-     * @todo implement
-     *
-     * @param stream the object input stream containing the serialized object
-     * @throws Exception in case of failure
+     * The namespace for the expression.
      */
-    private void readObject(final ObjectInputStream stream) throws Exception {
-        ObjectInputStream.GetField fields = stream.readFields();
-
-//        m_expression = (String)fields.get("m_expression", null);
-//        m_cflowExpression = (String)fields.get("m_cflowExpression", null);
-//        m_pointcutRefs = (List)fields.get("m_pointcutRefs", null);
-//        m_methodPointcutPatterns = (Map)fields.get("m_methodPointcutPatterns", null);
-//        m_setFieldPointcutPatterns = (Map)fields.get("m_setFieldPointcutPatterns", null);
-//        m_getFieldPointcutPatterns = (Map)fields.get("m_getFieldPointcutPatterns", null);
-//        m_throwsPointcutPatterns = (Map)fields.get("m_throwsPointcutPatterns", null);
-//        m_callerSidePointcutPatterns = (Map)fields.get("m_callerSidePointcutPatterns", null);
-//
-//        createJexlExpression();
-//        createJexlCFlowExpression();
-    }
+    private final String m_namespace;
 
     /**
-     * Creates a new expression.
+     * The string representation of the expression.
+     */
+    private final String m_expression;
+
+    /**
+     * The expression type.
+     */
+    private final PointcutType m_type;
+
+    /**
+     * The package namespace that the expression is living in.
+     */
+    private String m_package = "";
+
+    /**
+     * Creates a new expression template.
      *
      * @param namespace the namespace for the expression
      * @param expression the expression string
@@ -68,6 +54,65 @@ public class ExpressionTemplate extends Expression {
                        final String packageNamespace,
                        final String name,
                        final PointcutType type) {
-        super(namespace, expression, packageNamespace, name, type);
+        if (namespace == null) throw new IllegalArgumentException("namespace can not be null");
+        if (expression == null) throw new IllegalArgumentException("expression can not be null");
+        if (name == null) throw new IllegalArgumentException("name can not be null");
+        if (type == null) throw new IllegalArgumentException("type can not be null");
+
+        m_namespace = namespace;
+        m_expression = expression;
+        m_name = name;
+        m_type = type;
+        if (packageNamespace != null) {
+            m_package = packageNamespace;
+        }
+        else {
+            m_package = "";
+        }
+    }
+
+    /**
+     * Returns the namespace for the expression.
+     *
+     * @return the namespace for the expression
+     */
+    public String getNamespace() {
+        return m_namespace;
+    }
+
+    /**
+     * Returns the expression pattern as a string.
+     *
+     * @return the expression pattern as a string
+     */
+    public String getExpression() {
+        return m_expression;
+    }
+
+    /**
+     * Returns the name for the expression.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return m_name;
+    }
+
+    /**
+     * Returns the expression type.
+     *
+     * @return the expression type
+     */
+    public PointcutType getType() {
+        return m_type;
+    }
+
+    /**
+     * Returns the package for the expression.
+     *
+     * @return the package
+     */
+    public String getPackage() {
+        return m_package;
     }
 }

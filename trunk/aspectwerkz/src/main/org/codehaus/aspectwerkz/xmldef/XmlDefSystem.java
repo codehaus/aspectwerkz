@@ -26,7 +26,6 @@ import org.codehaus.aspectwerkz.xmldef.advice.AbstractAdvice;
 import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
 import org.codehaus.aspectwerkz.xmldef.definition.StartupManager;
 import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinitionImpl;
-import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.CompiledPatternTuple;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
@@ -51,11 +50,11 @@ import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.System;
 
 /**
- * Manages the aspects in the AspectWerkz system.<br/>
- * Handles the initialization and configuration of the system.<br/>
- * Stores and indexes the aspects defined in the system.<br/>
- * Stores and indexes the advised methods.<br/>
- * Stores and indexes the introduced methods.<br/>
+ * Manages the aspects in the AspectWerkz system.
+ * <p/>Handles the initialization and configuration of the system.
+ * <p/>Stores and indexes the aspects defined in the system.
+ * <p/>Stores and indexes the advised methods.
+ * <p/>Stores and indexes the introduced methods.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -387,29 +386,6 @@ public final class XmlDefSystem implements System {
             }
             else {
                 throw new DefinitionException("aspect " + name + " is not properly defined");
-            }
-        }
-    }
-
-    /**
-     * Returns the aspect for the class pattern specified.
-     *
-     * @param classPattern the class pattern
-     * @return the aspect
-     */
-    public AspectMetaData getAspectMetaData(final ClassPattern classPattern) {
-        if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
-
-        if (m_aspects.containsKey(classPattern)) {
-            return (AspectMetaData)m_aspects.get(classPattern);
-        }
-        else {
-            initialize();
-            if (m_aspects.containsKey(classPattern)) {
-                return (AspectMetaData)m_aspects.get(classPattern);
-            }
-            else {
-                throw new DefinitionException(classPattern.getPattern() + " does not have any aspects defined");
             }
         }
     }

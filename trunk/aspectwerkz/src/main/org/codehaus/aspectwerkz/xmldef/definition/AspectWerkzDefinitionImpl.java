@@ -812,6 +812,8 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     /**
      * Checks if a class is invoking a method that is picked out by a call pointcut.
      *
+     * @TODO: implement, now it filters nothing
+     *
      * @param classMetaData the class meta-data
      * @return boolean
      */
@@ -833,7 +835,6 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
 //        }
 //        return false;
 
-        // TODO: implement, now it filters nothing
         return true;
     }
 
