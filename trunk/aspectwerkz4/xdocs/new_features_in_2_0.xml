@@ -217,7 +217,7 @@ DeploymentScope scope = SystemDefinition.getDefinitionFor(loader, systemId).getD
 // deploy aspect
 DeploymentHandle handle = Deployer.deploy(..);
 
-// store the handle
+// store the handle somewhere
 
 ...
 
@@ -280,8 +280,8 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 <advice type="after finally"
-           bind-to="execution(@TxRequired * *.*(..))"
-           name="logTxMethods"/>
+        bind-to="execution(@TxRequired * *.*(..))"
+        name="logTxMethods"/>
                     ]]></source>
                 </p>
             </subsection>
@@ -308,8 +308,8 @@ public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 <advice type="after returning(@Service *..*)"
-           bind-to="execution(@TxRequired * *.*(..))"
-           name="txCommitReturningService"/>
+        bind-to="execution(@TxRequired * *.*(..))"
+        name="txCommitReturningService"/>
                     ]]></source>
                 </p>
             </subsection>
@@ -336,8 +336,8 @@ public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 <advice type="after throwing(SecurityException+)"
-           bind-to="execution(@TxRequired * *.*(..))"
-           name="txRollbackOnRuntimeException"/>
+        bind-to="execution(@TxRequired * *.*(..))"
+        name="txRollbackOnRuntimeException"/>
                     ]]></source>
                 </p>
             </subsection>
