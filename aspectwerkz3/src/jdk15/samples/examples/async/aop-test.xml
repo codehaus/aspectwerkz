@@ -1,0 +1,12 @@
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 1.0//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_1_0.dtd">
+
+<aspectwerkz>
+    <system id="math">
+        <aspect class="examples.async.AsyncAspect">
+            <advice name="execute" type="around" bind-to="execution(@examples.async.AsyncAspect$Async * examples.async.Math.*(..))"/>
+        </aspect>
+
+    </system>
+</aspectwerkz>
