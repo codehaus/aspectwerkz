@@ -22,31 +22,27 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.metadata.CflowMetaData;
 
 /**
- * Represents the aspect runtime system.<br/>
- * Manages the different parts of the runtime system and provides and API to access and manage the system.<br/>
+ * Represents the aspect runtime system.<br/> Manages the different parts of the runtime system and provides and API to
+ * access and manage the system.<br/>
  * <p/>
- * There is an AspectSystem per ClassLoader. An AspectSystem is aware of the classloader hierarchy and reflects
- * it by gathering the AspectManager, which represents a single &lt;system ..&gt; entry.
+ * There is an AspectSystem per ClassLoader. An AspectSystem is aware of the classloader hierarchy and reflects it by
+ * gathering the AspectManager, which represents a single &lt;system ..&gt; entry.
  * <p/>
- * When an instance of an AspectSystem is created (perClassLoader), it checks for existence of
- * previous AspectManager defined in parent ClassLoader. AspectManager are shared among AspectSystem as shown below:<br/>
- * </p>
+ * When an instance of an AspectSystem is created (perClassLoader), it checks for existence of previous AspectManager
+ * defined in parent ClassLoader. AspectManager are shared among AspectSystem as shown below:<br/> </p>
  * <pre>
  *          [0d, 1d, 2d]  (3 SystemDefs, all defined in this classloader)
  *                  /   \
  * [0r, 1r, 2r, 3d]      \  (3 reused, one more defined)
  *                     [0r, 1r, 2r, 3d]  (one more defined, not the same)
  * </pre>
- * </p>
- * This composition strategy allow to avoid global static repository, but is tight to following
- * ClassLoader parent hierarchy.
- * </p>
- * If an AspectManager is added at runtime, it should be added in the whole child hierarchy. TODO
- * </p>
+ * </p> This composition strategy allow to avoid global static repository, but is tight to following ClassLoader parent
+ * hierarchy. </p> If an AspectManager is added at runtime, it should be added in the whole child hierarchy. TODO </p>
+ * <p/>
+ * TODO: caution when addding a new SystemDefinition in between. TODO: move the remote proxy elsewhere unless defining
+ * classloader is needed.
  *
- * TODO: caution when addding a new SystemDefinition in between.
- * TODO: move the remote proxy elsewhere unless defining classloader is needed.
- *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public final class AspectSystem {
@@ -62,7 +58,9 @@ public final class AspectSystem {
             java.lang.System.getProperty("aspectwerkz.remote.server.run", "false")
     );
 
-    /** ClassLoader defining this AspectSystem */
+    /**
+     * ClassLoader defining this AspectSystem
+     */
     private final ClassLoader m_classLoader;
 
     /**
@@ -71,8 +69,8 @@ public final class AspectSystem {
     private AspectManager[] m_aspectManagers;
 
     /**
-     * Holds a list of the cflow join points passed by the control flow of the current thread.
-     * TODO: I think we need to use a static TL - need test coverage
+     * Holds a list of the cflow join points passed by the control flow of the current thread. TODO: I think we need to
+     * use a static TL - need test coverage
      */
     private final ThreadLocal m_controlFlowLog = new ThreadLocal();
 
@@ -112,14 +110,16 @@ public final class AspectSystem {
             AspectManager aspectManager = null;
             try {
                 aspectManager = getAspectManager(uuid);
-            } catch (DefinitionException e) {
+            }
+            catch (DefinitionException e) {
                 ;
             }
             if (aspectManager == null) {
                 // new def defined in THIS CL and not a parent one
                 aspectManager = new AspectManager(this, def);
                 System.out.println("Created AspectManager = " + uuid + ": " + aspectManager);
-            } else {
+            }
+            else {
                 System.out.println("Reused AspectManager = " + uuid + ": " + aspectManager);
                 continue;
             }
@@ -141,8 +141,8 @@ public final class AspectSystem {
     }
 
     /**
-     * Returns an AspectManager by its index.
-     * The index are stable when the ClassLoader hierarchy is crossed from top to bottom
+     * Returns an AspectManager by its index. The index are stable when the ClassLoader hierarchy is crossed from top to
+     * bottom
      *
      * @param aspectManagerIndex
      * @return AspectManager, or throw an IndexOutOfBoundException
@@ -238,7 +238,9 @@ public final class AspectSystem {
         }
 
         Set cflowSet = (Set)m_controlFlowLog.get();
-        if (cflowSet==null) cflowSet=new HashSet();//fix for "NOT cflow"
+        if (cflowSet == null) {
+            cflowSet = new HashSet();//fix for "NOT cflow"
+        }
         if (cflowExpression.matchCflow(cflowSet)) {
             return true;
         }
@@ -301,19 +303,23 @@ public final class AspectSystem {
     }
 
     /**
-     * Checks uuid unicity within the list. Throw a DefinitionException on failure.
-     * TODO AVAOPC algo is crapped, check earlier and avoid exception but do a WARN (in SysDefContainer)
+     * Checks uuid unicity within the list. Throw a DefinitionException on failure. TODO AVAOPC algo is crapped, check
+     * earlier and avoid exception but do a WARN (in SysDefContainer)
      *
      * @param definitions
      */
-    private static void assertUuidUniqueWithinHierarchy(List definitions) {
+    private static void assertUuidUniqueWithinHierarchy(final List definitions) {
         for (int i = 0; i < definitions.size(); i++) {
-            SystemDefinition systemDefinition = (SystemDefinition) definitions.get(i);
+            SystemDefinition systemDefinition = (SystemDefinition)definitions.get(i);
             for (int j = 0; j < definitions.size(); j++) {
-                if (j == i) continue;
-                SystemDefinition systemDefinition2 = (SystemDefinition) definitions.get(j);
+                if (j == i) {
+                    continue;
+                }
+                SystemDefinition systemDefinition2 = (SystemDefinition)definitions.get(j);
                 if (systemDefinition2.getUuid().equals(systemDefinition.getUuid())) {
-                    throw new DefinitionException("UUID is not unique within hierarchy: " + systemDefinition.getUuid());
+                    throw new DefinitionException(
+                            "UUID is not unique within hierarchy: " + systemDefinition.getUuid()
+                    );
                 }
             }
         }

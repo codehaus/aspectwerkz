@@ -30,10 +30,8 @@ import org.codehaus.aspectwerkz.definition.attribute.ImplementsAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.IntroduceAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.SetAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.ExpressionAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.asm.AsmAttributeEnhancer;
 import org.codehaus.aspectwerkz.definition.attribute.bcel.BcelAttributeEnhancer;
 import org.codehaus.aspectwerkz.metadata.QDoxParser;
-import org.apache.bcel.classfile.ClassFormatException;
 
 /**
  * Compiles attributes for the aspects. Can be called from the command line.

@@ -36,10 +36,6 @@ import org.dom4j.Element;
  */
 public class DocumentParser {
 
-    private static final String JAVA_VENDOR = "java.vendor";
-    private static final String JAVA_VM_VENDOR = "java.vm.vendor";
-    private static final String VENDOR_BEA = "BEA";
-
     /**
      * The attribute parser, retrieves the custom attributes from the bytecode of the classes.
      *

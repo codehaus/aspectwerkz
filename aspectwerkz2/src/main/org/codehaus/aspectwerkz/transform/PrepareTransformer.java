@@ -56,10 +56,12 @@ public class PrepareTransformer implements Transformer {
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = context.getMetaDataMaker().createClassMetaData(ctClass);
 
+            System.out.println("ctClass.getName() = " + ctClass.getName());
             // do we need to prepare the class
             if (classFilter(definition, ctClass)) {
                 continue;
             }
+            System.out.println("preparing....");
 
             // mark as prepared immediately
             // to trigger bytecode cache even if class has already some pointcuts

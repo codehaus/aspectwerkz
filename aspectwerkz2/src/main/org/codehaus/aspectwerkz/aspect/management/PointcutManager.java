@@ -340,9 +340,8 @@ public class PointcutManager {
             // and ignores CFLOW only expression (since they are CALL pc with CFlowSystemAspect bounded, which
             // must not be filtered out)
             if (expression.isOfType(PointcutType.CFLOW)
-                && expression.getTypes().size()>1
+                && expression.getTypes().size() > 1
                 && expression.match(classMetaData, memberMetaData, pointcutType)) {
-
 
                 // generate a minimalist expression like "TRUE AND cflow OR FALSE"
                 // where TRUE , FALSE etc is the result of the match as done at TF time

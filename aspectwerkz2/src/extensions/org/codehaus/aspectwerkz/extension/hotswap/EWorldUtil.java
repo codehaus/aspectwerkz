@@ -26,8 +26,10 @@ import java.util.ArrayList;
 public class EWorldUtil {
 
     public static void activate(String uuid, String aspectName, String adviceName, String expression, String pointcutName) {
-        System.out.println("activate  = " + uuid +","+aspectName+"."+adviceName+" @ "+expression +","+ pointcutName);
-        SystemDefinition sysDef = SystemDefinitionContainer.getSystemDefinition(ClassLoader.getSystemClassLoader(), uuid);
+        System.out.println("activate  = " + uuid + "," + aspectName + "." + adviceName + " @ " + expression + "," + pointcutName);
+        SystemDefinition sysDef = SystemDefinitionContainer.getSystemDefinition(
+                ClassLoader.getSystemClassLoader(), uuid
+        );
         if (sysDef == null) {
             return;
         }
@@ -44,7 +46,7 @@ public class EWorldUtil {
         boolean found = false;
         for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
             AdviceDefinition around = (AdviceDefinition)arounds.next();
-            if (around.getName().equals(aspectName + "."+adviceName)) {
+            if (around.getName().equals(aspectName + "." + adviceName)) {
                 // copy the logMethod advice
                 // note: we could add a totally new advice as well
                 newDef = around.copyAt(pcExpression);
@@ -55,15 +57,18 @@ public class EWorldUtil {
         }
         if (!found) {
             System.err.println("  advice not found");
-        } else {
+        }
+        else {
             aspectDef.addAroundAdvice(newDef);
             StartupManager.reinitializeSystem(ClassLoader.getSystemClassLoader(), sysDef);
         }
     }
 
     public static void deactivate(String uuid, String aspectName, String adviceName, String pointcutName) {
-        System.out.println("deactivate  = " + uuid +","+aspectName+"."+adviceName+" @ "+ pointcutName);
-        SystemDefinition sysDef = SystemDefinitionContainer.getSystemDefinition(ClassLoader.getSystemClassLoader(), uuid);
+        System.out.println("deactivate  = " + uuid + "," + aspectName + "." + adviceName + " @ " + pointcutName);
+        SystemDefinition sysDef = SystemDefinitionContainer.getSystemDefinition(
+                ClassLoader.getSystemClassLoader(), uuid
+        );
         if (sysDef == null) {
             return;
         }
@@ -73,9 +78,10 @@ public class EWorldUtil {
         boolean found = false;
         for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
             AdviceDefinition around = (AdviceDefinition)arounds.next();
-            if (around.getName().equals(aspectName + "."+adviceName)) {
+            if (around.getName().equals(aspectName + "." + adviceName)) {
                 found = true;
-                if (pointcutName.equals(around.getExpression().getName()) || pointcutName.equals(around.getExpression().getExpression())) {
+                if (pointcutName.equals(around.getExpression().getName()) ||
+                    pointcutName.equals(around.getExpression().getExpression())) {
                     System.out.println("<removing> " + around.getName() + " at " + pointcutName);
                     removedAdviceDefs.add(around);
                 }
@@ -89,9 +95,6 @@ public class EWorldUtil {
         }
         StartupManager.reinitializeSystem(ClassLoader.getSystemClassLoader(), sysDef);
     }
-
-
-
 
 
     public static void activateCache(String expression, String pointcutName) {
@@ -111,14 +114,15 @@ public class EWorldUtil {
     }
 
     public static void hotswap(String classPattern) {
-        AspectWerkzPreProcessor awpp = (AspectWerkzPreProcessor) ClassPreProcessorHelper.getClassPreProcessor();
+        AspectWerkzPreProcessor awpp = (AspectWerkzPreProcessor)ClassPreProcessorHelper.getClassPreProcessor();
         for (Iterator it = awpp.getClassCacheTuples().iterator(); it.hasNext();) {
             ClassCacheTuple tuple = (ClassCacheTuple)it.next();
             if (tuple.getClassName().startsWith(classPattern)) {
                 try {
                     System.out.println("hotswap " + tuple.getClassName());
                     HotSwapClient.hotswap(tuple.getClassLoader().loadClass(tuple.getClassName()));
-                } catch (Throwable t) {
+                }
+                catch (Throwable t) {
                     System.err.println("Unable to hotswap " + tuple.getClassName() + ": " + t.getMessage());
                 }
             }
