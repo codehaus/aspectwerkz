@@ -57,18 +57,15 @@ abstract class AbstractPrePostAdvice extends AbstractAdvice {
                 break;
 
             case DeploymentModel.PER_CLASS:
-                ((AbstractPrePostAdvice)getPerClassAdvice(joinPoint)).
-                        execute(joinPoint);
+                ((AbstractPrePostAdvice)getPerClassAdvice(joinPoint)).execute(joinPoint);
                 break;
 
             case DeploymentModel.PER_INSTANCE:
-                ((AbstractPrePostAdvice)getPerInstanceAdvice(joinPoint)).
-                        execute(joinPoint);
+                ((AbstractPrePostAdvice)getPerInstanceAdvice(joinPoint)).execute(joinPoint);
                 break;
 
             case DeploymentModel.PER_THREAD:
-                ((AbstractPrePostAdvice)getPerThreadAdvice()).
-                        execute(joinPoint);
+                ((AbstractPrePostAdvice)getPerThreadAdvice()).execute(joinPoint);
                 break;
 
             default:

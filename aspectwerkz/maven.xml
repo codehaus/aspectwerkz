@@ -427,6 +427,27 @@
     <!--            </exec>-->
     <!--        </goal>-->
 
+    <goal name="non-reentrancy-bug">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:jar"/>
+        <mkdir dir="${basedir}/target/bug-classes"/>
+        <javac destdir="${basedir}/target/bug-classes" deprecation="true"
+            debug="true" optimize="false" excludes="**/basic.xml">
+            <src>
+                <pathelement location="src/aoptests"></pathelement>
+            </src>
+            <classpath>
+                <pathelement path="${main.classes}"/>
+                <fileset dir="${lib.dir}">
+                    <include name="*.jar"></include>
+                </fileset>
+            </classpath>
+        </javac>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${basedir}/target/bug-classes -Daspectwerkz.definition.file=${src.dir}/aoptests/reentrancy/basic.xml aoptests.reentrancy.TestReentrancy"/>
+        </exec>
+    </goal>
+
    </project>
 
 

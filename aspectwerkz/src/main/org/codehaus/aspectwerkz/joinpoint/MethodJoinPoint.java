@@ -126,7 +126,6 @@ public abstract class MethodJoinPoint implements JoinPoint {
     public MethodJoinPoint(final String uuid, final int methodId, final String controllerClass) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (methodId < 0) throw new IllegalArgumentException("method id can not be less that zero");
-
         m_system = AspectWerkz.getSystem(uuid);
         m_system.initialize();
         m_uuid = uuid;

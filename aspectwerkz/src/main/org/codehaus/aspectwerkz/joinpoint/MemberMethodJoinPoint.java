@@ -55,7 +55,6 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
 
         super(uuid, methodId, controllerClass);
         if (targetObject == null) throw new IllegalArgumentException("target object can not be null");
-
         m_targetObjectReference = new SoftReference(targetObject);
 
         try {

@@ -415,8 +415,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
         InstructionList il = new InstructionList();
 
-        StringBuffer joinPoint = getJoinPointName(
-                originalMethod.getMethod(), methodSequence);
+        StringBuffer joinPoint = getJoinPointName(originalMethod.getMethod(), methodSequence);
 
         final MethodGen method = new MethodGen(
                 accessFlags,
@@ -435,13 +434,45 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
         int indexParam = 1;
         int indexStack = 0;
-        int indexJoinPoint = Type.getArgumentTypes(
-                originalMethod.getSignature()).length * 2 + 1;
+        int indexJoinPoint = Type.getArgumentTypes(originalMethod.getSignature()).length * 2 + 1;
 
+        // if (threadLocal == null) {
+        //    threadLocal = new SerializableThreadLocal();
+        // }
+        il.append(factory.createLoad(Type.OBJECT, 0));
+        il.append(factory.createFieldAccess(
+                cg.getClassName(),
+                joinPoint.toString(),
+                new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
+                Constants.GETFIELD)
+        );
+
+        BranchInstruction ifNotNull = factory.createBranchInstruction(Constants.IFNONNULL, null);
+        il.append(ifNotNull);
+        il.append(factory.createLoad(Type.OBJECT, 0));
+        il.append(factory.createNew(TransformationUtil.THREAD_LOCAL_CLASS));
+
+        il.append(InstructionConstants.DUP);
+        il.append(factory.createInvoke(
+                TransformationUtil.THREAD_LOCAL_CLASS,
+                "<init>",
+                Type.VOID,
+                Type.NO_ARGS,
+                Constants.INVOKESPECIAL)
+        );
+        il.append(factory.createFieldAccess(
+                cg.getClassName(),
+                joinPoint.toString(),
+                new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
+                Constants.PUTFIELD)
+        );
+
+        // Object joinPoint = ___jp.get();
         BranchInstruction biIfNotNull = null;
         InstructionHandle ihIfNotNull = null;
-        // Object joinPoint = ___jp.get();
-        il.append(factory.createLoad(Type.OBJECT, 0));
+
+        ifNotNull.setTarget(il.append(factory.createLoad(Type.OBJECT, 0)));
+
         il.append(factory.createFieldAccess(
                 cg.getClassName(),
                 joinPoint.toString(),

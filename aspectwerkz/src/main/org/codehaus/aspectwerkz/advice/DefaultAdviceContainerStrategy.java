@@ -104,7 +104,9 @@ public class DefaultAdviceContainerStrategy implements AdviceContainer {
      */
     public Object getPerInstanceAdvice(final JoinPoint joinPoint) {
         final Object callingInstance = joinPoint.getTargetObject();
-        if (callingInstance == null) throw new RuntimeException("advice applied to static context");
+        if (callingInstance == null) {
+            return getPerClassAdvice(joinPoint);
+        }
         if (!m_perInstance.containsKey(callingInstance)) {
             synchronized (m_perInstance) {
                 try {
