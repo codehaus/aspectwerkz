@@ -54,7 +54,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     static {
         String verbose = System.getProperty(AW_TRANSFORM_VERBOSE, null);
-        VERBOSE = verbose.equalsIgnoreCase("yes") || verbose.equalsIgnoreCase("true");
+        VERBOSE = "yes".equalsIgnoreCase(verbose) || "true".equalsIgnoreCase(verbose);
     }
 
     /**
