@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.11 2003-07-08 11:43:35 jboner Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.12 2003-07-08 12:59:08 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -133,8 +133,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @param definitionFile the definition file
      * @return the definition
      */
-    public static AspectWerkzDefinition getDefinition(
-            final String definitionFile) {
+    public static AspectWerkzDefinition getDefinition(final String definitionFile) {
         return getDefinition(definitionFile, false);
     }
 
@@ -145,9 +144,8 @@ public class AspectWerkzDefinition implements Serializable {
      * @param isDirty flag to mark the the defintion as updated or not
      * @return the definition
      */
-    public static AspectWerkzDefinition getDefinition(
-            final String definitionFile,
-            boolean isDirty) {
+    public static AspectWerkzDefinition getDefinition(final String definitionFile,
+                                                      boolean isDirty) {
         return XmlDefinitionParser.parse(new File(definitionFile), isDirty);
     }
 
@@ -325,8 +323,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @param introductionName the name of the introduction
      * @return the name of the interface
      */
-    public String getIntroductionImplementationName(
-            final String introductionName) {
+    public String getIntroductionImplementationName(final String introductionName) {
         if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
         if (!m_introductionMap.containsKey(introductionName)) {
             return null;
@@ -341,8 +338,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @param introductionName the name of the introduction
      * @return the introduction definition
      */
-    public IntroductionDefinition getIntroductionDefinition(
-            final String introductionName) {
+    public IntroductionDefinition getIntroductionDefinition(final String introductionName) {
         if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
         return (IntroductionDefinition)m_introductionMap.get(introductionName);
     }
