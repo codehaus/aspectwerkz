@@ -265,8 +265,9 @@ public class DocumentParser {
                         aspectDef
                 );
             }
-            parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut
-            // in Attributes AW-152
+            parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut in Attributes AW-152
+
+            // parse the class bytecode annotations
             AspectAnnotationParser.parse(aspectClassInfo, aspectDef, loader);
 
             // XML definition settings always overrides attribute definition settings
@@ -290,24 +291,6 @@ public class DocumentParser {
             definition.addAspect(aspectDef);
         }
     }
-
-//    /**
-//     * Loads the aspect class.
-//     *
-//     * @param loader          the class loader
-//     * @param aspectClassName the name of the class implementing the aspect
-//     * @return the class
-//     */
-//    private static Class loadAspectClass(final ClassLoader loader, final String aspectClassName) {
-//        Class aspectClass;
-//        try {
-//            aspectClass = loader.loadClass(aspectClassName);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new WrappedRuntimeException(e);
-//        }
-//        return aspectClass;
-//    }
 
     /**
      * Parses the aspectElement parameters. <p/>TODO: should perhaps move the parameters to the aspect def instead of
@@ -355,9 +338,9 @@ public class DocumentParser {
     /**
      * Parses the advices.
      *
-     * @param aspectElement the aspect element
-     * @param aspectDef     the system definition
-     * @param aspectClassInfo   the aspect class
+     * @param aspectElement   the aspect element
+     * @param aspectDef       the system definition
+     * @param aspectClassInfo the aspect class
      */
     private static void parseAdviceElements(final Element aspectElement,
                                             final AspectDefinition aspectDef,
@@ -797,7 +780,10 @@ public class DocumentParser {
                 return true;
             } else if (signatureElements.length == 1
                        && method.getParameterTypes().length == 1
-                       && method.getParameterTypes()[0].getName().equals(TransformationConstants.STATIC_JOIN_POINT_JAVA_CLASS_NAME)) {
+                       &&
+                       method.getParameterTypes()[0].getName().equals(
+                               TransformationConstants.STATIC_JOIN_POINT_JAVA_CLASS_NAME
+                       )) {
                 return true;
             } else {
                 return false;

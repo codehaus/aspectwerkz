@@ -43,7 +43,6 @@ public class HotSwapClient {
      */
     public static void hotswap(final Class klazz, final byte[] newBytes) {
         int code = hotswap(klazz.getName(), klazz, newBytes, newBytes.length);
-        System.out.println("redefining class: " + klazz.getName());
         if (code != 0) {
             throw new RuntimeException("HotSwap failed for " + klazz.getName() + ": " + code);
         }
@@ -66,7 +65,6 @@ public class HotSwapClient {
                     + ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader()
             );
         }
-        // Note: the following will not reset the JoinPointManager - see 1.0 instead.
         try {
             RuntimeClassProcessor runtimeProcessor = (RuntimeClassProcessor) ClassPreProcessorHelper
                     .getClassPreProcessor();

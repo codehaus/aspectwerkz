@@ -251,6 +251,20 @@ public class SystemDefinition {
     }
 
     /**
+     * Adds a new aspect definition, overwrites the previous one with the same name (if there is one).
+     *
+     * @param aspectDef the aspect definition
+     */
+    public void addAspectOverwriteIfNeeded(final AspectDefinition aspectDef) {
+        if (aspectDef == null) {
+            throw new IllegalArgumentException("aspect definition can not be null");
+        }
+        synchronized (m_aspectMap) {
+            m_aspectMap.put(aspectDef.getName(), aspectDef);
+        }
+    }
+
+    /**
      * Adds a new mixin definition.
      *
      * @param introDef the mixin definition

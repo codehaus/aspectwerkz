@@ -169,6 +169,8 @@ public class JavaClassInfo implements ClassInfo {
      */
     public List getAnnotations() {
         if (m_annotations == null) {
+            // TODO this means that JavaClassInfo is always using AsmClassInfo to get that annotations
+            // TODO should optimize for Java5
             m_annotations = Annotations.getAnnotationInfos(m_class);
         }
         return m_annotations;
