@@ -135,12 +135,49 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
 
         ClassInfo[] interfaces = model.getThisClassInfo().getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
-            ClassInfo anInterface = interfaces[i];
-            if (anInterface.getName().equals(ADVISABLE_CLASS_JAVA_NAME)) {
+            if (interfaces[i].getName().equals(ADVISABLE_CLASS_JAVA_NAME)) {
                 m_isThisAdvisable = true;
                 break;
             }
         }
+
+        // FIXME impl support for JIT gen of advisable code - example below
+        /*
+class JitJoinPoint {
+    private int joinPointIndex;
+    private POJO CALLEE;
+    private int STACK_FRAME_INDEX = -1;
+
+    private AroundAdviceDelegator[] aroundDelegators = ((Advisable)CALLEE).getAroundAdviceDelegators(joinPointIndex);
+    private int NR_OF_DELEGATORS = aroundDelegators.length;
+    private int DELEGATOR_INDEX = -1;
+
+
+    public Object proceed() {
+        // NOTE: in weaver we have checked POJO implements Advisable
+
+//        if (DELEGATOR_INDEX != -1 && DELEGATOR_INDEX < NR_OF_DELEGATORS) {
+//            return aroundDelegators[DELEGATOR_INDEX++].delegate(this);
+//        }
+
+        STACK_FRAME_INDEX++;
+        switch(STACK_FRAME_INDEX) {
+            case 0:
+                // regular advice invoke 1
+                return null;
+            case 1:
+                // regular advice invoke 2
+                return null;
+            case 2:
+                DELEGATOR_INDEX = 0; // trigger start of delegator chain
+                return proceed();
+            default:
+                return CALLEE.toString();
+        }
+    }
+}
+
+        */
 
         final AdviceInfoContainer advices = model.getAdviceInfoContainer();
 
