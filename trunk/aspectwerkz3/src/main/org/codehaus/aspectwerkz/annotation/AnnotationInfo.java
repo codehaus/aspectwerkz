@@ -7,17 +7,18 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.apache.xmlbeans.impl.jam.annotation.TypedAnnotationProxyBase;
 import java.io.Serializable;
 
 /**
+ * Holds the annotation proxy instance and the name of the annotation.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AnnotationInfo implements Serializable {
     private final String m_name;
-    private final TypedAnnotationProxyBase m_annotation;
+    private final AnnotationProxyBase m_annotation;
 
-    public AnnotationInfo(final String name, final TypedAnnotationProxyBase annotation) {
+    public AnnotationInfo(final String name, final AnnotationProxyBase annotation) {
         m_name = name;
         m_annotation = annotation;
     }
@@ -26,7 +27,7 @@ public class AnnotationInfo implements Serializable {
         return m_name;
     }
 
-    public TypedAnnotationProxyBase getAnnotation() {
+    public AnnotationProxyBase getAnnotation() {
         return m_annotation;
     }
 }

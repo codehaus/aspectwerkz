@@ -7,13 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.apache.xmlbeans.impl.jam.annotation.TypedAnnotationProxyBase;
-import java.io.Serializable;
+import org.codehaus.aspectwerkz.util.Strings;
 
 /**
+ * The 'Implements' annotation proxy.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ImplementsAnnotationProxy extends TypedAnnotationProxyBase implements Serializable {
+public class ImplementsAnnotationProxy extends AnnotationProxyBase {
     String m_expression;
 
     public String expression() {
@@ -21,6 +22,6 @@ public class ImplementsAnnotationProxy extends TypedAnnotationProxyBase implemen
     }
 
     public void setvalue(String value) {
-        m_expression = value;
-    }
+        m_expression = Strings.removeFormattingCharacters(value);
+   }
 }

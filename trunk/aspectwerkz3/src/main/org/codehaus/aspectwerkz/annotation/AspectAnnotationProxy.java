@@ -7,13 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.apache.xmlbeans.impl.jam.annotation.TypedAnnotationProxyBase;
-import java.io.Serializable;
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AspectAnnotationProxy extends TypedAnnotationProxyBase implements Serializable {
+public class AspectAnnotationProxy extends AnnotationProxyBase {
     private String m_name;
     private String m_deploymentModel = "perJVM";
 

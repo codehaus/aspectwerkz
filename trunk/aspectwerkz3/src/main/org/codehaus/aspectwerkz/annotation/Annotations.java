@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.apache.xmlbeans.impl.jam.annotation.TypedAnnotationProxyBase;
 import org.codehaus.aspectwerkz.annotation.instrumentation.Attributes;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -29,7 +28,7 @@ public final class Annotations {
      * @param klass          the java.lang.Class object to find the annotation on.
      * @return the annotation or null
      */
-    public static TypedAnnotationProxyBase getAnnotation(final String annotationName, final Class klass) {
+    public static AnnotationProxyBase getAnnotation(final String annotationName, final Class klass) {
         Object[] attributes = Attributes.getAttributes(klass);
         for (int i = 0; i < attributes.length; i++) {
             Object attribute = attributes[i];
@@ -50,7 +49,7 @@ public final class Annotations {
      * @param method         the java.lang.refect.Method object to find the annotation on.
      * @return the annotation or null
      */
-    public static TypedAnnotationProxyBase getAnnotation(final String annotationName, final Method method) {
+    public static AnnotationProxyBase getAnnotation(final String annotationName, final Method method) {
         Object[] attributes = Attributes.getAttributes(method);
         for (int i = 0; i < attributes.length; i++) {
             Object attribute = attributes[i];
@@ -71,7 +70,7 @@ public final class Annotations {
      * @param field          the java.lang.reflect.Field object to find the annotation on.
      * @return the annotation or null
      */
-    public static TypedAnnotationProxyBase getAnnotation(final String annotationName, final Field field) {
+    public static AnnotationProxyBase getAnnotation(final String annotationName, final Field field) {
         Object[] attributes = Attributes.getAttributes(field);
         for (int i = 0; i < attributes.length; i++) {
             Object attribute = attributes[i];
@@ -86,7 +85,9 @@ public final class Annotations {
     }
 
     /**
-     * Return the annotation infos for a specific class.
+     * Return a list with the annotations for a specific class.
+     * <p/>
+     * Each annotation is wrapped in {@link org.codehaus.aspectwerkz.annotation.AnnotationInfo} instance.
      *
      * @param klass the java.lang.Class object to find the annotation on.
      * @return a list with annotation
@@ -104,7 +105,9 @@ public final class Annotations {
     }
 
     /**
-     * Return the annotation infos for a specific method.
+     * Return the annotations for a specific method.
+     * <p/>
+     * Each annotation is wrapped in {@link org.codehaus.aspectwerkz.annotation.AnnotationInfo} instance.
      *
      * @param method the java.lang.refect.Method object to find the annotation on.
      * @return a list with annotation
@@ -122,7 +125,9 @@ public final class Annotations {
     }
 
     /**
-     * Return the annotation infos for a specific field.
+     * Return the annotations for a specific field.
+     * <p/>
+     * Each annotation is wrapped in {@link org.codehaus.aspectwerkz.annotation.AnnotationInfo} instance.
      *
      * @param field the java.lang.reflect.Field object to find the annotation on.
      * @return a list with annotation
