@@ -11,8 +11,7 @@ import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.annotation.Before;
 import org.codehaus.aspectwerkz.annotation.Around;
 import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.AddSerialVersionUidVisitor;
-import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.SerialVersionUidVisitor;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -73,7 +72,7 @@ public class CtorExecution extends TestCase implements Serializable {
 
     public void testSerialVer() throws Throwable {
         Class x = CtorExecution.class;
-        long l = AddSerialVersionUidVisitor.calculateSerialVersionUID(JavaClassInfo.getClassInfo(x));
+        long l = SerialVersionUidVisitor.calculateSerialVersionUID(x);
         // uncomment me and turn off weaver to compute the expected serialVerUID
         //System.out.println(l);
 
