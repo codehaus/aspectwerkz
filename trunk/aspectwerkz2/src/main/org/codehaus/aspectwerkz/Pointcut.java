@@ -12,5 +12,5 @@ package org.codehaus.aspectwerkz;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class Pointcut {
+public final class Pointcut {
 }
