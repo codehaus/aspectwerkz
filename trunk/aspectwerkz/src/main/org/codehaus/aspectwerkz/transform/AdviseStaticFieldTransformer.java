@@ -37,7 +37,7 @@ import org.apache.bcel.classfile.Field;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
 
 /**
  * Transforms member fields to become "aspect-aware".

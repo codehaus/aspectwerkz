@@ -19,7 +19,7 @@ import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.Constants;
 
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
 
 /**
  * Adds a <code>private void readObject(final ObjectInputStream stream) throws Exception</code>

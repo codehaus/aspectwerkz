@@ -43,6 +43,9 @@ import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.connectivity.RemoteProxyServer;
 import org.codehaus.aspectwerkz.connectivity.Invoker;
 import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
+import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.MethodComparator;
 
 /**
  * Manages the aspects in the AspectWerkz system.<br/>
