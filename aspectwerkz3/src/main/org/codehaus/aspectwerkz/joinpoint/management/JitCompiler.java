@@ -1775,7 +1775,7 @@ public class JitCompiler {
         // unwrap the parameters
         for (int f = 0; f < argTypes.length; f++) {
             cv.visitVarInsn(Constants.ALOAD, 2);
-            AsmHelper.setICONST_X(cv, f);
+            AsmHelper.loadConstant(cv, f);
             cv.visitInsn(Constants.AALOAD);
             Type argType = argTypes[f];
             switch (argType.getSort()) {

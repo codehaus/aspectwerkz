@@ -40,7 +40,6 @@ import java.util.List;
  * retriaval.
  * 
  * @TODO: the name switching between "/" and "." seems fragile (especially at lookup). Do a review.
- * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -228,6 +227,7 @@ public class AsmClassInfo implements ClassInfo {
             ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter(cw);
             cr.accept(visitor, false);
             String className = visitor.getClassName();
+
             AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
             ClassInfo classInfo = repository.getClassInfo(className);
             if (classInfo == null) {
@@ -358,7 +358,7 @@ public class AsmClassInfo implements ClassInfo {
      * @return the name of the class
      */
     public String getName() {
-        return m_name.replace('/', '.');
+        return m_name;
     }
 
     /**
@@ -545,15 +545,15 @@ public class AsmClassInfo implements ClassInfo {
      * @return
      */
     public static ClassInfo getArrayClassInfo(
-        String className,
-        ClassLoader loader,
-        ClassInfo componentClassInfo,
-        int dimension) {
+        final String className,
+        final ClassLoader loader,
+        final ClassInfo componentClassInfo,
+        final int dimension) {
+
         if (dimension <= 1) {
             return componentClassInfo;
         }
-        ClassInfo info = new AsmClassInfo(className, loader, componentClassInfo, dimension);
-        return info;
+        return new AsmClassInfo(className, loader, componentClassInfo, dimension);
     }
 
     /**
@@ -602,14 +602,17 @@ public class AsmClassInfo implements ClassInfo {
             final String[] interfaces,
             final String sourceFile) {
 
-            m_name = name;
+            m_name = name.replace('/', '.');
             m_modifiers = access;
-            m_superClassName = superName;
-            m_interfaceClassNames = interfaces;
+            m_superClassName = superName.replace('/', '.');
+            m_interfaceClassNames = new String[interfaces.length];
+            for (int i = 0; i < interfaces.length; i++) {
+                m_interfaceClassNames[i] = interfaces[i].replace('/', '.');
+            }
 
             // FIXME this algo for array types does most likely NOT WORK (since
             // I assume that ASM is handling arrays
-            // using the internal desriptor format)
+            // using the internal desriptor format '[L' and the algo is using '[]')
 
             if (m_name.endsWith("[]")) {
                 m_isArray = true;
@@ -660,7 +663,7 @@ public class AsmClassInfo implements ClassInfo {
             struct.desc = desc;
             struct.exceptions = exceptions;
             struct.attrs = attrs;
-            
+
             int hash = AsmHelper.calculateMethodHash(name, desc);
 
             if (name.equals("<clinit>")) {

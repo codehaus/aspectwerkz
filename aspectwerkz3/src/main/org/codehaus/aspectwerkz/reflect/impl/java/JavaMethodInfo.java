@@ -169,13 +169,14 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
         if (!m_member.getName().toString().equals(methodInfo.getName().toString())) {
             return false;
         }
-        ClassInfo[] parameterTypes = methodInfo.getParameterTypes();
-        if (m_parameterTypes.length != parameterTypes.length) {
+        Class[] parameterTypes1 = ((Method) m_member).getParameterTypes();
+        ClassInfo[] parameterTypes2 = methodInfo.getParameterTypes();
+        if (parameterTypes1.length != parameterTypes2.length) {
             return false;
         }
-        for (int i = 0; i < m_parameterTypes.length; i++) {
-            if (!m_parameterTypes[i].getName().toString().equals(
-                parameterTypes[i].getName().toString())) {
+        for (int i = 0; i < parameterTypes1.length; i++) {
+            if (!parameterTypes1[i].getName().toString().equals(
+                parameterTypes2[i].getName().toString())) {
                 return false;
             }
         }
@@ -186,11 +187,9 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
         int result = 29;
         result = (29 * result) + m_declaringType.getName().toString().hashCode();
         result = (29 * result) + m_member.getName().toString().hashCode();
-        if (m_parameterTypes == null) {
-            getParameterTypes();
-        }
-        for (int i = 0; i < m_parameterTypes.length; i++) {
-            result = (29 * result) + m_parameterTypes[i].getName().toString().hashCode();
+        Class[] parameterTypes = ((Method) m_member).getParameterTypes();
+        for (int i = 0; i < parameterTypes.length; i++) {
+            result = (29 * result) + parameterTypes[i].getName().toString().hashCode();
         }
         return result;
     }
