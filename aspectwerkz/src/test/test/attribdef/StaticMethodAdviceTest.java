@@ -82,7 +82,7 @@ public class StaticMethodAdviceTest extends TestCase {
         }
     }
 
-    public void testReturnPrimitiveAndNullFromAdvice() {
+    public static void testReturnPrimitiveAndNullFromAdvice() {
         try {
             assertEquals(0L, getPrimitiveAndNullFromAdvice());
         }
@@ -361,7 +361,7 @@ public class StaticMethodAdviceTest extends TestCase {
         return true;
     }
 
-    public long getPrimitiveAndNullFromAdvice() throws RuntimeException {
+    public static long getPrimitiveAndNullFromAdvice() throws RuntimeException {
         return 123456789L;
     }
 }
