@@ -86,7 +86,7 @@ public class CflowIdentifierLookupVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(Identifier node, Object data) {
-        Boolean isInInOrNotIn = (Boolean) IN_INORNOTIN_EXPR.get();
+        Boolean isInInOrNotIn = (Boolean)IN_INORNOTIN_EXPR.get();
         if (isInInOrNotIn.booleanValue())
             ((List)data).add(node.name);
         return data;

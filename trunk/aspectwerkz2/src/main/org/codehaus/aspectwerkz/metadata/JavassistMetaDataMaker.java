@@ -132,33 +132,34 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         if (method == null) throw new IllegalArgumentException("method can not be null");
 
         try {
-        MethodMetaData methodMetaData = new MethodMetaData();
-        methodMetaData.setName(method.getName());
+            MethodMetaData methodMetaData = new MethodMetaData();
+            methodMetaData.setName(method.getName());
 
-        // return type
-        methodMetaData.setReturnType(method.getReturnType().getName());
+            // return type
+            methodMetaData.setReturnType(method.getReturnType().getName());
 
-        // parameters
-        CtClass[] javaParameters = method.getParameterTypes();
-        String[] parameterTypes = new String[javaParameters.length];
-        for (int j = 0; j < javaParameters.length; j++) {
-            parameterTypes[j] = javaParameters[j].getName();
+            // parameters
+            CtClass[] javaParameters = method.getParameterTypes();
+            String[] parameterTypes = new String[javaParameters.length];
+            for (int j = 0; j < javaParameters.length; j++) {
+                parameterTypes[j] = javaParameters[j].getName();
+            }
+            methodMetaData.setParameterTypes(parameterTypes);
+
+            // exceptions
+            CtClass[] exceptionTables = method.getExceptionTypes();
+            String[] exceptions = new String[exceptionTables.length];
+            for (int k = 0; k < exceptionTables.length; k++) {
+                exceptions[k] = exceptionTables[k].getName();
+            }
+            methodMetaData.setExceptionTypes(exceptions);
+
+            //Javassist modifier is the same as java modifier used in ReflectionMetaDataMaker
+            methodMetaData.setModifiers(method.getModifiers());
+
+            return methodMetaData;
         }
-        methodMetaData.setParameterTypes(parameterTypes);
-
-        // exceptions
-        CtClass[] exceptionTables = method.getExceptionTypes();
-        String[] exceptions = new String[exceptionTables.length];
-        for (int k = 0; k < exceptionTables.length; k++) {
-            exceptions[k] = exceptionTables[k].getName();
-        }
-        methodMetaData.setExceptionTypes(exceptions);
-
-        //Javassist modifier is the same as java modifier used in ReflectionMetaDataMaker
-        methodMetaData.setModifiers(method.getModifiers());
-
-        return methodMetaData;
-        } catch (NotFoundException e) {
+        catch (NotFoundException e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -202,12 +203,13 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         if (field == null) throw new IllegalArgumentException("field can not be null");
 
         try {
-        FieldMetaData fieldMetaData = new FieldMetaData();
-        fieldMetaData.setName(field.getName());
-        fieldMetaData.setType(field.getType().getName());
-        fieldMetaData.setModifiers(field.getModifiers());
-        return fieldMetaData;
-        } catch (NotFoundException e) {
+            FieldMetaData fieldMetaData = new FieldMetaData();
+            fieldMetaData.setName(field.getName());
+            fieldMetaData.setType(field.getType().getName());
+            fieldMetaData.setModifiers(field.getModifiers());
+            return fieldMetaData;
+        }
+        catch (NotFoundException e) {
             throw new WrappedRuntimeException(e);
         }
     }

@@ -2,32 +2,30 @@
 
 package org.codehaus.aspectwerkz.definition.expression.ast;
 
-public interface ExpressionParserTreeConstants
-{
-  public int JJTEXPRESSIONSCRIPT = 0;
-  public int JJTVOID = 1;
-  public int JJTORNODE = 2;
-  public int JJTINNODE = 3;
-  public int JJTNOTINNODE = 4;
-  public int JJTANDNODE = 5;
-  public int JJTNOTNODE = 6;
-  public int JJTIDENTIFIER = 7;
-  public int JJTBOOLEANLITERAL = 8;
-  public int JJTTRUENODE = 9;
-  public int JJTFALSENODE = 10;
+public interface ExpressionParserTreeConstants {
+    public int JJTEXPRESSIONSCRIPT = 0;
+    public int JJTVOID = 1;
+    public int JJTORNODE = 2;
+    public int JJTINNODE = 3;
+    public int JJTNOTINNODE = 4;
+    public int JJTANDNODE = 5;
+    public int JJTNOTNODE = 6;
+    public int JJTIDENTIFIER = 7;
+    public int JJTBOOLEANLITERAL = 8;
+    public int JJTTRUENODE = 9;
+    public int JJTFALSENODE = 10;
 
-
-  public String[] jjtNodeName = {
-    "ExpressionScript",
-    "void",
-    "OrNode",
-    "InNode",
-    "NotInNode",
-    "AndNode",
-    "NotNode",
-    "Identifier",
-    "BooleanLiteral",
-    "TrueNode",
-    "FalseNode",
-  };
+    public String[] jjtNodeName = {
+        "ExpressionScript",
+        "void",
+        "OrNode",
+        "InNode",
+        "NotInNode",
+        "AndNode",
+        "NotNode",
+        "Identifier",
+        "BooleanLiteral",
+        "TrueNode",
+        "FalseNode",
+    };
 }

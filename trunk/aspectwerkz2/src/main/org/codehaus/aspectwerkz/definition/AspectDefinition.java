@@ -331,6 +331,7 @@ public class AspectDefinition {
     public static List sortAdvices(final List advices) {
         Collections.sort(advices, new Comparator() {
             private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
+
             public int compare(final Object obj1, final Object obj2) {
                 AdviceDefinition advice1 = (AdviceDefinition)obj1;
                 AdviceDefinition advice2 = (AdviceDefinition)obj2;

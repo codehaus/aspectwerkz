@@ -194,7 +194,7 @@ public class AspectC {
         DocletTag[] tags = javaClass.getTags();
         for (int i = 0; i < tags.length; i++) {
             DocletTag tag = tags[i];
-            if ( ! isCustomTag(tag) ) {
+            if (!isCustomTag(tag)) {
                 continue;
             }
             String name = tag.getName();
@@ -217,7 +217,7 @@ public class AspectC {
         DocletTag[] tags = javaField.getTags();
         for (int i = 0; i < tags.length; i++) {
             DocletTag tag = tags[i];
-            if ( ! isCustomTag(tag) ) {
+            if (!isCustomTag(tag)) {
                 continue;
             }
             String name = tag.getName();
@@ -240,7 +240,7 @@ public class AspectC {
         DocletTag[] tags = javaMethod.getTags();
         for (int i = 0; i < tags.length; i++) {
             DocletTag tag = tags[i];
-            if ( ! isCustomTag(tag) ) {
+            if (!isCustomTag(tag)) {
                 continue;
             }
             String name = tag.getName();
@@ -558,7 +558,7 @@ public class AspectC {
                     throw new RuntimeException("no implicit interfaces found for " + innerClass.getFullyQualifiedName());
                 }
                 for (int j = 0; j < introducedInterfaceNames.length; j++) {
-                    log("\tintroduction introduce implicit [" + introducedInterfaceNames[j] +"]");
+                    log("\tintroduction introduce implicit [" + introducedInterfaceNames[j] + "]");
                 }
             }
 

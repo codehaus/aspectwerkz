@@ -16,6 +16,8 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 /**
  * Implements the regular expression pattern matcher for caller side methods in AspectWerkz.
  *
+ * @TODO remove when we have the 'within' construct
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class CallerSidePattern extends Pattern {

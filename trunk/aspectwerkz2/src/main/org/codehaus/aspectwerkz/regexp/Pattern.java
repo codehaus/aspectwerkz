@@ -34,13 +34,13 @@ public abstract class Pattern implements Serializable {
     public static final String MULTIPLE_WILDCARD_KEY = "MULTIPLE_WILDCARD_KEY";
 
     /**
-     * Abbreviations for all the classes in the java.lang.* A
+     * Abbreviations for all the classes in the java.lang.* and
      * the java.util.* namespaces.
      */
     protected static final Map m_abbreviations = new HashMap();
 
     /**
-     * Compiles A returns a new class pattern.
+     * Compiles and returns a new class pattern.
      *
      * @param pattern the full pattern as a string
      * @return the pattern
@@ -50,7 +50,7 @@ public abstract class Pattern implements Serializable {
     }
 
     /**
-     * Compiles A returns a new method pattern.
+     * Compiles and returns a new method pattern.
      *
      * @param pattern the full pattern as a string
      * @return the pattern
@@ -60,7 +60,17 @@ public abstract class Pattern implements Serializable {
     }
 
     /**
-     * Compiles A returns a new field pattern.
+     * Compiles and returns a new constructor pattern.
+     *
+     * @param pattern the full pattern as a string
+     * @return the pattern
+     */
+    public static ConstructorPattern compileConstructorPattern(final String pattern) {
+        return new ConstructorPattern(pattern);
+    }
+
+    /**
+     * Compiles and returns a new field pattern.
      *
      * @param pattern the full pattern as a string
      * @return the pattern
@@ -80,7 +90,7 @@ public abstract class Pattern implements Serializable {
     }
 
     /**
-     * Compiles A returns a new throws pattern.
+     * Compiles and returns a new throws pattern.
      *
      * @param pattern the full pattern as a string
      * @return the pattern
@@ -109,6 +119,7 @@ public abstract class Pattern implements Serializable {
     }
 
     static {
+        // TODO: update for Java 1.5?
         // java.lang.*
         m_abbreviations.put("CharSequence", "java.lang.CharSequence");
         m_abbreviations.put("Cloneable", "java.lang.Cloneable");

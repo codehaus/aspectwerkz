@@ -23,6 +23,6 @@ public interface AttributeParser {
      * @param klass the class to extract attributes from
      * @param aspectDef the aspect definition
      * @param definition the aspectwerkz definition
-    */
+     */
     void parse(Class klass, AspectDefinition aspectDef, SystemDefinition definition);
 }

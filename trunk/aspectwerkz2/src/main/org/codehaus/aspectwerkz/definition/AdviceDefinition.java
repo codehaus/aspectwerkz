@@ -111,7 +111,6 @@ public class AdviceDefinition {
         m_name = name.trim();
     }
 
-
     /**
      * Returns the expression.
      *

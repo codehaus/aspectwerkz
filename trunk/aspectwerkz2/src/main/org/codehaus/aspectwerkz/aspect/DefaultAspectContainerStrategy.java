@@ -233,7 +233,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                 throw new WrappedRuntimeException(e);
             }
         }
-        return (Aspect) m_perJvm;
+        return (Aspect)m_perJvm;
     }
 
     /**
@@ -254,7 +254,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                 }
             }
         }
-        return (Aspect) m_perClass.get(callingClass);
+        return (Aspect)m_perClass.get(callingClass);
     }
 
     /**
@@ -278,7 +278,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                 }
             }
         }
-        return (Aspect) m_perInstance.get(callingInstance);
+        return (Aspect)m_perInstance.get(callingInstance);
     }
 
     /**
@@ -298,7 +298,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                 }
             }
         }
-        return (Aspect) m_perThread.get(currentThread);
+        return (Aspect)m_perThread.get(currentThread);
     }
 
     /**
@@ -335,6 +335,5 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
     public IntroductionContainer getIntroductionContainer(String name) {
         return (IntroductionContainer)m_introductionContainers.get(name);
     }
-
 
 }

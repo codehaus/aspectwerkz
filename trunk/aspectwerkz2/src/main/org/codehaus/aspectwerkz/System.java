@@ -154,7 +154,6 @@ public final class System {
         return false;
     }
 
-
     /**
      * Starts up the remote proxy server.
      */

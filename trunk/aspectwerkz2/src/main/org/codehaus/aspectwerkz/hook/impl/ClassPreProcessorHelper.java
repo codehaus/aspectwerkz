@@ -41,6 +41,7 @@ public class ClassPreProcessorHelper {
     static {
         initializePreProcessor();
     }
+
     /**
      * Initialization of the ClassPreProcessor
      * The ClassPreProcessor implementation is lazy loaded. This allow to put it

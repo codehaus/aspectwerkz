@@ -43,22 +43,23 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
             // byte[] besee = com.gnilux.besee.hook.impl.ClassPreProcessorHelper.defineClass0Pre(this, $$);
             // <call> c = defineClass0(name, besee, 0, besee.length, protectionDomain);
             ExprEditor defineClass0Pre = new ExprEditor() {
-                    public void edit(MethodCall m) throws CannotCompileException {
-                        if ("defineClass0".equals(m.getMethodName())) {
-                            //TODO check for IBM: THIS $1.. $5
-                            //TODO enhance this with a fake method preparation
-                            m.replace(
-                            "{"
-                            +"  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
-                            +"  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);"
-                            +"}");
-                        }
+                public void edit(MethodCall m) throws CannotCompileException {
+                    if ("defineClass0".equals(m.getMethodName())) {
+                        //TODO check for IBM: THIS $1.. $5
+                        //TODO enhance this with a fake method preparation
+                        m.replace(
+                                "{"
+                                + "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
+                                + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);"
+                                + "}");
                     }
+                }
             };
             klass.instrument(defineClass0Pre);
 
             return pool.write("java.lang.ClassLoader");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.err.println("failed to patch ClassLoader:");
             e.printStackTrace();
             return b;
@@ -74,6 +75,5 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
         me.preProcess(ClassLoaderPatcher.inputStreamToByteArray(is));
         is.close();
     }
-
 
 }

@@ -43,10 +43,10 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(OrNode node, Object data) {
-        Boolean lhs = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+        Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
         if (lhs.booleanValue())
             return Boolean.TRUE;
-        Boolean rhs = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+        Boolean rhs = (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
         return rhs;
     }
 
@@ -59,15 +59,15 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(AndNode node, Object data) {
-        Boolean lhs = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
-        if ( ! lhs.booleanValue())
+        Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
+        if (!lhs.booleanValue())
             return Boolean.FALSE;
-        Boolean rhs = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+        Boolean rhs = (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
         return rhs;
     }
 
     public Object visit(NotNode node, Object data) {
-        Boolean lhs = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+        Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
         if (lhs.booleanValue())
             return Boolean.FALSE;
         else
@@ -78,9 +78,10 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
         ExpressionContext ctx = (ExpressionContext)data;
         String leafName = node.name;
         Expression expression = ctx.getNamespace().getExpression(leafName);
-        if (expression!=null) {
+        if (expression != null) {
             return new Boolean(expression.match(ctx.getClassMetaData(), ctx.getMemberMetaData(), ctx.getExceptionType()));
-        } else {
+        }
+        else {
             throw new RuntimeException("no such registered expression");
         }
     }
@@ -99,6 +100,5 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
 
 
     //------------------------
-
 
 }

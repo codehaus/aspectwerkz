@@ -194,8 +194,6 @@ public class AspectAttributeParser implements AttributeParser {
         // parse the advices and introductions
         int methodIndex = 0;
 
-        // TODO: do not use INDEX use HASH?
-
         for (Iterator it = methodList.iterator(); it.hasNext(); methodIndex++) {
             Method method = (Method)it.next();
             // create the advice name out of the class and method name, <classname>.<methodname>

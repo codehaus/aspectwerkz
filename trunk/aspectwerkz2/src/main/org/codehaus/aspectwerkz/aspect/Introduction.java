@@ -97,13 +97,15 @@ public class Introduction implements Mixin {
         // perThread        perThread
         // todo all those checks should be done earlier
         // (AspectC thought doclet inheritance might cause problem when inheritating compiled aspects without source code)
-        if (definition.getDeploymentModel()==null) {
+        if (definition.getDeploymentModel() == null) {
             m_deploymentModel = m_aspect.___AW_getDeploymentModel();
-        } else {
+        }
+        else {
             int model = DeploymentModel.getDeploymentModelAsInt(definition.getDeploymentModel());
             if (DeploymentModel.isMixinDeploymentModelCompatible(model, m_aspect.___AW_getDeploymentModel())) {
                 m_deploymentModel = model;
-            } else {
+            }
+            else {
                 throw new RuntimeException("could no create mixin from aspect: incompatible deployment models : mixin " +
                         DeploymentModel.getDeploymentModelAsString(model) + " with aspect " + DeploymentModel.getDeploymentModelAsString(m_aspect.___AW_getDeploymentModel()));
             }
@@ -311,6 +313,6 @@ public class Introduction implements Mixin {
      * @return true if is an inner class
      */
     private static boolean isInnerClassOf(final Class klazz, final Class containingClass) {
-        return klazz.getName().startsWith(containingClass.getName()+"$");
+        return klazz.getName().startsWith(containingClass.getName() + "$");
     }
 }

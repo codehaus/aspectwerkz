@@ -213,7 +213,8 @@ public class XmlParser {
                 if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
                     InputStream in = getClass().getResourceAsStream("./aspectwerkz.dtd");
                     return new InputSource(in);
-                } else {
+                }
+                else {
                     System.err.println("AspectWerkz - WARN - deprecated DTD " + publicId + " - consider upgrading to " + DTD_PUBLIC_ID);
                     return new InputSource();// avoid null pointer exception
                 }

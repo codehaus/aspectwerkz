@@ -91,7 +91,7 @@ public class IntroduceAttribute implements Attribute {
      * TODO verify according to Aspect DM
      */
     private void verify() {
-        if (m_deploymentModel!=null &&
+        if (m_deploymentModel != null &&
                 !m_deploymentModel.equalsIgnoreCase("perJVM") &&
                 !m_deploymentModel.equalsIgnoreCase("perClass") &&
                 !m_deploymentModel.equalsIgnoreCase("perInstance") &&

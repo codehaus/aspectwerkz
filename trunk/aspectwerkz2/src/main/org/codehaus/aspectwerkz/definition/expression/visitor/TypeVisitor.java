@@ -49,7 +49,7 @@ public class TypeVisitor implements ExpressionParserVisitor {
         // assert RHS is of CFLOW type
         // note: anonymous type like "IN true" is assumed valid
         PointcutType rhs = getRightHS(node, this, data);
-        if (rhs!=null && ! rhs.equals(PointcutType.CFLOW))
+        if (rhs != null && !rhs.equals(PointcutType.CFLOW))
             throw new RuntimeException("IN type not valid");
         return getLeftHS(node, this, data);
     }
@@ -58,9 +58,9 @@ public class TypeVisitor implements ExpressionParserVisitor {
         // assert RHS is of CFLOW type
         // note: anonymous type like "IN true" is assumed valid
         PointcutType rhs = getRightHS(node, this, data);
-        if (rhs!=null && ! rhs.equals(PointcutType.CFLOW))
-        if (rhs!=null && ! rhs.equals(PointcutType.CFLOW))
-            throw new RuntimeException("NOT IN type not valid");
+        if (rhs != null && !rhs.equals(PointcutType.CFLOW))
+            if (rhs != null && !rhs.equals(PointcutType.CFLOW))
+                throw new RuntimeException("NOT IN type not valid");
         return getLeftHS(node, this, data);
     }
 
@@ -75,9 +75,10 @@ public class TypeVisitor implements ExpressionParserVisitor {
     public Object visit(Identifier node, Object data) {
         ExpressionNamespace space = (ExpressionNamespace)data;
         Expression expression = space.getExpression(node.name);
-        if (expression!=null) {
+        if (expression != null) {
             return expression.getType();
-        } else {
+        }
+        else {
             throw new RuntimeException("no such registered expression: " + node.name);
         }
     }
@@ -116,13 +117,16 @@ public class TypeVisitor implements ExpressionParserVisitor {
         if (node.jjtGetChild(0) instanceof BooleanLiteral) {
             // ignore lhs literal
             return rhs;
-        } else if (node.jjtGetChild(1) instanceof BooleanLiteral) {
+        }
+        else if (node.jjtGetChild(1) instanceof BooleanLiteral) {
             // ignore rhs literal
             return lhs;
-        } else {
-            if (rhs!=null && rhs.equals(lhs)) {
+        }
+        else {
+            if (rhs != null && rhs.equals(lhs)) {
                 return rhs;
-            } else {
+            }
+            else {
                 return null;
             }
         }

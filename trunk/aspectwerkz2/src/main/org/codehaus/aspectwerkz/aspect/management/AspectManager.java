@@ -523,7 +523,7 @@ public final class AspectManager {
         return m_aspectRegistry.getConstructor(klass, constructorHash);
     }
 
-       /**
+    /**
      * Returns a specific field by the class and the field index.
      *
      * @param klass the class housing the method

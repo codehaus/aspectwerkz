@@ -393,7 +393,6 @@ public abstract class Aspect implements Serializable {
         return m_container.getIntroductionContainer(mixinName).getTargetClass(mixinImpl);
     }
 
-
     /**
      * Provides custom deserialization.
      *

@@ -50,10 +50,10 @@ public abstract class LeafExpression extends Expression {
     protected Pattern m_memberPattern;
 
     protected LeafExpression(final ExpressionNamespace namespace,
-                        final String expression,
-                        final String packageNamespace,
-                        final String pointcutName,
-                        final PointcutType type) {
+                             final String expression,
+                             final String packageNamespace,
+                             final String pointcutName,
+                             final PointcutType type) {
         super(namespace, expression, packageNamespace, pointcutName, type);
 
         compilePattern();
@@ -151,7 +151,7 @@ public abstract class LeafExpression extends Expression {
      * @return true if match
      */
     public boolean matchInOrNotIn(final ClassMetaData classMetaData) {
-        if ( ! m_type.equals(PointcutType.CFLOW) )
+        if (!m_type.equals(PointcutType.CFLOW))
             throw new RuntimeException("matchIn called on non CflowExpression " + m_type.toString());
         return match(classMetaData);
     }
@@ -164,7 +164,7 @@ public abstract class LeafExpression extends Expression {
      * @return true if match
      */
     public boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
-        if ( ! m_type.equals(PointcutType.CFLOW) )
+        if (!m_type.equals(PointcutType.CFLOW))
             throw new RuntimeException("matchIn called on non CflowExpression " + m_type.toString());
         return match(classMetaData, memberMetaData);
     }

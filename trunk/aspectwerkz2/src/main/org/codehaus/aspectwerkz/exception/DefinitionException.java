@@ -39,8 +39,7 @@ public class DefinitionException extends RuntimeException {
      * @param message the detail of the error message
      * @param throwable the original exception
      */
-    public DefinitionException(String message, Throwable throwable)
-    {
+    public DefinitionException(String message, Throwable throwable) {
         super(message);
         this.originalException = throwable;
     }

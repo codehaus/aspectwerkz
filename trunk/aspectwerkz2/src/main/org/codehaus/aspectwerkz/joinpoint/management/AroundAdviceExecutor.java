@@ -104,7 +104,7 @@ public class AroundAdviceExecutor implements AdviceExecutor {
 
         Object result = null;
         if (m_currentAdviceIndex == m_adviceIndexes.length - 1) {
-            m_currentAdviceIndex = - 1;
+            m_currentAdviceIndex = -1;
             try {
                 switch (m_joinPointType) {
                     case JoinPointType.FIELD_SET:

@@ -243,12 +243,14 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         try {
             Class innerClass = Class.forName(innerClassName, false, m_loader);
             return getNearestInterfacesInHierarchy(innerClass);
-        } catch (ClassNotFoundException e) {
+        }
+        catch (ClassNotFoundException e) {
             // should not be raised
             throw new RuntimeException("could not load mixin for mixin implicit interface: ClassNotFoundException : " + e.getMessage());
-        } catch (NoClassDefFoundError er) {
+        }
+        catch (NoClassDefFoundError er) {
             // raised if extends / implements dependancies not found
-            throw new RuntimeException("could not find dependency for mixin implicit interface: " + innerClassName+ " ClassNotFoundException for " + er.getMessage());
+            throw new RuntimeException("could not find dependency for mixin implicit interface: " + innerClassName + " ClassNotFoundException for " + er.getMessage());
         }
     }
 
@@ -264,7 +266,8 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         String[] interfaces = null;
         if (implementedClasses.length == 0) {
             interfaces = getNearestInterfacesInHierarchy(root.getSuperclass());
-        } else {
+        }
+        else {
             interfaces = new String[implementedClasses.length];
             for (int i = 0; i < implementedClasses.length; i++) {
                 interfaces[i] = implementedClasses[i].getName();
