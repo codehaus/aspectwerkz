@@ -759,13 +759,13 @@ public class AsmClassInfo implements ClassInfo {
             componentClassAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream(componentName + ".class");
         }
         if (componentClassAsStream == null) {
-            new RuntimeException(
-                    "could not load class ["
+            System.out.println(
+                    "AW:WARNING - could not load class ["
                     + componentName
                     + "] as a resource in loader ["
                     + loader
                     + "]"
-            ).printStackTrace();
+            );
             return new ClassInfo.NullClassInfo();
         }
         ClassInfo componentInfo = null;
