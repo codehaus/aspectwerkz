@@ -7,16 +7,18 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.codehaus.aspectwerkz.definition.attribute.Attributes;
-import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
+import org.apache.xmlbeans.impl.jam.annotation.TypedAnnotationProxyBase;
+import org.codehaus.aspectwerkz.annotation.instrumentation.Attributes;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility class for annotation retrieval.
- * <p/>
- * PLEASE NOTE: this class will change in the future, the CustomAttribute return types will be user defined
- * annotation wrappers to have a single interface to both JavaDoc and JSR-175 annotations.
+ *
+ * @TODO: support for constructor annotations
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -28,14 +30,14 @@ public final class Annotations {
      * @param klass          the java.lang.Class object to find the annotation on.
      * @return the annotation or null
      */
-    public static CustomAttribute getAnnotation(final String annotationName, final Class klass) {
+    public static TypedAnnotationProxyBase getAnnotation(final String annotationName, final Class klass) {
         Object[] attributes = Attributes.getAttributes(klass);
         for (int i = 0; i < attributes.length; i++) {
             Object attribute = attributes[i];
-            if (attribute instanceof CustomAttribute) {
-                CustomAttribute attr = (CustomAttribute)attribute;
-                if (attr.getName().equalsIgnoreCase(annotationName)) {
-                    return attr;
+            if (attribute instanceof AnnotationInfo) {
+                AnnotationInfo annotationInfo = (AnnotationInfo)attribute;
+                if (annotationInfo.getName().equals(annotationName)) {
+                    return annotationInfo.getAnnotation();
                 }
             }
         }
@@ -49,14 +51,14 @@ public final class Annotations {
      * @param method         the java.lang.refect.Method object to find the annotation on.
      * @return the annotation or null
      */
-    public static CustomAttribute getAnnotation(final String annotationName, final Method method) {
+    public static TypedAnnotationProxyBase getAnnotation(final String annotationName, final Method method) {
         Object[] attributes = Attributes.getAttributes(method);
         for (int i = 0; i < attributes.length; i++) {
             Object attribute = attributes[i];
-            if (attribute instanceof CustomAttribute) {
-                CustomAttribute attr = (CustomAttribute)attribute;
-                if (attr.getName().equalsIgnoreCase(annotationName)) {
-                    return attr;
+            if (attribute instanceof AnnotationInfo) {
+                AnnotationInfo annotationInfo = (AnnotationInfo)attribute;
+                if (annotationInfo.getName().equals(annotationName)) {
+                    return annotationInfo.getAnnotation();
                 }
             }
         }
@@ -70,17 +72,71 @@ public final class Annotations {
      * @param field          the java.lang.reflect.Field object to find the annotation on.
      * @return the annotation or null
      */
-    public static CustomAttribute getAnnotation(final String annotationName, final Field field) {
+    public static TypedAnnotationProxyBase getAnnotation(final String annotationName, final Field field) {
         Object[] attributes = Attributes.getAttributes(field);
         for (int i = 0; i < attributes.length; i++) {
             Object attribute = attributes[i];
-            if (attribute instanceof CustomAttribute) {
-                CustomAttribute attr = (CustomAttribute)attribute;
-                if (attr.getName().equalsIgnoreCase(annotationName)) {
-                    return attr;
+            if (attribute instanceof AnnotationInfo) {
+                AnnotationInfo annotationInfo = (AnnotationInfo)attribute;
+                if (annotationInfo.getName().equals(annotationName)) {
+                    return annotationInfo.getAnnotation();
                 }
             }
         }
         return null;
+    }
+
+    /**
+     * Return the annotation infos for a specific class.
+     *
+     * @param klass the java.lang.Class object to find the annotation on.
+     * @return a list with annotation
+     */
+    public static List getAnnotationInfos(final Class klass) {
+        List annotations = new ArrayList();
+        Object[] attributes = Attributes.getAttributes(klass);
+        for (int i = 0; i < attributes.length; i++) {
+            Object attribute = attributes[i];
+            if (attribute instanceof AnnotationInfo) {
+                annotations.add(attribute);
+            }
+        }
+        return annotations;
+    }
+
+    /**
+     * Return the annotation infos for a specific method.
+     *
+     * @param method the java.lang.refect.Method object to find the annotation on.
+     * @return a list with annotation
+     */
+    public static List getAnnotationInfos(final Method method) {
+        List annotations = new ArrayList();
+        Object[] attributes = Attributes.getAttributes(method);
+        for (int i = 0; i < attributes.length; i++) {
+            Object attribute = attributes[i];
+            if (attribute instanceof AnnotationInfo) {
+                annotations.add(attribute);
+            }
+        }
+        return annotations;
+    }
+
+    /**
+     * Return the annotation infos for a specific field.
+     *
+     * @param field the java.lang.reflect.Field object to find the annotation on.
+     * @return a list with annotation
+     */
+    public static List getAnnotationInfos(final Field field) {
+        List annotations = new ArrayList();
+        Object[] attributes = Attributes.getAttributes(field);
+        for (int i = 0; i < attributes.length; i++) {
+            Object attribute = attributes[i];
+            if (attribute instanceof AnnotationInfo) {
+                annotations.add(attribute);
+            }
+        }
+        return annotations;
     }
 }
