@@ -95,7 +95,8 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             // build and sort the method lookup list
             final List methodLookupList = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
-                if (methodFilter(definition, classMetaData, methods[i]) == null) {
+                MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
+                if (methodFilter(definition, classMetaData, methodMetaData, methods[i])) {
                     continue;
                 }
                 methodLookupList.add(methods[i]);
@@ -106,10 +107,10 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             final Map methodSequences = new HashMap();
             final List proxyMethods = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
-
+                MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
                 // filter the methods
-                String uuid = methodFilter(definition, classMetaData, methods[i]);
-                if (methods[i].isStatic() || uuid == null) {
+                if (methodFilter(definition, classMetaData, methodMetaData, methods[i]) ||
+                        methods[i].isStatic()) {
                     continue;
                 }
 
@@ -135,8 +136,6 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                 addJoinPointField(cpg, cg, mg, methodSequence);
 
                 // get the join point controller
-                MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
-
                 final String controllerClassName =
                         definition.getJoinPointController(
                                 classMetaData,
@@ -162,11 +161,11 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                         methodLookupId,
                         methodSequence,
                         methods[i].getAccessFlags(),
-                        uuid,
+                        definition.getUuid(),
                         controllerClassName
                 ));
 
-                methods[i] = addPrefixToMethod(mg, methods[i], methodSequence, uuid);
+                methods[i] = addPrefixToMethod(mg, methods[i], methodSequence, definition.getUuid());
 
                 mg.setMaxStack();
             }
@@ -750,12 +749,12 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * @param definition the definition
      * @param classMetaData the class meta-data
      * @param method the method to filter
-     * @return the UUID for the weave model
+     * @return boolean
      */
-    private String methodFilter(final AspectWerkzDefinition definition,
-                                final ClassMetaData classMetaData,
-                                final Method method) {
-        String uuid = null;
+    private boolean methodFilter(final AspectWerkzDefinition definition,
+                                 final ClassMetaData classMetaData,
+                                 final MethodMetaData methodMetaData,
+                                 final Method method) {
         if (method.isAbstract() || method.isNative() ||
                 method.getName().equals("<init>") ||
                 method.getName().equals("<clinit>") ||
@@ -764,18 +763,17 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                 method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
                 method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
                 method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
-            uuid = null;
+            return true;
+        }
+        else if (definition.hasMethodPointcut(classMetaData, methodMetaData)) {
+            return false;
+        }
+        else if (definition.hasThrowsPointcut(classMetaData, methodMetaData)) {
+            return false;
         }
         else {
-            MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(method);
-            if (definition.hasMethodPointcut(classMetaData, methodMetaData)) {
-                uuid = definition.getUuid();
-            }
-            if (definition.hasThrowsPointcut(classMetaData, methodMetaData)) {
-                uuid = definition.getUuid();
-            }
+            return true;
         }
-        return uuid;
     }
 
     /**
