@@ -86,7 +86,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             DUMP_AFTER = false;
             DUMP_PATTERN = null;
         } else {
-            dumpPattern.trim();
+            dumpPattern = dumpPattern.trim();
             DUMP_AFTER = true;
             DUMP_BEFORE = dumpPattern.indexOf(",before") > 0;
             if (DUMP_BEFORE) {

@@ -25,7 +25,7 @@ import java.util.Set;
 
 /**
  * Abstraction of the system definition, defines the aspect system.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -103,18 +103,17 @@ public class SystemDefinition {
     public SystemDefinition(final String uuid) {
         setUuid(uuid);
         AspectDefinition systemAspect = new AspectDefinition(
-            CFlowSystemAspect.CLASS_NAME,
-            CFlowSystemAspect.CLASS_NAME,
-            m_uuid);
+                CFlowSystemAspect.CLASS_NAME,
+                CFlowSystemAspect.CLASS_NAME,
+                m_uuid
+        );
         systemAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
-        synchronized (m_aspectMap) {
-            m_aspectMap.put(CFlowSystemAspect.CLASS_NAME, systemAspect);
-        }
+        m_aspectMap.put(CFlowSystemAspect.CLASS_NAME, systemAspect);
     }
 
     /**
      * Sets the UUID for the definition.
-     * 
+     *
      * @param uuid the UUID
      */
     private void setUuid(final String uuid) {
@@ -123,7 +122,7 @@ public class SystemDefinition {
 
     /**
      * Returns the UUID for the definition.
-     * 
+     *
      * @return the UUID
      */
     public String getUuid() {
@@ -132,7 +131,7 @@ public class SystemDefinition {
 
     /**
      * Returns the include packages.
-     * 
+     *
      * @return the include packages
      */
     public Set getIncludePackages() {
@@ -141,7 +140,7 @@ public class SystemDefinition {
 
     /**
      * Returns the exclude packages.
-     * 
+     *
      * @return the exclude packages
      */
     public Set getExcludePackages() {
@@ -150,7 +149,7 @@ public class SystemDefinition {
 
     /**
      * Returns a collection with the aspect definitions registered.
-     * 
+     *
      * @return the aspect definitions
      */
     public Collection getAspectDefinitions() {
@@ -163,7 +162,7 @@ public class SystemDefinition {
 
     /**
      * Returns a collection with the introduction definitions registered.
-     * 
+     *
      * @return the introduction definitions
      */
     public Collection getIntroductionDefinitions() {
@@ -176,7 +175,7 @@ public class SystemDefinition {
 
     /**
      * Returns a collection with the advice definitions registered.
-     * 
+     *
      * @return the advice definitions
      */
     public Collection getAdviceDefinitions() {
@@ -192,7 +191,7 @@ public class SystemDefinition {
 
     /**
      * Returns a specific aspect definition.
-     * 
+     *
      * @param name the name of the aspect definition
      * @return the aspect definition
      */
@@ -202,7 +201,7 @@ public class SystemDefinition {
 
     /**
      * Returns a specific advice definition.
-     * 
+     *
      * @param name the name of the advice definition
      * @return the advice definition
      */
@@ -219,7 +218,7 @@ public class SystemDefinition {
 
     /**
      * Returns the introduction definitions for a specific class.
-     * 
+     *
      * @param ctx the expression context
      * @return a list with the introduction definitions
      */
@@ -239,7 +238,7 @@ public class SystemDefinition {
     /**
      * Returns the interface introductions for a certain class merged with the implementation based introductions as
      * well.
-     * 
+     *
      * @param ctx the expression context
      * @return the names
      */
@@ -264,7 +263,7 @@ public class SystemDefinition {
 
     /**
      * Returns the index for a specific introduction.
-     * 
+     *
      * @param aspectName the name of the aspect
      * @return the index
      */
@@ -274,14 +273,16 @@ public class SystemDefinition {
         }
         int index = m_aspectIndexes.get(aspectName);
         if (index < 1) {
-            throw new RuntimeException("aspect [" + aspectName + "] does not exist, failed in retrieving aspect index");
+            throw new RuntimeException(
+                    "aspect [" + aspectName + "] does not exist, failed in retrieving aspect index"
+            );
         }
         return index;
     }
 
     /**
      * Returns the index for a specific introduction.
-     * 
+     *
      * @param mixinName the name of the mixin
      * @return the index
      */
@@ -298,7 +299,7 @@ public class SystemDefinition {
 
     /**
      * Adds a new aspect definition.
-     * 
+     *
      * @param aspectDef the aspect definition
      */
     public void addAspect(final AspectDefinition aspectDef) {
@@ -319,7 +320,7 @@ public class SystemDefinition {
 
     /**
      * Adds a new mixin definition.
-     * 
+     *
      * @param introDef the mixin definition
      */
     public void addIntroductionDefinition(final IntroductionDefinition introDef) {
@@ -342,7 +343,7 @@ public class SystemDefinition {
 
     /**
      * Adds a new pure interface mixin definition.
-     * 
+     *
      * @param introDef the mixin definition
      */
     public void addInterfaceIntroductionDefinition(final InterfaceIntroductionDefinition introDef) {
@@ -356,7 +357,7 @@ public class SystemDefinition {
 
     /**
      * Adds a new include package.
-     * 
+     *
      * @param includePackage the new include package
      */
     public void addIncludePackage(final String includePackage) {
@@ -367,7 +368,7 @@ public class SystemDefinition {
 
     /**
      * Adds a new exclude package.
-     * 
+     *
      * @param excludePackage the new exclude package
      */
     public void addExcludePackage(final String excludePackage) {
@@ -378,7 +379,7 @@ public class SystemDefinition {
 
     /**
      * Adds a new prepare package.
-     * 
+     *
      * @param preparePackage the new prepare package
      */
     public void addPreparePackage(final String preparePackage) {
@@ -393,7 +394,7 @@ public class SystemDefinition {
 
     /**
      * Checks if there exists an advice with the name specified.
-     * 
+     *
      * @param name the name of the advice
      * @return boolean
      */
@@ -410,7 +411,7 @@ public class SystemDefinition {
 
     /**
      * Checks if there exists an introduction with the name specified.
-     * 
+     *
      * @param name the name of the introduction
      * @return boolean
      */
@@ -420,7 +421,7 @@ public class SystemDefinition {
 
     /**
      * Checks if a class should be included.
-     * 
+     *
      * @param className the name or the class
      * @return boolean
      */
@@ -442,7 +443,7 @@ public class SystemDefinition {
 
     /**
      * Checks if a class should be excluded.
-     * 
+     *
      * @param className the name or the class
      * @return boolean
      */
@@ -461,7 +462,7 @@ public class SystemDefinition {
 
     /**
      * Checks if a class is in prepare declaration
-     * 
+     *
      * @param className the name or the class
      * @return boolean
      */
@@ -480,7 +481,7 @@ public class SystemDefinition {
 
     /**
      * Checks if a class has an introduction.
-     * 
+     *
      * @param ctx the expression context
      * @return boolean
      */
@@ -504,7 +505,7 @@ public class SystemDefinition {
 
     /**
      * Checks if a method has an pointcut.
-     * 
+     *
      * @param ctx the expression context
      * @return boolean
      */
@@ -527,7 +528,7 @@ public class SystemDefinition {
 
     /**
      * Checks if a method has an cflow pointcut.
-     * 
+     *
      * @param ctx the expression context
      * @return boolean
      */
@@ -550,7 +551,7 @@ public class SystemDefinition {
 
     /**
      * Checks if a class is advised.
-     * 
+     *
      * @param ctxs an array with the expression contexts
      * @return boolean
      */
@@ -577,7 +578,7 @@ public class SystemDefinition {
 
     /**
      * Checks if a class is advised.
-     * 
+     *
      * @param ctx the expression context
      * @return boolean
      */
@@ -601,7 +602,7 @@ public class SystemDefinition {
 
     /**
      * Checks if a class has an introduction.
-     * 
+     *
      * @param ctxs an array with the expression contexts
      * @return boolean
      */
@@ -626,7 +627,7 @@ public class SystemDefinition {
 
     /**
      * Checks if a class has an introduction.
-     * 
+     *
      * @param ctx the expression context
      * @return boolean
      */
@@ -649,7 +650,7 @@ public class SystemDefinition {
 
     /**
      * Checks if a class is advised with an interface introduction.
-     * 
+     *
      * @param ctx the expression context
      * @return boolean
      */
@@ -672,11 +673,11 @@ public class SystemDefinition {
 
     /**
      * Adds a new parameter for the aspect.
-     * 
-     * @TODO: should perhaps move to the aspect def instead of being separated from the aspect def concept?
+     *
      * @param aspectName the name of the aspect
-     * @param key the key
-     * @param value the value
+     * @param key        the key
+     * @param value      the value
+     * @TODO: should perhaps move to the aspect def instead of being separated from the aspect def concept?
      */
     public void addParameter(final String aspectName, final String key, final String value) {
         Map parameters;
@@ -692,7 +693,7 @@ public class SystemDefinition {
 
     /**
      * Returns parameters for the aspect.
-     * 
+     *
      * @param aspectName the name of the aspect
      * @return parameters
      */

@@ -20,7 +20,7 @@ import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
 class MethodJoinPoint extends JoinPointBase {
     private MethodSignature m_signature;
 
-    private MethodRttiImpl m_rtti;
+    private transient MethodRttiImpl m_rtti;
 
     /**
      * Creates a new join point.

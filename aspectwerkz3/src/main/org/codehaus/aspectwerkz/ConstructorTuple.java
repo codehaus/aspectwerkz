@@ -8,13 +8,14 @@
 package org.codehaus.aspectwerkz;
 
 import java.lang.reflect.Constructor;
+import java.io.Serializable;
 
 /**
  * Contains a pair of the original method and the wrapper method if such a method exists.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class ConstructorTuple {
+public class ConstructorTuple implements Serializable {
     private final Constructor m_wrapperConstructor;
 
     private final Constructor m_originalConstructor;
@@ -27,7 +28,7 @@ public class ConstructorTuple {
      * @param wrapperConstructor
      * @param originalConstructor
      */
-    public ConstructorTuple(Constructor wrapperConstructor, Constructor originalConstructor) {
+    public ConstructorTuple(final Constructor wrapperConstructor, Constructor originalConstructor) {
         if (originalConstructor == null) {
             originalConstructor = wrapperConstructor;
         }

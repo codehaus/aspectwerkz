@@ -24,13 +24,15 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  *
+ * TODO this class has transient fields that might cause pbms after serialization
+ *
  * TODO change addXXAdvice to allow 'aspectName, adviceName' params
  */
 public class Pointcut implements Serializable {
     /**
      * The expression for the pointcut.
      */
-    protected ExpressionInfo m_expressionInfo;
+    protected transient ExpressionInfo m_expressionInfo;
 
     /**
      * The names of the around advices.
@@ -64,8 +66,10 @@ public class Pointcut implements Serializable {
 
     /**
      * The AspectManager for the AspectWerkz system.
+     *
+     * TODO if the manager is needed after serialization it can be rebuild using  UUID, see AdviceInfo.java
      */
-    protected final AspectManager m_aspectManager;
+    protected transient final AspectManager m_aspectManager;
 
     /**
      * Creates a new pointcut.

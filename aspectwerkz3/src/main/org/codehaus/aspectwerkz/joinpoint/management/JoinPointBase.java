@@ -55,13 +55,13 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     protected AfterAdviceExecutor m_afterAdviceExecutor;
 
-    protected WeakReference m_targetInstanceRef;
+    protected transient WeakReference m_targetInstanceRef;
 
     protected Map m_metaData = new HashMap();
 
     protected PointcutType m_pointcutType;
 
-    protected JoinPointMetaData m_joinPointMetaData;
+    protected transient JoinPointMetaData m_joinPointMetaData;
 
     /**
      * Creates a new join point base instance.
@@ -468,7 +468,6 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         m_type = fields.get("m_type", 0);
         m_typeAsString = getJoinPointTypeAsString(m_type);
         m_targetClass = (Class) fields.get("m_targetClass", null);
-        m_joinPointMetaData = (JoinPointMetaData) fields.get("m_joinPointMetaData", null);
         m_checkCflow = m_joinPointMetaData.cflowExpressions.size() > 0;
         m_aroundAdviceExecutor = (AroundAdviceExecutor) fields.get("m_aroundAdviceExecutor", null);
         m_beforeAdviceExecutor = (BeforeAdviceExecutor) fields.get("m_beforeAdviceExecutor", null);

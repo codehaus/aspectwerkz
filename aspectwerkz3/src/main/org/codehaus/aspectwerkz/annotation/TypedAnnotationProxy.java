@@ -22,7 +22,7 @@ public abstract class TypedAnnotationProxy implements Annotation, Serializable {
     /**
      * The one and only annotation parser.
      */
-    protected static AnnotationParser s_parser = new AnnotationParser(System.in);
+    protected static final AnnotationParser s_parser = new AnnotationParser(System.in);
 
     /**
      * The name of the annotation.

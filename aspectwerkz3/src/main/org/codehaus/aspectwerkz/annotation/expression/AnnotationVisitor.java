@@ -214,7 +214,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             for (int i = 0; i < nrOfElements; i++) {
                 String value = (String) node.jjtGetChild(i).jjtAccept(this, data);
                 if ((value.charAt(0) == '"') && (value.charAt(value.length() - 1) == '"')) {
-                    array[i] = new String(value.substring(1, value.length() - 1));
+                    array[i] = value.substring(1, value.length() - 1);
                 } else {
                     throw new RuntimeException("badly formatted string [" + value + "]");
                 }

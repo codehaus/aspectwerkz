@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz.definition;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

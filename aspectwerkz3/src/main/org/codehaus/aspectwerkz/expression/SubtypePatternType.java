@@ -7,12 +7,15 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression;
 
+import java.io.Serializable;
+
 /**
  * Type safe enum for the different matching types.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class SubtypePatternType {
+public class SubtypePatternType implements Serializable {
+
     public static final SubtypePatternType NOT_HIERARCHICAL = new SubtypePatternType("NOT_HIERARCHICAL");
 
     public static final SubtypePatternType MATCH_ON_ALL_METHODS = new SubtypePatternType("MATCH_ON_ALL_METHODS");
@@ -27,7 +30,7 @@ public class SubtypePatternType {
      * 
      * @param name
      */
-    private SubtypePatternType(String name) {
+    private SubtypePatternType(final String name) {
         myName = name;
     }
 

@@ -99,6 +99,7 @@ public class ClassInfoRepository {
     public void addClassInfo(final ClassInfo classInfo) {
         // is the class loaded by a class loader higher up in the hierarchy?
         if (checkParentClassRepository(classInfo.getName(), (ClassLoader) m_loaderRef.get()) == null) {
+            // need to create new String instance to avoid using the original reference
             m_repository.put(new String(classInfo.getName()), classInfo);
         } else {
             // TODO: remove class in child class repository and add it for the current (parent) CL

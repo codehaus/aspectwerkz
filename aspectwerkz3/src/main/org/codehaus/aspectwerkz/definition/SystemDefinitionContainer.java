@@ -28,14 +28,14 @@ public class SystemDefinitionContainer {
     /**
      * Map of SystemDefinition[List] per ClassLoader
      */
-    public static Map s_classLoaderSystemDefinitions = new WeakHashMap(); //note: null key is
+    public static final Map s_classLoaderSystemDefinitions = new WeakHashMap(); //note: null key is
 
     // supported
 
     /**
      * Map of SystemDefinition[List] per ClassLoader, with the hierarchy structure
      */
-    public static Map s_classLoaderHierarchicalSystemDefinitions = new WeakHashMap(); //note: null
+    public static final Map s_classLoaderHierarchicalSystemDefinitions = new WeakHashMap(); //note: null
 
     // key is
     // supported
@@ -43,7 +43,7 @@ public class SystemDefinitionContainer {
     /**
      * Map of SystemDefinition location (as String[List]) per ClassLoader
      */
-    public static Map s_classLoaderDefinitionLocations = new WeakHashMap(); //note: null key is
+    public static final Map s_classLoaderDefinitionLocations = new WeakHashMap(); //note: null key is
 
     // supported
 
@@ -78,7 +78,7 @@ public class SystemDefinitionContainer {
      * 
      * @param loader the class loader to register
      */
-    public static void registerClassLoader(ClassLoader loader) {
+    public static void registerClassLoader(final ClassLoader loader) {
         if (s_classLoaderSystemDefinitions.containsKey(loader)) {
             return;
         }
@@ -147,7 +147,7 @@ public class SystemDefinitionContainer {
      * @TODO No need for the s_ map
      * @TODO KICK the def map and crawl up the CL parents and redo a getResources check instead
      */
-    public static boolean isDefinedBy(ClassLoader loader, String def) {
+    public static boolean isDefinedBy(final ClassLoader loader, final String def) {
         if (loader == null) {
             return false;
         }
@@ -164,7 +164,7 @@ public class SystemDefinitionContainer {
      * 
      * @param loader
      */
-    public static void dump(ClassLoader loader) {
+    public static void dump(final ClassLoader loader) {
         StringBuffer dump = new StringBuffer("******************************************************************");
         dump.append("\n* ClassLoader = ");
 
@@ -198,7 +198,7 @@ public class SystemDefinitionContainer {
      * @param loader
      * @return List of SystemDefinition
      */
-    public static synchronized List getHierarchicalDefs(ClassLoader loader) {
+    public static synchronized List getHierarchicalDefs(final ClassLoader loader) {
         // check cache
         List defs;
         if (!s_classLoaderHierarchicalSystemDefinitions.containsKey(loader)) {

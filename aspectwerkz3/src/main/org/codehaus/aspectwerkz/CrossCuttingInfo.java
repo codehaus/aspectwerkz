@@ -41,7 +41,7 @@ public final class CrossCuttingInfo implements Serializable {
     /**
      * The container.
      */
-    private AspectContainer m_container = null;
+    private transient AspectContainer m_container = null;
 
     /**
      * Holds the deployment model.
@@ -66,12 +66,12 @@ public final class CrossCuttingInfo implements Serializable {
     /**
      * A reference to the AspectWerkz system housing this cross-cuttable class.
      */
-    private AspectSystem m_system;
+    private transient AspectSystem m_system;
 
     /**
      * The aspect definition.
      */
-    private AspectDefinition m_aspectDefinition;
+    private transient AspectDefinition m_aspectDefinition;
 
     /**
      * Creates a new cross-cutting info instance.
@@ -197,7 +197,9 @@ public final class CrossCuttingInfo implements Serializable {
 
     /**
      * Returns the aspect definition.
-     * 
+     * <p/>
+     * Will return null after deserialization.
+     *
      * @return the aspect definition
      */
     public AspectDefinition getAspectDefinition() {
@@ -313,7 +315,6 @@ public final class CrossCuttingInfo implements Serializable {
         m_name = (String) fields.get("m_name", null);
         m_aspectClass = (Class) fields.get("m_aspectClass", null);
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
-        m_aspectDefinition = (AspectDefinition) fields.get("m_aspectDefinition", null);
         m_parameters = (Map) fields.get("m_parameters", new HashMap());
         m_metaData = (Map) fields.get("m_metaData", new HashMap());
         m_container = StartupManager.createAspectContainer(this);

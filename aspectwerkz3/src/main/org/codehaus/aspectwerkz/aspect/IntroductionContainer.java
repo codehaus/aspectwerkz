@@ -255,7 +255,7 @@ public class IntroductionContainer {
                 m_perInstance = new WeakHashMap(m_perClass.size());
                 m_perThread = new WeakHashMap(m_perClass.size());
             } catch (Exception e) {
-                new WrappedRuntimeException(e);
+                throw new WrappedRuntimeException(e);
             }
         }
     }

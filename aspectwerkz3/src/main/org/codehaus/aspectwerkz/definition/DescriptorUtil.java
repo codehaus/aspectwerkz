@@ -143,13 +143,15 @@ public class DescriptorUtil {
     /**
      * The utility method that does the real work of parsing through the JVM formatted string and adding an converted
      * method parameter description to the StringBuffer.
-     * 
+     *
+     * @TODO this an extremely ugly method (the int an stringbuffer params must be removed)
+     *
      * @param jvmFormat The JVM formatted string that is being parsed.
      * @param i The offset into the string being parsed.
      * @param stringbuffer The storage for building the converted method signature.
      * @return new offset location for parsing.
      */
-    private static int jvmFormatToJavaFormat(String jvmFormat, int i, StringBuffer stringbuffer) {
+    private static int jvmFormatToJavaFormat(final String jvmFormat, int i, StringBuffer stringbuffer) {
         String s1 = "";
 
         //arrays.
