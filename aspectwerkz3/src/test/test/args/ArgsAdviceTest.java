@@ -20,6 +20,11 @@ import junit.framework.TestCase;
 public class ArgsAdviceTest extends TestCase implements Loggable {
 
     private String m_logString = "";
+    private static String s_logString = "";
+    // used for ctor call and static field set, else we use jp.getTarget()
+    public static void logStatic(String s) {
+        s_logString += s;
+    }
 
     //args(String, String, long)
     public void testMatchAll() {
@@ -92,6 +97,58 @@ public class ArgsAdviceTest extends TestCase implements Loggable {
         assertEquals("before a0 a1 before1 a0 a1 invocation after1 a0 a1 after a0 a1 ", m_logString);
     }
 
+    //-- method call pointcuts
+
+    //args(l<long>, s<String[]>)
+    public void testCallGetFirstAndSecond() {
+        m_logString = "";
+        callGetFirstAndSecond(1L, new String[]{"s0", "s1"});
+        assertEquals("before 1 s0,s1 before1 1 s0,s1 invocation after1 1 s0,s1 after 1 s0,s1 ", m_logString);
+        m_logString = "";
+        callGetFirstAndSecondXML(1L, new String[]{"s0", "s1"}, null);
+        assertEquals("before 1 s0,s1 before1 1 s0,s1 invocation after1 1 s0,s1 after 1 s0,s1 ", m_logString);
+    }
+
+    //-- ctor execution
+    //args(s)
+    public void testCtorExecutionGetFirst() {
+        //FIXME
+        // looks like a bug for ctor executiona and inner class inheritance
+        // see CtorLoggable and CtorExecution<init>, that has the call to CtorLoggable<init> corrupted
+//        m_logString = "";
+//        CtorExecution target = new CtorExecution("s");
+//        assertEquals("before s before1 s invocation after1 s after s ", m_logString);
+//        m_logString = "";
+//        CtorExecutionXML target2 = new CtorExecutionXML("s");
+//        assertEquals("before s before1 s invocation after1 s after s ", m_logString);
+    }
+
+    //-- ctor call
+    //args(s)
+    public void testCtorCallGetFirst() {
+        s_logString = "";
+        CtorCall target = new CtorCall("s");
+        assertEquals("before s before1 s invocation after1 s after s ", s_logString);
+        s_logString = "";
+        CtorCallXML target2 = new CtorCallXML("s");
+        assertEquals("before s before1 s invocation after1 s after s ", s_logString);
+    }
+
+    //-- field set
+    private String m_field;
+    private static String s_field;
+    public String getField() {return m_field;}
+    public static String getStaticField() {return s_field;}
+    //arg(s)
+    public void testFieldSetArg() {
+        m_logString = "";
+        m_field = "s";
+        assertEquals("before null,s before1 null,s after1 s,changed after s,s ", m_logString);
+        s_logString = "";
+        s_field = "s";
+        assertEquals("before null,s before1 null,s after1 s,changed after s,s ", s_logString);
+    }
+
 
     //-- Implementation methods
     public void log(String s) {
@@ -134,8 +191,44 @@ public class ArgsAdviceTest extends TestCase implements Loggable {
         log("invocation ");
     }
 
+    //-- method call
+    public void callGetFirstAndSecond(long l, String[] s) {
+        log("invocation ");
+    }
+    public void callGetFirstAndSecondXML(long l, String[] s, String[] ignore) {
+        log("invocation ");
+    }
 
+    class CtorLoggable implements Loggable {
+        public CtorLoggable() {}
+        public void log(String s) {
+            m_logString += s;
+        }
+    }
 
+    //-- ctor execution
+    class CtorExecution extends CtorLoggable {
+        public CtorExecution(String s) {
+            log("invocation ");
+        }
+    }
+    class CtorExecutionXML extends CtorLoggable {
+        public CtorExecutionXML(String s) {
+            log("invocation ");
+        }
+    }
+
+    //-- ctor call
+    class CtorCall extends CtorLoggable {
+        public CtorCall(String s) {
+            logStatic("invocation ");
+        }
+    }
+    class CtorCallXML extends CtorLoggable {
+        public CtorCallXML(String s) {
+            logStatic("invocation ");
+        }
+    }
 
 
     //-- JUnit

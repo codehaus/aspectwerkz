@@ -3,6 +3,12 @@
     <system id="tests">
         <pointcut name="handler" expression="handler(test.handler.HandlerTestBeforeException) AND within(test.handler.*)"/>
         <exclude package="test.attribdeff"/>
+        <aspect class="test.hierarchicalpattern.AA">
+            <pointcut name="pc" expression="execution(* test.hierarchicalpattern.IEjb+.*(..))"/>
+            <advice name="before" type="before" bind-to="pc"/>
+        </aspect>
+
+
         <package name="test.aspect">
             <aspect class="MemberMethodTestAspect"/>
             <aspect class="StaticMethodTestAspect"/>
@@ -71,7 +77,33 @@
                     name="orderChangedInPointcutAndAdviceSignatureAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,java.lang.String a0, String a1)"/>
                 <advice type="after" bind-to="xml_orderChangedInPointcutAndAdviceSignature(a1, a0)"
                     name="orderChangedInPointcutAndAdviceSignatureAfter(JoinPoint jp, String a0, String a1)"/>
-            testOrderChangedInPointcutAndAdviceSignature
+            <!-- method call pointcut -->
+            <pointcut name="xml_callGetFirstAndSecond(long l, String[] s)"
+                expression="within(test.args.ArgsAdviceTest) AND call(* callGetFirstAndSecondXML(..)) AND args(l, s, String[])"/>
+                <advice type="before" bind-to="xml_callGetFirstAndSecond(a0, a1)"
+                    name="callGetFirstAndSecondBefore(JoinPoint jp, long a0, String[] a1)"/>
+                <advice type="around" bind-to="xml_callGetFirstAndSecond(a0, a1)"
+                    name="callGetFirstAndSecondAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,long a0, java.lang.String[] a1)"/>
+                <advice type="after" bind-to="xml_callGetFirstAndSecond(a0, a1)"
+                    name="callGetFirstAndSecondAfter(JoinPoint jp, long a0, String[] a1)"/>
+            <!-- ctor execution pointcut -->
+            <pointcut name="xml_ctorExecutionGetFirst(String s)"
+                expression="execution(test.args.ArgsAdviceTest$CtorExecutionXML.new(..)) AND args(test.args.ArgsAdviceTest,s)"/>
+                <advice type="before" bind-to="xml_ctorExecutionGetFirst(a0)"
+                    name="ctorExecutionGetFirstBefore(JoinPoint jp, String a0)"/>
+                <advice type="around" bind-to="xml_ctorExecutionGetFirst(a0)"
+                    name="ctorExecutionGetFirstAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,java.lang.String a0)"/>
+                <advice type="after" bind-to="xml_ctorExecutionGetFirst(a0)"
+                    name="ctorExecutionGetFirstAfter(JoinPoint jp, String a0)"/>
+            <!-- ctor call pointcut -->
+            <pointcut name="xml_ctorCallGetFirst(String s)"
+                expression="within(test.args.ArgsAdviceTest) AND call(test.args.ArgsAdviceTest$CtorCallXML.new(..)) AND args(test.args.ArgsAdviceTest, s)"/>
+                <advice type="before" bind-to="xml_ctorCallGetFirst(a0)"
+                    name="ctorCallGetFirstBefore(JoinPoint jp, String a0)"/>
+                <advice type="around" bind-to="xml_ctorCallGetFirst(a0)"
+                    name="ctorCallGetFirstAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,java.lang.String a0)"/>
+                <advice type="after" bind-to="xml_ctorCallGetFirst(a0)"
+                    name="ctorCallGetFirstAfter(JoinPoint jp, String a0)"/>
 
         </aspect>
 
@@ -120,9 +152,5 @@
             <advice bind-to="test" type="around" name="advice1"/>
         </aspect>
 
-        <!-- Test for args binding in XML -->
-<!--        <aspect class="todo">-->
-<!--            <pointcut name="test(String s)" expression="execution(* alex..*.method(..)) AND args(s, String)"/>-->
-<!--        </aspect>-->
     </system>
 </aspectwerkz>

@@ -45,6 +45,9 @@ import java.util.List;
 
 /**
  * The advised class filter visitor.
+ *
+ * FIXME - poorly optimized:
+ * if pcA = within(X) and pcB = pcA AND call(* foo(..)), then ALL classes gets matched !
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>

@@ -56,7 +56,11 @@ class FieldJoinPoint extends JoinPointBase {
      */
     public Object proceed() throws Throwable {
         final Object result = m_aroundAdviceExecutor.proceed(this);
-        m_rtti.setFieldValue(result);
+        // AJ: for set join point, the returned value from around advice is ignored
+        // but not for get join point
+        if (m_type == JoinPointType.FIELD_GET) {
+            m_rtti.setFieldValue(result);
+        }
         return result;
     }
 
@@ -89,6 +93,21 @@ class FieldJoinPoint extends JoinPointBase {
     }
 
     public Object[] extractArguments(int[] methodToArgIndexes) {
-        return new Object[]{this};
+        // special handling for XML defined aspect, the old way, where we assume (JoinPoint) is sole arg
+        if (methodToArgIndexes.length <= 0) {
+            return new Object[]{this};
+        } else {
+            Object[] args = new Object[methodToArgIndexes.length];
+            for (int i = 0; i < args.length; i++) {
+                int argIndex = methodToArgIndexes[i];
+                if (argIndex != -1) {
+                    args[i] = m_rtti.getFieldValue();
+                } else {
+                    // assume for now -1 is JoinPoint - TODO: evolve for staticJP
+                    args[i] = this;
+                }
+            }
+            return args;
+        }
     }
 }

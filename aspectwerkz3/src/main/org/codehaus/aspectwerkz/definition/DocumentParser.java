@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
@@ -25,7 +26,7 @@ import java.util.List;
 
 /**
  * Parses the XML definition using <tt>dom4j</tt>.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -37,7 +38,7 @@ public class DocumentParser {
 
     /**
      * Parses aspect class names.
-     * 
+     *
      * @param document the defintion as a document
      * @return the aspect class names
      */
@@ -84,8 +85,8 @@ public class DocumentParser {
 
     /**
      * Parses the definition DOM document.
-     * 
-     * @param loader the current class loader
+     *
+     * @param loader   the current class loader
      * @param document the defintion as a document
      * @return the definitions
      */
@@ -98,9 +99,9 @@ public class DocumentParser {
 
     /**
      * Parses the <tt>system</tt> elements.
-     * 
+     *
      * @param loader the current class loader
-     * @param root the root element
+     * @param root   the root element
      */
     private static List parseSystemElements(final ClassLoader loader, final Element root) {
         final List systemDefs = new ArrayList();
@@ -116,16 +117,15 @@ public class DocumentParser {
 
     /**
      * Parses the <tt>system</tt> elements.
-     * 
-     * @param loader the current class loader
+     *
+     * @param loader        the current class loader
      * @param systemElement the system element
-     * @param basePackage the base package
+     * @param basePackage   the base package
      * @return the definition for the system
      */
-    private static SystemDefinition parseSystemElement(
-        final ClassLoader loader,
-        final Element systemElement,
-        final String basePackage) {
+    private static SystemDefinition parseSystemElement(final ClassLoader loader,
+                                                       final Element systemElement,
+                                                       final String basePackage) {
         String uuid = systemElement.attributeValue("id");
         if ((uuid == null) || uuid.equals("")) {
             throw new DefinitionException("system UUID must be specified");
@@ -150,7 +150,7 @@ public class DocumentParser {
 
     /**
      * Parses the global pointcuts.
-     * 
+     *
      * @param systemElement the system element
      * @return a list with the pointcuts
      */
@@ -176,19 +176,18 @@ public class DocumentParser {
 
     /**
      * Parses the definition DOM document.
-     * 
-     * @param loader the current class loader
-     * @param systemElement the system element
-     * @param definition the definition
-     * @param basePackage the base package
+     *
+     * @param loader          the current class loader
+     * @param systemElement   the system element
+     * @param definition      the definition
+     * @param basePackage     the base package
      * @param globalPointcuts the global pointcuts
      */
-    private static void parsePackageElements(
-        final ClassLoader loader,
-        final Element systemElement,
-        final SystemDefinition definition,
-        final String basePackage,
-        final List globalPointcuts) {
+    private static void parsePackageElements(final ClassLoader loader,
+                                             final Element systemElement,
+                                             final SystemDefinition definition,
+                                             final String basePackage,
+                                             final List globalPointcuts) {
         for (Iterator it1 = systemElement.elementIterator("package"); it1.hasNext();) {
             final Element packageElement = ((Element) it1.next());
             final String packageName = basePackage + getPackage(packageElement);
@@ -198,19 +197,18 @@ public class DocumentParser {
 
     /**
      * Parses the <tt>aspect</tt> elements.
-     * 
-     * @param loader the current class loader
-     * @param systemElement the system element
-     * @param definition the definition object
-     * @param packageName the package name
+     *
+     * @param loader          the current class loader
+     * @param systemElement   the system element
+     * @param definition      the definition object
+     * @param packageName     the package name
      * @param globalPointcuts the global pointcuts
      */
-    private static void parseAspectElements(
-        final ClassLoader loader,
-        final Element systemElement,
-        final SystemDefinition definition,
-        final String packageName,
-        final List globalPointcuts) {
+    private static void parseAspectElements(final ClassLoader loader,
+                                            final Element systemElement,
+                                            final SystemDefinition definition,
+                                            final String packageName,
+                                            final List globalPointcuts) {
         for (Iterator it1 = systemElement.elementIterator("aspect"); it1.hasNext();) {
             String aspectName = null;
             String className = null;
@@ -244,12 +242,14 @@ public class DocumentParser {
             } catch (Exception e) {
                 System.out.println("loader: " + loader);
                 System.out.println("aspectClassName: " + aspectClassName);
-                System.err.println("Warning: could not load aspect "
-                    + aspectClassName
-                    + " from "
-                    + loader
-                    + "due to: "
-                    + e.toString());
+                System.err.println(
+                        "Warning: could not load aspect "
+                        + aspectClassName
+                        + " from "
+                        + loader
+                        + "due to: "
+                        + e.toString()
+                );
                 e.printStackTrace();
                 continue;
             }
@@ -258,9 +258,10 @@ public class DocumentParser {
             for (Iterator it = globalPointcuts.iterator(); it.hasNext();) {
                 PointcutInfo pointcutInfo = (PointcutInfo) it.next();
                 DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                    pointcutInfo.name,
-                    pointcutInfo.expression,
-                    aspectDef);
+                        pointcutInfo.name,
+                        pointcutInfo.expression,
+                        aspectDef
+                );
             }
             parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut
             // in Attributes AW-152
@@ -290,8 +291,8 @@ public class DocumentParser {
 
     /**
      * Loads the aspect class.
-     * 
-     * @param loader the class loader
+     *
+     * @param loader          the class loader
      * @param aspectClassName the name of the class implementing the aspect
      * @return the class
      */
@@ -309,29 +310,30 @@ public class DocumentParser {
     /**
      * Parses the aspectElement parameters. <p/>TODO: should perhaps move the parameters to the aspect def instead of
      * the system def
-     * 
+     *
      * @param aspectElement the aspect element
-     * @param def the system definition
-     * @param aspectDef the aspect def
+     * @param def           the system definition
+     * @param aspectDef     the aspect def
      */
-    private static void parseParameterElements(
-        final Element aspectElement,
-        final SystemDefinition def,
-        final AspectDefinition aspectDef) {
+    private static void parseParameterElements(final Element aspectElement,
+                                               final SystemDefinition def,
+                                               final AspectDefinition aspectDef) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element parameterElement = (Element) it2.next();
             if (parameterElement.getName().trim().equals("param")) {
-                def.addParameter(aspectDef.getName(), parameterElement.attributeValue("name"), parameterElement
-                        .attributeValue("value"));
+                def.addParameter(
+                        aspectDef.getName(), parameterElement.attributeValue("name"), parameterElement
+                        .attributeValue("value")
+                );
             }
         }
     }
 
     /**
      * Parses the pointcuts.
-     * 
+     *
      * @param aspectElement the aspect element
-     * @param aspectDef the system definition
+     * @param aspectDef     the system definition
      */
     private static void parsePointcutElements(final Element aspectElement, final AspectDefinition aspectDef) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
@@ -346,15 +348,14 @@ public class DocumentParser {
 
     /**
      * Parses the advices.
-     * 
+     *
      * @param aspectElement the aspect element
-     * @param aspectDef the system definition
-     * @param aspectClass the aspect class
+     * @param aspectDef     the system definition
+     * @param aspectClass   the aspect class
      */
-    private static void parseAdviceElements(
-        final Element aspectElement,
-        final AspectDefinition aspectDef,
-        final Class aspectClass) {
+    private static void parseAdviceElements(final Element aspectElement,
+                                            final AspectDefinition aspectDef,
+                                            final Class aspectClass) {
         List methodList = ReflectHelper.createCompleteSortedMethodList(aspectClass);
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element adviceElement = (Element) it2.next();
@@ -362,7 +363,7 @@ public class DocumentParser {
                 String name = adviceElement.attributeValue("name");
                 String type = adviceElement.attributeValue("type");
                 String bindTo = adviceElement.attributeValue("bind-to");
-                String adviceName = aspectClass.getName() + '.' + name;
+                String adviceName = /*aspectClass.getName() + '.' +*/ name;
                 int methodIndex = 0;
                 Method method = null;
                 for (Iterator it3 = methodList.iterator(); it3.hasNext(); methodIndex++) {
@@ -374,7 +375,9 @@ public class DocumentParser {
                     }
                 }
                 if (method == null) {
-                    throw new DefinitionException("Could not find advice method " + name + " in " + aspectClass.getName());
+                    throw new DefinitionException(
+                            "Could not find advice method " + name + " in " + aspectClass.getName()
+                    );
                 }
                 createAndAddAdviceDefsToAspectDef(type, bindTo, adviceName, method, methodIndex, aspectDef);
                 for (Iterator it1 = adviceElement.elementIterator("bind-to"); it1.hasNext();) {
@@ -388,17 +391,16 @@ public class DocumentParser {
 
     /**
      * Parses the introduction.
-     * 
+     *
      * @param aspectElement the aspect element
-     * @param aspectDef the system definition
-     * @param aspectClass the aspect class
+     * @param aspectDef     the system definition
+     * @param aspectClass   the aspect class
      * @param packageName
      */
-    private static void parseIntroductionElements(
-        final Element aspectElement,
-        final AspectDefinition aspectDef,
-        final Class aspectClass,
-        final String packageName) {
+    private static void parseIntroductionElements(final Element aspectElement,
+                                                  final AspectDefinition aspectDef,
+                                                  final Class aspectClass,
+                                                  final String packageName) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element introduceElement = (Element) it2.next();
             if (introduceElement.getName().trim().equals("introduce")) {
@@ -422,27 +424,32 @@ public class DocumentParser {
                 try {
                     mixin = aspectClass.getClassLoader().loadClass(packageName + klass);
                 } catch (ClassNotFoundException e) {
-                    throw new DefinitionException("could not find mixin implementation: "
-                        + packageName
-                        + klass
-                        + " "
-                        + e.getMessage());
+                    throw new DefinitionException(
+                            "could not find mixin implementation: "
+                            + packageName
+                            + klass
+                            + " "
+                            + e.getMessage()
+                    );
                 }
 
                 // pure interface introduction
                 if (mixin.isInterface()) {
-                    DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(bindTo, name, packageName
-                        + klass, aspectDef);
+                    DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
+                            bindTo, name, packageName
+                            + klass, aspectDef
+                    );
 
                     // handles nested "bind-to" elements
                     for (Iterator it1 = introduceElement.elementIterator("bind-to"); it1.hasNext();) {
                         Element bindToElement = (Element) it1.next();
                         String pointcut = bindToElement.attributeValue("pointcut");
                         DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
-                            pointcut,
-                            name,
-                            packageName + klass,
-                            aspectDef);
+                                pointcut,
+                                name,
+                                packageName + klass,
+                                aspectDef
+                        );
                     }
                 } else {
                     // mixin introduction
@@ -452,20 +459,22 @@ public class DocumentParser {
                         introducedInterfaceNames[i] = introduced[i].getName();
                     }
                     DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
-                        mixin,
-                        bindTo,
-                        deploymentModel,
-                        aspectDef);
+                            mixin,
+                            bindTo,
+                            deploymentModel,
+                            aspectDef
+                    );
 
                     // handles nested "bind-to" elements
                     for (Iterator it1 = introduceElement.elementIterator("bind-to"); it1.hasNext();) {
                         Element bindToElement = (Element) it1.next();
                         String pointcut = bindToElement.attributeValue("pointcut");
                         DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
-                            mixin,
-                            pointcut,
-                            deploymentModel,
-                            aspectDef);
+                                mixin,
+                                pointcut,
+                                deploymentModel,
+                                aspectDef
+                        );
                     }
                 }
             }
@@ -474,30 +483,35 @@ public class DocumentParser {
 
     /**
      * Creates the advice definitions and adds them to the aspect definition.
-     * 
-     * @param type the type of advice
-     * @param bindTo the pointcut expresion
-     * @param name the name of the advice
-     * @param method the method implementing the advice
+     *
+     * @param type        the type of advice
+     * @param bindTo      the pointcut expresion
+     * @param name        the name of the advice
+     * @param method      the method implementing the advice
      * @param methodIndex the method index
-     * @param aspectDef the aspect definition
+     * @param aspectDef   the aspect definition
      */
-    private static void createAndAddAdviceDefsToAspectDef(
-        final String type,
-        final String bindTo,
-        final String name,
-        final Method method,
-        final int methodIndex,
-        final AspectDefinition aspectDef) {
+    private static void createAndAddAdviceDefsToAspectDef(final String type,
+                                                          final String bindTo,
+                                                          final String name,
+                                                          final Method method,
+                                                          final int methodIndex,
+                                                          final AspectDefinition aspectDef) {
         if (type.equalsIgnoreCase("around")) {
-            DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(bindTo, name, aspectDef.getName(), aspectDef
-                    .getClassName(), method, methodIndex, aspectDef);
+            DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(
+                    bindTo, name, aspectDef.getName(), aspectDef
+                    .getClassName(), method, methodIndex, aspectDef
+            );
         } else if (type.equalsIgnoreCase("before")) {
-            DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(bindTo, name, aspectDef.getName(), aspectDef
-                    .getClassName(), method, methodIndex, aspectDef);
+            DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(
+                    bindTo, name, aspectDef.getName(), aspectDef
+                    .getClassName(), method, methodIndex, aspectDef
+            );
         } else if (type.equalsIgnoreCase("after")) {
-            DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(bindTo, name, aspectDef.getName(), aspectDef
-                    .getClassName(), method, methodIndex, aspectDef);
+            DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(
+                    bindTo, name, aspectDef.getName(), aspectDef
+                    .getClassName(), method, methodIndex, aspectDef
+            );
         } else if (type.equalsIgnoreCase("afterFinally")) {
             // TODO: impl. afterFinally
         } else if (type.equalsIgnoreCase("afterReturning")) {
@@ -509,7 +523,7 @@ public class DocumentParser {
 
     /**
      * Retrieves and returns the package.
-     * 
+     *
      * @param packageElement the package element
      * @return the package as a string ending with DOT, or empty string
      */
@@ -536,15 +550,14 @@ public class DocumentParser {
 
     /**
      * Parses the <tt>include</tt> elements.
-     * 
-     * @param root the root element
-     * @param definition the definition object
+     *
+     * @param root        the root element
+     * @param definition  the definition object
      * @param packageName the package name
      */
-    private static void parseIncludePackageElements(
-        final Element root,
-        final SystemDefinition definition,
-        final String packageName) {
+    private static void parseIncludePackageElements(final Element root,
+                                                    final SystemDefinition definition,
+                                                    final String packageName) {
         for (Iterator it1 = root.elementIterator("include"); it1.hasNext();) {
             String includePackage = "";
             Element includeElement = (Element) it1.next();
@@ -578,15 +591,14 @@ public class DocumentParser {
 
     /**
      * Parses the <tt>exclude</tt> elements.
-     * 
-     * @param root the root element
-     * @param definition the definition object
+     *
+     * @param root        the root element
+     * @param definition  the definition object
      * @param packageName the package name
      */
-    private static void parseExcludePackageElements(
-        final Element root,
-        final SystemDefinition definition,
-        final String packageName) {
+    private static void parseExcludePackageElements(final Element root,
+                                                    final SystemDefinition definition,
+                                                    final String packageName) {
         for (Iterator it1 = root.elementIterator("exclude"); it1.hasNext();) {
             String excludePackage = "";
             Element excludeElement = (Element) it1.next();
@@ -620,15 +632,14 @@ public class DocumentParser {
 
     /**
      * Parses the <tt>prepare</tt> elements.
-     * 
-     * @param root the root element
-     * @param definition the definition object
+     *
+     * @param root        the root element
+     * @param definition  the definition object
      * @param packageName the base package name
      */
-    public static void parsePrepareElements(
-        final Element root,
-        final SystemDefinition definition,
-        final String packageName) {
+    public static void parsePrepareElements(final Element root,
+                                            final SystemDefinition definition,
+                                            final String packageName) {
         for (Iterator it1 = root.elementIterator("prepare"); it1.hasNext();) {
             String preparePackage = "";
             Element prepareElement = (Element) it1.next();
@@ -662,7 +673,7 @@ public class DocumentParser {
 
     /**
      * Retrieves and returns the base package for a system element
-     * 
+     *
      * @param system a system element
      * @return the base package
      */
@@ -730,9 +741,11 @@ public class DocumentParser {
         for (int i = 1; i < signatureElements.length; i++) {
             String paramType = signatureElements[i++];
             String paramName = signatureElements[i];
-            String methodParamType = method.getParameterTypes()[argIndex++].getName().replace('/', '.');
+            String methodParamType = JavaClassInfo.convertJavaArrayTypeNameToHumanTypeName(
+                    method.getParameterTypes()[argIndex++].getName().replace('/', '.')
+            );
             // handle shortcuts for java.lang.* and JoinPoint
-            String paramTypeResolved = (String)Pattern.ABBREVIATIONS.get(paramType);
+            String paramTypeResolved = (String) Pattern.ABBREVIATIONS.get(paramType);
             if (methodParamType.equals(paramType) || methodParamType.equals(paramTypeResolved)) {
                 continue;
             } else {

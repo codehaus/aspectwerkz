@@ -107,7 +107,7 @@ public class JavaClassInfo implements ClassInfo {
             m_name = klass.getName();
             m_isPrimitive = true;
         } else if (klass.getComponentType() != null) {
-            m_name = convertArrayTypeName(klass.getName());
+            m_name = convertJavaArrayTypeNameToHumanTypeName(klass.getName());
             m_isArray = true;
             m_interfaces = new ClassInfo[0];
         } else {
@@ -345,7 +345,7 @@ public class JavaClassInfo implements ClassInfo {
      * @param typeName is type name
      * @return
      */
-    private static String convertArrayTypeName(final String typeName) {
+    public static String convertJavaArrayTypeNameToHumanTypeName(final String typeName) {
         int index = typeName.lastIndexOf('[');
         if (index != -1) {
             StringBuffer arrayType = new StringBuffer();
