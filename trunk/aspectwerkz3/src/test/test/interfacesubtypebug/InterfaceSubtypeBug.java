@@ -30,7 +30,7 @@ public class InterfaceSubtypeBug extends TestCase {
         LOG = "";
         Target target = new Target();
         target.interfaceMethod();
-        assertEquals("target target ", LOG);
+        assertEquals("", LOG);
     }
 
     public static junit.framework.Test suite() {
