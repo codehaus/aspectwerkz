@@ -601,7 +601,7 @@ public class AttributeC {
 
         BindIntroductionRule bindIntroductionRule = new BindIntroductionRule();
         bindIntroductionRule.setExpression(ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).
-                                            createExpression(className));
+                                            createExpression(className, PointcutType.CLASS));
         //TODO ALEX JJ - not sure here.
 //
 //                Expression.createRootExpression(
@@ -748,8 +748,8 @@ public class AttributeC {
                             // create and add a new rule
                             BindAdviceRule bindAdviceRule = new BindAdviceRule();
                             bindAdviceRule.setExpression(
-                                    ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).createExecutionExpression(
-                                            expression, "", pointcutName
+                                    ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).createExpression(//)createExecutionExpression(
+                                            expression, /*"", */pointcutName
                                     ));
 //                                    Expression.createExecutionExpression(
 //                                            aspectDef.getName(),

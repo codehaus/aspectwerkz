@@ -78,7 +78,7 @@ public class TypeVisitor implements ExpressionParserVisitor {
         if (expression!=null) {
             return expression.getType();
         } else {
-            throw new RuntimeException("no such registered expression");
+            throw new RuntimeException("no such registered expression: " + node.name);
         }
     }
 
