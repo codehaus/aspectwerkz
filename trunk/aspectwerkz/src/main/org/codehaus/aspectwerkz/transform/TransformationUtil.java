@@ -25,6 +25,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.ArrayType;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
@@ -34,7 +35,7 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
  * Holds the constants and utility method used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: TransformationUtil.java,v 1.6 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: TransformationUtil.java,v 1.7 2003-06-20 06:14:27 jboner Exp $
  */
 public final class TransformationUtil {
 
@@ -61,7 +62,7 @@ public final class TransformationUtil {
     public static final String HANDLER_JOIN_POINT_EXECUTION_METHOD = "proceed";
     public static final String GET_JOIN_POINTS_EXECUTION_METHOD = "getJoinPoints";
     public static final String UUID_EXECUTION_METHOD = "generate";
-    public static final String GET_UUID_METHOD = "getUuid";
+    public static final String GET_UUID_METHOD = HIDDEN_METHOD_PREFIX + "getUuid";
     public static final String GET_META_DATA_METHOD = HIDDEN_METHOD_PREFIX + "getMetaData";
     public static final String SET_META_DATA_METHOD = HIDDEN_METHOD_PREFIX + "addMetaData";
 
@@ -241,6 +242,16 @@ public final class TransformationUtil {
         }
         else if (type.equals("byte")) {
             bcelReturnType = Type.BYTE;
+        }
+        else if (type.endsWith("]")) {
+            int index = type.indexOf('[');
+            int dimension = Integer.parseInt(
+                    type.substring(index + 1, type.length() - 1));
+            bcelReturnType = new ArrayType(
+                    type.substring(0, index), dimension);
+        }
+        else if (type.startsWith("[")) { // TODO: is this clause really needed?
+            bcelReturnType = Type.getType(type);
         }
         else {
             bcelReturnType = new ObjectType(type);

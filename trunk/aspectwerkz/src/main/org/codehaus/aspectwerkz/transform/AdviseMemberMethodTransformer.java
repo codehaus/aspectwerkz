@@ -55,7 +55,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.6 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.7 2003-06-20 06:14:27 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -102,7 +102,6 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                     initIndexes.add(new Integer(i));
                 }
             }
-            if (initIndexes.size() == 0) throw new RuntimeException("class corrupt: no <init> found in class " + cg.getClassName());
 
             // build and sort the method lookup list
             final List methodLookupList = new ArrayList();

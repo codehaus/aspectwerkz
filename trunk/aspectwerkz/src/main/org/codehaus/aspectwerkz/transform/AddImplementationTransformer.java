@@ -50,7 +50,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.8 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.9 2003-06-20 06:14:27 jboner Exp $
  */
 public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -134,7 +134,9 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
                 throw new DefinitionException("trying to createWeaveModel introduction with null or emtpy string as name to class " + cg.getClassName() + ": definition file is not consistent");
             }
 
-            if (methodMetaDataList == null) continue; // interface introduction
+            if (methodMetaDataList == null) {
+                continue; // interface introduction
+            }
 
             for (Iterator it2 = methodMetaDataList.iterator(); it2.hasNext();) {
                 MethodMetaData methodMetaData = (MethodMetaData)it2.next();
@@ -198,11 +200,12 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
         String[] exceptionTypes = methodMetaData.getExceptionTypes();
         int modifiers = methodMetaData.getModifiers();
 
-        final Type[] bcelParameterTypes = new Type[parameters.length];
         final String[] parameterNames = new String[parameters.length];
-
+        final Type[] bcelParameterTypes = new Type[parameters.length];
         final Type bcelReturnType = TransformationUtil.getBcelType(returnType);
-        if (bcelReturnType == Type.NULL) return; // we have a constructor => skip
+        if (bcelReturnType == Type.NULL) {
+            return; // we have a constructor => skip
+        }
 
         for (int i = 0; i < parameters.length; i++) {
             bcelParameterTypes[i] = TransformationUtil.
@@ -246,7 +249,8 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
                 BasicType type = null;
                 boolean hasLongOrDouble = false;
 
-                if (bcelParameterTypes[count] instanceof ObjectType) {
+                if (bcelParameterTypes[count] instanceof ObjectType
+                        || bcelParameterTypes[count] instanceof ArrayType) {
                     // we have an object
                     il.append(factory.createLoad(Type.OBJECT, idxParam));
                     il.append(InstructionConstants.AASTORE);
