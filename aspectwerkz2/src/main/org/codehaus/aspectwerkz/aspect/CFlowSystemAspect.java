@@ -113,8 +113,10 @@ public class CFlowSystemAspect extends Aspect {
      * available)
      */
     private static ClassNameMethodMetaDataTuple getMetaData(final JoinPoint joinPoint) {
-        return new ClassNameMethodMetaDataTuple(createClassMetaData(joinPoint),
-                                                createMethodMetaData(joinPoint));
+        return new ClassNameMethodMetaDataTuple(
+                createClassMetaData(joinPoint),
+                createMethodMetaData(joinPoint)
+        );
     }
 
     /**
@@ -134,8 +136,10 @@ public class CFlowSystemAspect extends Aspect {
      */
     private static MethodMetaData createMethodMetaData(final JoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
-        return ReflectionMetaDataMaker.createMethodMetaData(signature.getName(),
-                                                            signature.getParameterTypes(),
-                                                            signature.getReturnType());
+        return ReflectionMetaDataMaker.createMethodMetaData(
+                signature.getName(),
+                signature.getParameterTypes(),
+                signature.getReturnType()
+        );
     }
 }

@@ -73,10 +73,11 @@ public class Introduction implements Mixin {
      * @param aspect     which defines this mixin
      * @param definition
      */
-    public Introduction(final String name,
-                        final Class implClass,
-                        final Aspect aspect,
-                        final IntroductionDefinition definition) {
+    public Introduction(
+            final String name,
+            final Class implClass,
+            final Aspect aspect,
+            final IntroductionDefinition definition) {
         m_name = name;
         m_aspect = aspect;
         m_definition = definition;
@@ -101,8 +102,12 @@ public class Introduction implements Mixin {
                 m_deploymentModel = model;
             }
             else {
-                throw new RuntimeException("could no create mixin from aspect: incompatible deployment models : mixin " +
-                                           DeploymentModel.getDeploymentModelAsString(model) + " with aspect " + DeploymentModel.getDeploymentModelAsString(m_aspect.___AW_getDeploymentModel()));
+                throw new RuntimeException(
+                        "could no create mixin from aspect: incompatible deployment models : mixin " +
+                        DeploymentModel.getDeploymentModelAsString(model) +
+                        " with aspect " +
+                        DeploymentModel.getDeploymentModelAsString(m_aspect.___AW_getDeploymentModel())
+                );
             }
         }
 
@@ -118,7 +123,10 @@ public class Introduction implements Mixin {
             }
         }
         catch (Exception e) {
-            throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
+            throw new RuntimeException(
+                    "could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " +
+                    e.getMessage()
+            );
         }
     }
 
@@ -130,10 +138,12 @@ public class Introduction implements Mixin {
      * @return new introduction instance
      */
     public static Introduction newInstance(final Introduction prototype, final Aspect aspect) {
-        return new Introduction(prototype.m_name,
-                                prototype.m_mixinImplClass,
-                                aspect,
-                                prototype.m_definition);
+        return new Introduction(
+                prototype.m_name,
+                prototype.m_mixinImplClass,
+                aspect,
+                prototype.m_definition
+        );
     }
 
     /**
@@ -261,7 +271,9 @@ public class Introduction implements Mixin {
      * @param className the class name of the new implementation
      */
     public void ___AW_swapImplementation(final String className) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (className == null) {
+            throw new IllegalArgumentException("class name can not be null");
+        }
         try {
             Class newImplClass = ContextClassLoader.loadClass(className);//todo pbly old impl.getClassLoader() would be safer
             m_container.swapImplementation(newImplClass);
@@ -291,7 +303,10 @@ public class Introduction implements Mixin {
             }
         }
         catch (Exception e) {
-            throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
+            throw new RuntimeException(
+                    "could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " +
+                    e.getMessage()
+            );
         }
     }
 

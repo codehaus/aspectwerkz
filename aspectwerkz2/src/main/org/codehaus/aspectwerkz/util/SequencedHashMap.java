@@ -1,9 +1,9 @@
 package org.codehaus.aspectwerkz.util;
 
 /*
- * $Header: /home/projects/aspectwerkz/scm-cvs/aspectwerkz2/src/main/org/codehaus/aspectwerkz/util/SequencedHashMap.java,v 1.5 2004-02-20 07:44:46 jboner Exp $
- * $Revision: 1.5 $
- * $Date: 2004-02-20 07:44:46 $
+ * $Header: /home/projects/aspectwerkz/scm-cvs/aspectwerkz2/src/main/org/codehaus/aspectwerkz/util/SequencedHashMap.java,v 1.6 2004-02-23 07:51:27 jboner Exp $
+ * $Revision: 1.6 $
+ * $Date: 2004-02-23 07:51:27 $
  *
  * ====================================================================
  *
@@ -147,19 +147,25 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
         }
 
         public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (obj == this) return true;
-            if (!(obj instanceof Map.Entry)) return false;
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Map.Entry)) {
+                return false;
+            }
 
             Map.Entry other = (Map.Entry)obj;
 
             // implemented per api docs for Map.Entry.equals(Object)
             return ((getKey() == null ?
-                    other.getKey() == null :
-                    getKey().equals(other.getKey())) &&
+                     other.getKey() == null :
+                     getKey().equals(other.getKey())) &&
                     (getValue() == null ?
-                    other.getValue() == null :
-                    getValue().equals(other.getValue())));
+                     other.getValue() == null :
+                     getValue().equals(other.getValue())));
         }
 
         public String toString() {
@@ -294,12 +300,16 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
         // code duplication.
         if (value == null) {
             for (Entry pos = sentinel.next; pos != sentinel; pos = pos.next) {
-                if (pos.getValue() == null) return true;
+                if (pos.getValue() == null) {
+                    return true;
+                }
             }
         }
         else {
             for (Entry pos = sentinel.next; pos != sentinel; pos = pos.next) {
-                if (value.equals(pos.getValue())) return true;
+                if (value.equals(pos.getValue())) {
+                    return true;
+                }
             }
         }
         return false;
@@ -311,7 +321,9 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
     public Object get(Object o) {
         // find entry for the specified key object
         Entry entry = (Entry)entries.get(o);
-        if (entry == null) return null;
+        if (entry == null) {
+            return null;
+        }
 
         return entry.getValue();
     }
@@ -474,7 +486,9 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      */
     private Entry removeImpl(Object key) {
         Entry e = (Entry)entries.remove(key);
-        if (e == null) return null;
+        if (e == null) {
+            return null;
+        }
         modCount++;
         removeEntry(e);
         return e;
@@ -514,10 +528,16 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      * Implements {@link Map#equals(Object)}.
      */
     public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (obj == this) return true;
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
 
-        if (!(obj instanceof Map)) return false;
+        if (!(obj instanceof Map)) {
+            return false;
+        }
 
         return entrySet().equals(((Map)obj).entrySet());
     }
@@ -647,15 +667,21 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
         return new AbstractSet() {
             // helper
             private Entry findEntry(Object o) {
-                if (o == null) return null;
-                if (!(o instanceof Map.Entry)) return null;
+                if (o == null) {
+                    return null;
+                }
+                if (!(o instanceof Map.Entry)) {
+                    return null;
+                }
 
                 Map.Entry e = (Map.Entry)o;
                 Entry entry = (Entry)entries.get(e.getKey());
-                if (entry != null && entry.equals(e))
+                if (entry != null && entry.equals(e)) {
                     return entry;
-                else
+                }
+                else {
                     return null;
+                }
             }
 
             // required impl
@@ -665,7 +691,9 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
 
             public boolean remove(Object o) {
                 Entry e = findEntry(o);
-                if (e == null) return false;
+                if (e == null) {
+                    return false;
+                }
 
                 return SequencedHashMap.this.removeImpl(e.getKey()) != null;
             }

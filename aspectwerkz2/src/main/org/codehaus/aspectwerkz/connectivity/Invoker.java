@@ -24,9 +24,10 @@ public interface Invoker {
      * @param context    the context with the users principal and credentials
      * @return the result from the invocation
      */
-    public Object invoke(final String handle,
-                         final String methodName,
-                         final Class[] paramTypes,
-                         final Object[] args,
-                         final Object context);
+    public Object invoke(
+            final String handle,
+            final String methodName,
+            final Class[] paramTypes,
+            final Object[] args,
+            final Object context);
 }

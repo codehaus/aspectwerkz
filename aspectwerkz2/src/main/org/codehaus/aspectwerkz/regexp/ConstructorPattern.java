@@ -62,8 +62,12 @@ public class ConstructorPattern extends Pattern {
      * @return true if we have a matches
      */
     public boolean matchConstructorName(final String methodName) {
-        if (methodName == null) throw new IllegalArgumentException("method name can not be null");
-        if (methodName.equals("")) return false;
+        if (methodName == null) {
+            throw new IllegalArgumentException("method name can not be null");
+        }
+        if (methodName.equals("")) {
+            return false;
+        }
         return m_constructorNamePattern.contains(methodName);
     }
 
@@ -78,7 +82,7 @@ public class ConstructorPattern extends Pattern {
             return true;
         }
         if (parameterTypes.length == 0 && m_parameterTypePatterns.size() != 0 &&
-                ((com.karneim.util.collection.regex.Pattern)m_parameterTypePatterns.get(0)).
+            ((com.karneim.util.collection.regex.Pattern)m_parameterTypePatterns.get(0)).
                 getRegEx().equals(MULTIPLE_WILDCARD_KEY)) {
             return true;
         }
@@ -270,22 +274,30 @@ public class ConstructorPattern extends Pattern {
     }
 
     protected static int hashCodeOrZeroIfNull(final Object o) {
-        if (null == o) return 19;
+        if (null == o) {
+            return 19;
+        }
         return o.hashCode();
     }
 
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ConstructorPattern)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ConstructorPattern)) {
+            return false;
+        }
         final ConstructorPattern obj = (ConstructorPattern)o;
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
-                && areEqualsOrBothNull(obj.m_constructorNamePattern, this.m_constructorNamePattern)
-                && areEqualsOrBothNull(obj.m_parameterTypePatterns, this.m_parameterTypePatterns)
-                && areEqualsOrBothNull(obj.m_abbreviations, this.m_abbreviations);
+               && areEqualsOrBothNull(obj.m_constructorNamePattern, this.m_constructorNamePattern)
+               && areEqualsOrBothNull(obj.m_parameterTypePatterns, this.m_parameterTypePatterns)
+               && areEqualsOrBothNull(obj.m_abbreviations, this.m_abbreviations);
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
-        if (null == o1) return (null == o2);
+        if (null == o1) {
+            return (null == o2);
+        }
         return o1.equals(o2);
     }
 }

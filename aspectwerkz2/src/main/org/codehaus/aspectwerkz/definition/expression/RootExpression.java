@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.definition.expression;
 
 
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @todo document

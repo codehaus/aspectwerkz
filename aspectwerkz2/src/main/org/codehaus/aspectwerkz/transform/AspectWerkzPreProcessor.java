@@ -193,9 +193,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             byte[] bytecodeBeforeLocalTransformation = null;
             if (VERBOSE) {
                 bytecodeBeforeLocalTransformation = new byte[klass.getBytecode().length];
-                System.arraycopy(klass.getBytecode(), 0,
-                                 bytecodeBeforeLocalTransformation, 0,
-                                 klass.getBytecode().length);
+                System.arraycopy(
+                        klass.getBytecode(), 0,
+                        bytecodeBeforeLocalTransformation, 0,
+                        klass.getBytecode().length
+                );
             }
 
             if (transformer instanceof Transformer) {
@@ -253,7 +255,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * @param msg the message to log
      */
     public static void log(final String msg) {
-        if (VERBOSE) System.out.println(msg);
+        if (VERBOSE) {
+            System.out.println(msg);
+        }
     }
 
     /**
@@ -263,14 +267,14 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      */
     private static boolean filter(final String klass) {
         return klass.startsWith("org.codehaus.aspectwerkz.")
-                || klass.startsWith("javassist.")
-                || klass.startsWith("com.karneim.")
-                || klass.startsWith("com.bluecast.")
-                || klass.startsWith("org.apache.bcel.")
-                || klass.startsWith("gnu.trove.")
-                || klass.startsWith("org.dom4j.")
-                || klass.startsWith("org.xml.sax.")
-                || klass.startsWith("javax.xml.parsers.");
+               || klass.startsWith("javassist.")
+               || klass.startsWith("com.karneim.")
+               || klass.startsWith("com.bluecast.")
+               || klass.startsWith("org.apache.bcel.")
+               || klass.startsWith("gnu.trove.")
+               || klass.startsWith("org.dom4j.")
+               || klass.startsWith("org.xml.sax.")
+               || klass.startsWith("javax.xml.parsers.");
     }
 
 //    public static byte[] preProcessActivateS(final Class klazz) throws Throwable {
@@ -350,9 +354,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             byte[] bytecodeBeforeLocalTransformation = null;
             if (VERBOSE) {
                 bytecodeBeforeLocalTransformation = new byte[klass.getBytecode().length];
-                System.arraycopy(klass.getBytecode(), 0,
-                                 bytecodeBeforeLocalTransformation, 0,
-                                 klass.getBytecode().length);
+                System.arraycopy(
+                        klass.getBytecode(), 0,
+                        bytecodeBeforeLocalTransformation, 0,
+                        klass.getBytecode().length
+                );
             }
 
             if (transformer instanceof Activator) {

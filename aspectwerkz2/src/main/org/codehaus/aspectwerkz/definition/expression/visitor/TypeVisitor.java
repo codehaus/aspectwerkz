@@ -47,8 +47,9 @@ public class TypeVisitor implements ExpressionParserVisitor {
         // assert RHS is of CFLOW type
         // note: anonymous type like "IN true" is assumed valid
         PointcutType rhs = getRightHS(node, this, data);
-        if (rhs != null && !rhs.equals(PointcutType.CFLOW))
+        if (rhs != null && !rhs.equals(PointcutType.CFLOW)) {
             throw new RuntimeException("IN type not valid");
+        }
         return getLeftHS(node, this, data);
     }
 
@@ -56,9 +57,11 @@ public class TypeVisitor implements ExpressionParserVisitor {
         // assert RHS is of CFLOW type
         // note: anonymous type like "IN true" is assumed valid
         PointcutType rhs = getRightHS(node, this, data);
-        if (rhs != null && !rhs.equals(PointcutType.CFLOW))
-            if (rhs != null && !rhs.equals(PointcutType.CFLOW))
+        if (rhs != null && !rhs.equals(PointcutType.CFLOW)) {
+            if (rhs != null && !rhs.equals(PointcutType.CFLOW)) {
                 throw new RuntimeException("NOT IN type not valid");
+            }
+        }
         return getLeftHS(node, this, data);
     }
 

@@ -125,7 +125,9 @@ public class StdoutPreProcessor implements ClassPreProcessor {
                     //@todo - case sensitive stuff is dangerous
                     // we could merge all aw.xml in META-INF and WEB-INF and meta-inf ...
                     Enumeration ue = loader.getResources("META-INF/MANIFEST.MF");
-                    if (ue.hasMoreElements()) log("--- in scope for " + loader);
+                    if (ue.hasMoreElements()) {
+                        log("--- in scope for " + loader);
+                    }
                     while (ue.hasMoreElements()) {
                         log("--- " + ue.nextElement().toString());
                     }
@@ -164,8 +166,9 @@ public class StdoutPreProcessor implements ClassPreProcessor {
                 while (currentParent != null) {
                     for (Iterator us = path.iterator(); us.hasNext();) {
                         URL u = (URL)us.next();
-                        if (((List)classloaders.get(currentParent)).contains(u))
+                        if (((List)classloaders.get(currentParent)).contains(u)) {
                             log("!!!! duplicate detected for " + u + " in " + current);
+                        }
                     }
                     currentParent = currentParent.getParent();
                 }
@@ -177,14 +180,16 @@ public class StdoutPreProcessor implements ClassPreProcessor {
 
     private void registerSearchPath(final ClassLoader loader, final String klass) {
         // bootCL
-        if (loader == null)
+        if (loader == null) {
             return;
+        }
 
         // locate the klass
         String klassFile = klass.replace('.', '/') + ".class";
         URL uKlass = loader.getResource(klassFile);
-        if (uKlass == null)
+        if (uKlass == null) {
             return;
+        }
 
         // retrieve the location root (jar/zip or directory)
         URL uRoot = null;
@@ -244,13 +249,19 @@ public class StdoutPreProcessor implements ClassPreProcessor {
 
     public static void main(String args[]) throws Exception {
 
-        URL u = new URL("jar:file:/C:/bea/user_projects/domains/mydomain/myserver/.wlnotdelete/gallery/gallery-rar.jar!/");
+        URL u = new URL(
+                "jar:file:/C:/bea/user_projects/domains/mydomain/myserver/.wlnotdelete/gallery/gallery-rar.jar!/"
+        );
         // differ from a "/./"
-        URL u2 = new URL("jar:file:/C:/bea/user_projects/domains/mydomain/./myserver/.wlnotdelete/gallery/gallery-rar.jar!/");
-        if (u.sameFile(u2))
+        URL u2 = new URL(
+                "jar:file:/C:/bea/user_projects/domains/mydomain/./myserver/.wlnotdelete/gallery/gallery-rar.jar!/"
+        );
+        if (u.sameFile(u2)) {
             System.out.println("same");
-        else
+        }
+        else {
             System.out.println("differ");
+        }
 
     }
 

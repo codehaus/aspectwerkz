@@ -40,7 +40,8 @@
             <p>
                 Here are some simple examples to get you going with the Model 2 - Self defined Aspects approach.
                 All examples together with ready to execute tests are to be found in the
-                source distribution under <code>src/samples/examples/attribdef</code>. They are
+                source distribution under
+                <code>src/samples/examples/attribdef</code>. They are
                 all defined using the same definition file
                 <code>samples-attribdef.xml</code>
             </p>
@@ -53,9 +54,10 @@
                 by the pointcuts mapped to the advice.
             </p>
             <p>
-                To run the example type: <code>maven aspectwerkz:attribdef:samples:caching</code>
+                To run the example type:
+                <code>maven aspectwerkz:attribdef:samples:caching</code>
             </p>
-<source><![CDATA[
+            <source><![CDATA[
 /**
  * @Aspect perInstance
  */
@@ -113,7 +115,7 @@ public class CachingAspect extends Aspect {
 
     protected Map m_cache = new HashMap();
 }
-]]></source>
+            ]]></source>
         </section>
 
         <section name="Logging">
@@ -133,7 +135,7 @@ public class CachingAspect extends Aspect {
                 to refine the metadata that defines the pointcuts where logging concern has to be bounded.
                 Note that no pointcut needs to be defined in the abstract aspect.
             </p>
-<source><![CDATA[
+            <source><![CDATA[
 /**
  * The abstract Aspect
  *
@@ -216,7 +218,7 @@ public class LoggingAspect extends AbstractLoggingAspect {
      */
     Pointcut logSet;
 }
-]]></source>
+            ]]></source>
         </section>
 
         <section name="Introductions and Mixins">
@@ -226,19 +228,24 @@ public class LoggingAspect extends AbstractLoggingAspect {
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:attribdef:samples:introduction</code><br/>
+                <code>maven aspectwerkz:attribdef:samples:introduction</code>
+                <br/>
                 The example makes use of mixin inheritance within aspect
                 inheritance. Moreover, the concrete aspect hides the introduced interface by using
-                the <i>implicit</i> interface lookup (introduced interface are looked for in the mixin
-                implementation hierarchy).<br/>
+                the
+                <i>implicit</i> interface lookup (introduced interface are looked for in the mixin
+                implementation hierarchy).
+                <br/>
                 You can also note the deployment models. The mixin is perInstance whereas the aspect is perClass,
                 thus you have to call the right methods to retrieve the target instance (since there is none attached to the aspect).
             </p>
             <p>
-                Note: if you add more than one <code>Introduction</code> to a class
-                then <b>you</b> have to make sure that the names of the methods
+                Note: if you add more than one
+                <code>Introduction</code> to a class
+                then
+                <b>you</b> have to make sure that the names of the methods
                 do not collide.
-<source><![CDATA[
+                <source><![CDATA[
 /**
  * @Aspect perClass
  */
@@ -263,10 +270,11 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
                 As you can see neither the interface nor the implementation class
                 needs to implement a certain interface or extend a certain class.
             </p>
-             <p>
-                Now you will be able to invoke your <code>Introduction</code>
+            <p>
+                Now you will be able to invoke your
+                <code>Introduction</code>
                 like this:
-<source><![CDATA[
+                <source><![CDATA[
 public class Target {
     ...
     System.out.println("The mixin says: " + ((Mixin)this).sayHello2());
@@ -281,20 +289,30 @@ public class Target {
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:attribdef:samples:cflow</code><br/>
+                <code>maven aspectwerkz:attribdef:samples:cflow</code>
+                <br/>
             </p>
             <p>
-                In this example we have two methods <code>step1</code> and <code>step2</code>
-                in which <code>step1</code> calls <code>step2</code>.
+                In this example we have two methods
+                <code>step1</code> and
+                <code>step2</code>
+                in which
+                <code>step1</code> calls
+                <code>step2</code>.
             </p>
             <p>
-                The advices at the step2 <code>@Execution</code> pointcut will only be triggered if we are in the
-                control flow of the <code>@cflow</code> pointcut called cflowPointcut, e.g. the
-                method <code>step1</code>. Otherwise the advice should be skipped.<br/>
-                Note the <code>&amp;&amp;</code> expression to express the cflow algebraic.
+                The advices at the step2
+                <code>@Execution</code> pointcut will only be triggered if we are in the
+                control flow of the
+                <code>@cflow</code> pointcut called cflowPointcut, e.g. the
+                method
+                <code>step1</code>. Otherwise the advice should be skipped.
+                <br/>
+                Note the
+                <code>&amp;&amp;</code> expression to express the cflow algebraic.
             </p>
             <p>
-<source><![CDATA[
+                <source><![CDATA[
 /**
  * @Aspect
  */
@@ -330,7 +348,8 @@ public class CFlowAspect extends Aspect {
             </p>
             <p>
                 To run the example type:
-                <code>maven aspectwerkz:attribdef:samples:exception</code><br/>
+                <code>maven aspectwerkz:attribdef:samples:exception</code>
+                <br/>
             </p>
             <p>
                 <source><![CDATA[
@@ -366,7 +385,7 @@ public class CFlowAspect extends Aspect {
             <p>
                 Here is the XML definition file for the aspect examples above.
             </p>
-<source><![CDATA[
+            <source><![CDATA[
 <!DOCTYPE aspectwerkz PUBLIC
     "-//AspectWerkz//DTD//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
@@ -384,7 +403,7 @@ public class CFlowAspect extends Aspect {
         </package>
     </system>
 </aspectwerkz>
-]]></source>
+            ]]></source>
         </section>
     </body>
 

@@ -151,13 +151,20 @@ public final class AspectManager {
      *                        DeploymentModel.PER_JVM)
      * @param loader          an optional class loader (if null it uses the context classloader)
      */
-    public void createAspect(final String name,
-                             final String aspectClassName,
-                             final int deploymentModel,
-                             final ClassLoader loader) {
-        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
-        if (aspectClassName == null) throw new IllegalArgumentException("class name can not be null");
-        if (deploymentModel < 0 || deploymentModel > 3) throw new IllegalArgumentException(deploymentModel + " is not a valid deployment model type");
+    public void createAspect(
+            final String name,
+            final String aspectClassName,
+            final int deploymentModel,
+            final ClassLoader loader) {
+        if (name == null) {
+            throw new IllegalArgumentException("aspect name can not be null");
+        }
+        if (aspectClassName == null) {
+            throw new IllegalArgumentException("class name can not be null");
+        }
+        if (deploymentModel < 0 || deploymentModel > 3) {
+            throw new IllegalArgumentException(deploymentModel + " is not a valid deployment model type");
+        }
 
         Aspect prototype = null;
         Class aspectClass = null;
@@ -193,9 +200,11 @@ public final class AspectManager {
         }
 
         // create the aspect definition
-        AspectDefinition aspectDef = new AspectDefinition(aspectClassName,
-                                                          aspectClassName,
-                                                          DeploymentModel.getDeploymentModelAsString(deploymentModel));
+        AspectDefinition aspectDef = new AspectDefinition(
+                aspectClassName,
+                aspectClassName,
+                DeploymentModel.getDeploymentModelAsString(deploymentModel)
+        );
 
         // parse the class attributes and create a definition
         m_attributeParser.parse(aspectClass, aspectDef, m_definition);
@@ -306,10 +315,15 @@ public final class AspectManager {
      * @param memberMetaData meta-data for the member
      * @return the pointcuts for this join point
      */
-    public List getExecutionPointcuts(final ClassMetaData classMetaData,
-                                      final MemberMetaData memberMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (memberMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+    public List getExecutionPointcuts(
+            final ClassMetaData classMetaData,
+            final MemberMetaData memberMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (memberMetaData == null) {
+            throw new IllegalArgumentException("method meta-data can not be null");
+        }
         initialize();
 
         Integer hashKey = Util.calculateHash(classMetaData.getName(), memberMetaData);
@@ -335,10 +349,15 @@ public final class AspectManager {
      * @param fieldMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getGetPointcuts(final ClassMetaData classMetaData,
-                                final FieldMetaData fieldMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
+    public List getGetPointcuts(
+            final ClassMetaData classMetaData,
+            final FieldMetaData fieldMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (fieldMetaData == null) {
+            throw new IllegalArgumentException("field meta-data can not be null");
+        }
 
         initialize();
 
@@ -366,10 +385,15 @@ public final class AspectManager {
      * @param fieldMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getSetPointcuts(final ClassMetaData classMetaData,
-                                final FieldMetaData fieldMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
+    public List getSetPointcuts(
+            final ClassMetaData classMetaData,
+            final FieldMetaData fieldMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (fieldMetaData == null) {
+            throw new IllegalArgumentException("field meta-data can not be null");
+        }
 
         initialize();
 
@@ -397,7 +421,9 @@ public final class AspectManager {
      * @return the pointcuts for this join point
      */
     public List getHandlerPointcuts(final ClassMetaData classMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
 
         initialize();
 
@@ -425,10 +451,15 @@ public final class AspectManager {
      * @param memberMetaData meta-data for the member
      * @return the pointcuts for this join point
      */
-    public List getCallPointcuts(final ClassMetaData classMetaData,
-                                 final MemberMetaData memberMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (memberMetaData == null) throw new IllegalArgumentException("member meta-data can not be null");
+    public List getCallPointcuts(
+            final ClassMetaData classMetaData,
+            final MemberMetaData memberMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (memberMetaData == null) {
+            throw new IllegalArgumentException("member meta-data can not be null");
+        }
 
         initialize();
 
@@ -454,10 +485,15 @@ public final class AspectManager {
      * @return
      * @TODO - ALEX what needs to be done here Alex? You put in the TODO but no explanation
      */
-    public List getCFlowExpressions(final ClassMetaData classMetaData,
-                                    final MethodMetaData methodMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+    public List getCFlowExpressions(
+            final ClassMetaData classMetaData,
+            final MethodMetaData methodMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (methodMetaData == null) {
+            throw new IllegalArgumentException("method meta-data can not be null");
+        }
 
         initialize();
 

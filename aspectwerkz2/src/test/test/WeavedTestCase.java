@@ -20,14 +20,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 /**
- * Transparently runs TestCase with an embedded online mode
- * Write a JUnit test case and extends WeaverTestCase.
+ * Transparently runs TestCase with an embedded online mode Write a JUnit test case and extends WeaverTestCase.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class WeavedTestCase extends TestCase {
 
-    /** the test runner that runs the test thru reflection in a weaving ClassLoader */
+    /**
+     * the test runner that runs the test thru reflection in a weaving ClassLoader
+     */
     private static WeaverTestRunner s_runner = new WeaverTestRunner();
 
     public WeavedTestCase() {
@@ -39,8 +40,7 @@ public class WeavedTestCase extends TestCase {
     }
 
     /**
-     * Overrides JUnit runBare() to run thru the weaverTestRunner
-     * This allow WeaverTestCase to be regular TestCase
+     * Overrides JUnit runBare() to run thru the weaverTestRunner This allow WeaverTestCase to be regular TestCase
      *
      * @throws Throwable
      */
@@ -62,7 +62,9 @@ public class WeavedTestCase extends TestCase {
      */
     public static class WeaverTestRunner {
 
-        /** Weaving classloader */
+        /**
+         * Weaving classloader
+         */
         private WeavingClassLoader cl;
 
         /**
@@ -76,26 +78,31 @@ public class WeavedTestCase extends TestCase {
                 while (st.hasMoreTokens()) {
                     paths.add((new File(st.nextToken())).getCanonicalFile().toURL());
                 }
-                cl = new WeavingClassLoader((URL[])paths.toArray(new URL[]{}), ClassLoader.getSystemClassLoader().getParent());
-            } catch (IOException e) {
+                cl =
+                new WeavingClassLoader(
+                        (URL[])paths.toArray(new URL[]{}), ClassLoader.getSystemClassLoader().getParent()
+                );
+            }
+            catch (IOException e) {
                 throw new WrappedRuntimeException(e);
             }
         }
 
         /**
-         * Runs a single test (testXX)
-         * Takes care of not using the weaving class loader is online mode or weavingClassLoader.main() is already used
-         * (might fail under JRockit MAPI)
+         * Runs a single test (testXX) Takes care of not using the weaving class loader is online mode or
+         * weavingClassLoader.main() is already used (might fail under JRockit MAPI)
          *
-         * @param testClassName test class
+         * @param testClassName  test class
          * @param testMethodName test method
          * @throws Throwable
          */
         public void runTest(String testClassName, String testMethodName) throws Throwable {
             // skip test embedded weaving if online mode / weavingClassLoader.main() is already used
-            if (cl.getClass().getClassLoader()==null || cl.getClass().getClassLoader().getClass().getName().indexOf("hook.impl.Weaving") > 0) {
+            if (cl.getClass().getClassLoader() == null ||
+                cl.getClass().getClassLoader().getClass().getName().indexOf("hook.impl.Weaving") > 0) {
                 ;
-            } else {
+            }
+            else {
                 Thread.currentThread().setContextClassLoader(cl);// needed for Aspect loading
             }
             Class testClass = Class.forName(testClassName, true, Thread.currentThread().getContextClassLoader());
@@ -109,7 +116,8 @@ public class WeavedTestCase extends TestCase {
                 testInstance = ctor.newInstance(new Object[]{});
                 Method setNameMethod = testClass.getMethod("setName", new Class[]{String.class});
                 setNameMethod.invoke(testInstance, new Object[]{testMethodName});
-            } catch (NoSuchMethodException e) {
+            }
+            catch (NoSuchMethodException e) {
                 ctor = testClass.getConstructor(new Class[]{String.class});
                 testInstance = ctor.newInstance(new Object[]{testMethodName});
             }

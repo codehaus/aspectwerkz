@@ -48,11 +48,12 @@ public class ExpressionContext {
      *
      * @param pointcutType the pointcut type
      */
-    public ExpressionContext(final PointcutType pointcutType,
-                             ExpressionNamespace namespace,
-                             ClassMetaData classMetaData,
-                             MemberMetaData memberMetaData,
-                             String exceptionType) {
+    public ExpressionContext(
+            final PointcutType pointcutType,
+            ExpressionNamespace namespace,
+            ClassMetaData classMetaData,
+            MemberMetaData memberMetaData,
+            String exceptionType) {
         m_pointcutType = pointcutType;
         m_namespace = namespace;
         m_classMetaData = classMetaData;

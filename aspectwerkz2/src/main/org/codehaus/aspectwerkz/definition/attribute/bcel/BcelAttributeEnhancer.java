@@ -81,7 +81,9 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
             String classFileName = className.replace('.', '/') + ".class";
             InputStream classAsStream = m_loader.getResourceAsStream(classFileName);
 
-            if (classAsStream == null) return false;
+            if (classAsStream == null) {
+                return false;
+            }
             ClassParser classParser = new ClassParser(classAsStream, className);
             m_javaClass = classParser.parse();
 
@@ -100,12 +102,16 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
      * @param attribute the attribute
      */
     public void insertClassAttribute(final Object attribute) {
-        if (m_classGen == null) throw new IllegalStateException("attribute enhancer is not initialized");
+        if (m_classGen == null) {
+            throw new IllegalStateException("attribute enhancer is not initialized");
+        }
         byte[] serializedAttribute = serialize(attribute);
-        Attribute attr = new Unknown(m_constantPoolGen.addUtf8("Custom"),
-                                     serializedAttribute.length,
-                                     serializedAttribute,
-                                     m_constantPoolGen.getConstantPool());
+        Attribute attr = new Unknown(
+                m_constantPoolGen.addUtf8("Custom"),
+                serializedAttribute.length,
+                serializedAttribute,
+                m_constantPoolGen.getConstantPool()
+        );
         m_classGen.addAttribute(attr);
     }
 
@@ -116,16 +122,20 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
      * @param attribute the attribute
      */
     public void insertFieldAttribute(final JavaField field, final Object attribute) {
-        if (m_classGen == null) throw new IllegalStateException("attribute enhancer is not initialized");
+        if (m_classGen == null) {
+            throw new IllegalStateException("attribute enhancer is not initialized");
+        }
         byte[] serializedAttribute = serialize(attribute);
         Field[] classfileField = m_classGen.getFields();
         for (int i = 0; i < classfileField.length; i++) {
             if (classfileField[i].getName().equals(field.getName())) {
                 FieldGen fieldGen = new FieldGen(classfileField[i], m_constantPoolGen);
-                Attribute attr = new Unknown(m_constantPoolGen.addUtf8("Custom"),
-                                             serializedAttribute.length,
-                                             serializedAttribute,
-                                             m_constantPoolGen.getConstantPool());
+                Attribute attr = new Unknown(
+                        m_constantPoolGen.addUtf8("Custom"),
+                        serializedAttribute.length,
+                        serializedAttribute,
+                        m_constantPoolGen.getConstantPool()
+                );
                 fieldGen.addAttribute(attr);
                 Field newField = fieldGen.getField();
                 m_classGen.replaceField(classfileField[i], newField);
@@ -140,7 +150,9 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
      * @param attribute the attribute
      */
     public void insertMethodAttribute(final JavaMethod method, final Object attribute) {
-        if (m_classGen == null) throw new IllegalStateException("attribute enhancer is not initialized");
+        if (m_classGen == null) {
+            throw new IllegalStateException("attribute enhancer is not initialized");
+        }
 
         byte[] serializedAttribute = serialize(attribute);
 
@@ -152,17 +164,23 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         Method[] classfileMethod = m_classGen.getMethods();
         for (int i = 0; i < classfileMethod.length; i++) {
             if (classfileMethod[i].getName().equals(method.getName())) {
-                if (Arrays.equals(methodParamTypes,
-                                  DescriptorUtil.convertToJavaFormat(classfileMethod[i].getSignature()))
+                if (Arrays.equals(
+                        methodParamTypes,
+                        DescriptorUtil.convertToJavaFormat(classfileMethod[i].getSignature())
+                )
                 ) {
-                    MethodGen methodGen = new MethodGen(classfileMethod[i],
-                                                        m_javaClass.getClassName(),
-                                                        m_constantPoolGen);
+                    MethodGen methodGen = new MethodGen(
+                            classfileMethod[i],
+                            m_javaClass.getClassName(),
+                            m_constantPoolGen
+                    );
 
-                    Attribute attr = new Unknown(m_constantPoolGen.addUtf8("Custom"),
-                                                 serializedAttribute.length,
-                                                 serializedAttribute,
-                                                 m_constantPoolGen.getConstantPool());
+                    Attribute attr = new Unknown(
+                            m_constantPoolGen.addUtf8("Custom"),
+                            serializedAttribute.length,
+                            serializedAttribute,
+                            m_constantPoolGen.getConstantPool()
+                    );
                     methodGen.addAttribute(attr);
                     Method newMethod = methodGen.getMethod();
                     m_classGen.replaceMethod(classfileMethod[i], newMethod);
@@ -190,7 +208,9 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
                 // directory does not exist create all directories in the path
                 boolean success = parentFile.mkdirs();
                 if (!success) {
-                    throw new RuntimeException("could not create dir structure needed to write file " + path + " to disk");
+                    throw new RuntimeException(
+                            "could not create dir structure needed to write file " + path + " to disk"
+                    );
                 }
             }
 
@@ -228,18 +248,26 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
      * @return nearest superclass (including itself) ' implemented interfaces
      */
     public String[] getNearestInterfacesInHierarchy(String innerClassName) {
-        if (m_loader == null) throw new IllegalStateException("attribute enhancer is not initialized");
+        if (m_loader == null) {
+            throw new IllegalStateException("attribute enhancer is not initialized");
+        }
         try {
             Class innerClass = Class.forName(innerClassName, false, m_loader);
             return getNearestInterfacesInHierarchy(innerClass);
         }
         catch (ClassNotFoundException e) {
             // should not be raised
-            throw new RuntimeException("could not load mixin for mixin implicit interface: ClassNotFoundException : " + e.getMessage());
+            throw new RuntimeException(
+                    "could not load mixin for mixin implicit interface: ClassNotFoundException : " + e.getMessage()
+            );
         }
         catch (NoClassDefFoundError er) {
             // raised if extends / implements dependancies not found
-            throw new RuntimeException("could not find dependency for mixin implicit interface: " + innerClassName + " ClassNotFoundException for " + er.getMessage());
+            throw new RuntimeException(
+                    "could not find dependency for mixin implicit interface: " + innerClassName +
+                    " ClassNotFoundException for " +
+                    er.getMessage()
+            );
         }
     }
 

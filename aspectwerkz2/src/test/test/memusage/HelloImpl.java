@@ -24,7 +24,10 @@ public class HelloImpl implements Hello {
     }
 
     public static void main(String args[]) throws Exception {
-        BCELifier bc = new BCELifier((new ClassLoaderRepository(HelloImpl.class.getClassLoader())).loadClass(HelloImpl.class.getName()), System.out);
+        BCELifier bc = new BCELifier(
+                (new ClassLoaderRepository(HelloImpl.class.getClassLoader())).loadClass(HelloImpl.class.getName()),
+                System.out
+        );
         bc.start();
     }
 }

@@ -40,7 +40,9 @@ public final class System {
     /**
      * The path to the definition file.
      */
-    private static final boolean START_REMOTE_PROXY_SERVER = "true".equals(java.lang.System.getProperty("aspectwerkz.remote.server.run", "false"));
+    private static final boolean START_REMOTE_PROXY_SERVER = "true".equals(
+            java.lang.System.getProperty("aspectwerkz.remote.server.run", "false")
+    );
 
     /**
      * The aspect manager.
@@ -68,8 +70,12 @@ public final class System {
      * @param definition the definition for the system
      */
     System(final String uuid, final SystemDefinition definition) {
-        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        if (definition == null) throw new IllegalArgumentException("definition can not be null");
+        if (uuid == null) {
+            throw new IllegalArgumentException("uuid can not be null");
+        }
+        if (definition == null) {
+            throw new IllegalArgumentException("definition can not be null");
+        }
 
         m_aspectManager = new AspectManager(uuid, definition);
 
@@ -101,7 +107,9 @@ public final class System {
      * @param metaData the classname:methodMetaData metaData
      */
     public void enteringControlFlow(final ClassNameMethodMetaDataTuple metaData) {
-        if (metaData == null) throw new IllegalArgumentException("classname:methodMetaData tuple can not be null");
+        if (metaData == null) {
+            throw new IllegalArgumentException("classname:methodMetaData tuple can not be null");
+        }
 
         Set cflowSet = (Set)m_controlFlowLog.get();
         if (cflowSet == null) {
@@ -117,7 +125,9 @@ public final class System {
      * @param metaData the classname:methodMetaData metaData
      */
     public void exitingControlFlow(final ClassNameMethodMetaDataTuple metaData) {
-        if (metaData == null) throw new IllegalArgumentException("classname:methodMetaData tuple can not be null");
+        if (metaData == null) {
+            throw new IllegalArgumentException("classname:methodMetaData tuple can not be null");
+        }
 
         Set cflowSet = (Set)m_controlFlowLog.get();
         if (cflowSet == null) {
@@ -134,7 +144,9 @@ public final class System {
      * @return boolean
      */
     public boolean isInControlFlowOf(final Expression cflowExpression) {
-        if (cflowExpression == null) throw new IllegalArgumentException("cflowExpression can not be null");
+        if (cflowExpression == null) {
+            throw new IllegalArgumentException("cflowExpression can not be null");
+        }
 
         Set cflowSet = (Set)m_controlFlowLog.get();
         if (cflowSet == null || cflowSet.isEmpty()) {
@@ -186,11 +198,12 @@ public final class System {
      */
     private Invoker getDefaultInvoker() {
         return new Invoker() {
-            public Object invoke(final String handle,
-                                 final String methodName,
-                                 final Class[] paramTypes,
-                                 final Object[] args,
-                                 final Object context) {
+            public Object invoke(
+                    final String handle,
+                    final String methodName,
+                    final Class[] paramTypes,
+                    final Object[] args,
+                    final Object context) {
                 Object result = null;
                 try {
                     final Object instance = RemoteProxy.getWrappedInstance(handle);

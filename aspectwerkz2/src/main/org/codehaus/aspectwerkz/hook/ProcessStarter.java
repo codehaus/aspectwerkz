@@ -130,16 +130,20 @@ public class ProcessStarter {
         String mainArgs = javaArgs[2];
         String options = optionArgs + " -cp " + cpArgs;
 
-        String clp = System.getProperty(CL_PRE_PROCESSOR_CLASSNAME_PROPERTY, "org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl");
+        String clp = System.getProperty(
+                CL_PRE_PROCESSOR_CLASSNAME_PROPERTY, "org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl"
+        );
 
         // if java version does not support method "VirtualMachine.canRedefineClass"
         // or if bootclasspath is forced, transform optionsArg
         if (!hasCanRedefineClass() || System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY) != null) {
             String bootDir = System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY, CL_BOOTCLASSPATH_FORCE_DEFAULT);
-            if (System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY) != null)
+            if (System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY) != null) {
                 System.out.println("HotSwap deactivated, using bootclasspath: " + bootDir);
-            else
+            }
+            else {
                 System.out.println("HotSwap not supported by this java version, using bootclasspath: " + bootDir);
+            }
 
             ClassLoaderPatcher.patchClassLoader(clp, bootDir);
 
@@ -181,7 +185,9 @@ public class ProcessStarter {
             catch (NumberFormatException nfe) {
                 ;
             }
-            VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(clp, starter.getTransport(), starter.getAddress(), secondsToWait);
+            VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(
+                    clp, starter.getTransport(), starter.getAddress(), secondsToWait
+            );
             if (vm == null) {
                 process.destroy();
             }
@@ -260,10 +266,12 @@ public class ProcessStarter {
             String current = null;
             while (st.hasMoreTokens()) {
                 current = st.nextToken();
-                if (" ".equals(current))
+                if (" ".equals(current)) {
                     sb.append("\\ ");
-                else
+                }
+                else {
                     sb.append(current);
+                }
             }
             return sb.toString();
         }
@@ -310,8 +318,11 @@ public class ProcessStarter {
                 }
             }
             else if (!foundMain && ("-cp".equals(previous) || "-classpath".equals(previous))) {
-                if (cpOptionsArgB.length() > 0)
-                    cpOptionsArgB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) ? ";" : ":");
+                if (cpOptionsArgB.length() > 0) {
+                    cpOptionsArgB.append(
+                            (System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) ? ";" : ":"
+                    );
+                }
                 cpOptionsArgB.append(removeEmbracingQuotes(args[i]));
             }
             else {

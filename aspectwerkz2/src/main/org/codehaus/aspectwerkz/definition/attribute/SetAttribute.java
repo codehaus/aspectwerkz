@@ -27,7 +27,9 @@ public class SetAttribute implements Attribute {
      * @param expression the expression
      */
     public SetAttribute(final String expression) {
-        if (expression == null || expression.equals("")) throw new IllegalArgumentException("expression is not valid for set pointcut");
+        if (expression == null || expression.equals("")) {
+            throw new IllegalArgumentException("expression is not valid for set pointcut");
+        }
         m_expression = expression;
     }
 

@@ -147,13 +147,17 @@ public class PrepareTransformer implements Transformer {
                 addPrefixToMethod(cg, method, methodLookupId, methodSequence, definition.getUuid());
 
                 // create a proxy method for the original method
-                newMethods.add(createPreparedProxyMethod(cg,
-                                                         method,
-                                                         formerName,
-                                                         formerModifiers,
-                                                         methodLookupId,
-                                                         methodSequence,
-                                                         definition.getUuid()));
+                newMethods.add(
+                        createPreparedProxyMethod(
+                                cg,
+                                method,
+                                formerName,
+                                formerModifiers,
+                                methodLookupId,
+                                methodSequence,
+                                definition.getUuid()
+                        )
+                );
 
             }
 
@@ -187,9 +191,11 @@ public class PrepareTransformer implements Transformer {
             ;//go on
         }
 
-        CtField field = new CtField(cg.getClassPool().get(TransformationUtil.THREAD_LOCAL_CLASS),
-                                    joinPointContainer,
-                                    cg);
+        CtField field = new CtField(
+                cg.getClassPool().get(TransformationUtil.THREAD_LOCAL_CLASS),
+                joinPointContainer,
+                cg
+        );
         field.setModifiers(Modifier.PRIVATE | Modifier.FINAL);
         cg.addField(field, "new " + TransformationUtil.THREAD_LOCAL_CLASS + "()");
     }
@@ -207,9 +213,11 @@ public class PrepareTransformer implements Transformer {
             ;//go on to add it
         }
 
-        CtField field = new CtField(cg.getClassPool().get(TransformationUtil.THREAD_LOCAL_CLASS),
-                                    joinPoint,
-                                    cg);
+        CtField field = new CtField(
+                cg.getClassPool().get(TransformationUtil.THREAD_LOCAL_CLASS),
+                joinPoint,
+                cg
+        );
         field.setModifiers(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC);
         cg.addField(field, "new " + TransformationUtil.THREAD_LOCAL_CLASS + "()");
     }
@@ -222,9 +230,10 @@ public class PrepareTransformer implements Transformer {
      * @param mg             the MethodGen
      * @param methodSequence the methods sequence number
      */
-    private void addStaticJoinPointField(final CtClass cg,
-                                         final CtMethod mg,
-                                         final int methodSequence) throws NotFoundException, CannotCompileException {
+    private void addStaticJoinPointField(
+            final CtClass cg,
+            final CtMethod mg,
+            final int methodSequence) throws NotFoundException, CannotCompileException {
         final String joinPoint = getJoinPointName(mg, methodSequence);
 
         try {
@@ -235,9 +244,11 @@ public class PrepareTransformer implements Transformer {
             ;//go on to add it
         }
 
-        CtField field = new CtField(cg.getClassPool().get(TransformationUtil.THREAD_LOCAL_CLASS),
-                                    joinPoint,
-                                    cg);
+        CtField field = new CtField(
+                cg.getClassPool().get(TransformationUtil.THREAD_LOCAL_CLASS),
+                joinPoint,
+                cg
+        );
         field.setModifiers(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC);
         cg.addField(field, "new " + TransformationUtil.THREAD_LOCAL_CLASS + "()");//TODO jcache
     }
@@ -254,9 +265,11 @@ public class PrepareTransformer implements Transformer {
     private void createStaticClassField(final CtClass cg) throws NotFoundException, CannotCompileException {
         final String className = cg.getName();
 
-        CtField field = new CtField(cg.getClassPool().get("java.lang.Class"),
-                                    TransformationUtil.STATIC_CLASS_FIELD,
-                                    cg);
+        CtField field = new CtField(
+                cg.getClassPool().get("java.lang.Class"),
+                TransformationUtil.STATIC_CLASS_FIELD,
+                cg
+        );
         field.setModifiers(Modifier.STATIC | Modifier.PRIVATE);
         cg.addField(field, "java.lang.Class.forName(\"" + className + "\")");
     }
@@ -270,11 +283,12 @@ public class PrepareTransformer implements Transformer {
      * @param uuid           the definition UUID
      * @return the modified method
      */
-    private void addPrefixToMethod(final CtClass cg,
-                                   final CtMethod mg,
-                                   int methodLookupId,
-                                   final int methodSequence,
-                                   final String uuid) {
+    private void addPrefixToMethod(
+            final CtClass cg,
+            final CtMethod mg,
+            int methodLookupId,
+            final int methodSequence,
+            final String uuid) {
 
         // change the method access flags (should always be set to protected)
         int accessFlags = mg.getModifiers();
@@ -311,13 +325,14 @@ public class PrepareTransformer implements Transformer {
      * @param controllerClassName the class name of the controller class to use
      * @return the proxy method
      */
-    private CtMethod createPreparedProxyMethod(final CtClass cg,
-                                               final CtMethod originalMethod,
-                                               String formerName,
-                                               int formerModifiers,
-                                               final int methodId,
-                                               final int methodSequence,
-                                               final String uuid) throws NotFoundException, CannotCompileException {
+    private CtMethod createPreparedProxyMethod(
+            final CtClass cg,
+            final CtMethod originalMethod,
+            String formerName,
+            int formerModifiers,
+            final int methodId,
+            final int methodSequence,
+            final String uuid) throws NotFoundException, CannotCompileException {
         String joinPoint = getJoinPointName(originalMethod, methodSequence);
 
         StringBuffer body = new StringBuffer("{");
@@ -330,32 +345,37 @@ public class PrepareTransformer implements Transformer {
         CtMethod method = null;
         if (Modifier.isStatic(originalMethod.getModifiers())) {
             // j bug
-            method = JavassistHelper.makeStatic(originalMethod.getReturnType(),
-                                                formerName,
-                                                originalMethod.getParameterTypes(),
-                                                originalMethod.getExceptionTypes(),
-                                                body.toString(),
-                                                cg);
+            method = JavassistHelper.makeStatic(
+                    originalMethod.getReturnType(),
+                    formerName,
+                    originalMethod.getParameterTypes(),
+                    originalMethod.getExceptionTypes(),
+                    body.toString(),
+                    cg
+            );
         }
         else {
-            method = CtNewMethod.make(originalMethod.getReturnType(),
-                                      formerName,
-                                      originalMethod.getParameterTypes(),
-                                      originalMethod.getExceptionTypes(),
-                                      body.toString(),
-                                      cg);
+            method = CtNewMethod.make(
+                    originalMethod.getReturnType(),
+                    formerName,
+                    originalMethod.getParameterTypes(),
+                    originalMethod.getExceptionTypes(),
+                    body.toString(),
+                    cg
+            );
         }
         method.setModifiers(formerModifiers);
         //cg.addMethod(method); // done later
         return method;
     }
 
-    private CtMethod createProxyMethodWithContainer(final CtClass cg,
-                                                    final CtMethod originalMethod,
-                                                    final int methodId,
-                                                    final int methodSequence,
-                                                    final String uuid,
-                                                    final String controllerClassName) throws NotFoundException, CannotCompileException {
+    private CtMethod createProxyMethodWithContainer(
+            final CtClass cg,
+            final CtMethod originalMethod,
+            final int methodId,
+            final int methodSequence,
+            final String uuid,
+            final String controllerClassName) throws NotFoundException, CannotCompileException {
 
         String joinPoint = getJoinPointName(originalMethod, methodSequence);
 
@@ -389,13 +409,15 @@ public class PrepareTransformer implements Transformer {
             body.append("return ($r)smjp.proceed();");
         }
         body.append("}");
-        CtMethod method = JavassistHelper.makeStatic(//CtNewMethod.make boggus with static method
+        CtMethod method = JavassistHelper.makeStatic(
+                //CtNewMethod.make boggus with static method
                 originalMethod.getReturnType(),
                 originalMethod.getName(), //TODO rename correctly handled by j ?
                 originalMethod.getParameterTypes(),
                 originalMethod.getExceptionTypes(),
                 body.toString(),
-                cg);
+                cg
+        );
         method.setModifiers(originalMethod.getModifiers());
         //cg.addMethod(method); // done later
         return method;
@@ -430,9 +452,10 @@ public class PrepareTransformer implements Transformer {
      * @param cg            the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition,
-                                final ClassMetaData classMetaData,
-                                final CtClass cg) throws NotFoundException {
+    private boolean classFilter(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final CtClass cg) throws NotFoundException {
         if (cg.isInterface() || cg.getSuperclass().getName().equals("org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
             //TODO complex inherit not supported
@@ -459,18 +482,19 @@ public class PrepareTransformer implements Transformer {
      * @param method         the method to filter
      * @return boolean
      */
-    private boolean methodFilter(final SystemDefinition definition,
-                                 final ClassMetaData classMetaData,
-                                 final MethodMetaData methodMetaData,
-                                 final CtMethod method) {
+    private boolean methodFilter(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final MethodMetaData methodMetaData,
+            final CtMethod method) {
         if (Modifier.isAbstract(method.getModifiers()) || Modifier.isNative(method.getModifiers()) ||
-                method.getName().equals("<init>") ||
-                method.getName().equals("<clinit>") ||
-                method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
-                method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
-                method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            method.getName().equals("<init>") ||
+            method.getName().equals("<clinit>") ||
+            method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
+            method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
+            method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
+            method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
+            method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
         }
         return false;
@@ -483,8 +507,9 @@ public class PrepareTransformer implements Transformer {
      * @param methodSequence the method sequence
      * @return the name of the join point
      */
-    private String getJoinPointName(final CtMethod method,
-                                    final int methodSequence) {
+    private String getJoinPointName(
+            final CtMethod method,
+            final int methodSequence) {
         final StringBuffer joinPoint = new StringBuffer();
         joinPoint.append(TransformationUtil.STATIC_METHOD_JOIN_POINT_PREFIX);
         joinPoint.append(method.getName());
@@ -501,10 +526,11 @@ public class PrepareTransformer implements Transformer {
      * @param className      FQN of the declaring class
      * @return the name of the join point
      */
-    private static String getPrefixedMethodName(final CtMethod method,
-                                                int methodLookupId,
-                                                final int methodSequence,
-                                                final String className) {
+    private static String getPrefixedMethodName(
+            final CtMethod method,
+            int methodLookupId,
+            final int methodSequence,
+            final String className) {
         final StringBuffer methodName = new StringBuffer();
         methodName.append(TransformationUtil.ORIGINAL_METHOD_PREFIX);
         methodName.append(methodLookupId);

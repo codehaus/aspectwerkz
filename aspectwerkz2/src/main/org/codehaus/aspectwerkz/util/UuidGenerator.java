@@ -40,7 +40,9 @@ public class UuidGenerator {
      * @return a unique uuid
      */
     public static String generate(Object obj) {
-        if (!s_initialized) initialize(obj);
+        if (!s_initialized) {
+            initialize(obj);
+        }
 
         long timeNow = System.currentTimeMillis();
 

@@ -119,10 +119,11 @@ public class ExpressionNamespace {
      * @param type             the pointcut type
      * @return the expression (needs to be casted)
      */
-    public Expression createExpression(final String expression,
-                                       final String packageNamespace,
-                                       final String name,
-                                       final PointcutType type) {
+    public Expression createExpression(
+            final String expression,
+            final String packageNamespace,
+            final String name,
+            final PointcutType type) {
         Expression expr = null;
         if (!looksLikeLeaf(expression)) {
             expr = new ExpressionExpression(this, expression, name);
@@ -162,9 +163,10 @@ public class ExpressionNamespace {
      * @param name             the name of the pointcut
      * @return the expression
      */
-    public ExecutionExpression createExecutionExpression(final String expression,
-                                                         final String packageNamespace,
-                                                         final String name) {
+    public ExecutionExpression createExecutionExpression(
+            final String expression,
+            final String packageNamespace,
+            final String name) {
         return new ExecutionExpression(this, expression, packageNamespace, name);
     }
 
@@ -176,9 +178,10 @@ public class ExpressionNamespace {
      * @param name             the name of the pointcut
      * @return the expression
      */
-    public CallExpression createCallExpression(final String expression,
-                                               final String packageNamespace,
-                                               final String name) {
+    public CallExpression createCallExpression(
+            final String expression,
+            final String packageNamespace,
+            final String name) {
         return new CallExpression(this, expression, packageNamespace, name);
     }
 
@@ -190,9 +193,10 @@ public class ExpressionNamespace {
      * @param name             the name of the pointcut
      * @return the expression
      */
-    public SetExpression createSetExpression(final String expression,
-                                             final String packageNamespace,
-                                             final String name) {
+    public SetExpression createSetExpression(
+            final String expression,
+            final String packageNamespace,
+            final String name) {
         return new SetExpression(this, expression, packageNamespace, name);
     }
 
@@ -204,9 +208,10 @@ public class ExpressionNamespace {
      * @param name             the name of the pointcut
      * @return the expression
      */
-    public GetExpression createGetExpression(final String expression,
-                                             final String packageNamespace,
-                                             final String name) {
+    public GetExpression createGetExpression(
+            final String expression,
+            final String packageNamespace,
+            final String name) {
         return new GetExpression(this, expression, packageNamespace, name);
     }
 
@@ -218,9 +223,10 @@ public class ExpressionNamespace {
      * @param name             the name of the pointcut
      * @return the expression
      */
-    public CflowExpression createCflowExpression(final String expression,
-                                                 final String packageNamespace,
-                                                 final String name) {
+    public CflowExpression createCflowExpression(
+            final String expression,
+            final String packageNamespace,
+            final String name) {
         return new CflowExpression(this, expression, packageNamespace, name);
     }
 
@@ -232,9 +238,10 @@ public class ExpressionNamespace {
      * @param name             the name of the pointcut
      * @return the expression
      */
-    public HandlerExpression createHandlerExpression(final String expression,
-                                                     final String packageNamespace,
-                                                     final String name) {
+    public HandlerExpression createHandlerExpression(
+            final String expression,
+            final String packageNamespace,
+            final String name) {
         return new HandlerExpression(this, expression, packageNamespace, name);
     }
 
@@ -246,9 +253,10 @@ public class ExpressionNamespace {
      * @param name             the name of the pointcut
      * @return the expression
      */
-    public ClassExpression createClassExpression(final String expression,
-                                                 final String packageNamespace,
-                                                 final String name) {
+    public ClassExpression createClassExpression(
+            final String expression,
+            final String packageNamespace,
+            final String name) {
         return new ClassExpression(this, expression, packageNamespace, name);
     }
 
@@ -277,10 +285,11 @@ public class ExpressionNamespace {
      * @param type
      * @return the expression
      */
-    public Expression registerExpression(final String expression,
-                                         final String packageNamespace,
-                                         final String name,
-                                         final PointcutType type) {
+    public Expression registerExpression(
+            final String expression,
+            final String packageNamespace,
+            final String name,
+            final PointcutType type) {
         return registerExpression(createExpression(expression, packageNamespace, name, type));
     }
 

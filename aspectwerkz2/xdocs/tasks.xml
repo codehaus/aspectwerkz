@@ -10,7 +10,8 @@
         <section name="Tasks">
             <p>
                 <code>AspectWerkz</code> now uses JIRA for issue tracking.
-                Browse to <a href="http://jira.codehaus.org/secure/BrowseProject.jspa?id=10105">this page</a>
+                Browse to
+                <a href="http://jira.codehaus.org/secure/BrowseProject.jspa?id=10105">this page</a>
                 to view the task list and other issues.
             </p>
             <p>

@@ -35,7 +35,9 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * @return a <code>ClassMetaData</code> instance.
      */
     public static ClassMetaData createClassMetaData(final JavaClass javaClass) {
-        if (javaClass == null) throw new IllegalArgumentException("class can not be null");
+        if (javaClass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
 
         if (s_classMetaDataCache.containsKey(javaClass.getClassName())) {
             return (ClassMetaData)s_classMetaDataCache.get(javaClass.getClassName());
@@ -97,7 +99,9 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * @return a <code>InterfaceMetaData</code> instance.
      */
     private static InterfaceMetaData createInterfaceMetaData(final JavaClass javaClass) {
-        if (javaClass == null) throw new IllegalArgumentException("class can not be null");
+        if (javaClass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
 
         if (s_interfaceMetaDataCache.containsKey(javaClass.getClassName())) {
             return (InterfaceMetaData)s_interfaceMetaDataCache.get(javaClass.getClassName());
@@ -132,7 +136,9 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * @return a <code>MethodMetaData</code> instance.
      */
     public static MethodMetaData createMethodMetaData(final Method method) {
-        if (method == null) throw new IllegalArgumentException("method can not be null");
+        if (method == null) {
+            throw new IllegalArgumentException("method can not be null");
+        }
 
         MethodMetaData methodMetaData = new MethodMetaData();
         methodMetaData.setName(method.getName());
@@ -172,10 +178,15 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * @param cpg         is the constant pool generator.
      * @return a <code>MethodMetaData</code> instance.
      */
-    public static MethodMetaData createMethodMetaData(final InvokeInstruction instruction,
-                                                      final ConstantPoolGen cpg) {
-        if (instruction == null) throw new IllegalArgumentException("instruction can not be null");
-        if (cpg == null) throw new IllegalArgumentException("constant pool can not be null");
+    public static MethodMetaData createMethodMetaData(
+            final InvokeInstruction instruction,
+            final ConstantPoolGen cpg) {
+        if (instruction == null) {
+            throw new IllegalArgumentException("instruction can not be null");
+        }
+        if (cpg == null) {
+            throw new IllegalArgumentException("constant pool can not be null");
+        }
 
         MethodMetaData methodMetaData = new MethodMetaData();
 
@@ -201,7 +212,9 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * @return a <code>FieldMetaData</code> instance.
      */
     private static FieldMetaData createFieldMetaData(final Field field) {
-        if (field == null) throw new IllegalArgumentException("field can not be null");
+        if (field == null) {
+            throw new IllegalArgumentException("field can not be null");
+        }
 
         FieldMetaData fieldMetaData = new FieldMetaData();
         fieldMetaData.setName(field.getName());
@@ -217,10 +230,15 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * @param cpg         the constant pool
      * @return the field meta-data
      */
-    public static FieldMetaData createFieldMetaData(final FieldInstruction instruction,
-                                                    final ConstantPoolGen cpg) {
-        if (instruction == null) throw new IllegalArgumentException("instruction can not be null");
-        if (cpg == null) throw new IllegalArgumentException("constant pool can not be null");
+    public static FieldMetaData createFieldMetaData(
+            final FieldInstruction instruction,
+            final ConstantPoolGen cpg) {
+        if (instruction == null) {
+            throw new IllegalArgumentException("instruction can not be null");
+        }
+        if (cpg == null) {
+            throw new IllegalArgumentException("constant pool can not be null");
+        }
 
         FieldMetaData fieldMetaData = new FieldMetaData();
         fieldMetaData.setName(instruction.getFieldName(cpg));

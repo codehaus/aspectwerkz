@@ -69,20 +69,35 @@ public class AdviceDefinition {
      * @param methodIndex     the method index
      * @param deploymentModel the deployment model
      */
-    public AdviceDefinition(final String name,
-                            final String aspectName,
-                            final String aspectClassName,
-                            final Expression expression,
-                            final Method method,
-                            final int methodIndex,
-                            final AspectDefinition aspectDef) {
-        if (name == null) throw new IllegalArgumentException("name can not be null");
-        if (aspectName == null) throw new IllegalArgumentException("aspect name can not be null");
-        if (aspectClassName == null) throw new IllegalArgumentException("class name can not be null");
-        if (expression == null) throw new IllegalArgumentException("expression can not be null");
-        if (method == null) throw new IllegalArgumentException("method can not be null");
-        if (methodIndex < 0) throw new IllegalArgumentException("method index is not valid");
-        if (aspectDef == null) throw new IllegalArgumentException("aspect definition can not be null");
+    public AdviceDefinition(
+            final String name,
+            final String aspectName,
+            final String aspectClassName,
+            final Expression expression,
+            final Method method,
+            final int methodIndex,
+            final AspectDefinition aspectDef) {
+        if (name == null) {
+            throw new IllegalArgumentException("name can not be null");
+        }
+        if (aspectName == null) {
+            throw new IllegalArgumentException("aspect name can not be null");
+        }
+        if (aspectClassName == null) {
+            throw new IllegalArgumentException("class name can not be null");
+        }
+        if (expression == null) {
+            throw new IllegalArgumentException("expression can not be null");
+        }
+        if (method == null) {
+            throw new IllegalArgumentException("method can not be null");
+        }
+        if (methodIndex < 0) {
+            throw new IllegalArgumentException("method index is not valid");
+        }
+        if (aspectDef == null) {
+            throw new IllegalArgumentException("aspect definition can not be null");
+        }
 
         m_name = name;
         m_aspectName = aspectName;

@@ -38,9 +38,10 @@ public class CompiledPatternTuple implements Serializable {
      * @param pattern      the pattern
      * @param hierarchical the hierarchical flag
      */
-    public CompiledPatternTuple(final ClassPattern classPattern,
-                                final Pattern pattern,
-                                final boolean hierarchical) {
+    public CompiledPatternTuple(
+            final ClassPattern classPattern,
+            final Pattern pattern,
+            final boolean hierarchical) {
         m_classPattern = classPattern;
         m_pattern = pattern;
         m_hierarchical = hierarchical;
@@ -75,12 +76,12 @@ public class CompiledPatternTuple implements Serializable {
 
     public String toString() {
         return '['
-                + super.toString()
-                + ": "
-                + ',' + m_pattern.toString()
-                + ',' + m_classPattern.m_pattern
-                + ',' + m_hierarchical
-                + ']';
+               + super.toString()
+               + ": "
+               + ',' + m_pattern.toString()
+               + ',' + m_classPattern.m_pattern
+               + ',' + m_hierarchical
+               + ']';
     }
 
     public int hashCode() {
@@ -91,20 +92,28 @@ public class CompiledPatternTuple implements Serializable {
     }
 
     protected static int hashCodeOrZeroIfNull(final Object o) {
-        if (null == o) return 19;
+        if (null == o) {
+            return 19;
+        }
         return o.hashCode();
     }
 
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CompiledPatternTuple)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof CompiledPatternTuple)) {
+            return false;
+        }
         final CompiledPatternTuple obj = (CompiledPatternTuple)o;
         return areEqualsOrBothNull(obj.m_classPattern, this.m_classPattern)
-                && areEqualsOrBothNull(obj.m_pattern, this.m_pattern);
+               && areEqualsOrBothNull(obj.m_pattern, this.m_pattern);
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
-        if (null == o1) return (null == o2);
+        if (null == o1) {
+            return (null == o2);
+        }
         return o1.equals(o2);
     }
 }

@@ -33,7 +33,9 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * @return a <code>ClassMetaData</code> instance.
      */
     public static ClassMetaData createClassMetaData(final CtClass javaClass) {
-        if (javaClass == null) throw new IllegalArgumentException("class can not be null");
+        if (javaClass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
 
         if (s_classMetaDataCache.containsKey(javaClass.getName())) {
             return (ClassMetaData)s_classMetaDataCache.get(javaClass.getName());
@@ -104,7 +106,9 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * @return a <code>InterfaceMetaData</code> instance.
      */
     private static InterfaceMetaData createInterfaceMetaData(final CtClass javaClass) {
-        if (javaClass == null) throw new IllegalArgumentException("class can not be null");
+        if (javaClass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
 
         if (s_interfaceMetaDataCache.containsKey(javaClass.getName())) {
             return (InterfaceMetaData)s_interfaceMetaDataCache.get(javaClass.getName());
@@ -139,7 +143,9 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * @return a <code>MethodMetaData</code> instance.
      */
     public static MethodMetaData createMethodMetaData(final CtMethod method) {
-        if (method == null) throw new IllegalArgumentException("method can not be null");
+        if (method == null) {
+            throw new IllegalArgumentException("method can not be null");
+        }
 
         try {
             MethodMetaData methodMetaData = new MethodMetaData();
@@ -181,7 +187,9 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * @return a <code>FieldMetaData</code> instance.
      */
     public static FieldMetaData createFieldMetaData(final CtField field) {
-        if (field == null) throw new IllegalArgumentException("field can not be null");
+        if (field == null) {
+            throw new IllegalArgumentException("field can not be null");
+        }
 
         try {
             FieldMetaData fieldMetaData = new FieldMetaData();
@@ -202,7 +210,9 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * @return a <code>ConstructorMetaData</code> instance.
      */
     public static ConstructorMetaData createConstructorMetaData(CtConstructor constructor) {
-        if (constructor == null) throw new IllegalArgumentException("constructor can not be null");
+        if (constructor == null) {
+            throw new IllegalArgumentException("constructor can not be null");
+        }
 
         try {
             ConstructorMetaData constructorMetaData = new ConstructorMetaData();

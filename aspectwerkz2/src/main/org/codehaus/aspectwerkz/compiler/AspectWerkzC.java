@@ -248,7 +248,8 @@ public class AspectWerkzC {
             File[] classes = sourceFile.listFiles();
             for (int i = 0; i < classes.length; i++) {
                 if (classes[i].isDirectory() && !(BACKUP_DIR.equals(classes[i].getName()))) {
-                    String packaging = (prefixPackage != null) ? prefixPackage + "." + classes[i].getName() : classes[i].getName();
+                    String packaging = (prefixPackage != null) ?
+                                       prefixPackage + "." + classes[i].getName() : classes[i].getName();
                     doCompile(classes[i], packaging);
                 }
                 else if (classes[i].getName().toLowerCase().endsWith(".class")) {
@@ -284,15 +285,17 @@ public class AspectWerkzC {
             byte[] buffer = new byte[1024];
             while (in.available() > 0) {
                 int length = in.read(buffer);
-                if (length == -1)
+                if (length == -1) {
                     break;
+                }
                 bos.write(buffer, 0, length);
             }
 
             // rebuild className
             String className = file.getName().substring(0, file.getName().length() - 6);
-            if (packaging != null)
+            if (packaging != null) {
                 className = packaging + '.' + className;
+            }
 
             // transform
             byte[] transformed = null;
@@ -310,7 +313,9 @@ public class AspectWerkzC {
 
             // verify modified class
             if (verify) {
-                URLClassLoader verifier = new VerifierClassLoader(compilationLoader.getURLs(), ClassLoader.getSystemClassLoader());
+                URLClassLoader verifier = new VerifierClassLoader(
+                        compilationLoader.getURLs(), ClassLoader.getSystemClassLoader()
+                );
                 try {
                     utility.log("   [verify] " + className);
                     Class.forName(className, false, verifier);
@@ -352,8 +357,9 @@ public class AspectWerkzC {
 
         // create an empty jar target.jar.aspectwerkzc
         File workingFile = new File(file.getAbsolutePath() + ".aspectwerkzc");
-        if (workingFile.exists())
+        if (workingFile.exists()) {
             workingFile.delete();
+        }
 
         ZipFile zip = null;
         ZipOutputStream zos = null;
@@ -370,8 +376,9 @@ public class AspectWerkzC {
                 byte[] buffer = new byte[1024];
                 while (in.available() > 0) {
                     int length = in.read(buffer);
-                    if (length == -1)
+                    if (length == -1) {
                         break;
+                    }
                     bos.write(buffer, 0, length);
                 }
                 in.close();
@@ -506,7 +513,7 @@ public class AspectWerkzC {
     public static boolean isJarFile(File source) {
         return (source.isFile()
                 && (source.getName().toLowerCase().endsWith(".jar")
-                || source.getName().toLowerCase().endsWith(".zip"))
+                    || source.getName().toLowerCase().endsWith(".zip"))
                );
     }
 
@@ -516,8 +523,12 @@ public class AspectWerkzC {
     public static void doHelp() {
         System.out.println("--- AspectWerkzC compiler ---");
         System.out.println("Usage:");
-        System.out.println("java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify] <ClassPreProcessorImpl> <target 1> .. <target n>");
-        System.out.println("  <ClassPreProcessorImpl> : full qualified name of the ClassPreProcessor implementation (must be in classpath)");
+        System.out.println(
+                "java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify] <ClassPreProcessorImpl> <target 1> .. <target n>"
+        );
+        System.out.println(
+                "  <ClassPreProcessorImpl> : full qualified name of the ClassPreProcessor implementation (must be in classpath)"
+        );
         System.out.println("  <target i> : exploded dir, jar, zip files to compile");
     }
 
@@ -545,10 +556,15 @@ public class AspectWerkzC {
 
         // set preprocessor
         try {
-            compiler.setPreprocessor(System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT));
+            compiler.setPreprocessor(
+                    System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT)
+            );
         }
         catch (CompileException e) {
-            System.err.println("Cannot instantiate ClassPreProcessor: " + System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT));
+            System.err.println(
+                    "Cannot instantiate ClassPreProcessor: " +
+                    System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT)
+            );
             e.printStackTrace();
             System.exit(-1);
         }
@@ -560,16 +576,23 @@ public class AspectWerkzC {
 
         // analyse arguments first to build the compilation classpath
         for (int i = 0; i < args.length; i++) {
-            if ("-verbose".equals(args[i]))
+            if ("-verbose".equals(args[i])) {
                 compiler.setVerbose(true);
-            else if ("-haltOnError".equals(args[i]))
+            }
+            else if ("-haltOnError".equals(args[i])) {
                 compiler.setHaltOnError(true);
-            else if ("-verify".equals(args[i]))
+            }
+            else if ("-verify".equals(args[i])) {
                 compiler.setVerify(true);
+            }
             else if ("-cp".equals(args[i])) {
-                if (i == args.length - 1)
+                if (i == args.length - 1) {
                     ;//ignore ending -cp with no entry
-                StringTokenizer pathSeparator = new StringTokenizer(args[++i], (System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) ? ";" : ":");
+                }
+                StringTokenizer pathSeparator = new StringTokenizer(
+                        args[++i],
+                        (System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) ? ";" : ":"
+                );
                 while (pathSeparator.hasMoreTokens()) {
                     File path = new File(pathSeparator.nextToken());
                     paths.add(path);

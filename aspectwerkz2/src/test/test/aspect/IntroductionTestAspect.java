@@ -96,7 +96,8 @@ public class IntroductionTestAspect extends Aspect {
             return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
         }
 
-        public int variousArguments2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
+        public int variousArguments2(float f, int i, String str1, Object o, long l, String str2)
+                throws RuntimeException {
             return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
         }
 
@@ -191,7 +192,8 @@ public class IntroductionTestAspect extends Aspect {
             return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
         }
 
-        public int variousArguments2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
+        public int variousArguments2(float f, int i, String str1, Object o, long l, String str2)
+                throws RuntimeException {
             return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
         }
 

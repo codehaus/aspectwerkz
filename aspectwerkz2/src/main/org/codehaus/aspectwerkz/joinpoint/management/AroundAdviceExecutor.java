@@ -68,10 +68,11 @@ public class AroundAdviceExecutor {
      * @param cflowExpressions
      * @param system
      */
-    public AroundAdviceExecutor(final IndexTuple[] adviceIndexes,
-                                final List cflowExpressions,
-                                final System system,
-                                final int joinPointType) {
+    public AroundAdviceExecutor(
+            final IndexTuple[] adviceIndexes,
+            final List cflowExpressions,
+            final System system,
+            final int joinPointType) {
         m_adviceIndexes = adviceIndexes;
         m_cflowExpressions = cflowExpressions;
         m_system = system;

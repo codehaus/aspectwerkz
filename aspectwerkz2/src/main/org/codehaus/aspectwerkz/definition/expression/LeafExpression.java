@@ -58,11 +58,12 @@ public abstract class LeafExpression extends Expression {
      * @param pointcutName
      * @param type
      */
-    protected LeafExpression(final ExpressionNamespace namespace,
-                             final String expression,
-                             final String packageNamespace,
-                             final String pointcutName,
-                             final PointcutType type) {
+    protected LeafExpression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String packageNamespace,
+            final String pointcutName,
+            final PointcutType type) {
         super(namespace, expression, packageNamespace, pointcutName, type);
         compilePattern();
     }
@@ -111,8 +112,9 @@ public abstract class LeafExpression extends Expression {
      * @return true if match
      */
     public boolean matchInOrNotIn(final ClassMetaData classMetaData) {
-        if (!m_type.equals(PointcutType.CFLOW))
+        if (!m_type.equals(PointcutType.CFLOW)) {
             throw new RuntimeException("matchIn called on non CflowExpression " + m_type.toString());
+        }
         return match(classMetaData);
     }
 
@@ -123,8 +125,9 @@ public abstract class LeafExpression extends Expression {
      * @return true if match
      */
     public boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
-        if (!m_type.equals(PointcutType.CFLOW))
+        if (!m_type.equals(PointcutType.CFLOW)) {
             throw new RuntimeException("matchIn called on non CflowExpression " + m_type.toString());
+        }
         return match(classMetaData, memberMetaData);
     }
 
@@ -141,9 +144,10 @@ public abstract class LeafExpression extends Expression {
      * @todo handles the special case with ThrowsExpressions which needs to match on exception type (which breaks clean
      * the API), how to handle this in a cleaner way?
      */
-    public boolean match(final ClassMetaData classMetaData,
-                         final MemberMetaData memberMetaData,
-                         final String exceptionType) {
+    public boolean match(
+            final ClassMetaData classMetaData,
+            final MemberMetaData memberMetaData,
+            final String exceptionType) {
         return match(classMetaData, memberMetaData);
     }
 

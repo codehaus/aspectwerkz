@@ -16,7 +16,10 @@ import org.codehaus.aspectwerkz.compiler.VerifierClassLoader;
 
 public class CustomClassLoaderTest extends TestCase {
 
-    private static String targetPath = CustomClassLoaderTest.class.getClassLoader().getResource("test/clapp/Target.class").toString();
+    private static String targetPath = CustomClassLoaderTest.class.getClassLoader().getResource(
+            "test/clapp/Target.class"
+    )
+            .toString();
 
     static {
         targetPath = targetPath.substring(0, targetPath.indexOf("test/clapp/Target.class"));
@@ -28,8 +31,10 @@ public class CustomClassLoaderTest extends TestCase {
      */
     public void testCustomClassLoaderWeaving() {
         try {
-            VerifierClassLoader cl = new VerifierClassLoader(new URL[]{new URL(targetPath)},
-                                                             ClassLoader.getSystemClassLoader());
+            VerifierClassLoader cl = new VerifierClassLoader(
+                    new URL[]{new URL(targetPath)},
+                    ClassLoader.getSystemClassLoader()
+            );
 
             Class target = cl.loadClass("test.clapp.Target");
             assertEquals(target.getClassLoader().hashCode(), cl.hashCode());

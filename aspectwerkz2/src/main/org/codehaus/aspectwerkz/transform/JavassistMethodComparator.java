@@ -62,11 +62,17 @@ public final class JavassistMethodComparator implements Comparator {
             }
             final CtClass[] args1 = m1.getParameterTypes();
             final CtClass[] args2 = m2.getParameterTypes();
-            if (args1.length < args2.length) return -1;
-            if (args1.length > args2.length) return 1;
+            if (args1.length < args2.length) {
+                return -1;
+            }
+            if (args1.length > args2.length) {
+                return 1;
+            }
             for (int i = 0; i < args1.length; i++) {
                 int result = args1[i].getName().compareTo(args2[i].getName());
-                if (result != 0) return result;
+                if (result != 0) {
+                    return result;
+                }
             }
         }
         catch (Throwable e) {

@@ -23,7 +23,9 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
             System.out.println("aspect target class: " + ___AW_getTargetClass());
             System.out.println("aspect target instance: " + ___AW_getTargetInstance());
             System.out.println("mixin target class: " + ___AW_getMixinTargetClass(this.getClass().getName(), this));
-            System.out.println("mixin target instance: " + ___AW_getMixinTargetInstance(this.getClass().getName(), this));
+            System.out.println(
+                    "mixin target instance: " + ___AW_getMixinTargetInstance(this.getClass().getName(), this)
+            );
             return "Hello World! Hello World!";
         }
     }

@@ -32,7 +32,9 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
      * @return a <code>ClassMetaData</code> instance.
      */
     public static ClassMetaData createClassMetaData(final JavaClass javaClass) {
-        if (javaClass == null) throw new IllegalArgumentException("class can not be null");
+        if (javaClass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
 
         if (s_classMetaDataCache.containsKey(javaClass.getName())) {
             return (ClassMetaData)s_classMetaDataCache.get(javaClass.getName());
@@ -103,7 +105,9 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
      * @todo add the interface's interfaces to the InterfaceMetaData (if needed)
      */
     public static InterfaceMetaData createInterfaceMetaData(final Type type) {
-        if (type == null) throw new IllegalArgumentException("interface can not be null");
+        if (type == null) {
+            throw new IllegalArgumentException("interface can not be null");
+        }
 
         if (s_interfaceMetaDataCache.containsKey(type.getValue())) {
             return (InterfaceMetaData)s_interfaceMetaDataCache.get(type.getValue());
@@ -133,7 +137,11 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
      * @return a <code>MethodMetaData</code> instance.
      */
     public static MethodMetaData createMethodMetaData(final JavaMethod method) {
-        if (method.isConstructor()) throw new IllegalArgumentException("QDox method is not a regular method but a constructor [" + method.getName() + ']');
+        if (method.isConstructor()) {
+            throw new IllegalArgumentException(
+                    "QDox method is not a regular method but a constructor [" + method.getName() + ']'
+            );
+        }
 
         MethodMetaData data = new MethodMetaData();
         data.setName(method.getName());
@@ -168,7 +176,9 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
      * @return a <code>ConstructorMetaData</code> instance.
      */
     public static ConstructorMetaData createConstructorMetaData(final JavaMethod constructor) {
-        if (!constructor.isConstructor()) throw new IllegalArgumentException("QDox method is not a constructor [" + constructor.getName() + ']');
+        if (!constructor.isConstructor()) {
+            throw new IllegalArgumentException("QDox method is not a constructor [" + constructor.getName() + ']');
+        }
 
         ConstructorMetaData constructorMetaData = new ConstructorMetaData();
         constructorMetaData.setName(constructor.getName());

@@ -39,7 +39,9 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
     private static ClassPreProcessor preProcessor;
 
     static {
-        String clpp = System.getProperty("aspectwerkz.classloader.preprocessor", "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor");
+        String clpp = System.getProperty(
+                "aspectwerkz.classloader.preprocessor", "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor"
+        );
         try {
             // note: CLPP loaded by current thread classloader which is bootstrap classloader
             // caution: forcing loading thru Thread.setContextClassLoader() or ClassLoader.getSystemClassLoader()
@@ -91,8 +93,12 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
 
         while (true) {
             System.out.print(".");
-            ClassLoader nonDelegatingCL = new VerifierClassLoader(new URL[]{(new File(args[0])).toURL()}, ClassLoader.getSystemClassLoader());
-            Class loaded = nonDelegatingCL.loadClass(org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor.class.getName());
+            ClassLoader nonDelegatingCL = new VerifierClassLoader(
+                    new URL[]{(new File(args[0])).toURL()}, ClassLoader.getSystemClassLoader()
+            );
+            Class loaded = nonDelegatingCL.loadClass(
+                    org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor.class.getName()
+            );
             Thread.sleep(500);
         }
     }

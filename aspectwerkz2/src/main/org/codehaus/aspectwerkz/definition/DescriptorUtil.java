@@ -43,11 +43,11 @@ import java.util.StringTokenizer;
  * form (4.2).  The interpretation of the field types is as shown in Table 4.2.
  * <p/>
  * BaseType Character  Type       Interpretation ---------------------------------------------- B                   byte
- *       signed byte C                   char       Unicode character D                   double     double-precision
+ * signed byte C                   char       Unicode character D                   double     double-precision
  * floating-point value F                   float      single-precision floating-point value I                   int
- *    integer J                   long       long integer L<classname>;       reference  an instance of class
- * <classname> S                   short      signed short Z                   boolean    true or false [
- * reference  one array dimension
+ * integer J                   long       long integer L<classname>;       reference  an instance of class <classname> S
+ *                   short      signed short Z                   boolean    true or false [ reference  one array
+ * dimension
  *
  * @author <a href="mailto:mpollack@speakeasy.org">Mark Pollack</a>
  */
@@ -155,9 +155,10 @@ public class DescriptorUtil {
      * @param stringbuffer The storage for building the converted method signature.
      * @return new offset location for parsing.
      */
-    private static int jvmFormatToJavaFormat(String jvmFormat,
-                                             int i,
-                                             StringBuffer stringbuffer) {
+    private static int jvmFormatToJavaFormat(
+            String jvmFormat,
+            int i,
+            StringBuffer stringbuffer) {
         String s1 = "";
         //arrays.
         for (; jvmFormat.charAt(i) == '['; i++) {

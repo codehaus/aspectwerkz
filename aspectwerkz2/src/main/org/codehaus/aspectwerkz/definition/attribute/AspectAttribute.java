@@ -80,9 +80,9 @@ public class AspectAttribute implements Attribute {
      */
     private void verify() {
         if (!m_deploymentModel.equalsIgnoreCase("perJVM") &&
-                !m_deploymentModel.equalsIgnoreCase("perClass") &&
-                !m_deploymentModel.equalsIgnoreCase("perInstance") &&
-                !m_deploymentModel.equalsIgnoreCase("perThread")) {
+            !m_deploymentModel.equalsIgnoreCase("perClass") &&
+            !m_deploymentModel.equalsIgnoreCase("perInstance") &&
+            !m_deploymentModel.equalsIgnoreCase("perThread")) {
             throw new IllegalArgumentException("deployment model is not valid for aspect");
         }
     }

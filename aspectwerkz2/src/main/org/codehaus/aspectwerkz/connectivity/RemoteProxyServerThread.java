@@ -67,11 +67,14 @@ public class RemoteProxyServerThread implements Runnable {
      * @param loader       the classloader to use
      * @param invoker      the invoker that makes the method invocation in the client thread
      */
-    public RemoteProxyServerThread(final Socket clientSocket,
-                                   final ClassLoader loader,
-                                   final Invoker invoker,
-                                   final int timeout) {
-        if (clientSocket == null) throw new IllegalArgumentException("client socket can not be null");
+    public RemoteProxyServerThread(
+            final Socket clientSocket,
+            final ClassLoader loader,
+            final Invoker invoker,
+            final int timeout) {
+        if (clientSocket == null) {
+            throw new IllegalArgumentException("client socket can not be null");
+        }
         m_socket = clientSocket;
         m_loader = loader;
         m_invoker = invoker;
@@ -132,7 +135,7 @@ public class RemoteProxyServerThread implements Runnable {
      */
     private void handleCreateCommand()
             throws IOException, ClassNotFoundException,
-            InstantiationException, IllegalAccessException {
+                   InstantiationException, IllegalAccessException {
 
         final String className = (String)m_in.readObject();
         Class klass = m_loader.loadClass(className);

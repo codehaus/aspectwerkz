@@ -67,9 +67,11 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      * @param ctClass the class
      */
     private void addStaticClassField(final CtClass ctClass) throws NotFoundException, CannotCompileException {
-        CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"),
-                                    TransformationUtil.STATIC_CLASS_FIELD,
-                                    ctClass);
+        CtField field = new CtField(
+                ctClass.getClassPool().get("java.lang.Class"),
+                TransformationUtil.STATIC_CLASS_FIELD,
+                ctClass
+        );
         field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
         ctClass.addField(field, "java.lang.Class.forName(\"" + ctClass.getName() + "\")");
     }
@@ -83,9 +85,11 @@ public class PrepareAdvisedClassTransformer implements Transformer {
     private void addJoinPointManagerField(final CtClass ctClass, final SystemDefinition definition)
             throws NotFoundException, CannotCompileException {
 
-        CtField field = new CtField(ctClass.getClassPool().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS),
-                                    TransformationUtil.JOIN_POINT_MANAGER_FIELD,
-                                    ctClass);
+        CtField field = new CtField(
+                ctClass.getClassPool().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS),
+                TransformationUtil.JOIN_POINT_MANAGER_FIELD,
+                ctClass
+        );
         field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
         StringBuffer body = new StringBuffer();
         body.append(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
@@ -107,11 +111,13 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      * @param cg            the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition,
-                                final ClassMetaData classMetaData,
-                                final CtClass cg,
-                                final boolean isActivatePhase) {
-        if (cg.isInterface() || TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+    private boolean classFilter(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final CtClass cg,
+            final boolean isActivatePhase) {
+        if (cg.isInterface() ||
+            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = cg.getName();
@@ -125,11 +131,11 @@ public class PrepareAdvisedClassTransformer implements Transformer {
             return true;
         }
         if (definition.hasExecutionPointcut(classMetaData) ||
-                definition.hasCallPointcut(classMetaData) ||
-                definition.hasGetPointcut(classMetaData) ||
-                definition.hasSetPointcut(classMetaData) ||
-                definition.hasHandlerPointcut(classMetaData) ||
-                definition.hasIntroductions(classMetaData)) {
+            definition.hasCallPointcut(classMetaData) ||
+            definition.hasGetPointcut(classMetaData) ||
+            definition.hasSetPointcut(classMetaData) ||
+            definition.hasHandlerPointcut(classMetaData) ||
+            definition.hasIntroductions(classMetaData)) {
             return false;
         }
         return true;

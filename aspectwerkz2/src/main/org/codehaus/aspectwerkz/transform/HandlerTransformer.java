@@ -60,65 +60,71 @@ public class HandlerTransformer implements Transformer {
                 return;
             }
 
-            ctClass.instrument(new ExprEditor() {
-                public void edit(Handler handlerExpr) throws CannotCompileException {
-                    try {
-                        CtClass exceptionClass = null;
-                        try {
-                            exceptionClass = handlerExpr.getType();
+            ctClass.instrument(
+                    new ExprEditor() {
+                        public void edit(Handler handlerExpr) throws CannotCompileException {
+                            try {
+                                CtClass exceptionClass = null;
+                                try {
+                                    exceptionClass = handlerExpr.getType();
+                                }
+                                catch (NullPointerException e) {
+                                    return;
+                                }
+
+                                CtBehavior where = null;
+                                try {
+                                    where = handlerExpr.where();
+                                }
+                                catch (RuntimeException e) {
+                                    // <clinit> access leads to a bug in Javassist
+                                    where = ctClass.getClassInitializer();
+                                }
+
+                                MethodMetaData methodMetaData = null; //JavassistMetaDataMaker.createMethodMetaData(...);
+
+                                ClassMetaData exceptionClassMetaData = JavassistMetaDataMaker.createClassMetaData(
+                                        exceptionClass
+                                );
+
+
+                                // TODO: NO filtering on class and method is done (only exception class), needs to be implemented
+                                if (!definition.hasHandlerPointcut(
+                                        classMetaData, methodMetaData, exceptionClassMetaData
+                                )) {
+                                    return;
+                                }
+
+                                // call the wrapper method instead of the callee method
+                                StringBuffer body = new StringBuffer();
+                                body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                                body.append('.');
+                                body.append(TransformationUtil.PROCEED_WITH_HANDLER_JOIN_POINT_METHOD);
+                                body.append('(');
+
+                                // TODO: unique hash is needed, based on: executing class, executing method, catch clause (and sequence number?)
+                                body.append(TransformationUtil.calculateHash(exceptionClass));
+                                body.append(", $1, ");
+                                if (Modifier.isStatic(where.getModifiers())) {
+                                    body.append("(Object)null, \"");
+                                }
+                                else {
+                                    body.append("this, \"");
+                                }
+
+                                // TODO: use a better signature (or remove)
+                                body.append(exceptionClass.getName());
+                                body.append("\");");
+
+                                handlerExpr.insertBefore(body.toString());
+                                context.markAsAdvised();
+                            }
+                            catch (NotFoundException nfe) {
+                                nfe.printStackTrace();
+                            }
                         }
-                        catch (NullPointerException e) {
-                            return;
-                        }
-
-                        CtBehavior where = null;
-                        try {
-                            where = handlerExpr.where();
-                        }
-                        catch (RuntimeException e) {
-                            // <clinit> access leads to a bug in Javassist
-                            where = ctClass.getClassInitializer();
-                        }
-
-                        MethodMetaData methodMetaData = null; //JavassistMetaDataMaker.createMethodMetaData(...);
-
-                        ClassMetaData exceptionClassMetaData = JavassistMetaDataMaker.createClassMetaData(exceptionClass);
-
-
-                        // TODO: NO filtering on class and method is done (only exception class), needs to be implemented
-                        if (!definition.hasHandlerPointcut(classMetaData, methodMetaData, exceptionClassMetaData)) {
-                            return;
-                        }
-
-                        // call the wrapper method instead of the callee method
-                        StringBuffer body = new StringBuffer();
-                        body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
-                        body.append('.');
-                        body.append(TransformationUtil.PROCEED_WITH_HANDLER_JOIN_POINT_METHOD);
-                        body.append('(');
-
-                        // TODO: unique hash is needed, based on: executing class, executing method, catch clause (and sequence number?)
-                        body.append(TransformationUtil.calculateHash(exceptionClass));
-                        body.append(", $1, ");
-                        if (Modifier.isStatic(where.getModifiers())) {
-                            body.append("(Object)null, \"");
-                        }
-                        else {
-                            body.append("this, \"");
-                        }
-
-                        // TODO: use a better signature (or remove)
-                        body.append(exceptionClass.getName());
-                        body.append("\");");
-
-                        handlerExpr.insertBefore(body.toString());
-                        context.markAsAdvised();
                     }
-                    catch (NotFoundException nfe) {
-                        nfe.printStackTrace();
-                    }
-                }
-            });
+            );
         }
     }
 
@@ -130,11 +136,12 @@ public class HandlerTransformer implements Transformer {
      * @param cg            the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition,
-                                final ClassMetaData classMetaData,
-                                final CtClass cg) {
+    private boolean classFilter(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final CtClass cg) {
         if (cg.isInterface() ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = cg.getName();

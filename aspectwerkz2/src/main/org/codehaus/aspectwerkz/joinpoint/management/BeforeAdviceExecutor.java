@@ -51,9 +51,10 @@ public class BeforeAdviceExecutor {
      * @param cflowExpressions
      * @param system
      */
-    public BeforeAdviceExecutor(final IndexTuple[] adviceIndexes,
-                                final List cflowExpressions,
-                                final System system) {
+    public BeforeAdviceExecutor(
+            final IndexTuple[] adviceIndexes,
+            final List cflowExpressions,
+            final System system) {
         m_adviceIndexes = adviceIndexes;
         m_cflowExpressions = cflowExpressions;
         m_system = system;

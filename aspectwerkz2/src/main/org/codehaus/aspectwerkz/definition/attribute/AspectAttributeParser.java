@@ -37,10 +37,13 @@ public class AspectAttributeParser implements AttributeParser {
      * @param aspectDef  the aspect definition
      * @param definition the aspectwerkz definition
      */
-    public void parse(final Class klass,
-                      final AspectDefinition aspectDef,
-                      final SystemDefinition definition) {
-        if (klass == null) throw new IllegalArgumentException("class to parse can not be null");
+    public void parse(
+            final Class klass,
+            final AspectDefinition aspectDef,
+            final SystemDefinition definition) {
+        if (klass == null) {
+            throw new IllegalArgumentException("class to parse can not be null");
+        }
 
         AspectAttribute aspectAttr = getAspectAttribute(klass);
 
@@ -62,9 +65,15 @@ public class AspectAttributeParser implements AttributeParser {
      * @param aspectDef the aspect definition
      */
     private void parseFieldAttributes(final Class klass, AspectDefinition aspectDef) {
-        if (aspectDef == null) throw new IllegalArgumentException("aspect definition can not be null");
-        if (klass == null) return;
-        if (klass.getName().equals(Aspect.class.getName())) return;
+        if (aspectDef == null) {
+            throw new IllegalArgumentException("aspect definition can not be null");
+        }
+        if (klass == null) {
+            return;
+        }
+        if (klass.getName().equals(Aspect.class.getName())) {
+            return;
+        }
 
         Field[] fieldList = klass.getDeclaredFields();
         // parse the pointcuts
@@ -76,71 +85,89 @@ public class AspectAttributeParser implements AttributeParser {
 
                 if (fieldAttr instanceof ExecutionAttribute) {
                     ExecutionAttribute attribute = (ExecutionAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(field.getName(),
-                                                                              PointcutType.EXECUTION,
-                                                                              attribute.getExpression(),
-                                                                              aspectDef);
+                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
+                            field.getName(),
+                            PointcutType.EXECUTION,
+                            attribute.getExpression(),
+                            aspectDef
+                    );
                     break;
                 }
                 else if (fieldAttr instanceof CallAttribute) {
                     CallAttribute attribute = (CallAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(field.getName(),
-                                                                              PointcutType.CALL,
-                                                                              attribute.getExpression(),
-                                                                              aspectDef);
+                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
+                            field.getName(),
+                            PointcutType.CALL,
+                            attribute.getExpression(),
+                            aspectDef
+                    );
                     break;
                 }
                 else if (fieldAttr instanceof ClassAttribute) {
                     ClassAttribute attribute = (ClassAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(field.getName(),
-                                                                              PointcutType.CLASS,
-                                                                              attribute.getExpression(),
-                                                                              aspectDef);
+                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
+                            field.getName(),
+                            PointcutType.CLASS,
+                            attribute.getExpression(),
+                            aspectDef
+                    );
                     break;
                 }
                 else if (fieldAttr instanceof SetAttribute) {
                     SetAttribute attribute = (SetAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(field.getName(),
-                                                                              PointcutType.SET,
-                                                                              attribute.getExpression(),
-                                                                              aspectDef);
+                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
+                            field.getName(),
+                            PointcutType.SET,
+                            attribute.getExpression(),
+                            aspectDef
+                    );
                     break;
                 }
                 else if (fieldAttr instanceof GetAttribute) {
                     GetAttribute attribute = (GetAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(field.getName(),
-                                                                              PointcutType.GET,
-                                                                              attribute.getExpression(),
-                                                                              aspectDef);
+                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
+                            field.getName(),
+                            PointcutType.GET,
+                            attribute.getExpression(),
+                            aspectDef
+                    );
                     break;
                 }
                 else if (fieldAttr instanceof HandlerAttribute) {
                     HandlerAttribute attribute = (HandlerAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(field.getName(),
-                                                                              PointcutType.HANDLER,
-                                                                              attribute.getExpression(),
-                                                                              aspectDef);
+                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
+                            field.getName(),
+                            PointcutType.HANDLER,
+                            attribute.getExpression(),
+                            aspectDef
+                    );
                     break;
                 }
                 else if (fieldAttr instanceof CFlowAttribute) {
                     CFlowAttribute attribute = (CFlowAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(field.getName(),
-                                                                              PointcutType.CFLOW,
-                                                                              attribute.getExpression(),
-                                                                              aspectDef);
+                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
+                            field.getName(),
+                            PointcutType.CFLOW,
+                            attribute.getExpression(),
+                            aspectDef
+                    );
                     // TODO: ALEX CFLOW
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(field.getName() + "-System",
-                                                                              PointcutType.CALL,
-                                                                              attribute.getExpression(),
-                                                                              aspectDef);
+                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
+                            field.getName() + "-System",
+                            PointcutType.CALL,
+                            attribute.getExpression(),
+                            aspectDef
+                    );
                     break;
                 }
                 else if (fieldAttr instanceof ImplementsAttribute) {
                     ImplementsAttribute attribute = (ImplementsAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(attribute.getExpression(),
-                                                                                           field.getName(),
-                                                                                           field.getType().getName(),
-                                                                                           aspectDef);
+                    DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
+                            attribute.getExpression(),
+                            field.getName(),
+                            field.getType().getName(),
+                            aspectDef
+                    );
                     break;
                 }
             }
@@ -158,14 +185,23 @@ public class AspectAttributeParser implements AttributeParser {
      * @param aspectName      the aspect name
      * @param aspectDef       the aspect definition
      */
-    private void parseMethodAttributes(final Class klass,
-                                       final String aspectClassName,
-                                       final String aspectName,
-                                       final AspectDefinition aspectDef) {
-        if (klass == null) throw new IllegalArgumentException("class can not be null");
-        if (aspectClassName == null) throw new IllegalArgumentException("aspect class name can not be null");
-        if (aspectName == null) throw new IllegalArgumentException("aspect name can not be null");
-        if (aspectDef == null) throw new IllegalArgumentException("aspect definition can not be null");
+    private void parseMethodAttributes(
+            final Class klass,
+            final String aspectClassName,
+            final String aspectName,
+            final AspectDefinition aspectDef) {
+        if (klass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
+        if (aspectClassName == null) {
+            throw new IllegalArgumentException("aspect class name can not be null");
+        }
+        if (aspectName == null) {
+            throw new IllegalArgumentException("aspect name can not be null");
+        }
+        if (aspectDef == null) {
+            throw new IllegalArgumentException("aspect definition can not be null");
+        }
 
         List methodList = TransformationUtil.createSortedMethodList(klass);
 
@@ -189,10 +225,15 @@ public class AspectAttributeParser implements AttributeParser {
                     }
                     String expression = aroundAttr.getExpression();
                     if (expression == null || expression.equals("")) {
-                        throw new DefinitionException("pointcut expression for advice [" + adviceName + "] is missing");
+                        throw new DefinitionException(
+                                "pointcut expression for advice [" + adviceName + "] is missing"
+                        );
                     }
-                    DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(expression, adviceName, aspectName,
-                                                                                  aspectClassName, method, methodIndex, aspectDef);
+                    DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(
+                            expression, adviceName, aspectName,
+                            aspectClassName, method, methodIndex,
+                            aspectDef
+                    );
                 }
                 else if (methodAttr instanceof BeforeAttribute) {
                     BeforeAttribute beforeAttr = (BeforeAttribute)methodAttr;
@@ -203,10 +244,15 @@ public class AspectAttributeParser implements AttributeParser {
                     }
                     String expression = beforeAttr.getExpression();
                     if (expression == null || expression.equals("")) {
-                        throw new DefinitionException("pointcut expression for advice [" + adviceName + "] is missing");
+                        throw new DefinitionException(
+                                "pointcut expression for advice [" + adviceName + "] is missing"
+                        );
                     }
-                    DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(expression, adviceName, aspectName,
-                                                                                  aspectClassName, method, methodIndex, aspectDef);
+                    DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(
+                            expression, adviceName, aspectName,
+                            aspectClassName, method, methodIndex,
+                            aspectDef
+                    );
                 }
                 else if (methodAttr instanceof AfterAttribute) {
                     AfterAttribute afterAttr = (AfterAttribute)methodAttr;
@@ -217,10 +263,15 @@ public class AspectAttributeParser implements AttributeParser {
                     }
                     String expression = afterAttr.getExpression();
                     if (expression == null || expression.equals("")) {
-                        throw new DefinitionException("pointcut expression for advice [" + adviceName + "] is missing");
+                        throw new DefinitionException(
+                                "pointcut expression for advice [" + adviceName + "] is missing"
+                        );
                     }
-                    DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(expression, adviceName, aspectName,
-                                                                                 aspectClassName, method, methodIndex, aspectDef);
+                    DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(
+                            expression, adviceName, aspectName,
+                            aspectClassName, method, methodIndex,
+                            aspectDef
+                    );
                 }
             }
         }
@@ -256,7 +307,9 @@ public class AspectAttributeParser implements AttributeParser {
      * @param aspectDef
      */
     private void parseClassAttributes(final Class klass, AspectDefinition aspectDef) {
-        if (klass == null) throw new IllegalArgumentException("class can not be null");
+        if (klass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
 
         Object[] classAttributes = Attributes.getAttributes(klass);
         for (int i = 0; i < classAttributes.length; i++) {
@@ -272,12 +325,14 @@ public class AspectAttributeParser implements AttributeParser {
                     throw new WrappedRuntimeException(e);
                 }
                 Method[] methods = (Method[])TransformationUtil.createSortedMethodList(mixin).toArray(new Method[]{});//gatherMixinSortedMethods(mixin, introduceAttr.getIntroducedInterfaceNames());
-                DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(introduceAttr.getExpression(),
-                                                                              introduceAttr.getInnerClassName(),
-                                                                              introduceAttr.getIntroducedInterfaceNames(),
-                                                                              methods,
-                                                                              introduceAttr.getDeploymentModel(),
-                                                                              aspectDef);
+                DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
+                        introduceAttr.getExpression(),
+                        introduceAttr.getInnerClassName(),
+                        introduceAttr.getIntroducedInterfaceNames(),
+                        methods,
+                        introduceAttr.getDeploymentModel(),
+                        aspectDef
+                );
             }
         }
     }

@@ -84,8 +84,9 @@ public class Klass {
      * @throws IOException
      */
     public CtClass getInitialCtClass() throws IOException {
-        if (m_initialCtClass == null)
+        if (m_initialCtClass == null) {
             m_initialCtClass = fromByte(m_name, m_initialBytecode, null);//TODO BREAK
+        }
         return m_initialCtClass;
     }
 

@@ -47,12 +47,19 @@ public class InterfaceIntroductionDefinition {
      * @param expression         the expression
      * @param interfaceClassName the class name of the interface
      */
-    public InterfaceIntroductionDefinition(final String name,
-                                           final Expression expression,
-                                           final String interfaceClassName) {
-        if (name == null) throw new IllegalArgumentException("name can not be null");
-        if (expression == null) throw new IllegalArgumentException("expression can not be null");
-        if (interfaceClassName == null) throw new IllegalArgumentException("interface class name can not be null");
+    public InterfaceIntroductionDefinition(
+            final String name,
+            final Expression expression,
+            final String interfaceClassName) {
+        if (name == null) {
+            throw new IllegalArgumentException("name can not be null");
+        }
+        if (expression == null) {
+            throw new IllegalArgumentException("expression can not be null");
+        }
+        if (interfaceClassName == null) {
+            throw new IllegalArgumentException("interface class name can not be null");
+        }
 
         m_name = name;
         m_interfaceClassNames.add(interfaceClassName);

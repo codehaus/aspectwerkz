@@ -61,11 +61,12 @@ public class AddImplementationTransformer implements Transformer {
      * @param methodIndex    the method index
      * @param definition     the definition
      */
-    public void createProxyMethod(final CtClass ctClass,
-                                  final MethodMetaData methodMetaData,
-                                  final int mixinIndex,
-                                  final int methodIndex,
-                                  final SystemDefinition definition) {
+    public void createProxyMethod(
+            final CtClass ctClass,
+            final MethodMetaData methodMetaData,
+            final int mixinIndex,
+            final int methodIndex,
+            final SystemDefinition definition) {
         try {
             String methodName = methodMetaData.getName();
             String[] parameters = methodMetaData.getParameterTypes();
@@ -111,12 +112,14 @@ public class AddImplementationTransformer implements Transformer {
             body.append("this").append(");");
             body.append("}");
 
-            CtMethod method = CtNewMethod.make(javassistReturnType,
-                                               methodName,
-                                               bcelParameterTypes,
-                                               bcelExceptionTypes,
-                                               body.toString(),
-                                               ctClass);
+            CtMethod method = CtNewMethod.make(
+                    javassistReturnType,
+                    methodName,
+                    bcelParameterTypes,
+                    bcelExceptionTypes,
+                    body.toString(),
+                    ctClass
+            );
             method.setModifiers(Modifier.PUBLIC);
             ctClass.addMethod(method);
         }
@@ -144,9 +147,11 @@ public class AddImplementationTransformer implements Transformer {
             }
         }
         if (!hasField) {
-            CtField field = new CtField(ctClass.getClassPool().get(TransformationUtil.ASPECT_MANAGER_CLASS),
-                                        TransformationUtil.ASPECT_MANAGER_FIELD,
-                                        ctClass);
+            CtField field = new CtField(
+                    ctClass.getClassPool().get(TransformationUtil.ASPECT_MANAGER_CLASS),
+                    TransformationUtil.ASPECT_MANAGER_FIELD,
+                    ctClass
+            );
 
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             StringBuffer body = new StringBuffer();
@@ -188,10 +193,12 @@ public class AddImplementationTransformer implements Transformer {
      * @param definition    the definition
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final CtClass cg,
-                                final ClassMetaData classMetaData,
-                                final SystemDefinition definition) {
-        if (cg.isInterface() || TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+    private boolean classFilter(
+            final CtClass cg,
+            final ClassMetaData classMetaData,
+            final SystemDefinition definition) {
+        if (cg.isInterface() ||
+            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = cg.getName();
@@ -199,7 +206,7 @@ public class AddImplementationTransformer implements Transformer {
             return true;
         }
         if (definition.inIncludePackage(className) &&
-                definition.hasIntroductions(classMetaData)) {
+            definition.hasIntroductions(classMetaData)) {
             return false;
         }
         return true;

@@ -81,7 +81,12 @@ public class Plug {
         }
 
         // patch the java.lang.ClassLoader
-        byte[] patched = ClassLoaderPatcher.getPatchedClassLoader(System.getProperty(ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY, org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class.getName()));
+        byte[] patched = ClassLoaderPatcher.getPatchedClassLoader(
+                System.getProperty(
+                        ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
+                        org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class.getName()
+                )
+        );
         //@todo refactor Patcher to handle errors instead of stderr warnings / Error
 
         // pack the jar file
@@ -114,10 +119,12 @@ public class Plug {
         String transport = (String)jdwp.get(TRANSPORT_JDWP);
         String address = (String)jdwp.get(ADDRESS_JDWP);
         String name = null;
-        if ("dt_socket".equals(transport))
+        if ("dt_socket".equals(transport)) {
             name = "com.sun.jdi.SocketAttach";
-        else if ("dt_shmem".equals(transport))
+        }
+        else if ("dt_shmem".equals(transport)) {
             name = "com.sun.jdi.SharedMemoryAttach";
+        }
 
         AttachingConnector connector = null;
         for (Iterator i = Bootstrap.virtualMachineManager().attachingConnectors().iterator(); i.hasNext();) {
@@ -127,8 +134,9 @@ public class Plug {
                 break;
             }
         }
-        if (connector == null)
+        if (connector == null) {
             throw new Exception("no AttachingConnector for transport: " + transport);
+        }
 
         Map args = connector.defaultArguments();
         if ("dt_socket".equals(transport)) {
@@ -196,8 +204,14 @@ public class Plug {
      */
     public void hotswap(Map jdwp) throws Exception {
         // @todo check it works at runtime not suspended
-        VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(System.getProperty(ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY, org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class.getName()),
-                                                                  (String)jdwp.get(TRANSPORT_JDWP), (String)jdwp.get(ADDRESS_JDWP));
+        VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(
+                System.getProperty(
+                        ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
+                        org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class.getName()
+                ),
+                (String)jdwp.get(TRANSPORT_JDWP),
+                (String)jdwp.get(ADDRESS_JDWP)
+        );
         if (vm != null) {
             vm.resume();
             vm.dispose();
@@ -229,8 +243,9 @@ public class Plug {
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             int index = token.indexOf("=");
-            if (index < 0)
+            if (index < 0) {
                 throw new Exception("invalid jdwp string: " + args);
+            }
             map.put(token.substring(0, index), token.substring(index + 1));
         }
         return map;

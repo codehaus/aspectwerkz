@@ -41,8 +41,9 @@ public class AddInterfacePreProcessor implements ClassPreProcessor {
             ClassGen cg = new ClassGen(parser.parse());
 
             // instrument
-            if (!cg.isInterface() && !Arrays.asList(cg.getInterfaceNames()).contains("java.util.EventListener"))
+            if (!cg.isInterface() && !Arrays.asList(cg.getInterfaceNames()).contains("java.util.EventListener")) {
                 cg.addInterface("java.util.EventListener");
+            }
 
             try {
                 cg.getJavaClass().dump("_dump/" + klass.replace('.', '/') + ".class");

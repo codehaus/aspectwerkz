@@ -50,10 +50,11 @@ public class PatternTuple implements Serializable {
      * @param pattern            the pattern
      * @param hierarchical       the hierarchical flag
      */
-    public PatternTuple(final String callerClassPattern,
-                        final String calleeClassPattern,
-                        final String pattern,
-                        final boolean hierarchical) {
+    public PatternTuple(
+            final String callerClassPattern,
+            final String calleeClassPattern,
+            final String pattern,
+            final boolean hierarchical) {
         m_callerClassPattern = callerClassPattern;
         m_calleeClassPattern = calleeClassPattern;
         m_memberPattern = pattern;
@@ -69,11 +70,12 @@ public class PatternTuple implements Serializable {
      * @param hierarchical       the hierarchical flag
      * @param hierarchicalCallee the hierarchical callee flag
      */
-    public PatternTuple(final String callerClassPattern,
-                        final String calleeClassPattern,
-                        final String pattern,
-                        final boolean hierarchical,
-                        final boolean hierarchicalCallee) {
+    public PatternTuple(
+            final String callerClassPattern,
+            final String calleeClassPattern,
+            final String pattern,
+            final boolean hierarchical,
+            final boolean hierarchicalCallee) {
         m_callerClassPattern = callerClassPattern;
         m_calleeClassPattern = calleeClassPattern;
         m_memberPattern = pattern;
@@ -128,12 +130,12 @@ public class PatternTuple implements Serializable {
 
     public String toString() {
         return '['
-                + super.toString()
-                + ": "
-                + ',' + m_memberPattern
-                + ',' + m_callerClassPattern
-                + ',' + m_hierarchical
-                + ']';
+               + super.toString()
+               + ": "
+               + ',' + m_memberPattern
+               + ',' + m_callerClassPattern
+               + ',' + m_hierarchical
+               + ']';
     }
 
     public int hashCode() {
@@ -144,20 +146,28 @@ public class PatternTuple implements Serializable {
     }
 
     protected static int hashCodeOrZeroIfNull(final Object o) {
-        if (null == o) return 19;
+        if (null == o) {
+            return 19;
+        }
         return o.hashCode();
     }
 
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PatternTuple)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PatternTuple)) {
+            return false;
+        }
         final PatternTuple obj = (PatternTuple)o;
         return areEqualsOrBothNull(obj.m_callerClassPattern, this.m_callerClassPattern)
-                && areEqualsOrBothNull(obj.m_memberPattern, this.m_memberPattern);
+               && areEqualsOrBothNull(obj.m_memberPattern, this.m_memberPattern);
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
-        if (null == o1) return (null == o2);
+        if (null == o1) {
+            return (null == o2);
+        }
         return o1.equals(o2);
     }
 }

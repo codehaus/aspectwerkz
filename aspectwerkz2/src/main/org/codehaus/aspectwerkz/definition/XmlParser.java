@@ -59,8 +59,12 @@ public class XmlParser {
      * @return the definitions
      */
     public static List parse(final ClassLoader loader, final File definitionFile, boolean isDirty) {
-        if (definitionFile == null) throw new IllegalArgumentException("definition file can not be null");
-        if (!definitionFile.exists()) throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
+        if (definitionFile == null) {
+            throw new IllegalArgumentException("definition file can not be null");
+        }
+        if (!definitionFile.exists()) {
+            throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
+        }
 
         // if definition is not updated; don't parse but return it right away
         if (isNotUpdated(definitionFile)) {
@@ -141,9 +145,15 @@ public class XmlParser {
      * @return the definition merged document
      */
     public static Document mergeDocuments(final Document document1, final Document document2) {
-        if (document2 == null && document1 != null) return document1;
-        if (document1 == null && document2 != null) return document2;
-        if (document1 == null && document2 == null) return null;
+        if (document2 == null && document1 != null) {
+            return document1;
+        }
+        if (document1 == null && document2 != null) {
+            return document2;
+        }
+        if (document1 == null && document2 == null) {
+            return null;
+        }
         try {
 
             Element root1 = document1.getRootElement();
@@ -201,12 +211,16 @@ public class XmlParser {
                     if (in == null) {
                         System.err.println("AspectWerkz - WARN - could not open DTD");
                         return new InputSource();
-                    } else {
+                    }
+                    else {
                         return new InputSource(in);
                     }
                 }
                 else {
-                    System.err.println("AspectWerkz - WARN - deprecated DTD " + publicId + " - consider upgrading to " + DTD_PUBLIC_ID);
+                    System.err.println(
+                            "AspectWerkz - WARN - deprecated DTD " + publicId + " - consider upgrading to " +
+                            DTD_PUBLIC_ID
+                    );
                     return new InputSource();// avoid null pointer exception
                 }
             }

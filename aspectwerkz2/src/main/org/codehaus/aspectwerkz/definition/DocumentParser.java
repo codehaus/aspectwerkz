@@ -47,9 +47,10 @@ public class DocumentParser {
      * @param basePackage   the base package
      * @return the definition for the system
      */
-    public static SystemDefinition parseSystemElement(final ClassLoader loader,
-                                                      final Element systemElement,
-                                                      final String basePackage) {
+    public static SystemDefinition parseSystemElement(
+            final ClassLoader loader,
+            final Element systemElement,
+            final String basePackage) {
 
         final SystemDefinition definition = new SystemDefinition();
 
@@ -106,10 +107,11 @@ public class DocumentParser {
      * @param basePackage   the base package
      * @return flag that says if we have a definition of this kind or not
      */
-    private static boolean parsePackageElements(final ClassLoader loader,
-                                                final Element systemElement,
-                                                final SystemDefinition definition,
-                                                final String basePackage) {
+    private static boolean parsePackageElements(
+            final ClassLoader loader,
+            final Element systemElement,
+            final SystemDefinition definition,
+            final String basePackage) {
         boolean hasDef = false;
         for (Iterator it1 = systemElement.elementIterator("package"); it1.hasNext();) {
             final Element packageElement = ((Element)it1.next());
@@ -132,10 +134,11 @@ public class DocumentParser {
      * @return flag that says if we have a definition of this kind or not
      * @TODO: Passing in the CL all the way down here, but uses the context CL anyway. Will not work with AOPC.
      */
-    private static boolean parseAspectElements(final ClassLoader loader,
-                                               final Element systemElement,
-                                               final SystemDefinition definition,
-                                               final String packageName) {
+    private static boolean parseAspectElements(
+            final ClassLoader loader,
+            final Element systemElement,
+            final SystemDefinition definition,
+            final String packageName) {
 
         boolean hasDef = false;
         for (Iterator it1 = systemElement.elementIterator("aspect"); it1.hasNext();) {
@@ -210,15 +213,18 @@ public class DocumentParser {
      * @param def           the system definition
      * @param aspectDef     the aspect def
      */
-    private static void parseParameterElements(final Element aspectElement,
-                                               final SystemDefinition def,
-                                               final AspectDefinition aspectDef) {
+    private static void parseParameterElements(
+            final Element aspectElement,
+            final SystemDefinition def,
+            final AspectDefinition aspectDef) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element parameterElement = (Element)it2.next();
             if (parameterElement.getName().trim().equals("param")) {
-                def.addParameter(aspectDef.getName(),
-                                 parameterElement.attributeValue("name"),
-                                 parameterElement.attributeValue("value"));
+                def.addParameter(
+                        aspectDef.getName(),
+                        parameterElement.attributeValue("name"),
+                        parameterElement.attributeValue("value")
+                );
             }
         }
     }
@@ -279,10 +285,11 @@ public class DocumentParser {
      * @param aspectDef     the system definition
      * @param aspectClass   the aspect class
      */
-    private static void parseAdviceElements(final ClassLoader loader,
-                                            final Element aspectElement,
-                                            final AspectDefinition aspectDef,
-                                            final Class aspectClass) {
+    private static void parseAdviceElements(
+            final ClassLoader loader,
+            final Element aspectElement,
+            final AspectDefinition aspectDef,
+            final Class aspectClass) {
 
         List methodList = TransformationUtil.createSortedMethodList(aspectClass);
 
@@ -325,23 +332,30 @@ public class DocumentParser {
      * @param methodIndex the method index
      * @param aspectDef   the aspect definition
      */
-    private static void createAndAddAdviceDefsToAspectDef(final String type,
-                                                          final String bindTo,
-                                                          final String name,
-                                                          final Method method,
-                                                          final int methodIndex,
-                                                          final AspectDefinition aspectDef) {
+    private static void createAndAddAdviceDefsToAspectDef(
+            final String type,
+            final String bindTo,
+            final String name,
+            final Method method,
+            final int methodIndex,
+            final AspectDefinition aspectDef) {
         if (type.equalsIgnoreCase("around")) {
-            DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(bindTo, name, aspectDef.getName(), aspectDef.getClassName(),
-                                                                          method, methodIndex, aspectDef);
+            DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(
+                    bindTo, name, aspectDef.getName(), aspectDef.getClassName(),
+                    method, methodIndex, aspectDef
+            );
         }
         else if (type.equalsIgnoreCase("before")) {
-            DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(bindTo, name, aspectDef.getName(), aspectDef.getClassName(),
-                                                                          method, methodIndex, aspectDef);
+            DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(
+                    bindTo, name, aspectDef.getName(), aspectDef.getClassName(),
+                    method, methodIndex, aspectDef
+            );
         }
         else if (type.equalsIgnoreCase("after")) {
-            DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(bindTo, name, aspectDef.getName(), aspectDef.getClassName(),
-                                                                         method, methodIndex, aspectDef);
+            DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(
+                    bindTo, name, aspectDef.getName(), aspectDef.getClassName(),
+                    method, methodIndex, aspectDef
+            );
         }
         else if (type.equalsIgnoreCase("afterFinally")) {
             // TODO: impl. afterFinally
@@ -391,9 +405,10 @@ public class DocumentParser {
      * @param definition  the definition object
      * @param packageName the package name
      */
-    private static void parseIncludePackageElements(final Element root,
-                                                    final SystemDefinition definition,
-                                                    final String packageName) {
+    private static void parseIncludePackageElements(
+            final Element root,
+            final SystemDefinition definition,
+            final String packageName) {
         for (Iterator it1 = root.elementIterator("include"); it1.hasNext();) {
             String includePackage = "";
             Element includeElement = (Element)it1.next();
@@ -436,9 +451,10 @@ public class DocumentParser {
      * @param definition  the definition object
      * @param packageName the package name
      */
-    private static void parseExcludePackageElements(final Element root,
-                                                    final SystemDefinition definition,
-                                                    final String packageName) {
+    private static void parseExcludePackageElements(
+            final Element root,
+            final SystemDefinition definition,
+            final String packageName) {
         for (Iterator it1 = root.elementIterator("exclude"); it1.hasNext();) {
             String excludePackage = "";
             Element excludeElement = (Element)it1.next();
@@ -481,9 +497,10 @@ public class DocumentParser {
      * @param definition  the definition object
      * @param packageName the base package name
      */
-    public static void parsePrepareElements(final Element root,
-                                            final SystemDefinition definition,
-                                            final String packageName) {
+    public static void parsePrepareElements(
+            final Element root,
+            final SystemDefinition definition,
+            final String packageName) {
         for (Iterator it1 = root.elementIterator("prepare"); it1.hasNext();) {
             String preparePackage = "";
             Element prepareElement = (Element)it1.next();

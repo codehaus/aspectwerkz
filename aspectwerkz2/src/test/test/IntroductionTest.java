@@ -124,21 +124,27 @@ public class IntroductionTest extends TestCase implements Identifiable {
     }
 
     public void testVariousArguments1() {
-        assertEquals("dummy".hashCode() + 1 + (int)2.3F, this.hashCode() + (int)34L,
-                     ((Introductions)m_toBeIntroduced).variousArguments1("dummy", 1, 2.3F, this, 34L));
+        assertEquals(
+                "dummy".hashCode() + 1 + (int)2.3F, this.hashCode() + (int)34L,
+                ((Introductions)m_toBeIntroduced).variousArguments1("dummy", 1, 2.3F, this, 34L)
+        );
     }
 
     public void testVariousArguments2() {
-        assertEquals((int)2.3F + 1 + "dummy".hashCode() + this.hashCode() + (int)34L + "test".hashCode(),
-                     ((Introductions)m_toBeIntroduced).variousArguments2(2.3F, 1, "dummy", this, 34L, "test"));
+        assertEquals(
+                (int)2.3F + 1 + "dummy".hashCode() + this.hashCode() + (int)34L + "test".hashCode(),
+                ((Introductions)m_toBeIntroduced).variousArguments2(2.3F, 1, "dummy", this, 34L, "test")
+        );
     }
 
     public void testReplaceImplementation() {
-        assertEquals("test.aspect.IntroductionTestAspect$MyImpl",
-                     SystemLoader.getSystem("tests").
-                     getAspectManager().
-                     getMixin("test.aspect.IntroductionTestAspect$MyImpl").
-                     ___AW_getImplementationClassName());
+        assertEquals(
+                "test.aspect.IntroductionTestAspect$MyImpl",
+                SystemLoader.getSystem("tests").
+                getAspectManager().
+                getMixin("test.aspect.IntroductionTestAspect$MyImpl").
+                ___AW_getImplementationClassName()
+        );
 
         assertEquals(1, ((Introductions)m_toBeIntroduced).intArg(1));
 
@@ -150,19 +156,23 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
         assertEquals(-1, ((Introductions)m_toBeIntroduced).intArg(1));
 
-        assertEquals("test.aspect.IntroductionTestAspect$MyOtherImpl",
-                     SystemLoader.getSystem("tests").
-                     getAspectManager().
-                     getMixin("test.aspect.IntroductionTestAspect$MyImpl").
-                     ___AW_getImplementationClassName());
+        assertEquals(
+                "test.aspect.IntroductionTestAspect$MyOtherImpl",
+                SystemLoader.getSystem("tests").
+                getAspectManager().
+                getMixin("test.aspect.IntroductionTestAspect$MyImpl").
+                ___AW_getImplementationClassName()
+        );
     }
 
     public void testReplaceImplementationToAutonomousOne() {
-        assertEquals("test.aspect.IntroductionTestAspect$MyOtherImpl",
-                     SystemLoader.getSystem("tests").
-                     getAspectManager().
-                     getMixin("test.aspect.IntroductionTestAspect$MyImpl").
-                     ___AW_getImplementationClassName());
+        assertEquals(
+                "test.aspect.IntroductionTestAspect$MyOtherImpl",
+                SystemLoader.getSystem("tests").
+                getAspectManager().
+                getMixin("test.aspect.IntroductionTestAspect$MyImpl").
+                ___AW_getImplementationClassName()
+        );
 
         assertEquals(-1, ((Introductions)m_toBeIntroduced).intArg(1));
 
@@ -174,11 +184,13 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
         assertEquals(-2, ((Introductions)m_toBeIntroduced).intArg(1));
 
-        assertEquals("test.aspect.IntroductionTestAspectMyImplReplacement",
-                     SystemLoader.getSystem("tests").
-                     getAspectManager().
-                     getMixin("test.aspect.IntroductionTestAspect$MyImpl").
-                     ___AW_getImplementationClassName());
+        assertEquals(
+                "test.aspect.IntroductionTestAspectMyImplReplacement",
+                SystemLoader.getSystem("tests").
+                getAspectManager().
+                getMixin("test.aspect.IntroductionTestAspect$MyImpl").
+                ___AW_getImplementationClassName()
+        );
     }
 
     public static void main(String[] args) {

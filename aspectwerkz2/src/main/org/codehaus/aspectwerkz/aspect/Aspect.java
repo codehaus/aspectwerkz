@@ -365,7 +365,9 @@ public abstract class Aspect implements Serializable {
      * @return the value of the parameter
      */
     public String ___AW_getParameter(final String name) {
-        if (!m_parameters.containsKey(name)) throw new DefinitionException("parameter to advice not specified: " + name);
+        if (!m_parameters.containsKey(name)) {
+            throw new DefinitionException("parameter to advice not specified: " + name);
+        }
         return (String)m_parameters.get(name);
     }
 

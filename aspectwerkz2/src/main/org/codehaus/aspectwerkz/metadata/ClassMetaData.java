@@ -193,7 +193,9 @@ public class ClassMetaData implements MetaData {
      * @return a list with all the methods
      */
     private List collectAllMethods(final ClassMetaData klass, final List methodList) {
-        if (klass == null) return methodList;
+        if (klass == null) {
+            return methodList;
+        }
         methodList.addAll(klass.getMethods());
         return collectAllMethods(klass.getSuperClass(), methodList);
     }

@@ -108,8 +108,9 @@ public class ClassLoaderPatcher {
                 throw new Error("target JVM cannot redefine classes, please force the use of -Xbootclasspath");
             }
             List classList = vm.classesByName(className);
-            if (classList.size() == 0)
+            if (classList.size() == 0) {
                 throw new Error("Fatal error: Can't find class " + className);
+            }
             ReferenceType rt = (ReferenceType)classList.get(0);
             Map map = new HashMap();
             map.put(rt, bytes);
@@ -154,12 +155,15 @@ public class ClassLoaderPatcher {
      * Patch java.lang.ClassLoader with preProcessorName instance and hotswap in target VM using a JDWP attaching
      * connector
      */
-    public static VirtualMachine hotswapClassLoader(String preProcessorName, String transport, String address, int secondsToWait) {
+    public static VirtualMachine hotswapClassLoader(
+            String preProcessorName, String transport, String address, int secondsToWait) {
         String name = null;
-        if ("dt_socket".equals(transport))
+        if ("dt_socket".equals(transport)) {
             name = "com.sun.jdi.SocketAttach";
-        else if ("dt_shmem".equals(transport))
+        }
+        else if ("dt_shmem".equals(transport)) {
             name = "com.sun.jdi.SharedMemoryAttach";
+        }
 
         AttachingConnector connector = null;
         for (Iterator i = Bootstrap.virtualMachineManager().attachingConnectors().iterator(); i.hasNext();) {
@@ -169,8 +173,9 @@ public class ClassLoaderPatcher {
                 break;
             }
         }
-        if (connector == null)
+        if (connector == null) {
             throw new Error("no AttachingConnector for transport: " + transport);
+        }
 
         Map args = connector.defaultArguments();
         if ("dt_socket".equals(transport)) {

@@ -96,9 +96,15 @@ public class PointcutManager {
      * @param deploymentModel the deployment model for the aspect
      */
     public PointcutManager(final String uuid, final String name, final int deploymentModel) {
-        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        if (name == null) throw new IllegalArgumentException("name can not be null");
-        if (deploymentModel < 0) throw new IllegalArgumentException(deploymentModel + " is not a valid deployement model type");
+        if (uuid == null) {
+            throw new IllegalArgumentException("uuid can not be null");
+        }
+        if (name == null) {
+            throw new IllegalArgumentException("name can not be null");
+        }
+        if (deploymentModel < 0) {
+            throw new IllegalArgumentException(deploymentModel + " is not a valid deployement model type");
+        }
         m_uuid = uuid;
         m_name = name;
         m_deploymentModel = deploymentModel;
@@ -292,10 +298,15 @@ public class PointcutManager {
      * @param memberMetaData the meta-data for the member
      * @return the pointcuts
      */
-    public List getExecutionPointcuts(final ClassMetaData classMetaData,
-                                      final MemberMetaData memberMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (memberMetaData == null) throw new IllegalArgumentException("member meta-data can not be null");
+    public List getExecutionPointcuts(
+            final ClassMetaData classMetaData,
+            final MemberMetaData memberMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (memberMetaData == null) {
+            throw new IllegalArgumentException("member meta-data can not be null");
+        }
 //
         List pointcutList = new ArrayList();
         for (Iterator it = m_executionPointcuts.iterator(); it.hasNext();) {
@@ -330,10 +341,15 @@ public class PointcutManager {
      * @param fieldMetaData the meta-data for the field
      * @return the pointcuts
      */
-    public List getGetPointcuts(final ClassMetaData classMetaData,
-                                final FieldMetaData fieldMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
+    public List getGetPointcuts(
+            final ClassMetaData classMetaData,
+            final FieldMetaData fieldMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (fieldMetaData == null) {
+            throw new IllegalArgumentException("field meta-data can not be null");
+        }
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_getPointcuts.iterator(); it.hasNext();) {
@@ -368,10 +384,15 @@ public class PointcutManager {
      * @param fieldMetaData the meta-data for the field
      * @return the pointcuts
      */
-    public List getSetPointcuts(final ClassMetaData classMetaData,
-                                final FieldMetaData fieldMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
+    public List getSetPointcuts(
+            final ClassMetaData classMetaData,
+            final FieldMetaData fieldMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (fieldMetaData == null) {
+            throw new IllegalArgumentException("field meta-data can not be null");
+        }
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_setPointcuts.iterator(); it.hasNext();) {
@@ -407,7 +428,9 @@ public class PointcutManager {
      * @return the pointcuts
      */
     public List getHandlerPointcuts(final ClassMetaData classMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_handlerPointcuts.iterator(); it.hasNext();) {
@@ -442,10 +465,15 @@ public class PointcutManager {
      * @param memberMetaData the meta-data for the member
      * @return the pointcuts
      */
-    public List getCallPointcuts(final ClassMetaData classMetaData,
-                                 final MemberMetaData memberMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (memberMetaData == null) throw new IllegalArgumentException("member meta-data can not be null");
+    public List getCallPointcuts(
+            final ClassMetaData classMetaData,
+            final MemberMetaData memberMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (memberMetaData == null) {
+            throw new IllegalArgumentException("member meta-data can not be null");
+        }
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_callPointcuts.iterator(); it.hasNext();) {
@@ -499,10 +527,15 @@ public class PointcutManager {
      * @param methodMetaData the meta-data for the method
      * @return the pointcuts
      */
-    public List getCFlowExpressions(final ClassMetaData classMetaData,
-                                    final MethodMetaData methodMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+    public List getCFlowExpressions(
+            final ClassMetaData classMetaData,
+            final MethodMetaData methodMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (methodMetaData == null) {
+            throw new IllegalArgumentException("method meta-data can not be null");
+        }
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_methodToCFlowMethodsMap.entrySet().iterator(); it.hasNext();) {
@@ -519,19 +552,19 @@ public class PointcutManager {
 
     public String toString() {
         return '['
-                + super.toString()
-                + ": "
-                + ',' + m_name
-                + ',' + m_uuid
-                + ',' + m_deploymentModel
-                + ',' + m_introductions
-                + ',' + m_executionPointcuts
-                + ',' + m_getPointcuts
-                + ',' + m_setPointcuts
-                + ',' + m_callPointcuts
-                + ',' + m_handlerPointcuts
-                + ',' + m_methodToCFlowMethodsMap
-                + ']';
+               + super.toString()
+               + ": "
+               + ',' + m_name
+               + ',' + m_uuid
+               + ',' + m_deploymentModel
+               + ',' + m_introductions
+               + ',' + m_executionPointcuts
+               + ',' + m_getPointcuts
+               + ',' + m_setPointcuts
+               + ',' + m_callPointcuts
+               + ',' + m_handlerPointcuts
+               + ',' + m_methodToCFlowMethodsMap
+               + ']';
     }
 
     public int hashCode() {
@@ -550,28 +583,36 @@ public class PointcutManager {
     }
 
     protected static int hashCodeOrZeroIfNull(final Object o) {
-        if (null == o) return 19;
+        if (null == o) {
+            return 19;
+        }
         return o.hashCode();
     }
 
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PointcutManager)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PointcutManager)) {
+            return false;
+        }
         final PointcutManager obj = (PointcutManager)o;
         return areEqualsOrBothNull(obj.m_name, this.m_name)
-                && (obj.m_deploymentModel == this.m_deploymentModel)
-                && areEqualsOrBothNull(obj.m_uuid, this.m_uuid)
-                && areEqualsOrBothNull(obj.m_introductions, this.m_introductions)
-                && areEqualsOrBothNull(obj.m_executionPointcuts, this.m_executionPointcuts)
-                && areEqualsOrBothNull(obj.m_getPointcuts, this.m_getPointcuts)
-                && areEqualsOrBothNull(obj.m_setPointcuts, this.m_setPointcuts)
-                && areEqualsOrBothNull(obj.m_handlerPointcuts, this.m_handlerPointcuts)
-                && areEqualsOrBothNull(obj.m_callPointcuts, this.m_callPointcuts)
-                && areEqualsOrBothNull(obj.m_methodToCFlowMethodsMap, this.m_methodToCFlowMethodsMap);
+               && (obj.m_deploymentModel == this.m_deploymentModel)
+               && areEqualsOrBothNull(obj.m_uuid, this.m_uuid)
+               && areEqualsOrBothNull(obj.m_introductions, this.m_introductions)
+               && areEqualsOrBothNull(obj.m_executionPointcuts, this.m_executionPointcuts)
+               && areEqualsOrBothNull(obj.m_getPointcuts, this.m_getPointcuts)
+               && areEqualsOrBothNull(obj.m_setPointcuts, this.m_setPointcuts)
+               && areEqualsOrBothNull(obj.m_handlerPointcuts, this.m_handlerPointcuts)
+               && areEqualsOrBothNull(obj.m_callPointcuts, this.m_callPointcuts)
+               && areEqualsOrBothNull(obj.m_methodToCFlowMethodsMap, this.m_methodToCFlowMethodsMap);
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
-        if (null == o1) return (null == o2);
+        if (null == o1) {
+            return (null == o2);
+        }
         return o1.equals(o2);
     }
 }

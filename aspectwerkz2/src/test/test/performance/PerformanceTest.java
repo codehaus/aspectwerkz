@@ -25,7 +25,9 @@ public class PerformanceTest extends TestCase {
         }
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocationNormalMethod = time / (double)m_numberOfInvocations;
-        if (m_printInfo) System.out.println("\nNon advised method: " + timePerInvocationNormalMethod);
+        if (m_printInfo) {
+            System.out.println("\nNon advised method: " + timePerInvocationNormalMethod);
+        }
     }
 
     public void testAdvisedMethodNoAdvicePerformance() {
@@ -42,7 +44,9 @@ public class PerformanceTest extends TestCase {
         time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
         double overhead = timePerInvocation - timePerInvocationNormalMethod;
-        if (m_printInfo) System.out.println("\nAdvised method no advice: " + overhead);
+        if (m_printInfo) {
+            System.out.println("\nAdvised method no advice: " + overhead);
+        }
     }
 
     public void testMethodAdvicePerJVMPerformance() {
@@ -59,7 +63,9 @@ public class PerformanceTest extends TestCase {
         time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
         double overhead = timePerInvocation - timePerInvocationNormalMethod;
-        if (m_printInfo) System.out.println("\nPER_JVM advice: " + overhead);
+        if (m_printInfo) {
+            System.out.println("\nPER_JVM advice: " + overhead);
+        }
     }
 
     public void testMethodAdvicePerClassPerformance() {
@@ -76,7 +82,9 @@ public class PerformanceTest extends TestCase {
         time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
         double overhead = timePerInvocation - timePerInvocationNormalMethod;
-        if (m_printInfo) System.out.println("\nPER_CLASS advice: " + overhead);
+        if (m_printInfo) {
+            System.out.println("\nPER_CLASS advice: " + overhead);
+        }
     }
 
     public void testMethodAdvicePerInstancePerformance() {
@@ -93,7 +101,9 @@ public class PerformanceTest extends TestCase {
         time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
         double overhead = timePerInvocation - timePerInvocationNormalMethod;
-        if (m_printInfo) System.out.println("\nPER_INSTANCE advice: " + overhead);
+        if (m_printInfo) {
+            System.out.println("\nPER_INSTANCE advice: " + overhead);
+        }
     }
 
     public void testMethodAdvicePerThreadPerformance() {
@@ -110,7 +120,9 @@ public class PerformanceTest extends TestCase {
         time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
         double overhead = timePerInvocation - timePerInvocationNormalMethod;
-        if (m_printInfo) System.out.println("\nPER_THREAD advice: " + overhead);
+        if (m_printInfo) {
+            System.out.println("\nPER_THREAD advice: " + overhead);
+        }
     }
 
     public void testIntroductionPerJVMPerformance() {
@@ -121,7 +133,9 @@ public class PerformanceTest extends TestCase {
         }
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
-        if (m_printInfo) System.out.println("\nPER_JVM introduction: " + timePerInvocation);
+        if (m_printInfo) {
+            System.out.println("\nPER_JVM introduction: " + timePerInvocation);
+        }
     }
 
     public void testIntroductionPerClassPerformance() {
@@ -132,7 +146,9 @@ public class PerformanceTest extends TestCase {
         }
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
-        if (m_printInfo) System.out.println("\nPER_CLASS introduction: " + timePerInvocation);
+        if (m_printInfo) {
+            System.out.println("\nPER_CLASS introduction: " + timePerInvocation);
+        }
     }
 
     public void testIntroductionPerInstancePerformance() {
@@ -143,7 +159,9 @@ public class PerformanceTest extends TestCase {
         }
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
-        if (m_printInfo) System.out.println("\nPER_INSTANCE introduction: " + timePerInvocation);
+        if (m_printInfo) {
+            System.out.println("\nPER_INSTANCE introduction: " + timePerInvocation);
+        }
     }
 
     public void testIntroductionPerThreadPerformance() {
@@ -154,7 +172,9 @@ public class PerformanceTest extends TestCase {
         }
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
-        if (m_printInfo) System.out.println("\nPER_THREAD introduction: " + timePerInvocation);
+        if (m_printInfo) {
+            System.out.println("\nPER_THREAD introduction: " + timePerInvocation);
+        }
     }
 
     public static void main(String[] args) {

@@ -53,8 +53,9 @@ public class ClassPreProcessorHelper {
      */
     public static synchronized void initializePreProcessor() {
         //@todo review log statement according to log layer
-        if (preProcessorInitialized)
+        if (preProcessorInitialized) {
             return;
+        }
         preProcessorInitialized = true;
         Class klass = null;
         String s = System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT);
@@ -67,7 +68,7 @@ public class ClassPreProcessorHelper {
         catch (ClassNotFoundException _ex) {
             System.err.println("AspectWerkz - WARN - Pre-processor class '" + s + "' not found");
         }
-        if (klass != null)
+        if (klass != null) {
             try {
                 preProcessor = (ClassPreProcessor)klass.newInstance();
                 preProcessor.initialize(null);
@@ -77,12 +78,14 @@ public class ClassPreProcessorHelper {
                 System.err.println("AspectWerkz - WARN - Error initializing pre-processor class " + s + ':');
                 throwable.printStackTrace();
             }
+        }
     }
 
     /**
      * byte code instrumentation of class loaded
      */
-    public static byte[] defineClass0Pre(ClassLoader caller, String name, byte[] b, int off, int len, ProtectionDomain pd) {
+    public static byte[] defineClass0Pre(
+            ClassLoader caller, String name, byte[] b, int off, int len, ProtectionDomain pd) {
         if (!preProcessorInitialized) {
             initializePreProcessor();
         }
@@ -103,7 +106,9 @@ public class ClassPreProcessorHelper {
                 return obyte;
             }
             catch (Throwable throwable) {
-                System.err.println("AspectWerkz - WARN - Error pre-processing class " + name + " in " + Thread.currentThread());
+                System.err.println(
+                        "AspectWerkz - WARN - Error pre-processing class " + name + " in " + Thread.currentThread()
+                );
                 throwable.printStackTrace();
                 byte[] obyte = new byte[len];
                 System.arraycopy(b, off, obyte, 0, len);

@@ -80,8 +80,12 @@ public class MethodPattern extends Pattern {
      * @return true if we have a matches
      */
     public boolean matchMethodName(final String methodName) {
-        if (methodName == null) throw new IllegalArgumentException("method name can not be null");
-        if (methodName.equals("")) return false;
+        if (methodName == null) {
+            throw new IllegalArgumentException("method name can not be null");
+        }
+        if (methodName.equals("")) {
+            return false;
+        }
         return m_methodNamePattern.contains(methodName);
     }
 
@@ -92,8 +96,12 @@ public class MethodPattern extends Pattern {
      * @return true if we have a matches
      */
     public boolean matchReturnType(final String returnType) {
-        if (returnType == null) throw new IllegalArgumentException("return type class name can not be null");
-        if (returnType.equals("")) return false;
+        if (returnType == null) {
+            throw new IllegalArgumentException("return type class name can not be null");
+        }
+        if (returnType.equals("")) {
+            return false;
+        }
         return m_returnTypePattern.contains(returnType);
     }
 
@@ -108,7 +116,7 @@ public class MethodPattern extends Pattern {
             return true;
         }
         if (parameterTypes.length == 0 && m_parameterTypePatterns.size() != 0 &&
-                ((com.karneim.util.collection.regex.Pattern)m_parameterTypePatterns.get(0)).
+            ((com.karneim.util.collection.regex.Pattern)m_parameterTypePatterns.get(0)).
                 getRegEx().equals(MULTIPLE_WILDCARD_KEY)) {
             return true;
         }
@@ -334,23 +342,31 @@ public class MethodPattern extends Pattern {
     }
 
     protected static int hashCodeOrZeroIfNull(final Object o) {
-        if (null == o) return 19;
+        if (null == o) {
+            return 19;
+        }
         return o.hashCode();
     }
 
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MethodPattern)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof MethodPattern)) {
+            return false;
+        }
         final MethodPattern obj = (MethodPattern)o;
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
-                && areEqualsOrBothNull(obj.m_methodNamePattern, this.m_methodNamePattern)
-                && areEqualsOrBothNull(obj.m_parameterTypePatterns, this.m_parameterTypePatterns)
-                && areEqualsOrBothNull(obj.m_returnTypePattern, this.m_returnTypePattern)
-                && areEqualsOrBothNull(obj.m_abbreviations, this.m_abbreviations);
+               && areEqualsOrBothNull(obj.m_methodNamePattern, this.m_methodNamePattern)
+               && areEqualsOrBothNull(obj.m_parameterTypePatterns, this.m_parameterTypePatterns)
+               && areEqualsOrBothNull(obj.m_returnTypePattern, this.m_returnTypePattern)
+               && areEqualsOrBothNull(obj.m_abbreviations, this.m_abbreviations);
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
-        if (null == o1) return (null == o2);
+        if (null == o1) {
+            return (null == o2);
+        }
         return o1.equals(o2);
     }
 }

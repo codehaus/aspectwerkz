@@ -29,7 +29,9 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      * @return a <code>ClassMetaData</code> instance.
      */
     public static ClassMetaData createClassMetaData(final Class klass) {
-        if (klass == null) throw new IllegalArgumentException("class can not be null");
+        if (klass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
 
         if (s_classMetaDataCache.containsKey(klass.getName())) {
             return (ClassMetaData)s_classMetaDataCache.get(klass.getName());
@@ -93,7 +95,9 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      * @return a <code>InterfaceMetaData</code> instance.
      */
     public static InterfaceMetaData createInterfaceMetaData(final Class anInterface) {
-        if (anInterface == null) throw new IllegalArgumentException("interface can not be null");
+        if (anInterface == null) {
+            throw new IllegalArgumentException("interface can not be null");
+        }
 
         if (s_interfaceMetaDataCache.containsKey(anInterface.getName())) {
             return (InterfaceMetaData)s_interfaceMetaDataCache.get(anInterface.getName());
@@ -124,9 +128,10 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      * @param returnType     is the return type.
      * @return a <code>MethodMetaData</code> instance.
      */
-    public static MethodMetaData createMethodMetaData(final String methodName,
-                                                      final Class[] parameterTypes,
-                                                      final Class returnType) {
+    public static MethodMetaData createMethodMetaData(
+            final String methodName,
+            final Class[] parameterTypes,
+            final Class returnType) {
         MethodMetaData data = new MethodMetaData();
         data.setName(methodName);
         data.setParameterTypes(TypeConverter.convertTypeToJava(parameterTypes));
@@ -172,8 +177,9 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      * @param typeName  is the type of the field.
      * @return a <code>FieldMetaData</code> instance.
      */
-    public static FieldMetaData createFieldMetaData(final String fieldName,
-                                                    final String typeName) {
+    public static FieldMetaData createFieldMetaData(
+            final String fieldName,
+            final String typeName) {
         FieldMetaData data = new FieldMetaData();
         data.setName(fieldName);
         data.setType(typeName);

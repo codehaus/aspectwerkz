@@ -129,9 +129,10 @@ public class MethodExecutionTransformer implements Transformer {
      * @param methodHash     the method hash
      * @return the wrapper method
      */
-    private CtMethod createWrapperMethod(final CtClass ctClass,
-                                         final CtMethod originalMethod,
-                                         final int methodHash)
+    private CtMethod createWrapperMethod(
+            final CtClass ctClass,
+            final CtMethod originalMethod,
+            final int methodHash)
             throws NotFoundException, CannotCompileException {
 
         StringBuffer body = new StringBuffer();
@@ -160,11 +161,12 @@ public class MethodExecutionTransformer implements Transformer {
             // special handling for void return type leads to cleaner bytecode generation with Javassist
             body.append("{").append(callBody.toString()).append("}");
         }
-        else if ( ! originalMethod.getReturnType().isPrimitive()) {
+        else if (!originalMethod.getReturnType().isPrimitive()) {
             body.append("{ return ($r)");
             body.append(callBody.toString());
             body.append("}");
-        } else {
+        }
+        else {
             String localResult = TransformationUtil.ASPECTWERKZ_PREFIX + "res";
             body.append("{Object ").append(localResult).append(" = ");
             body.append(callBody.toString());
@@ -177,20 +179,24 @@ public class MethodExecutionTransformer implements Transformer {
 
         CtMethod method = null;
         if (Modifier.isStatic(originalMethod.getModifiers())) {
-            method = JavassistHelper.makeStatic(originalMethod.getReturnType(),
-                                                originalMethod.getName(),
-                                                originalMethod.getParameterTypes(),
-                                                originalMethod.getExceptionTypes(),
-                                                body.toString(),
-                                                ctClass);
+            method = JavassistHelper.makeStatic(
+                    originalMethod.getReturnType(),
+                    originalMethod.getName(),
+                    originalMethod.getParameterTypes(),
+                    originalMethod.getExceptionTypes(),
+                    body.toString(),
+                    ctClass
+            );
         }
         else {
-            method = CtNewMethod.make(originalMethod.getReturnType(),
-                                      originalMethod.getName(),
-                                      originalMethod.getParameterTypes(),
-                                      originalMethod.getExceptionTypes(),
-                                      body.toString(),
-                                      ctClass);
+            method = CtNewMethod.make(
+                    originalMethod.getReturnType(),
+                    originalMethod.getName(),
+                    originalMethod.getParameterTypes(),
+                    originalMethod.getExceptionTypes(),
+                    body.toString(),
+                    ctClass
+            );
             method.setModifiers(originalMethod.getModifiers());
         }
 
@@ -233,12 +239,13 @@ public class MethodExecutionTransformer implements Transformer {
      * @param cg            the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition,
-                                final ClassMetaData classMetaData,
-                                final CtClass cg,
-                                final boolean isActivatePhase) {
+    private boolean classFilter(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final CtClass cg,
+            final boolean isActivatePhase) {
         if (cg.isInterface() ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = cg.getName();
@@ -265,19 +272,20 @@ public class MethodExecutionTransformer implements Transformer {
      * @param method        the method to filter
      * @return boolean
      */
-    private boolean methodFilter(final SystemDefinition definition,
-                                 final ClassMetaData classMetaData,
-                                 final MethodMetaData methodMetaData,
-                                 final CtMethod method) {
+    private boolean methodFilter(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final MethodMetaData methodMetaData,
+            final CtMethod method) {
         if (Modifier.isAbstract(method.getModifiers()) ||
-                Modifier.isNative(method.getModifiers()) ||
-                method.getName().equals("<init>") ||
-                method.getName().equals("<clinit>") ||
-                method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
-                method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
-                method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            Modifier.isNative(method.getModifiers()) ||
+            method.getName().equals("<init>") ||
+            method.getName().equals("<clinit>") ||
+            method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
+            method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
+            method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
+            method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
+            method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
         }
         else if (definition.hasExecutionPointcut(classMetaData, methodMetaData)) {

@@ -46,10 +46,13 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
                     if ("defineClass0".equals(m.getMethodName())) {
                         //TODO check for IBM: THIS $1.. $5
                         //TODO enhance this with a fake method preparation
-                        m.replace('{'
-                                  + "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
-                                  + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);"
-                                  + '}');
+                        m.replace(
+                                '{'
+                                +
+                                "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
+                                + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);"
+                                + '}'
+                        );
                     }
                 }
             };
@@ -69,7 +72,9 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
      */
     public static void main(String args[]) throws Exception {
         ClassLoaderPreProcessor me = new ClassLoaderPreProcessorImpl();
-        InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream("java/lang/ClassLoader.class");
+        InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream(
+                "java/lang/ClassLoader.class"
+        );
         me.preProcess(ClassLoaderPatcher.inputStreamToByteArray(is));
         is.close();
     }

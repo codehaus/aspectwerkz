@@ -15,8 +15,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import java.io.StringReader;
 
 /**
- * Test the pointcut expression boolean grammar
- * Ignores cflow operator
+ * Test the pointcut expression boolean grammar Ignores cflow operator
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -60,7 +59,8 @@ public class ExpressionGrammarTest extends TestCase {
         try {
             SimpleNode root = (new ExpressionParser(new StringReader(expression))).ExpressionScript();
             return ((Boolean)root.jjtAccept(MOCK_VISITOR, null)).booleanValue();
-        } catch (ParseException e) {
+        }
+        catch (ParseException e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -71,7 +71,8 @@ public class ExpressionGrammarTest extends TestCase {
             String leafName = node.name;
             if (leafName.startsWith("true_")) {
                 return Boolean.TRUE;
-            } else {
+            }
+            else {
                 return Boolean.FALSE;
             }
         }

@@ -44,8 +44,12 @@ public class ClassPattern extends Pattern {
      * @return true if we have a matches
      */
     public boolean matches(final String className) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
-        if (className.equals("")) return false;
+        if (className == null) {
+            throw new IllegalArgumentException("class name can not be null");
+        }
+        if (className.equals("")) {
+            return false;
+        }
         return m_classNamePattern.contains(className);
     }
 
@@ -112,21 +116,29 @@ public class ClassPattern extends Pattern {
     }
 
     protected static int hashCodeOrZeroIfNull(final Object o) {
-        if (null == o) return 19;
+        if (null == o) {
+            return 19;
+        }
         return o.hashCode();
     }
 
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ClassPattern)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ClassPattern)) {
+            return false;
+        }
         final ClassPattern obj = (ClassPattern)o;
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
-                && areEqualsOrBothNull(obj.m_classNamePattern, this.m_classNamePattern)
-                && areEqualsOrBothNull(obj.m_abbreviations, this.m_abbreviations);
+               && areEqualsOrBothNull(obj.m_classNamePattern, this.m_classNamePattern)
+               && areEqualsOrBothNull(obj.m_abbreviations, this.m_abbreviations);
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
-        if (null == o1) return (null == o2);
+        if (null == o1) {
+            return (null == o2);
+        }
         return o1.equals(o2);
     }
 }

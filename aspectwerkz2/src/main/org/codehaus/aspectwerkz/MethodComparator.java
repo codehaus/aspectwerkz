@@ -87,7 +87,9 @@ public final class MethodComparator implements java.util.Comparator {
      */
     private int compareNormal(final Method m1, final Method m2) {
         try {
-            if (m1.equals(m2)) return 0;
+            if (m1.equals(m2)) {
+                return 0;
+            }
 
             final String m1Name = m1.getName();
             final String m2Name = m2.getName();
@@ -97,12 +99,20 @@ public final class MethodComparator implements java.util.Comparator {
             }
             final Class[] args1 = m1.getParameterTypes();
             final Class[] args2 = m2.getParameterTypes();
-            if (args1.length < args2.length) return -1;
-            if (args1.length > args2.length) return 1;
+            if (args1.length < args2.length) {
+                return -1;
+            }
+            if (args1.length > args2.length) {
+                return 1;
+            }
             for (int i = 0; i < args1.length; i++) {
                 //handles array types - AW-104
-                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
-                if (result != 0) return result;
+                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(
+                        TypeConverter.convertTypeToJava(args2[i])
+                );
+                if (result != 0) {
+                    return result;
+                }
             }
         }
         catch (Throwable e) {
@@ -122,7 +132,9 @@ public final class MethodComparator implements java.util.Comparator {
      */
     private int comparePrefixed(final Method m1, final Method m2) {
         try {
-            if (m1.equals(m2)) return 0;
+            if (m1.equals(m2)) {
+                return 0;
+            }
 
             // compare only the original method names, i.e. remove the prefix and suffix
             final String[] m1Tokens = Strings.splitString(m1.getName(), TransformationUtil.DELIMITER);
@@ -136,12 +148,20 @@ public final class MethodComparator implements java.util.Comparator {
             }
             final Class[] args1 = m1.getParameterTypes();
             final Class[] args2 = m2.getParameterTypes();
-            if (args1.length < args2.length) return -1;
-            if (args1.length > args2.length) return 1;
+            if (args1.length < args2.length) {
+                return -1;
+            }
+            if (args1.length > args2.length) {
+                return 1;
+            }
             for (int i = 0; i < args1.length; i++) {
                 //handles array types - AW-104
-                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
-                if (result != 0) return result;
+                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(
+                        TypeConverter.convertTypeToJava(args2[i])
+                );
+                if (result != 0) {
+                    return result;
+                }
             }
         }
         catch (Throwable e) {
@@ -159,10 +179,13 @@ public final class MethodComparator implements java.util.Comparator {
      * @param m2
      * @return int
      */
-    private int compareMethodMetaData(final MethodMetaData m1,
-                                      final MethodMetaData m2) {
+    private int compareMethodMetaData(
+            final MethodMetaData m1,
+            final MethodMetaData m2) {
         try {
-            if (m1.equals(m2)) return 0;
+            if (m1.equals(m2)) {
+                return 0;
+            }
 
             final String m1Name = m1.getName();
             final String m2Name = m2.getName();
@@ -172,11 +195,17 @@ public final class MethodComparator implements java.util.Comparator {
             }
             final String[] args1 = m1.getParameterTypes();
             final String[] args2 = m2.getParameterTypes();
-            if (args1.length < args2.length) return -1;
-            if (args1.length > args2.length) return 1;
+            if (args1.length < args2.length) {
+                return -1;
+            }
+            if (args1.length > args2.length) {
+                return 1;
+            }
             for (int i = 0; i < args1.length; i++) {
                 int result = args1[i].compareTo(args2[i]);
-                if (result != 0) return result;
+                if (result != 0) {
+                    return result;
+                }
             }
         }
         catch (Throwable e) {

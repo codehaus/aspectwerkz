@@ -21,13 +21,13 @@ public class HandlerTestAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     *  Handler
+     * Handler
      */
     Pointcut handler;
 
     // ============ Advices ============
 
-   /**
+    /**
      * Before handler
      */
     public void before(final JoinPoint joinPoint) throws Throwable {

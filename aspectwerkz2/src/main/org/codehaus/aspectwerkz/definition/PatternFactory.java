@@ -37,8 +37,12 @@ public class PatternFactory {
      * @return a tuple of the class patterns and the member pattern
      */
     public static PatternTuple createClassPatternTuple(final String pattern, final String packageName) {
-        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
-        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern can not be null");
+        }
+        if (packageName == null) {
+            throw new IllegalArgumentException("package name can not be null");
+        }
 
         boolean isHierarchical = false;
         try {
@@ -69,8 +73,12 @@ public class PatternFactory {
      * @return the class pattern
      */
     public static String createClassPattern(final String pattern, final String packageName) {
-        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
-        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern can not be null");
+        }
+        if (packageName == null) {
+            throw new IllegalArgumentException("package name can not be null");
+        }
 
         try {
             String classPattern;
@@ -105,8 +113,12 @@ public class PatternFactory {
      * @return a tuple of the class patterns and the execution pattern
      */
     public static PatternTuple createMethodPatternTuple(final String pattern, final String packageName) {
-        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
-        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern can not be null");
+        }
+        if (packageName == null) {
+            throw new IllegalArgumentException("package name can not be null");
+        }
 
         boolean isHierarchical = false;
         try {
@@ -116,7 +128,10 @@ public class PatternFactory {
             String parameterTypes = pattern.substring(pattern.indexOf('('), pattern.length()).trim();
             int indexLastDot = classNameWithMethodName.lastIndexOf('.');
 
-            final String methodPattern = classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
+            final String methodPattern = classNameWithMethodName.substring(
+                    indexLastDot + 1, classNameWithMethodName.length()
+            )
+                    .trim();
             String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
             if (classPattern.endsWith("+")) {
                 classPattern = classPattern.substring(0, classPattern.length() - 1);
@@ -142,8 +157,12 @@ public class PatternFactory {
      * @return a tuple of the class patterns and the execution pattern
      */
     public static PatternTuple createConstructorPatternTuple(final String pattern, final String packageName) {
-        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
-        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern can not be null");
+        }
+        if (packageName == null) {
+            throw new IllegalArgumentException("package name can not be null");
+        }
 
         boolean isHierarchical = false;
         try {
@@ -151,7 +170,10 @@ public class PatternFactory {
             String parameterTypes = pattern.substring(pattern.indexOf('('), pattern.length()).trim();
             int indexLastDot = classNameWithMethodName.lastIndexOf('.');
 
-            final String methodPattern = classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
+            final String methodPattern = classNameWithMethodName.substring(
+                    indexLastDot + 1, classNameWithMethodName.length()
+            )
+                    .trim();
             String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
             if (classPattern.endsWith("+")) {
                 classPattern = classPattern.substring(0, classPattern.length() - 1);
@@ -176,8 +198,12 @@ public class PatternFactory {
      * @return the execution pattern
      */
     public static String createMethodPattern(final String pattern, final String packageName) {
-        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
-        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern can not be null");
+        }
+        if (packageName == null) {
+            throw new IllegalArgumentException("package name can not be null");
+        }
 
         try {
             int indexFirstSpace = pattern.indexOf(' ');
@@ -217,8 +243,12 @@ public class PatternFactory {
      * @return a tuple of the class patterns and the member pattern
      */
     public static PatternTuple createFieldPatternTuple(final String pattern, final String packageName) {
-        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
-        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern can not be null");
+        }
+        if (packageName == null) {
+            throw new IllegalArgumentException("package name can not be null");
+        }
 
         boolean isHierarchical = false;
         try {
@@ -227,7 +257,10 @@ public class PatternFactory {
             String classNameWithFieldName = pattern.substring(indexFirstSpace, pattern.length()).trim();
             int indexLastDot = classNameWithFieldName.lastIndexOf('.');
 
-            final String fieldPattern = classNameWithFieldName.substring(indexLastDot + 1, classNameWithFieldName.length()).trim();
+            final String fieldPattern = classNameWithFieldName.substring(
+                    indexLastDot + 1, classNameWithFieldName.length()
+            )
+                    .trim();
             String classPattern = packageName + classNameWithFieldName.substring(0, indexLastDot).trim();
             if (classPattern.endsWith("+")) {
                 classPattern = classPattern.substring(0, classPattern.length() - 1);
@@ -253,8 +286,12 @@ public class PatternFactory {
      * @return the member pattern
      */
     public static String createFieldPattern(final String pattern, final String packageName) {
-        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
-        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern can not be null");
+        }
+        if (packageName == null) {
+            throw new IllegalArgumentException("package name can not be null");
+        }
 
         boolean isHierarchical = false;
         try {
@@ -295,8 +332,12 @@ public class PatternFactory {
      * @return a tuple of the class patterns and the member pattern
      */
     public static PatternTuple createThrowsPatternTuple(final String pattern, final String packageName) {
-        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
-        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern can not be null");
+        }
+        if (packageName == null) {
+            throw new IllegalArgumentException("package name can not be null");
+        }
 
         boolean isHierarchical = false;
         try {
@@ -304,10 +345,19 @@ public class PatternFactory {
             final String exceptionName = pattern.substring(pattern.indexOf('#') + 1).trim();
             int indexFirstSpace = classAndMethodName.indexOf(' ');
             final String returnType = classAndMethodName.substring(0, indexFirstSpace + 1);
-            String classNameWithMethodName = classAndMethodName.substring(indexFirstSpace, classAndMethodName.indexOf('(')).trim();
-            final String parameterTypes = classAndMethodName.substring(classAndMethodName.indexOf('('), classAndMethodName.length()).trim();
+            String classNameWithMethodName = classAndMethodName.substring(
+                    indexFirstSpace, classAndMethodName.indexOf('(')
+            )
+                    .trim();
+            final String parameterTypes = classAndMethodName.substring(
+                    classAndMethodName.indexOf('('), classAndMethodName.length()
+            )
+                    .trim();
             int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-            final String methodPattern = classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
+            final String methodPattern = classNameWithMethodName.substring(
+                    indexLastDot + 1, classNameWithMethodName.length()
+            )
+                    .trim();
             String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
             if (classPattern.endsWith("+")) {
                 classPattern = classPattern.substring(0, classPattern.length() - 1);
@@ -336,15 +386,22 @@ public class PatternFactory {
      * @return the throws pattern
      */
     public static String createThrowsPattern(final String pattern, final String packageName) {
-        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
-        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern can not be null");
+        }
+        if (packageName == null) {
+            throw new IllegalArgumentException("package name can not be null");
+        }
 
         try {
             String classAndMethodName = pattern.substring(0, pattern.indexOf('#')).trim();
             final String exceptionName = pattern.substring(pattern.indexOf('#') + 1).trim();
             int indexFirstSpace = classAndMethodName.indexOf(' ');
             final String returnType = classAndMethodName.substring(0, indexFirstSpace + 1);
-            String classNameWithMethodName = classAndMethodName.substring(indexFirstSpace, classAndMethodName.length()).trim();
+            String classNameWithMethodName = classAndMethodName.substring(
+                    indexFirstSpace, classAndMethodName.length()
+            )
+                    .trim();
 
             StringBuffer fullPattern = new StringBuffer();
             fullPattern.append(returnType);
@@ -382,11 +439,16 @@ public class PatternFactory {
      * @param packageName the name of the package
      * @return a tuple of the class patterns and the member pattern
      */
-    public static PatternTuple createCallPatternTuple(final int type,
-                                                      String pattern,
-                                                      final String packageName) {
-        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
-        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
+    public static PatternTuple createCallPatternTuple(
+            final int type,
+            String pattern,
+            final String packageName) {
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern can not be null");
+        }
+        if (packageName == null) {
+            throw new IllegalArgumentException("package name can not be null");
+        }
 
         boolean isHierarchical = false;
         boolean isHierarchicalCallee = false;
@@ -406,9 +468,11 @@ public class PatternFactory {
             String calleeMethodPattern = null;
             if (type == Pattern.CONSTRUCTOR) {
                 String classNameWithMethodName = calleePattern.substring(0, calleePattern.indexOf('(')).trim();
-                String parameterTypes = calleePattern.substring(calleePattern.indexOf('('), calleePattern.length()).trim();
+                String parameterTypes = calleePattern.substring(calleePattern.indexOf('('), calleePattern.length())
+                        .trim();
                 int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-                calleeMethodPattern = classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
+                calleeMethodPattern =
+                classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
                 calleeClassPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
 
                 if (calleeClassPattern.endsWith("+")) {
@@ -419,10 +483,13 @@ public class PatternFactory {
             }
             else {
                 String returnType = calleePattern.substring(0, indexFirstSpace + 1);
-                String classNameWithMethodName = calleePattern.substring(indexFirstSpace, calleePattern.indexOf('(')).trim();
-                String parameterTypes = calleePattern.substring(calleePattern.indexOf('('), calleePattern.length()).trim();
+                String classNameWithMethodName = calleePattern.substring(indexFirstSpace, calleePattern.indexOf('('))
+                        .trim();
+                String parameterTypes = calleePattern.substring(calleePattern.indexOf('('), calleePattern.length())
+                        .trim();
                 int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-                calleeMethodPattern = classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
+                calleeMethodPattern =
+                classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
                 calleeClassPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
 
                 if (calleeClassPattern.endsWith("+")) {
@@ -437,8 +504,10 @@ public class PatternFactory {
             buf.append(SystemDefinition.CALLER_SIDE_DELIMITER);
             buf.append(calleeMethodPattern);
 
-            return new PatternTuple(callerClassPattern, calleeClassPattern, buf.toString(),
-                                    isHierarchical, isHierarchicalCallee);
+            return new PatternTuple(
+                    callerClassPattern, calleeClassPattern, buf.toString(),
+                    isHierarchical, isHierarchicalCallee
+            );
         }
         catch (Exception e) {
             throw new DefinitionException("caller side pattern is not well formed [" + pattern + ']');
@@ -453,8 +522,12 @@ public class PatternFactory {
      * @return the call pattern
      */
     public static String createCallPattern(String pattern, final String packageName) {
-        if (pattern == null) throw new IllegalArgumentException("pattern can not be null");
-        if (packageName == null) throw new IllegalArgumentException("package name can not be null");
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern can not be null");
+        }
+        if (packageName == null) {
+            throw new IllegalArgumentException("package name can not be null");
+        }
 
         try {
             if (pattern.indexOf('>') == -1) {
@@ -471,7 +544,10 @@ public class PatternFactory {
             String classNameWithMethodName = calleePattern.substring(indexFirstSpace, calleePattern.indexOf('(')).trim();
             String parameterTypes = calleePattern.substring(calleePattern.indexOf('('), calleePattern.length()).trim();
             int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-            String calleeMethodPattern = classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
+            String calleeMethodPattern = classNameWithMethodName.substring(
+                    indexLastDot + 1, classNameWithMethodName.length()
+            )
+                    .trim();
             String calleeClassPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
 
             StringBuffer fullPattern = new StringBuffer();

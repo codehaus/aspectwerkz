@@ -147,15 +147,15 @@ public class ExpressionExpression extends Expression {
             cflowName = (String)i.next();
             m_cflowExpressionRefs.put(cflowName, m_namespace.getExpression(cflowName));
         }
-        if (m_cflowExpressionRefs.size() > 1)
+        if (m_cflowExpressionRefs.size() > 1) {
             throw new RuntimeException("complex cflow expression not supported yet");
+        }
     }
 
     /**
-     * @TODO document
-     *
      * @param classMetaData
      * @return
+     * @TODO document
      */
     public boolean match(final ClassMetaData classMetaData) {
         for (Iterator it = m_expressionRefs.values().iterator(); it.hasNext();) {
@@ -214,13 +214,16 @@ public class ExpressionExpression extends Expression {
      * @param exceptionType  the exception type (null => match all)
      * @return boolean
      */
-    public boolean match(final ClassMetaData classMetaData,
-                         final MemberMetaData memberMetaData,
-                         final String exceptionType) {
+    public boolean match(
+            final ClassMetaData classMetaData,
+            final MemberMetaData memberMetaData,
+            final String exceptionType) {
         if (exceptionType != null) {
             throw new RuntimeException("cannot evaluate exception of type [" + m_type.toString() + ']');
         }
-        ExpressionContext ctx = new ExpressionContext(m_type, m_namespace, classMetaData, memberMetaData, exceptionType);
+        ExpressionContext ctx = new ExpressionContext(
+                m_type, m_namespace, classMetaData, memberMetaData, exceptionType
+        );
         return ((Boolean)root.jjtAccept(EVALUATE_VISITOR, ctx)).booleanValue();
     }
 

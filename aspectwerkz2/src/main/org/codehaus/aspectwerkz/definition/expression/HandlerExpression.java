@@ -65,9 +65,10 @@ public class HandlerExpression extends LeafExpression {
      * @param expression   the expression as a string
      * @param pointcutName the name of the pointcut
      */
-    HandlerExpression(final ExpressionNamespace namespace,
-                      final String expression,
-                      final String pointcutName) {
+    HandlerExpression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String pointcutName) {
         this(namespace, expression, "", pointcutName);
     }
 
@@ -79,10 +80,11 @@ public class HandlerExpression extends LeafExpression {
      * @param packageNamespace the package namespace that the expression is living in
      * @param pointcutName     the name of the pointcut
      */
-    HandlerExpression(final ExpressionNamespace namespace,
-                      final String expression,
-                      final String packageNamespace,
-                      final String pointcutName) {
+    HandlerExpression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String packageNamespace,
+            final String pointcutName) {
         super(namespace, expression, packageNamespace, pointcutName, PointcutType.HANDLER);
     }
 }

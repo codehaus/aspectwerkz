@@ -28,7 +28,10 @@ public class MethodTuple {
             originalMethod = wrapperMethod;
         }
         if (wrapperMethod.getDeclaringClass() != originalMethod.getDeclaringClass()) {
-            throw new RuntimeException(wrapperMethod.getName() + " and " + originalMethod.getName() + " does not have the same declaring class");
+            throw new RuntimeException(
+                    wrapperMethod.getName() + " and " + originalMethod.getName() +
+                    " does not have the same declaring class"
+            );
         }
         m_declaringClass = wrapperMethod.getDeclaringClass();
         m_wrapperMethod = wrapperMethod;

@@ -56,15 +56,32 @@ public final class TransformationUtil {
     public static final String PROCEED_WITH_GET_JOIN_POINT_METHOD = "proceedWithGetJoinPoint";
     public static final String PROCEED_WITH_HANDLER_JOIN_POINT_METHOD = "proceedWithHandlerJoinPoint";
 
-    public static final String SUPER_CALL_WRAPPER_PREFIX = ASPECTWERKZ_PREFIX + DELIMITER + "super_call_wrapper" + DELIMITER;
-    public static final String MEMBER_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "member_method" + DELIMITER;
-    public static final String STATIC_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "static_method" + DELIMITER;
-    public static final String MEMBER_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "member_field" + DELIMITER + "get" + DELIMITER;
-    public static final String MEMBER_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "member_field" + DELIMITER + "set" + DELIMITER;
-    public static final String STATIC_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "static_field" + DELIMITER + "get" + DELIMITER;
-    public static final String STATIC_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "static_field" + DELIMITER + "set" + DELIMITER;
-    public static final String CALLER_SIDE_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "caller_side_method" + DELIMITER;
-    public static final String CONSTRUCTOR_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "constructor" + DELIMITER;
+    public static final String SUPER_CALL_WRAPPER_PREFIX = ASPECTWERKZ_PREFIX + DELIMITER + "super_call_wrapper" +
+                                                           DELIMITER;
+    public static final String MEMBER_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "member_method" +
+                                                                 DELIMITER;
+    public static final String STATIC_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "static_method" +
+                                                                 DELIMITER;
+    public static final String MEMBER_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "member_field" +
+                                                                    DELIMITER +
+                                                                    "get" +
+                                                                    DELIMITER;
+    public static final String MEMBER_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "member_field" +
+                                                                    DELIMITER +
+                                                                    "set" +
+                                                                    DELIMITER;
+    public static final String STATIC_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "static_field" +
+                                                                    DELIMITER +
+                                                                    "get" +
+                                                                    DELIMITER;
+    public static final String STATIC_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "static_field" +
+                                                                    DELIMITER +
+                                                                    "set" +
+                                                                    DELIMITER;
+    public static final String CALLER_SIDE_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "caller_side_method" +
+                                                               DELIMITER;
+    public static final String CONSTRUCTOR_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "constructor" +
+                                                               DELIMITER;
 //
     public static final String FIELD_JOIN_POINT_PRE_EXECUTION_METHOD = "pre";
     public static final String FIELD_JOIN_POINT_POST_EXECUTION_METHOD = "post";
@@ -113,7 +130,9 @@ public final class TransformationUtil {
      * @return the sorted method list
      */
     public static List createSortedMethodList(final Class klass) {
-        if (klass == null) throw new IllegalArgumentException("class to sort method on can not be null");
+        if (klass == null) {
+            throw new IllegalArgumentException("class to sort method on can not be null");
+        }
 
         // get all public methods including the inherited methods
         java.lang.reflect.Method[] methods = klass.getMethods();
@@ -122,23 +141,25 @@ public final class TransformationUtil {
         for (int i = 0; i < methods.length; i++) {
             java.lang.reflect.Method method = methods[i];
             if (!method.getName().equals("equals") &&
-                    !method.getName().equals("hashCode") &&
-                    !method.getName().equals("getClass") &&
-                    !method.getName().equals("toString") &&
-                    !method.getName().equals("wait") &&
-                    !method.getName().equals("notify") &&
-                    !method.getName().equals("notifyAll") &&
-                    !method.getName().startsWith(CLASS_LOOKUP_METHOD) &&
-                    !method.getName().startsWith(GET_UUID_METHOD) &&
-                    !method.getName().startsWith(GET_META_DATA_METHOD) &&
-                    !method.getName().startsWith(SET_META_DATA_METHOD) &&
-                    !method.getName().startsWith(ORIGINAL_METHOD_PREFIX) &&
-                    !method.getName().startsWith(ASPECTWERKZ_PREFIX)) {
+                !method.getName().equals("hashCode") &&
+                !method.getName().equals("getClass") &&
+                !method.getName().equals("toString") &&
+                !method.getName().equals("wait") &&
+                !method.getName().equals("notify") &&
+                !method.getName().equals("notifyAll") &&
+                !method.getName().startsWith(CLASS_LOOKUP_METHOD) &&
+                !method.getName().startsWith(GET_UUID_METHOD) &&
+                !method.getName().startsWith(GET_META_DATA_METHOD) &&
+                !method.getName().startsWith(SET_META_DATA_METHOD) &&
+                !method.getName().startsWith(ORIGINAL_METHOD_PREFIX) &&
+                !method.getName().startsWith(ASPECTWERKZ_PREFIX)) {
                 methodList.add(method);
             }
         }
-        Collections.sort(methodList,
-                         MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
+        Collections.sort(
+                methodList,
+                MethodComparator.getInstance(MethodComparator.NORMAL_METHOD)
+        );
         return methodList;
     }
 
@@ -149,7 +170,9 @@ public final class TransformationUtil {
      * @return the sorted method list
      */
     public static List createSortedMethodList(final CtClass klass) {
-        if (klass == null) throw new IllegalArgumentException("class to sort method on can not be null");
+        if (klass == null) {
+            throw new IllegalArgumentException("class to sort method on can not be null");
+        }
 
         // get all public methods including the inherited methods
         CtMethod[] methods = klass.getMethods();
@@ -158,23 +181,25 @@ public final class TransformationUtil {
         for (int i = 0; i < methods.length; i++) {
             CtMethod method = methods[i];
             if (!method.getName().equals("equals") &&
-                    !method.getName().equals("hashCode") &&
-                    !method.getName().equals("getClass") &&
-                    !method.getName().equals("toString") &&
-                    !method.getName().equals("wait") &&
-                    !method.getName().equals("notify") &&
-                    !method.getName().equals("notifyAll") &&
-                    !method.getName().startsWith(CLASS_LOOKUP_METHOD) &&
-                    !method.getName().startsWith(GET_UUID_METHOD) &&
-                    !method.getName().startsWith(GET_META_DATA_METHOD) &&
-                    !method.getName().startsWith(SET_META_DATA_METHOD) &&
-                    !method.getName().startsWith(ORIGINAL_METHOD_PREFIX) &&
-                    !method.getName().startsWith(ASPECTWERKZ_PREFIX)) {
+                !method.getName().equals("hashCode") &&
+                !method.getName().equals("getClass") &&
+                !method.getName().equals("toString") &&
+                !method.getName().equals("wait") &&
+                !method.getName().equals("notify") &&
+                !method.getName().equals("notifyAll") &&
+                !method.getName().startsWith(CLASS_LOOKUP_METHOD) &&
+                !method.getName().startsWith(GET_UUID_METHOD) &&
+                !method.getName().startsWith(GET_META_DATA_METHOD) &&
+                !method.getName().startsWith(SET_META_DATA_METHOD) &&
+                !method.getName().startsWith(ORIGINAL_METHOD_PREFIX) &&
+                !method.getName().startsWith(ASPECTWERKZ_PREFIX)) {
                 methodList.add(method);
             }
         }
-        Collections.sort(methodList,
-                         MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
+        Collections.sort(
+                methodList,
+                MethodComparator.getInstance(MethodComparator.NORMAL_METHOD)
+        );
         return methodList;
     }
 
@@ -409,9 +434,10 @@ public final class TransformationUtil {
      * @param className      the class name
      * @return the name of the join point
      */
-    public static String getPrefixedMethodName(final CtMethod method,
-                                               final int methodSequence,
-                                               final String className) {
+    public static String getPrefixedMethodName(
+            final CtMethod method,
+            final int methodSequence,
+            final String className) {
         final StringBuffer methodName = new StringBuffer();
         methodName.append(ORIGINAL_METHOD_PREFIX);
         methodName.append(method.getName());
@@ -430,9 +456,10 @@ public final class TransformationUtil {
      * @param className      the class name
      * @return the name of the join point
      */
-    public static String getPrefixedMethodName(final Method method,
-                                               final int methodSequence,
-                                               final String className) {
+    public static String getPrefixedMethodName(
+            final Method method,
+            final int methodSequence,
+            final String className) {
         final StringBuffer methodName = new StringBuffer();
         methodName.append(ORIGINAL_METHOD_PREFIX);
         methodName.append(method.getName());
