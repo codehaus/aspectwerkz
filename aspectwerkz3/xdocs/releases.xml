@@ -37,6 +37,14 @@
                 </p>
             </subsection>
             <section name="Release notes">
+                <subsection name="New features and changes in release 1.0">
+                    <p>
+                        <ul>
+                            <li>AnnotationCTask to run AnnotaionC from Ant as a custom task</li>
+                            <li>Minor bug fix when using META-INF/aop.xml in J2EE environments</li>
+                        </ul>
+                    </p>
+                </subsection>
                 <subsection name="New features and changes in release 1.0.RC3">
                     <p>
                         <ul>

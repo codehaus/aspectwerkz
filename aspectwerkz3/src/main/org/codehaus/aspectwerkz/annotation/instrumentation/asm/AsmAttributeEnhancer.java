@@ -93,13 +93,10 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
      * @param classPath the class path
      * @return true if the class was succefully loaded, false otherwise
      */
-    public boolean initialize(final String className, final String classPath) {
+    public boolean initialize(final String className, final URL[] classPath) {
         try {
             m_className = className;
-            URL[] urls = new URL[] {
-                new File(classPath).toURL()
-            };
-            m_loader = new URLClassLoader(urls);
+            m_loader = new URLClassLoader(classPath);
             m_classFileName = className.replace('.', '/') + ".class";
             InputStream classAsStream = m_loader.getResourceAsStream(m_classFileName);
             if (classAsStream == null) {

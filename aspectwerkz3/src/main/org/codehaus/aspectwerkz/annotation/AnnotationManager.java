@@ -12,10 +12,13 @@ import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
+
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.util.Strings;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,6 +58,19 @@ public class AnnotationManager {
     }
 
     /**
+     * Adds a source file.
+     *
+     * @param srcFile the source file
+     */
+    public void addSource(final String srcFile) {
+        try {
+            m_parser.addSource(new File(srcFile));
+        } catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    /**
      * Register an annotation together with its proxy implementation.
      *
      * @param proxyClass     the proxy class
@@ -74,14 +90,14 @@ public class AnnotationManager {
         Collection javaClasses = new ArrayList();
         String className;
         for (Iterator it = classes.iterator(); it.hasNext();) {
-            className = (String)it.next();
+            className = (String) it.next();
             if (JAVA_LANG_OBJECT_CLASS_NAME.equals(className)) {
                 continue;
             }
             JavaClass clazz = m_parser.getClassByName(className);
             javaClasses.add(clazz);
         }
-        return (JavaClass[])javaClasses.toArray(new JavaClass[]{});
+        return (JavaClass[]) javaClasses.toArray(new JavaClass[]{});
     }
 
     /**
@@ -101,7 +117,7 @@ public class AnnotationManager {
                 annotations.add(instantiateAnnotation(rawAnnotation));
             }
         }
-        return (Annotation[])annotations.toArray(new Annotation[]{});
+        return (Annotation[]) annotations.toArray(new Annotation[]{});
     }
 
     /**
@@ -121,7 +137,7 @@ public class AnnotationManager {
                 annotations.add(instantiateAnnotation(rawAnnotation));
             }
         }
-        return (Annotation[])annotations.toArray(new Annotation[]{});
+        return (Annotation[]) annotations.toArray(new Annotation[]{});
     }
 
     /**
@@ -141,7 +157,7 @@ public class AnnotationManager {
                 annotations.add(instantiateAnnotation(rawAnnotation));
             }
         }
-        return (Annotation[])annotations.toArray(new Annotation[]{});
+        return (Annotation[]) annotations.toArray(new Annotation[]{});
     }
 
     /**
@@ -152,10 +168,10 @@ public class AnnotationManager {
      * @return
      */
     private Annotation instantiateAnnotation(RawAnnotation rawAnnotation) {
-        Class proxyClass = (Class)m_registeredAnnotations.get(rawAnnotation.name);
+        Class proxyClass = (Class) m_registeredAnnotations.get(rawAnnotation.name);
         Annotation annotation;
         try {
-            annotation = (Annotation)proxyClass.newInstance();
+            annotation = (Annotation) proxyClass.newInstance();
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
@@ -182,7 +198,7 @@ public class AnnotationManager {
 
         // check first for untyped annotations
         if (m_registeredAnnotations.containsKey(annotationName)) {
-            Class proxyClass = (Class)m_registeredAnnotations.get(annotationName);
+            Class proxyClass = (Class) m_registeredAnnotations.get(annotationName);
             if (UntypedAnnotationProxy.class.isAssignableFrom(proxyClass)) {
                 // we do have an untyped annotation
                 // does it match
