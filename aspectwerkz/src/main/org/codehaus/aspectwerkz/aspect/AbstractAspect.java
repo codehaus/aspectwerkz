@@ -392,7 +392,7 @@ public abstract class AbstractAspect implements Serializable {
      *
      * @param the aspect definition
      */
-    public void setAspectDef(AspectDefinition aspectDef) {
+    public void setAspectDef(final AspectDefinition aspectDef) {
         m_aspectDef = aspectDef;
     }
 

@@ -9,25 +9,25 @@ package examples.logging;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
+import org.codehaus.aspectwerkz.aspect.AbstractAspect;
 
 /**
- * Aspect("perJVM")
- * Aspect(DeploymentModel.PER_JVM)
- * @Aspect(null)
+ * @Aspect ("JVM")
  */
-public class LoggingAspect {
+public class LoggingAspect extends AbstractAspect {
 
     private int m_level = 0;
 
     /**
-     * @Pointcut("expression")
+     * @Pointcut ("* examples.logging.Target.toLog*(..)")
      */
     void test() {}
 
     /**
-     * @AroundAdvice("test")
+     * @AroundAdvice ("test")
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
+        System.out.println("LoggingAspect.logMethod");
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
         indent();
         System.out.println("--> " + jp.getTargetClass().getName() + "::" + jp.getMethodName());

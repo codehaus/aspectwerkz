@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.definition.attribute;
 
 import attrib4j.Attribute;
-import org.codehaus.aspectwerkz.DeploymentModel;
 
 /**
  * Attribute for the Aspect construct.
@@ -28,18 +27,20 @@ public class AspectAttribute implements Attribute {
      * @param deploymentModel the deployment model for the aspect
      */
     public AspectAttribute(final String deploymentModel) {
-        if (deploymentModel == null) {
             m_deploymentModel = "perJVM";
-        }
-        else {
-            m_deploymentModel = deploymentModel;
-        }
-        if (m_deploymentModel.equalsIgnoreCase("perJVM") ||
-                m_deploymentModel.equalsIgnoreCase("perClass") ||
-                m_deploymentModel.equalsIgnoreCase("perInstance") ||
-                m_deploymentModel.equalsIgnoreCase("perThread")) {
-            throw new IllegalArgumentException("deployment model is not valid for aspect");
-        }
+
+//        if (deploymentModel == null) {
+//            m_deploymentModel = "perJVM";
+//        }
+//        else {
+//            m_deploymentModel = deploymentModel;
+//        }
+//        if (m_deploymentModel.equalsIgnoreCase("perJVM") ||
+//                m_deploymentModel.equalsIgnoreCase("perClass") ||
+//                m_deploymentModel.equalsIgnoreCase("perInstance") ||
+//                m_deploymentModel.equalsIgnoreCase("perThread")) {
+//            throw new IllegalArgumentException("deployment model is not valid for aspect");
+//        }
     }
 
     /**

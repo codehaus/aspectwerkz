@@ -147,7 +147,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             return bytecode;
         }
 
-        buildMixinMetaDataRepository(loader);
+//        buildMixinMetaDataRepository(loader);
         loadAndMergeXmlDefinitions(loader);
 
         if (VERBOSE) {
@@ -267,6 +267,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         m_metaDataRepository.put(loader, repository); // add the loader here already to prevent recursive calls
 
         AspectWerkzDefinition def = AspectWerkzDefinition.getDefinitionForTransformation();
+        def.loadAspects(loader);
+
         Collection introDefs = def.getIntroductionDefinitions();
         for (Iterator it = introDefs.iterator(); it.hasNext();) {
             String className = ((IntroductionDefinition)it.next()).getAspectClassName();
@@ -342,7 +344,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             }
 
             // create a new definition based on the merged definition documents
-            AspectWerkzDefinition.createDefinition(document).initialize(loader);
+            AspectWerkzDefinition.createDefinition(document);
         }
         catch (Exception e) {
             ;// ignore

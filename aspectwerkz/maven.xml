@@ -218,9 +218,8 @@
     <goal name="aspectwerkz:samples:logging">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${src.dir}/samples${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* examples.logging.Target"/>
+            <arg line="-cp ${src.dir}/samples${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.logging.Target"/>
         </exec>
     </goal>
 
