@@ -20,7 +20,7 @@
                 <pre>
     cvs -d :pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm login
 
-    cvs -z3 -d :pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm co aspectwerkz3
+    cvs -z3 -d :pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm co aspectwerkz4
                 </pre>
                 Updates from within the module's directory do not need the -d parameter.
             </p>
@@ -34,7 +34,7 @@
                 <pre>
     export CVS_RSH=ssh
 
-    cvs -z3 -d :pserver:developername@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm co aspectwerkz3
+    cvs -z3 -d :pserver:developername@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm co aspectwerkz4
                 </pre>
             </p>
         </section>

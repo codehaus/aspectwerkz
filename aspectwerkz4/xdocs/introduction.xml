@@ -17,16 +17,19 @@
                 by only reading this reference manual.
             </p>
             <p>
-                If you are a beginner I would
-                recommend that you first read some introductory articles on the
+                If you are familiar with AOP but are new to AspectWerkz, please read one of the
+                introductory
+                <a href="http://docs.codehaus.org/display/AW/Tutorials">tutorials</a> to get started.
+            </p>
+            <p>
+                If you are a beginner we recommend that you first read some introductory articles on the
                 subject. For example one of the
                 <a href="http://www.javaworld.com/javaworld/jw-01-2002/jw-0118-aspect.html">JavaWorld's</a>
                 series of articles.
             </p>
             <p>
-                If you are familiar with AOP but are new to AspectWerkz, please read one of the
-                introductory
-                <a href="http://docs.codehaus.org/display/AW/Tutorials">tutorials</a> to get started.
+                You can access materials of our talks at main Java events (JavaPolis, JavaOne, AOSD, JAOO, User Groups, etc)
+                in the <a href="papers_talks.html">papers and talks section</a>.
             </p>
         </section>
     </body>

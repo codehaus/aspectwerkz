@@ -11,6 +11,10 @@
                 <b>Implementation issues</b>
             </p>
             <p>
+                This section documents the programming model for Aspects, Advices and Introductions (Mixins)
+                in AspectWerkz.
+            </p>
+            <p>
                 <ol>
                     <li>
                         <a href="#Aspects">Aspect models</a>
@@ -28,7 +32,7 @@
                         <a href="#RTTI interfaces">RTTI interfaces</a>
                     </li>
                     <li>
-                        <a href="#Using the CrossCuttingInfo class">Using the CrossCuttingInfo class</a>
+                        <a href="#Using the AspectContext class">Using the AspectContext class</a>
                     </li>
                     <li>
                         <a href="#Introductions">Introductions</a>
@@ -71,7 +75,7 @@
                         as its only parameter - this is needed if you want to retrieve information about the runtime
                         system, access paramaters defined at deployment time, access meta-data etc.
                         See
-                        <a href="#Using the CrossCuttingInfo class">Using the CrossCuttingInfo class</a> section
+                        <a href="#Using the AspectContext class">Using the AspectContext class</a> section
                         for details.
                     </li>
                     <br/>
@@ -97,6 +101,13 @@
                     using the
                     <code>extends</code> keyword.
                 </p>
+                <p>
+                    Nevertheless specific rules must be observed for advices represented as methods. Indeed, the advice
+                    is likely to be invoked from the class it is applied to as a result of the weaving process.
+                    Advices should thus be public. Private or protected advices is not supported. Package private advices
+                    are not encouraged. Aspects classes should for the same purpose be public (or package private
+                    thought not encouraged).
+                </p>
             </subsection>
         </section>
         <section name="Advice">
@@ -109,6 +120,8 @@
                             For
                         <code>Around</code> advice:
                         <br/>
+                        <code>public Object &lt;name of method&gt;(StaticJoinPoint staticJoinPoint) throws Throwable</code> signature.
+                        <br/>
                         <code>public Object &lt;name of method&gt;(JoinPoint joinPoint) throws Throwable</code> signature.
                     </li>
                     <br/>
@@ -117,12 +130,21 @@
                         <code>Before</code> and
                         <code>After</code> advice:
                         <br/>
-                        <code>public void &lt;name of method&gt;(JoinPoint joinPoint) throws Throwable</code> signature.
+                        <code>public void &lt;name of method&gt;()</code> signature.
+                        <br/>
+                        <code>public void &lt;name of method&gt;(StaticJoinPoint staticJoinPoint)</code> signature.
+                        <br/>
+                        <code>public void &lt;name of method&gt;(JoinPoint joinPoint)</code> signature.
                     </li>
                 </ul>
                     The advice can then be defined using XML or annotations, see the
                 <a href="xml_definition.html">XML definition</a> section or the
                 <a href="attribute_definition.html">Annotation definition</a> section for more information.
+            </p>
+            <p>
+                Using StaticJoinPoint, JoinPoint or no JoinPoint at all is discussed in <a href="TODO">this section</a>.
+            </p>
+            <p>
             </p>
             <p>
                     Here is a simple example of an
@@ -136,6 +158,7 @@
             </p>
             <p>
                 <source><![CDATA[
+@Around myPointcut
 public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
     // do some stuff
     Object result = joinPoint.proceed();
@@ -145,10 +168,18 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
             ]]></source>
             </p>
             <p>
-                If a pointcut is using the
-                <code>args()</code> selector to gain direct access to the advised method/constructor/field set
-                the Pointcut declaration itself will have a signature. The bounded advice(s) is then required to have those
-                parameters in their signature as well. This allows to avoid using the RTTI interface as well as providing strong typing.
+                Note: for such a simple advice, StaticJoinPoint and staticJoinPoint.proceed() would be preferable.
+            </p>
+            <p>
+
+            </p>
+            <p>
+                When using pointcut designators like args(..), this(..), target(..), or when using after returning or after throwing
+                with a type binding, advice signature will be pointcut dependant. Read more about it in <a href="TODO">this section</a>.
+                This allows to gain direct access to the advised method/constructor/field set arguments.
+                The Pointcut declaration itself will have a specific signature. The bounded advice(s) is then required to have those
+                parameters in their signature as well. This allows to avoid using the RTTI interface as well as providing strong typing and
+                implies better performance.
             </p>
             <p>
                 Such an advice can be defined thru Annotations and thru XML. See the
@@ -178,26 +209,29 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
         </section>
         <section name="JoinPoint instance">
             <p>
-                Each advice is passed a
-                <code>JoinPoint</code> instance. The
+                Each advice is passed the
+                <code>JoinPoint</code> instance or <code>StaticJoinPoint</code> instance if it requires it. The
                 <code>JoinPoint</code> class implements
-                the join point concept, i.e. a well-defined point in the program flow.
+                the join point concept, i.e. a well-defined point in the program flow and provides a reflective access API
+                to it. The <code>StaticJoinPoint</code> class is a lightweight version without the reflective access API which
+                allows for a better performance (at the pros/cons of less genericity).
             </p>
             <p>
                 The
-                <code>JoinPoint</code> instance contains static info and RTTI (runtime type information) about the join point we are
+                <code>JoinPoint</code> instance contains static information and RTTI (runtime type information) about the join point we are
                 currently executing over.
-                The static info (the signature) is retrieved through one of the
+                The <code>StaticJoinPoint</code> instance contains only the static information.
+                The static information (the signature) is retrieved through one of the
                 <a href="#Signature interfaces">Signature interfaces</a> by invoking
                 <code>getSignature()</code>.
                 While the RTTI is retrieved through one of the
                 <a href="#RTTI interfaces">RTTI interfaces</a>
                 by invoking
-                <code>getRtti()</code>.
+                <code>getRtti(), getTarget(), getThis(), getCaller(), getCallee()</code>.
             </p>
             <p>
                 The
-                <code>JoinPoint</code> clas has a method called
+                <code>JoinPoint</code> and <code>StaticJoinPoint</code>class have a method called
                 <code>proceed()</code>, this method is used in
                 <code>Around</code> advice to either:
                 <ul>
@@ -215,13 +249,6 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
                 <code>proceed()</code> method or faking the value and returning something else.
             </p>
             <p>
-                <b>Warning</b>: if the
-                <code>proceed()</code> method is invoked within an
-                <code>Before</code> or
-                <code>After</code>
-                advice it will currently result in infinite recursion.
-            </p>
-            <p>
                 The
                 <code>JoinPoint</code> class has some other interesting methods as well, see the JavaDoc for details.
             </p>
@@ -235,8 +262,8 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
             </p>
             <p>
                 The
-                <code>Signature</code> can ber retrieved from the
-                <code>JoinPoint</code> by invoking
+                <code>Signature</code> can be retrieved from the
+                <code>JoinPoint</code> or <code>StaticJoinPoint</code> by invoking
                 the
                 <code>getSignature()</code> method.
             </p>
@@ -261,9 +288,11 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.FieldSignature</code>
                     </li>
+                    <!-- TODO: uncomment when impl.
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature</code>
                     </li>
+                    -->
                 </ul>
                 See the JavaDoc for API details.
             </p>
@@ -277,10 +306,10 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
             </p>
             <p>
                 The
-                <code>Signature</code> can ber retrieved from the
+                <code>RTTI</code> can be retrieved from the
                 <code>JoinPoint</code> by invoking
                 the
-                <code>getSignature()</code> method.
+                <code>getRtti()</code> method.
             </p>
             <p>
                 The interfaces are:
@@ -303,34 +332,35 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.FieldRtti</code>
                     </li>
+                    <!-- uncomment when impl.
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti</code>
                     </li>
+                    -->
                 </ul>
                 See the JavaDoc for API details.
             </p>
         </section>
-        <section name="Using the CrossCuttingInfo class">
+        <section name="Using the AspectContext class">
             <p>
                 The
-                <code>CrossCuttingInfo</code> class provides methods for getting handles to various parts
+                <code>AspectContext</code> class provides methods for getting handles to various parts
                 of the system, that can be used for introspection as well as redefinitions of the runtime system.
             </p>
             <p>
                 To access the
-                <code>CrossCuttingInfo</code> in a specific aspect or mixin you have define a
+                <code>AspectContext</code> in a specific aspect you have define a
                 constructor that takes one
                 <code>org.codehaus.aspectwerkz.AspectContext</code> as its only
                 parameter. The system will then take care of passing in a
-                <code>CrossCuttingInfo </code> instance
-                when the aspect of mixin is instantiated. This instance you can then use as you wish, store it in
+                <code>AspectContext </code> instance
+                when the aspect is instantiated. This instance you can then use as you wish, store it in
                 a member field etc.
             </p>
             <p>
                 This class has many useful methods. For example:
                 <source><![CDATA[
 ...
-RuntimeSystem getSystem()
 AspectContainer getContainer()
 
 void setParameter(String name, String value)
@@ -340,15 +370,14 @@ void setMetaData(Object key, Object value)
 Object getMetaData(Object key)
 
 int getDeploymentModel()
-void setDeploymentModel(int deploymentModel)
-
-Object getMixinTargetInstance(String mixinName, Object mixinImpl)
-Class getMixinTargetClass(String mixinName, Object mixinImpl)
 ...
                 ]]></source>
             </p>
         </section>
         <section name="Introductions">
+            <p>
+                FIXME: Jonas can you do that part ?
+            </p>
             <p>
                 Introductions makes it possible to extend a class with a new interface and/or a new implementation
                 (methods and fields).
@@ -387,7 +416,7 @@ Class getMixinTargetClass(String mixinName, Object mixinImpl)
                         as its only parameter - this is needed if you want to retrieve information about the runtime
                         system, access paramaters defined at deployment time, access meta-data etc.
                         See
-                        <a href="#Using the CrossCuttingInfo class">Using the CrossCuttingInfo class</a> section
+                        <a href="#Using the AspectContext class">Using the AspectContext class</a> section
                         for details.
                     </li>
                     <br/>
@@ -428,24 +457,25 @@ SystemLoader.getSystem("systemId").getAspectManager().getMixin("test.attribdef.a
         <section name="Example of an Aspect">
             <p>
                    This is a simple example showing how an aspect implementation with a couple of advice
-                    and an introduction could look like:
+                    and an introduction could look like (Note: annotations to define the aspects are ommitted here):
                 <source><![CDATA[
 public class MyAspect {
 
-     public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
+     public Object myAroundAdvice(StaticJoinPoint staticJoinPoint) throws Throwable {
          // do some stuff
-         Object result = joinPoint.proceed();
+         Object result = staticJoinPoint.proceed();
          // do some other stuff
          return result;
      }
 
-     public void myBeforeAdvice(JoinPoint joinPoint) throws Throwable {
+     public void myBeforeAdvice(JoinPoint joinPoint) {
          // do some stuff
      }
 
-    public static class MyIntroduction extends SuperMixin implements ContractualInterface {
-        ... // introduced methods and fields
-    }
+     // the Mixin could be an outer class
+     public static class MyIntroduction extends SuperMixin implements ContractualInterface {
+         ... // introduced methods and fields
+     }
 }
                     ]]></source>
             </p>
@@ -457,14 +487,16 @@ public class MyAspect {
                 It can be used
                 to provide aspects that needs to be tuned without an extra development phase (apart from editing an XML file).
                 The main disadvantage with this approach is that the implementation is separated from the definition which
-                makes the code harder to refactor, maintain and reuse.
+                makes the code harder to refactor, maintain and reuse.<br/>
+                Using the XML definition is a bit more difficult as well when pointcuts have complex signature to expose
+                runtime arguments and instances (args(..), this(..), target(..)).
             </p>
             <p>
                 The
                 <a href="attribute_definition.html">Annotation definition</a> allows you to have truly self-contained aspect components.
-                Those are easier to maintain, refactor and reuse as well as build libraries upon. The drawbacks are that it
-                requires an additional post-compilation step (until Java 1.5) to annotate them with the metadata and
-                introduces tighter coupling, makes the aspect harder to configure etc.
+                Those are easier to maintain, refactor and reuse as well as build libraries upon. The drawbacks are when you are not using Java 5, it
+                requires an additional post-compilation step to annotate them with the metadata. Moreover it
+                introduces tighter coupling, and makes the aspect harder to configure. You would have to extend the aspect to refine it.
             </p>
             <p>
                 We have exprerienced that a combination of both definition formats can be beneficial. For example define

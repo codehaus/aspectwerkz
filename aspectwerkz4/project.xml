@@ -132,10 +132,10 @@
         <!-- ============================================================== -->
         <!-- for building, testing and samples (not needed at runtime) -->
         <!-- ============================================================== -->
-        <!--        <dependency>-->
-        <!--            <id>tools</id>-->
-        <!--            <jar>tools.jar</jar>-->
-        <!--        </dependency>-->
+        <dependency>
+            <id>tools</id>
+            <jar>tools.jar</jar>
+        </dependency>
         <dependency>
             <id>ant</id>
             <version>1.5.2</version>
