@@ -155,7 +155,7 @@ public class AsmClassInfo implements ClassInfo {
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
         try {
             ClassReader cr = new ClassReader(bytecode);
-            ClassWriter cw = new ClassWriter(true);
+            ClassWriter cw = AsmHelper.newClassWriter(true);
             ClassInfoClassAdapter visitor = new ClassInfoClassAdapter(cw);
             cr.accept(visitor, new Attribute[] {
                 new CustomAttribute()
@@ -241,7 +241,7 @@ public class AsmClassInfo implements ClassInfo {
     public static ClassInfo getClassInfo(final InputStream stream, final ClassLoader loader) {
         try {
             ClassReader cr = new ClassReader(stream);
-            ClassWriter cw = new ClassWriter(true);
+            ClassWriter cw = AsmHelper.newClassWriter(true);
             ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter(cw);
             cr.accept(visitor, false);
             String className = visitor.getClassName();
@@ -274,7 +274,7 @@ public class AsmClassInfo implements ClassInfo {
      */
     public static String retrieveClassNameFromBytecode(final byte[] bytecode) {
         ClassReader cr = new ClassReader(bytecode);
-        ClassWriter cw = new ClassWriter(true);
+        ClassWriter cw = AsmHelper.newClassWriter(true);
         ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter(cw);
         cr.accept(visitor, false);
         return visitor.getClassName();

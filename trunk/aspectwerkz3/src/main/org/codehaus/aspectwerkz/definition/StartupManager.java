@@ -111,7 +111,7 @@ public class StartupManager {
                 + containerClassName
                 + "] (one that takes a CrossCuttingInfo instance as its only parameter): "
                 + e.toString());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             StringBuffer cause = new StringBuffer();
             cause.append("could not create aspect container using the implementation specified [");
             cause.append(containerClassName);

@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.annotation.instrumentation.asm;
 
 import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
+import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -54,7 +55,7 @@ public class AsmAttributeExtractor implements AttributeExtractor {
             InputStream classStream = loader.getResourceAsStream(classFileName);
             if (classStream != null) {
                 m_reader = new ClassReader(classStream);
-                m_writer = new ClassWriter(false);
+                m_writer = AsmHelper.newClassWriter(false);
             } else {
                 return false;
             }

@@ -15,6 +15,7 @@ import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.expression.QDoxParser;
 import org.codehaus.aspectwerkz.reflect.TypeConverter;
+import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
@@ -188,7 +189,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
         }
         try {
             // parse the bytecode
-            ClassWriter writer = new ClassWriter(true);
+            ClassWriter writer = AsmHelper.newClassWriter(true);
             m_reader.accept(new AttributeClassAdapter(writer), false);
 
             // write the bytecode to disk
