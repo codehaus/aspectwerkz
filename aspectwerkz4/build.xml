@@ -535,7 +535,7 @@
     <!-- =================================================== -->
     <!--  Example on how to use the annotationc ant task -->
     <!-- =================================================== -->
-    <target name="samples:task:annotationc" depends="init">
+    <target name="samples:task:annotationc" depends="init, compile:all">
         <taskdef name="annotationc"
             classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask"
             classpathref="project.class.path"/>
@@ -545,10 +545,10 @@
             properties="${basedir}/src/samples/annotation.properties"
             copytodest="**/*.RESIDUALPROPS">
             <src path="${basedir}/src/samples"/>
-            <src path="${basedir}/src/test"/>
+<!--            <src path="${basedir}/src/test"/>-->
             <classpath path="${basedir}/target/samples-classes"/>
-            <classpath path="${basedir}/target/test-classes"/>
-            <classpath path="${basedir}/target/classes"/>
+<!--            <classpath path="${basedir}/target/test-classes"/>-->
+<!--            <classpath path="${basedir}/target/classes"/>-->
             <fileset dir=".">
                 <include name="**/BAZ.java"/>
             </fileset>
