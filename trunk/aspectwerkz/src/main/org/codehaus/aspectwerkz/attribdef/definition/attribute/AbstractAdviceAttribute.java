@@ -16,10 +16,7 @@ import java.io.Serializable;
  */
 public abstract class AbstractAdviceAttribute implements Serializable {
 
-    /**
-     * @TODO: calculate serialVersionUID
-     */
-    private static final long serialVersionUID = 1L;
+    private final static long serialVersionUID = -4932063216445134332L;
 
     /**
      * The expression for the advice.

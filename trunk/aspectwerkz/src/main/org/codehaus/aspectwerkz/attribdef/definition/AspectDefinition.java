@@ -24,6 +24,7 @@ import org.codehaus.aspectwerkz.definition.PointcutDefinition;
  * Holds the meta-data for the aspect.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AspectDefinition {
 
@@ -58,12 +59,8 @@ public class AspectDefinition {
     private final List m_afterAdvices = new ArrayList();
 
     /**
-     * The method introductions.
-     */
-    private final List m_methodIntroductions = new ArrayList();
-
-    /**
      * The interface introductions.
+     * pure interface or implementations
      */
     private final List m_interfaceIntroductions = new ArrayList();
 
@@ -190,32 +187,12 @@ public class AspectDefinition {
     }
 
     /**
-     * Adds a new method introduction.
+     * Adds a new interface introduction.
      *
      * @param introductionMetaData the introduction
      */
-    public void addMethodIntroduction(final MethodIntroductionDefinition introductionMetaData) {
-        m_methodIntroductions.add(introductionMetaData);
-    }
-
-    /**
-     * Adds a new interface introduction.
-     *
-     * @param interfaceIntroDef the introduction
-     */
-    public void addInterfaceIntroduction(final InterfaceIntroductionDefinition introductionMetaData) {
+    public void addInterfaceIntroduction(final IntroductionDefinition introductionMetaData) {
         m_interfaceIntroductions.add(introductionMetaData);
-    }
-
-    /**
-     * Returns the method introductions.
-     *
-     * @TODO: gets sorted every time, have a flag?
-     *
-     * @return the introductions
-     */
-    public List getMethodIntroductions() {
-        return sortMethodIntroductions(m_methodIntroductions);
     }
 
     /**
@@ -301,7 +278,7 @@ public class AspectDefinition {
     /**
      * Returns all the advices for this aspect.
      *
-     * @TODO: gets sorted every time, have a flag?
+     * TODO: gets sorted every time, have a flag?
      *
      * @return all the advices
      */
@@ -332,23 +309,5 @@ public class AspectDefinition {
         return advices;
     }
 
-    /**
-     * Sorts the introductions by method.
-     *
-     * @param introductions a list with the introductions to sort
-     * @return a sorted list with the introductions
-     */
-    public static List sortMethodIntroductions(final List introductions) {
-        Collections.sort(introductions, new Comparator() {
-            private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
-
-            public int compare(final Object obj1, final Object obj2) {
-                MethodIntroductionDefinition introduction1 = (MethodIntroductionDefinition)obj1;
-                MethodIntroductionDefinition introduction2 = (MethodIntroductionDefinition)obj2;
-                return m_comparator.compare(introduction1.getMethod(), introduction2.getMethod());
-            }
-        });
-        return introductions;
-    }
 }
 

@@ -18,10 +18,7 @@ import org.codehaus.aspectwerkz.DeploymentModel;
  */
 public class AspectAttribute implements Serializable {
 
-    /**
-     * @TODO: calculate serialVersionUID
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5565371328658309916L;
 
     /**
      * The name of the aspect.

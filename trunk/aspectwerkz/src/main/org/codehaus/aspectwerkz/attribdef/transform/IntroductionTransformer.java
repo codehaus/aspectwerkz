@@ -9,31 +9,27 @@ package org.codehaus.aspectwerkz.attribdef.transform;
 
 import java.util.List;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantUtf8;
-import org.apache.bcel.Constants;
 
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.AddImplementationTransformer;
-import org.codehaus.aspectwerkz.attribdef.definition.InterfaceIntroductionDefinition;
-import org.codehaus.aspectwerkz.attribdef.definition.MethodIntroductionDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.AspectWerkzDefinitionImpl;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.attribdef.definition.IntroductionDefinition;
 
 /**
  * Handles the attribdef specific algorithms for adding the introductions.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class IntroductionTransformer {
 
@@ -55,25 +51,27 @@ public class IntroductionTransformer {
         int[] interfaces = cg.getInterfaces();
 
         boolean isClassAdvised = false;
-        List introDefs = def.getInterfaceIntroductions(classMetaData);
+        List introDefs = def.getIntroductionDefinitionsForClass(classMetaData);
         for (Iterator it = introDefs.iterator(); it.hasNext();) {
 
-            InterfaceIntroductionDefinition introductionDef = (InterfaceIntroductionDefinition)it.next();
-            String className = introductionDef.getInterfaceClassName();
+            IntroductionDefinition introductionDef = (IntroductionDefinition)it.next();
+            for (Iterator iit = introductionDef.getInterfaceIntroductions().iterator(); iit.hasNext();) {
+                String className = (String) iit.next();
 
-            boolean addInterface = true;
-            for (int l = 0; l < interfaces.length; l++) {
-                ConstantClass cc = (ConstantClass)cpg.getConstant(interfaces[l]);
-                ConstantUtf8 cu = (ConstantUtf8)cpg.getConstant(cc.getNameIndex());
+                boolean addInterface = true;
+                for (int l = 0; l < interfaces.length; l++) {
+                    ConstantClass cc = (ConstantClass)cpg.getConstant(interfaces[l]);
+                    ConstantUtf8 cu = (ConstantUtf8)cpg.getConstant(cc.getNameIndex());
 
-                if (implementsInterface(cu, className)) {
-                    addInterface = false;
-                    break;
+                    if (implementsInterface(cu, className)) {
+                        addInterface = false;
+                        break;
+                    }
                 }
-            }
-            if (addInterface && className != null) {
-                TransformationUtil.addInterfaceToClass(cg, className);
-                isClassAdvised = true;
+                if (addInterface && className != null) {
+                    TransformationUtil.addInterfaceToClass(cg, className);
+                    isClassAdvised = true;
+                }
             }
         }
 
@@ -102,50 +100,24 @@ public class IntroductionTransformer {
                                               final AddImplementationTransformer transformer) {
         AspectWerkzDefinitionImpl def = (AspectWerkzDefinitionImpl)definition;
 
-        Map metaDataRepository = context.getMetaDataRepository();
         List introductionDefs = def.getIntroductionDefinitionsForClass(classMetaData);
-
         boolean isClassAdvised = false;
         for (Iterator it = introductionDefs.iterator(); it.hasNext();) {
-            MethodIntroductionDefinition introDef = (MethodIntroductionDefinition)it.next();
-            try {
-                // get the method meta-data for the introduced method
-                for (Iterator it2 = metaDataRepository.values().iterator(); it2.hasNext();) {
-                    Set metaDataRep = ((Set)it2.next());
-                    for (Iterator it3 = metaDataRep.iterator(); it3.hasNext();) {
-
-                        // get the meta-data for the aspect
-                        ClassMetaData aspectMetaData = (ClassMetaData)it3.next();
-
-                        List methods = aspectMetaData.getAllMethods();
-                        for (Iterator it4 = methods.iterator(); it4.hasNext();) {
-                            MethodMetaData methodMetaData = (MethodMetaData)it4.next();
-                            // try to find the meta-data for the introduced method
-                            if ((methodMetaData.getName().equals(introDef.getMethod().getName()) &&
-                                    (methodMetaData.getModifiers() & Constants.ACC_PUBLIC) != 0 &&
-                                    !(methodMetaData.getReturnType() == null ||
-                                    methodMetaData.getName().equals("<init>")))) {
-
-                                int mixinIndex = def.getAspectIndexByName(
-                                        aspectMetaData.getName()
-                                );
-                                int methodIndex = introDef.getMethodIndex();
-
-                                transformer.createProxyMethod(
-                                        cg, cpg, factory,
-                                        methodMetaData,
-                                        mixinIndex,
-                                        methodIndex,
-                                        definition.getUuid()
-                                );
-                                isClassAdvised = true;
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e) {
-                throw new DefinitionException("can not weave introduction [" + introDef.getName() + "] for [" + cg.getClassName() + "]: definition is not valid, due to: " + e.getMessage());
+            IntroductionDefinition introDef = (IntroductionDefinition) it.next();
+            int methodIndex = 0;
+            for (Iterator mit = introDef.getMethodIntroductions().iterator(); mit.hasNext(); methodIndex++) {
+                int mixinIndex = def.getMixinIndexByName(introDef.getName());
+                isClassAdvised = true;
+                //TODO any use case for a method already implemented ?
+                transformer.createProxyMethod(
+                        cg,
+                        cpg,
+                        factory,
+                        (MethodMetaData)mit.next(),
+                        mixinIndex,
+                        methodIndex,
+                        def.getUuid()
+                );
             }
         }
 

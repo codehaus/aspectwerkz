@@ -10,16 +10,14 @@ package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 import java.io.Serializable;
 
 /**
- * Attribute for the method Introduction construct.
+ * Attribute for the inner class Introduction construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class IntroduceAttribute implements Serializable {
 
-    /**
-     * @TODO: calculate serialVersionUID
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -146743510655018866L;
 
     /**
      * The expression for the introduction.
@@ -27,13 +25,25 @@ public class IntroduceAttribute implements Serializable {
     private final String m_expression;
 
     /**
+     * The FQN of the inner class for default introduction impl.
+     */
+    private final String m_innerClassName;
+
+    /**
+     * The FQN of interface implemented by the inner class.
+     */
+    private final String[] m_introducedInterfaceNames;
+
+    /**
      * Create an Introduction attribute.
      *
      * @param expression the expression for the introduction
      */
-    public IntroduceAttribute(final String expression) {
+    public IntroduceAttribute(final String expression, final String innerClassName, final String[] interfaceNames) {
         if (expression == null) throw new IllegalArgumentException("expression is not valid for introduction");
         m_expression = expression;
+        m_innerClassName = innerClassName;
+        m_introducedInterfaceNames = interfaceNames;
     }
 
     /**
@@ -44,4 +54,13 @@ public class IntroduceAttribute implements Serializable {
     public String getExpression() {
         return m_expression;
     }
+
+    public String getInnerClassName() {
+        return m_innerClassName;
+    }
+
+    public String[] getIntroducedInterfaceNames() {
+        return m_introducedInterfaceNames;
+    }
+
 }

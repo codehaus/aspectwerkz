@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Arrays;
 
 import org.codehaus.aspectwerkz.attribdef.Pointcut;
 import org.codehaus.aspectwerkz.attribdef.definition.AspectDefinition;
@@ -21,12 +22,15 @@ import org.codehaus.aspectwerkz.attribdef.definition.attribute.AfterAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.BeforeAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.IntroduceAttribute;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.MethodComparator;
 
 /**
  * Extracts the aspects attributes from the class files and creates a meta-data representation of them.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class DefaultAspectAttributeParser extends AspectAttributeParser {
 
@@ -54,6 +58,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
 
         parseFieldAttributes(klass, aspectDef);
         parseMethodAttributes(klass, className, aspectName, aspectDef);
+        parseClassAttributes(klass, aspectDef);
 
         return aspectDef;
     }
@@ -228,13 +233,13 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                             aspectClassName, method, methodIndex, aspectDef
                     );
                 }
-                else if (methodAttr instanceof IntroduceAttribute) {
-                    String expression = ((IntroduceAttribute)methodAttr).getExpression();
-                    createAndAddIntroductionDefToAspectDef(
-                            expression, adviceName, aspectName,
-                            aspectClassName, method, methodIndex, aspectDef
-                    );
-                }
+//                else if (methodAttr instanceof IntroduceAttribute) {
+//                    String expression = ((IntroduceAttribute)methodAttr).getExpression();
+//                    createAndAddIntroductionDefToAspectDef(
+//                            expression, adviceName, aspectName,
+//                            aspectClassName, method, methodIndex, aspectDef
+//                    );
+//                }
             }
         }
     }
@@ -259,5 +264,42 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
             throw new DefinitionException("aspect [" + klass.getName() + "] is not properly defined. (Is the aspect compiled with AspectC?)");
         }
         return aspectAttr;
+    }
+
+    /**
+     * Looks for @Introduce IntroduceAttribute defined at aspect class level
+     *
+     * @param klass of aspect
+     * @param aspectDef
+     */
+    private void parseClassAttributes(final Class klass, AspectDefinition aspectDef) {
+        if (klass == null) throw new IllegalArgumentException("class can not be null");
+
+        Object[] classAttributes = Attributes.getAttributes(klass);
+        for (int i = 0; i < classAttributes.length; i++) {
+            IntroduceAttribute introduceAttr = null;
+            if (classAttributes[i] instanceof IntroduceAttribute) {
+                introduceAttr = (IntroduceAttribute) classAttributes[i];
+
+                Class mixin = null;
+                try {
+                    mixin = klass.getClassLoader().loadClass(introduceAttr.getInnerClassName());
+                } catch (ClassNotFoundException e) {
+                    throw new WrappedRuntimeException(e);
+                }
+                Method[] methods = mixin.getDeclaredMethods();//TODO is this enough (mixin impl inheritance)?
+                Arrays.sort(methods, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
+
+                createAndAddIntroductionDefToAspectDef(
+                        introduceAttr.getExpression(),
+                        introduceAttr.getInnerClassName(),
+                        introduceAttr.getIntroducedInterfaceNames(),
+                        methods,
+                        aspectDef
+                );
+            }
+        }
+
+
     }
 }

@@ -28,6 +28,7 @@ import org.codehaus.aspectwerkz.attribdef.definition.attribute.GetAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.ThrowsAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.CFlowAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.bcel.BcelAttributeEnhancer;
+import org.codehaus.aspectwerkz.Alex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ import java.util.List;
  * Compiles attributes for the aspects. Can be called from the command line.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AspectC {
 
@@ -121,8 +123,13 @@ public class AspectC {
                             parseAroundAdvice(javaMethod, enhancer);
                             parseBeforeAdvice(javaMethod, enhancer);
                             parseAfterAdvice(javaMethod, enhancer);
-                            parseMethodIntroduction(javaMethod, enhancer);
                         }
+
+                        JavaClass[] innerClasses = javaClass.getInnerClasses();
+                        for (int k = 0; k < innerClasses.length; k++) {
+                            parseIntroduction(innerClasses[k], enhancer);
+                        }
+
                         enhancer.write(destDir);
                     }
                 }
@@ -391,22 +398,29 @@ public class AspectC {
     }
 
     /**
-     * Parses the method introduction attribute.
+     * Parse the @Introduce inner class introductions
      *
-     * @param javaMethod the java method
-     * @param enhancer the attribute enhancer
+     * @param innerClass
+     * @param enhancer
      */
-    private void parseMethodIntroduction(final JavaMethod javaMethod,
-                                                final AttributeEnhancer enhancer) {
-        DocletTag[] introductionTags = javaMethod.getTagsByName(ATTR_INTRODUCE);
+    private void parseIntroduction(final JavaClass innerClass, final AttributeEnhancer enhancer) {
+        DocletTag[] introductionTags = innerClass.getTagsByName(ATTR_INTRODUCE);
         for (int i = 0; i < introductionTags.length; i++) {
             DocletTag introductionTag = introductionTags[i];
             String expression = introductionTag.getValue();
-            enhancer.insertMethodAttribute(
-                    javaMethod,
-                    new IntroduceAttribute(expression)
+            JavaClass[] introducedInterfaceClasses = innerClass.getImplementedInterfaces();
+            String[] introducedInterfaceNames = new String[introducedInterfaceClasses.length];
+            for (int j = 0; j < introducedInterfaceClasses.length; j++) {
+                introducedInterfaceNames[j] = introducedInterfaceClasses[j].getFullyQualifiedName();
+                log("\tintroduction introduce [" + introducedInterfaceNames[j] +"]");
+            }
+            enhancer.insertClassAttribute(
+                    new IntroduceAttribute(
+                            expression,
+                            innerClass.getFullyQualifiedName(),
+                            introducedInterfaceNames)
             );
-            log("\tmethod introduction [" + javaMethod.getName() + "::" + expression + "]");
+            log("\tintroduction impl [" + innerClass.getName() + "::" + expression + "]");
         }
     }
 

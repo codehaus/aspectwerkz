@@ -9,6 +9,9 @@ package org.codehaus.aspectwerkz.attribdef.aspect;
 
 import java.io.Serializable;
 import java.io.ObjectInputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.attribdef.definition.StartupManager;
@@ -23,9 +26,11 @@ import org.codehaus.aspectwerkz.SystemLoader;
 /**
  * Abstract base class that all Aspect implementations must extend.
  *
+ * todo: check needs: the mixin inner class - aspect relationship does not exist here.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class Aspect implements Serializable, Mixin {
+public abstract class Aspect implements Serializable {
 
     /**
      * An empty <code>Object</code> array.
@@ -102,6 +107,7 @@ public abstract class Aspect implements Serializable, Mixin {
             clone.m_container = prototype.m_container;
             clone.m_deploymentModel = prototype.m_deploymentModel;
 //            clone.m_parameters = prototype.m_parameters;
+
             return clone;
         }
         catch (Exception e) {
@@ -160,64 +166,64 @@ public abstract class Aspect implements Serializable, Mixin {
         }
     }
 
-    /**
-     * Invokes the method with the index specified.
-     * Invoked by methods without any parameters (slight performance gain since
-     * we are saving us one array creation).
-     *
-     * @param methodIndex the method index
-     * @param callingObject a reference to the calling object
-     * @return the result from the invocation
-     */
-    public Object ___AW_invokeMixin(final int methodIndex, final Object callingObject) {
-        return ___AW_invokeMixin(methodIndex, EMPTY_OBJECT_ARRAY, callingObject);
-    }
+//    /**
+//     * Invokes the method with the index specified.
+//     * Invoked by methods without any parameters (slight performance gain since
+//     * we are saving us one array creation).
+//     *
+//     * @param methodIndex the method index
+//     * @param callingObject a reference to the calling object
+//     * @return the result from the invocation
+//     */
+//    public Object ___AW_invokeMixin(final int methodIndex, final Object callingObject) {
+//        return ___AW_invokeMixin(methodIndex, EMPTY_OBJECT_ARRAY, callingObject);
+//    }
 
-    /**
-     * Invokes an introduced method with the index specified.
-     *
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
-     * @param callingObject a reference to the calling object
-     * @return the result from the invocation
-     */
-
-    public Object ___AW_invokeMixin(final int methodIndex,
-                                    final Object[] parameters,
-                                    final Object callingObject) {
-        try {
-            Object result = null;
-            switch (m_deploymentModel) {
-
-                case DeploymentModel.PER_JVM:
-                    result = ___AW_invokeIntroductionPerJvm(methodIndex, parameters);
-                    break;
-
-                case DeploymentModel.PER_CLASS:
-                    result = ___AW_invokeIntroductionPerClass(
-                            callingObject, methodIndex, parameters
-                    );
-                    break;
-
-                case DeploymentModel.PER_INSTANCE:
-                    result = ___AW_invokeIntroductionPerInstance(
-                            callingObject, methodIndex, parameters
-                    );
-                    break;
-
-                case DeploymentModel.PER_THREAD:
-                    result = ___AW_invokeIntroductionPerThread(methodIndex, parameters);
-                    break;
-
-                default:
-                    throw new RuntimeException("invalid deployment model: " + m_deploymentModel);
-            }
-            return result;
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-    }
+//    /**
+//     * Invokes an introduced method with the index specified.
+//     *
+//     * @param methodIndex the method index
+//     * @param parameters the parameters for the invocation
+//     * @param callingObject a reference to the calling object
+//     * @return the result from the invocation
+//     */
+//
+//    public Object ___AW_invokeMixin(final int methodIndex,
+//                                    final Object[] parameters,
+//                                    final Object callingObject) {
+//        try {
+//            Object result = null;
+//            switch (m_deploymentModel) {
+//
+//                case DeploymentModel.PER_JVM:
+//                    result = ___AW_invokeIntroductionPerJvm(methodIndex, parameters);
+//                    break;
+//
+//                case DeploymentModel.PER_CLASS:
+//                    result = ___AW_invokeIntroductionPerClass(
+//                            callingObject, methodIndex, parameters
+//                    );
+//                    break;
+//
+//                case DeploymentModel.PER_INSTANCE:
+//                    result = ___AW_invokeIntroductionPerInstance(
+//                            callingObject, methodIndex, parameters
+//                    );
+//                    break;
+//
+//                case DeploymentModel.PER_THREAD:
+//                    result = ___AW_invokeIntroductionPerThread(methodIndex, parameters);
+//                    break;
+//
+//                default:
+//                    throw new RuntimeException("invalid deployment model: " + m_deploymentModel);
+//            }
+//            return result;
+//        }
+//        catch (Exception e) {
+//            throw new WrappedRuntimeException(e);
+//        }
+//    }
 
     /**
      * Invokes an introduced method on a per JVM basis.
@@ -263,56 +269,56 @@ public abstract class Aspect implements Serializable, Mixin {
         return m_container.invokeAdvicePerThread(methodIndex, joinPoint);
     }
 
-    /**
-     * Invokes an introduced method on a per JVM basis.
-     *
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
-     * @return the result from the method invocation
-     */
-    private Object ___AW_invokeIntroductionPerJvm(final int methodIndex, final Object[] parameters) {
-        return m_container.invokeIntroductionPerJvm(methodIndex, parameters);
-    }
+//    /**
+//     * Invokes an introduced method on a per JVM basis.
+//     *
+//     * @param methodIndex the method index
+//     * @param parameters the parameters for the invocation
+//     * @return the result from the method invocation
+//     */
+//    private Object ___AW_invokeIntroductionPerJvm(final int methodIndex, final Object[] parameters) {
+//        return m_container.invokeIntroductionPerJvm(methodIndex, parameters);
+//    }
 
-    /**
-     * Invokes an introduced method on a per class basis.
-     *
-     * @param callingObject a reference to the calling object
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
-     * @return the result from the method invocation
-     */
-    private Object ___AW_invokeIntroductionPerClass(final Object callingObject,
-                                                    final int methodIndex,
-                                                    final Object[] parameters) {
-        return m_container.invokeIntroductionPerClass(callingObject, methodIndex, parameters);
-    }
-
-    /**
-     * Invokes an introduced method on a per instance basis.
-     *
-     * @param callingObject a reference to the calling object
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
-     * @return the result from the method invocation
-     */
-    private Object ___AW_invokeIntroductionPerInstance(final Object callingObject,
-                                                       final int methodIndex,
-                                                       final Object[] parameters) {
-        return m_container.invokeIntroductionPerInstance(callingObject, methodIndex, parameters);
-    }
-
-    /**
-     * Invokes an introduced method on a per thread basis.
-     *
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
-     * @return the result from the method invocation
-     */
-    private Object ___AW_invokeIntroductionPerThread(final int methodIndex,
-                                                     final Object[] parameters) {
-        return m_container.invokeIntroductionPerThread(methodIndex, parameters);
-    }
+//    /**
+//     * Invokes an introduced method on a per class basis.
+//     *
+//     * @param callingObject a reference to the calling object
+//     * @param methodIndex the method index
+//     * @param parameters the parameters for the invocation
+//     * @return the result from the method invocation
+//     */
+//    private Object ___AW_invokeIntroductionPerClass(final Object callingObject,
+//                                                    final int methodIndex,
+//                                                    final Object[] parameters) {
+//        return m_container.invokeIntroductionPerClass(callingObject, methodIndex, parameters);
+//    }
+//
+//    /**
+//     * Invokes an introduced method on a per instance basis.
+//     *
+//     * @param callingObject a reference to the calling object
+//     * @param methodIndex the method index
+//     * @param parameters the parameters for the invocation
+//     * @return the result from the method invocation
+//     */
+//    private Object ___AW_invokeIntroductionPerInstance(final Object callingObject,
+//                                                       final int methodIndex,
+//                                                       final Object[] parameters) {
+//        return m_container.invokeIntroductionPerInstance(callingObject, methodIndex, parameters);
+//    }
+//
+//    /**
+//     * Invokes an introduced method on a per thread basis.
+//     *
+//     * @param methodIndex the method index
+//     * @param parameters the parameters for the invocation
+//     * @return the result from the method invocation
+//     */
+//    private Object ___AW_invokeIntroductionPerThread(final int methodIndex,
+//                                                     final Object[] parameters) {
+//        return m_container.invokeIntroductionPerThread(methodIndex, parameters);
+//    }
 
     /**
      * Sets the name of the aspect.
@@ -450,38 +456,38 @@ public abstract class Aspect implements Serializable, Mixin {
         m_targetClass = targetClass;
     }
 
-    /**
-     * Returns the implementation class name for the mixin.
-     *
-     * @return the implementation class name for the mixin
-     */
-    public String ___AW_getImplementationClassName() {
-        return m_aspectClass.getName();
-    }
+//    /**
+//     * Returns the implementation class name for the mixin.
+//     *
+//     * @return the implementation class name for the mixin
+//     */
+//    public String ___AW_getImplementationClassName() {
+//        return m_aspectClass.getName();
+//    }
 
-    /**
-     * Swaps the current introduction implementation.
-     *
-     * @param className the class name of the new implementation
-     */
-    public void ___AW_swapImplementation(final String className) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
-        synchronized (m_aspectClass) {
-            try {
-                m_aspectClass = ClassLoader.getSystemClassLoader().loadClass(className);
-                Aspect clone = (Aspect)m_aspectClass.newInstance();
-                clone.m_uuid = m_uuid;
-                clone.m_name = m_name;
-                clone.m_aspectClass = m_aspectClass;
-                clone.m_container = m_container;
-                clone.m_deploymentModel = m_deploymentModel;
-            }
-            catch (Exception e) {
-                throw new WrappedRuntimeException(e);
-            }
-        }
-        m_container.swapImplementation(m_aspectClass);
-    }
+//    /**
+//     * Swaps the current introduction implementation.
+//     *
+//     * @param className the class name of the new implementation
+//     */
+//    public void ___AW_swapImplementation(final String className) {
+//        if (className == null) throw new IllegalArgumentException("class name can not be null");
+//        synchronized (m_aspectClass) {
+//            try {
+//                m_aspectClass = ClassLoader.getSystemClassLoader().loadClass(className);
+//                Aspect clone = (Aspect)m_aspectClass.newInstance();
+//                clone.m_uuid = m_uuid;
+//                clone.m_name = m_name;
+//                clone.m_aspectClass = m_aspectClass;
+//                clone.m_container = m_container;
+//                clone.m_deploymentModel = m_deploymentModel;
+//            }
+//            catch (Exception e) {
+//                throw new WrappedRuntimeException(e);
+//            }
+//        }
+//        m_container.swapImplementation(m_aspectClass);
+//    }
 
     /**
      * Provides custom deserialization.

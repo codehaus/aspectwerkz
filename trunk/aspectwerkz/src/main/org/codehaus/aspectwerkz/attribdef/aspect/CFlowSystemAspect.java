@@ -14,11 +14,17 @@ import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
+
+import java.util.List;
+import java.util.Iterator;
+import java.lang.reflect.Method;
 
 /**
  * Manages the cflow pointcuts.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class CFlowSystemAspect extends Aspect {
 
@@ -50,13 +56,31 @@ public class CFlowSystemAspect extends Aspect {
     /**
      * Index of the pre advice method.
      */
-    public static final int PRE_ADVICE_INDEX = 21;
+    public static final int PRE_ADVICE_INDEX;
 
     /**
      * Index of the post advice method.
      */
-    public static final int POST_ADVICE_INDEX = 23;
+    public static final int POST_ADVICE_INDEX;
 
+    static {
+        // set the method flow indexes
+        // this is used when the aspect is registered in the system
+        // we assume enterControlFlow and exitControlFlow are defined once in this class
+        List methods = TransformationUtil.createSortedMethodList(CFlowSystemAspect.class);
+        int index = 0;
+        int preIndex = 0;
+        int postIndex = 0;
+        for (Iterator i = methods.iterator(); i.hasNext(); index++) {
+            Method m = (Method)i.next();
+            if (PRE_ADVICE.equals(m.getName()))
+                preIndex = index;
+            else if (POST_ADVICE.equals(m.getName()))
+                postIndex = index;
+        }
+        PRE_ADVICE_INDEX = preIndex;
+        POST_ADVICE_INDEX = postIndex;
+    }
 
     /**
      * Registers the join point as the start of a control flow (cflow) in the system.

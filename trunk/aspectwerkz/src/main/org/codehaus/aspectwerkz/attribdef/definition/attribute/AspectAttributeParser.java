@@ -12,13 +12,7 @@ import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
-import org.codehaus.aspectwerkz.attribdef.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.attribdef.definition.PointcutDefinitionImpl;
-import org.codehaus.aspectwerkz.attribdef.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.attribdef.definition.MethodIntroductionDefinition;
-import org.codehaus.aspectwerkz.attribdef.definition.AdviceWeavingRule;
-import org.codehaus.aspectwerkz.attribdef.definition.IntroductionWeavingRule;
-import org.codehaus.aspectwerkz.attribdef.definition.InterfaceIntroductionDefinition;
+import org.codehaus.aspectwerkz.attribdef.definition.*;
 
 /**
  * Abstract base class for all the aspect attribute parsers to extend.
@@ -131,25 +125,63 @@ public abstract class AspectAttributeParser {
      *
      * @param expression
      * @param introductionName
-     * @param aspectName
-     * @param aspectClassName
-     * @param method
-     * @param methodIndex
+     * @param introducedInterfaceNames
+     * @param introducedMethods
      * @param aspectDef
      */
     protected void createAndAddIntroductionDefToAspectDef(final String expression,
                                                           final String introductionName,
-                                                          final String aspectName,
-                                                          final String aspectClassName,
-                                                          final Method method,
-                                                          final int methodIndex,
+                                                          final String[] introducedInterfaceNames,
+                                                          final Method[] introducedMethods,
                                                           final AspectDefinition aspectDef) {
-        MethodIntroductionDefinition adviceDef = createMethodIntroductionDefinition(
-                introductionName, aspectName, aspectClassName, expression,
-                method, methodIndex, aspectDef
-        );
-        aspectDef.addMethodIntroduction(adviceDef);
+        IntroductionDefinition introDef = createIntroductionDefinition(
+                introductionName,
+                expression,
+                introducedInterfaceNames,
+                introducedMethods,
+                aspectDef);
+        aspectDef.addInterfaceIntroduction(introDef);
     }
+
+    /**
+     * Creates an introduction definition
+     *
+     * @param introductionName
+     * @param expression
+     * @param introducedInterfaceNames
+     * @param introducedMethods
+     * @param aspectDef
+     * @return
+     */
+    private IntroductionDefinition createIntroductionDefinition(
+            String introductionName, String expression,
+            String[] introducedInterfaceNames, Method[] introducedMethods,
+            AspectDefinition aspectDef) {
+
+        final IntroductionDefinition introDef = new IntroductionDefinition(
+                introductionName, expression, introducedInterfaceNames, introducedMethods
+
+        );
+
+        try {
+            final PointcutDefinition pointcutDef = new PointcutDefinitionImpl(
+                    introductionName, PointcutDefinition.CLASS, expression, aspectDef
+            );
+
+            final IntroductionWeavingRule introductionWeavingRule = new IntroductionWeavingRule();
+            introductionWeavingRule.setExpression(introductionName);
+
+            aspectDef.addPointcut(pointcutDef);
+            addPointcutPattern(introductionWeavingRule, pointcutDef);
+
+            introDef.setWeavingRule(introductionWeavingRule);
+        }
+        catch (Exception e) {
+            throw new DefinitionException("definition for introduction [" + introDef.getName() + "] in aspect [" + aspectDef.getName() + "] is not valid: " + e.getMessage());
+        }
+        return introDef;
+    }
+
 
     /**
      * Creates and add interface introduction definition to aspect definition.
@@ -163,10 +195,14 @@ public abstract class AspectAttributeParser {
                                                                    final String introductionName,
                                                                    final String interfaceClassName,
                                                                    final AspectDefinition aspectDef) {
-        InterfaceIntroductionDefinition interfaceIntroDef = createInterfaceIntroductionDefinition(
-                introductionName, expression, interfaceClassName, aspectDef
-        );
-        aspectDef.addInterfaceIntroduction(interfaceIntroDef);
+        IntroductionDefinition introDef = createInterfaceIntroductionDefinition(
+                introductionName, expression, interfaceClassName, aspectDef);
+        aspectDef.addInterfaceIntroduction(introDef);
+
+//        InterfaceIntroductionDefinition interfaceIntroDef = createInterfaceIntroductionDefinition(
+//                introductionName, expression, interfaceClassName, aspectDef
+//        );
+//        aspectDef.addInterfaceIntroduction(interfaceIntroDef);
     }
 
     /**
@@ -219,49 +255,49 @@ public abstract class AspectAttributeParser {
         return adviceDef;
     }
 
-    /**
-     * Creates a new introduction definition.
-     *
-     * @param introductionName the introduction name
-     * @param aspectName the aspect name
-     * @param aspectClassName the aspect class name
-     * @param expression the pointcut expression
-     * @param method the introduction method
-     * @param methodIndex the introduction method index
-     * @param aspectDef the aspect definition
-     * @return the new introduction definition
-     */
-    protected MethodIntroductionDefinition createMethodIntroductionDefinition(
-            final String introductionName,
-            final String aspectName,
-            final String aspectClassName,
-            final String expression,
-            final Method method,
-            final int methodIndex,
-            final AspectDefinition aspectDef) {
-
-        final MethodIntroductionDefinition introDef = new MethodIntroductionDefinition(
-                introductionName, aspectName, aspectClassName,
-                expression, method, methodIndex, aspectDef.getDeploymentModel()
-        );
-
-        try {
-            final IntroductionWeavingRule introductionWeavingRule = new IntroductionWeavingRule();
-            introductionWeavingRule.setExpression(expression);
-
-            for (Iterator it2 = introDef.getPointcutRefs().iterator(); it2.hasNext();) {
-                String pointcutName = (String)it2.next();
-                PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
-                addPointcutPattern(introductionWeavingRule, pointcutDef);
-            }
-
-            introDef.setWeavingRule(introductionWeavingRule);
-        }
-        catch (Exception e) {
-            throw new DefinitionException("definition for introduction [" + introDef.getName() + "] in aspect [" + aspectDef.getName() + "] is not valid: " + e.getMessage());
-        }
-        return introDef;
-    }
+//    /**
+//     * Creates a new introduction definition.
+//     *
+//     * @param introductionName the introduction name
+//     * @param aspectName the aspect name
+//     * @param aspectClassName the aspect class name
+//     * @param expression the pointcut expression
+//     * @param method the introduction method
+//     * @param methodIndex the introduction method index
+//     * @param aspectDef the aspect definition
+//     * @return the new introduction definition
+//     */
+//    protected MethodIntroductionDefinition createMethodIntroductionDefinition(
+//            final String introductionName,
+//            final String aspectName,
+//            final String aspectClassName,
+//            final String expression,
+//            final Method method,
+//            final int methodIndex,
+//            final AspectDefinition aspectDef) {
+//
+//        final MethodIntroductionDefinition introDef = new MethodIntroductionDefinition(
+//                introductionName, aspectName, aspectClassName,
+//                expression, method, methodIndex, aspectDef.getDeploymentModel()
+//        );
+//
+//        try {
+//            final IntroductionWeavingRule introductionWeavingRule = new IntroductionWeavingRule();
+//            introductionWeavingRule.setExpression(expression);
+//
+//            for (Iterator it2 = introDef.getPointcutRefs().iterator(); it2.hasNext();) {
+//                String pointcutName = (String)it2.next();
+//                PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
+//                addPointcutPattern(introductionWeavingRule, pointcutDef);
+//            }
+//
+//            introDef.setWeavingRule(introductionWeavingRule);
+//        }
+//        catch (Exception e) {
+//            throw new DefinitionException("definition for introduction [" + introDef.getName() + "] in aspect [" + aspectDef.getName() + "] is not valid: " + e.getMessage());
+//        }
+//        return introDef;
+//    }
 
     /**
      * Creates a new interface introduction definition.
@@ -272,13 +308,13 @@ public abstract class AspectAttributeParser {
      * @param aspectDef the aspect definition
      * @return the new introduction definition
      */
-    protected InterfaceIntroductionDefinition createInterfaceIntroductionDefinition(
+    protected IntroductionDefinition createInterfaceIntroductionDefinition(
             final String introductionName,
             final String expression,
             final String interfaceClassName,
             final AspectDefinition aspectDef) {
 
-        final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(
+        final IntroductionDefinition introDef = new IntroductionDefinition(
                 introductionName, expression, interfaceClassName
         );
 

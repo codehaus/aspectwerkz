@@ -29,13 +29,13 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.AspectMetaData;
 import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.attribdef.aspect.Aspect;
+import org.codehaus.aspectwerkz.attribdef.aspect.Introduction;
 import org.codehaus.aspectwerkz.attribdef.definition.StartupManager;
 import org.codehaus.aspectwerkz.attribdef.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.attribdef.definition.MethodIntroductionDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.AspectWerkzDefinitionImpl;
 import org.codehaus.aspectwerkz.attribdef.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.attribdef.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.DefaultAspectAttributeParser;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
@@ -63,6 +63,7 @@ import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
  * Stores and indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public final class AttribDefSystem implements System {
 
@@ -74,42 +75,42 @@ public final class AttribDefSystem implements System {
     /**
      * and cache for the method pointcuts.
      *
-     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
     private final Map m_methodPointcutCache = new WeakHashMap();
 
     /**
      * and cache for the get field pointcuts.
      *
-     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
     private final Map m_getFieldPointcutCache = new WeakHashMap();
 
     /**
      * and cache for the set field pointcuts.
      *
-     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
     private final Map m_setFieldPointcutCache = new WeakHashMap();
 
     /**
      * and cache for the throws pointcuts.
      *
-     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
     private final Map m_throwsPointcutCache = new WeakHashMap();
 
     /**
      * and cache for the caller side pointcuts.
      *
-     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
     private final Map m_callerSidePointcutCache = new WeakHashMap();
 
     /**
      * and cache for the cflow pointcuts.
      *
-     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
     private final Map m_cflowPointcutCache = new WeakHashMap();
 
@@ -135,8 +136,9 @@ public final class AttribDefSystem implements System {
 
     /**
      * Holds the indexes for the introductions.
+     * Each nested class in aspect has its own index
      */
-    private Map m_introductionIndexes = new HashMap();
+    private Mixin[] m_mixins = new Mixin[0];
 
     /**
      * Marks the system as initialized.
@@ -231,7 +233,7 @@ public final class AttribDefSystem implements System {
         synchronized (m_aspects) {
             synchronized (m_aspectIndexes) {
                 synchronized (m_adviceIndexes) {
-                    synchronized (m_introductionIndexes) {
+                    synchronized (m_mixins) {
                         synchronized (m_aspectMetaDataMap) {
                             try {
                                 m_aspectMetaDataMap.put(aspect.___AW_getName(), aspectMetaData);
@@ -257,19 +259,24 @@ public final class AttribDefSystem implements System {
                                     );
                                 }
 
-                                // retrieve a sorted introduction list => matches the sorted method list in the container
-                                int introMethodIndex = 0;
-                                List introductions = aspect.___AW_getAspectDef().getMethodIntroductions();
-                                for (Iterator it = introductions.iterator(); it.hasNext(); introMethodIndex++) {
-                                    final MethodIntroductionDefinition introductionDef =
-                                            (MethodIntroductionDefinition)it.next();
-                                    m_introductionIndexes.put(
-                                            introductionDef.getName(),
-                                            new IndexTuple(indexAspect, introMethodIndex)
-                                    );
+
+                                List introductions = aspect.___AW_getAspectDef().getInterfaceIntroductions();
+                                for (Iterator it = introductions.iterator(); it.hasNext(); ) {
+                                    IntroductionDefinition introDef = (IntroductionDefinition) it.next();
+                                    if (introDef.getMethodIntroductions().isEmpty()) {
+                                        continue;//TODO bad
+                                    }
+                                    Introduction mixin = new Introduction(introDef.getName(), aspect, introDef);
+                                    //todo : very bad
+                                    final Mixin[] tmpMixins = new Mixin[m_mixins.length + 1];
+                                    java.lang.System.arraycopy(m_mixins, 0, tmpMixins, 0, m_mixins.length);
+                                    tmpMixins[m_mixins.length] = mixin;
+                                    m_mixins = new Mixin[m_mixins.length + 1];
+                                    java.lang.System.arraycopy(tmpMixins, 0, m_mixins, 0, tmpMixins.length);
                                 }
                             }
                             catch (Exception e) {
+                                e.printStackTrace();;
                                 throw new DefinitionException("could not register aspect [" + aspect.___AW_getName() + "] due to: " + e.getMessage());
                             }
                         }
@@ -441,20 +448,20 @@ public final class AttribDefSystem implements System {
      * @return the the mixin (aspect in this case)
      */
     public Mixin getMixin(final int index) {
-        Aspect aspect;
+        Mixin mixin;
         try {
-            aspect = m_aspects[index - 1];
+            mixin = m_mixins[index - 1];
         }
         catch (Throwable e1) {
             initialize();
             try {
-                aspect = m_aspects[index - 1];
+                mixin = m_mixins[index - 1];
             }
             catch (ArrayIndexOutOfBoundsException e2) {
-                throw new DefinitionException("no aspect with index " + index);
+                throw new DefinitionException("no mixin with index " + index);
             }
         }
-        return aspect;
+        return mixin;
     }
 
     /**
@@ -464,16 +471,18 @@ public final class AttribDefSystem implements System {
      * @return the the mixin (aspect in this case)
      */
     public Mixin getMixin(final String name) {
+//        java.lang.System.out.println(name);
+//        (new Exception()).printStackTrace();
         if (name == null) throw new IllegalArgumentException("introduction name can not be null");
 
         Mixin introduction;
         try {
-            introduction = m_aspects[m_definition.getAspectIndexByName(name) - 1];
+            introduction = m_mixins[m_definition.getMixinIndexByName(name) - 1];
         }
         catch (Throwable e1) {
             initialize();
             try {
-                introduction = m_aspects[m_definition.getAspectIndexByName(name) - 1];
+                introduction = m_mixins[m_definition.getMixinIndexByName(name) - 1];
             }
             catch (ArrayIndexOutOfBoundsException e2) {
                 throw new DefinitionException("no introduction with name " + name);
@@ -509,19 +518,6 @@ public final class AttribDefSystem implements System {
     }
 
     /**
-     * Returns the index for a specific name to introduction mapping.
-     *
-     * @param name the name of the introduction
-     * @return the index of the introduction
-     */
-    public IndexTuple getIntroductionIndexFor(final String name) {
-        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
-        final IndexTuple index = (IndexTuple)m_introductionIndexes.get(name);
-        if (index == null) throw new DefinitionException("introduction " + name + " is not properly defined");
-        return index;
-    }
-
-    /**
      * Returns the aspect meta-data for the name specified.
      *
      * @param name the name of the aspect
@@ -547,7 +543,7 @@ public final class AttribDefSystem implements System {
     /**
      * Returns the aspect meta-data for the class pattern specified.
      *
-     * @TODO: needed?
+     * TODO: needed?
      *
      * @param classPattern the class pattern
      * @return the aspect
@@ -632,7 +628,7 @@ public final class AttribDefSystem implements System {
      * and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData the meta-data for the class
-     * @param methodMetaData meta-data for the method
+     * @param fieldMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
     public List getGetFieldPointcuts(final ClassMetaData classMetaData,
@@ -668,7 +664,7 @@ public final class AttribDefSystem implements System {
      * and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData the meta-data for the class
-     * @param methodMetaData meta-data for the method
+     * @param fieldMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
     public List getSetFieldPointcuts(final ClassMetaData classMetaData,
@@ -888,7 +884,6 @@ public final class AttribDefSystem implements System {
      *
      * @param klass the class
      * @param methods the method list
-     * @param addedMethods the method added to the method list
      */
     protected void collectMethods(final Class klass, final List methods) {
 

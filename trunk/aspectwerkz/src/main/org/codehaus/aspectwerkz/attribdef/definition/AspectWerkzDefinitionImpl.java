@@ -7,13 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.attribdef.definition;
 
-import java.util.Map;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import gnu.trove.TObjectIntHashMap;
 
@@ -33,6 +27,7 @@ import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
  * Implementation of the AspectWerkz interface for the attribdef definition model.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
 
@@ -44,6 +39,13 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     private final TObjectIntHashMap m_aspectIndexes = new TObjectIntHashMap();
 
     /**
+     * Holds the indexes for the mixins. The mixin indexes are needed here (instead of in the
+     * AspectWerkz class like the advice indexes) since they need to be available to the
+     * transformers before the AspectWerkz system has been initialized.
+     */
+    private final TObjectIntHashMap m_mixinIndexes = new TObjectIntHashMap();
+
+    /**
      * Set with the aspect class names.
      */
     private Set m_aspectsToUse = new HashSet();
@@ -52,6 +54,11 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      * Maps the aspects to it's name.
      */
     private final Map m_aspectMap = new SequencedHashMap();
+
+    /**
+     * Maps the mixins to it's name.
+     */
+    private final Map m_mixinMap = new HashMap();
 
     /**
      * The UUID for this definition.
@@ -70,8 +77,8 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
 
     /**
      * The default attribute parser.
-     * @TODO: make customizable (-D..)
-     * @TODO: use factory
+     * TODO: make customizable (-D..)
+     * TODO: use factory
      */
     private final AspectAttributeParser m_attributeParser = new DefaultAspectAttributeParser();
 
@@ -179,12 +186,11 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      */
     public Collection getIntroductionDefinitions() {
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
-        final Collection introductionDefs = new ArrayList();
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-            introductionDefs.addAll(aspectDef.getMethodIntroductions());
+        Collection clone = new ArrayList(m_mixinMap.size());
+        for (Iterator it = m_mixinMap.values().iterator(); it.hasNext();) {
+            clone.add(it.next());
         }
-        return introductionDefs;
+        return clone;
     }
 
     /**
@@ -207,7 +213,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     /**
      * Returns a specific aspect definition.
      *
-     * @TODO: needed??
+     * TODO: needed??
      *
      * @param name the name of the aspect definition
      * @return the aspect definition
@@ -220,7 +226,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     /**
      * Returns a specific advice definition.
      *
-     * @TODO: needed??
+     * TODO: needed??
      *
      * @param name the name of the advice definition
      * @return the advice definition
@@ -244,45 +250,32 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      * @return the name of the interface
      */
     public String getIntroductionImplName(final String introductionName) {
-        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
-        if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
-
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-            List introductions = aspectDef.getMethodIntroductions();
-            for (Iterator it2 = introductions.iterator(); it2.hasNext();) {
-                MethodIntroductionDefinition introDef = (MethodIntroductionDefinition)it2.next();
-                if (introDef.getName().equals(introductionName)) {
-                    return introDef.getAspectClassName();
-                }
-            }
-        }
-        return null;
+        throw new RuntimeException("not implemented");
     }
 
-    /**
-     * Returns a specific introduction definition.
-     *
-     * @TODO: needed??
-     *
-     * @param introductionName the name of the introduction
-     * @return the introduction definition
-     */
-    public MethodIntroductionDefinition getIntroductionDefinition(final String introductionName) {
-        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
-
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-            List introductions = aspectDef.getMethodIntroductions();
-            for (Iterator it2 = introductions.iterator(); it2.hasNext();) {
-                MethodIntroductionDefinition introDef = (MethodIntroductionDefinition)it2.next();
-                if (introDef.getName().equals(introductionName)) {
-                    return introDef;
-                }
-            }
-        }
-        return null;
-    }
+//    /**
+//     * Returns a specific introduction definition.
+//     *
+//     * TODO: needed??
+//     *
+//     * @param introductionName the name of the introduction
+//     * @return the introduction definition
+//     */
+//    public MethodIntroductionDefinition getIntroductionDefinition(final String introductionName) {
+//        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
+//
+//        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+//            AspectDefinition aspectDef = (AspectDefinition)it.next();
+//            List introductions = aspectDef.getMethodIntroductions();
+//            for (Iterator it2 = introductions.iterator(); it2.hasNext();) {
+//                MethodIntroductionDefinition introDef = (MethodIntroductionDefinition)it2.next();
+//                if (introDef.getName().equals(introductionName)) {
+//                    return introDef;
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     /**
      * Returns the introduction definitions for a specific class.
@@ -293,13 +286,10 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     public List getIntroductionDefinitionsForClass(final ClassMetaData classMetaData) {
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         final List introDefs = new ArrayList();
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-            for (Iterator it2 = aspectDef.getMethodIntroductions().iterator(); it2.hasNext();) {
-                MethodIntroductionDefinition introDef = (MethodIntroductionDefinition)it2.next();
-                if (introDef.getWeavingRule().matchClassPointcut(classMetaData)) {
-                    introDefs.add(introDef);
-                }
+        for (Iterator it = m_mixinMap.values().iterator(); it.hasNext();) {
+            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
+            if (introDef.getWeavingRule().matchClassPointcut(classMetaData)) {
+                introDefs.add(introDef);
             }
         }
         return introDefs;
@@ -320,9 +310,23 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
+     * Returns the index for a specific introduction.
+     *
+     * @param mixinName the name of the mixin
+     * @return the index
+     */
+    public int getMixinIndexByName(final String mixinName) {
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
+        if (mixinName == null) throw new IllegalArgumentException("mixin name can not be null");
+        int index = m_mixinIndexes.get(mixinName);
+        if (index < 1) throw new RuntimeException("mixin [" + mixinName + "] does not exist, failed in retrieving mixin index");
+        return index;
+    }
+
+    /**
      * Returns the indexes for the introductions.
      *
-     * @TODO: needed??
+     * TODO: needed??
      *
      * @return the indexes
      */
@@ -387,6 +391,26 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
+     * Adds a new mixin definition.
+     *
+     * @param introDef the mixin definition
+     */
+    public void addMixin(final IntroductionDefinition introDef) {
+        if (introDef == null) throw new IllegalArgumentException("introduction definition can not be null");
+        if (m_mixinIndexes.containsKey(introDef.getName())) {
+            if (true) throw new RuntimeException("warning here - doublon in name");
+            return;
+        }
+        synchronized (m_mixinMap) {
+            synchronized (m_mixinIndexes) {
+                final int index = m_mixinMap.values().size() + 1;
+                m_mixinIndexes.put(introDef.getName(), index);
+                m_mixinMap.put(introDef.getName(), introDef);
+            }
+        }
+    }
+
+    /**
      * Adds a new aspect to use.
      *
      * @param className the class name of the aspect
@@ -444,14 +468,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      */
     public boolean hasIntroduction(final String name) {
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
-        if (m_aspectMap.containsKey(name)) {
-            AspectDefinition aspectDef = (AspectDefinition)m_aspectMap.get(name);
-            if (!aspectDef.getInterfaceIntroductions().isEmpty() ||
-                    (!aspectDef.getMethodIntroductions().isEmpty())) {
-                return true;
-            }
-        }
-        return false;
+        return m_mixinMap.containsKey(name);
     }
 
     /**
@@ -501,21 +518,10 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-            for (Iterator it2 = aspectDef.getMethodIntroductions().iterator(); it2.hasNext();) {
-                MethodIntroductionDefinition introDef = (MethodIntroductionDefinition)it2.next();
-
-                IntroductionWeavingRule weavingRule = introDef.getWeavingRule();
-                if (weavingRule.matchClassPointcut(classMetaData)) {
-                    return true;
-                }
-            }
-            for (Iterator it2 = aspectDef.getInterfaceIntroductions().iterator(); it2.hasNext();) {
-                InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition)it2.next();
-                if (introDef.getWeavingRule().matchClassPointcut(classMetaData)) {
-                    return true;
-                }
+        for (Iterator it = m_mixinMap.values().iterator(); it.hasNext();) {
+            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
+            if (introDef.getWeavingRule().matchClassPointcut(classMetaData)) {
+                return true;
             }
         }
         return false;
@@ -574,7 +580,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      * Checks if a class has a <tt>GetFieldPointcut</tt>.
      * Only checks for a class match to allow early filtering.
      *
-     * @TODO: how to know if it is a Set of a Get field pointcut
+     * TODO: how to know if it is a Set of a Get field pointcut
      *
      * @param classMetaData the class meta-data
      * @return boolean
@@ -598,7 +604,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     /**
      * Checks if a class and field has a <tt>GetFieldPointcut</tt>.
      *
-     * @TODO: how to know if it is a Set of a Get field pointcut
+     * TODO: how to know if it is a Set of a Get field pointcut
      *
      * @param classMetaData the class meta-data
      * @param fieldMetaData the name or the field
@@ -626,7 +632,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      * Checks if a class has a <tt>SetFieldPointcut</tt>.
      * Only checks for a class match to allow early filtering.
      *
-     * @TODO: how to know if it is a Set of a Get field pointcut
+     * TODO: how to know if it is a Set of a Get field pointcut
      *
      * @param classMetaData the class meta-data
      * @return boolean
@@ -650,7 +656,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     /**
      * Checks if a class and field has a <tt>SetFieldPointcut</tt>.
      *
-     * @TODO: how to know if it is a Set of a Get field pointcut
+     * TODO: how to know if it is a Set of a Get field pointcut
      *
      * @param classMetaData the class meta-data
      * @param fieldMetaData the name or the field
@@ -783,13 +789,11 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         List introductionDefs = new ArrayList();
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-            for (Iterator it2 = aspectDef.getInterfaceIntroductions().iterator(); it2.hasNext();) {
-                InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition)it2.next();
-                if (introDef.getWeavingRule().matchClassPointcut(classMetaData)) {
-                    introductionDefs.add(introDef);
-                }
+        for (Iterator it = m_mixinMap.values().iterator(); it.hasNext();) {
+            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
+            if (introDef.getMethodIntroductions().isEmpty() &&
+                introDef.getWeavingRule().matchClassPointcut(classMetaData)) {
+                introductionDefs.add(introDef);
             }
         }
         return introductionDefs;
@@ -804,19 +808,22 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     public void buildMixinMetaDataRepository(final Set repository, final ClassLoader loader) {
         loadAspects(loader);
 
-        Set definedAspects = getAspectsToUse();
-
-        for (Iterator it = definedAspects.iterator(); it.hasNext();) {
-            String className = (String)it.next();
-            try {
-                Class mixin = loader.loadClass(className);
-                ClassMetaData metaData = ReflectionMetaDataMaker.createClassMetaData(mixin);
-                repository.add(metaData);
-            }
-            catch (ClassNotFoundException e) {
-                ;// ignore
-            }
-        }
+        // not needed for inner class mixins
+        // todo check me
+//        Set definedAspects = getAspectsToUse();
+//
+//        for (Iterator it = definedAspects.iterator(); it.hasNext();) {
+//
+//            String className = (String)it.next();
+//            try {
+//                Class mixin = loader.loadClass(className);
+//                ClassMetaData metaData = ReflectionMetaDataMaker.createClassMetaData(mixin);
+//                repository.add(metaData);
+//            }
+//            catch (ClassNotFoundException e) {
+//                ;// ignore
+//            }
+//        }
     }
 
     /**
@@ -830,6 +837,12 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
             Class klass = loader.loadClass(aspectClassName);
             AspectDefinition aspectDef = m_attributeParser.parse(klass);
             addAspect(aspectDef);
+            for (Iterator mixins = aspectDef.getInterfaceIntroductions().iterator(); mixins.hasNext();) {
+                //TODO redundant with interface introd.
+                IntroductionDefinition introDef = (IntroductionDefinition)mixins.next();
+                if (!introDef.getMethodIntroductions().isEmpty())
+                    addMixin(introDef);
+            }
         }
         catch (ClassNotFoundException e) {
             throw new WrappedRuntimeException(e);
