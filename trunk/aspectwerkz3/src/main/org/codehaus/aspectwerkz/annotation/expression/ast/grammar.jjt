@@ -10,6 +10,7 @@
  * JJTree grammar for annotation expressions.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 
 options {
@@ -79,12 +80,12 @@ TOKEN :
 | < RIGHT_BRACKET : "}" >
 | < COMMA : "," >
 | < EQUALS : "=" >
-| < AT : "@" >
-| < CHAR_LETTER : (~["\n","\r", "\\", "\""]) >
+| < #AT : "@" >
 | < ANNOTATION : <AT> <JAVA_NAME> >
 | < JAVA_TYPE: <JAVA_NAME> (<DOT> <JAVA_NAME>)* >
-| < JAVA_NAME: (<JAVA_LETTER>)+ >
+| < #JAVA_NAME: (<JAVA_LETTER>)+ >
 | < #JAVA_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
+| < #CHAR_LETTER : (~["\n","\r", "\\", "\""]) >
 }
 
 /**
@@ -101,7 +102,23 @@ ASTRoot Root() #Root : {}
  */
 void Annotation() #Annotation : {}
 {
-    <ANNOTATION> "(" (LOOKAHEAD(2) (KeyValuePair()) | LOOKAHEAD(2) (Value()) )* ")"
+    LOOKAHEAD(3)
+    <ANNOTATION> <LEFT_PARENTHEZIS> (LOOKAHEAD(4) KeyValuePairList() | Value()) <RIGHT_PARENTHEZIS>
+    |
+    LOOKAHEAD(2)
+    <ANNOTATION> <LEFT_PARENTHEZIS> <RIGHT_PARENTHEZIS>
+    |
+    <ANNOTATION>
+
+}
+
+/**
+ * KeyValuePairList.
+ */
+void KeyValuePairList() : {}
+{
+    KeyValuePair()
+    ( (<COMMA>)? KeyValuePair() )*
 }
 
 /**
@@ -116,7 +133,7 @@ void KeyValuePair() #KeyValuePair :
     {
         jjtThis.setKey(key.image);
     }
-    "="
+    <EQUALS>
     Value()
 }
 
@@ -200,7 +217,7 @@ void String() #String :
  */
 void Array() #Array : {}
 {
-    "{" [Value() (LOOKAHEAD(2) "," Value())* [","]] "}"
+    <LEFT_BRACKET> [Value() (LOOKAHEAD(2) <COMMA> Value())* ] <RIGHT_BRACKET>
 }
 
 /**

@@ -58,6 +58,8 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.aopc.AspectSystemTest.class);
         suite.addTestSuite(test.aspectutilmethodbug.Test.class);
         suite.addTestSuite(test.advisetostringbug.Test.class);
+        suite.addTestSuite(test.annotation.AnnotationParserTest.class);
+        suite.addTestSuite(test.annotation.AnnotationCTest.class);
         //suite.addTestSuite(test.performance.PerformanceTest.class);
 
         // TODO: deprecated until a better hot deployment model has been implemented

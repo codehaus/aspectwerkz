@@ -32,7 +32,7 @@ public interface Annotation {
      * 
      * @param value
      */
-    void setValue(String value);
+    void initialize(String name, String value);
 
     /**
      * Checks if the annotation is typed or not.

@@ -48,19 +48,25 @@ public abstract class TypedAnnotationProxy implements Annotation, Serializable {
     }
 
     /**
-     * Sets the full value of the annotation (including possible named parameters etc.).
-     * 
-     * @param value
+     * Sets the full value of the annotation (including possible named parameters etc.)
+     * as @Foo(x=3 ...)
      */
-    public void setValue(final String value) {
-        if (value == null) {
-            throw new IllegalArgumentException("value can not be null");
+    public void initialize(final String name, String value) {
+        if (name == null) {
+            throw new IllegalArgumentException("name can not be null");
         }
+        StringBuffer representation = new StringBuffer("@");
+        representation.append(name).append('(');
+        if (value!=null) {
+            representation.append(value);
+        }
+        representation.append(')');
+
         try {
-            AnnotationVisitor.parse(this, s_parser.parse(value));
+            AnnotationVisitor.parse(this, s_parser.parse(representation.toString()));
         } catch (ParseException e) {
             e.printStackTrace();
-            throw new RuntimeException("could not parse annotation [" + m_name + " " + value + "]");
+            throw new RuntimeException("could not parse annotation [" + m_name + " " + representation.toString() + "]");
         }
     }
 
