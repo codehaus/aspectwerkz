@@ -852,11 +852,6 @@ public class ExpressionTest extends TestCase {
             NAMESPACE).getAdvisedClassFilterExpression().match(
             new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
 
-        //FIXME: since Pointcut with signature in grammar, not/NOT must be separated by a <space>
-        //        assertTrue(new ExpressionInfo(
-        //            "NOT(execution(void test.expression.Target.modifiers1()) OR !execution(* java.lang.String.*(..)))",
-        //            NAMESPACE).getAdvisedClassFilterExpression().match(
-        //            new ExpressionContext(PointcutType.ANY, otherType, null)));
         assertTrue(new ExpressionInfo(
             "!(execution(void test.expression.Target.modifiers1()) OR !execution(* java.lang.String.*(..)))",
             NAMESPACE).getAdvisedClassFilterExpression()

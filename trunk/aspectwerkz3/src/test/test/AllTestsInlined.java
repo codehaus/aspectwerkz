@@ -25,16 +25,17 @@ public class AllTestsInlined extends TestCase {
         TestSuite suite = new TestSuite("All tests");
 
         suite.addTestSuite(FieldAdviceTest.class);
-//        suite.addTestSuite(StaticMethodAdviceTest.class);//RTTI missing - fails with NPE
-//        suite.addTestSuite(CallerSideAdviceTest.class);
-//        suite.addTestSuite(test.callAndExecution.CallExecutionTest.class);
-//        suite.addTestSuite(test.hierarchicalpattern.HierachicalPatternTest.class);
-//        suite.addTestSuite(test.abstractclass.AbstractClassTest.class);
-//        suite.addTestSuite(test.reflection.ReflectionTest.class);
-//        suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
-//        suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
-//        suite.addTestSuite(test.args.ArgsAdviceTest.class);
-//        suite.addTestSuite(test.aopc.AspectSystemTest.class);//fails for a weird ClassCastE (to solve)
+        suite.addTestSuite(StaticMethodAdviceTest.class);//RTTI missing - fails with NPE
+        suite.addTestSuite(CallerSideAdviceTest.class);
+        suite.addTestSuite(test.callAndExecution.CallExecutionTest.class);
+        suite.addTestSuite(test.hierarchicalpattern.HierachicalPatternTest.class);
+        suite.addTestSuite(test.abstractclass.AbstractClassTest.class);
+        suite.addTestSuite(test.reflection.ReflectionTest.class);
+        suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
+        suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
+        suite.addTestSuite(test.args.ArgsAdviceTest.class);
+        suite.addTestSuite(test.aopc.AspectSystemTest.class);//fails for a weird ClassCastE (to solve)
+        suite.addTestSuite(test.advisetostringbug.Test.class);
 
         // NOT YET COMPLETED
 
