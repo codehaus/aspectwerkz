@@ -26,9 +26,33 @@ public class StaticInitializationAspect {
 	Pointcut staticInitialization;
 	
 	/**
+	 * @Expression staticinitialization(@StaticInitializationService)
+	 */
+	Pointcut staticServiceInitialization;
+	
+	/**
+	 * @Expression staticinitialization(@StaticInitializationService test.staticinitialization.*)
+	 */
+	Pointcut staticPatternInitialization;
+	
+	/**
 	 * @Before staticInitialization
 	 */
 	public void beforeStaticInitializer() {
+		StaticInitializationTest.s_messages.add(StaticInitializationTest.BEFORE_EXPECTED_MESSAGES[0]);	                                                                                   
+	}
+	
+	/**
+	 * @Before staticServiceInitialization
+	 */
+	public void beforeStaticServiceInitialization() {
+		StaticInitializationTest.s_messages.add(StaticInitializationTest.BEFORE_EXPECTED_MESSAGES[0]);	                                                                                   
+	}
+	
+	/**
+	 * @Before staticPatternInitialization
+	 */
+	public void beforeStaticPatternInitialization() {
 		StaticInitializationTest.s_messages.add(StaticInitializationTest.BEFORE_EXPECTED_MESSAGES[0]);	                                                                                   
 	}
 	
@@ -40,6 +64,20 @@ public class StaticInitializationAspect {
 	}
 	
 	/**
+	 * @Before staticServiceInitialization
+	 */
+	public void beforeStaticServiceInitialization(StaticJoinPoint sjp) {
+		StaticInitializationTest.s_staticJoinPoints.add(sjp);
+	}
+	
+	/**
+	 * @Before staticPatternInitialization
+	 */
+	public void beforeStaticPatternInitialization(StaticJoinPoint sjp) {
+		StaticInitializationTest.s_staticJoinPoints.add(sjp);
+	}
+	
+	/**
 	 * @Before staticInitialization
 	 */
 	public void beforeStaticInitialization(JoinPoint jp) {
@@ -47,9 +85,43 @@ public class StaticInitializationAspect {
 	}
 	
 	/**
+	 * @Before staticServiceInitialization
+	 */
+	public void beforeStaticServiceInitialization(JoinPoint jp) {
+		StaticInitializationTest.s_joinPoints.add(jp);
+	}
+	
+	/**
+	 * @Before staticPatternInitialization
+	 */
+	public void beforeStaticPatternInitialization(JoinPoint jp) {
+		StaticInitializationTest.s_joinPoints.add(jp);
+	}
+	
+	/**
 	 * @Around staticInitialization
 	 */
 	public Object aroundStaticInitialization(StaticJoinPoint sjp) throws Throwable {
+		StaticInitializationTest.s_messages.add(StaticInitializationTest.BEFORE_EXPECTED_MESSAGES[1]);
+		StaticInitializationTest.s_staticJoinPoints.add(sjp);
+		
+		return sjp.proceed();
+	}
+	
+	/**
+	 * @Around staticServiceInitialization
+	 */
+	public Object aroundStaticServiceInitialization(StaticJoinPoint sjp) throws Throwable {
+		StaticInitializationTest.s_messages.add(StaticInitializationTest.BEFORE_EXPECTED_MESSAGES[1]);
+		StaticInitializationTest.s_staticJoinPoints.add(sjp);
+		
+		return sjp.proceed();
+	}
+	
+	/**
+	 * @Around staticPatternInitialization
+	 */
+	public Object aroundStaticPatternInitialization(StaticJoinPoint sjp) throws Throwable {
 		StaticInitializationTest.s_messages.add(StaticInitializationTest.BEFORE_EXPECTED_MESSAGES[1]);
 		StaticInitializationTest.s_staticJoinPoints.add(sjp);
 		
@@ -67,6 +139,26 @@ public class StaticInitializationAspect {
 	}
 	
 	/**
+	 * @Around staticServiceInitialization
+	 */
+	public Object aroundStaticServiceInitialization(JoinPoint jp) throws Throwable {
+		StaticInitializationTest.s_messages.add(StaticInitializationTest.BEFORE_EXPECTED_MESSAGES[2]);
+		StaticInitializationTest.s_joinPoints.add(jp);
+		
+		return jp.proceed();
+	}
+	
+	/**
+	 * @Around staticPatternInitialization
+	 */
+	public Object aroundStaticPatternInitialization(JoinPoint jp) throws Throwable {
+		StaticInitializationTest.s_messages.add(StaticInitializationTest.BEFORE_EXPECTED_MESSAGES[2]);
+		StaticInitializationTest.s_joinPoints.add(jp);
+		
+		return jp.proceed();
+	}
+	
+	/**
 	 * @AfterReturning staticInitialization
 	 */
 	public void afterReturningStaticInitializer() {
@@ -74,9 +166,37 @@ public class StaticInitializationAspect {
 	}
 
 	/**
+	 * @AfterReturning staticServiceInitialization
+	 */
+	public void afterReturningServiceInitializer() {
+		StaticInitializationTest.s_messages.add(StaticInitializationTest.AFTER_EXPECTED_MESSAGES[0]);
+	}
+	
+	/**
+	 * @AfterReturning staticPatternInitialization
+	 */
+	public void afterReturningPatternInitializer() {
+		StaticInitializationTest.s_messages.add(StaticInitializationTest.AFTER_EXPECTED_MESSAGES[0]);
+	}
+	
+	/**
 	 * @AfterReturning staticInitialization
 	 */
 	public void afterReturningStaticInitializer(StaticJoinPoint sjp) {
+		StaticInitializationTest.s_staticJoinPoints.add(sjp);
+	}
+	
+	/**
+	 * @AfterReturning staticServiceInitialization
+	 */
+	public void afterReturningServiceInitializer(StaticJoinPoint sjp) {
+		StaticInitializationTest.s_staticJoinPoints.add(sjp);
+	}
+	
+	/**
+	 * @AfterReturning staticPatternInitialization
+	 */
+	public void afterReturningPatternInitializer(StaticJoinPoint sjp) {
 		StaticInitializationTest.s_staticJoinPoints.add(sjp);
 	}
 	
@@ -88,9 +208,37 @@ public class StaticInitializationAspect {
 	}
 	
 	/**
+	 * @AfterReturning staticServiceInitialization
+	 */
+	public void afterReturningServiceInitializer(JoinPoint jp) {
+		StaticInitializationTest.s_joinPoints.add(jp);
+	}
+	
+	/**
+	 * @AfterReturning staticPatternInitialization
+	 */
+	public void afterReturningPatternInitializer(JoinPoint jp) {
+		StaticInitializationTest.s_joinPoints.add(jp);
+	}
+	
+	/**
 	 * @After staticInitialization
 	 */
 	public void afterStaticInitializer() {
+		StaticInitializationTest.s_messages.add(StaticInitializationTest.AFTER_EXPECTED_MESSAGES[1]);
+	}
+	
+	/**
+	 * @After staticServiceInitialization
+	 */
+	public void afterServiceInitializer() {
+		StaticInitializationTest.s_messages.add(StaticInitializationTest.AFTER_EXPECTED_MESSAGES[1]);
+	}
+	
+	/**
+	 * @After staticPatternInitialization
+	 */
+	public void afterPatternInitializer() {
 		StaticInitializationTest.s_messages.add(StaticInitializationTest.AFTER_EXPECTED_MESSAGES[1]);
 	}
 	
@@ -102,9 +250,37 @@ public class StaticInitializationAspect {
 	}
 	
 	/**
+	 * @After staticServiceInitialization
+	 */
+	public void afterServiceInitializer(StaticJoinPoint sjp) {
+		StaticInitializationTest.s_staticJoinPoints.add(sjp);
+	}
+	
+	/**
+	 * @After staticPatternInitialization
+	 */
+	public void afterPatternInitializer(StaticJoinPoint sjp) {
+		StaticInitializationTest.s_staticJoinPoints.add(sjp);
+	}
+	
+	/**
 	 * @After staticInitialization
 	 */
 	public void afterStaticInitializer(JoinPoint jp) {
+		StaticInitializationTest.s_joinPoints.add(jp);
+	}
+	
+	/**
+	 * @After staticServiceInitialization
+	 */
+	public void afterServiceInitializer(JoinPoint jp) {
+		StaticInitializationTest.s_joinPoints.add(jp);
+	}
+	
+	/**
+	 * @After staticPatternInitialization
+	 */
+	public void afterPatternInitializer(JoinPoint jp) {
 		StaticInitializationTest.s_joinPoints.add(jp);
 	}
 }

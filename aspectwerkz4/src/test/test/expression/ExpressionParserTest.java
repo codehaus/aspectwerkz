@@ -1,13 +1,17 @@
-/*
- * $Id: ExpressionParserTest.java,v 1.1 2004-12-17 15:52:10 avasseur Exp $
- * $Date: 2004-12-17 15:52:10 $
- */
+/**************************************************************************************
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the LGPL license      *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package test.expression;
 
 import junit.framework.TestCase;
 
 import org.codehaus.aspectwerkz.expression.ast.ExpressionParser;
 import org.codehaus.aspectwerkz.expression.ast.ParseException;
+import org.codehaus.aspectwerkz.expression.ast.TokenMgrError;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 
 
@@ -15,7 +19,6 @@ import org.codehaus.aspectwerkz.expression.ExpressionInfo;
  * Unit test for expression parser.
  * 
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
- * @version $Revision: 1.1 $
  */
 public class ExpressionParserTest extends TestCase {
 	private static final ExpressionParser PARSER = ExpressionInfo.getParser();
@@ -91,12 +94,44 @@ public class ExpressionParserTest extends TestCase {
 		for(int i = 0; i < TYPE_EXPRESSIONS.length; i++) {
 			parse("within(" + TYPE_EXPRESSIONS[i] + ")");
 			
-			if(i < TYPE_EXPRESSIONS.length - 3) {
-				parse("staticinitialization(" + TYPE_EXPRESSIONS[i] + ")");
-			}
+			parse("staticinitialization(" + TYPE_EXPRESSIONS[i] + ")");
 		}
 	}
+
+	/* FIXME ArgParameters()
+	public void testArgsAndPointcutrefs() {
+		assertNull("args()", parseString("args()"));
+		
+		assertNotNull("args(,, String)", parseString("args(,, String)"));
+		
+		assertNotNull("args(, , String, , int)", parseString("args(, , String, , int)"));
+		
+		assertNull("pointcutref()", parseString("pointcutref()"));
+		
+		assertNull("pointcutref(arg1)", parseString("pointcutref(arg1)"));
+		
+		assertNull("pointcutref(..)", parseString("pointcutref(..)"));
+		
+		assertNull("pointcutref(arg1, ..)", parseString("pointcutref(arg1, ..)"));
+		
+		assertNotNull("pointcutref(, arg2)", parseString("pointcutref(, arg2)"));
+		
+		assertNotNull("pointcutref(, arg2, , arg4)", parseString("pointcutref(, arg2, , arg4)"));
+	}
+	*/
 	
+	
+	public void testWithincodeStaticinitialization() {
+	    for(int i = 0; i < TYPE_EXPRESSIONS.length; i++) {
+	        Throwable cause = parseString("withincode(staticinitialization(" 
+	                + TYPE_EXPRESSIONS[i] + "))");
+	        if(null != cause) {
+	            cause.printStackTrace();
+	        }
+			assertNull(TYPE_EXPRESSIONS[i] + cause, 
+			           cause);
+		}
+	}
 	
 	private void parse(String expression) {
 		try {
@@ -104,6 +139,20 @@ public class ExpressionParserTest extends TestCase {
 		} catch(ParseException e) {
 			fail("parsing [" + expression +"] failed because:\n" + e.getMessage());
 		}
+	}
+	
+	private Throwable parseString(String expression) {
+		try {
+			PARSER.parse(expression);
+		} catch(ParseException pe) {
+			return pe;
+		} catch(TokenMgrError tokenerr) {
+			return tokenerr;
+		} catch(Exception ex) {
+			return ex;
+		}
+		
+		return null;
 	}
 	
 	private static final String[] METHOD_EXPRESSIONS = {
@@ -127,7 +176,7 @@ public class ExpressionParserTest extends TestCase {
 			"@Transaction !static * foo.*.*.*(..)",
 			"!@Transaction !static * foo.*.*.*(..)"
 	};
-	
+			
 	private static final String[] CONSTRUCTOR_EXPRESSIONS = {
 			"foo.*.Bar.new()",
 			"*.new(*)",
@@ -184,11 +233,12 @@ public class ExpressionParserTest extends TestCase {
 	private static final String[] TYPE_EXPRESSIONS = {
 			"foo.bar.*",
 			"foo.*.FooBar",
-			"foo.*.FooB*", 
-			"public foo.bar.*",
+			"foo.*.FooB*",
 			"foo..",
+			"public foo.bar.*",
 			"@Session foo.bar.*",
 			"@Session",
+			"@Session @Service foo....bar.*",
 			"@Session @Service public abstract foo....bar.*"
 			
 	};

@@ -12,6 +12,8 @@ import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
+import org.codehaus.aspectwerkz.reflect.StaticInitializationInfo;
+
 import gnu.trove.TIntIntHashMap;
 import gnu.trove.TObjectIntHashMap;
 
@@ -31,6 +33,8 @@ public class ExpressionContext {
     public static final int FIELD_INFO = 2;
 
     public static final int CLASS_INFO = 3;
+    
+    private static final int STATIC_INFO = 4;
 
     private final int m_reflectionInfoType;
 
@@ -105,6 +109,8 @@ public class ExpressionContext {
             m_reflectionInfoType = FIELD_INFO;
         } else if (reflectionInfo instanceof ClassInfo) {
             m_reflectionInfoType = CLASS_INFO;
+        } else if (reflectionInfo instanceof StaticInitializationInfo) {
+        	m_reflectionInfoType = STATIC_INFO;
         } else {
             m_reflectionInfoType = INFO_NOT_AVAILABLE;// used for early eval on CALL
         }

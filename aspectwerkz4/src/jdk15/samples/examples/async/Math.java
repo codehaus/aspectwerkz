@@ -13,6 +13,10 @@ import is.Service;
 @Service
 public class Math {
 
+    static {
+        System.out.println("Math.'static initializer'");
+    }
+
     @Async(timeout = 10)
     public void add(int a, int b) {
         System.out.printf(

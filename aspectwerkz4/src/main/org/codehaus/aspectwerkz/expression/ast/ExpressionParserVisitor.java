@@ -18,8 +18,8 @@ public interface ExpressionParserVisitor
   public Object visit(ASTHandler node, Object data);
   public Object visit(ASTWithin node, Object data);
   public Object visit(ASTWithinCode node, Object data);
-  public Object visit(ASTClassPattern node, Object data);
   public Object visit(ASTStaticInitialization node, Object data);
+  public Object visit(ASTClassPattern node, Object data);
   public Object visit(ASTCflow node, Object data);
   public Object visit(ASTCflowBelow node, Object data);
   public Object visit(ASTArgs node, Object data);

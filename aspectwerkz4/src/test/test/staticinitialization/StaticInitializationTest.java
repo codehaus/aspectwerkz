@@ -58,17 +58,21 @@ public class StaticInitializationTest extends TestCase {
 	}
 
 	private void checkMessages() {
+		int messages = 3 * (BEFORE_EXPECTED_MESSAGES.length 
+             	+ AFTER_EXPECTED_MESSAGES.length) + 1;
+		
 		assertEquals("logged messages should match",
-		             BEFORE_EXPECTED_MESSAGES.length 
-		             	+ AFTER_EXPECTED_MESSAGES.length + 1,
+		             messages,
 		             s_messages.size());
 		
 		for(int i = 0; i < BEFORE_EXPECTED_MESSAGES.length; i++) {
-			assertEquals(BEFORE_EXPECTED_MESSAGES[i],
-			             s_messages.get(i));			
+			for(int j = 0; j < 3; j++) {
+				assertEquals(BEFORE_EXPECTED_MESSAGES[i],
+				             s_messages.get(i * 3 + j));
+			}
 		}
 		
-		int lastBeforeIndex = BEFORE_EXPECTED_MESSAGES.length;
+		int lastBeforeIndex = 3 * BEFORE_EXPECTED_MESSAGES.length;
 		
 		assertEquals("clinit was expected to execute",
 		             CLINIT_EXECUTION_MESSAGE,
@@ -77,14 +81,16 @@ public class StaticInitializationTest extends TestCase {
 		lastBeforeIndex++;
 		
 		for(int i = 0; i < AFTER_EXPECTED_MESSAGES.length; i++) {
-			assertEquals(AFTER_EXPECTED_MESSAGES[i],
-			             s_messages.get(lastBeforeIndex + i));
+			for(int j = 0; j < 3; j++) {
+				assertEquals(AFTER_EXPECTED_MESSAGES[i],
+				             s_messages.get(lastBeforeIndex + (i * 3) + j));
+			}
 		}
 	}
 	
 	private void checkStaticJoinPoints(Class clazz, List data) {
 		assertEquals("staticjoinpoints number does not match",
-		             4,
+		             12,
 		             data.size()
 		);
 		
@@ -133,7 +139,7 @@ public class StaticInitializationTest extends TestCase {
 	
 	private void checkJoinPoints(Class clazz) {
 		assertEquals("joinpoints number does not match",
-		             4,
+		             12,
 		             s_staticJoinPoints.size()
 		);
 		

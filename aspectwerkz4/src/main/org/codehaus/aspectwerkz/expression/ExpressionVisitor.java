@@ -218,14 +218,25 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTStaticInitialization node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        if (context.hasStaticInitializationPointcut()) {
+        
+        if (context.hasStaticInitializationPointcut() && context.hasReflectionInfo()) {
         	ReflectionInfo reflectInfo = context.getReflectionInfo();
         	
-        	if(null == reflectInfo) {
-        		return Boolean.FALSE;
-        	}
         	if(reflectInfo instanceof StaticInitializationInfo) {
-        		return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        		ClassInfo declaringClassInfo = ((StaticInitializationInfo) reflectInfo).getDeclaringType();
+        		
+            	boolean matchedAnnotations = visitAttributes(node, declaringClassInfo);
+            	if(!matchedAnnotations) {
+            		return Boolean.FALSE;
+            	}
+        		
+            	// In an annotated subtree, the last child node represents the pattern
+            	Node lastNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
+            	if(lastNode instanceof ASTAttribute) {
+            		return Boolean.TRUE;
+            	} else {
+                    return lastNode.jjtAccept(this, reflectInfo);
+                }
         	} else {
         		return Boolean.FALSE;
         	}
@@ -258,22 +269,40 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTWithinCode node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
+        
+        if(!context.hasWithinReflectionInfo()) {
+        	return null;
+        }
+        
         ReflectionInfo reflectInfo = context.getWithinReflectionInfo();
         
         if(node.isStaticInitializer()) {
-        	if(null != reflectInfo) {
-	            return node.jjtGetChild(0).jjtAccept(this, reflectInfo);
-        	} else {
-        	    return null;
-        	}
-        } else if (null != reflectInfo) {
+    		if(reflectInfo instanceof StaticInitializationInfo) {
+    			// Ignore the ASTStaticInitialization node in this context
+    			SimpleNode staticClinitNode = (SimpleNode) node.jjtGetChild(0);
+           		ClassInfo declaringClassInfo = ((StaticInitializationInfo) reflectInfo).getDeclaringType();
+        		
+            	boolean matchedAnnotations = visitAttributes(staticClinitNode, declaringClassInfo);
+            	if(!matchedAnnotations) {
+            		return Boolean.FALSE;
+            	}
+        		
+            	// In an annotated subtree, the last child node represents the pattern
+            	Node lastNode = staticClinitNode.jjtGetChild(staticClinitNode.jjtGetNumChildren() - 1);
+            	if(lastNode instanceof ASTAttribute) {
+            		return Boolean.TRUE;
+            	} else {
+                    return lastNode.jjtAccept(this, reflectInfo);
+                }
+    		} else {
+    			return Boolean.FALSE;
+    		}
+        } else {
 	        return visitAnnotatedNode(
 	        		node,
 					reflectInfo
 					);
-        } else {
-            return null;
-        }
+        } 
     }
 
 

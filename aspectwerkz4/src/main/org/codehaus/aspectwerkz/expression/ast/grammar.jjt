@@ -485,7 +485,7 @@ void WithinCode() #WithinCode : {
 {
 	<WITHIN_CODE>
 	(
-		StaticInitializationPattern() 
+		WithinStaticInitialization() 
 		")"
 		{
 			jjtThis.setStaticInitializer(true);
@@ -507,20 +507,29 @@ void WithinCode() #WithinCode : {
 	)
 }
 
-void StaticInitializationPattern() #ClassPattern : 
-{
-	Token tkn = null;
-}
+void WithinStaticInitialization() #StaticInitialization : {}
 {
 		<TYPE_STATICINITIALIZATION> 
 		<METHOD_PARAMETER_START> 
 
-		tkn = <METHOD_CLASS_PATTERN>
-		{
-			jjtThis.setTypePattern(tkn.image);
-		}
+		(LOOKAHEAD(2) MethodAttribute())*
+		(
+			StaticInitializationPattern()
+		)?
 		
 		<METHOD_PARAMETER_END>
+}
+
+void StaticInitializationPattern() #ClassPattern :
+{
+	Token tkn = null;
+}
+{
+	(StaticInitializationPatternModifier())*
+	tkn = <METHOD_CLASS_PATTERN>
+	{
+		jjtThis.setTypePattern(tkn.image);
+	}
 }
 
 /**
@@ -528,7 +537,12 @@ void StaticInitializationPattern() #ClassPattern :
  */
 void StaticInitialization() #StaticInitialization : {}
 {
-    <STATIC_INITIALIZATION> ClassPattern() <CLASS_POINTCUT_END>
+    <STATIC_INITIALIZATION> 
+    (LOOKAHEAD(2) ClassAttribute())*
+    (
+    	ClassPattern() 
+    )?
+    <CLASS_POINTCUT_END>
 }
 
 /**
@@ -853,6 +867,48 @@ void ClassModifier() #Modifier : {}
     }
     |
     <CLASS_FINAL>
+    {
+        jjtThis.setModifier(Modifier.FINAL);
+    }
+    )
+}
+
+/**
+ * Method modifier.
+ */
+void StaticInitializationPatternModifier() #Modifier : {}
+{
+    (<METHOD_NOT>
+    {
+        jjtThis.toggleNot();
+    })*
+    (
+    <METHOD_PUBLIC>
+    {
+        jjtThis.setModifier(Modifier.PUBLIC);
+    }
+    |
+    <METHOD_PROTECTED>
+    {
+        jjtThis.setModifier(Modifier.PROTECTED);
+    }
+    |
+    <METHOD_PRIVATE>
+    {
+        jjtThis.setModifier(Modifier.PRIVATE);
+    }
+    |
+    <METHOD_STATIC>
+    {
+        jjtThis.setModifier(Modifier.STATIC);
+    }
+    |
+    <METHOD_ABSTRACT>
+    {
+        jjtThis.setModifier(Modifier.ABSTRACT);
+    }
+    |
+    <METHOD_FINAL>
     {
         jjtThis.setModifier(Modifier.FINAL);
     }

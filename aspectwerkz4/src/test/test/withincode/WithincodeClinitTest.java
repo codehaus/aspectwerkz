@@ -40,8 +40,12 @@ public class WithincodeClinitTest extends TestCase {
 	
 	private static final String[] EXPECTED_MSGS = {
 	    "beforeCtorCall",
+	    "beforeWithincodeClinitCtorCall",
+	    "beforeWithincodeClinitPatternCtorCall",
 	    "afterReturningCtorCall",
 	    "afterCtorCall",
+	    "afterWithincodeClinitCtorCall",
+	    "afterWithincodeClinitPatternCtorCall",
 	    "beforeGetSet",
 	    "afterReturningGetSet",
 	    "afterGetSet",

@@ -791,7 +791,7 @@ void WithinCode()             : {/*@bgen(jjtree) WithinCode */
 /*@egen*/
 	<WITHIN_CODE>
 	(
-		StaticInitializationPattern() 
+		WithinStaticInitialization() 
 		")"/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
@@ -838,7 +838,46 @@ void WithinCode()             : {/*@bgen(jjtree) WithinCode */
 /*@egen*/
 }
 
-void StaticInitializationPattern()               : 
+void WithinStaticInitialization()                       : {/*@bgen(jjtree) StaticInitialization */
+  ASTStaticInitialization jjtn000 = new ASTStaticInitialization(JJTSTATICINITIALIZATION);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) StaticInitialization */
+                try {
+/*@egen*/
+		<TYPE_STATICINITIALIZATION> 
+		<METHOD_PARAMETER_START> 
+
+		(LOOKAHEAD(2) MethodAttribute())*
+		(
+			StaticInitializationPattern()
+		)?
+		
+		<METHOD_PARAMETER_END>/*@bgen(jjtree)*/
+                } catch (Throwable jjte000) {
+                  if (jjtc000) {
+                    jjtree.clearNodeScope(jjtn000);
+                    jjtc000 = false;
+                  } else {
+                    jjtree.popNode();
+                  }
+                  if (jjte000 instanceof RuntimeException) {
+                    throw (RuntimeException)jjte000;
+                  }
+                  if (jjte000 instanceof ParseException) {
+                    throw (ParseException)jjte000;
+                  }
+                  throw (Error)jjte000;
+                } finally {
+                  if (jjtc000) {
+                    jjtree.closeNodeScope(jjtn000, true);
+                  }
+                }
+/*@egen*/
+}
+
+void StaticInitializationPattern()               :
 {/*@bgen(jjtree) ClassPattern */
         ASTClassPattern jjtn000 = new ASTClassPattern(JJTCLASSPATTERN);
         boolean jjtc000 = true;
@@ -847,22 +886,37 @@ void StaticInitializationPattern()               :
 	Token tkn = null;
 }
 {/*@bgen(jjtree) ClassPattern */
-                try {
+        try {
 /*@egen*/
-		<TYPE_STATICINITIALIZATION> 
-		<METHOD_PARAMETER_START> 
-
-		tkn = <METHOD_CLASS_PATTERN>
-		{
-			jjtn000.setTypePattern(tkn.image);
-		}
-		
-		<METHOD_PARAMETER_END>/*@bgen(jjtree)*/
-                } finally {
-                  if (jjtc000) {
-                    jjtree.closeNodeScope(jjtn000, true);
-                  }
-                }
+	(StaticInitializationPatternModifier())*
+	tkn = <METHOD_CLASS_PATTERN>/*@bgen(jjtree)*/
+        {
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+        }
+/*@egen*/
+	{
+		jjtn000.setTypePattern(tkn.image);
+	}/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
 /*@egen*/
 }
 
@@ -877,7 +931,12 @@ void StaticInitialization()                       : {/*@bgen(jjtree) StaticIniti
 {/*@bgen(jjtree) StaticInitialization */
     try {
 /*@egen*/
-    <STATIC_INITIALIZATION> ClassPattern() <CLASS_POINTCUT_END>/*@bgen(jjtree)*/
+    <STATIC_INITIALIZATION> 
+    (LOOKAHEAD(2) ClassAttribute())*
+    (
+    	ClassPattern() 
+    )?
+    <CLASS_POINTCUT_END>/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -1606,6 +1665,90 @@ void ClassModifier()           : {/*@bgen(jjtree) Modifier */
     }
     |
     <CLASS_FINAL>/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
+    {
+        jjtn000.setModifier(Modifier.FINAL);
+    }
+    )/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/
+}
+
+/**
+ * Method modifier.
+ */
+void StaticInitializationPatternModifier()           : {/*@bgen(jjtree) Modifier */
+  ASTModifier jjtn000 = new ASTModifier(JJTMODIFIER);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) Modifier */
+    try {
+/*@egen*/
+    (<METHOD_NOT>
+    {
+        jjtn000.toggleNot();
+    })*
+    (
+    <METHOD_PUBLIC>/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
+    {
+        jjtn000.setModifier(Modifier.PUBLIC);
+    }
+    |
+    <METHOD_PROTECTED>/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
+    {
+        jjtn000.setModifier(Modifier.PROTECTED);
+    }
+    |
+    <METHOD_PRIVATE>/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
+    {
+        jjtn000.setModifier(Modifier.PRIVATE);
+    }
+    |
+    <METHOD_STATIC>/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
+    {
+        jjtn000.setModifier(Modifier.STATIC);
+    }
+    |
+    <METHOD_ABSTRACT>/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
+    {
+        jjtn000.setModifier(Modifier.ABSTRACT);
+    }
+    |
+    <METHOD_FINAL>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
