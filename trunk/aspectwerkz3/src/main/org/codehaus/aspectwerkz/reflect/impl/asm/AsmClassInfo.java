@@ -643,7 +643,7 @@ public class AsmClassInfo implements ClassInfo {
             struct.attrs = attrs;
             AsmFieldInfo fieldInfo = new AsmFieldInfo(struct, m_name, (ClassLoader) m_loaderRef
                     .get());
-            m_fields.put(AsmHelper.calculateHash(struct), fieldInfo);
+            m_fields.put(AsmHelper.calculateFieldHash(name, desc), fieldInfo);
             super.visitField(access, name, desc, value, attrs);
         }
 
@@ -660,6 +660,9 @@ public class AsmClassInfo implements ClassInfo {
             struct.desc = desc;
             struct.exceptions = exceptions;
             struct.attrs = attrs;
+            
+            int hash = AsmHelper.calculateMethodHash(name, desc);
+
             if (name.equals("<clinit>")) {
                 // skip <clinit>
             } else if (name.equals("<init>")) {
@@ -667,13 +670,13 @@ public class AsmClassInfo implements ClassInfo {
                     struct,
                     m_name,
                     (ClassLoader) m_loaderRef.get());
-                m_constructors.put(AsmHelper.calculateHash(struct), methodInfo);
+                m_constructors.put(hash, methodInfo);
             } else {
                 AsmMethodInfo methodInfo = new AsmMethodInfo(
                     struct,
                     m_name,
                     (ClassLoader) m_loaderRef.get());
-                m_methods.put(AsmHelper.calculateHash(struct), methodInfo);
+                m_methods.put(hash, methodInfo);
             }
             return cv.visitMethod(access, name, desc, exceptions, attrs);
         }

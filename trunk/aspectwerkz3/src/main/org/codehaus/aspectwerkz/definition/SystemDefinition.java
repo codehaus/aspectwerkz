@@ -100,7 +100,7 @@ public class SystemDefinition {
     /**
      * Creates a new instance, creates and sets the system cflow aspect.
      */
-    public SystemDefinition(String uuid) {
+    public SystemDefinition(final String uuid) {
         setUuid(uuid);
         AspectDefinition systemAspect = new AspectDefinition(
             CFlowSystemAspect.CLASS_NAME,
@@ -247,8 +247,6 @@ public class SystemDefinition {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
-
-        // add the interface introductions
         List interfaceIntroductionDefs = new ArrayList();
         for (Iterator it = m_interfaceIntroductionMap.values().iterator(); it.hasNext();) {
             InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition) it.next();
@@ -261,9 +259,6 @@ public class SystemDefinition {
                 }
             }
         }
-
-        // add the implementation introductions
-        //        interfaceIntroductionDefs.addAll(getIntroductionDefinitions(ctx));
         return interfaceIntroductionDefs;
     }
 
@@ -489,7 +484,7 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class has a <tt>Mixin</tt>.
+     * Checks if a class has an introduction.
      * 
      * @param ctx the expression context
      * @return boolean
@@ -562,6 +557,34 @@ public class SystemDefinition {
     /**
      * Checks if a class is advised.
      * 
+     * @param ctxs an array with the expression contexts
+     * @return boolean
+     */
+    public boolean isAdvised(final ExpressionContext[] ctxs) {
+        if (ctxs == null) {
+            throw new IllegalArgumentException("context array can not be null");
+        }
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition) it.next();
+            List advices = aspectDef.getAllAdvices();
+            for (Iterator it2 = advices.iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+                for (int i = 0; i < ctxs.length; i++) {
+                    ExpressionContext ctx = ctxs[i];
+                    if (adviceDef.getExpressionInfo().getAdvisedClassFilterExpression().match(ctx)
+                        || adviceDef.getExpressionInfo().getAdvisedCflowClassFilterExpression()
+                                .match(ctx)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a class is advised.
+     * 
      * @param ctx the expression context
      * @return boolean
      */
@@ -585,7 +608,32 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class is advised.
+     * Checks if a class has an introduction.
+     * 
+     * @param ctxs an array with the expression contexts
+     * @return boolean
+     */
+    public boolean isIntroduced(final ExpressionContext[] ctxs) {
+        if (ctxs == null) {
+            throw new IllegalArgumentException("context array can not be null");
+        }
+        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
+            IntroductionDefinition introDef = (IntroductionDefinition) it.next();
+            ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
+            for (int i = 0; i < expressionInfos.length; i++) {
+                ExpressionInfo expressionInfo = expressionInfos[i];
+                for (int j = 0; j < ctxs.length; j++) {
+                    if (expressionInfo.getAdvisedClassFilterExpression().match(ctxs[j])) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a class has an introduction.
      * 
      * @param ctx the expression context
      * @return boolean
@@ -631,13 +679,14 @@ public class SystemDefinition {
     }
 
     /**
-     * Adds a new parameter for the aspect. <p/>
+     * Adds a new parameter for the aspect.
+     * 
+     * @TODO: should perhaps move to the aspect def instead of being separated from the aspect def
+     *        concept?
      * 
      * @param aspectName the name of the aspect
      * @param key the key
      * @param value the value
-     * @TODO: should perhaps move to the aspect def instead of being separated from the aspect def
-     *        concept?
      */
     public void addParameter(final String aspectName, final String key, final String value) {
         Map parameters;

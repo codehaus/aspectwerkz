@@ -15,6 +15,17 @@ import java.util.Hashtable;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface WeavingStrategy {
+    
+    /**
+     * Defines the inlining weaving strategy.
+     */
+    public static final int INLINING = 0;
+
+    /**
+     * Defines the delegation weaving strategy.
+     */
+    public static final int DELEGATION = 1;
+
     /**
      * Initializes the transformer stack.
      * 

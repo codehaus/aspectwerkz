@@ -39,18 +39,7 @@ import javassist.NotFoundException;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class MethodExecutionTransformer implements Transformer {
-    //TODO refactor in type pattern
-    public final static int STATUS_SKIP = 1;
 
-    public final static int STATUS_HASNOPOINTCUT = 2;
-
-    public final static int STATUS_HASPOINTCUT = 3;
-
-    /**
-     * The join point index.
-     */
-
-    //private int m_joinPointIndex;
     /**
      * Makes the member method transformations.
      * 
@@ -82,7 +71,7 @@ public class MethodExecutionTransformer implements Transformer {
         final List sortedMethods = Arrays.asList(methods);
         Collections.sort(sortedMethods, JavassistMethodComparator.getInstance());
         final TObjectIntHashMap methodSequences = new TObjectIntHashMap();
-        final List sorteMethodTuples = new ArrayList(sortedMethods.size());
+        final List sortedMethodTuples = new ArrayList(sortedMethods.size());
         for (Iterator methodsIt = sortedMethods.iterator(); methodsIt.hasNext();) {
             CtMethod method = (CtMethod) methodsIt.next();
             MethodInfo methodInfo = JavassistMethodInfo.getMethodInfo(method, context.getLoader());
@@ -99,13 +88,13 @@ public class MethodExecutionTransformer implements Transformer {
             tuple.setStatus(status);
 
             // @TODO filter out "skip" status
-            sorteMethodTuples.add(tuple);
+            sortedMethodTuples.add(tuple);
         }
         final List wrapperMethods = new ArrayList();
         boolean isClassAdvised = false;
-        for (Iterator i = sorteMethodTuples.iterator(); i.hasNext();) {
+        for (Iterator i = sortedMethodTuples.iterator(); i.hasNext();) {
             MethodSequenceTuple tuple = (MethodSequenceTuple) i.next();
-            if (tuple.getStatus() != STATUS_HASPOINTCUT) {
+            if (tuple.getStatus() != STATUS_HAS_POINTCUT) {
                 continue;
             }
             CtMethod method = tuple.getMethod();
@@ -153,12 +142,12 @@ public class MethodExecutionTransformer implements Transformer {
         // looping on the original methods is enough since we will look for
         // method with no pc
         // thus that have not been changed in the previous transformation steps
-        for (Iterator i = sorteMethodTuples.iterator(); i.hasNext();) {
+        for (Iterator i = sortedMethodTuples.iterator(); i.hasNext();) {
             MethodSequenceTuple tuple = (MethodSequenceTuple) i.next();
 
             //System.out.println(" tuple " + tuple.getAdvice().getName() + " :
             // " + tuple.getStatus());
-            if (tuple.getStatus() != STATUS_HASNOPOINTCUT) {
+            if (tuple.getStatus() != STATUS_HAS_NO_POINTCUT) {
                 continue;
             }
             CtMethod method = tuple.getMethod();
@@ -375,12 +364,12 @@ public class MethodExecutionTransformer implements Transformer {
         }
         for (Iterator defs = definitions.iterator(); defs.hasNext();) {
             if (((SystemDefinition) defs.next()).hasPointcut(ctx)) {
-                return STATUS_HASPOINTCUT;
+                return STATUS_HAS_POINTCUT;
             } else {
                 continue;
             }
         }
-        return STATUS_HASNOPOINTCUT;
+        return STATUS_HAS_NO_POINTCUT;
     }
 }
 

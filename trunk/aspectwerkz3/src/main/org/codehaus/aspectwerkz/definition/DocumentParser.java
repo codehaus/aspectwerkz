@@ -12,7 +12,6 @@ import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -244,10 +243,15 @@ public class DocumentParser {
             try {
                 aspectClass = loadAspectClass(loader, aspectClassName);
             } catch (Exception e) {
+                System.out.println("loader: " + loader);
+                System.out.println("aspectClassName: " + aspectClassName);
                 System.err.println("Warning: could not load aspect "
                     + aspectClassName
                     + " from "
-                    + loader);
+                    + loader
+                    + "due to: "
+                    + e.toString());
+                e.printStackTrace();
                 continue;
             }
 
@@ -260,7 +264,7 @@ public class DocumentParser {
                     aspectDef);
             }
             parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut
-                                                      // in Attributes AW-152
+            // in Attributes AW-152
             s_annotationParser.parse(aspectClass, aspectDef, definition);
 
             // XML definition settings always overrides attribute definition settings
@@ -300,6 +304,7 @@ public class DocumentParser {
         try {
             aspectClass = loader.loadClass(aspectClassName);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new WrappedRuntimeException(e);
         }
         return aspectClass;

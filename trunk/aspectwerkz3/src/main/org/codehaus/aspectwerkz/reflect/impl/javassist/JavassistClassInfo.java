@@ -171,6 +171,8 @@ public class JavassistClassInfo implements ClassInfo {
     /**
      * Returns the class info for a specific ctClass.
      * 
+     * @param clazz
+     * @param loader
      * @return the class info
      */
     public static ClassInfo getClassInfo(final CtClass clazz, final ClassLoader loader) {

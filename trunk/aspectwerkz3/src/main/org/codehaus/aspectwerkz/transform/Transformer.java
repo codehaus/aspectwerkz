@@ -16,6 +16,13 @@ import org.codehaus.aspectwerkz.transform.delegation.Klass;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public interface Transformer {
+    
+    public final static int STATUS_SKIP = 1;
+
+    public final static int STATUS_HAS_NO_POINTCUT = 2;
+
+    public final static int STATUS_HAS_POINTCUT = 3;
+
     /**
      * Transforms bytecode at load time
      * 

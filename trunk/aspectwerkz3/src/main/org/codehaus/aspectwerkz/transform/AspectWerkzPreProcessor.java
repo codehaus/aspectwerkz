@@ -13,8 +13,8 @@ import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
-import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfoRepository;
 import org.codehaus.aspectwerkz.transform.delegation.DelegationWeavingStrategy;
+import org.codehaus.aspectwerkz.transform.inlining.InliningWeavingStrategy;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,6 +45,9 @@ import java.util.Map;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassProcessor {
+
+    private final static String AW_WEAVING_STRATEGY = "aspectwerkz.weaving.strategy";
+
     private final static String AW_TRANSFORM_FILTER = "aspectwerkz.transform.filter";
 
     private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
@@ -61,7 +64,19 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     private final static boolean VERBOSE;
 
+    private final static int WEAVING_STRATEGY;
+
     static {
+        // define the weaving strategy
+        String weavingStrategy = System.getProperty(AW_WEAVING_STRATEGY, "delegation").trim();
+        if (weavingStrategy.equalsIgnoreCase("inlining")) {
+            WEAVING_STRATEGY = WeavingStrategy.INLINING;
+        } else if (weavingStrategy.equalsIgnoreCase("delegation")) {
+            WEAVING_STRATEGY = WeavingStrategy.DELEGATION;
+        } else {
+            throw new RuntimeException("unknown weaving strategy specified: " + weavingStrategy);
+        }
+        // define the tracing and dump options
         String verbose = System.getProperty(AW_TRANSFORM_VERBOSE, null);
         VERBOSE = "yes".equalsIgnoreCase(verbose) || "true".equalsIgnoreCase(verbose);
         String filter = System.getProperty(AW_TRANSFORM_FILTER, null);
@@ -102,7 +117,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     /**
      * Pre processor weaving strategy.
      */
-    private WeavingStrategy m_preProcessorStrategy = new DelegationWeavingStrategy();
+    private WeavingStrategy m_weavingStrategy;
 
     /**
      * Initializes the transformer stack.
@@ -110,10 +125,18 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * @param params not used
      */
     public void initialize(final Hashtable params) {
-        m_preProcessorStrategy.initialize(params);
+        switch (WEAVING_STRATEGY) {
+            case WeavingStrategy.DELEGATION:
+                m_weavingStrategy = new DelegationWeavingStrategy();
+                break;
+
+            case WeavingStrategy.INLINING:
+                m_weavingStrategy = new InliningWeavingStrategy();
+                break;
+        }
+        m_weavingStrategy.initialize(params);
         m_initialized = true;
     }
-
     /**
      * Transform bytecode according to the transformer stack
      * 
@@ -130,8 +153,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                 return bytecode;
             }
         }
-        final String className = name.replace('/', '.'); // needed for JRockit (as well as all in
-                                                         // all TFs)
+        // needed for JRockit (as well as all in all TFs)
+        final String className = name.replace('/', '.'); 
         if (filter(className) || !m_initialized) {
             return bytecode;
         }
@@ -147,12 +170,12 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     public byte[] _preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
-        final String className = name.replace('/', '.'); // needed for JRockit (as well as all in
-                                                         // all TFs)
+        // needed for JRockit (as well as all in all TFs)
+        final String className = name.replace('/', '.'); 
         final Context context;
         try {
             // create a new transformation context
-            context = m_preProcessorStrategy.newContext(name, bytecode, loader);
+            context = m_weavingStrategy.newContext(name, bytecode, loader);
         } catch (Exception e) {
             log("failed " + className);
             e.printStackTrace();
@@ -164,7 +187,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         dumpBefore(className, context);
 
         // do the transformation
-        m_preProcessorStrategy.transform(className, context);
+        m_weavingStrategy.transform(className, context);
 
         // handle the prepared Class cache for further runtime weaving
         if (context.isPrepared()) {
@@ -173,9 +196,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             s_classByteCache.put(key, new ByteArray(context.getCurrentBytecode()));
         }
 
-        // dump after (not compliant with multiple CL weaving same class differently,
-        // since based on class FQN name)
-        //        dumpAfter(className, klass);
+        // return the transformed bytecode
         return context.getCurrentBytecode();
     }
 
@@ -197,11 +218,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                 + className);
         }
 
-        // FIXME this method does now work with inlining - uses javassist stuff
-
         // flush class info repository cache so that new weaving is aware of wrapper method
         // existence
-        JavassistClassInfoRepository.removeClassInfoFromAllClassLoaders(klazz.getName());
+
+        // FIXME implement and move method
+//        JavassistClassInfoRepository.removeClassInfoFromAllClassLoaders(klazz.getName());
 
         // transform as if multi weaving
         byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz
@@ -277,7 +298,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * @param className
      * @param context
      */
-    public static void dumpForce(final String className, final Context context) {
+    public static void dumpForce(final Context context) {
         context.dump("_dump/force/");
     }
 

@@ -34,29 +34,33 @@ public class Target {
      * @log level=0
      *      sconstant=org.codehaus.aspectwerkz.transform.TransformationUtil.ASPECTWERKZ_PREFIX
      */
-    public static void toLog1() {
+    public static int toLog1(int i) {
+        System.out.println("Target.toLog1()");
         new Target().toLog2(new String[] {
             "parameter"
         });
+        return i;
     }
 
     /**
      * @log level=3 sarr={"Hello","World", "Jonas's car"}
      */
-    protected void toLog2(java.lang.String[] arg) {
+    public void toLog2(java.lang.String[] arg) {
+        System.out.println("Target.toLog2()");
         new Target().toLog3();
     }
 
     /**
      * @log level=4 darr={4.5D,8.98665D,0.00000342}
      */
-    private String toLog3() {
+    public String toLog3() {
+        System.out.println("Target.toLog3()");
         return "result";
     }
 
     public static void main(String[] args) {
         System.out.println("Target.main");
-        Target.toLog1();
+        Target.toLog1(2);
         Target target = new Target();
         target.increment();
         target.getCounter();
