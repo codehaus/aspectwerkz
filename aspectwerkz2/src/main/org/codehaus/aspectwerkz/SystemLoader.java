@@ -11,13 +11,11 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.List;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
-import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
- * Stores the ISystem on a per ClassLoader basis.<p/>
+ * Stores the AspectSystem on a per ClassLoader basis.<p/>
  * The <code>getSystem</code> method checks for system initialisation.
  * <p/>
- * TODO: AOPCSystem can be wrapped behind a factory on ISystem (use case ?)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -36,12 +34,12 @@ public class SystemLoader {
      * @param loader the ClassLoader
      * @return the System instance for this ClassLoader
      */
-    public synchronized static ISystem getSystem(ClassLoader loader) {
-        ISystem system = (ISystem)s_systems.get(loader);
+    public synchronized static AspectSystem getSystem(ClassLoader loader) {
+        AspectSystem system = (AspectSystem)s_systems.get(loader);
         if (system == null) {
             SystemDefinitionContainer.registerClassLoader(loader);
             List defs = SystemDefinitionContainer.getHierarchicalDefs(loader);
-            system = new AOPCSystem(loader, defs);
+            system = new AspectSystem(loader, defs);
             s_systems.put(loader, system);
         }
         return system;
@@ -54,7 +52,7 @@ public class SystemLoader {
      * @param instance
      * @return the System instance for the instance class ClassLoader
      */
-    public static ISystem getSystem(Object instance) {
+    public static AspectSystem getSystem(Object instance) {
         return getSystem(instance.getClass().getClassLoader());
 
     }
@@ -66,7 +64,7 @@ public class SystemLoader {
      * @param klass
      * @return the System instance for the class ClassLoader
      */
-    public static ISystem getSystem(Class klass) {
+    public static AspectSystem getSystem(Class klass) {
         return getSystem(klass.getClassLoader());
     }
 

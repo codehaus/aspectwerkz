@@ -67,7 +67,7 @@ public final class CrossCuttingInfo implements Serializable {
     /**
      * A reference to the AspectWerkz system housing this cross-cuttable class.
      */
-    private ISystem m_system;
+    private AspectSystem m_system;
 
     /**
      * The aspect definition.
@@ -127,7 +127,7 @@ public final class CrossCuttingInfo implements Serializable {
      *
      * @return the system
      */
-    public ISystem getSystem() {
+    public AspectSystem getSystem() {
         if (m_system == null) {
             m_system = SystemLoader.getSystem(getAspectClass());//AVAOPC CRAP
             m_system.initialize();

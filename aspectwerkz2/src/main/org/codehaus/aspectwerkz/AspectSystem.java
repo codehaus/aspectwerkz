@@ -25,12 +25,12 @@ import org.codehaus.aspectwerkz.metadata.CflowMetaData;
  * Represents the aspect runtime system.<br/>
  * Manages the different parts of the runtime system and provides and API to access and manage the system.<br/>
  * <p/>
- * There is an AOPCSystem per ClassLoader. An AOPCSystem is aware of the classloader hierarchy and reflects
+ * There is an AspectSystem per ClassLoader. An AspectSystem is aware of the classloader hierarchy and reflects
  * it by gathering the AspectManager, which represents a single &lt;system ..&gt; entry.
  * <p/>
- * When an instance of an AOPCSystem is created (perClassLoader), it checks for existence of
+ * When an instance of an AspectSystem is created (perClassLoader), it checks for existence of
  * previous AspectManager defined in parent ClassLoader. AspectManager are indexed according to their
- * defining AOPCSystem, but the index is shared among AOPCSystem as shown below:<br/>
+ * defining AspectSystem, but the index is shared among AspectSystem as shown below:<br/>
  * </p>
  * <pre>
  *          [0d, 1d, 2d]  (3 SystemDefs, all defined in this classloader, and indexed)
@@ -48,7 +48,7 @@ import org.codehaus.aspectwerkz.metadata.CflowMetaData;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public final class AOPCSystem implements ISystem {
+public final class AspectSystem {
 
 //    /** All defined AspectManager, indexed by systemDefinition.hashcode()/uuid (uuid for readability only) */
 //    private final static Map s_aspectManagerMap = new HashMap();
@@ -61,7 +61,7 @@ public final class AOPCSystem implements ISystem {
             java.lang.System.getProperty("aspectwerkz.remote.server.run", "false")
     );
 
-    /** ClassLoader defining this AOPCSystem */
+    /** ClassLoader defining this AspectSystem */
     private final ClassLoader m_classLoader;
 
     /**
@@ -89,14 +89,14 @@ public final class AOPCSystem implements ISystem {
      * @param loader      the classloader defining the system
      * @param definitions the ordered SystemDefinitions for the system (whole hierarchy)
      */
-    AOPCSystem(ClassLoader loader, final List definitions) {
+    AspectSystem(ClassLoader loader, final List definitions) {
         m_classLoader = loader;
         m_aspectManagers = new AspectManager[definitions.size()];
 
         // assert uuid are unique in the ClassLoader hierarchy
         assertUuidUniqueWithinHierarchy(definitions);
 
-        // copy the AspectManagers from the parent ClassLoader AOPCSystem
+        // copy the AspectManagers from the parent ClassLoader AspectSystem
         if (loader.getParent() != null) {
             AspectManager[] parentAspectManagers = SystemLoader.getSystem(loader.getParent()).getAspectManagers();
             System.arraycopy(parentAspectManagers, 0, m_aspectManagers, 0, parentAspectManagers.length);
@@ -107,7 +107,7 @@ public final class AOPCSystem implements ISystem {
             SystemDefinition def = (SystemDefinition)definitions.get(i);
             String uuid = def.getUuid();
 
-            // check if the SystemDefinition comes from a parent AOPCSystem before adding it
+            // check if the SystemDefinition comes from a parent AspectSystem before adding it
             AspectManager aspectManager = null;
             try {
                 aspectManager = getAspectManager(uuid);
@@ -131,9 +131,9 @@ public final class AOPCSystem implements ISystem {
     }
 
     /**
-     * Returns the classloader which defines this AOPCSystem
+     * Returns the classloader which defines this AspectSystem
      *
-     * @return the classloader which defines this AOPCSystem
+     * @return the classloader which defines this AspectSystem
      */
     public ClassLoader getDefiningClassLoader() {
         return m_classLoader;
@@ -158,7 +158,7 @@ public final class AOPCSystem implements ISystem {
      * @throws DefinitionException (runtime exception) if not found
      */
     public AspectManager getAspectManager(String uuid) {
-        // Note: uuid is assumed to be unique within an AOPCSystem
+        // Note: uuid is assumed to be unique within an AspectSystem
         for (int i = 0; i < m_aspectManagers.length; i++) {
             AspectManager aspectManager = m_aspectManagers[i];
             // the null check makes sense only in the flow of <init>
