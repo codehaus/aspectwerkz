@@ -19,8 +19,6 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import java.util.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
 
 /**
  * Manages the aspects, registry for the aspect containers (one container per aspect type).
@@ -37,8 +35,10 @@ public class Aspects {
 
     /**
      * Map with all the aspect containers mapped to the aspects class
+     * TODO: if the map is weak, then aspects are lost. If the key is the aspect itself, then
+     * we cannot handle aspect reuse in a good way. For now we will strong ref the aspect
      */
-    private static final Map ASPECT_CONTAINERS = new WeakHashMap();
+    private static final Map ASPECT_CONTAINERS = new HashMap();
 
     /**
      * Returns the aspect container for the aspect with the given name.
@@ -327,12 +327,12 @@ public class Aspects {
     }
 
     private static class ContainerKey {
-        Reference aspectClassRef;
+        Class aspectClass;
         String qName;
         private long aspectClassHash;
 
         private ContainerKey(final Class aspectClass, final String qName) {
-            this.aspectClassRef = new WeakReference(aspectClass);
+            this.aspectClass = aspectClass;
             this.qName = qName;
             this.aspectClassHash = aspectClass.hashCode();
         }
@@ -359,6 +359,5 @@ public class Aspects {
         static ContainerKey get(final Class aspectClass, final String qName) {
             return new ContainerKey(aspectClass, qName);
         }
-
     }
 }
