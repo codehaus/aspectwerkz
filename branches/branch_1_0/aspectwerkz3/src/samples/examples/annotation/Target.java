@@ -48,9 +48,7 @@ public class Target {
          * @param jp
          */
         public void beforeA(JoinPoint jp) {
-            System.out.println("hehehe");
             System.out.println("Target$AnnotationMatchAspect.beforeA : " + jp.toString());
-
         }
 
         /**
@@ -59,8 +57,6 @@ public class Target {
          */
         public void beforeB(JoinPoint jp) {
             System.out.println("Target$AnnotationMatchAspect.beforeB");
-
-
         }
     }
 
