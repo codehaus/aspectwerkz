@@ -2003,7 +2003,7 @@ public class ExpressionTest extends TestCase {
     }
 
     // ============ hasmethod/hasfield =============
-    public void tesHasMethod() throws Exception {
+    public void testHasMethod() throws Exception {
         ClassInfo klass = JavaClassInfo.getClassInfo(Target.class);
         ClassInfo string = JavaClassInfo.getClassInfo(String.class);
         assertTrue(
@@ -2055,7 +2055,7 @@ public class ExpressionTest extends TestCase {
         );
     }
 
-    public void tesHasField() throws Exception {
+    public void testHasField() throws Exception {
         ClassInfo klass = JavaClassInfo.getClassInfo(Target.class);
         ClassInfo string = JavaClassInfo.getClassInfo(String.class);
         assertTrue(
