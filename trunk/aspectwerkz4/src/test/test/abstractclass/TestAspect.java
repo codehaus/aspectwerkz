@@ -15,6 +15,9 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * @Aspect
  */
 public class TestAspect {
+
+    static String s_log;
+
     /**
      * @Expression execution(* test.abstractclass.AbstractTarget.*(..))
      */
@@ -24,6 +27,15 @@ public class TestAspect {
      * @Around pc
      */
     public Object advice(final JoinPoint joinPoint) throws Throwable {
+        s_log += joinPoint.getSignature().getName();//method name
+        return joinPoint.proceed();
+    }
+
+    /**
+     * @Around execution(* test.abstractclass.AbstractTarget+.*(..))
+     */
+    public Object adviceOnAbstractMethod(final JoinPoint joinPoint) throws Throwable {
+        s_log += joinPoint.getSignature().getName()+"XX";//method name + XX
         return joinPoint.proceed();
     }
 }

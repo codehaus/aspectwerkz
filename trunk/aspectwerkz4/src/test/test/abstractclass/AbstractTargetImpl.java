@@ -11,4 +11,8 @@ package test.abstractclass;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AbstractTargetImpl extends AbstractTarget {
+    public String method3() {
+        return "x";
+    }
+
 }

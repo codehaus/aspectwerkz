@@ -12,10 +12,12 @@ package test.abstractclass;
  */
 public abstract class AbstractTarget {
     public String method1() {
-        return "method1";
+        return "x";
     }
 
     public static String method2() {
-        return "method2";
+        return "x";
     }
+
+    public abstract String method3();
 }
