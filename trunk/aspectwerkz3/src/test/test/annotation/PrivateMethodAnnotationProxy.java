@@ -7,10 +7,10 @@
  **************************************************************************************/
 package test.annotation;
 
-import org.codehaus.aspectwerkz.annotation.AnnotationProxyBase;
+import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class PrivateMethodAnnotationProxy extends AnnotationProxyBase {
+public class PrivateMethodAnnotationProxy extends TypedAnnotationProxy {
 }
