@@ -544,6 +544,7 @@
             destdir="${basedir}/target/samples-classes"
             properties="${basedir}/src/samples/annotation.properties"
             copytodest="**/*.RESIDUALPROPS">
+            <properties path="${basedir}/src/samples/annotation.properties"/>
             <src path="${basedir}/src/samples"/>
 <!--            <src path="${basedir}/src/test"/>-->
             <classpath path="${basedir}/target/samples-classes"/>
