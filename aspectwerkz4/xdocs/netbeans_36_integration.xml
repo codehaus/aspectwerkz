@@ -53,6 +53,9 @@
                         <li>aspectwerkz-
                             <i>version</i>.jar
                         </li>
+                        <li>aspectwerkz-jdk14
+                            <i>version</i>.jar
+                        </li>
                         <li>aspectwerkz-core-
                             <i>version</i>.jar
                         </li>
@@ -161,6 +164,9 @@
                         Mount the following jar files to the project:
                         <ul>
                             <li>aspectwerkz-
+                                <i>version</i>.jar
+                            </li>
+                            <li>aspectwerkz-jdk14
                                 <i>version</i>.jar
                             </li>
                             <li>jrexx-
