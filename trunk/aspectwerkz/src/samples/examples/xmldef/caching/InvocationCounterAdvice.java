@@ -7,9 +7,9 @@
  **************************************************************************************/
 package examples.caching;
 
-import org.codehaus.aspectwerkz.advice.PreAdvice;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint;
+import org.codehaus.aspectwerkz.xmldef.advice.PreAdvice;
+import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.xmldef.joinpoint.CallerSideJoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
