@@ -14,6 +14,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Matches well defined point of execution in the program where a
@@ -29,9 +30,8 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
-    private static final long serialVersionUID = 3503130760940517679L;
+    private static final long serialVersionUID = -1514240227634639181L;
 
     /**
      * A soft reference to the target instance.
@@ -43,19 +43,27 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param targetObject the target object
+     * @param targetClass the target class
      * @param methodId the id of the original method
      * @param controllerClass the class name of the controller class to use
      */
     public MemberMethodJoinPoint(final String uuid,
                                  final Object targetObject,
+                                 final String targetClassName,
                                  final int methodId,
                                  final String controllerClass) {
-        super(uuid, methodId, controllerClass);
 
+        super(uuid, methodId, controllerClass);
         if (targetObject == null) throw new IllegalArgumentException("target object can not be null");
 
         m_targetObjectReference = new SoftReference(targetObject);
-        m_targetClass = targetObject.getClass();
+
+        try {
+            m_targetClass = Thread.currentThread().getContextClassLoader().loadClass(targetClassName);
+        }
+        catch (ClassNotFoundException e) {
+            throw new WrappedRuntimeException(e);
+        }
 
         m_originalMethod = m_system.getMethod(m_targetClass, m_methodId);
         m_originalMethod.setAccessible(true);
@@ -65,7 +73,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
         // get all the pointcuts for this class
         List pointcuts = m_system.getMethodPointcuts(m_classMetaData, m_methodMetaData);
 
-        // put the pointcuts in the pointcut array
+        // put the pointcuts in an array
         m_pointcuts = new MethodPointcut[pointcuts.size()];
         int i = 0;
         for (Iterator it = pointcuts.iterator(); it.hasNext(); i++) {
@@ -81,6 +89,14 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
 
         // get the cflow pointcuts that affects this join point
         m_cflowPointcuts = m_system.getCFlowPointcuts(m_targetClass.getName(), m_methodMetaData);
+
+        // check if the one of the pointcuts is marked as non-reentrant
+        for (int j = 0; j < m_pointcuts.length; j++) {
+            if (m_pointcuts[j].isNonReentrant()) {
+                m_isNonReentrant = true;
+                break;
+            }
+        }
     }
 
     /**
@@ -99,8 +115,12 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      */
     protected MethodJoinPoint deepCopy() {
         final MemberMethodJoinPoint clone = new MemberMethodJoinPoint(
-                        m_uuid, m_targetObjectReference.get(),
-                        m_methodId, m_controller.getClass().getName());
+                m_uuid,
+                m_targetObjectReference.get(),
+                m_targetClass.getName(),
+                m_methodId,
+                m_controller.getClass().getName()
+        );
         clone.m_targetClass = m_targetClass;
         clone.m_originalMethod = m_originalMethod;
         clone.m_pointcuts = m_pointcuts;
@@ -109,6 +129,15 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
         clone.m_methodMetaData = m_methodMetaData;
         clone.m_controller = m_controller.deepCopy();
         return clone;
+    }
+
+    /**
+     * Overrides hashCode.
+     *
+     * @return the hash code
+     */
+    public int hashCode() {
+        return super.hashCode();
     }
 
     /**

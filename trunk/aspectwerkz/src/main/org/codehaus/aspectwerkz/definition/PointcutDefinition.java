@@ -62,7 +62,12 @@ public class PointcutDefinition implements Serializable {
     /**
      * Hierarchical flag.
      */
-    private boolean m_hierarchical = false;;
+    private boolean m_hierarchical = false;
+
+    /**
+     * Marks the pointcut as reentrant.
+     */
+    private String m_isNonReentrant = "false";
 
     /**
      * Returns the name of the pointcut.
@@ -210,5 +215,32 @@ public class PointcutDefinition implements Serializable {
      */
     public boolean isHierarchical() {
         return m_hierarchical;
+    }
+
+    /**
+     * Sets the non-reentrancy flag.
+     *
+     * @param isNonReentrant
+     */
+    public void setNonReentrant(final String isNonReentrant) {
+        m_isNonReentrant = isNonReentrant;
+    }
+
+    /**
+     * Returns the string representation of the non-reentrancy flag.
+     *
+     * @return the non-reentrancy flag
+     */
+    public String getNonReentrant() {
+        return m_isNonReentrant;
+    }
+
+    /**
+     * Checks if the pointcut is non-reentrant or not.
+     *
+     * @return the non-reentrancy flag
+     */
+    public boolean isNonReentrant() {
+        return "true".equalsIgnoreCase(m_isNonReentrant);
     }
 }

@@ -254,9 +254,7 @@ public class XmlDefinitionParser {
      */
     private static void setParsingTimestamp() {
         final long newModifiedTime = System.currentTimeMillis();
-        boolean success = s_timestamp.setLastModified(newModifiedTime);
-        if (!success) {
-        }
+        s_timestamp.setLastModified(newModifiedTime);
     }
 
     /**
@@ -544,9 +542,12 @@ public class XmlDefinitionParser {
                         else if (name.equals("type")) {
                             pointcutDef.setType(value);
                         }
+                        else if (name.equals("non-reentrant")) {
+                            pointcutDef.setNonReentrant(value);
+                        }
                     }
 
-                    // handle the pointcut pattern, split the pattern in a class A
+                    // handle the pointcut pattern, split the pattern in a class and
                     // a method/field/throws/callerside pattern
                     final String pattern = nestedAdviceElement.attributeValue("pattern");
                     try {
@@ -740,7 +741,7 @@ public class XmlDefinitionParser {
     }
 
     /**
-     * Parses the nested <tt>introduction-ref</tt> A <tt>advice-ref</tt> elements.
+     * Parses the nested <tt>introduction-ref</tt> and <tt>advice-ref</tt> elements.
      *
      * @param introductionElement the root introduction element
      * @param introWeavingRule the IntroducutionWeavingRule definition
@@ -971,7 +972,7 @@ public class XmlDefinitionParser {
                     basePackage = basePackage.substring(0, basePackage.length() - 1);
                 }
                 else if (basePackage.endsWith(".")) {
-                    // skip
+                    ; // skip
                 }
                 else {
                     basePackage += ".";
@@ -1001,7 +1002,7 @@ public class XmlDefinitionParser {
                     packageName = packageName.substring(0, packageName.length() - 1);
                 }
                 else if (packageName.endsWith(".")) {
-                    // skip
+                    ;// skip
                 }
                 else {
                     packageName += ".";

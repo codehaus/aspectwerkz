@@ -827,6 +827,24 @@ public final class AspectWerkz {
     }
 
     /**
+     * Checks if a specific class has an aspect defined.
+     *
+     * @param name the name of the aspect
+     * @return boolean true if the class has an aspect defined
+     */
+    public boolean hasAspect(final String name) {
+        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
+
+        initialize();
+        if (m_aspects.containsKey(name)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
      * Returns a specific method by the class and the method index.
      *
      * @param klass the class housing the method
@@ -864,24 +882,6 @@ public final class AspectWerkz {
     }
 
     /**
-     * Checks if a specific class has an aspect defined.
-     *
-     * @param name the name of the aspect
-     * @return boolean true if the class has an aspect defined
-     */
-    public boolean hasAspect(final String name) {
-        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
-
-        initialize();
-        if (m_aspects.containsKey(name)) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    /**
      * Creates a new method repository for the class specified.
      *
      * @param klass the class
@@ -895,10 +895,10 @@ public final class AspectWerkz {
         Collections.sort(methods, MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD));
 
         final Method[] sortedMethods = new Method[methods.size()];
-
         for (int i = 0; i < sortedMethods.length; i++) {
             sortedMethods[i] = (Method)methods.get(i);
         }
+
         synchronized (m_methods) {
             m_methods.put(klass, sortedMethods);
         }

@@ -26,7 +26,6 @@ import org.codehaus.aspectwerkz.metadata.MetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
@@ -109,13 +108,12 @@ public abstract class MethodJoinPoint implements JoinPoint {
     /**
      * Checks that the method invocation chain is not reentrant.
      */
-    protected boolean m_reentrancyCheck = false;
+    protected boolean m_reentrancyCheck = false; // must be set to false as initial value
 
     /**
      * Marks the join point as non-reentrant.
-     * @todo option in definition to choose between non-reentrancy and reentrancy for a specific pointcut
      */
-    protected boolean m_nonReentrant = false;
+    protected boolean m_isNonReentrant = false;
 
     /**
      * Creates a new MethodJoinPoint object.
@@ -348,7 +346,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * @throws Throwable the exception from the original method
      */
     public Object invokeOriginalMethod() throws Throwable {
-        if (m_nonReentrant) {
+        if (m_isNonReentrant) {
             if (m_reentrancyCheck) return m_result;
             m_reentrancyCheck = true;
         }
@@ -356,10 +354,6 @@ public abstract class MethodJoinPoint implements JoinPoint {
             m_result = m_originalMethod.invoke(getTargetObject(), m_parameters);
         }
         catch (InvocationTargetException e) {
-//            System.out.println("============ ERRRR ============");
-//            System.out.println("m_originalMethod.getName() = " + m_originalMethod.getName());
-//            System.out.println("getTargetObject() = " + getTargetObject());
-//            System.out.println("m_methodId = " + m_methodId);
             handleException(e);
         }
         return m_result;

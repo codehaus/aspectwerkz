@@ -7,8 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import java.util.List;
-
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.FieldGen;
 import org.apache.bcel.generic.Type;

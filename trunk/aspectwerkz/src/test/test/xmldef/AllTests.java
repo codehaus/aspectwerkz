@@ -41,8 +41,8 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.AbstractClassInstrumentationTest.class);
         suite.addTestSuite(test.StringsTest.class);
         suite.addTestSuite(test.HierachicalPatternTest.class);
-        suite.addTestSuite(test.PerformanceTest.class);
         suite.addTestSuite(test.reflection.ReflectionTest.class);
+        suite.addTestSuite(test.PerformanceTest.class);
         return suite;
     }
 

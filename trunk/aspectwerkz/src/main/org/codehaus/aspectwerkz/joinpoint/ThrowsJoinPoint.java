@@ -36,9 +36,8 @@ public class ThrowsJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
-    private static final long serialVersionUID = -5868604244664715450L;
+    private static final long serialVersionUID = 6363637170952486892L;
 
     /**
      * The method join point for this join point.

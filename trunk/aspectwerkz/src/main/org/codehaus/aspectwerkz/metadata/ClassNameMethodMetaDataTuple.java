@@ -7,8 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-
 /**
  * Holds a tuple that consists of the class name A the meta-data for a specific method.
  *

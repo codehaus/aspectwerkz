@@ -22,8 +22,8 @@ import java.util.Set;
  *  <li>Undefined advice and introduction references
  * </ul>
  *
- * TODO: Add warning for duplicated/redundant advices for the same join point
- * TODO: Check pattern expressions syntax
+ * @todo Add warning for duplicated/redundant advices for the same join point
+ * @todo Check pattern expressions syntax
  *
  * @author <a href="mailto:carlos@bluebox.com.br">Carlos Villela</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -74,7 +74,7 @@ public class DefinitionValidator {
             for (Iterator i1 = adviceRules.iterator(); i1.hasNext();) {
                 AdviceWeavingRule rule = (AdviceWeavingRule)i1.next();
                 checkUndefinedAdvices(rule.getAdviceRefs());
-                // TODO: Check for undefined advice stacks
+                // @todo Check for undefined advice stacks
             }
 
             for (Iterator i2 = introductionRules.iterator(); i2.hasNext();) {
@@ -93,7 +93,6 @@ public class DefinitionValidator {
      * @param refs introduction references to check
      */
     private void checkUndefinedIntroductions(List refs) {
-        Collection defs = m_definition.getIntroductionDefinitions();
         for (Iterator i = refs.iterator(); i.hasNext();) {
             String ref = (String)i.next();
             if (!m_definition.hasIntroduction(ref))
@@ -106,7 +105,6 @@ public class DefinitionValidator {
      * @param refs advice references to check
      */
     private void checkUndefinedAdvices(List refs) {
-        Collection defs = m_definition.getAdviceDefinitions();
         for (Iterator i = refs.iterator(); i.hasNext();) {
             String ref = (String)i.next();
             if (!m_definition.hasAdvice(ref))

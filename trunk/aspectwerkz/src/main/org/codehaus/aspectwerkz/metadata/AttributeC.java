@@ -366,6 +366,7 @@ public class AttributeC {
             Element pointcutDefElement = aspectElement.addElement("pointcut-def");
             pointcutDefElement.addAttribute("name", pointcutDef.getName());
             pointcutDefElement.addAttribute("type", pointcutDef.getType());
+            pointcutDefElement.addAttribute("non-reentrant", pointcutDef.getNonReentrant());
 
             StringBuffer fullPattern = new StringBuffer();
             String type = pointcutDef.getType();
@@ -709,11 +710,13 @@ public class AttributeC {
                 }
 
                 String cflowRef = methodTags[j].getNamedParameter("cflow");
+                String isNonReentrant = methodTags[j].getNamedParameter("non-reentrant");
 
                 String[] attributes = methodTags[j].getParameters();
                 for (int k = 0; k < attributes.length; k++) {
                     String attribute = attributes[k];
-                    if (attribute.startsWith("cflow=")) {
+                    if (attribute.startsWith("cflow=") ||
+                            attribute.startsWith("non-reentrant=")) {
                         continue;
                     }
 
@@ -726,6 +729,7 @@ public class AttributeC {
                         pointcutDef.setClassPattern(className);
                         pointcutDef.setPattern(createMethodPattern(javaMethods[i]));
                         pointcutDef.setType(PointcutDefinition.METHOD);
+                        pointcutDef.setNonReentrant(isNonReentrant);
                         definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                 addPointcutDef(pointcutDef);
 

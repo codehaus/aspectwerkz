@@ -14,7 +14,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.ref.SoftReference;
 
-import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
 
 /**
@@ -33,7 +32,6 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
     private static final long serialVersionUID = 3055780985379512486L;
 

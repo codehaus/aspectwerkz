@@ -18,15 +18,6 @@
                 recommend that you first read some introductory articles on the
                 subject.
             </p>
-            <p>
-                <code>AspectWerkz</code> is a dynamic, lightweight and
-                high-performant AOP framework for Java. It utilizes the
-                <a href="http://jakarta.apache.org/bcel">BCEL</a> library for
-                bytecode manipulation of Java classes. It hooks in directly after
-                the bootstrap class loader thru several state of the art options and can perform bytecode transformations
-                on classes loaded by all the preceeding class loaders. The target
-                classes can be regular POJOs.
-            </p>
         </section>
     </body>
 

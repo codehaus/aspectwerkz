@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collections;
-import java.util.Set;
 
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -24,7 +23,6 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.InstructionConstants;
-import org.apache.bcel.generic.CPInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.FieldGen;
@@ -67,16 +65,14 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
     /**
      * Makes the member method transformations.
      *
-     * @todo remove all thread-safe stuff
-     *
      * @param context the transformation context
      * @param klass the class set.
      */
     public void transformCode(final Context context, final Klass klass) {
 
         final ClassGen cg = klass.getClassGen();
-        ClassMetaData classMetaData = BcelMetaDataMaker.
-                createClassMetaData(context.getJavaClass(cg));
+        ClassMetaData classMetaData =
+                BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
 
         if (classFilter(classMetaData, cg)) {
             return;
@@ -117,8 +113,6 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
             final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
 
-//            handleCallToOverriddenSuperClassMethod(mg, cg, cpg, factory);
-
             // take care of identification of overloaded methods by inserting a sequence number
             if (methodSequences.containsKey(methods[i].getName())) {
                 int sequence = ((Integer)methodSequences.get(methods[i].getName())).intValue();
@@ -134,10 +128,11 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             final int methodSequence = ((Integer)methodSequences.
                     get(methods[i].getName())).intValue();
 
-            // check if the pointcut should be deployed as thread safe or not
-            final boolean isThreadSafe = true; // isThreadSafe(cg, methods[i]);
+            handleCallToOverriddenSuperClassMethod(mg, cg, cpg, factory, methodSequence, context);
 
-            addJoinPointField(cpg, cg, mg, methodSequence, isThreadSafe);
+            // check if the pointcut should be deployed as thread safe or not
+
+            addJoinPointField(cpg, cg, mg, methodSequence);
 
             // get the join point controller
             MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
@@ -154,10 +149,8 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                         methods[initIndex],
                         methods[i],
                         factory,
-                        methodLookupId,
-                        methodSequence,
-                        isThreadSafe,
-                        uuid).getMethod();
+                        methodSequence
+                ).getMethod();
             }
 
             proxyMethods.add(createProxyMethod(
@@ -166,9 +159,9 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                     methodLookupId,
                     methodSequence,
                     methods[i].getAccessFlags(),
-                    isThreadSafe,
                     uuid,
-                    controllerClassName));
+                    controllerClassName
+            ));
 
             methods[i] = addPrefixToMethod(mg, methods[i], methodSequence);
 
@@ -189,103 +182,77 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * Searches for a invocation to the super class' method that the current
      * method has overridden.
      *
+     * @todo make this feature configurable per class in the definition
+     *
      * @param mg the method gen
      * @param cg the class gen
      * @param cpg the constant pool gen
      * @param factory the instruction factory
+     * @param methodSequence the sequence number for the method
+     * @param context the context
      */
-//    private void handleCallToOverriddenSuperClassMethod(final MethodGen mg,
-//                                                        final ClassGen cg,
-//                                                        final ConstantPoolGen cpg,
-//                                                        final InstructionFactory factory) {
-//
-//        InstructionList il = mg.getInstructionList();
-//        if (il == null) return;
-//
-//        InstructionHandle ih = il.getStart();
-//        while (ih != null) {
-//            Instruction ins = ih.getInstruction();
-//
-//            // TODO: are both INVOKESPECIAL and INVOKEVIRTUAL needed?
-//            if (ins instanceof INVOKESPECIAL || ins instanceof INVOKEVIRTUAL) {
-//
-//                InvokeInstruction invokeInstruction = (InvokeInstruction)ins;
-//
-//                // get the method name and class name of the method being invoked
-//                String methodName = invokeInstruction.getName(cpg);
-//                String className = invokeInstruction.getClassName(cpg);
-//                String superClassName = cg.getSuperclassName();
-//
-//                if (methodName.equals(mg.getMethod().getName()) &&
-//                        className.equals(superClassName)) {
-//
-//                    String wrapperMethodName = TransformationUtil.
-//                            SUPER_CALL_WRAPPER_PREFIX + methodName;
-//
-//                    ih.swapInstruction(factory.createInvoke(
-//                            superClassName,
-//                            wrapperMethodName,
-//                            mg.getReturnType(),
-//                            mg.getArgumentTypes(),
-//                            Constants.INVOKESPECIAL)
-//                    );
-//
-//                    addSuperCallWrapperMethod(wrapperMethodName, mg, cg, cpg, factory);
-//                }
-//            }
-//            ih = ih.getNext();
-//        }
-//    }
+    private void handleCallToOverriddenSuperClassMethod(final MethodGen mg,
+                                                        final ClassGen cg,
+                                                        final ConstantPoolGen cpg,
+                                                        final InstructionFactory factory,
+                                                        final int methodSequence,
+                                                        final Context context) {
+        InstructionList il = mg.getInstructionList();
+        if (il == null) return;
 
-    /**
-     * Creates a wrapper method for the super class' method invocation.
-     *
-     * @param methodName the name of the method
-     * @param cg the class gen
-     * @param cpg the constant pool gen
-     * @param factory the instruction factory
-     */
-//    private void addSuperCallWrapperMethod(final String methodName,
-//                                           final MethodGen mg,
-//                                           final ClassGen cg,
-//                                           final ConstantPoolGen cpg,
-//                                           final InstructionFactory factory) {
-//        System.out.println("AdviseMemberMethodTransformer.addSuperCallWrapperMethod");
-//        final InstructionList il = new InstructionList();
-//
-//        MethodGen method = new MethodGen(
-//                mg.getModifiers(),
-//                Type.getReturnType(mg.getSignature()),
-//                Type.getArgumentTypes(mg.getSignature()),
-//                mg.getArgumentNames(),
-//                methodName,
-//                cg.getClassName(),
-//                il, cpg
-//        );
-//
-//        // TODO: load the params at runtime
-//        il.append(factory.createLoad(Type.OBJECT, 0));
-//        il.append(factory.createLoad(Type.INT, 1));
-//        il.append(factory.createLoad(Type.LONG,  2));
-//        il.append(factory.createLoad(Type.OBJECT, 4));
-//
-//        il.append(factory.createInvoke(
-//                cg.getClassName(),
-//                TransformationUtil.ORIGINAL_METHOD_PREFIX + methodName,
-//                Type.getReturnType(mg.getSignature()),
-//                Type.getArgumentTypes(mg.getSignature()),
-//                Constants.INVOKESPECIAL)
-//        );
-//
-//        // TODO: choose return type at runtime
-//        il.append(factory.createReturn(Type.OBJECT));
-//
-//        method.setMaxStack();
-//        method.setMaxLocals();
-//
-//        cg.addMethod(method.getMethod());
-//        il.dispose();
-//    }
+        InstructionHandle ih = il.getStart();
+        while (ih != null) {
+            Instruction ins = ih.getInstruction();
+
+            // TODO: are both INVOKESPECIAL and INVOKEVIRTUAL needed?
+            if (ins instanceof INVOKESPECIAL || ins instanceof INVOKEVIRTUAL) {
+
+                InvokeInstruction invokeInstruction = (InvokeInstruction)ins;
+
+                // get the method name and class name of the method being invoked
+                String methodName = invokeInstruction.getName(cpg);
+                String className = invokeInstruction.getClassName(cpg);
+                String signature = invokeInstruction.getSignature(cpg);
+                String superClassName = cg.getSuperclassName();
+
+                if (methodName.equals(mg.getMethod().getName()) &&
+                        className.equals(superClassName)) {
+
+                    JavaClass superClass = context.getSuperClass(cg);
+                    Method[] methods = superClass.getMethods();
+                    MethodMetaData methodMetaData = null;
+                    for (int i = 0; i < methods.length; i++) {
+                        Method method = methods[i];
+                        if (method.getSignature().equals(signature)) {
+                            methodMetaData = BcelMetaDataMaker.createMethodMetaData(method);
+                            break;
+                        }
+                    }
+                    if (methodMetaData == null) {
+                        return;
+                    }
+
+                    ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(superClass);
+                    if (m_definition.hasMethodPointcut(classMetaData, methodMetaData)) {
+                        StringBuffer prefixedOriginalMethod = new StringBuffer();
+                        prefixedOriginalMethod.append(TransformationUtil.ORIGINAL_METHOD_PREFIX);
+                        prefixedOriginalMethod.append(methodName);
+                        prefixedOriginalMethod.append(TransformationUtil.DELIMITER);
+                        prefixedOriginalMethod.append(methodSequence);
+
+                        ih.swapInstruction(factory.createInvoke(
+                                superClassName,
+                                prefixedOriginalMethod.toString(),
+                                mg.getReturnType(),
+                                mg.getArgumentTypes(),
+                                Constants.INVOKESPECIAL)
+                        );
+                    }
+                }
+            }
+            ih = ih.getNext();
+        }
+    }
 
     /**
      * Adds a join point member field.
@@ -298,31 +265,20 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
     private void addJoinPointField(final ConstantPoolGen cp,
                                    final ClassGen cg,
                                    final MethodGen mg,
-                                   final int methodSequence,
-                                   final boolean isThreadSafe) {
+                                   final int methodSequence) {
 
-        final StringBuffer joinPoint =
-                getJoinPointName(mg.getMethod(), methodSequence);
+        final StringBuffer joinPoint = getJoinPointName(mg.getMethod(), methodSequence);
 
         if (cg.containsField(joinPoint.toString()) != null) {
             return;
         }
 
-        final FieldGen field;
-        if (isThreadSafe) {
-            field = new FieldGen(
-                    Constants.ACC_PRIVATE | Constants.ACC_FINAL,
-                    new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
-                    joinPoint.toString(),
-                    cp);
-        }
-        else {
-            field = new FieldGen(
-                    Constants.ACC_PRIVATE | Constants.ACC_FINAL,
-                    TransformationUtil.MEMBER_METHOD_JOIN_POINT_TYPE,
-                    joinPoint.toString(),
-                    cp);
-        }
+        final FieldGen field = new FieldGen(
+                Constants.ACC_PRIVATE | Constants.ACC_FINAL,
+                new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
+                joinPoint.toString(),
+                cp
+        );
         cg.addField(field.getField());
     }
 
@@ -334,10 +290,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * @param init the constructor for the class
      * @param method the current method
      * @param factory the objectfactory
-     * @param methodId the id of the current method in the lookup table
      * @param methodSequence the methods sequence number
-     * @param isThreadSafe
-     * @param uuid the UUID for the weave model
      * @return the modified constructor
      */
     private MethodGen createJoinPointField(final ConstantPoolGen cp,
@@ -345,10 +298,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                                            final Method init,
                                            final Method method,
                                            final InstructionFactory factory,
-                                           final int methodId,
-                                           final int methodSequence,
-                                           final boolean isThreadSafe,
-                                           final String uuid) {
+                                           final int methodSequence) {
 
         final MethodGen mg = new MethodGen(init, cg.getClassName(), cp);
         final InstructionList il = mg.getInstructionList();
@@ -375,51 +325,25 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
         final StringBuffer joinPoint = getJoinPointName(method, methodSequence);
 
         final InstructionHandle ihPost;
-        if (isThreadSafe) {
-            ihPost = il.insert(ih, factory.createLoad(Type.OBJECT, 0));
-            il.insert(ih, factory.createNew(TransformationUtil.THREAD_LOCAL_CLASS));
+        ihPost = il.insert(ih, factory.createLoad(Type.OBJECT, 0));
+        il.insert(ih, factory.createNew(TransformationUtil.THREAD_LOCAL_CLASS));
 
-            il.insert(ih, InstructionConstants.DUP);
+        il.insert(ih, InstructionConstants.DUP);
 
-            il.insert(ih, factory.createInvoke(
-                    TransformationUtil.THREAD_LOCAL_CLASS,
-                    "<init>",
-                    Type.VOID,
-                    new Type[]{},
-                    Constants.INVOKESPECIAL));
+        il.insert(ih, factory.createInvoke(
+                TransformationUtil.THREAD_LOCAL_CLASS,
+                "<init>",
+                Type.VOID,
+                new Type[]{},
+                Constants.INVOKESPECIAL
+        ));
 
-            il.insert(ih, factory.createFieldAccess(
-                    cg.getClassName(),
-                    joinPoint.toString(),
-                    new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
-                    Constants.PUTFIELD));
-        }
-        else {
-            // create an new join point
-            ihPost = il.insert(ih, factory.createLoad(Type.OBJECT, 0));
-            il.insert(ih, factory.createNew(TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS));
-
-            // load the parameters (uuid, this, method id)
-            il.insert(ih, InstructionConstants.DUP);
-            il.insert(ih, new PUSH(cp, uuid));
-            il.insert(ih, factory.createLoad(Type.OBJECT, 0));
-            il.insert(ih, new PUSH(cp, methodId));
-
-            // invokes the constructor
-            il.insert(ih, factory.createInvoke(
-                    TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS,
-                    "<init>",
-                    Type.VOID,
-                    new Type[]{Type.STRING, Type.OBJECT, Type.INT},
-                    Constants.INVOKESPECIAL));
-
-            // set the join point to the member field specified
-            il.insert(ih, factory.createFieldAccess(
-                    cg.getClassName(),
-                    joinPoint.toString(),
-                    TransformationUtil.MEMBER_METHOD_JOIN_POINT_TYPE,
-                    Constants.PUTFIELD));
-        }
+        il.insert(ih, factory.createFieldAccess(
+                cg.getClassName(),
+                joinPoint.toString(),
+                new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
+                Constants.PUTFIELD
+        ));
         il.redirectBranches(ih, ihPost);
 
         mg.setMaxStack();
@@ -440,15 +364,15 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                                      final Method method,
                                      final int methodSequence) {
 
-        // change the method access flags (should always be set to private)
+        // change the method access flags (should always be set to protected)
         int accessFlags = mg.getAccessFlags();
-        if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
-            // set the private flag
-            accessFlags |= Constants.ACC_PRIVATE;
+        if ((accessFlags & Constants.ACC_PROTECTED) == 0) {
+            // set the protected flag
+            accessFlags |= Constants.ACC_PROTECTED;
         }
-        if ((accessFlags & Constants.ACC_PROTECTED) != 0) {
-            // clear the protected flag
-            accessFlags &= ~Constants.ACC_PROTECTED;
+        if ((accessFlags & Constants.ACC_PRIVATE) != 0) {
+            // clear the private flag
+            accessFlags &= ~Constants.ACC_PRIVATE;
         }
         if ((accessFlags & Constants.ACC_PUBLIC) != 0) {
             // clear the public flag
@@ -468,6 +392,8 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * catches the invocation for further processing by the framework
      * before redirecting to the original method.
      *
+     * @todo pass the 'class' as a Class instance not a String to the join point. Add the class field to the class using BCEL (see AdviseStaticMethodTransformer.java)
+     *
      * @param cp the ConstantPoolGen
      * @param cg the ClassGen
      * @param originalMethod the current method
@@ -475,7 +401,6 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * @param methodId the id of the current method in the lookup tabl
      * @param methodSequence the methods sequence number
      * @param accessFlags the access flags of the original method
-     * @param isThreadSafe
      * @param uuid the uuid for the weave model defining the pointcut
      * @param controllerClassName the class name of the controller class to use
      * @return the proxy method
@@ -487,27 +412,19 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                                      final int methodId,
                                      final int methodSequence,
                                      final int accessFlags,
-                                     final boolean isThreadSafe,
                                      final String uuid,
                                      final String controllerClassName) {
 
-        final InstructionList il = new InstructionList();
+        InstructionList il = new InstructionList();
 
-        final Type[] parameterTypes =
-                Type.getArgumentTypes(originalMethod.getSignature());
-        final Type returnType =
-                Type.getReturnType(originalMethod.getSignature());
-        final String[] parameterNames =
-                originalMethod.getArgumentNames();
-
-        final StringBuffer joinPoint = getJoinPointName(
+        StringBuffer joinPoint = getJoinPointName(
                 originalMethod.getMethod(), methodSequence);
 
         final MethodGen method = new MethodGen(
                 accessFlags,
-                returnType,
-                parameterTypes,
-                parameterNames,
+                Type.getReturnType(originalMethod.getSignature()),
+                Type.getArgumentTypes(originalMethod.getSignature()),
+                originalMethod.getArgumentNames(),
                 originalMethod.getName(),
                 cg.getClassName(),
                 il, cp
@@ -520,143 +437,146 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
         int indexParam = 1;
         int indexStack = 0;
-        int indexJoinPoint = parameterTypes.length * 2 + 1;
+        int indexJoinPoint = Type.getArgumentTypes(
+                originalMethod.getSignature()).length * 2 + 1;
 
         BranchInstruction biIfNotNull = null;
         InstructionHandle ihIfNotNull = null;
-        if (isThreadSafe) {
-            // Object joinPoint = ___jp.get();
-            il.append(factory.createLoad(Type.OBJECT, 0));
-            il.append(factory.createFieldAccess(
-                    cg.getClassName(),
-                    joinPoint.toString(),
-                    new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
-                    Constants.GETFIELD));
-            il.append(factory.createInvoke(
-                    TransformationUtil.THREAD_LOCAL_CLASS,
-                    "get",
-                    Type.OBJECT,
-                    Type.NO_ARGS,
-                    Constants.INVOKEVIRTUAL));
-            il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
+        // Object joinPoint = ___jp.get();
+        il.append(factory.createLoad(Type.OBJECT, 0));
+        il.append(factory.createFieldAccess(
+                cg.getClassName(),
+                joinPoint.toString(),
+                new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
+                Constants.GETFIELD
+        ));
+        il.append(factory.createInvoke(
+                TransformationUtil.THREAD_LOCAL_CLASS,
+                "get",
+                Type.OBJECT,
+                Type.NO_ARGS,
+                Constants.INVOKEVIRTUAL
+        ));
+        il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
-            // if (joinPoint == null) {
-            il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
-            biIfNotNull = factory.createBranchInstruction(Constants.IFNONNULL, null);
-            il.append(biIfNotNull);
+        // if (joinPoint == null) {
+        il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
+        biIfNotNull = factory.createBranchInstruction(Constants.IFNONNULL, null);
+        il.append(biIfNotNull);
 
-            // joinPoint = new MemberMethodJoinPoint(uuid, this, 10);
-            il.append(factory.createNew(
-                    TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS));
-            il.append(InstructionConstants.DUP);
+        // joinPoint = new MemberMethodJoinPoint(uuid, this, "foo.bar.Baz", 10);
+        il.append(factory.createNew(TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS));
+        il.append(InstructionConstants.DUP);
 
-            il.append(new PUSH(cp, uuid));
-            il.append(factory.createLoad(Type.OBJECT, 0));
-            il.append(new PUSH(cp, methodId));
-            il.append(new PUSH(cp, controllerClassName));
+        il.append(new PUSH(cp, uuid));
+        il.append(factory.createLoad(Type.OBJECT, 0));
+        il.append(new PUSH(cp, cg.getClassName()));
+        il.append(new PUSH(cp, methodId));
+        il.append(new PUSH(cp, controllerClassName));
 
-            il.append(factory.createInvoke(
-                    TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS,
-                    "<init>",
-                    Type.VOID,
-                    new Type[]{Type.STRING, Type.OBJECT, Type.INT, Type.STRING},
-                    Constants.INVOKESPECIAL));
-            il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
+        il.append(factory.createInvoke(
+                TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS,
+                "<init>",
+                Type.VOID,
+                new Type[]{Type.STRING, Type.OBJECT, Type.STRING, Type.INT, Type.STRING},
+                Constants.INVOKESPECIAL
+        ));
+        il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
-            // ___jp.set(joinPoint);
-            il.append(factory.createLoad(Type.OBJECT, 0));
-            il.append(factory.createFieldAccess(
-                    cg.getClassName(),
-                    joinPoint.toString(),
-                    new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
-                    Constants.GETFIELD));
-            il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
-            il.append(factory.createInvoke(
-                    TransformationUtil.THREAD_LOCAL_CLASS,
-                    "set",
-                    Type.VOID,
-                    new Type[]{Type.OBJECT},
-                    Constants.INVOKEVIRTUAL));
+        // ___jp.set(joinPoint);
+        il.append(factory.createLoad(Type.OBJECT, 0));
+        il.append(factory.createFieldAccess(
+                cg.getClassName(),
+                joinPoint.toString(),
+                new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
+                Constants.GETFIELD
+        ));
+        il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
+        il.append(factory.createInvoke(
+                TransformationUtil.THREAD_LOCAL_CLASS,
+                "set",
+                Type.VOID,
+                new Type[]{Type.OBJECT},
+                Constants.INVOKEVIRTUAL
+        ));
 
-            ihIfNotNull = il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
-            il.append(factory.createCheckCast(
-                    TransformationUtil.MEMBER_METHOD_JOIN_POINT_TYPE));
-            indexJoinPoint += 2;
-            il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
+        ihIfNotNull = il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
+        il.append(factory.createCheckCast(TransformationUtil.MEMBER_METHOD_JOIN_POINT_TYPE));
+        indexJoinPoint += 2;
+        il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
-            biIfNotNull.setTarget(ihIfNotNull);
-        }
+        biIfNotNull.setTarget(ihIfNotNull);
 
         // if we have parameters, wrap them up
-        if (parameterTypes.length != 0) {
+        if (Type.getArgumentTypes(originalMethod.getSignature()).length != 0) {
 
             // create and allocate the parameters array
-            il.append(new PUSH(cp, parameterTypes.length));
-            il.append((CPInstruction)factory.createNewArray(Type.OBJECT, (short)1));
+            il.append(new PUSH(cp, Type.getArgumentTypes(originalMethod.getSignature()).length));
+            il.append(factory.createNewArray(Type.OBJECT, (short)1));
 
             il.append(InstructionConstants.DUP);
             il.append(new PUSH(cp, indexStack));
             indexStack++;
 
             // add all the parameters, wrap the primitive types in their object counterparts
-            for (int count = 0; count < parameterTypes.length; count++) {
+            for (int count = 0; count < Type.getArgumentTypes(originalMethod.getSignature()).length; count++) {
 
                 String wrapperClass = null;
                 BasicType type = null;
                 boolean hasLongOrDouble = false;
 
-                if (parameterTypes[count] instanceof ObjectType ||
-                        parameterTypes[count] instanceof ArrayType) {
+                if (Type.getArgumentTypes(originalMethod.getSignature())[count] instanceof ObjectType ||
+                        Type.getArgumentTypes(originalMethod.getSignature())[count] instanceof ArrayType) {
                     // we have an object or an array
                     il.append(factory.createLoad(Type.OBJECT, indexParam));
                     il.append(InstructionConstants.AASTORE);
                     indexParam++;
                 }
-                else if (parameterTypes[count] instanceof ArrayType) {
+                else if (Type.getArgumentTypes(originalMethod.getSignature())[count] instanceof ArrayType) {
                     // we have an array
                     il.append(factory.createLoad(Type.OBJECT, indexParam));
                     il.append(InstructionConstants.AASTORE);
                     indexParam++;
                 }
-                else if (parameterTypes[count] instanceof BasicType) {
+                else if (Type.getArgumentTypes(originalMethod.getSignature())[count] instanceof BasicType) {
                     hasLongOrDouble = false;
                     // we have a primitive type
-                    if ((parameterTypes[count]).equals(Type.LONG)) {
+                    if ((Type.getArgumentTypes(originalMethod.getSignature())[count]).equals(Type.LONG)) {
                         wrapperClass = "java.lang.Long";
                         type = Type.LONG;
                         hasLongOrDouble = true;
                     }
-                    else if ((parameterTypes[count]).equals(Type.INT)) {
+                    else if ((Type.getArgumentTypes(originalMethod.getSignature())[count]).equals(Type.INT)) {
                         wrapperClass = "java.lang.Integer";
                         type = Type.INT;
                     }
-                    else if ((parameterTypes[count]).equals(Type.SHORT)) {
+                    else if ((Type.getArgumentTypes(originalMethod.getSignature())[count]).equals(Type.SHORT)) {
                         wrapperClass = "java.lang.Short";
                         type = Type.SHORT;
                     }
-                    else if ((parameterTypes[count]).equals(Type.DOUBLE)) {
+                    else if ((Type.getArgumentTypes(originalMethod.getSignature())[count]).equals(Type.DOUBLE)) {
                         wrapperClass = "java.lang.Double";
                         type = Type.DOUBLE;
                         hasLongOrDouble = true;
                     }
-                    else if ((parameterTypes[count]).equals(Type.FLOAT)) {
+                    else if ((Type.getArgumentTypes(originalMethod.getSignature())[count]).equals(Type.FLOAT)) {
                         wrapperClass = "java.lang.Float";
                         type = Type.FLOAT;
                     }
-                    else if ((parameterTypes[count]).equals(Type.CHAR)) {
+                    else if ((Type.getArgumentTypes(originalMethod.getSignature())[count]).equals(Type.CHAR)) {
                         wrapperClass = "java.lang.Character";
                         type = Type.CHAR;
                     }
-                    else if ((parameterTypes[count]).equals(Type.BYTE)) {
+                    else if ((Type.getArgumentTypes(originalMethod.getSignature())[count]).equals(Type.BYTE)) {
                         wrapperClass = "java.lang.Byte";
                         type = Type.BYTE;
                     }
-                    else if ((parameterTypes[count]).equals(Type.BOOLEAN)) {
+                    else if ((Type.getArgumentTypes(originalMethod.getSignature())[count]).equals(Type.BOOLEAN)) {
                         wrapperClass = "java.lang.Boolean";
                         type = Type.BOOLEAN;
                     }
                     else {
-                        throw new RuntimeException("unknown parameter type: " + parameterTypes[count]);
+                        throw new RuntimeException("unknown parameter type: " + Type.getArgumentTypes(originalMethod.getSignature())[count]);
                     }
                     il.append(factory.createNew(wrapperClass));
                     il.append(InstructionConstants.DUP);
@@ -666,12 +586,13 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                             "<init>",
                             Type.VOID,
                             new Type[]{type},
-                            Constants.INVOKESPECIAL));
+                            Constants.INVOKESPECIAL
+                    ));
                     il.append(InstructionConstants.AASTORE);
                     indexParam++;
                 } // end handle basic or object type
 
-                if (count != parameterTypes.length - 1) {
+                if (count != Type.getArgumentTypes(originalMethod.getSignature()).length - 1) {
                     // if we don't have the last parameter, create the parameter on the stack
                     il.append(InstructionConstants.DUP);
                     il.append(new PUSH(cp, indexStack));
@@ -685,20 +606,9 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             // create the object array
             il.append(factory.createStore(Type.OBJECT, indexParam));
 
-            if (isThreadSafe) {
-                // if threadsafe grab the newly retrieved local join point field from the stack
-                il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
-            }
-            else {
-                // grab the join point member field
-                il.append(factory.createLoad(Type.OBJECT, 0));
-                il.append(factory.createFieldAccess(
-                        cg.getClassName(),
-                        joinPoint.toString(),
-                        TransformationUtil.MEMBER_METHOD_JOIN_POINT_TYPE,
-                        Constants.GETFIELD));
+            // if threadsafe grab the newly retrieved local join point field from the stack
+            il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
 
-            }
             // invoke joinPoint.setParameter(..)
             il.append(factory.createLoad(Type.OBJECT, indexParam));
             il.append(factory.createInvoke(
@@ -706,129 +616,123 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                     "setParameters",
                     Type.VOID,
                     new Type[]{new ArrayType(Type.OBJECT, 1)},
-                    Constants.INVOKEVIRTUAL));
+                    Constants.INVOKEVIRTUAL
+            ));
             indexParam++;
 
         } // end - if parameters.length != 0
 
-        if (isThreadSafe) {
-            // if threadsafe grab the newly retrieved local join point field from the stack
-            il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
-            il.append(factory.createInvoke(
-                    TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS,
-                    "proceed", Type.OBJECT, Type.NO_ARGS, Constants.INVOKEVIRTUAL));
-        }
-        else {
-            // grab the join point member field
-            il.append(factory.createLoad(Type.OBJECT, 0));
-            il.append(factory.createFieldAccess(
-                    cg.getClassName(),
-                    joinPoint.toString(),
-                    TransformationUtil.MEMBER_METHOD_JOIN_POINT_TYPE,
-                    Constants.GETFIELD));
+        // if threadsafe grab the newly retrieved local join point field from the stack
+        il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
+        il.append(factory.createInvoke(
+                TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS,
+                "proceed",
+                Type.OBJECT,
+                Type.NO_ARGS,
+                Constants.INVOKEVIRTUAL
+        ));
 
-            // invoke joinPoint.proceed()
-            il.append(factory.createInvoke(
-                    TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS,
-                    "proceed",
-                    Type.OBJECT,
-                    Type.NO_ARGS,
-                    Constants.INVOKEVIRTUAL));
-        }
-
-        if (!returnType.equals(Type.VOID)) {
+        if (!Type.getReturnType(originalMethod.getSignature()).equals(Type.VOID)) {
             // create the result from the invocation
             il.append(factory.createStore(Type.OBJECT, indexParam));
             il.append(factory.createLoad(Type.OBJECT, indexParam));
 
             // cast the result and return it, if the return type is a
             // primitive type, retrieve it from the wrapped object first
-            if (returnType instanceof BasicType) {
-                if (returnType.equals(Type.LONG)) {
+            if (Type.getReturnType(originalMethod.getSignature()) instanceof BasicType) {
+                if (Type.getReturnType(originalMethod.getSignature()).equals(Type.LONG)) {
                     il.append(factory.createCheckCast(new ObjectType("java.lang.Long")));
                     il.append(factory.createInvoke(
                             "java.lang.Long",
                             "longValue",
                             Type.LONG,
                             Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL));
+                            Constants.INVOKEVIRTUAL
+                    ));
                 }
-                else if (returnType.equals(Type.INT)) {
+                else if (Type.getReturnType(originalMethod.getSignature()).equals(Type.INT)) {
                     il.append(factory.createCheckCast(new ObjectType("java.lang.Integer")));
                     il.append(factory.createInvoke(
                             "java.lang.Integer",
                             "intValue",
                             Type.INT,
                             Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL));
+                            Constants.INVOKEVIRTUAL
+                    ));
                 }
-                else if (returnType.equals(Type.SHORT)) {
+                else if (Type.getReturnType(originalMethod.getSignature()).equals(Type.SHORT)) {
                     il.append(factory.createCheckCast(new ObjectType("java.lang.Short")));
                     il.append(factory.createInvoke(
                             "java.lang.Short",
                             "shortValue",
                             Type.SHORT,
                             Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL));
+                            Constants.INVOKEVIRTUAL
+                    ));
                 }
-                else if (returnType.equals(Type.DOUBLE)) {
+                else if (Type.getReturnType(originalMethod.getSignature()).equals(Type.DOUBLE)) {
                     il.append(factory.createCheckCast(new ObjectType("java.lang.Double")));
                     il.append(factory.createInvoke(
                             "java.lang.Double",
                             "doubleValue",
                             Type.DOUBLE,
                             Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL));
+                            Constants.INVOKEVIRTUAL
+                    ));
                 }
-                else if (returnType.equals(Type.FLOAT)) {
+                else if (Type.getReturnType(originalMethod.getSignature()).equals(Type.FLOAT)) {
                     il.append(factory.createCheckCast(new ObjectType("java.lang.Float")));
                     il.append(factory.createInvoke(
                             "java.lang.Float",
                             "floatValue",
                             Type.FLOAT,
                             Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL));
+                            Constants.INVOKEVIRTUAL
+                    ));
                 }
-                else if (returnType.equals(Type.CHAR)) {
+                else if (Type.getReturnType(originalMethod.getSignature()).equals(Type.CHAR)) {
                     il.append(factory.createCheckCast(new ObjectType("java.lang.Character")));
                     il.append(factory.createInvoke(
                             "java.lang.Character",
                             "charValue",
                             Type.CHAR,
                             Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL));
+                            Constants.INVOKEVIRTUAL
+                    ));
                 }
-                else if (returnType.equals(Type.BYTE)) {
+                else if (Type.getReturnType(originalMethod.getSignature()).equals(Type.BYTE)) {
                     il.append(factory.createCheckCast(new ObjectType("java.lang.Byte")));
                     il.append(factory.createInvoke(
                             "java.lang.Byte",
                             "byteValue",
                             Type.BYTE,
                             Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL));
+                            Constants.INVOKEVIRTUAL
+                    ));
                 }
-                else if (returnType.equals(Type.BOOLEAN)) {
+                else if (Type.getReturnType(originalMethod.getSignature()).equals(Type.BOOLEAN)) {
                     il.append(factory.createCheckCast(new ObjectType("java.lang.Boolean")));
                     il.append(factory.createInvoke(
                             "java.lang.Boolean",
                             "booleanValue",
                             Type.BOOLEAN,
                             Type.NO_ARGS,
-                            Constants.INVOKEVIRTUAL));
+                            Constants.INVOKEVIRTUAL
+                    ));
                 }
-                else if (returnType.equals(Type.VOID)) {
-                    // skip
+                else if (Type.getReturnType(originalMethod.getSignature()).equals(Type.VOID)) {
+                    ;// skip
                 }
                 else {
-                    throw new Error("unknown return type: " + returnType);
+                    throw new Error("unknown return type: " + Type.getReturnType(originalMethod.getSignature()));
                 }
             }
             else {
                 // cast the result to the right type
-                il.append(factory.createCast(Type.OBJECT, returnType));
+                il.append(factory.createCast(Type.OBJECT, Type.getReturnType(originalMethod.getSignature())));
             }
         }
-        il.append(factory.createReturn(returnType));
+        il.append(factory.createReturn(Type.getReturnType(originalMethod.getSignature())));
 
         method.setMaxStack();
         method.setMaxLocals();
@@ -909,53 +813,6 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             }
         }
         return uuid;
-    }
-
-    /**
-     * Collects all methods for the class specified, calls itself recursively with
-     * the class' super class as argument to collect all methods.
-     *
-     * @param klass the BCEL JavaClass
-     * @param methods the method list
-     * @param addedMethods the method added to the method list
-     * @param context the context
-     * @param classMetaData the meta-data for the class being transformed
-     * @param isSuperClass
-     */
-    private void collectMethods(final JavaClass klass,
-                                final List methods,
-                                final Set addedMethods,
-                                final Context context,
-                                final ClassMetaData classMetaData,
-                                final boolean isSuperClass) {
-        final Method[] declaredMethods = klass.getMethods();
-        for (int i = 0; i < declaredMethods.length; i++) {
-            MethodMetaData methodMetaData =
-                    BcelMetaDataMaker.createMethodMetaData(declaredMethods[i]);
-            // add only the advised original methods to the lookup table,
-            // method pairs that consists of original:proxy
-            if (methodFilter(classMetaData, declaredMethods[i]) != null &&
-                    !addedMethods.contains(methodMetaData)) {
-                if (isSuperClass &&
-                        (declaredMethods[i].isPublic() ||
-                        declaredMethods[i].isProtected())) {
-                    methods.add(declaredMethods[i]);
-                    addedMethods.add(methodMetaData);
-                }
-                else {
-                    methods.add(declaredMethods[i]);
-                    addedMethods.add(methodMetaData);
-                }
-            }
-        }
-        JavaClass superClass = context.getSuperClass(klass);
-        if (superClass != null) {
-            // calls itself recursively
-            collectMethods(superClass, methods, addedMethods, context, classMetaData, true);
-        }
-        else {
-            return;
-        }
     }
 
     /**

@@ -172,7 +172,8 @@ public class Context {
      * @param cg the ClassGen
      * @return the super class of the JavaClass
      */
-    public JavaClass getSuperClass(final JavaClass klass) {
+    public JavaClass getSuperClass(final ClassGen cg) {
+        JavaClass klass = getJavaClass(cg);
         try {
             final JavaClass superClass = klass.getSuperClass();
             if (superClass == null) return null;
