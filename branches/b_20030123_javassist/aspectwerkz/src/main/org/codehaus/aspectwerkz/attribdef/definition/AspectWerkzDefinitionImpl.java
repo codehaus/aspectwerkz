@@ -91,6 +91,11 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     private final Set m_excludePackages = new HashSet();
 
     /**
+     * The prepare packages.
+     */
+    private final Set m_preparePackages = new HashSet();
+
+    /**
      * The default attribute parser.
      * TODO: make customizable (-D..)
      * TODO: use factory
@@ -463,7 +468,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Checks if a class has an <tt>AspectMetaData</tt>.
+     * Checks if a class is in include declaration.
      *
      * @param className the name or the class
      * @return boolean
@@ -483,7 +488,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Checks if a class has an <tt>AspectMetaData</tt>.
+     * Checks if a class is in exclude declaration.
      *
      * @param className the name or the class
      * @return boolean
@@ -491,6 +496,23 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     public boolean inExcludePackage(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         for (Iterator it = m_excludePackages.iterator(); it.hasNext();) {
+            String packageName = (String)it.next();
+            if (className.startsWith(packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a class is in prepare declaration
+     *
+     * @param className the name or the class
+     * @return boolean
+     */
+    public boolean inPreparePackage(String className) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        for (Iterator it = m_preparePackages.iterator(); it.hasNext();) {
             String packageName = (String)it.next();
             if (className.startsWith(packageName)) {
                 return true;

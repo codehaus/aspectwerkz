@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
  * Interface for the aspectwerkz definition implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public interface AspectWerkzDefinition extends Serializable {
 
@@ -161,7 +162,7 @@ public interface AspectWerkzDefinition extends Serializable {
     boolean hasIntroduction(String name);
 
     /**
-     * Checks if a class has an <tt>AspectMetaData</tt>.
+     * Checks if a class is in include declaration
      *
      * @param className the name or the class
      * @return boolean
@@ -169,12 +170,20 @@ public interface AspectWerkzDefinition extends Serializable {
     boolean inIncludePackage(String className);
 
     /**
-     * Checks if a class has an <tt>AspectMetaData</tt>.
+     * Checks if a class is in exclude declaration
      *
      * @param className the name or the class
      * @return boolean
      */
     boolean inExcludePackage(String className);
+
+    /**
+     * Checks if a class is in prepare declaration
+     *
+     * @param className the name or the class
+     * @return boolean
+     */
+    boolean inPreparePackage(String className);
 
     /**
      * Checks if a class has an <tt>Mixin</tt>.
