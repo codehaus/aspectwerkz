@@ -219,6 +219,15 @@ public final class AspectManager {
         m_aspectRegistry.register(prototype, new PointcutManager(m_uuid, name, deploymentModel));
     }
 
+   /**
+     * Returns the UUID for the system.
+     *
+     * @return the UUID
+     */
+    public String getUuid() {
+        return m_uuid;
+    }
+
     /**
      * Retrieves a specific aspect based on index.
      *

@@ -32,11 +32,6 @@ import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 public final class System {
 
     /**
-     * The UUID of the single system if only one definition is used.
-     */
-    public static final String DEFAULT_SYSTEM = "default";
-
-    /**
      * The path to the definition file.
      */
     private static final boolean START_REMOTE_PROXY_SERVER = "true".equals(
@@ -98,6 +93,15 @@ public final class System {
      */
     public AspectManager getAspectManager() {
         return m_aspectManager;
+    }
+
+    /**
+     * Returns the UUID for the system.
+     *
+     * @return the UUID
+     */
+    public String getUuid() {
+        return m_aspectManager.getUuid();
     }
 
     /**

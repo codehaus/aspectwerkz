@@ -316,6 +316,7 @@ public class StartupManager {
                                 cflowAspect.addBeforeAdvice(
                                         new AdviceDefinition(
                                                 CFlowSystemAspect.PRE_ADVICE,
+                                                AdviceDefinition.BEFORE_ADVICE,
                                                 cflowAspect.getName(),
                                                 cflowAspect.getClassName(),
                                                 value,
@@ -332,6 +333,7 @@ public class StartupManager {
                                 cflowAspect.addAfterAdvice(
                                         new AdviceDefinition(
                                                 CFlowSystemAspect.POST_ADVICE,
+                                                AdviceDefinition.AFTER_ADVICE,
                                                 cflowAspect.getName(),
                                                 cflowAspect.getClassName(),
                                                 value,

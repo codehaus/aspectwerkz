@@ -61,7 +61,7 @@ public class DefinitionParserHelper {
             final int methodIndex,
             final AspectDefinition aspectDef) {
         AdviceDefinition adviceDef = createAdviceDefinition(
-                adviceName, aspectName, aspectClassName,
+                adviceName, AdviceDefinition.AROUND_ADVICE, aspectName, aspectClassName,
                 expression, method, methodIndex, aspectDef
         );
         aspectDef.addAroundAdvice(adviceDef);
@@ -87,7 +87,7 @@ public class DefinitionParserHelper {
             final int methodIndex,
             final AspectDefinition aspectDef) {
         AdviceDefinition adviceDef = createAdviceDefinition(
-                adviceName, aspectName, aspectClassName,
+                adviceName, AdviceDefinition.BEFORE_ADVICE, aspectName, aspectClassName,
                 expression, method, methodIndex, aspectDef
         );
         aspectDef.addBeforeAdvice(adviceDef);
@@ -113,7 +113,7 @@ public class DefinitionParserHelper {
             final int methodIndex,
             final AspectDefinition aspectDef) {
         AdviceDefinition adviceDef = createAdviceDefinition(
-                adviceName, aspectName, aspectClassName,
+                adviceName, AdviceDefinition.AFTER_ADVICE, aspectName, aspectClassName,
                 expression, method, methodIndex, aspectDef
         );
         aspectDef.addAfterAdvice(adviceDef);
@@ -178,6 +178,7 @@ public class DefinitionParserHelper {
      * Creates a new advice definition.
      *
      * @param adviceName      the advice name
+     * @param adviceType      the advice type
      * @param aspectName      the aspect name
      * @param aspectClassName the aspect class name
      * @param expression      the pointcut expression
@@ -188,6 +189,7 @@ public class DefinitionParserHelper {
      */
     public static AdviceDefinition createAdviceDefinition(
             final String adviceName,
+            final String adviceType,
             final String aspectName,
             final String aspectClassName,
             final String expression,
@@ -198,7 +200,7 @@ public class DefinitionParserHelper {
                 createExpression(expression);
 
         final AdviceDefinition adviceDef = new AdviceDefinition(
-                adviceName, aspectName, aspectClassName,
+                adviceName, adviceType, aspectName, aspectClassName,
                 expr, method, methodIndex, aspectDef
         );
         return adviceDef;

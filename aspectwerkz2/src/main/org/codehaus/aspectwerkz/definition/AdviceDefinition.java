@@ -18,10 +18,19 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
  */
 public class AdviceDefinition {
 
+    public static final String AROUND_ADVICE = "AROUND_ADVICE";
+    public static final String BEFORE_ADVICE = "BEFORE_ADVICE";
+    public static final String AFTER_ADVICE = "AFTER_ADVICE";
+
     /**
      * The name of the advice.
      */
     private String m_name;
+
+    /**
+     * The type of the advice.
+     */
+    private String m_type;
 
     /**
      * The aspect class name.
@@ -62,6 +71,7 @@ public class AdviceDefinition {
      * Creates a new advice meta-data instance.
      *
      * @param name            the name of the expression
+     * @param type            the type of the advice
      * @param aspectName      the name of the aspect
      * @param aspectClassName the class name of the aspect
      * @param expression      the expression
@@ -70,6 +80,7 @@ public class AdviceDefinition {
      */
     public AdviceDefinition(
             final String name,
+            final String type,
             final String aspectName,
             final String aspectClassName,
             final Expression expression,
@@ -78,6 +89,9 @@ public class AdviceDefinition {
             final AspectDefinition aspectDef) {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
+        }
+        if (!type.equals(AROUND_ADVICE) && !type.equals(BEFORE_ADVICE) && !type.equals(AFTER_ADVICE)) {
+            throw new IllegalArgumentException("illegal advice type");
         }
         if (aspectName == null) {
             throw new IllegalArgumentException("aspect name can not be null");
@@ -99,6 +113,7 @@ public class AdviceDefinition {
         }
 
         m_name = name;
+        m_type = type;
         m_aspectName = aspectName;
         m_aspectClassName = aspectClassName;
         m_expression = expression;
@@ -197,9 +212,16 @@ public class AdviceDefinition {
         m_attribute = attribute;
     }
 
-    public AdviceDefinition copyAt(Expression expression) {
-        AdviceDefinition def = new AdviceDefinition(
+    /**
+     * Deep copy of the definition.
+     *
+     * @param expression
+     * @return
+     */
+    public AdviceDefinition copyAt(final Expression expression) {
+        return new AdviceDefinition(
                 getName(),
+                getType(),
                 getAspectName(),
                 getAspectClassName(),
                 expression,
@@ -207,7 +229,18 @@ public class AdviceDefinition {
                 getMethodIndex(),
                 m_aspectDefinition
         );
-        return def;
+    }
+
+    /**
+     * Returns the advice type, one of:
+     * AdviceDefinition.AROUND_ADVICE,
+     * AdviceDefinition.BEFORE_ADVICE or
+     * AdviceDefinition.AFTER_ADVICE
+     *
+     * @return the advice type
+     */
+    private String getType() {
+        return m_type;
     }
 
     /**

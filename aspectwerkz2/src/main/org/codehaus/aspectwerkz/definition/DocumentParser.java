@@ -129,8 +129,7 @@ public class DocumentParser {
 
         String uuid = systemElement.attributeValue("id");
         if (uuid == null || uuid.equals("")) {
-            // TODO: log a warning "no id specified in the definition, using default (AspectWerkz.DEFAULT_SYSTEM)"
-            uuid = System.DEFAULT_SYSTEM;
+            throw new DefinitionException("system UUID must be specified");
         }
         definition.setUuid(uuid);
 
