@@ -56,7 +56,7 @@ public class PointcutManager {
     /**
      * The UUID for the system.
      */
-    protected final String m_uuid;
+    //protected final String m_uuid;
 
     /**
      * Creates a new aspect.
@@ -64,8 +64,8 @@ public class PointcutManager {
      * @param uuid the UUID for the AspectWerkz system
      * @param name the name of the aspect
      */
-    public PointcutManager(final String uuid, final String name) {
-        this(uuid, name, DeploymentModel.PER_JVM);
+    public PointcutManager(/*final String uuid, */final String name) {
+        this(/*uuid, */name, DeploymentModel.PER_JVM);
     }
 
     /**
@@ -75,17 +75,17 @@ public class PointcutManager {
      * @param name            the name of the aspect
      * @param deploymentModel the deployment model for the aspect
      */
-    public PointcutManager(final String uuid, final String name, final int deploymentModel) {
-        if (uuid == null) {
-            throw new IllegalArgumentException("uuid can not be null");
-        }
+    public PointcutManager(/*final String uuid, */final String name, final int deploymentModel) {
+//        if (uuid == null) {
+//            throw new IllegalArgumentException("uuid can not be null");
+//        }
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
         }
         if (deploymentModel < 0) {
             throw new IllegalArgumentException(deploymentModel + " is not a valid deployement model type");
         }
-        m_uuid = uuid;
+//        m_uuid = uuid;
         m_name = name;
         m_deploymentModel = deploymentModel;
     }
@@ -238,6 +238,7 @@ public class PointcutManager {
         for (Iterator it = m_pointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
             if (pointcut.getExpression().match(classMetaData, memberMetaData, pointcutType)) {
+                //System.out.println("MATCH " + pointcut.getExpression().getName() + " : " + pointcut.getExpression());//AVAOPC ALEX
                 pointcutList.add(pointcut);
             }
         }
@@ -358,7 +359,7 @@ public class PointcutManager {
                + super.toString()
                + ": "
                + ',' + m_name
-               + ',' + m_uuid
+               //+ ',' + m_uuid
                + ',' + m_deploymentModel
                + ',' + m_introductions
 //               + ',' + m_methodToCFlowMethodsMap
@@ -369,7 +370,7 @@ public class PointcutManager {
         int result = 17;
         result = 37 * result + m_deploymentModel;
         result = 37 * result + hashCodeOrZeroIfNull(m_name);
-        result = 37 * result + hashCodeOrZeroIfNull(m_uuid);
+        //result = 37 * result + hashCodeOrZeroIfNull(m_uuid);
         result = 37 * result + hashCodeOrZeroIfNull(m_introductions);
         result = 37 * result + hashCodeOrZeroIfNull(m_pointcuts);
 //        result = 37 * result + hashCodeOrZeroIfNull(m_methodToCFlowMethodsMap);
@@ -393,7 +394,7 @@ public class PointcutManager {
         final PointcutManager obj = (PointcutManager)o;
         return areEqualsOrBothNull(obj.m_name, this.m_name)
                && (obj.m_deploymentModel == this.m_deploymentModel)
-               && areEqualsOrBothNull(obj.m_uuid, this.m_uuid)
+               //&& areEqualsOrBothNull(obj.m_uuid, this.m_uuid)
                && areEqualsOrBothNull(obj.m_introductions, this.m_introductions)
                && areEqualsOrBothNull(obj.m_pointcuts, this.m_pointcuts);
 //               && areEqualsOrBothNull(obj.m_methodToCFlowMethodsMap, this.m_methodToCFlowMethodsMap);

@@ -7,52 +7,79 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
-import java.util.HashMap;
 import java.util.Map;
-
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import java.util.WeakHashMap;
+import java.util.List;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
- * Loads the different types of system. Caches the system, mapped to its id.
+ * Stores the ISystem on a per ClassLoader basis.<p/>
+ * The <code>getSystem</code> method checks for system initialisation.
  * <p/>
- * TODO: put this class in the same package as the System impl. and set the constructor to package private
+ * TODO: AOPCSystem can be wrapped behind a factory on ISystem (use case ?)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class SystemLoader {
 
     /**
-     * Holds references to all the systems defined. Maps the UUID to a matching system instance.
+     * Holds references to all the systems defined. Maps the ClassLoader to a matching system instance.
      */
-    private static final Map s_systems = new HashMap();
+    private static final Map s_systems = new WeakHashMap();
 
     /**
-     * Returns the system with a specific UUID.
-     * <p/>
+     * Returns the System for a specific ClassLoader. If the system is not initialized, register the ClassLoader
+     * hierarchy and all the definitions to initialize the system.
      *
-     * @param uuid the UUID for the system
-     * @return the system for the UUID specified
-     * @TODO: is this caching a bottleneck, since it req. the method to be synchronized? Is there a better impl.?
+     * @param loader the ClassLoader
+     * @return the System instance for this ClassLoader
      */
-    public synchronized static System getSystem(final String uuid) {
-        if (uuid == null) {
-            throw new IllegalArgumentException("uuid can not be null");
+    public synchronized static ISystem getSystem(ClassLoader loader) {
+        ISystem system = (ISystem)s_systems.get(loader);
+        if (system == null) {
+            SystemDefinitionContainer.registerClassLoader(loader);
+            List defs = SystemDefinitionContainer.getHierarchicalDefs(loader);
+            system = new AOPCSystem(loader, defs);
+            s_systems.put(loader, system);
         }
-        try {
-            System system = (System)s_systems.get(uuid);
-            if (system == null) {
-                final SystemDefinition definition = DefinitionLoader.getDefinition(
-                        ContextClassLoader.getLoader(), uuid
-                );
-                system = new System(uuid, definition);
-                s_systems.put(uuid, system);
-            }
-            return system;
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
+        return system;
+    }
+
+    /**
+     * Returns the System for a specific instance. The instance class ClassLoader is queried.
+     * TODO: avoid bootCL lookup
+     *
+     * @param instance
+     * @return the System instance for the instance class ClassLoader
+     */
+    public static ISystem getSystem(Object instance) {
+        return getSystem(instance.getClass().getClassLoader());
+
+    }
+
+    /**
+     * Returns the System for a specific class. The class ClassLoader is queried.
+     * TODO: avoid bootCL lookup
+     *
+     * @param klass
+     * @return the System instance for the class ClassLoader
+     */
+    public static ISystem getSystem(Class klass) {
+        return getSystem(klass.getClassLoader());
+    }
+
+
+//    public synchronized static ISystem getSystem(String uuid) {
+//        // called by introduced METHODS + JIT
+//        // AVAOPC // should be kicked out TODO
+//        System.err.println("\n** WARN SystemLoader.getSystem" + uuid+"\n");
+//        (new Exception()).printStackTrace();
+//        ClassLoader loader = ContextClassLoader.getLoader();
+//        return getSystem(loader);//??
+//    }
+
+    private SystemLoader() {
     }
 }

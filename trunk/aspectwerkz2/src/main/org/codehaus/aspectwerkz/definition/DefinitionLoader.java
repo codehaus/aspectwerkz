@@ -10,9 +10,11 @@ package org.codehaus.aspectwerkz.definition;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
@@ -233,4 +235,33 @@ public class DefinitionLoader {
         }
         return XmlParser.getAspectClassNames(new File(definitionFileName));
     }
+
+    public static List getDefaultDefinition(ClassLoader loader) {
+        if (DEFINITION_FILE != null) {
+            File file = new File(DEFINITION_FILE);
+            if (file.canRead()) {
+                try {
+                    return XmlParser.parseNoCache(loader, file.toURL());
+                } catch (MalformedURLException e) {
+                    System.err.println("<WARN> Cannot read -D"+DEFINITION_FILE);
+                }
+            } else {
+                System.err.println("<WARN> Cannot read -D"+DEFINITION_FILE);
+            }
+        }
+        return new ArrayList();
+    }
+
+    public static List getDefaultDefinitionAspectNames() {
+        if (DEFINITION_FILE != null) {
+            File file = new File(DEFINITION_FILE);
+            if (file.canRead()) {
+                return XmlParser.getAspectClassNames(file);
+            } else {
+                System.err.println("<WARN> Cannot read -D"+DEFINITION_FILE);
+            }
+        }
+        return new ArrayList();
+    }
+
 }

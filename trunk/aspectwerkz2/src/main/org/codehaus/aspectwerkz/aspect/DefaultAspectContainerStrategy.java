@@ -380,6 +380,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
             throw new WrappedRuntimeException(e);
         }
         catch (InvocationTargetException e) {
+            e.printStackTrace();
             throw new WrappedRuntimeException(e.getTargetException());
         }
     }

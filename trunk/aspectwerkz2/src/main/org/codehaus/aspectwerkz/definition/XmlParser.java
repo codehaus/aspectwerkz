@@ -61,14 +61,23 @@ public class XmlParser {
             throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
         }
         try {
-            Document document = createDocument(definitionFile.toURL());
-            return DocumentParser.parseAspectClassNames(document);
+            return getAspectClassNames(definitionFile.toURL());
         }
         catch (MalformedURLException e) {
             throw new DefinitionException(definitionFile + " does not exist");
         }
+    }
+
+    public static List getAspectClassNames(final URL definitionURL) {
+        if (definitionURL == null) {
+            throw new IllegalArgumentException("definition file can not be null");
+        }
+        try {
+            Document document = createDocument(definitionURL);
+            return DocumentParser.parseAspectClassNames(document);
+        }
         catch (DocumentException e) {
-            throw new DefinitionException("XML definition file <" + definitionFile + "> has errors: " + e.toString());
+            throw new DefinitionException("XML definition file <" + definitionURL + "> has errors: " + e.toString());
         }
     }
 

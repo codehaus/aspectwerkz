@@ -94,7 +94,6 @@ public class PointcutExpressionTest extends WeavedTestCase implements Loggable {
 
     public PointcutExpressionTest(String name) {
         super(name);
-        SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

@@ -24,6 +24,8 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import gnu.trove.TObjectIntHashMap;
 
 /**
@@ -53,7 +55,7 @@ public class MethodExecutionTransformer implements Transformer {
      * Creates a new instance of the transformer.
      */
     public MethodExecutionTransformer() {
-        m_definitions = DefinitionLoader.getDefinitions();
+        //m_definitions = DefinitionLoader.getDefinitions();
     }
 
     /**
@@ -63,14 +65,16 @@ public class MethodExecutionTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws Exception {
-        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());
+        m_definitions = SystemDefinitionContainer.getDefinitionsContext();
+
+        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); // TODO not thread safe
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
             if (classFilter(definition, classMetaData, ctClass)) {
-                return;
+                continue;//AVAOPC
             }
 
             final CtMethod[] methods = ctClass.getDeclaredMethods();

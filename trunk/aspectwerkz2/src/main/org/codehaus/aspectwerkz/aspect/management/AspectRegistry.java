@@ -46,6 +46,8 @@ import org.codehaus.aspectwerkz.util.Strings;
  * Stores the aspects, advices, pointcuts etc. Manages the method, advice and aspect indexing.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * 
  * @TODO Use hashes, aspect=>hashcode for class advice=>hashcode for method signature
  * @TODO Store references to all join points that uses advices from a certain aspect [aspectKey=>joinPoints]
  * @TODO Map all aspects to a key, meaning have a key that maps to a data structure that contains full info about the
@@ -54,9 +56,9 @@ import org.codehaus.aspectwerkz.util.Strings;
 public class AspectRegistry {
 
     /**
-     * The UUID for the system.
+     * The AspectManager for the system.
      */
-    private final String m_uuid;
+    private final AspectManager m_aspectManager;
 
     /**
      * The definition.
@@ -98,27 +100,27 @@ public class AspectRegistry {
     /**
      * Holds references to the methods to the advised classes in the system.
      */
-    private final Map m_methods = new HashMap();
+    private final static Map s_methods = new HashMap();//WEAK
 
     /**
      * Holds references to the fields to the advised classes in the system.
      */
-    private final Map m_fields = new HashMap();
+    private final static Map s_fields = new HashMap();
 
     /**
      * Holds references to all the the advised constructors in the system, maps the target Class to a sorted list of all
      * the advised constructors in the class.
      */
-    private final Map m_constructors = new HashMap();
+    private final static Map s_constructors = new HashMap();
 
     /**
      * Creates a new aspect registry.
      *
-     * @param uuid       the system UUID
+     * @param aspectManager the system aspectManager
      * @param definition the system definition
      */
-    public AspectRegistry(final String uuid, final SystemDefinition definition) {
-        m_uuid = uuid;
+    public AspectRegistry(final AspectManager aspectManager, final SystemDefinition definition) {
+        m_aspectManager = aspectManager;
         m_definition = definition;
     }
 
@@ -132,7 +134,7 @@ public class AspectRegistry {
                 return;
             }
             m_initialized = true;
-            StartupManager.initializeSystem(m_uuid, m_definition);
+            StartupManager.initializeSystem(m_aspectManager, m_definition);
         }
     }
 
@@ -156,9 +158,13 @@ public class AspectRegistry {
                     synchronized (m_mixins) {
                         synchronized (m_pointcutManagerMap) {
                             try {
+//                                System.out.println("AspectRegistry.register "
+//                                    + aspect.getCrossCuttingInfo().getName() + " "
+//                                    + this.m_aspectManager.getUuid() + " "
+//                                    + this
+//                                );
                                 CrossCuttingInfo crossCuttingInfo = container.getCrossCuttingInfo();
-
-                                m_pointcutManagerMap.put(crossCuttingInfo.getName(), pointcutManager);
+                                m_pointcutManagerMap.put(crossCuttingInfo.getName(), pointcutManager);//AVAOPC what is this name as a key here
 
                                 // aspects
                                 final int indexAspect = m_aspectContainers.length + 1;
@@ -176,10 +182,19 @@ public class AspectRegistry {
                                 List advices = crossCuttingInfo.getAspectDefinition().getAllAdvices();
                                 for (Iterator it = advices.iterator(); it.hasNext();) {
                                     final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
+                                    IndexTuple tuple = new IndexTuple(indexAspect, adviceDef.getMethodIndex(), m_aspectManager.getUuid(), m_aspectManager.getIndex());
+                                    //prefix AdviceName with AspectName to allow AspectReuse
                                     m_adviceIndexes.put(
-                                            adviceDef.getName(),
-                                            new IndexTuple(indexAspect, adviceDef.getMethodIndex())
+                                            crossCuttingInfo.getName()+"/"+adviceDef.getName(),
+                                            tuple
                                     );
+//                                    System.out.println("IndexTuple = "+ m_aspectManager.getUuid() +
+//                                            ", " + aspect.getCrossCuttingInfo().getName() +
+//                                            ", " + adviceDef.getName() +
+//                                            ", "+indexAspect +
+//                                            ", "+adviceDef.getMethodIndex()+
+//                                            ", "+tuple.toString()
+//                                    );
                                 }
 
                                 // mixins
@@ -543,14 +558,14 @@ public class AspectRegistry {
      * @param methodHash the method hash
      * @return the method tuple
      */
-    public MethodTuple getMethodTuple(final Class klass, final int methodHash) {
+    public static MethodTuple getMethodTuple(final Class klass, final int methodHash) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
 
         try {
             // create the method repository lazily
-            if (!m_methods.containsKey(klass)) {
+            if (!s_methods.containsKey(klass)) {
                 createMethodRepository(klass);
             }
         }
@@ -560,16 +575,10 @@ public class AspectRegistry {
 
         MethodTuple methodTuple;
         try {
-            methodTuple = (MethodTuple)((TIntObjectHashMap)m_methods.get(klass)).get(methodHash);
+            methodTuple = (MethodTuple)((TIntObjectHashMap)s_methods.get(klass)).get(methodHash);
         }
         catch (Throwable e1) {
-            initialize();
-            try {
-                methodTuple = (MethodTuple)((TIntObjectHashMap)m_methods.get(klass)).get(methodHash);
-            }
-            catch (Exception e) {
-                throw new WrappedRuntimeException(e);
-            }
+            throw new WrappedRuntimeException(e1);
         }
         return methodTuple;
     }
@@ -581,14 +590,14 @@ public class AspectRegistry {
      * @param constructorHash the constructor hash
      * @return the constructor
      */
-    public ConstructorTuple getConstructorTuple(final Class klass, final int constructorHash) {
+    public static ConstructorTuple getConstructorTuple(final Class klass, final int constructorHash) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
 
         try {
             // create the constructor repository lazily
-            if (!m_constructors.containsKey(klass)) {
+            if (!s_constructors.containsKey(klass)) {
                 createConstructorRepository(klass);
             }
         }
@@ -598,17 +607,10 @@ public class AspectRegistry {
 
         ConstructorTuple constructorTuple;
         try {
-            constructorTuple = (ConstructorTuple)((TIntObjectHashMap)m_constructors.get(klass)).get(constructorHash);
+            constructorTuple = (ConstructorTuple)((TIntObjectHashMap)s_constructors.get(klass)).get(constructorHash);
         }
         catch (Throwable e1) {
-            initialize();
-            try {
-                constructorTuple =
-                (ConstructorTuple)((TIntObjectHashMap)m_constructors.get(klass)).get(constructorHash);
-            }
-            catch (Exception e) {
-                throw new WrappedRuntimeException(e);
-            }
+            throw new WrappedRuntimeException(e1);
         }
         return constructorTuple;
     }
@@ -620,14 +622,14 @@ public class AspectRegistry {
      * @param fieldHash the method hash
      * @return the method tuple
      */
-    public Field getField(final Class klass, final int fieldHash) {
+    public static Field getField(final Class klass, final int fieldHash) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
 
         try {
             // create the fields repository lazily
-            if (!m_fields.containsKey(klass)) {
+            if (!s_fields.containsKey(klass)) {
                 createFieldRepository(klass);
             }
         }
@@ -637,16 +639,10 @@ public class AspectRegistry {
 
         Field field;
         try {
-            field = (Field)((TIntObjectHashMap)m_fields.get(klass)).get(fieldHash);
+            field = (Field)((TIntObjectHashMap)s_fields.get(klass)).get(fieldHash);
         }
         catch (Throwable e1) {
-            initialize();
-            try {
-                field = (Field)((TIntObjectHashMap)m_fields.get(klass)).get(fieldHash);
-            }
-            catch (Exception e) {
-                throw new WrappedRuntimeException(e);
-            }
+            throw new WrappedRuntimeException(e1);
         }
         return field;
     }
@@ -656,7 +652,7 @@ public class AspectRegistry {
      *
      * @param klass the class
      */
-    protected void createMethodRepository(final Class klass) {
+    protected static void createMethodRepository(final Class klass) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
@@ -704,8 +700,8 @@ public class AspectRegistry {
             }
         }
 
-        synchronized (m_methods) {
-            m_methods.put(klass, methodMap);
+        synchronized (s_methods) {
+            s_methods.put(klass, methodMap);
         }
     }
 
@@ -714,7 +710,7 @@ public class AspectRegistry {
      *
      * @param klass the class
      */
-    protected void createConstructorRepository(final Class klass) {
+    protected static void createConstructorRepository(final Class klass) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
@@ -784,8 +780,8 @@ public class AspectRegistry {
             constructorMap.put(constructorHash, constructorTuple);
         }
 
-        synchronized (m_constructors) {
-            m_constructors.put(klass, constructorMap);
+        synchronized (s_constructors) {
+            s_constructors.put(klass, constructorMap);
         }
     }
 
@@ -794,7 +790,7 @@ public class AspectRegistry {
      *
      * @param klass the class
      */
-    protected void createFieldRepository(final Class klass) {
+    protected static void createFieldRepository(final Class klass) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
@@ -808,8 +804,8 @@ public class AspectRegistry {
             fieldMap.put(fieldHash, field);
         }
 
-        synchronized (m_fields) {
-            m_fields.put(klass, fieldMap);
+        synchronized (s_fields) {
+            s_fields.put(klass, fieldMap);
         }
     }
 }

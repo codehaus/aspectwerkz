@@ -8,11 +8,12 @@
 package test.mixindeployment;
 
 import junit.framework.TestCase;
+import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class IntroductionDeploymentTest extends TestCase {
+public class IntroductionDeploymentTest extends WeavedTestCase {
 
     public class TargetA {
     };
@@ -27,6 +28,9 @@ public class IntroductionDeploymentTest extends TestCase {
         TargetA a1 = new TargetA();
         TargetA a2 = new TargetA();
         TargetB b = new TargetB();
+
+        Marker m1 = (Marker)a1;
+        Object o1 = m1.getTargetInstance();
 
         assertEquals(a1, ((Marker)a1).getTargetInstance());
 

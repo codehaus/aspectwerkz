@@ -63,7 +63,7 @@ public class MethodCallUnTransformer implements Transformer {
 
             // filter not RuW ready classes
             if (classFilter(definition, classMetaData, ctClass)) {
-                return;
+                continue;
             }
 
             ctClass.instrument(

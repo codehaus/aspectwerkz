@@ -161,7 +161,6 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
     public CallerSideAdviceTest(String name) {
         super(name);
-        SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

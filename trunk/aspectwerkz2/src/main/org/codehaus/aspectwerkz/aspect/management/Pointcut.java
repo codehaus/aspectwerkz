@@ -19,6 +19,7 @@ import java.util.Collections;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.NameIndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.AOPCSystem;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
@@ -27,7 +28,10 @@ import org.codehaus.aspectwerkz.definition.PointcutDefinition;
  * Could matches one or many as long at it is well defined.<br/>
  * Stores the advices for the specific pointcut.
  *
+ * TODO change addXXAdvice to allow 'aspectName, adviceName' params
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class Pointcut implements Serializable {
 
@@ -72,24 +76,21 @@ public class Pointcut implements Serializable {
     protected IndexTuple[] m_afterAdviceIndexes = new IndexTuple[0];
 
     /**
-     * The UUID for the AspectWerkz system.
+     * The AspectManager for the AspectWerkz system.
      */
-    protected String m_uuid;
+    protected final AspectManager m_aspectManager;
 
     /**
      * Creates a new pointcut.
      *
-     * @param uuid       the UUID for the AspectWerkz system
+     * @param aspectManager the aspectManager for the AspectWerkz system
      * @param expression the pattern for the pointcut
      */
-    public Pointcut(final String uuid, final Expression expression) {
-        if (uuid == null) {
-            throw new IllegalArgumentException("uuid can not be null");
-        }
+    public Pointcut(final AspectManager aspectManager, final Expression expression) {
         if (expression == null) {
             throw new IllegalArgumentException("expression be null");
         }
-        m_uuid = uuid;
+        m_aspectManager = aspectManager;
         m_expression = expression;
     }
 
@@ -123,8 +124,7 @@ public class Pointcut implements Serializable {
                 // update the indexes
                 m_aroundAdviceIndexes = new IndexTuple[m_aroundAdviceNames.length];
                 for (int i = 0, j = m_aroundAdviceNames.length; i < j; i++) {
-                    m_aroundAdviceIndexes[i] = SystemLoader.getSystem(m_uuid).
-                            getAspectManager().getAdviceIndexFor(m_aroundAdviceNames[i]);
+                    m_aroundAdviceIndexes[i] = m_aspectManager.getAdviceIndexFor(m_aroundAdviceNames[i]);
                 }
             }
         }
@@ -152,8 +152,7 @@ public class Pointcut implements Serializable {
                 // update the indexes
                 m_beforeAdviceIndexes = new IndexTuple[m_beforeAdviceNames.length];
                 for (int i = 0, j = m_beforeAdviceNames.length; i < j; i++) {
-                    m_beforeAdviceIndexes[i] = SystemLoader.getSystem(m_uuid).
-                            getAspectManager().getAdviceIndexFor(m_beforeAdviceNames[i]);
+                    m_beforeAdviceIndexes[i] = m_aspectManager.getAdviceIndexFor(m_beforeAdviceNames[i]);
                 }
             }
         }
@@ -181,8 +180,7 @@ public class Pointcut implements Serializable {
                 // update the indexes
                 m_afterAdviceIndexes = new IndexTuple[m_afterAdviceNames.length];
                 for (int i = 0, j = m_afterAdviceNames.length; i < j; i++) {
-                    m_afterAdviceIndexes[i] = SystemLoader.getSystem(m_uuid).
-                            getAspectManager().getAdviceIndexFor(m_afterAdviceNames[i]);
+                    m_afterAdviceIndexes[i] = m_aspectManager.getAdviceIndexFor(m_afterAdviceNames[i]);
                 }
             }
         }
@@ -604,6 +602,7 @@ public class Pointcut implements Serializable {
 
     /**
      * Provides custom deserialization.
+     * TODO needs aspectManager recovery
      *
      * @param stream the object input stream containing the serialized object
      * @throws java.lang.Exception in case of failure
@@ -618,7 +617,6 @@ public class Pointcut implements Serializable {
         m_beforeAdviceIndexes = (IndexTuple[])fields.get("m_beforeAdviceIndexes", null);
         m_afterAdviceNames = (String[])fields.get("m_afterAdviceNames", null);
         m_afterAdviceIndexes = (IndexTuple[])fields.get("m_afterAdviceIndexes", null);
-        m_uuid = (String)fields.get("m_uuid", null);
     }
 }
 

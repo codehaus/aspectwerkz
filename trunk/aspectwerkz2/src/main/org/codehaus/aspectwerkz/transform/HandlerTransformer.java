@@ -64,7 +64,7 @@ public class HandlerTransformer implements Transformer {
             final ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
 
             if (classFilter(definition, classMetaData, ctClass)) {
-                return;
+                continue;
             }
 
             ctClass.instrument(

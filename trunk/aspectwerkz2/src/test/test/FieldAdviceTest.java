@@ -301,7 +301,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public FieldAdviceTest(String name) {
         super(name);
-        SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

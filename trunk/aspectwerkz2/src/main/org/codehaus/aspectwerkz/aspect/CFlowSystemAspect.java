@@ -20,7 +20,6 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.*;
-import org.codehaus.aspectwerkz.System;
 
 /**
  * Manages the cflow pointcuts.
@@ -68,7 +67,7 @@ public class CFlowSystemAspect {
     /**
      * Reference to the system.
      */
-    private final System m_system;
+    private ISystem m_system = null;
 
     /**
      * The cross-cutting info.
@@ -163,5 +162,9 @@ public class CFlowSystemAspect {
                 signature.getParameterTypes(),
                 signature.getReturnType()
         );
+    }
+
+    public void postCreate() {
+        ;
     }
 }

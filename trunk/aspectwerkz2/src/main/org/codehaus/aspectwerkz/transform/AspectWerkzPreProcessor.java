@@ -12,6 +12,9 @@ import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.metadata.MetaDataMaker;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -98,6 +101,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      */
     private boolean m_initialized = false;
 
+
+    private SystemDefinitionContainer m_aopc_defs = new SystemDefinitionContainer();
+
     /**
      * Initializes the transformer stack.
      *
@@ -109,16 +115,16 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         // CAUTION: ORDER IS IMPORTANT!
         m_stack = new ArrayList();
         m_stack.add(new PrepareAdvisedClassTransformer());
-        m_stack.add(new MethodCallUnTransformer());
+//        m_stack.add(new MethodCallUnTransformer());
         m_stack.add(new FieldSetGetTransformer());
         m_stack.add(new MethodCallTransformer());
         m_stack.add(new ConstructorCallTransformer());
         m_stack.add(new MethodExecutionTransformer());
         m_stack.add(new ConstructorExecutionTransformer());
-        m_stack.add(new HandlerTransformer());
+//        m_stack.add(new HandlerTransformer());
         m_stack.add(new AddInterfaceTransformer());
         m_stack.add(new AddImplementationTransformer());
-        m_stack.add(new PrepareTransformer());
+//AVAOPC        m_stack.add(new PrepareTransformer());
 
         m_initialized = true;
     }
@@ -141,6 +147,26 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (VERBOSE) {
             log(loader.toString() + ':' + className + '[' + Thread.currentThread().getName() + ']');
         }
+
+        // AOPC
+        m_aopc_defs.registerClassLoader(loader);
+        List preAspectNamesContext = SystemDefinitionContainer.getAspectNamesContext();
+        List preDefintionsContext = SystemDefinitionContainer.getAspectNamesContext();
+        try {
+            SystemDefinitionContainer.setAspectNamesContext(m_aopc_defs.getHierarchicalAspectNames(loader));
+            SystemDefinitionContainer.setDefinitionsContext(m_aopc_defs.getHierarchicalDefs(loader));
+
+            return _preProcess(name, bytecode, loader);
+        } finally {
+            SystemDefinitionContainer.setAspectNamesContext(preAspectNamesContext);
+            SystemDefinitionContainer.setDefinitionsContext(preDefintionsContext);
+        }
+    }
+
+
+
+    public byte[] _preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
+        final String className = name.replace('/', '.'); // needed for JRockit (as well as all in all TFs)
 
         // prepare Klass wrapper
         // TODO lightweight since BCEL not used anymore
@@ -192,6 +218,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             catch (Exception e) {
                 e.printStackTrace();
             }
+            dumpForce(className, klass);
         }
 
         // handle the prepared Class cache for further runtime weaving
@@ -307,4 +334,17 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             }
         }
     }
+
+    public static void dumpForce(final String className, final Klass klass) {
+                try {
+                    klass.getCtClass().getClassPool().writeFile(
+                            className, "_dump/force/"
+                    );
+                }
+                catch (Exception e) {
+                    log("failed to dump " + className);
+                    e.printStackTrace();
+                }
+    }
+
 }

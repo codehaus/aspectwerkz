@@ -8,13 +8,19 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.System;
+import org.codehaus.aspectwerkz.ISystem;
+import org.codehaus.aspectwerkz.AOPCSystem;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
+import org.codehaus.aspectwerkz.aspect.AspectContainer;
+
+import java.lang.reflect.Method;
 
 /**
  * Handles the execution of the around advices.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AroundAdviceExecutor {
 
@@ -33,12 +39,12 @@ public class AroundAdviceExecutor {
     /**
      * The aspect system.
      */
-    private final System m_system;
+    private final ISystem m_system;
 
     /**
      * The aspect manager.
      */
-    private final AspectManager m_aspectManager;
+    private final AspectManager[] m_aspectManagers;
 
     /**
      * The join point type.
@@ -54,12 +60,23 @@ public class AroundAdviceExecutor {
      */
     public AroundAdviceExecutor(
             final IndexTuple[] adviceIndexes,
-            final System system,
+            final ISystem system,
             final int joinPointType) {
         m_adviceIndexes = adviceIndexes;
         m_system = system;
-        m_aspectManager = m_system.getAspectManager();
+        m_aspectManagers = m_system.getAspectManagers();
         m_joinPointType = joinPointType;
+
+//        System.out.println("AroundAdviceExecutor.new");
+//        for (int i = 0; i < m_adviceIndexes.length; i++) {
+//            IndexTuple index = m_adviceIndexes[i];
+//            System.out.println("  m_adviceIndex = " + index);
+//
+//            AspectManager am = m_aspectManagers[index.getAspectManagerIndex()];
+//            AspectContainer aspectC = am.getAspectContainer(index.getAspectIndex());
+//            Method advice = aspectC.getAdvice(index.getMethodIndex());
+//            System.out.println("  advice = " + am.getUuid()+":"+aspectC.getCrossCuttingInfo().getName()+":"+advice);
+//        }
     }
 
     /**
@@ -69,10 +86,12 @@ public class AroundAdviceExecutor {
      * @return the result from the next advice in the chain or the invocation of the target method
      */
     public Object proceed(final JoinPointBase joinPoint) throws Throwable {
+        //System.out.println("AroundAdviceExecutor.proceed " + joinPoint);
         if (!joinPoint.isInCflow()) {
             return JoinPointBase.invokeJoinPoint(joinPoint, m_joinPointType);
         }
-
+        //System.out.println("m_stackIndex = " + m_stackIndex);
+        //System.out.println("m_currentAdviceIndex = " + m_currentAdviceIndex);
         m_stackIndex++;
         try {
             if (m_stackIndex == 0) {
@@ -95,8 +114,9 @@ public class AroundAdviceExecutor {
                 m_currentAdviceIndex++;
                 try {
                     IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
-                    result = m_aspectManager.getAspectContainer(index.getAspectIndex()).
-                            invokeAdvice(index.getMethodIndex(), joinPoint);
+                    result = m_aspectManagers[index.getAspectManagerIndex()]
+                                .getAspectContainer(index.getAspectIndex())
+                                .invokeAdvice(index.getMethodIndex(), joinPoint);
                 }
                 finally {
                     m_currentAdviceIndex--;

@@ -44,7 +44,6 @@ public class HierachicalPatternTest extends TestCase implements Loggable, DummyI
 
     public HierachicalPatternTest(String name) {
         super(name);
-        SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

@@ -41,8 +41,8 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.CallerSideAdviceTest.class);
 
         suite.addTestSuite(test.CFlowTest.class);
-        suite.addTestSuite(test.IntroductionTest.class);
-//        suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
+        //AVAOPC//suite.addTestSuite(test.IntroductionTest.class);
+        suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
         suite.addTestSuite(test.handler.HandlerTest.class);
         suite.addTestSuite(test.orthogonal.OrthogonalTest.class);
 

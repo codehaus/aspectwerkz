@@ -138,8 +138,8 @@ public class IntroductionTest extends WeavedTestCase {
     public void testReplaceImplementation() {
         assertEquals(
                 "test.aspect.IntroductionTestAspect$MyImpl",
-                SystemLoader.getSystem("tests").
-                getAspectManager().
+                SystemLoader.getSystem(this).
+                getAspectManager("tests").
                 getMixin("test.aspect.IntroductionTestAspect$MyImpl").
                 getImplementationClassName()
         );
@@ -147,8 +147,8 @@ public class IntroductionTest extends WeavedTestCase {
         assertEquals(1, ((Introductions)m_toBeIntroduced).intArg(1));
 
         // swap with an inner class
-        SystemLoader.getSystem("tests").
-                getAspectManager().
+        SystemLoader.getSystem(this).
+                getAspectManager("tests").
                 getMixin("test.aspect.IntroductionTestAspect$MyImpl").
                 swapImplementation("test.aspect.IntroductionTestAspect$MyOtherImpl");
 
@@ -156,8 +156,8 @@ public class IntroductionTest extends WeavedTestCase {
 
         assertEquals(
                 "test.aspect.IntroductionTestAspect$MyOtherImpl",
-                SystemLoader.getSystem("tests").
-                getAspectManager().
+                SystemLoader.getSystem(this).
+                getAspectManager("tests").
                 getMixin("test.aspect.IntroductionTestAspect$MyImpl").
                 getImplementationClassName()
         );
@@ -166,8 +166,8 @@ public class IntroductionTest extends WeavedTestCase {
     public void testReplaceImplementationToAutonomousOne() {
         assertEquals(
                 "test.aspect.IntroductionTestAspect$MyOtherImpl",
-                SystemLoader.getSystem("tests").
-                getAspectManager().
+                SystemLoader.getSystem(this).
+                getAspectManager("tests").
                 getMixin("test.aspect.IntroductionTestAspect$MyImpl").
                 getImplementationClassName()
         );
@@ -175,8 +175,8 @@ public class IntroductionTest extends WeavedTestCase {
         assertEquals(-1, ((Introductions)m_toBeIntroduced).intArg(1));
 
         // swap with an outer class
-        SystemLoader.getSystem("tests").
-                getAspectManager().
+        SystemLoader.getSystem(this).
+                getAspectManager("tests").
                 getMixin("test.aspect.IntroductionTestAspect$MyImpl").
                 swapImplementation("test.aspect.IntroductionTestAspectMyImplReplacement");
 
@@ -184,8 +184,8 @@ public class IntroductionTest extends WeavedTestCase {
 
         assertEquals(
                 "test.aspect.IntroductionTestAspectMyImplReplacement",
-                SystemLoader.getSystem("tests").
-                getAspectManager().
+                SystemLoader.getSystem(this).
+                getAspectManager("tests").
                 getMixin("test.aspect.IntroductionTestAspect$MyImpl").
                 getImplementationClassName()
         );
@@ -202,7 +202,6 @@ public class IntroductionTest extends WeavedTestCase {
     public IntroductionTest(String name) {
         super(name);
         m_toBeIntroduced = new ToBeIntroduced();
-        SystemLoader.getSystem("tests").initialize();
     }
 
     public String ___AW_getUuid() {

@@ -121,7 +121,6 @@ public class ConstructorAdviceTest extends WeavedTestCase {
 
     public ConstructorAdviceTest(String name) {
         super(name);
-        SystemLoader.getSystem("tests").initialize();
     }
 
     public static void logCall(final String wasHere) {

@@ -37,8 +37,8 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
 
         // get the pointcut by name (can also be retrieved by method meta-data)
-        Pointcut pointcut = SystemLoader.getSystem("tests").
-                getAspectManager().
+        Pointcut pointcut = SystemLoader.getSystem(this.getClass()).
+                getAspectManager("tests").
                 getPointcutManager(ASPECT_NAME).
                 getPointcut("pc1 || pc2 || pc3");
 
@@ -66,8 +66,8 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         methodMetaData.setReturnType("void");
         methodMetaData.setExceptionTypes(new String[]{});
 
-        Pointcut methodPointcut = (Pointcut)SystemLoader.getSystem("tests").
-                getAspectManager().
+        Pointcut methodPointcut = (Pointcut)SystemLoader.getSystem(this.getClass()).
+                getAspectManager("tests").
                 getPointcutManager(ASPECT_NAME).
                 getExecutionPointcuts(m_classMetaData, methodMetaData).get(0);
 
@@ -92,8 +92,8 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         methodMetaData.setReturnType("void");
         methodMetaData.setExceptionTypes(new String[]{});
 
-        Pointcut methodPointcut = (Pointcut)SystemLoader.getSystem("tests").
-                getAspectManager().
+        Pointcut methodPointcut = (Pointcut)SystemLoader.getSystem(this).
+                getAspectManager("tests").
                 getPointcutManager(ASPECT_NAME).
                 getExecutionPointcuts(m_classMetaData, methodMetaData).get(0);
 
@@ -119,7 +119,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             assertEquals("before2 invocation after2 ", m_logString);
 
             // create a new advice
-            SystemLoader.getSystem("tests").getAspectManager().createAspect(
+            SystemLoader.getSystem(this).getAspectManager("tests").createAspect(
                     NEW_ASPECT_NAME,
                     NEW_ASPECT_NAME,
                     DeploymentModel.PER_INSTANCE,
@@ -128,22 +128,22 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 
             // test the some stuff for the aspect
             assertNotNull(
-                    SystemLoader.getSystem("tests").
-                    getAspectManager().getPointcutManager(NEW_ASPECT_NAME)
+                    SystemLoader.getSystem(this).
+                    getAspectManager("tests").getPointcutManager(NEW_ASPECT_NAME)
             );
 
             assertEquals(
                     DeploymentModel.PER_INSTANCE,
-                    SystemLoader.getSystem("tests").
-                    getAspectManager().
+                    SystemLoader.getSystem(this).
+                    getAspectManager("tests").
                     getPointcutManager(NEW_ASPECT_NAME).
                     getDeploymentModel()
             );
 
             assertEquals(
                     NEW_ASPECT_NAME,
-                    SystemLoader.getSystem("tests").
-                    getAspectManager().
+                    SystemLoader.getSystem(this).
+                    getAspectManager("tests").
                     getPointcutManager(NEW_ASPECT_NAME).
                     getName()
             );
@@ -156,8 +156,8 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             methodMetaData.setExceptionTypes(new String[]{});
 
             // get an existing pointcut
-            Pointcut methodPointcut = (Pointcut)SystemLoader.getSystem("tests").
-                    getAspectManager().
+            Pointcut methodPointcut = (Pointcut)SystemLoader.getSystem(this).
+                    getAspectManager("tests").
                     getPointcutManager(ASPECT_NAME).
                     getExecutionPointcuts(m_classMetaData, methodMetaData).
                     get(0);
@@ -189,7 +189,6 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 
     public DynamicDeploymentTest(String name) {
         super(name);
-        SystemLoader.getSystem("tests").initialize();
     }
 
     public void log(final String wasHere) {
