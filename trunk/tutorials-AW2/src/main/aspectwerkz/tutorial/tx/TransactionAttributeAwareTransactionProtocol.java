@@ -95,7 +95,7 @@ public class TransactionAttributeAwareTransactionProtocol {
         final MethodSignature sig = (MethodSignature)jp.getSignature();
         final Class declaringType = sig.getDeclaringType();
         final Method method = sig.getMethod();
-        final TransactionAttributeType txType = getTransactionTypeFor(declaringType, method);
+        final TransactionAttributeType txType = getTransactionAttributeTypeFor(declaringType, method);
 
         switch(txType) {
             case REQUIRED:
@@ -224,7 +224,7 @@ public class TransactionAttributeAwareTransactionProtocol {
      * @param method
      * @return the TX type
      */
-    public static TransactionAttributeType getTransactionTypeFor(final Class klass, final Method method) {
+    public static TransactionAttributeType getTransactionAttributeTypeFor(final Class klass, final Method method) {
         TransactionAttribute tx = method.getAnnotation(TransactionAttribute.class);
         if (tx == null) {
             tx = (TransactionAttribute) klass.getAnnotation(TransactionAttribute.class);
