@@ -23,11 +23,22 @@ public class IntroductionTestAspect {
      * @Implements within(test.ToBeIntroduced)
      */
     Serializable serializable;
+    
+    /**
+     * @Implements hasmethod(* *..*.thisMethodNameShouldHopefullyBeUnique())
+     */
+    Serializable otherSerializable;
+    
+    /**
+     * @Implements hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique)
+     */
+    Cloneable cloneable;
 
     /**
      * Here we use an expression
      * 
-     * @Introduce within(test.ToBeIntroduced)
+     * @Introduce within(test.ToBeIntroduced) or 
+     *               hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique)
      */
     public static class MyImpl implements Introductions {
         //TODO: allow naming of mixin instead of innerClass FQN

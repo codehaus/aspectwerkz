@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression;
 
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.expression.ast.ASTAnd;
 import org.codehaus.aspectwerkz.expression.ast.ASTAttribute;
 import org.codehaus.aspectwerkz.expression.ast.ASTCall;
@@ -34,7 +35,8 @@ import org.codehaus.aspectwerkz.expression.ast.ExpressionParserVisitor;
 import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
+import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
 
 /**
  * Checks if the expression has a cflow pointcut.
@@ -164,6 +166,14 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTArgs node, Object data) {
+        return Boolean.TRUE;
+    }
+
+    public Object visit(ASTHasMethod node, Object data) {
+        return Boolean.TRUE;
+    }
+
+    public Object visit(ASTHasField node, Object data) {
         return Boolean.TRUE;
     }
 

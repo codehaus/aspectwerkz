@@ -122,6 +122,14 @@ public class ExpressionContext {
         return m_pointcutType.equals(PointcutType.ATTRIBUTE);
     }
 
+    public boolean hasHasMethodPointcut() {
+        return m_pointcutType.equals(PointcutType.HAS_METHOD);
+    }
+
+    public boolean hasHasFieldPointcut() {
+        return m_pointcutType.equals(PointcutType.HAS_FIELD);
+    }
+
     public boolean hasWithinReflectionInfo() {
         return m_withinReflectionInfo != null;
     }

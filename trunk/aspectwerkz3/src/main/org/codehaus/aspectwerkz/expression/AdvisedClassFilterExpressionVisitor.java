@@ -45,6 +45,8 @@ import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 
 import java.util.List;
 import java.util.Iterator;
+import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
+import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
 
 /**
  * The advised class filter visitor.
@@ -312,6 +314,16 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         return null;
     }
 
+    public Object visit(ASTHasMethod node, Object data) {
+        ExpressionContext context = (ExpressionContext) data;
+        return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+    }
+    
+    public Object visit(ASTHasField node, Object data) {
+        ExpressionContext context = (ExpressionContext) data;
+        return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+    }
+ 
     // ============ Patterns =============
     public Object visit(ASTClassPattern node, Object data) {
         ClassInfo classInfo = (ClassInfo) data;
@@ -420,5 +432,5 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         }
         return true;
     }
-
+  
 }

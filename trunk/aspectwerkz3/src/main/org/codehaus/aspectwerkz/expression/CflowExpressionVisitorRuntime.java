@@ -22,6 +22,8 @@ import org.codehaus.aspectwerkz.expression.ast.ASTWithin;
 import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
+import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
+import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
 
 /**
  * The Cflow expression visitor used at runtime. <p/>This visitor does a parse on a compsosite context, based on the
@@ -112,6 +114,14 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
     }
 
     public Object visit(ASTArgs node, Object data) {
+        return super.visit(node, ((CompositeContext) data).getLocalContext());
+    }
+
+    public Object visit(ASTHasMethod node, Object data) {
+        return super.visit(node, ((CompositeContext) data).getLocalContext());
+    }
+
+    public Object visit(ASTHasField node, Object data) {
         return super.visit(node, ((CompositeContext) data).getLocalContext());
     }
 

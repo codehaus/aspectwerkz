@@ -122,6 +122,11 @@ TOKEN : /* POINTCUTS */
 |
     < IF : "if(" >
 |
+    < HAS_METHOD : "hasmethod(" > : METHOD
+
+|
+    < HAS_FIELD : "hasfield(" > : FIELD
+|
     < POINTCUT_REFERENCE_WITH_ARGS : <POINTCUT_REFERENCE>"(" > : IN_ARGS
 |
     < POINTCUT_REFERENCE : (["a"-"z", "A"-"Z", "_", "$", ".", "0"-"9"])+ >
@@ -331,6 +336,8 @@ void Pointcut() : {}
     LOOKAHEAD(4) Cflow() |
     LOOKAHEAD(4) CflowBelow() |
     LOOKAHEAD(4) Args() |
+    LOOKAHEAD(4) HasMethod() |
+    LOOKAHEAD(4) HasField() |
     LOOKAHEAD(4) PointcutReference()
 }
 
@@ -438,6 +445,22 @@ void Args() #Args : {}
     <ARGS> <ARGS_END>
     |
     <ARGS> ArgsParameters() <ARGS_END>
+}
+
+/**
+ * HasMethod.
+ */
+void HasMethod() #HasMethod : {}
+{
+   <HAS_METHOD> MethodPattern() ")"
+}
+
+/**
+ * HasField.
+ */
+void HasField() #HasField : {}
+{
+   <HAS_FIELD> FieldPattern() <FIELD_POINTCUT_END>
 }
 
 //------------------ Patterns ------------------
