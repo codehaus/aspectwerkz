@@ -41,6 +41,7 @@
     <!-- AW -->
     <taskdef name="awc" classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" classpathref="project.classpath"/>
     <taskdef name="awweave" classname="org.codehaus.aspectwerkz.compiler.AspectWerkzCTask" classpathref="project.classpath"/>
+    <taskdef name="awannc" classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" classpathref="project.classpath"/>
     <!-- AW 1.0 -->
     <taskdef name="awc_1_0" classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" classpathref="aspectwerkz_1_0.classpath"/>
     <taskdef name="awweave_1_0" classname="org.codehaus.aspectwerkz.compiler.AspectWerkzCTask" classpathref="aspectwerkz_1_0.classpath"/>
@@ -117,6 +118,21 @@
         <javac destdir="${d}/target" debug="${javac.debug}" classpathref="project.classpath">
             <src path="${d}/src/aspectwerkz"/>
         </javac>
+    </target>
+
+    <!-- test custom annoation -->
+    <target name="demo:annc" depends="init, clean, compile, compile:aspectwerkz">
+        <awannc verbose="true"
+            destdir="${d}/target"
+            properties="${d}/src/aspectwerkz/META-INF/annotation.properties">
+            <src path="${d}/src/aspectwerkz"/>
+            <classpath refid="project.classpath"/>
+            <classpath path="${d}/target"/>
+        </awannc>
+        <java classname="awbench.aspectwerkz.TargetOfCustomAnnotation" fork="true">
+            <classpath refid="project.classpath"/>
+            <classpath path="${d}/target"/>
+        </java>
     </target>
 
     <target name="compile:aspectwerkz_1_0" depends="init">
@@ -339,6 +355,8 @@
 <!--        <antcall target="run"/>-->
         <antcall target="clean" />
         <antcall target="run:aw"/>
+        <antcall target="clean" />
+        <antcall target="run:awproxy"/>
         <antcall target="clean"/>
         <antcall target="run:aw_1_0"/>
         <antcall target="clean"/>
