@@ -148,6 +148,7 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
          */
         public void visitLineNumber(int lineNumber, Label label) {
             m_lineNumber = lineNumber;
+            super.visitLineNumber(lineNumber, label);
         }
 
         /**

@@ -216,6 +216,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
          */
         public void visitLineNumber(int lineNumber, Label label) {
             m_lineNumber = lineNumber;
+            super.visitLineNumber(lineNumber, label);
         }
 
         /**
