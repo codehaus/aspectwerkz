@@ -19,8 +19,10 @@ public class AbstractClassTest extends TestCase {
 
     public void testInstrumentedAbstractMemberMethodInvocation() {
         try {
+            TestAspect.s_log = "";
             AbstractTarget target = new AbstractTargetImpl();
-            assertEquals("method1", target.method1());
+            target.method1();
+            assertEquals("method1method1XX", TestAspect.s_log);
         } catch (Exception e) {
             fail();
         }
@@ -28,8 +30,21 @@ public class AbstractClassTest extends TestCase {
 
     public void testInstrumentedAbstractStaticMethodInvocation() {
         try {
+            TestAspect.s_log = "";
             AbstractTarget target = new AbstractTargetImpl();
-            assertEquals("method2", target.method2());
+            target.method2();
+            assertEquals("method2method2XX", TestAspect.s_log);
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testInstrumentedAbstractImplementedMethodInvocation() {
+        try {
+            TestAspect.s_log = "";
+            AbstractTarget target = new AbstractTargetImpl();
+            target.method3();
+            assertEquals("method3XX", TestAspect.s_log);
         } catch (Exception e) {
             fail();
         }
