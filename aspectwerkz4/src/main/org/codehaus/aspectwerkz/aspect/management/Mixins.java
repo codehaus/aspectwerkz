@@ -125,7 +125,7 @@ public class Mixins {
     private static MixinFactory createMixinFactory(final Class mixinClass) {
         MixinDefinition mixinDefinition = null;
 
-        Set definitions = SystemDefinitionContainer.getRegularAndVirtualDefinitionsFor(mixinClass.getClassLoader());
+        Set definitions = SystemDefinitionContainer.getDefinitionsFor(mixinClass.getClassLoader());
         for (Iterator iterator = definitions.iterator(); iterator.hasNext() && mixinDefinition == null;) {
             SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
             for (Iterator iterator1 = systemDefinition.getMixinDefinitions().iterator(); iterator1.hasNext();) {

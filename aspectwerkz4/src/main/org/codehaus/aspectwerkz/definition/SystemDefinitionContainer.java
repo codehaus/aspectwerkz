@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -20,6 +21,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.io.File;
 
+import EDU.oswego.cs.dl.util.concurrent.ReadWriteLock;
+import EDU.oswego.cs.dl.util.concurrent.ReentrantWriterPreferenceReadWriteLock;
+import EDU.oswego.cs.dl.util.concurrent.Sync;
+
 /**
  * The SystemDefintionContainer maintains all the definition and is aware of the classloader hierarchy. <p/>A
  * ThreadLocal structure is used during weaving to store current classloader defintion hierarchy. <p/>Due to
@@ -29,6 +34,9 @@ import java.io.File;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class SystemDefinitionContainer {
+
+    private static final ReadWriteLock s_lock = new ReentrantWriterPreferenceReadWriteLock();
+
     /**
      * Map of SystemDefinition[List] per ClassLoader.
      * NOTE: null key is supported
@@ -38,7 +46,7 @@ public class SystemDefinitionContainer {
      * Map of SystemDefinition[List] per ClassLoader, with the hierarchy structure
      * NOTE: null key is supported
      */
-    public static final Map s_classLoaderHierarchicalSystemDefinitions = new WeakHashMap();
+    public static Map s_classLoaderHierarchicalSystemDefinitions = new WeakHashMap();
 
     /**
      * Map of SystemDefinition location (as URL[List]) per ClassLoader
@@ -73,10 +81,6 @@ public class SystemDefinitionContainer {
      */
     private static boolean s_disableSystemWideDefinition = false;
 
-    /**
-     * The virtual systems, one per class loader.
-     */
-    private static final Map s_virtualSystems = new WeakHashMap();
     private static final String VIRTUAL_SYSTEM_ID_PREFIX = "virtual_";
 
     /**
@@ -84,39 +88,64 @@ public class SystemDefinitionContainer {
      *
      * @param loader the class loader to register
      */
-    public static void registerClassLoader(final ClassLoader loader) {
+    private static void registerClassLoader(final ClassLoader loader) {
+        // note: read lock is alreayd owned
+        Sync writeLock = s_lock.writeLock();
         if (s_classLoaderSystemDefinitions.containsKey(loader)) {
             return;
         }
-        // skip boot classloader and ext classloader
-        if (loader == null) {
-            s_classLoaderSystemDefinitions.put(loader, new HashSet());
-            s_classLoaderDefinitionLocations.put(loader, new ArrayList());
-            return;
-        }
-
-        // register parents first
-        registerClassLoader(loader.getParent());
-
-        // then register -D.. if system classloader and then all META-INF/aop.xml
         try {
-            final Set definitions = new HashSet();
-            final List locationOfDefinitions = new ArrayList();
-
-            // early registration to avoid recursion
-            s_classLoaderSystemDefinitions.put(loader, definitions);
-            s_classLoaderDefinitionLocations.put(loader, locationOfDefinitions);
-
-            // is this system classloader ?
-            if ((loader == ClassLoader.getSystemClassLoader()) && !s_disableSystemWideDefinition) {
-                // -D..file=... sysdef
-                definitions.addAll(DefinitionLoader.getDefaultDefinition(loader));
-                locationOfDefinitions.add(new File(URL_JVM_OPTION_SYSTEM).toURL());
+            writeLock.acquire();
+            // recheck
+            if (s_classLoaderSystemDefinitions.containsKey(loader)) {
+                return;
             }
-            if (loader.getResource(WEB_WEB_INF_XML_FILE) != null) {
-                Enumeration webres = loader.getResources(AOP_WEB_INF_XML_FILE);
-                while (webres.hasMoreElements()) {
-                    URL def = (URL) webres.nextElement();
+
+            // else - register
+
+            // skip boot classloader and ext classloader
+            if (loader == null) {
+                // by defaults, there is alwasy the virtual definition, that has lowest precedence
+                Set defaults = new HashSet();
+                defaults.add(new SystemDefinition(getVirtualDefinitionUuid(loader)));
+                s_classLoaderSystemDefinitions.put(loader, defaults);
+                s_classLoaderDefinitionLocations.put(loader, new ArrayList());
+                return;
+            }
+
+            // register parents first
+            registerClassLoader(loader.getParent());
+
+            // then register -D.. if system classloader and then all META-INF/aop.xml
+            try {
+                final Set definitions = new HashSet();
+                final List locationOfDefinitions = new ArrayList();
+
+                // early registration to avoid recursion
+                s_classLoaderSystemDefinitions.put(loader, definitions);
+                s_classLoaderDefinitionLocations.put(loader, locationOfDefinitions);
+
+                // is this system classloader ?
+                if ((loader == ClassLoader.getSystemClassLoader()) && !s_disableSystemWideDefinition) {
+                    // -D..file=... sysdef
+                    definitions.addAll(DefinitionLoader.getDefaultDefinition(loader));
+                    locationOfDefinitions.add(new File(URL_JVM_OPTION_SYSTEM).toURL());
+                }
+                if (loader.getResource(WEB_WEB_INF_XML_FILE) != null) {
+                    Enumeration webres = loader.getResources(AOP_WEB_INF_XML_FILE);
+                    while (webres.hasMoreElements()) {
+                        URL def = (URL) webres.nextElement();
+                        if (isDefinedBy(loader, def)) {
+                            ;
+                        } else {
+                            definitions.addAll(XmlParser.parseNoCache(loader, def));
+                            locationOfDefinitions.add(def);
+                        }
+                    }
+                }
+                Enumeration res = loader.getResources(AOP_META_INF_XML_FILE);
+                while (res.hasMoreElements()) {
+                    URL def = (URL) res.nextElement();
                     if (isDefinedBy(loader, def)) {
                         ;
                     } else {
@@ -124,109 +153,188 @@ public class SystemDefinitionContainer {
                         locationOfDefinitions.add(def);
                     }
                 }
+
+                // there is alwasy the virtual definition, that has lowest precedence
+                definitions.add(new SystemDefinition(getVirtualDefinitionUuid(loader)));
+
+                dump(loader);
+            } catch (Throwable t) {
+                t.printStackTrace();
             }
-            Enumeration res = loader.getResources(AOP_META_INF_XML_FILE);
-            while (res.hasMoreElements()) {
-                URL def = (URL) res.nextElement();
-                if (isDefinedBy(loader, def)) {
-                    ;
-                } else {
-                    definitions.addAll(XmlParser.parseNoCache(loader, def));
-                    locationOfDefinitions.add(def);
-                }
-            }
-            dump(loader);
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new WrappedRuntimeException(e);
+        } finally {
+            //downgrade lock by releasing directly
+            writeLock.release();
         }
     }
 
     /**
      * Hotdeploy a list of SystemDefintions as defined at the level of the given ClassLoader
-     * <p/>Note: this is used for Offline mode.
-     * TODO: sync StartupManager TODO: flush sub systems defs or allow different organization if wished so?
+     * <p/>
+     * Note: this is used for Offline mode.
      *
      * @param loader      ClassLoader
      * @param definitions SystemDefinitions list
      */
     public static void deployDefinitions(final ClassLoader loader, final Set definitions) {
-        registerClassLoader(loader);
-        Set defs = (Set) s_classLoaderSystemDefinitions.get(loader);
-        defs.addAll(definitions);
-        dump(loader);
+        Sync lock = s_lock.writeLock();
+        try {
+            lock.acquire();
+
+            // make sure the classloader is known
+            registerClassLoader(loader);
+
+            //unchanged: s_classLoaderDefinitionLocations
+
+            // propagate change by flushing hierachical cache in all childs
+            flushHierarchicalSystemDefinitionsBelow(loader);
+
+            // update
+            Set defs = (Set) s_classLoaderSystemDefinitions.get(loader);
+            defs.addAll(definitions);
+            dump(loader);
+        } catch (InterruptedException e) {
+            throw new WrappedRuntimeException(e);
+        } finally {
+            lock.release();
+        }
+    }
+
+    private static void flushHierarchicalSystemDefinitionsBelow(ClassLoader loader) {
+        // write lock is supposed to be owned already
+        Map classLoaderHierarchicalSystemDefinitions = new WeakHashMap();
+        for (Iterator iterator = s_classLoaderHierarchicalSystemDefinitions.entrySet().iterator(); iterator.hasNext();) {
+            Map.Entry entry = (Map.Entry) iterator.next();
+            ClassLoader currentLoader = (ClassLoader) entry.getKey();
+            if (isChildOf(currentLoader, loader)) {
+                ;// flushed
+            } else {
+                classLoaderHierarchicalSystemDefinitions.put(currentLoader, entry.getValue());
+            }
+        }
+        s_classLoaderHierarchicalSystemDefinitions = classLoaderHierarchicalSystemDefinitions;
     }
 
     /**
-     * Lookup for a given SystemDefinition by uuid within a given ClassLoader The lookup does not go thru the
-     * ClassLoader hierarchy
+     * Lookup for a given SystemDefinition by uuid within a given ClassLoader.
+     * <p/>
+     * The lookup does go thru the ClassLoader hierarchy
      *
      * @param loader ClassLoader
      * @param uuid   system uuid
      * @return SystemDefinition or null if no such defined definition
      */
     public static SystemDefinition getDefinitionFor(final ClassLoader loader, final String uuid) {
-        getHierarchicalDefinitionsFor(loader);
-        for (Iterator defs = getDefinitionsFor(loader).iterator(); defs.hasNext();) {
-            SystemDefinition def = (SystemDefinition) defs.next();
-            if (def.getUuid().equals(uuid)) {
-                return def;
+        Sync lock = s_lock.readLock();
+        try {
+            lock.acquire();
+            for (Iterator defs = getDefinitionsFor(loader).iterator(); defs.hasNext();) {
+                SystemDefinition def = (SystemDefinition) defs.next();
+                if (def.getUuid().equals(uuid)) {
+                    return def;
+                }
             }
+            return null;
+        } catch (InterruptedException e) {
+            throw new WrappedRuntimeException(e);
+        } finally {
+            lock.release();
         }
-        return null;
     }
 
     /**
-     * Return the list of SystemDefinitions defined at the given ClassLoader level. Does not handles the ClassLoader
-     * hierarchy.
+     * Return the list of SystemDefinitions visible at the given ClassLoader level.
+     * <p/>
+     * It does handle the ClassLoader hierarchy.
      *
      * @param loader
      * @return SystemDefinitions list
      */
     public static Set getDefinitionsFor(final ClassLoader loader) {
-        getHierarchicalDefinitionsFor(loader);
-        return (Set) s_classLoaderSystemDefinitions.get(loader);
+        Sync lock = s_lock.readLock();
+        try {
+            lock.acquire();
+            return getHierarchicalDefinitionsFor(loader);
+        } catch (InterruptedException e) {
+            throw new WrappedRuntimeException(e);
+        } finally {
+            lock.release();
+        }
     }
 
     /**
-     * Returns all the system definitions, including the virtual system.
+     * Return the list of SystemDefinitions defined at the given ClassLoader level.
+     * <p/>
+     * It does NOT handle the ClassLoader hierarchy.
      *
      * @param loader
-     * @return
+     * @return SystemDefinitions list
      */
-    public static Set getRegularAndVirtualDefinitionsFor(final ClassLoader loader) {
-        final Set allDefs = new HashSet();
-        allDefs.addAll(getDefinitionsFor(loader));
-        allDefs.add(getVirtualDefinitionFor(loader));
-        return allDefs;
+    public static Set getDefinitionsAt(final ClassLoader loader) {
+        Sync lock = s_lock.readLock();
+        try {
+            lock.acquire();
+            // make sure the classloader is registered
+            registerClassLoader(loader);
+            return (Set) s_classLoaderSystemDefinitions.get(loader);
+        } catch (InterruptedException e) {
+            throw new WrappedRuntimeException(e);
+        } finally {
+            lock.release();
+        }
     }
+
+//    /**
+//     * Returns all the system definitions, including the virtual system.
+//     *
+//     * @param loader
+//     * @return
+//     */
+//    public static Set getRegularAndVirtualDefinitionsFor(final ClassLoader loader) {
+//        final Set allDefs = new HashSet();
+//        allDefs.addAll(getDefinitionsFor(loader));
+//        allDefs.add(getVirtualDefinitionFor(loader));
+//        return allDefs;
+//    }
 
     /**
      * Returns the virtual system for the class loader specified.
+     * <p/>
+     * There is ONE and ONLY ONE virtual system per classloader ie several per classloader
+     * hierachy. This definition hosts hotdeployed aspects. This method returns the
+     * one corresponding to the given classloader only.
      *
      * @param loader the class loader
      * @return the virtual system
      */
-    public static SystemDefinition getVirtualDefinitionFor(final ClassLoader loader) {
-        final SystemDefinition virtualSystemDef;
-        if (!s_virtualSystems.containsKey(loader)) {
-            int hash = loader == null ? 0 : loader.hashCode();// handle bootclassloader with care
-            virtualSystemDef = new SystemDefinition(VIRTUAL_SYSTEM_ID_PREFIX + new Integer(hash).toString());
-            s_virtualSystems.put(loader, virtualSystemDef);
-        } else {
-            virtualSystemDef = (SystemDefinition) s_virtualSystems.get(loader);
-        }
-        return virtualSystemDef;
+    public static SystemDefinition getVirtualDefinitionAt(final ClassLoader loader) {
+        // since virtual uuid is mapped to a classloader, a direct lookup on uuid is enough
+        return getDefinitionFor(loader, getVirtualDefinitionUuid(loader));
     }
 
     /**
-     * Returns the list of all ClassLoaders registered so far Note: when a child ClassLoader is registered, all its
-     * parent hierarchy is registered
+     * Returns the uuid for the virtual system definition for the given classloader
      *
-     * @return ClassLoader Set
+     * @param loader
+     * @return
      */
-    public static Set getAllRegisteredClassLoaders() {
-        return s_classLoaderSystemDefinitions.keySet();
+    private static String getVirtualDefinitionUuid(ClassLoader loader) {
+        // handle bootclassloader with care
+        int hash = loader == null ? 0 : loader.hashCode();
+        StringBuffer sb = new StringBuffer(VIRTUAL_SYSTEM_ID_PREFIX);
+        return sb.append(hash).toString();
     }
+
+//    /**
+//     * Returns the list of all ClassLoaders registered so far Note: when a child ClassLoader is registered, all its
+//     * parent hierarchy is registered
+//     *
+//     * @return ClassLoader Set
+//     */
+//    public static Set getAllRegisteredClassLoaders() {
+//        return s_classLoaderSystemDefinitions.keySet();
+//    }
 
     /**
      * Turns on the option to avoid -Daspectwerkz.definition.file handling.
@@ -236,35 +344,52 @@ public class SystemDefinitionContainer {
     }
 
     /**
-     * Returns the gathered SystemDefinition visible from a classloader. <p/>This method is using a cache. Caution when
+     * Returns the gathered SystemDefinition visible from a classloader.
+     * <p/>
+     * This method is using a cache. Caution when
      * modifying this method since when an aop.xml is loaded, the aspect classes gets loaded as well, which triggers
      * this cache, while the system is in fact not yet initialized properly. </p>
      *
      * @param loader
      * @return set with the system definitions
      */
-    private static synchronized Set getHierarchicalDefinitionsFor(final ClassLoader loader) {
+    private static Set getHierarchicalDefinitionsFor(final ClassLoader loader) {
         // check cache
-        final Set defs;
+        // note: read Lock is already acquired at this stage
+        Sync writeLock = s_lock.writeLock();
         if (!s_classLoaderHierarchicalSystemDefinitions.containsKey(loader)) {
-            // if runtime access before load time
-            if (!s_classLoaderSystemDefinitions.containsKey(loader)) {
-                registerClassLoader(loader);
-            }
-            defs = new HashSet();
-            // put it in the cache now since this method is recursive
-            s_classLoaderHierarchicalSystemDefinitions.put(loader, defs);
-            if (loader == null) {
-                ; // go on to put in the cache at the end
-            } else {
-                ClassLoader parent = loader.getParent();
-                defs.addAll(getHierarchicalDefinitionsFor(parent));
-                defs.addAll((Set) s_classLoaderSystemDefinitions.get(loader));
+            // upgrade lock
+            try {
+                writeLock.acquire();
+                // recheck [see JavaDoc for read / write lock
+                if (!s_classLoaderHierarchicalSystemDefinitions.containsKey(loader)) {
+                    // make sure the classloader is known
+                    registerClassLoader(loader);
+
+                    Set defs = new HashSet();
+                    // put it in the cache now since this method is recursive
+                    s_classLoaderHierarchicalSystemDefinitions.put(loader, defs);
+                    if (loader == null) {
+                        ; // go on to put in the cache at the end
+                    } else {
+                        ClassLoader parent = loader.getParent();
+                        defs.addAll(getHierarchicalDefinitionsFor(parent));
+                    }
+                    defs.addAll((Set) s_classLoaderSystemDefinitions.get(loader));
+
+                    return defs;
+                } else {
+                    return ((Set) s_classLoaderHierarchicalSystemDefinitions.get(loader));
+                }
+            } catch (InterruptedException e) {
+                throw new WrappedRuntimeException(e);
+            } finally {
+                // downgrade lock
+                writeLock.release(); // release write, still hold read
             }
         } else {
-            defs = ((Set) s_classLoaderHierarchicalSystemDefinitions.get(loader));
+            return ((Set) s_classLoaderHierarchicalSystemDefinitions.get(loader));
         }
-        return defs;
     }
 
     /**
@@ -328,5 +453,26 @@ public class SystemDefinitionContainer {
         }
         dump.append("\n******************************************************************");
         System.out.println(dump.toString());
+    }
+
+    /**
+     * Returns true if the given classloader is a child of the given parent classloader
+     *
+     * @param loader
+     * @param parentLoader
+     * @return
+     */
+    private static boolean isChildOf(ClassLoader loader, ClassLoader parentLoader) {
+        if (loader == null) {
+            if (parentLoader == null) {
+                return true;
+            } else {
+                return false;
+            }
+        } else if (loader.equals(parentLoader)) {
+            return true;
+        } else {
+            return isChildOf(loader.getParent(), parentLoader);
+        }
     }
 }

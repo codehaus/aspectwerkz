@@ -356,7 +356,7 @@ public class JoinPointManager {
         final List afterReturningAdvices = new ArrayList();
         final List afterThrowingAdvices = new ArrayList();
 
-        final Set systemDefinitions = SystemDefinitionContainer.getRegularAndVirtualDefinitionsFor(loader);
+        final Set systemDefinitions = SystemDefinitionContainer.getDefinitionsFor(loader);
 
         for (Iterator iterator = systemDefinitions.iterator(); iterator.hasNext();) {
             SystemDefinition systemDefinition = (SystemDefinition) iterator.next();

@@ -70,18 +70,16 @@ public final class DeploymentHandle {
 
     void revertChanges() {
         final ClassLoader loader = (ClassLoader) m_loaderRef.get();
-        final Set systemDefs = SystemDefinitionContainer.getRegularAndVirtualDefinitionsFor(loader);
-        for (Iterator it = systemDefs.iterator(); it.hasNext();) {
-            SystemDefinition systemDef = (SystemDefinition) it.next();
-            for (Iterator it2 = systemDef.getAspectDefinitions().iterator(); it2.hasNext();) {
-                AspectDefinition aspectDef = (AspectDefinition) it2.next();
-                for (Iterator it3 = aspectDef.getAfterAdviceDefinitions().iterator(); it3.hasNext();) {
-                    AdviceDefinition adviceDef = (AdviceDefinition) it3.next();
-                    DefinitionChangeElement changeElement =
-                            (DefinitionChangeElement) m_definitionChangeElements.get(adviceDef.getQualifiedName());
-                    if (changeElement != null) {
-                        changeElement.getAdviceDef().setExpressionInfo(changeElement.getOldExpression());
-                    }
+        // hotdeployment is done thru the virtual system, so reverts changes as well
+        SystemDefinition systemDef = SystemDefinitionContainer.getVirtualDefinitionAt(loader);
+        for (Iterator it2 = systemDef.getAspectDefinitions().iterator(); it2.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition) it2.next();
+            for (Iterator it3 = aspectDef.getAfterAdviceDefinitions().iterator(); it3.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition) it3.next();
+                DefinitionChangeElement changeElement =
+                        (DefinitionChangeElement) m_definitionChangeElements.get(adviceDef.getQualifiedName());
+                if (changeElement != null) {
+                    changeElement.getAdviceDef().setExpressionInfo(changeElement.getOldExpression());
                 }
             }
         }
