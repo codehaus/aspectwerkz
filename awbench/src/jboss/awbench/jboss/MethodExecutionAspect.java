@@ -47,14 +47,14 @@ public class MethodExecutionAspect {
     }
 
     // Note: advice cannot have args in JBoss AOP
-    public Object beforeWithPrimitiveArgs(Invocation jp)/*, int i)*/ throws Throwable {
+    public Object beforeWithPrimitiveArgs(Invocation jp) throws Throwable {
         int j = ((Integer)((MethodInvocation)jp).getArguments()[0]).intValue();
         Run.ADVICE_HIT++;
         return jp.invokeNext();
     }
 
     // Note: advice cannot have args in JBoss AOP
-    public Object beforeWithWrappedArgs(Invocation jp)/*, Integer i)*/ throws Throwable {
+    public Object beforeWithWrappedArgs(Invocation jp) throws Throwable {
         Integer j = (Integer)((MethodInvocation)jp).getArguments()[0];
         Run.ADVICE_HIT++;
         return jp.invokeNext();
@@ -113,7 +113,7 @@ public class MethodExecutionAspect {
     }
 
     // Note: advice cannot have args in JBoss AOP
-    public Object beforeWithArgsAndTarget(Invocation jp)/*, int i)*/ throws Throwable {
+    public Object beforeWithArgsAndTarget(Invocation jp) throws Throwable {
         int j = ((Integer)((MethodInvocation)jp).getArguments()[0]).intValue();
         Execution u = (Execution)jp.getTargetObject();
         Run.ADVICE_HIT++;
@@ -121,14 +121,14 @@ public class MethodExecutionAspect {
     }
 
     // Note: advice cannot have args in JBoss AOP
-    public Object aroundStackedWithArgAndTarget_1(Invocation jp)/*, int i)*/ throws Throwable {
+    public Object aroundStackedWithArgAndTarget_1(Invocation jp) throws Throwable {
         int j = ((Integer)((MethodInvocation)jp).getArguments()[0]).intValue();
         Execution u = (Execution)jp.getTargetObject();
         Run.ADVICE_HIT++;
         return jp.invokeNext();
     }
     // Note: advice cannot have args in JBoss AOP
-    public Object aroundStackedWithArgAndTarget_2(Invocation jp)/*, int i)*/ throws Throwable {
+    public Object aroundStackedWithArgAndTarget_2(Invocation jp) throws Throwable {
         int j = ((Integer)((MethodInvocation)jp).getArguments()[0]).intValue();
         Execution u = (Execution)jp.getTargetObject();
         Run.ADVICE_HIT++;

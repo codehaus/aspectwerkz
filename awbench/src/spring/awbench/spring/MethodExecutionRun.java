@@ -30,6 +30,7 @@ public class MethodExecutionRun {
 
         ApplicationContext ctx = new FileSystemXmlApplicationContext("src/spring/springconfig.xml");
         IExecution test = (IExecution) ctx.getBean("execution");
+        test.warmup();
 
         Run run = null;
 

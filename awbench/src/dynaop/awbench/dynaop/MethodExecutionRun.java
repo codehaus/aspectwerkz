@@ -29,7 +29,8 @@ public class MethodExecutionRun {
         }
 
         IExecution test = (IExecution) ProxyFactory.getInstance().extend(Execution.class);
-
+        test.warmup();
+        
         Run run = null;
 
         run = new Run("method execution, before advice");
