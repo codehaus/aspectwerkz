@@ -10,8 +10,6 @@ package org.codehaus.aspectwerkz.annotation;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
-import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
-import org.codehaus.aspectwerkz.transform.ReflectHelper;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.objectweb.asm.attrs.*;
 import org.objectweb.asm.attrs.Annotation;
@@ -27,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Arrays;
+import java.io.Serializable;
 
 /**
  * Dynamic proxy handler for ASM Annotations we extract
@@ -76,16 +76,16 @@ public class Java5AnnotationInvocationHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String name = method.getName();
         if ("toString".equals(name)) {
-            //TODO implement toString as per JSR-175 spec
-            StringBuffer sb = new StringBuffer(m_annotationClassName);
-            sb.append("[");
+            StringBuffer sb = new StringBuffer();
+            sb.append('@').append(m_annotationClassName);
+            sb.append("(");
             String sep = "";
             for (Iterator iterator = m_annotationElements.iterator(); iterator.hasNext();) {
                 AnnotationElement annotationElement = (AnnotationElement) iterator.next();
-                sb.append(sep).append(annotationElement.name + "=" + annotationElement.valueHolder.toString());
-                sep = "; ";
+                sb.append(sep).append(annotationElement.name + "=" + annotationElement.toString());
+                sep = ", ";
             }
-            sb.append("]");
+            sb.append(")");
             return sb.toString();
         } else if ("annotationType".equals(name)) {
             // funny, may explain why 1.5 Annotation intf has annotationType + getClass
@@ -95,6 +95,7 @@ public class Java5AnnotationInvocationHandler implements InvocationHandler {
             if (m_annotationElements.isEmpty()) {
                 return null;
             } else {
+                //FIXME !!value can be there with other elements !
                 // we could check that we don't have more than one element
                 return ((AnnotationElement) m_annotationElements.get(0)).resolveValueHolderFrom(
                         proxy.getClass().getClassLoader()
@@ -122,7 +123,7 @@ public class Java5AnnotationInvocationHandler implements InvocationHandler {
      * only for a subset of Java types.
      *
      * @param annotation
-     * @param loader
+     * @param loader the classloader of the annotatED component (can be different from the one of the annotation class)
      * @return
      */
     public static org.codehaus.aspectwerkz.annotation.Annotation getAnnotationProxy(org.objectweb.asm.attrs.Annotation annotation, ClassLoader loader) {
@@ -217,18 +218,19 @@ public class Java5AnnotationInvocationHandler implements InvocationHandler {
      *
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
-    private static class LazyClass {
-        LazyClass(String className) {
+    public static class LazyClass implements Serializable {
+
+        public LazyClass(String className) {
             this.className = className;
         }
 
-        String className;
+        public String className;
 
         public String toString() {
-            return className + ".class";
+            return className;
         }
 
-        Class getActualClassFrom(ClassLoader loader) {
+        public Class getActualClassFrom(ClassLoader loader) {
             try {
                 return Class.forName(className, false, loader);
             } catch (ClassNotFoundException e) {
@@ -243,13 +245,13 @@ public class Java5AnnotationInvocationHandler implements InvocationHandler {
      *
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
-    private static class AnnotationElement {
+    public static class AnnotationElement implements Serializable {
         String name;
         Object valueHolder;
-        private boolean isLazyClass = false;
-        private boolean isLazyClassArray = false;
+        protected boolean isLazyClass = false;
+        protected boolean isLazyClassArray = false;
 
-        AnnotationElement(String name, Object valueHolder) {
+        public AnnotationElement(String name, Object valueHolder) {
             this.name = name;
             this.valueHolder = valueHolder;
             if (valueHolder instanceof LazyClass) {
@@ -274,6 +276,28 @@ public class Java5AnnotationInvocationHandler implements InvocationHandler {
                 //TODO support N dimension array needed ?
             } else {
                 return valueHolder;
+            }
+        }
+
+        /**
+         * Returns a string representation of the annotation element value
+         * as per JSR-175 ie array are pretty printed
+         *
+         * Note that such a represention is not parsable again
+         * (f.e. element String s() will not have quotes and escapes etc.
+         * @return
+         */
+        public String toString() {
+            if (isLazyClass) {
+                StringBuffer sb = new StringBuffer("class ");
+                sb.append(((LazyClass) valueHolder).className);
+                return sb.toString();
+            } else {
+                if (valueHolder == null) {
+                    return "null";
+                } else {
+                    return valueHolder.toString();
+                }
             }
         }
     }

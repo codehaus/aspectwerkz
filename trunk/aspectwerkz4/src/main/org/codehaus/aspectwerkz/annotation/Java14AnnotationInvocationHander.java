@@ -17,6 +17,8 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * A Java 1.3 / 1.4 strongly typed Annotation handler.
@@ -29,14 +31,14 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
     //TODO calculate
     private static final long serialVersionUID = 1L;
     
-    private String m_annotationTypeName;
+    private String m_annotationClassName;
     private String m_rawAnnotationName;//nickname f.e. @Before in 1.4
     private String m_rawAnnotationValue;
     private final boolean m_isUntyped;
     private final Map m_elements = new HashMap();
 
     public Java14AnnotationInvocationHander(Class annotationInterface, String rawAnnotationName, String rawAnnotationValue) {
-        m_annotationTypeName = annotationInterface.getName().replace('/', '.');
+        m_annotationClassName = annotationInterface.getName().replace('/', '.');
         m_rawAnnotationName = rawAnnotationName;
         m_rawAnnotationValue = rawAnnotationValue;
 
@@ -50,10 +52,10 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
         // for @AfterReturning etc, we allow anonymous style but are using typed annotation
         // hence the @Around pc is a non supported syntax (should be @Around "pc")
         // but for compatibility purpose we fake it here.
-        if (m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.AfterReturning")
-            || m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.AfterThrowing")
-            || m_annotationTypeName.startsWith("org.codehaus.aspectwerkz.annotation.")
-            && ! m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.UntypedAnnotation")) {
+        if (m_annotationClassName.equals("org.codehaus.aspectwerkz.annotation.AfterReturning")
+            || m_annotationClassName.equals("org.codehaus.aspectwerkz.annotation.AfterThrowing")
+            || m_annotationClassName.startsWith("org.codehaus.aspectwerkz.annotation.")
+            && ! m_annotationClassName.equals("org.codehaus.aspectwerkz.annotation.UntypedAnnotation")) {
             String trimed = m_rawAnnotationValue.trim();
             if (trimed.startsWith("type")
                 || trimed.startsWith("pointcut")
@@ -71,16 +73,14 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
         // parse the raw representation for typed annotation
         if (!m_isUntyped) {
             StringBuffer representation = new StringBuffer("@");
-            representation.append(m_annotationTypeName).append('(');
+            representation.append(m_annotationClassName).append('(');
             if (m_rawAnnotationValue != null) {
                 // @Aspect perJVM is allowed, while should be @Aspect "perJVM"
                 // for now patch it here...
                 // FIXME
-                if (m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.Aspect")) {
+                if (m_annotationClassName.equals("org.codehaus.aspectwerkz.annotation.Aspect")) {
                     if (m_rawAnnotationValue.indexOf("name") < 0) {
-                        //representation.append("\"");
                         representation.append(m_rawAnnotationValue);
-                        //representation.append("\"");
                     }
                 } else {
                     representation.append(m_rawAnnotationValue);
@@ -92,21 +92,21 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
         }
     }
 
-    public Object invoke(Object proxy, Method method, Object[] args) {
-        //TODO support for LazyClass
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String methodName = method.getName();
         Object returned = null;
         if ("toString".equals(methodName)) {
-            //TODO implement toString as per JSR-175 spec
-            StringBuffer sb = new StringBuffer(m_rawAnnotationName);
-            sb.append("[");
+            StringBuffer sb = new StringBuffer();
+            sb.append('@').append(m_rawAnnotationName);
+            sb.append("(");
             String sep = "";
             for (Iterator iterator = m_elements.keySet().iterator(); iterator.hasNext();) {
-                Object elementName = iterator.next();
-                sb.append(sep).append(elementName + "=" + m_elements.get(elementName).toString());
-                sep = "; ";
+                Java5AnnotationInvocationHandler.AnnotationElement element =
+                        (Java5AnnotationInvocationHandler.AnnotationElement) iterator.next();
+                sb.append(sep).append(element.name + "=" + element.toString());
+                sep = ", ";
             }
-            sb.append("]");
+            sb.append(")");
             returned = sb.toString();
         } else if (m_isUntyped) {
             if ("value".equals(methodName)) {
@@ -114,25 +114,21 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
             } else if ("name".equals(methodName)) {
                 returned = m_rawAnnotationName;
             } else if ("annotationType".equals(methodName)) {
-                returned = proxy.getClass();//TODO test me
+                returned = Class.forName(m_annotationClassName, false, proxy.getClass().getClassLoader());
             } else {
-                throw new RuntimeException("No such annotation element [" + method.getName() + "] on @" + m_annotationTypeName);
+                throw new RuntimeException("No such element on Annotation @" + m_annotationClassName + " : " + methodName);
             }
         } else if (m_elements.containsKey(methodName)) {
-            returned = m_elements.get(methodName);
-//        } else if (/*isExtended AND*/methodName.startsWith("set")) {
-//            char[] elementName = new char[methodName.length() - 3];
-//            methodName.getChars(3, methodName.length(), elementName, 0);
-//            elementName[0] = new String(elementName, 0, 1).toLowerCase().charAt(0);
-//            m_elements.put(new String(elementName), args[0]);
-//            returned = null;
+            Java5AnnotationInvocationHandler.AnnotationElement element =
+                    (Java5AnnotationInvocationHandler.AnnotationElement) m_elements.get(methodName);
+            Object valueHolder = element.resolveValueHolderFrom(proxy.getClass().getClassLoader());
+            returned = valueHolder;
         } else {
             returned = null;
         }
 
-        //TODO make more robust - same in JDK 15.
+        //handle default value for primitive types
         if (returned == null && method.getReturnType().isPrimitive()) {
-            //TODO might be worth to not use reflect here
             Class returnedTyped = method.getReturnType();
             if (boolean.class.equals(returnedTyped))
                 return Boolean.FALSE;

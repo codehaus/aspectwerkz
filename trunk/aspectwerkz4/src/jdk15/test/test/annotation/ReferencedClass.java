@@ -11,9 +11,4 @@ package test.annotation;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class ReferencedClass {
-
-    static {
-        if (true)
-            throw new Error("This class should not be loaded");
-    }
 }

@@ -7,9 +7,13 @@
  **************************************************************************************/
 package test.annotation;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
+@Retention(RetentionPolicy.RUNTIME)
 public @interface DefaultedAnnotation {
 
     public String s() default "default";
@@ -17,6 +21,8 @@ public @interface DefaultedAnnotation {
     public int[] is() default {1,2};
 
     public Class klass() default ReferencedClass.class;
+
+    public Class[] klass2() default {ReferencedClass.class, ReferencedClass.class};
 
     public NestedDefaultedAnnotation nested() default @NestedDefaultedAnnotation(s="default_const");
 
