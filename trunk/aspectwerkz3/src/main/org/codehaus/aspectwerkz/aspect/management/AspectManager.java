@@ -33,11 +33,11 @@ import java.util.WeakHashMap;
 
 /**
  * Manages the aspects. <p/>Handles deployment, redeployment, management, configuration or redefinition of the aspects.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it should remove a
- *        certain advice from the pointcut - notification of the JoinPoinManager.
+ * certain advice from the pointcut - notification of the JoinPoinManager.
  */
 public final class AspectManager {
     /**
@@ -57,24 +57,24 @@ public final class AspectManager {
 
     /**
      * Cache for the pointcuts.
-     * 
+     *
      * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
-     *        invalidated.
+     * invalidated.
      */
     private final Map m_pointcutCache = new WeakHashMap();
 
     /**
      * Cache for the cflow pointcuts.
-     * 
+     *
      * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
-     *        invalidated.
+     * invalidated.
      */
     private final Map m_cflowPointcutCache = new WeakHashMap();
 
     /**
      * Creates a new aspect manager.
-     * 
-     * @param system the system
+     *
+     * @param system     the system
      * @param definition the system definition
      */
     public AspectManager(final AspectSystem system, final SystemDefinition definition) {
@@ -93,8 +93,8 @@ public final class AspectManager {
 
     /**
      * Registers a new aspect.
-     * 
-     * @param container the containern for the aspect to register
+     *
+     * @param container      the containern for the aspect to register
      * @param aspectMetaData the aspect meta-data
      */
     public void register(final AspectContainer container, final PointcutManager aspectMetaData) {
@@ -103,18 +103,17 @@ public final class AspectManager {
 
     /**
      * Creates and registers new aspect at runtime.
-     * 
-     * @param name the name of the aspect
+     *
+     * @param name            the name of the aspect
      * @param aspectClassName the class name of the aspect
      * @param deploymentModel the deployment model for the aspect (constants in the DeploymemtModel class, e.g. f.e.
-     *            DeploymentModel.PER_JVM)
-     * @param loader an optional class loader (if null it uses the context classloader)
+     *                        DeploymentModel.PER_JVM)
+     * @param loader          an optional class loader (if null it uses the context classloader)
      */
-    public void createAspect(
-        final String name,
-        final String aspectClassName,
-        final int deploymentModel,
-        final ClassLoader loader) {
+    public void createAspect(final String name,
+                             final String aspectClassName,
+                             final int deploymentModel,
+                             final ClassLoader loader) {
         if (name == null) {
             throw new IllegalArgumentException("aspect name can not be null");
         }
@@ -150,12 +149,15 @@ public final class AspectManager {
         AspectAnnotationParser.parse(aspectClass, aspectDef, m_definition);
         m_definition.addAspect(aspectDef);
         CrossCuttingInfo crossCuttingInfo = new CrossCuttingInfo(
-            null,
-            aspectClass,
-            aspectDef.getName(),
-            deploymentModel,
-            aspectDef,
-            new HashMap());
+                null,
+                aspectClass,
+                aspectDef.getName(),
+                deploymentModel,
+                aspectDef,
+                new HashMap()
+        );
+
+        // create the aspect container
         AspectContainer container = StartupManager.createAspectContainer(crossCuttingInfo);
         crossCuttingInfo.setContainer(container);
         m_aspectRegistry.register(container, new PointcutManager(name, deploymentModel));
@@ -163,7 +165,7 @@ public final class AspectManager {
 
     /**
      * Returns the UUID for the system.
-     * 
+     *
      * @return the UUID
      */
     public String getUuid() {
@@ -172,7 +174,7 @@ public final class AspectManager {
 
     /**
      * Returns the aspect container by its index.
-     * 
+     *
      * @param index the index of the aspect
      * @return the aspect
      */
@@ -182,7 +184,7 @@ public final class AspectManager {
 
     /**
      * Returns the aspect container for a specific name.
-     * 
+     *
      * @param name the name of the aspect
      * @return the the aspect prototype
      */
@@ -192,7 +194,7 @@ public final class AspectManager {
 
     /**
      * Returns an array with all the aspect containers.
-     * 
+     *
      * @return the aspect containers
      */
     public AspectContainer[] getAspectContainers() {
@@ -201,7 +203,7 @@ public final class AspectManager {
 
     /**
      * Returns the aspect for a specific name, deployed as perJVM.
-     * 
+     *
      * @param name the name of the aspect
      * @return the the aspect
      */
@@ -211,7 +213,7 @@ public final class AspectManager {
 
     /**
      * Returns an array with all the cross-cutting infos.
-     * 
+     *
      * @return the cross-cutting infos
      */
     public CrossCuttingInfo[] getCrossCuttingInfos() {
@@ -226,7 +228,7 @@ public final class AspectManager {
 
     /**
      * Retrieves a specific mixin based on its index.
-     * 
+     *
      * @param index the index of the introduction (aspect in this case)
      * @return the the mixin (aspect in this case)
      */
@@ -236,7 +238,7 @@ public final class AspectManager {
 
     /**
      * Returns the mixin implementation for a specific name.
-     * 
+     *
      * @param name the name of the introduction (aspect in this case)
      * @return the the mixin (aspect in this case)
      */
@@ -246,7 +248,7 @@ public final class AspectManager {
 
     /**
      * Returns the index for a specific name to aspect mapping.
-     * 
+     *
      * @param name the name of the aspect
      * @return the index of the aspect
      */
@@ -256,7 +258,7 @@ public final class AspectManager {
 
     /**
      * Returns the index for a specific name to advice mapping.
-     * 
+     *
      * @param name the name of the advice
      * @return the index of the advice
      */
@@ -266,7 +268,7 @@ public final class AspectManager {
 
     /**
      * Returns the pointcut manager for the name specified.
-     * 
+     *
      * @param name the name of the aspect
      * @return thepointcut manager
      */
@@ -276,7 +278,7 @@ public final class AspectManager {
 
     /**
      * Returns a list with all the pointcut managers.
-     * 
+     *
      * @return thepointcut managers
      */
     public Collection getPointcutManagers() {
@@ -286,7 +288,7 @@ public final class AspectManager {
     /**
      * Returns the pointcut list for the context specified. <p/>Caches the list, needed since the actual method call is
      * expensive and is made each time a new instance of an advised class is created.
-     * 
+     *
      * @param ctx the expression context
      * @return the pointcuts for this join point
      */
@@ -314,7 +316,7 @@ public final class AspectManager {
     /**
      * Returns the cflow pointcut list for the context specified. <p/>Caches the list, needed since the actual method
      * call is expensive and is made each time a new instance of an advised class is created.
-     * 
+     *
      * @param ctx the expression context
      * @return the pointcuts for this join point
      */
@@ -340,7 +342,7 @@ public final class AspectManager {
 
     /**
      * Checks if a specific class has an aspect defined.
-     * 
+     *
      * @param name the name of the aspect
      * @return boolean true if the class has an aspect defined
      */
@@ -350,8 +352,8 @@ public final class AspectManager {
 
     /**
      * Returns a specific method by the class and the method index.
-     * 
-     * @param klass the class housing the method
+     *
+     * @param klass      the class housing the method
      * @param methodHash the method hash
      * @return the method
      */
@@ -361,8 +363,8 @@ public final class AspectManager {
 
     /**
      * Returns a specific constructor by the class and the constructor index.
-     * 
-     * @param klass the class housing the method
+     *
+     * @param klass           the class housing the method
      * @param constructorHash the method hash
      * @return the constructor
      */
@@ -372,8 +374,8 @@ public final class AspectManager {
 
     /**
      * Returns a specific field by the class and the field index.
-     * 
-     * @param klass the class housing the method
+     *
+     * @param klass     the class housing the method
      * @param fieldHash the method hash
      * @return the field
      */
@@ -383,7 +385,7 @@ public final class AspectManager {
 
     /**
      * Returns the string representation of the manager.
-     * 
+     *
      * @return
      */
     public String toString() {

@@ -13,7 +13,6 @@ import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
-import org.codehaus.aspectwerkz.transform.delegation.DelegationWeavingStrategy;
 import org.codehaus.aspectwerkz.transform.inlining.InliningWeavingStrategy;
 
 import java.util.Collection;
@@ -39,13 +38,11 @@ import java.util.Map;
  * mode where weaving of those classes is needed. Setting this option in online mode will lead to
  * <code>ClassCircularityError</code>.</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassProcessor {
-
-    private final static String AW_WEAVING_STRATEGY = "aspectwerkz.weaving.strategy";
 
     private final static String AW_TRANSFORM_FILTER = "aspectwerkz.transform.filter";
 
@@ -63,18 +60,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     public final static boolean VERBOSE;
 
-    private final static int WEAVING_STRATEGY;
-
     static {
-        // define the weaving strategy
-        String weavingStrategy = System.getProperty(AW_WEAVING_STRATEGY, "delegation").trim();
-        if (weavingStrategy.equalsIgnoreCase("inlining")) {
-            WEAVING_STRATEGY = WeavingStrategy.INLINING;
-        } else if (weavingStrategy.equalsIgnoreCase("delegation")) {
-            WEAVING_STRATEGY = WeavingStrategy.DELEGATION;
-        } else {
-            throw new RuntimeException("unknown weaving strategy specified: " + weavingStrategy);
-        }
         // define the tracing and dump options
         String verbose = System.getProperty(AW_TRANSFORM_VERBOSE, null);
         VERBOSE = "yes".equalsIgnoreCase(verbose) || "true".equalsIgnoreCase(verbose);
@@ -91,8 +77,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             DUMP_BEFORE = dumpPattern.indexOf(",before") > 0;
             if (DUMP_BEFORE) {
                 DUMP_PATTERN = Pattern.compileTypePattern(
-                    dumpPattern.substring(0, dumpPattern.indexOf(',')),
-                    SubtypePatternType.NOT_HIERARCHICAL);
+                        dumpPattern.substring(0, dumpPattern.indexOf(',')),
+                        SubtypePatternType.NOT_HIERARCHICAL
+                );
             } else {
                 DUMP_PATTERN = Pattern.compileTypePattern(dumpPattern, SubtypePatternType.NOT_HIERARCHICAL);
             }
@@ -101,7 +88,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     /**
      * Bytecode cache for prepared class and runtime weaving.
-     * 
+     *
      * @TODO: allow for other cache implementations (file, jms, clustered, jcache, JNDI, javagroups etc.)
      */
     private static Map s_classByteCache = new HashMap();
@@ -118,29 +105,21 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     /**
      * Initializes the transformer stack.
-     * 
+     *
      * @param params not used
      */
     public void initialize(final Hashtable params) {
-        switch (WEAVING_STRATEGY) {
-            case WeavingStrategy.DELEGATION:
-                m_weavingStrategy = new DelegationWeavingStrategy();
-                break;
-
-            case WeavingStrategy.INLINING:
-                m_weavingStrategy = new InliningWeavingStrategy();
-                break;
-        }
+        m_weavingStrategy = new InliningWeavingStrategy();
         m_weavingStrategy.initialize(params);
         m_initialized = true;
     }
 
     /**
      * Transform bytecode according to the transformer stack
-     * 
-     * @param name class name
+     *
+     * @param name     class name
      * @param bytecode bytecode to transform
-     * @param loader classloader loading the class
+     * @param loader   classloader loading the class
      * @return modified (or not) bytecode
      */
     public byte[] preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
@@ -201,7 +180,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     /**
      * Runtime weaving of given Class according to the actual definition
-     * 
+     *
      * @param klazz
      * @return new bytes for Class representation
      * @throws Throwable
@@ -216,12 +195,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             throw new RuntimeException("can not find cached class in cache for prepared classes: " + className);
         }
 
-        // flush class info repository cache so that new weaving is aware of wrapper method
-        // existence
-
-        // FIXME implement and move method
-        //        JavassistClassInfoRepository.removeClassInfoFromAllClassLoaders(klazz.getName());
-
         // transform as if multi weaving
         byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz.getClassLoader());
 
@@ -232,7 +205,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     /**
      * Logs a message.
-     * 
+     *
      * @param msg the message to log
      */
     public static void log(final String msg) {
@@ -243,31 +216,31 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     /**
      * Excludes instrumentation for the class used during the instrumentation
-     * 
+     *
      * @param klass the AspectWerkz class
      */
     private static boolean filter(final String klass) {
         return (klass == null)
-            || klass.startsWith("org.codehaus.aspectwerkz.")
-            || klass.startsWith("javassist.")
-            || klass.startsWith("org.objectweb.asm.")
-            || klass.startsWith("com.karneim.")
-            || klass.startsWith("com.bluecast.")
-            || klass.startsWith("gnu.trove.")
-            || klass.startsWith("org.dom4j.")
-            || klass.startsWith("org.xml.sax.")
-            || klass.startsWith("javax.xml.parsers.")
-            || klass.startsWith("sun.reflect.Generated")// issue on J2SE 5 reflection - AW-245
+               || klass.startsWith("org.codehaus.aspectwerkz.")
+               || klass.startsWith("javassist.")
+               || klass.startsWith("org.objectweb.asm.")
+               || klass.startsWith("com.karneim.")
+               || klass.startsWith("com.bluecast.")
+               || klass.startsWith("gnu.trove.")
+               || klass.startsWith("org.dom4j.")
+               || klass.startsWith("org.xml.sax.")
+               || klass.startsWith("javax.xml.parsers.")
+               || klass.startsWith("sun.reflect.Generated")// issue on J2SE 5 reflection - AW-245
 
-        // TODO: why have we had jMunit classes filtered out, they are not part of AW core, can't be filtered out since
-        // users want to advise on those
-            //|| klass.startsWith("junit.")
-        ;
+                // TODO: why have we had jMunit classes filtered out, they are not part of AW core, can't be filtered out since
+                // users want to advise on those
+                //|| klass.startsWith("junit.")
+                ;
     }
 
     /**
      * Dumps class before weaving.
-     * 
+     *
      * @param className
      * @param context
      */
@@ -281,7 +254,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     /**
      * Dumps class after weaving.
-     * 
+     *
      * @param className
      * @param context
      */
@@ -295,7 +268,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     /**
      * Always dumps class.
-     * 
+     *
      * @param context
      */
     public static void dumpForce(final Context context) {
@@ -304,7 +277,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     /**
      * Returns the caching tuples.
-     * 
+     *
      * @return
      */
     public Collection getClassCacheTuples() {

@@ -121,13 +121,12 @@ public class AspectAnnotationParser {
                 if (AnnotationC.ANNOTATION_EXPRESSION.equals(annotationInfo.getName())) {
                     DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
                             field.getName(),
-                            ((ExpressionAnnotationProxy)annotationInfo.getAnnotation()).expression(),
+                            ((ExpressionAnnotationProxy) annotationInfo.getAnnotation()).expression(),
                             aspectDef
                     );
-                }
-                else if (AnnotationC.ANNOTATION_IMPLEMENTS.equals(annotationInfo.getName())) {
+                } else if (AnnotationC.ANNOTATION_IMPLEMENTS.equals(annotationInfo.getName())) {
                     DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
-                            ((ImplementsAnnotationProxy)annotationInfo.getAnnotation()).expression(),
+                            ((ImplementsAnnotationProxy) annotationInfo.getAnnotation()).expression(),
                             field.getName(),
                             field.getType().getName(),
                             aspectDef
@@ -190,7 +189,7 @@ public class AspectAnnotationParser {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
 
-        List methodList = ReflectHelper.createCompleteSortedMethodList(klass);
+        List methodList = ReflectHelper.createSortedMethodList(klass);
 
         // iterate first on all method to lookup @Expression Pointcut annotations so that they can be resolved
         int methodIndex = 0;
@@ -205,7 +204,8 @@ public class AspectAnnotationParser {
 
                     DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
                             AspectAnnotationParser
-                            .getMethodPointcutCallSignature(method.getName(), annotation), annotation.expression(), aspectDef
+                            .getMethodPointcutCallSignature(method.getName(), annotation),
+                            annotation.expression(), aspectDef
                     );
                 }
             }

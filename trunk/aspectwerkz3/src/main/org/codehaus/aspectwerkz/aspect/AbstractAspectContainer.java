@@ -8,30 +8,32 @@
 package org.codehaus.aspectwerkz.aspect;
 
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
-import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
-import org.codehaus.aspectwerkz.joinpoint.management.JoinPointBase;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.List;
+import java.lang.reflect.Method;
 
 /**
  * Abstract base class for the aspect container implementations.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @FIXME remove the prototype pattern impl
+ * @FIXME rename createAspect methods to getAspect or aspectOf(..)
  */
 public abstract class AbstractAspectContainer implements AspectContainer {
+
     public static final int ASPECT_CONSTRUCTION_TYPE_UNKNOWN = 0;
     public static final int ASPECT_CONSTRUCTION_TYPE_DEFAULT = 1;
     public static final int ASPECT_CONSTRUCTION_TYPE_CROSS_CUTTING_INFO = 2;
-    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[] {};
+    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
+
+    /**
+     * An array with the single cross-cutting info, needed to save one array creation per invocation.
+     */
+    protected final Object[] ARRAY_WITH_SINGLE_CROSS_CUTTING_INFO = new Object[1];
 
     /**
      * The aspect construction type.
@@ -47,11 +49,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * The cross-cutting info prototype.
      */
     protected final CrossCuttingInfo m_infoPrototype;
-
-    /**
-     * An array with the single cross-cutting info, needed to save one array creation per invocation.
-     */
-    protected final Object[] arrayWithSingleCrossCuttingInfo = new Object[1];
 
     /**
      * The aspect instance prototype.
@@ -85,7 +82,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
 
     /**
      * Creates a new aspect container strategy.
-     * 
+     *
      * @param crossCuttingInfo the cross-cutting info
      */
     public AbstractAspectContainer(final CrossCuttingInfo crossCuttingInfo) {
@@ -93,60 +90,14 @@ public abstract class AbstractAspectContainer implements AspectContainer {
             throw new IllegalArgumentException("cross-cutting info can not be null");
         }
         m_infoPrototype = crossCuttingInfo;
-        arrayWithSingleCrossCuttingInfo[0] = m_infoPrototype;
+        ARRAY_WITH_SINGLE_CROSS_CUTTING_INFO[0] = m_infoPrototype;
         m_aspectPrototype = createAspect();
         createAdviceRepository();
     }
 
     /**
-     * Invokes an advice with the index specified.
-     * 
-     * @param adviceIndex the advice index
-     * @param joinPoint the join point
-     * @return the result from the invocation
-     */
-    public Object invokeAdvice(final int adviceIndex, final JoinPoint joinPoint) throws Throwable {
-        //throw new UnsupportedOperationException("deprecated for args() support");
-        return invokeAdvice(adviceIndex, joinPoint, new int[]{-1});//cflow backward compatible
-    }
-
-    public Object invokeAdvice(final int adviceIndex, final JoinPoint joinPoint, int[] methodToArgIndexes) throws Throwable {
-        Object result = null;
-        switch (m_infoPrototype.getDeploymentModel()) {
-            case DeploymentModel.PER_JVM:
-                result = invokeAdvicePerJvm(adviceIndex, joinPoint, methodToArgIndexes);
-                break;
-            case DeploymentModel.PER_CLASS:
-                result = invokeAdvicePerClass(adviceIndex, joinPoint, methodToArgIndexes);
-                break;
-            case DeploymentModel.PER_INSTANCE:
-                result = invokeAdvicePerInstance(adviceIndex, joinPoint, methodToArgIndexes);
-                break;
-            case DeploymentModel.PER_THREAD:
-                result = invokeAdvicePerThread(adviceIndex, joinPoint, methodToArgIndexes);
-                break;
-            default:
-                throw new RuntimeException("invalid deployment model: " + m_infoPrototype.getDeploymentModel());
-        }
-        return result;
-    }
-
-    /**
-     * Returns a specific advice by index.
-     * 
-     * @param index the index
-     * @return the advice
-     */
-    public Method getAdvice(final int index) {
-        if (index < 0) {
-            throw new IllegalArgumentException("advice index can not be less than 0");
-        }
-        return m_adviceRepository[index];
-    }
-
-    /**
      * Returns the cross-cutting info.
-     * 
+     *
      * @return the cross-cutting info
      */
     public CrossCuttingInfo getCrossCuttingInfo() {
@@ -154,129 +105,8 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     }
 
     /**
-     * Invokes the advice method on a per JVM basis.
-     * 
-     * @param adviceIndex the advice index
-     * @param joinPoint the join point
-     * @param methodToArgIndexes indexes of args to pass to the advice
-     * @return the result from the method invocation
-     */
-    private Object invokeAdvicePerJvm(final int adviceIndex, final JoinPoint joinPoint, int[] methodToArgIndexes) throws Throwable {
-        Object result;
-        try {
-            createPerJvmAspect();
-            Method method = m_adviceRepository[adviceIndex];
-            result = method.invoke(m_perJvm, ((JoinPointBase)joinPoint).extractArguments(methodToArgIndexes));
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new DefinitionException("advices for aspect ["
-                + m_infoPrototype.getAspectDefinition().getName()
-                + "] are not properly defined");
-        } catch (InvocationTargetException e) {
-            throw e.getTargetException();
-        } catch (Exception e) {
-            System.err.println("advice Method : " + m_adviceRepository[adviceIndex].toString());
-            System.err.println("args map: ");
-            for (int i = 0; i < methodToArgIndexes.length; i++) {
-                System.err.println("\t" + methodToArgIndexes[i]);
-            }
-            throw new WrappedRuntimeException(e);
-        }
-        return result;
-    }
-
-    /**
-     * Invokes the advice method on a per class basis.
-     * 
-     * @param adviceIndex the advice index
-     * @param joinPoint the join point
-     * @param methodToArgIndexes indexes of args to pass to the advice
-     * @return the result from the method invocation
-     */
-    private Object invokeAdvicePerClass(final int adviceIndex, final JoinPoint joinPoint, int[] methodToArgIndexes) throws Throwable {
-        final Class targetClass = joinPoint.getTargetClass();
-        Object result;
-        try {
-            createPerClassAspect(targetClass);
-            result = m_adviceRepository[adviceIndex].invoke(m_perClass.get(targetClass),
-                    ((JoinPointBase)joinPoint).extractArguments(methodToArgIndexes)
-            );
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new DefinitionException("advices for aspect ["
-                + m_infoPrototype.getAspectDefinition().getName()
-                + "] are not properly defined");
-        } catch (InvocationTargetException e) {
-            throw e.getTargetException();
-        } catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-        return result;
-    }
-
-    /**
-     * Invokes the advice method on a per instance basis.
-     * 
-     * @param adviceIndex the advice index
-     * @param joinPoint the join point
-     * @param methodToArgIndexes indexes of args to pass to the advice
-     * @return the result from the method invocation
-     */
-    private Object invokeAdvicePerInstance(final int adviceIndex, final JoinPoint joinPoint, int[] methodToArgIndexes) throws Throwable {
-        Object result = null;
-        Object targetInstance = joinPoint.getTarget();
-        if (targetInstance == null) { // can be null if f.e. an aspect has deployment model
-            // perInstance and has caller
-            // side pointcuts defined
-            return invokeAdvicePerClass(adviceIndex, joinPoint, methodToArgIndexes);
-        }
-        try {
-            createPerInstanceAspect(targetInstance);
-            result = m_adviceRepository[adviceIndex].invoke(m_perInstance.get(targetInstance),
-                    ((JoinPointBase)joinPoint).extractArguments(methodToArgIndexes)
-            );
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new DefinitionException("advices for aspect ["
-                + m_infoPrototype.getAspectDefinition().getName()
-                + "] are not properly defined");
-        } catch (InvocationTargetException e) {
-            throw e.getTargetException();
-        } catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-        return result;
-    }
-
-    /**
-     * Invokes the advice method on a per thread basis.
-     * 
-     * @param adviceIndex the advice index
-     * @param joinPoint the join point
-     * @param methodToArgIndexes indexes of args to pass to the advice
-     * @return the result from the method invocation
-     */
-    private Object invokeAdvicePerThread(final int adviceIndex, final JoinPoint joinPoint, int[] methodToArgIndexes) throws Throwable {
-        Object result;
-        try {
-            final Thread currentThread = Thread.currentThread();
-            createPerThreadAspect(currentThread);
-            Method method = m_adviceRepository[adviceIndex];
-            result = method.invoke(m_perThread.get(currentThread),
-                    ((JoinPointBase)joinPoint).extractArguments(methodToArgIndexes)
-            );
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new DefinitionException("advices for aspect ["
-                + m_infoPrototype.getAspectDefinition().getName()
-                + "] are not properly defined");
-        } catch (InvocationTargetException e) {
-            throw e.getTargetException();
-        } catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-        return result;
-    }
-
-    /**
      * Creates a new perJVM cross-cutting instance, if it already exists then return it.
-     * 
+     *
      * @return the cross-cutting instance
      */
     public Object createPerJvmAspect() {
@@ -288,7 +118,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
 
     /**
      * Creates a new perClass cross-cutting instance, if it already exists then return it.
-     * 
+     *
      * @param callingClass
      * @return the cross-cutting instance
      */
@@ -303,7 +133,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
 
     /**
      * Creates a new perInstance cross-cutting instance, if it already exists then return it.
-     * 
+     *
      * @param callingInstance
      * @return the cross-cutting instance
      */
@@ -321,7 +151,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
 
     /**
      * Creates a new perThread cross-cutting instance, if it already exists then return it.
-     * 
+     *
      * @param thread the thread for the aspect
      * @return the cross-cutting instance
      */
@@ -336,8 +166,8 @@ public abstract class AbstractAspectContainer implements AspectContainer {
 
     /**
      * Attach the introduction container to this aspect container to mirror the "aspect contains 0-n introduction"
-     * 
-     * @param name of the introduction
+     *
+     * @param name           of the introduction
      * @param introContainer introduction container
      */
     public void addIntroductionContainer(final String name, final IntroductionContainer introContainer) {
@@ -346,7 +176,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
 
     /**
      * Returns the introduction container of given name (introduction name) or null if not linked.
-     * 
+     *
      * @param name of the introduction
      * @return introduction container
      */
@@ -355,11 +185,24 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     }
 
     /**
+     * Returns a specific advice by index.
+     *
+     * @param index the index
+     * @return the advice
+     */
+    public Method getAdviceMethod(final int index) {
+        if (index < 0) {
+            throw new IllegalArgumentException("advice index can not be less than 0");
+        }
+        return m_adviceRepository[index];
+    }
+
+    /**
      * Creates a repository for the advice methods.
      */
     protected void createAdviceRepository() {
         synchronized (m_adviceRepository) {
-            List methodList = ReflectHelper.createCompleteSortedMethodList(m_infoPrototype.getAspectClass());
+            List methodList = ReflectHelper.createSortedMethodList(m_infoPrototype.getAspectClass());
             m_adviceRepository = new Method[methodList.size()];
             for (int i = 0; i < m_adviceRepository.length; i++) {
                 Method method = (Method) methodList.get(i);
@@ -371,9 +214,8 @@ public abstract class AbstractAspectContainer implements AspectContainer {
 
     /**
      * To be implemented by the concrete aspect containers. <p/>Should return a new aspect instance.
-     * 
+     *
      * @return a new aspect instance
      */
     protected abstract Object createAspect();
-
 }

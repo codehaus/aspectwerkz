@@ -7,30 +7,24 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Constructor;
 
-import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
-import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
-import org.codehaus.aspectwerkz.reflect.impl.java.JavaConstructorInfo;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.transform.delegation.JavassistHelper;
 
 /**
- * Utility method for manipulating and managing ClassInfo hierarchies.
- * 
+ * Utility method for manipulating and managing ClassInfo hierarchies.   \
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @TODO remove most methods here
  */
 public class ClassInfoHelper {
     /**
      * Matches a type.
-     * 
+     *
      * @param typePattern the pattern to try to parse against
-     * @param classInfo the info of the class
+     * @param classInfo   the info of the class
      * @return
      */
     public static boolean matchType(final TypePattern typePattern, final ClassInfo classInfo) {
@@ -49,9 +43,9 @@ public class ClassInfoHelper {
     /**
      * Tries to finds a parse at some superclass in the hierarchy. <p/>Only checks for a class parse to allow early
      * filtering. <p/>Recursive.
-     * 
+     *
      * @param classInfo the class info
-     * @param pattern the type pattern
+     * @param pattern   the type pattern
      * @return boolean
      */
     public static boolean matchSuperClasses(final ClassInfo classInfo, final TypePattern pattern) {
@@ -76,16 +70,15 @@ public class ClassInfoHelper {
     /**
      * Tries to finds a parse at some interface in the hierarchy. <p/>Only checks for a class parse to allow early
      * filtering. <p/>Recursive.
-     * 
+     *
      * @param interfaces the interfaces
-     * @param classInfo the class info
-     * @param pattern the type pattern
+     * @param classInfo  the class info
+     * @param pattern    the type pattern
      * @return boolean
      */
-    public static boolean matchInterfaces(
-        final ClassInfo[] interfaces,
-        final ClassInfo classInfo,
-        final TypePattern pattern) {
+    public static boolean matchInterfaces(final ClassInfo[] interfaces,
+                                          final ClassInfo classInfo,
+                                          final TypePattern pattern) {
         if ((interfaces.length == 0) || (classInfo == null) || (pattern == null)) {
             return false;
         }
@@ -105,75 +98,8 @@ public class ClassInfoHelper {
     }
 
     /**
-     * Creates a member info instance based on the signature etc.
-     * 
-     * @param targetClass
-     * @param withinMethodName
-     * @param withinMethodSignature
-     * @return a member info instance
-     * @TODO: check if we have a constructor and not a method
-     */
-    public static MemberInfo createMemberInfo(
-        final Class targetClass,
-        final String withinMethodName,
-        final String withinMethodSignature) {
-        MemberInfo withinMemberInfo = null;
-        String[] withinMethodParameterNames = DescriptorUtil.getParameters(withinMethodSignature);
-
-        // AW-272, call within constructor
-        // Note: in 1.0, within info comes from CtBehavior in Javassist, and thus ctor
-        // is not named <init> but the FQN of its declaring class
-        // see ConstructorCallTF and MethodCallTF
-        if (targetClass.getName().equals(withinMethodName)) {
-            Constructor[] targetConstructors = targetClass.getDeclaredConstructors();
-            for (int i = 0; i < targetConstructors.length; i++) {
-                Constructor constructor = targetConstructors[i];
-                Class[] parameterTypes = constructor.getParameterTypes();
-                if (withinMethodParameterNames.length == parameterTypes.length) {
-                    boolean match = true;
-                    for (int j = 0; j < parameterTypes.length; j++) {
-                        String withinCtorParameterName = JavassistHelper
-                                .convertJavassistTypeSignatureToReflectTypeSignature(withinMethodParameterNames[j]);
-                        if (!parameterTypes[j].getName().equals(withinCtorParameterName)) {
-                            match = false;
-                            break;
-                        }
-                    }
-                    if (match) {
-                        withinMemberInfo = JavaConstructorInfo.getConstructorInfo(constructor);
-                        break;
-                    }
-                }
-            }
-        } else {
-            Method[] targetMethods = targetClass.getDeclaredMethods();
-            for (int i = 0; i < targetMethods.length; i++) {
-                Method method = targetMethods[i];
-                Class[] parameterTypes = method.getParameterTypes();
-                if (method.getName().equals(withinMethodName)
-                    && (withinMethodParameterNames.length == parameterTypes.length)) {
-                    boolean match = true;
-                    for (int j = 0; j < parameterTypes.length; j++) {
-                        String withinMethodParameterName = JavassistHelper
-                                .convertJavassistTypeSignatureToReflectTypeSignature(withinMethodParameterNames[j]);
-                        if (!parameterTypes[j].getName().equals(withinMethodParameterName)) {
-                            match = false;
-                            break;
-                        }
-                    }
-                    if (match) {
-                        withinMemberInfo = JavaMethodInfo.getMethodInfo(method);
-                        break;
-                    }
-                }
-            }
-        }
-        return withinMemberInfo;
-    }
-
-    /**
      * Checks if a method is static or not.
-     * 
+     *
      * @param methodInfo the info for the method
      * @return boolean
      */
@@ -188,7 +114,7 @@ public class ClassInfoHelper {
 
     /**
      * Checks if a class implements a certain inteface, somewhere up in the class hierarchy.
-     * 
+     *
      * @param classInfo
      * @param interfaceName
      * @return true if we have a parse else false
@@ -213,7 +139,7 @@ public class ClassInfoHelper {
 
     /**
      * Checks if a class has a certain class as super class, somewhere up in the class hierarchy.
-     * 
+     *
      * @param classInfo the meta-data for the class to parse
      * @param className the name of the super class
      * @return true if we have a parse else false

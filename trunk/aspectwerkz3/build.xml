@@ -260,7 +260,7 @@
         <jarjar jarfile="${target.dir}/aspectwerkz-extensions-${version}.jar" basedir="${extensions.classes}">
             <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
         </jarjar>
-        <copy tofile="${lib.dir}/aspectwerkz-extensions-${version}.jar" file="${target.dir}/aspectwerkz-extensions-${version}.jar" overwrite="true" />
+        <copy tofile="${lib.dir}/aspectwerkz-extensions-${version}.jar" file="${target.dir}/aspectwerkz-extensions-${version}.jar" overwrite="true"/>
     </target>
 
     <!-- ============================================================== -->
@@ -345,17 +345,7 @@
     <!-- =================================================== -->
     <target name="test" depends="clean, jars, test:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.verbose=false -Daspectwerkz.jit.off=false -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
-        </exec>
-    </target>
-    <target name="test:nojit" depends="clean, jars, test:annotationc">
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.jit.off=true -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
-        </exec>
-    </target>
-    <target name="test:inlining" depends="clean, jars, test:annotationc">
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml -Daspectwerkz.weaving.strategy=inlining test.AllTestsInlined"/>
+            <arg line="-cp ${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTestsInlined"/>
         </exec>
     </target>
 
@@ -407,13 +397,13 @@
     <!-- =================================================== -->
     <target name="samples:logging" depends="clean, jars, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.weaving.strategy=delegation examples.logging.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.logging.Target"/>
         </exec>
     </target>
 
     <target name="samples:logging:inlining" depends="clean, jars, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.weaving.strategy=inlining examples.logging.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.logging.Target"/>
         </exec>
     </target>
 
@@ -422,7 +412,7 @@
     <!-- =================================================== -->
     <target name="samples:annotation" depends="clean, jars, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.verbose=true -Daspectwerkz.weaving.strategy=delegation examples.annotation.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.verbose=true examples.annotation.Target"/>
         </exec>
     </target>
 
