@@ -148,13 +148,9 @@ public final class System {
         }
 
         Set cflowSet = (Set)m_controlFlowLog.get();
-        if (cflowSet == null || cflowSet.isEmpty()) {
-            return false;
-        }
-        else {
-            if (cflowExpression.matchCflow(cflowSet)) {
-                return true;
-            }
+        if (cflowSet==null) cflowSet=new HashSet();//fix for "NOT cflow"
+        if (cflowExpression.matchCflow(cflowSet)) {
+            return true;
         }
         return false;
     }
