@@ -148,17 +148,15 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             log(Util.classLoaderToString(loader) + ':' + className + '[' + Thread.currentThread().getName() + ']');
         }
 
-        // AOPC
-        SystemDefinitionContainer.registerClassLoader(loader);
-        List preAspectNamesContext = SystemDefinitionContainer.getAspectNamesContext();
-        List preDefintionsContext = SystemDefinitionContainer.getAspectNamesContext();
+//        List preAspectNamesContext = SystemDefinitionContainer.getAspectNamesContext();
+//        List preDefintionsContext = SystemDefinitionContainer.getAspectNamesContext();
         try {
-            SystemDefinitionContainer.setAspectNamesContext(SystemDefinitionContainer.getHierarchicalAspectNames(loader));
-            SystemDefinitionContainer.setDefinitionsContext(SystemDefinitionContainer.getHierarchicalDefs(loader));
+//            SystemDefinitionContainer.setAspectNamesContext(SystemDefinitionContainer.getHierarchicalAspectNames(loader));
+//            SystemDefinitionContainer.setDefinitionsContext(SystemDefinitionContainer.getHierarchicalDefs(loader));
             return _preProcess(name, bytecode, loader);
         } finally {
-            SystemDefinitionContainer.setAspectNamesContext(preAspectNamesContext);
-            SystemDefinitionContainer.setDefinitionsContext(preDefintionsContext);
+//            SystemDefinitionContainer.setAspectNamesContext(preAspectNamesContext);
+//            SystemDefinitionContainer.setDefinitionsContext(preDefintionsContext);
         }
     }
 

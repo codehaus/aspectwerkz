@@ -9,8 +9,11 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+
 import javassist.ClassPool;
 import javassist.LoaderClassPath;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
  * Transformation context.
@@ -23,11 +26,6 @@ public class Context {
      * The class loader for the class being transformed.
      */
     private final ClassLoader m_loader;
-
-    /**
-     * The Javassist Repository based on the context class loader.
-     */
-    private final ClassPool m_repository;
 
     /**
      * Marks the class being transformed as advised.
@@ -50,14 +48,19 @@ public class Context {
     private Map m_metaData = new HashMap();
 
     /**
+     * The contextual list of SystemDefinitions
+     */
+    private final List m_definitions;
+
+    /**
      * Creates a new context.
      *
      * @param loader the class loader
      */
     public Context(final ClassLoader loader) {
         m_loader = loader;
-        m_repository = new ClassPool(null);
-        m_repository.insertClassPath(new LoaderClassPath(loader));
+        // Note: we are not using a lazy loading for the definitions since it is cached anyway
+        m_definitions = SystemDefinitionContainer.getHierarchicalDefs(m_loader);
     }
 
     /**
@@ -70,12 +73,11 @@ public class Context {
     }
 
     /**
-     * Returns the repository.
-     *
-     * @return the Javassist Repository based on context class loader
+     * The definitions context (with hierarchical structure)
+     * @return
      */
-    public ClassPool getClassPool() {
-        return m_repository;
+    public List getDefinitions() {
+        return m_definitions;
     }
 
     /**

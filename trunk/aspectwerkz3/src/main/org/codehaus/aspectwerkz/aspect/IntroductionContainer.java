@@ -90,6 +90,7 @@ public class IntroductionContainer {
             if (m_perJvm == null) {
                 // only compatible aspect deployment is perJVM
                 m_perJvm = Introduction.newInstance(m_prototype, m_prototype.getCrossCuttingInfo());
+                m_perJvm.createMixin();
             }
             result = m_methodRepository[methodIndex].invoke(m_perJvm.getImplementation(), parameters);
         } catch (InvocationTargetException e) {
@@ -122,6 +123,7 @@ public class IntroductionContainer {
                     Introduction perClassIntroduction = Introduction.newInstance(m_prototype,
                                                                                  m_prototype.getCrossCuttingInfo());
                     m_perClass.put(targetClass, perClassIntroduction);
+                    perClassIntroduction.createMixin();
                 }
             }
             result = m_methodRepository[methodIndex].invoke(((Introduction)m_perClass.get(targetClass))
@@ -155,6 +157,15 @@ public class IntroductionContainer {
                     Introduction perInstanceIntroduction = Introduction.newInstance(m_prototype,
                                                                                     m_prototype.getCrossCuttingInfo());
                     m_perInstance.put(targetInstance, perInstanceIntroduction);
+                    //TODO
+                    //AW-207
+                    //even with createMixin called after this is not fixed
+                    // System.out.println(" added " + targetInstance + " / " + perInstanceIntroduction.getImplementation());
+                    // since getImplementation is not yet set (since createMixin not yet called)
+                    // and the getTargetInstance call is looping thru based on matching on getImplementation
+                    // ie cannot be used as long as the mixin instance is not created
+                    // ..
+                    perInstanceIntroduction.createMixin();
                 }
             }
             result = m_methodRepository[methodIndex].invoke(((Introduction)m_perInstance.get(targetInstance))
@@ -184,8 +195,9 @@ public class IntroductionContainer {
             if (!m_perThread.containsKey(currentThread)) {
                 synchronized (m_perThread) {
                     // only compatible aspect deployments is perThread
-                    m_perThread.put(currentThread,
-                                    Introduction.newInstance(m_prototype, m_prototype.getCrossCuttingInfo()));
+                    Introduction perThreadIntroduction = Introduction.newInstance(m_prototype, m_prototype.getCrossCuttingInfo());
+                    m_perThread.put(currentThread, perThreadIntroduction);
+                    perThreadIntroduction.createMixin();
                 }
             }
             result = m_methodRepository[methodIndex].invoke(((Introduction)m_perThread.get(currentThread))

@@ -50,7 +50,7 @@ public class MethodCallTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
-        List definitions = SystemDefinitionContainer.getDefinitionsContext();
+        List definitions = context.getDefinitions();
         m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe reentrant
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
@@ -94,7 +94,7 @@ public class MethodCallTransformer implements Transformer {
                             // TODO: callee side class info is NOT used, make use of it
                             ClassInfo calleeSideClassInfo = classInfoRepository.getClassInfo(calleeClassName);
                             if (calleeSideClassInfo == null) {
-                                calleeSideClassInfo = new JavassistClassInfo(context.getClassPool().get(calleeClassName),
+                                calleeSideClassInfo = new JavassistClassInfo(ctClass.getClassPool().get(calleeClassName),
                                                                              context.getLoader());
                             }
 

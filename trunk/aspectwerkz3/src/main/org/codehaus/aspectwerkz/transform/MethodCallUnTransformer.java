@@ -40,7 +40,7 @@ public class MethodCallUnTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
-        List definitions = SystemDefinitionContainer.getDefinitionsContext();
+        List definitions = context.getDefinitions();
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
             final CtClass ctClass = klass.getCtClass();

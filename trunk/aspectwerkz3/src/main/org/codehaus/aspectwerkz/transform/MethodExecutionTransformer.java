@@ -52,7 +52,7 @@ public class MethodExecutionTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws Exception {
-        List definitions = SystemDefinitionContainer.getDefinitionsContext();
+        List definitions = context.getDefinitions();
         m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); // TODO not thread safe
         final CtClass ctClass = klass.getCtClass();
         ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());

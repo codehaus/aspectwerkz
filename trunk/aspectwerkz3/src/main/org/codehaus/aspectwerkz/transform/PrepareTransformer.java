@@ -34,7 +34,7 @@ public class PrepareTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
-        List definitions = SystemDefinitionContainer.getDefinitionsContext();
+        List definitions = context.getDefinitions();
 
         // loop over all the definitions
         for (Iterator it = definitions.iterator(); it.hasNext();) {

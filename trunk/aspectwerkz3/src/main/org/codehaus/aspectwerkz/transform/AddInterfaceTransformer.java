@@ -35,7 +35,7 @@ public final class AddInterfaceTransformer implements Transformer {
      * @param klass   the class
      */
     public void transform(final Context context, final Klass klass) {
-        List definitions = SystemDefinitionContainer.getDefinitionsContext();
+        List definitions = context.getDefinitions();
 
         // loop over all the definitions
         for (Iterator it = definitions.iterator(); it.hasNext();) {
