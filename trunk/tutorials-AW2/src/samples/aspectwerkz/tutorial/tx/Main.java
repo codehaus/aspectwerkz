@@ -9,148 +9,188 @@ package aspectwerkz.tutorial.tx;
 
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.transaction.SystemException;
 import javax.transaction.Status;
 
-import org.codehaus.aspectwerkz.aspect.management.Aspects;
-
 /**
+ * Main class that shows how the different transaction attribute semantics work.
+ * Prints out the steps in standard out.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Main {
 
     // ==== top level methods ====
 
-    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-    private void startTxSupports_InvokeNoOpMethod_ShouldCommit() {
-        System.out.println("startTxSupports_InvokeNoOpMethod_ShouldCommit");
-        noOp();
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    private void startTxRequires_InvokeTxSupports_InvokeNoOpMethod_ShouldCommit() {
+        logInfo("    startTxRequires_InvokeTxSupports_InvokeNoOpMethod_ShouldCommit");
+        txSupports();
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     private void startTxRequired_InvokeMethodThrowingCheckedException_ShouldCommit() throws Exception {
-        System.out.println("startTxRequired_InvokeMethodThrowingCheckedException_ShouldCommit");
+        logInfo("    startTxRequired_InvokeMethodThrowingCheckedException_ShouldCommit");
         throwException();
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     private void startTxRequired_InvokeMethodThrowingUncheckedException_ShouldRollback() {
-        System.out.println("startTxRequired_InvokeMethodThrowingUncheckedException_ShouldRollback");
+        logInfo("    startTxRequired_InvokeMethodThrowingUncheckedException_ShouldRollback");
         throwRuntimeException();
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    private void startTxRequired_InvokeMethodWithTxNever_ShouldThrowTxException() {
-        System.out.println("startTxRequired_InvokeMethodWithTxNever_ShouldThrowTxException");
+    private void startTxRequired_InvokeMethodWithTxNever_ShouldThrowRemoteException() {
+        logInfo("    startTxRequired_InvokeMethodWithTxNever_ShouldThrowRemoteException");
         txNever();
     }
 
-    private void startNoTx_InvokeMethodWithTxMandatory_ShouldThrowTxException() {
-        System.out.println("startNoTx_InvokeMethodWithTxMandatory_ShouldThrowTxException");
+    private void startNoTx_InvokeMethodWithTxMandatory_ShouldThrowTransactionRequiredException() {
+        logInfo("    startNoTx_InvokeMethodWithTxMandatory_ShouldThrowTransactionRequiredException");
         txMandatory();
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    private void startTxRequired_InvokeTxRequiresNew_TopLevelShouldRollbackNestedShouldCommit() {
+        logInfo("    startTxRequired_InvokeTxRequiresNew_TopLevelShouldRollbackNestedShouldCommit");
+        txRequiresNew();
+        throwRuntimeException();
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    private void startTxRequired_InvokeTxNotSuppported_TopLevelShouldCommitEvenThoughNestedThrowsRTE() {
+        logInfo("    startTxRequired_InvokeTxNotSuppported_TopLevelShouldCommitEvenThoughNestedThrowsRTE");
+        txNotSupported();
     }
 
     // ==== nested methods ====
 
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+    private void txSupports() {
+        logInfo("        txSupports");
+        noOp();
+    }
+
     @TransactionAttribute(TransactionAttributeType.NEVER)
     private void txNever() {
-        System.out.println("    txNever");
+        logInfo("        txNever");
     }
 
     @TransactionAttribute(TransactionAttributeType.MANDATORY)
     private void txMandatory() {
-        System.out.println("    txMandatory");
+        logInfo("        txMandatory");
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRESNEW)
+    private void txRequiresNew() {
+        logInfo("        txRequiresNew");
+    }
+
+    @TransactionAttribute(TransactionAttributeType.NOTSUPPORTED)
+    private void txNotSupported() {
+        logInfo("        txNotSupported");
+        printTxStatus();
     }
 
     private void throwException() throws Exception {
-        System.out.println("    throwException");
+        logInfo("        throwException");
         throw new Exception();
     }
 
     private void throwRuntimeException() {
-        System.out.println("    throwRuntimeException");
+        logInfo("        throwRuntimeException");
         throw new RuntimeException();
     }
 
     private void noOp() {
-        System.out.println("    noOp");
+        logInfo("        noOp");
     }
 
     public static void main(String[] args) {
         Main main = new Main();
 
-        System.out.println("-------------------------------");
-        main.startTxSupports_InvokeNoOpMethod_ShouldCommit();
+        logInfo("\n-------------------------------");
+        main.startTxRequires_InvokeTxSupports_InvokeNoOpMethod_ShouldCommit();
 
-        System.out.println("-------------------------------");
+        logInfo("\n-------------------------------");
         try {
             main.startTxRequired_InvokeMethodThrowingCheckedException_ShouldCommit();
         } catch (Exception e) {
         }
 
-        System.out.println("-------------------------------");
+        logInfo("\n-------------------------------");
         try {
             main.startTxRequired_InvokeMethodThrowingUncheckedException_ShouldRollback();
         } catch (RuntimeException e) {
         }
 
-        System.out.println("-------------------------------");
+        logInfo("\n-------------------------------");
         try {
-            main.startTxRequired_InvokeMethodWithTxNever_ShouldThrowTxException();
-        } catch (TransactionException e) {
-            System.out.println("INFO - catched expected TransactionException: " + e.getMessage());
+            main.startTxRequired_InvokeMethodWithTxNever_ShouldThrowRemoteException();
+        } catch (Throwable e) {
+            logInfo("exception expected: " + e.toString());
         }
 
-        System.out.println("-------------------------------");
+        logInfo("\n-------------------------------");
         try {
-            main.startNoTx_InvokeMethodWithTxMandatory_ShouldThrowTxException();
-        } catch (TransactionException e) {
-            System.out.println("INFO - catched expected TransactionException: " + e.getMessage());
+            main.startNoTx_InvokeMethodWithTxMandatory_ShouldThrowTransactionRequiredException();
+        } catch (Throwable e) {
+            logInfo("exception expected: " + e.toString());
+        }
+
+        logInfo("\n-------------------------------");
+        try {
+            main.startTxRequired_InvokeTxRequiresNew_TopLevelShouldRollbackNestedShouldCommit();
+        } catch (Throwable e) {
+            logInfo("exception expected: " + e.toString());
+        }
+
+        logInfo("\n-------------------------------");
+        try {
+            main.startTxRequired_InvokeTxNotSuppported_TopLevelShouldCommitEvenThoughNestedThrowsRTE();
+        } catch (Throwable e) {
+            logInfo("exception expected: " + e.toString());
         }
 
         System.exit(0);
     }
 
-    public static void printTxStatus() {
-        try {
-            TransactionAttribyteTypeAwareTransactionProtocol txAspect =
-                    (TransactionAttribyteTypeAwareTransactionProtocol)
-                    Aspects.aspectOf(TransactionAttribyteTypeAwareTransactionProtocol.class);
-            switch (txAspect.getTransaction().getStatus()) {
-                case Status.STATUS_COMMITTED:
-                    System.out.println("        STATUS_COMMITTED");
-                    break;
-                case Status.STATUS_COMMITTING:
-                    System.out.println("        STATUS_COMMITTING");
-                    break;
-                case Status.STATUS_ACTIVE:
-                    System.out.println("        STATUS_ACTIVE");
-                    break;
-                case Status.STATUS_MARKED_ROLLBACK:
-                    System.out.println("        STATUS_MARKED_ROLLBACK");
-                    break;
-                case Status.STATUS_NO_TRANSACTION:
-                    System.out.println("        STATUS_NO_TRANSACTION");
-                    break;
-                case Status.STATUS_PREPARED:
-                    System.out.println("        STATUS_PREPARED");
-                    break;
-                case Status.STATUS_PREPARING:
-                    System.out.println("        STATUS_PREPARING");
-                    break;
-                case Status.STATUS_ROLLEDBACK:
-                    System.out.println("        STATUS_ROLLEDBACK");
-                    break;
-                case Status.STATUS_ROLLING_BACK:
-                    System.out.println("        STATUS_ROLLING_BACK");
-                    break;
-                case Status.STATUS_UNKNOWN:
-                    System.out.println("        STATUS_UNKNOWN");
-                    break;
-            }
-        } catch (SystemException e) {
-            throw new RuntimeException(e);
+    private static void printTxStatus() {
+        switch (TransactionAttribyteTypeAwareTransactionProtocol.getTransactionStatus()) {
+            case Status.STATUS_COMMITTED:
+                logInfo("TX status: STATUS_COMMITTED");
+                break;
+            case Status.STATUS_COMMITTING:
+                logInfo("TX status: STATUS_COMMITTING");
+                break;
+            case Status.STATUS_ACTIVE:
+                logInfo("TX status: STATUS_ACTIVE");
+                break;
+            case Status.STATUS_MARKED_ROLLBACK:
+                logInfo("TX status: STATUS_MARKED_ROLLBACK");
+                break;
+            case Status.STATUS_NO_TRANSACTION:
+                logInfo("TX status: STATUS_NO_TRANSACTION");
+                break;
+            case Status.STATUS_PREPARED:
+                logInfo("TX status: STATUS_PREPARED");
+                break;
+            case Status.STATUS_PREPARING:
+                logInfo("TX status: STATUS_PREPARING");
+                break;
+            case Status.STATUS_ROLLEDBACK:
+                logInfo("TX status: STATUS_ROLLEDBACK");
+                break;
+            case Status.STATUS_ROLLING_BACK:
+                logInfo("TX status: STATUS_ROLLING_BACK");
+                break;
+            case Status.STATUS_UNKNOWN:
+                logInfo("TX status: STATUS_UNKNOWN");
+                break;
         }
     }
 
+    private static void logInfo(final String message) {
+        System.out.println("[Main:INFO] " + message);
+    }
 }
