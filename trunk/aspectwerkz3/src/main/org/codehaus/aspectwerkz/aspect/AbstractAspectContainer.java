@@ -89,7 +89,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
         if (crossCuttingInfo == null) {
             throw new IllegalArgumentException("cross-cutting info can not be null");
         }
-
         m_infoPrototype = crossCuttingInfo;
         arrayWithSingleCrossCuttingInfo[0] = m_infoPrototype;
         m_aspectPrototype = createAspect();
@@ -105,7 +104,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      */
     public Object invokeAdvice(final int methodIndex, final JoinPoint joinPoint) {
         Object result = null;
-
         switch (m_infoPrototype.getDeploymentModel()) {
             case DeploymentModel.PER_JVM:
                 result = invokeAdvicePerJvm(methodIndex, joinPoint);
@@ -122,7 +120,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
             default:
                 throw new RuntimeException("invalid deployment model: " + m_infoPrototype.getDeploymentModel());
         }
-
         return result;
     }
 
@@ -136,7 +133,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
         if (index < 0) {
             throw new IllegalArgumentException("advice index can not be less than 0");
         }
-
         return m_adviceRepository[index];
     }
 
@@ -184,7 +180,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     private Object invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) {
         final Class targetClass = joinPoint.getTargetClass();
         Object result = null;
-
         try {
             createPerClassAspect(targetClass);
             result = m_adviceRepository[methodIndex].invoke(m_perClass.get(targetClass), new Object[] { joinPoint });
@@ -207,11 +202,9 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     private Object invokeAdvicePerInstance(final int methodIndex, final JoinPoint joinPoint) {
         Object result = null;
         Object targetInstance = joinPoint.getTargetInstance();
-
         if (targetInstance == null) { // can be null if f.e. an aspect has deployment model perInstance and has caller side pointcuts defined
             return invokeAdvicePerClass(methodIndex, joinPoint);
         }
-
         try {
             createPerInstanceAspect(targetInstance);
             result = m_adviceRepository[methodIndex].invoke(m_perInstance.get(targetInstance),
@@ -234,14 +227,10 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      */
     private Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint) {
         Object result;
-
         try {
             final Thread currentThread = Thread.currentThread();
-
             createPerThreadAspect(currentThread);
-
             Method method = m_adviceRepository[methodIndex];
-
             result = method.invoke(m_perThread.get(currentThread), new Object[] { joinPoint });
         } catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
@@ -261,7 +250,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
         if (m_perJvm == null) {
             m_perJvm = createAspect();
         }
-
         return m_perJvm;
     }
 
@@ -277,7 +265,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
                 m_perClass.put(callingClass, createAspect());
             }
         }
-
         return m_perClass.get(callingClass);
     }
 
@@ -291,13 +278,11 @@ public abstract class AbstractAspectContainer implements AspectContainer {
         if (callingInstance == null) {
             return createPerClassAspect(callingInstance.getClass());
         }
-
         if (!m_perInstance.containsKey(callingInstance)) {
             synchronized (m_perInstance) {
                 m_perInstance.put(callingInstance, createAspect());
             }
         }
-
         return m_perInstance.get(callingInstance);
     }
 
@@ -313,7 +298,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
                 m_perThread.put(thread, createAspect());
             }
         }
-
         return m_perThread.get(thread);
     }
 
@@ -343,12 +327,9 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     protected void createAdviceRepository() {
         synchronized (m_adviceRepository) {
             List methodList = TransformationUtil.createSortedMethodList(m_infoPrototype.getAspectClass());
-
             m_adviceRepository = new Method[methodList.size()];
-
             for (int i = 0; i < m_adviceRepository.length; i++) {
                 Method method = (Method)methodList.get(i);
-
                 method.setAccessible(true);
                 m_adviceRepository[i] = method;
             }

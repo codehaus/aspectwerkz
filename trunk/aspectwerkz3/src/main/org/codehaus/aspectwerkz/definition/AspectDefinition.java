@@ -75,6 +75,11 @@ public class AspectDefinition {
     private Map m_parameters = new HashMap();
 
     /**
+     * The container implementation class name.
+     */
+    private String m_containerClassName;
+
+    /**
      * Creates a new aspect meta-data instance.
      *
      * @param name      the name of the aspect
@@ -290,6 +295,24 @@ public class AspectDefinition {
      */
     public Map getParameters() {
         return m_parameters;
+    }
+
+    /**
+     * Sets the name of the container implementation class.
+     *
+     * @param containerClassName the container class name
+     */
+    public void setContainerClassName(final String containerClassName) {
+        m_containerClassName = containerClassName;
+    }
+
+    /**
+     * Returns the name of the container implementation class.
+     *
+     * @return the container class name
+     */
+    public String getContainerClassName() {
+        return m_containerClassName;
     }
 
     /**

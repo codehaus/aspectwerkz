@@ -168,19 +168,39 @@ public class PointcutManager {
     }
 
     /**
-     * Returns all the pointcuts for the member join point specified.
-     *
-     * @param ctx the expression context
-     * @return the pointcuts that match
-     */
+      * Returns all the pointcuts for the join point specified.
+      *
+      * @param ctx the expression context
+      * @return the pointcuts that match
+      */
     public List getPointcuts(final ExpressionContext ctx) {
         if (ctx == null) {
-            throw new IllegalArgumentException("class meta-data can not be null");
+            throw new IllegalArgumentException("context can not be null");
         }
         List pointcutList = new ArrayList();
         for (Iterator it = m_pointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
             if (pointcut.getExpressionInfo().getExpression().match(ctx)) {
+                pointcutList.add(pointcut);
+            }
+        }
+        return pointcutList;
+    }
+
+    /**
+      * Returns all the cflow pointcuts for the join point specified.
+      *
+      * @param ctx the expression context
+      * @return the pointcuts that match
+      */
+    public List getCflowPointcuts(final ExpressionContext ctx) {
+        if (ctx == null) {
+            throw new IllegalArgumentException("context can not be null");
+        }
+        List pointcutList = new ArrayList();
+        for (Iterator it = m_pointcuts.iterator(); it.hasNext();) {
+            Pointcut pointcut = (Pointcut)it.next();
+            if (pointcut.getExpressionInfo().getCflowExpression().match(ctx)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -194,7 +214,6 @@ public class PointcutManager {
         if (!(o instanceof PointcutManager)) {
             return false;
         }
-
         final PointcutManager pointcutManager = (PointcutManager)o;
         if (m_deploymentModel != pointcutManager.m_deploymentModel) {
             return false;
