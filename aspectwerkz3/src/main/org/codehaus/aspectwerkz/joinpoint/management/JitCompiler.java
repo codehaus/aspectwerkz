@@ -401,7 +401,7 @@ public class JitCompiler {
                 cw.visitEnd();
 
                 // FIXME: should be a VM option
-                 AsmHelper.dumpClass("_dump", className, cw);
+                 //AsmHelper.dumpClass("_dump", className, cw);
 
                 // load the generated class
                 joinPointClass = AsmHelper.loadClass(loader, cw.toByteArray(), className);
