@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * compiler, fields are in the reverse order, thus pointcut reference in aspect defined with annotations
  * may not be resolved until the whole class has been parsed.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class ExpressionInfo {
@@ -76,6 +76,7 @@ public class ExpressionInfo {
      * Name of the special argument for an afterReturning/Throwing when this one is bounded.
      */
     private String m_specialArgumentName = null;
+
     /**
      * Creates a new expression info instance.
      *
@@ -246,6 +247,7 @@ public class ExpressionInfo {
 
     /**
      * Set the bounded name of the special argument for afterReturning/Throwing binding
+     *
      * @param specialArgumentName
      */
     public void setSpecialArgumentName(String specialArgumentName) {
@@ -254,6 +256,7 @@ public class ExpressionInfo {
 
     /**
      * Get the bounded name of the special argument for afterReturning/Throwing binding
+     *
      * @return
      */
     public String getSpecialArgumentName() {

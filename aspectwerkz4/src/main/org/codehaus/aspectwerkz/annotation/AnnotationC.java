@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -42,7 +42,7 @@ import java.util.StringTokenizer;
  * <p/>Annotation compiler. <p/>Extracts the annotations from JavaDoc tags and inserts them into the bytecode of the
  * class.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AnnotationC {
@@ -329,14 +329,16 @@ public class AnnotationC {
         for (int i = 0; i < annotations.length; i++) {
             Annotation annotation = annotations[i];
             if (annotation != null) {
-                enhancer.insertClassAttribute(new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_ASPECT(), annotation));
+                enhancer.insertClassAttribute(
+                        new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_ASPECT(), annotation)
+                );
                 String name = ((Aspect) annotation).name();
                 if (name == null) {
                     name = clazz.getFullyQualifiedName();
                 }
-                String deploymentModel = ((Aspect)annotation).deploymentModel();
-                if (((Aspect)annotation).value()!=null) {
-                    deploymentModel = ((Aspect)annotation).value();
+                String deploymentModel = ((Aspect) annotation).deploymentModel();
+                if (((Aspect) annotation).value() != null) {
+                    deploymentModel = ((Aspect) annotation).value();
                 }
                 logInfo("aspect [" + name + ']');
                 logInfo("    deployment model [" + deploymentModel + ']');
@@ -354,7 +356,9 @@ public class AnnotationC {
     private static void parseMixinAnnotations(final JavaClass clazz,
                                               final AnnotationManager manager,
                                               final AttributeEnhancer enhancer) {
-        final Annotation[] introduceAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_MIXIN(), clazz);
+        final Annotation[] introduceAnnotations = manager.getAnnotations(
+                AOPAnnotationConstants.ANNOTATION_MIXIN(), clazz
+        );
         final String className = clazz.getFullyQualifiedName();
         for (int k = 0; k < introduceAnnotations.length; k++) {
             Annotation introduceAnnotation = introduceAnnotations[k];
@@ -376,12 +380,12 @@ public class AnnotationC {
                     }
                 }
                 String deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_JVM);
-                if (((Mixin)introduceAnnotation).deploymentModel() != null) {
-                    deploymentModel = ((Mixin)introduceAnnotation).deploymentModel();
+                if (((Mixin) introduceAnnotation).deploymentModel() != null) {
+                    deploymentModel = ((Mixin) introduceAnnotation).deploymentModel();
                 }
-                String expression = ((Mixin)introduceAnnotation).pointcut();
+                String expression = ((Mixin) introduceAnnotation).pointcut();
                 if (expression == null) {
-                    expression = ((Mixin)introduceAnnotation).value();
+                    expression = ((Mixin) introduceAnnotation).value();
                 }
                 logInfo(
                         "    mixin introduction [" + clazz.getFullyQualifiedName()
@@ -389,7 +393,9 @@ public class AnnotationC {
                         "] deployment model ["
                         + deploymentModel + ']'
                 );
-                enhancer.insertClassAttribute(new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_MIXIN(), introduceAnnotation));
+                enhancer.insertClassAttribute(
+                        new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_MIXIN(), introduceAnnotation)
+                );
             }
         }
     }
@@ -405,7 +411,9 @@ public class AnnotationC {
                                                 final AttributeEnhancer enhancer,
                                                 final JavaMethod method) {
         // Pointcut with signature
-        Annotation[] expressionAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_EXPRESSION(), method);
+        Annotation[] expressionAnnotations = manager.getAnnotations(
+                AOPAnnotationConstants.ANNOTATION_EXPRESSION(), method
+        );
         for (int i = 0; i < expressionAnnotations.length; i++) {
             Annotation expressionAnnotation = expressionAnnotations[i];
             if (expressionAnnotation != null && expressionAnnotation instanceof Expression) {
@@ -457,47 +465,69 @@ public class AnnotationC {
         for (int i = 0; i < afterAnnotations.length; i++) {
             Annotation afterAnnotation = afterAnnotations[i];
             if (afterAnnotation != null && afterAnnotation instanceof After) {
-                enhancer.insertMethodAttribute(method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER(), afterAnnotation));
+                enhancer.insertMethodAttribute(
+                        method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER(), afterAnnotation)
+                );
                 logInfo(
                         "    after advice [" + AnnotationC.getShortCallSignature(method) + " :: "
                         + ((After) afterAnnotation).value() + ']'
                 );
             }
         }
-        Annotation[] afterFinallyAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_AFTER_FINALLY(), method);
+        Annotation[] afterFinallyAnnotations = manager.getAnnotations(
+                AOPAnnotationConstants.ANNOTATION_AFTER_FINALLY(), method
+        );
         for (int i = 0; i < afterFinallyAnnotations.length; i++) {
             Annotation afterAnnotation = afterFinallyAnnotations[i];
             if (afterAnnotation != null && afterAnnotation instanceof AfterFinally) {
-                enhancer.insertMethodAttribute(method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER_FINALLY(), afterAnnotation));
+                enhancer.insertMethodAttribute(
+                        method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER_FINALLY(), afterAnnotation)
+                );
                 logInfo(
                         "    after finally advice [" + AnnotationC.getShortCallSignature(method) + " :: "
                         + ((AfterFinally) afterAnnotation).value() + ']'
                 );
             }
         }
-        Annotation[] afterReturningAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_AFTER_RETURNING(), method);
+        Annotation[] afterReturningAnnotations = manager.getAnnotations(
+                AOPAnnotationConstants.ANNOTATION_AFTER_RETURNING(), method
+        );
         for (int i = 0; i < afterReturningAnnotations.length; i++) {
             Annotation afterAnnotation = afterReturningAnnotations[i];
             if (afterAnnotation != null && afterAnnotation instanceof AfterReturning) {
-                enhancer.insertMethodAttribute(method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER_RETURNING(), afterAnnotation));
+                enhancer.insertMethodAttribute(
+                        method,
+                        new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER_RETURNING(), afterAnnotation)
+                );
                 logInfo(
                         "    after returning advice [" + AnnotationC.getShortCallSignature(method) + " :: "
-                        + AspectAnnotationParser.getExpressionElseValue(((AfterReturning) afterAnnotation).value(),
-                                                                      ((AfterReturning) afterAnnotation).pointcut())
-                        + " :: " + ((AfterReturning) afterAnnotation).type()+ ']'
+                        +
+                        AspectAnnotationParser.getExpressionElseValue(
+                                ((AfterReturning) afterAnnotation).value(),
+                                ((AfterReturning) afterAnnotation).pointcut()
+                        )
+                        + " :: " + ((AfterReturning) afterAnnotation).type() + ']'
                 );
             }
         }
-        Annotation[] afterThrowingAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_AFTER_THROWING(), method);
+        Annotation[] afterThrowingAnnotations = manager.getAnnotations(
+                AOPAnnotationConstants.ANNOTATION_AFTER_THROWING(), method
+        );
         for (int i = 0; i < afterThrowingAnnotations.length; i++) {
             Annotation afterAnnotation = afterThrowingAnnotations[i];
             if (afterAnnotation != null && afterAnnotation instanceof AfterThrowing) {
-                enhancer.insertMethodAttribute(method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER_THROWING(), afterAnnotation));
+                enhancer.insertMethodAttribute(
+                        method,
+                        new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER_THROWING(), afterAnnotation)
+                );
                 logInfo(
                         "    after throwing advice [" + AnnotationC.getShortCallSignature(method) + " :: "
-                        + AspectAnnotationParser.getExpressionElseValue(((AfterThrowing) afterAnnotation).value(),
-                                                                      ((AfterThrowing) afterAnnotation).pointcut())
-                        + " :: " + ((AfterThrowing) afterAnnotation).type()+ ']'
+                        +
+                        AspectAnnotationParser.getExpressionElseValue(
+                                ((AfterThrowing) afterAnnotation).value(),
+                                ((AfterThrowing) afterAnnotation).pointcut()
+                        )
+                        + " :: " + ((AfterThrowing) afterAnnotation).type() + ']'
                 );
             }
         }
@@ -507,9 +537,7 @@ public class AnnotationC {
             for (int i = 0; i < customAnnotations.length; i++) {
                 Annotation customAnnotation = customAnnotations[i];
                 if (customAnnotation != null) {
-                    enhancer.insertMethodAttribute(
-                            method, new AnnotationInfo(annotationName, customAnnotation)
-                    );
+                    enhancer.insertMethodAttribute(method, new AnnotationInfo(annotationName, customAnnotation));
                     logInfo(
                             "    custom method annotation [" + annotationName + " @ "
                             + method.getParentClass().getName() + '.' + method.getName() +
@@ -561,7 +589,9 @@ public class AnnotationC {
                                                final AttributeEnhancer enhancer,
                                                final JavaField field) {
 
-        Annotation[] expressionAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_EXPRESSION(), field);
+        Annotation[] expressionAnnotations = manager.getAnnotations(
+                AOPAnnotationConstants.ANNOTATION_EXPRESSION(), field
+        );
         for (int i = 0; i < expressionAnnotations.length; i++) {
             Annotation expressionAnnotation = expressionAnnotations[i];
             if (expressionAnnotation != null && expressionAnnotation instanceof Expression) {
@@ -577,7 +607,9 @@ public class AnnotationC {
                 );
             }
         }
-        Annotation[] implementsAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_IMPLEMENTS(), field);
+        Annotation[] implementsAnnotations = manager.getAnnotations(
+                AOPAnnotationConstants.ANNOTATION_IMPLEMENTS(), field
+        );
         for (int i = 0; i < implementsAnnotations.length; i++) {
             Annotation implementsAnnotation = implementsAnnotations[i];
             if (implementsAnnotation != null && implementsAnnotation instanceof Implements) {
@@ -589,7 +621,7 @@ public class AnnotationC {
                 );
                 logInfo(
                         "    interface introduction [" + field.getName() + " :: "
-                        + ((Implements)implementsAnnotation).value() + ']'
+                        + ((Implements) implementsAnnotation).value() + ']'
                 );
             }
         }
@@ -651,7 +683,7 @@ public class AnnotationC {
     /**
      * Registers the user defined annotations.
      *
-     * @param manager        the annotations manager
+     * @param manager         the annotations manager
      * @param propertiesFiles
      */
     private static void registerUserDefinedAnnotations(final AnnotationManager manager,
@@ -666,7 +698,8 @@ public class AnnotationC {
                 in = new FileInputStream(propertiesFile);
                 ANNOTATION_DEFINITION.load(in);
             } catch (Exception e) {
-                String message = "custom annotation properties " + propertiesFile + " can not be loaded: " + e.toString();
+                String message = "custom annotation properties " + propertiesFile + " can not be loaded: " +
+                                 e.toString();
                 logWarning(message);
                 throw new DefinitionException(message);
             } finally {
@@ -692,8 +725,8 @@ public class AnnotationC {
                     klass = s_loader.loadClass(className);
                 } catch (ClassNotFoundException e) {
                     String message = className
-                            +
-                            " could not be found on system classpath or class path provided as argument to the compiler";
+                                     +
+                                     " could not be found on system classpath or class path provided as argument to the compiler";
                     logError(message);
                     throw new DefinitionException(message);
                 }
@@ -708,7 +741,7 @@ public class AnnotationC {
      * Prints the usage.
      */
     private static void printUsage() {
-        System.out.println("AspectWerkz (c) 2002-2005 Jonas Bonér, Alexandre Vasseur");
+        System.out.println("AspectWerkz (c) 2002-2005 Jonas BonŽr, Alexandre Vasseur");
         System.out
                 .println(
                         "usage: java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC [-verbose] -src <path to src dir> | -srcfiles <list of files> | -srcincludes <path to file> -classes <path to classes dir> [-dest <path to destination dir>] [-custom <property file for custom annotations>]"

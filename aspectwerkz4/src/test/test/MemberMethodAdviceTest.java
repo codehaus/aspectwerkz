@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -10,7 +10,7 @@ package test;
 import junit.framework.TestCase;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class MemberMethodAdviceTest extends TestCase implements Loggable {
@@ -172,7 +172,9 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         try {
             assertEquals(0L, getPrimitiveAndNullFromAdvice());
         } catch (NullPointerException e) {
-            fail("If method that returns a primitive has an advice that returns NULL then it causes a NPE. The NULL should be handled in bytecode and it should return the default value for the primitive (wrapped)");
+            fail(
+                    "If method that returns a primitive has an advice that returns NULL then it causes a NPE. The NULL should be handled in bytecode and it should return the default value for the primitive (wrapped)"
+            );
         }
     }
 
@@ -221,7 +223,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public void testObjectArrayArg() {
-        String[] array = new String[] {
+        String[] array = new String[]{
             "one", "two", "three"
         };
         assertTrue(arrayParam(array)[0].equals(array[0]));
@@ -230,7 +232,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public void testCharArrayArg() {
-        char[] array = new char[] {
+        char[] array = new char[]{
             'A', 'B', 'C'
         };
         assertTrue(charArrayParam(array)[0] == array[0]);
@@ -239,7 +241,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public void testLongArrayArg() {
-        long[] array = new long[] {
+        long[] array = new long[]{
             1L, 2L, 3L
         };
         assertTrue(longArrayParam(array)[0] == array[0]);
@@ -248,7 +250,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public void testIntArrayArg() {
-        int[] array = new int[] {
+        int[] array = new int[]{
             1, 2, 3
         };
         assertTrue(intArrayParam(array)[0] == array[0]);
@@ -257,7 +259,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public void testShortArrayArg() {
-        short[] array = new short[] {
+        short[] array = new short[]{
             1, 2, 3
         };
         assertTrue(shortArrayParam(array)[0] == array[0]);
@@ -266,7 +268,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public void testBooleanArrayArg() {
-        boolean[] array = new boolean[] {
+        boolean[] array = new boolean[]{
             true, false
         };
         assertTrue(booleanArrayParam(array)[0] == array[0]);
@@ -274,7 +276,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public void testByteArrayArg() {
-        byte[] array = new byte[] {
+        byte[] array = new byte[]{
             1, 2, 3
         };
         assertTrue(byteArrayParam(array)[0] == array[0]);
@@ -283,7 +285,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public void testFloatArrayArg() {
-        float[] array = new float[] {
+        float[] array = new float[]{
             1.1F, 2.1F, 3.1F
         };
         assertTrue(floatArrayParam(array)[0] == array[0]);
@@ -293,27 +295,38 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
 
     public void testVariousArguments1() {
         assertEquals(
-            "dummy".hashCode() + 1 + (int) 2.3F,
-            this.hashCode() + (int) 34L,
-            variousParams1("dummy", 1, 2.3F, this, 34L));
+                "dummy".hashCode() + 1 + (int) 2.3F,
+                this.hashCode() + (int) 34L,
+                variousParams1("dummy", 1, 2.3F, this, 34L)
+        );
     }
 
     public void testVariousArguments2() {
-        assertEquals((int) 2.3F
-            + 1
-            + "dummy".hashCode()
-            + this.hashCode()
-            + (int) 34L
-            + "test".hashCode(), variousParams2(2.3F, 1, "dummy", this, 34L, "test"));
+        assertEquals(
+                (int) 2.3F
+                + 1
+                + "dummy".hashCode()
+                + this.hashCode()
+                + (int) 34L
+                + "test".hashCode(), variousParams2(2.3F, 1, "dummy", this, 34L, "test")
+        );
     }
 
     public void testVariousArguments4() {
-        assertEquals("dummy", takesArrayAsArgument(new String[] {
-            "dummy", "test"
-        })[0]);
-        assertEquals("test", takesArrayAsArgument(new String[] {
-            "dummy", "test"
-        })[1]);
+        assertEquals(
+                "dummy", takesArrayAsArgument(
+                        new String[]{
+                            "dummy", "test"
+                        }
+                )[0]
+        );
+        assertEquals(
+                "test", takesArrayAsArgument(
+                        new String[]{
+                            "dummy", "test"
+                        }
+                )[1]
+        );
     }
 
     public void testLongParamNoAroundAdvice() {

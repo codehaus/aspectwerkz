@@ -25,7 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Manages the aspects, registry for the aspect containers (one container per aspect type).
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class Aspects {
@@ -97,7 +97,7 @@ public class Aspects {
     /**
      * Returns the per class aspect instance for the aspect with the given name for the perTarget model
      *
-     * @param name   the name of the aspect
+     * @param name        the name of the aspect
      * @param targetClass the targetClass class
      * @return the per class aspect instance
      */
@@ -120,7 +120,7 @@ public class Aspects {
      * Returns the per class aspect instance for the aspect with the given name for the perTarget model
      *
      * @param aspectClass the name of the aspect
-     * @param targetClass      the targetClass class
+     * @param targetClass the targetClass class
      * @return the per class aspect instance
      */
     public static Object aspectOf(final Class aspectClass, final Class targetClass) {
@@ -130,7 +130,7 @@ public class Aspects {
     /**
      * Returns the per targetClass instance aspect instance for the aspect with the given name for the perTarget model
      *
-     * @param name   the name of the aspect
+     * @param name           the name of the aspect
      * @param targetInstance the targetClass instance, can be null (static method, ctor call)
      * @return the per instance aspect instance, fallback on perClass if targetInstance is null
      */
@@ -144,7 +144,9 @@ public class Aspects {
             if (className != null) {
                 return aspectOf(className, targetInstance);
             } else {
-                throw new Error("Could not load aspect " + name + " from " + targetInstance.getClass().getClassLoader());
+                throw new Error(
+                        "Could not load aspect " + name + " from " + targetInstance.getClass().getClassLoader()
+                );
             }
         }
     }
@@ -152,7 +154,7 @@ public class Aspects {
     /**
      * Returns the per targetClass instance aspect instance for the aspect with the given name for the perTarget model
      *
-     * @param aspectClass the name of the aspect
+     * @param aspectClass    the name of the aspect
      * @param targetInstance the targetClass instance, can be null
      * @return the per targetClass instance aspect instance, fallback to perClass if targetInstance is null
      */

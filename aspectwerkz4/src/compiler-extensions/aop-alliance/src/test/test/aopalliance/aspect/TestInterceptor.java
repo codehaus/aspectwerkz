@@ -14,7 +14,7 @@ import org.aopalliance.intercept.MethodInvocation;
 /**
  * Test interceptor for the Aop Alliance compiler extension to AspectWerkz.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public class TestInterceptor implements MethodInterceptor {
 

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -14,15 +14,15 @@ import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
 /**
  * Utility method used by the transformers.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public final class TransformationUtil {
 
     /**
      * Returns the prefixed method name.
      *
-     * @param methodName     the method name
-     * @param className      the class name
+     * @param methodName the method name
+     * @param className  the class name
      * @return the name of the join point
      */
     public static String getPrefixedOriginalMethodName(final String methodName,

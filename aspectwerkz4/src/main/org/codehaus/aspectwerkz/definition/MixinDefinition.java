@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Definition for the mixin construct.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public class MixinDefinition {
     /**
@@ -72,8 +72,8 @@ public class MixinDefinition {
      *
      * @param mixinClass      the mixin class
      * @param deploymentModel mixin deployment model
-     * @param isTransient transient flag
-     * @param systemDef the system definition
+     * @param isTransient     transient flag
+     * @param systemDef       the system definition
      */
     public MixinDefinition(final ClassInfo mixinClass,
                            final String deploymentModel,
@@ -110,6 +110,7 @@ public class MixinDefinition {
     public String getFactoryClassName() {
         return m_factoryClassName;
     }
+
     /**
      * Returns the methods to introduce.
      *

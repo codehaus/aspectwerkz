@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -26,7 +26,7 @@ import java.util.Iterator;
  * and patches the 'clinit' method.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @TODO: for multi weaving, we could go on in adding several AW initJoinPoints_xxWeaveCount method, but then cannot be
  * done with RW
  */
@@ -183,7 +183,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
      * Handles the method body of the AW initJoinPoints method.
      *
      * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
      */
     public class InsertBeforeInitJoinPointsCodeAdapter extends CodeAdapter {
 

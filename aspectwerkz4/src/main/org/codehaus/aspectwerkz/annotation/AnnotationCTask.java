@@ -1,5 +1,5 @@
 /************1**************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -28,14 +28,14 @@ import org.apache.tools.ant.types.Reference;
 
 /**
  * AnnotationC Ant task.
- *
+ * <p/>
  * Use the following parameters to configure the task:
  * <ul>
  * <li>verbose: [optional] flag marking the task verbosity [true / false]</li>
  * <li>properties: [optional] path to a properties file when user-defined annoations are to be used</li>
  * <li>destdir: [optional unless input classes are in more than one path] directory where to put annnotated class files</li>
  * <li>copytodest: [optional] filename pattern to copy extra resources like dtd, xml, or properties files that were found
- *      in the input classes path(s). By defaults, only ".class" files will be handled. It is ignored if "destdir" is not set.</li>
+ * in the input classes path(s). By defaults, only ".class" files will be handled. It is ignored if "destdir" is not set.</li>
  * </ul>
  * <p/>
  * Use the following parameters to configure the classpath to point to the classes to be weaved. Those can be specified
@@ -95,6 +95,7 @@ public class AnnotationCTask extends Task {
 
     /**
      * <task copytodest="** slash *">
+     *
      * @param pattern
      */
     public void setCopytodest(String pattern) {
@@ -113,34 +114,39 @@ public class AnnotationCTask extends Task {
     //-- <properties .., <src .., <sourcepath.. and srcdir=.. sourcepathref=..
 
     public Path createProperties() {
-        if (m_propertiesNested == null)
+        if (m_propertiesNested == null) {
             m_propertiesNested = new Path(getProject());
+        }
         return m_propertiesNested.createPath();
     }
 
     public Path createSrc() {
-        if (m_src == null)
+        if (m_src == null) {
             m_src = new Path(getProject());
+        }
         return m_src.createPath();
     }
 
     public void setSrcdir(Path srcDir) {
-        if (m_src == null)
+        if (m_src == null) {
             m_src = srcDir;
-        else
+        } else {
             m_src.append(srcDir);
+        }
     }
 
     public void setSourcepath(Path sourcepath) {
-        if (m_src == null)
+        if (m_src == null) {
             m_src = sourcepath;
-        else
+        } else {
             m_src.append(sourcepath);
+        }
     }
 
     public Path createSourcepath() {
-        if (m_src == null)
+        if (m_src == null) {
             m_src = new Path(getProject());
+        }
         return m_src.createPath();
     }
 
@@ -152,15 +158,17 @@ public class AnnotationCTask extends Task {
     //--- classpath
 
     public void setClasspath(Path classpath) {
-        if (m_classpath == null)
+        if (m_classpath == null) {
             m_classpath = classpath;
-        else
+        } else {
             m_classpath.append(classpath);
+        }
     }
 
     public Path createClasspath() {
-        if (m_classpath == null)
+        if (m_classpath == null) {
             m_classpath = new Path(getProject());
+        }
         return m_classpath.createPath();
     }
 
@@ -216,11 +224,11 @@ public class AnnotationCTask extends Task {
 
             AnnotationC.compile(
                     m_verbose,
-                    (String[])srcDirs.toArray(new String[]{}),
-                    (String[])srcFiles.toArray(new String[]{}),
-                    (String[])classpathDirs.toArray(new String[]{}),
+                    (String[]) srcDirs.toArray(new String[]{}),
+                    (String[]) srcFiles.toArray(new String[]{}),
+                    (String[]) classpathDirs.toArray(new String[]{}),
                     m_destdir == null ? null : m_destdir.getAbsolutePath(),
-                    (String[])allProperties.toArray(new String[]{})
+                    (String[]) allProperties.toArray(new String[]{})
             );
 
             if (m_destdir != null) {
@@ -251,8 +259,9 @@ public class AnnotationCTask extends Task {
 
     private List getDirectories(Path path) throws BuildException {
         List dirs = new ArrayList();
-        if (path == null)
+        if (path == null) {
             return dirs;
+        }
         for (int i = 0; i < path.list().length; i++) {
             File dir = getProject().resolveFile(path.list()[i]);
             if (!dir.exists()) {
@@ -284,7 +293,7 @@ public class AnnotationCTask extends Task {
         List sourceDir = getDirectories(m_src);
         for (Iterator iterator = sourceDir.iterator(); iterator.hasNext();) {
             String dir = (String) iterator.next();
-            FileSet anonFs  = new FileSet();
+            FileSet anonFs = new FileSet();
             anonFs.setIncludes(CLASS_PATTERN);
             if (m_includePattern != null) {
                 anonFs.setIncludes(m_includePattern);

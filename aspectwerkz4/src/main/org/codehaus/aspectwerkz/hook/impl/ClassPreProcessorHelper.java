@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -80,7 +80,7 @@ public class ClassPreProcessorHelper {
             } catch (Throwable throwable) {
                 System.err.println("AspectWerkz - WARN - Error initializing pre-processor class " + s + ':');
                 throwable.printStackTrace();
-            }                       
+            }
         }
     }
 
@@ -123,11 +123,11 @@ public class ClassPreProcessorHelper {
 
     // FIXME needed for 1.5 Plug but implies Java 1.4 NIO usage
     public static ByteBuffer defineClass0Pre(ClassLoader caller,
-                                         String name,
-                                         ByteBuffer byteBuffer,
-                                         int off,
-                                         int len,
-                                         ProtectionDomain pd) {
+                                             String name,
+                                             ByteBuffer byteBuffer,
+                                             int off,
+                                             int len,
+                                             ProtectionDomain pd) {
         byte[] bytes = new byte[len];
         byteBuffer.get(bytes, off, len);
         byte[] newbytes = defineClass0Pre(caller, name, bytes, 0, bytes.length, pd);

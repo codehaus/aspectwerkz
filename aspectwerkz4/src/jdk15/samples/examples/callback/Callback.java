@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadFactory;
  * -Daspectwerkz.definition.file=src\jdk15\samples\examples\callback\aop.xml
  * And optianally:
  * -Daspectwerkz.transform.verbose=true
- *
+ * <p/>
  * Note: you can avoid use of -D...file=...aop.xml if you have the aop.xml in a META-INF folder somewhere in the classpath.
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
@@ -76,17 +76,19 @@ public class Callback {
         /**
          * Java 5 thread utils
          */
-        private Executor m_threadPool = Executors.newCachedThreadPool(new ThreadFactory() {
-            public Thread newThread(Runnable target) {
-                Thread t = new Thread(target);
-                t.setDaemon(true);// use of daemon to run from Ant
-                return t;
-            }
-        });
+        private Executor m_threadPool = Executors.newCachedThreadPool(
+                new ThreadFactory() {
+                    public Thread newThread(Runnable target) {
+                        Thread t = new Thread(target);
+                        t.setDaemon(true);// use of daemon to run from Ant
+                        return t;
+                    }
+                }
+        );
 
         // a bit tedious to match inner class so I am a bit lazy here.
         @Around("call(* *..*.*Callee.longOp(int)) && args(howLong) && this(caller)")
-        public Object doAsync(final StaticJoinPoint sjp, int howLong, final Callback caller) throws Throwable {
+                public Object doAsync(final StaticJoinPoint sjp, int howLong, final Callback caller) throws Throwable {
             System.out.println("[AOP powered] - Callback$AsyncAspect.doAsync - for this long: " + howLong);
             m_threadPool.execute(
                     new Runnable() {
@@ -95,7 +97,9 @@ public class Callback {
                                 // proceed in a new thread
                                 sjp.proceed();
                                 // when done, triggers the callback
-                                caller.callback("[AOP powered] - I am done there .. " + Thread.currentThread().getName());
+                                caller.callback(
+                                        "[AOP powered] - I am done there .. " + Thread.currentThread().getName()
+                                );
                             } catch (Throwable e) {
                                 throw new RuntimeException(e);
                             }

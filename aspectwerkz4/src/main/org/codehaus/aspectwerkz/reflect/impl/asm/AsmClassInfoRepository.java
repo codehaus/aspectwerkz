@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -21,7 +21,7 @@ import java.io.IOException;
 /**
  * A repository for the class info hierarchy. Is class loader aware.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public class AsmClassInfoRepository {
     /**
@@ -56,11 +56,15 @@ public class AsmClassInfoRepository {
             try {
                 InputStream stream = loader.getResourceAsStream("annotation.properties");
                 if (stream != null) {
-                     try {
-                         m_annotationProperties.load(stream);
-                     } finally {
-                         try { stream.close(); } catch(Exception e) {;}
-                     }
+                    try {
+                        m_annotationProperties.load(stream);
+                    } finally {
+                        try {
+                            stream.close();
+                        } catch (Exception e) {
+                            ;
+                        }
+                    }
                 }
             } catch (IOException e) {
                 throw new DefinitionException("could not find resource [annotation.properties] on classpath");

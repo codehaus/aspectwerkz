@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * Enhances classes with custom attributes using the ASM library.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AsmAttributeEnhancer implements AttributeEnhancer {
@@ -281,7 +281,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     /**
      * Base class for the attribute adapter visitors.
      *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
      */
     private class AttributeClassAdapter extends ClassAdapter {
         private static final String INIT_METHOD_NAME = "<init>";
@@ -373,7 +373,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
      */
     private static class FieldAttributeInfo {
         public final byte[] attribute;
@@ -386,7 +386,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
      */
     private static class MethodAttributeInfo {
         public final byte[] attribute;

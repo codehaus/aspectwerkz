@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -43,7 +43,7 @@ import java.util.Iterator;
  * This implementation guarantees that the method, fields and constructors can be retrieved in the same order as they were in the bytecode
  * (it can depends of the compiler and might not be the order of the source code - f.e. IBM compiler)
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AsmClassInfo implements ClassInfo {
@@ -820,7 +820,7 @@ public class AsmClassInfo implements ClassInfo {
     /**
      * ASM bytecode visitor that retrieves the class name from the bytecode.
      *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
      */
     public static class ClassNameRetrievalClassAdapter extends AsmAnnotationHelper.NullClassAdapter {
 
@@ -843,7 +843,7 @@ public class AsmClassInfo implements ClassInfo {
     /**
      * ASM bytecode visitor that gathers info about the class.
      *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
      */
     private class ClassInfoClassAdapter extends AsmAnnotationHelper.NullClassAdapter {
 

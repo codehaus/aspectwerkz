@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -26,7 +26,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 /**
  * Adds an interface to the target class.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public class AddInterfaceVisitor extends ClassAdapter implements TransformationConstants {
 
@@ -93,7 +93,7 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
         int i = 0;
         final String[] newInterfaceArray = new String[interfacesToAdd.size()];
         for (Iterator it = interfacesToAdd.iterator(); it.hasNext();) {
-            newInterfaceArray[i++] = (String)it.next();
+            newInterfaceArray[i++] = (String) it.next();
         }
 
         for (int j = 0; j < newInterfaceArray.length; j++) {
@@ -107,8 +107,8 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
     /**
      * Filters the classes to be transformed.
      *
-     * @param classInfo  the class to filter
-     * @param ctx        the context
+     * @param classInfo   the class to filter
+     * @param ctx         the context
      * @param definitions a set with the definitions
      * @return boolean true if the method should be filtered away
      */
@@ -116,7 +116,7 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
                                       final ExpressionContext ctx,
                                       final Set definitions) {
         for (Iterator it = definitions.iterator(); it.hasNext();) {
-            SystemDefinition systemDef = (SystemDefinition)it.next();
+            SystemDefinition systemDef = (SystemDefinition) it.next();
             if (classInfo.isInterface()) {
                 return true;
             }

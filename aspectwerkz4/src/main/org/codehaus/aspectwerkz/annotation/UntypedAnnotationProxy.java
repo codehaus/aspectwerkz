@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -13,12 +13,14 @@ import java.io.Serializable;
 /**
  * Untyped annotation proxy. <p/>To be used with JavDoc-style, pure string based, one value only type of annotations.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class UntypedAnnotationProxy implements Annotation, Serializable {
 
-    public Class annotationType() {return null;}
+    public Class annotationType() {
+        return null;
+    }
 
     /**
      * The full value of the annotation.

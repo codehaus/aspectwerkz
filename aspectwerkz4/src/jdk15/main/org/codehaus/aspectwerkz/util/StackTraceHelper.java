@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -14,7 +14,7 @@ import java.util.Iterator;
 /**
  * Utility methods for dealing with stack traces.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public final class StackTraceHelper {
 
@@ -45,7 +45,7 @@ public final class StackTraceHelper {
         final StackTraceElement[] newStackTrace = new StackTraceElement[newStackTraceList.size()];
         int k = 0;
         for (Iterator it = newStackTraceList.iterator(); it.hasNext(); k++) {
-            final StackTraceElement element = (StackTraceElement)it.next();
+            final StackTraceElement element = (StackTraceElement) it.next();
             newStackTrace[k] = element;
         }
         exception.setStackTrace(newStackTrace);

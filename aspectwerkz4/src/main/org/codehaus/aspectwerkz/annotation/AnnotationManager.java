@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -37,7 +37,7 @@ import java.lang.reflect.Method;
 /**
  * Parses and retrieves annotations.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AnnotationManager {
@@ -57,6 +57,7 @@ public class AnnotationManager {
     /**
      * Constructs a new annotation manager and had the given ClassLoader to the
      * search path
+     *
      * @param loader
      */
     public AnnotationManager(ClassLoader loader) {
@@ -189,7 +190,7 @@ public class AnnotationManager {
         final Class proxyClass = (Class) m_registeredAnnotations.get(rawAnnotation.name);
 
         // FIXME migrate those old styled as well
-        if (! proxyClass.isInterface()) {
+        if (!proxyClass.isInterface()) {
             try {
                 Annotation annotation = (Annotation) proxyClass.newInstance();
                 annotation.initialize(rawAnnotation.name, (rawAnnotation.value == null) ? "" : rawAnnotation.value);
@@ -200,14 +201,18 @@ public class AnnotationManager {
         }
 
         try {
-            InvocationHandler handler = new Java14AnnotationInvocationHander(proxyClass, rawAnnotation.name, rawAnnotation.value);
+            InvocationHandler handler = new Java14AnnotationInvocationHander(
+                    proxyClass, rawAnnotation.name, rawAnnotation.value
+            );
             Object annotationProxy = Proxy.newProxyInstance(
                     proxyClass.getClassLoader(), new Class[]{Annotation.class, proxyClass}, handler
             );
             return (Annotation) annotationProxy;
         } catch (Throwable e) {
-            throw new DefinitionException("Unable to parse annotation @" + rawAnnotation.name +
-                                          " " + rawAnnotation.value, e);
+            throw new DefinitionException(
+                    "Unable to parse annotation @" + rawAnnotation.name +
+                    " " + rawAnnotation.value, e
+            );
         }
     }
 
@@ -240,7 +245,7 @@ public class AnnotationManager {
         }
         if (annotationName.equals(name)) {
             // untyped
-            value = asIs.substring(asIs.indexOf(' ')+1, asIs.length());
+            value = asIs.substring(asIs.indexOf(' ') + 1, asIs.length());
             if (!value.startsWith("\"") && !value.endsWith("\"")) {
                 //value = "\""+value+"\"";
             }
@@ -250,13 +255,13 @@ public class AnnotationManager {
                 name = asIs.substring(0, asIs.indexOf('('));
             }
             if (annotationName.equals(name)) {
-                value = asIs.substring(asIs.indexOf('(')+1, asIs.length());
+                value = asIs.substring(asIs.indexOf('(') + 1, asIs.length());
                 if (value.endsWith(")")) {
                     if (value.length() > 1) {
-                        value = value.substring(0, value.length()-1);
+                        value = value.substring(0, value.length() - 1);
                         if (value.startsWith("\"") && value.endsWith("\"")) {
                             if (value.length() > 2) {
-                                value = value.substring(1, value.length()-1);
+                                value = value.substring(1, value.length() - 1);
                             }
                         }
                     } else {

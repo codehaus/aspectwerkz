@@ -13,7 +13,7 @@ package org.codehaus.aspectwerkz.transform.inlining;
  * and can be a subset of actual JP (f.e. call, where information is lost in between each weave phase).
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public final class EmittedJoinPoint {
 

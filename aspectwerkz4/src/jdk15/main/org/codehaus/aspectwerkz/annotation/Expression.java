@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -14,14 +14,14 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Annotation for pointcut
- *
+ * <p/>
  * TODO: rename to Pointcut and remove pointcut as field ??
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Expression {
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface Expression {
     /**
      * The pointcut expression
      */

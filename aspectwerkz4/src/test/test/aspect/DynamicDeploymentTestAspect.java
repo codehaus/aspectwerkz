@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -13,7 +13,7 @@ import org.codehaus.aspectwerkz.definition.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @Aspect perJVM
  * @TODO: need nested pointcuts, need to be able to specify one singe pointcut name for the advice
  * to be able to easily refer to it when modifying the advices at runtime. this the handle is

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -23,7 +23,7 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class ExpressionTest extends TestCase {
@@ -2872,76 +2872,102 @@ public class ExpressionTest extends TestCase {
                 "execution(* parameters1(..)) && this(test.expression.Target)",
                 NAMESPACE
         );
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, s_declaringType, s_declaringType)
-        ));
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, parameters1, s_declaringType)
-        ));
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, parameters2, s_declaringType)
-        ));
-        assertFalse(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, parameters2, otherType)
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, s_declaringType, s_declaringType)
-        ));
-        assertTrue(info.getExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, parameters1, s_declaringType)
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, parameters2, s_declaringType)
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, parameters2, otherType)
-        ));
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, s_declaringType, s_declaringType)
+                )
+        );
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, parameters1, s_declaringType)
+                )
+        );
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, parameters2, s_declaringType)
+                )
+        );
+        assertFalse(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, parameters2, otherType)
+                )
+        );
+        assertFalse(
+                info.getExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, s_declaringType, s_declaringType)
+                )
+        );
+        assertTrue(
+                info.getExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, parameters1, s_declaringType)
+                )
+        );
+        assertFalse(
+                info.getExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, parameters2, s_declaringType)
+                )
+        );
+        assertFalse(
+                info.getExpression().match(new ExpressionContext(PointcutType.EXECUTION, parameters2, otherType))
+        );
 
         info = new ExpressionInfo(
                 "call(* parameters1(..)) && this(test.expression.Target)",
                 NAMESPACE
         );
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.CALL, s_declaringType, s_declaringType)
-        ));
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters1, s_declaringType)
-        ));
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters2, s_declaringType)
-        ));
-        assertFalse(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters2, otherType)
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.CALL, s_declaringType, s_declaringType)
-        ));
-        assertTrue(info.getExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters1, s_declaringType)
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters2, s_declaringType)
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters2, otherType)
-        ));
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.CALL, s_declaringType, s_declaringType)
+                )
+        );
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.CALL, parameters1, s_declaringType)
+                )
+        );
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.CALL, parameters2, s_declaringType)
+                )
+        );
+        assertFalse(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.CALL, parameters2, otherType)
+                )
+        );
+        assertFalse(
+                info.getExpression().match(new ExpressionContext(PointcutType.CALL, s_declaringType, s_declaringType))
+        );
+        assertTrue(
+                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters1, s_declaringType))
+        );
+        assertFalse(
+                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, s_declaringType))
+        );
+        assertFalse(
+                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, otherType))
+        );
 
         info = new ExpressionInfo(
                 "call(* parameters1(..)) && this(java.lang.String)",
                 NAMESPACE
         );
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters1, otherType)
-        ));
-        assertTrue(info.getExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters1, otherType)
-        ));
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters2, otherType)
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters2, otherType)
-        ));
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.CALL, parameters1, otherType)
+                )
+        );
+        assertTrue(
+                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters1, otherType))
+        );
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.CALL, parameters2, otherType)
+                )
+        );
+        assertFalse(
+                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, otherType))
+        );
 
         //TODO test when withinInfo is a static method (should not match)
         //same with field get / set
@@ -2955,76 +2981,102 @@ public class ExpressionTest extends TestCase {
                 "execution(* parameters1(..)) && target(test.expression.Target)",
                 NAMESPACE
         );
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, s_declaringType, s_declaringType)
-        ));
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, parameters1, s_declaringType)
-        ));
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, parameters2, s_declaringType)
-        ));
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, parameters2, otherType)//otherType ignored
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, s_declaringType, s_declaringType)
-        ));
-        assertTrue(info.getExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, parameters1, s_declaringType)
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, parameters2, s_declaringType)
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.EXECUTION, parameters2, otherType)
-        ));
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, s_declaringType, s_declaringType)
+                )
+        );
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, parameters1, s_declaringType)
+                )
+        );
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, parameters2, s_declaringType)
+                )
+        );
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, parameters2, otherType)//otherType ignored
+                )
+        );
+        assertFalse(
+                info.getExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, s_declaringType, s_declaringType)
+                )
+        );
+        assertTrue(
+                info.getExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, parameters1, s_declaringType)
+                )
+        );
+        assertFalse(
+                info.getExpression().match(
+                        new ExpressionContext(PointcutType.EXECUTION, parameters2, s_declaringType)
+                )
+        );
+        assertFalse(
+                info.getExpression().match(new ExpressionContext(PointcutType.EXECUTION, parameters2, otherType))
+        );
 
         info = new ExpressionInfo(
                 "call(* parameters1(..)) && target(test.expression.Target)",
                 NAMESPACE
         );
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.CALL, s_declaringType, s_declaringType)
-        ));
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters1, s_declaringType)
-        ));
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters2, s_declaringType)
-        ));
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters2, otherType)//otherType ignored
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.CALL, s_declaringType, s_declaringType)
-        ));
-        assertTrue(info.getExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters1, s_declaringType)
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters2, s_declaringType)
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters2, otherType)
-        ));
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.CALL, s_declaringType, s_declaringType)
+                )
+        );
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.CALL, parameters1, s_declaringType)
+                )
+        );
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.CALL, parameters2, s_declaringType)
+                )
+        );
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.CALL, parameters2, otherType)//otherType ignored
+                )
+        );
+        assertFalse(
+                info.getExpression().match(new ExpressionContext(PointcutType.CALL, s_declaringType, s_declaringType))
+        );
+        assertTrue(
+                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters1, s_declaringType))
+        );
+        assertFalse(
+                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, s_declaringType))
+        );
+        assertFalse(
+                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, otherType))
+        );
 
         info = new ExpressionInfo(
                 "call(* parameters1(..)) && target(java.lang.String)",
                 NAMESPACE
         );
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters1, otherType)
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters1, otherType)
-        ));
-        assertTrue(info.getAdvisedClassFilterExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters2, otherType)
-        ));
-        assertFalse(info.getExpression().match(
-                new ExpressionContext(PointcutType.CALL, parameters2, otherType)
-        ));
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.CALL, parameters1, otherType)
+                )
+        );
+        assertFalse(
+                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters1, otherType))
+        );
+        assertTrue(
+                info.getAdvisedClassFilterExpression().match(
+                        new ExpressionContext(PointcutType.CALL, parameters2, otherType)
+                )
+        );
+        assertFalse(
+                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, otherType))
+        );
 
         //TODO test when withinInfo is a static method (should not match)
         //same with field get / set

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -19,7 +19,7 @@ import java.lang.reflect.Modifier;
  * A compiler that compiles/generates a class that represents a specific join point, a class which invokes the advices
  * and the target join point statically.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
  */
 public class FieldGetJoinPointCompiler extends AbstractJoinPointCompiler {
@@ -193,7 +193,9 @@ public class FieldGetJoinPointCompiler extends AbstractJoinPointCompiler {
         cv.visitFieldInsn(GETFIELD, m_joinPointClassName, CALLER_INSTANCE_FIELD_NAME, m_callerClassSignature);
         cv.visitVarInsn(ALOAD, 0);
         cv.visitFieldInsn(GETFIELD, m_joinPointClassName, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature);
-        cv.visitMethodInsn(INVOKESPECIAL, FIELD_RTTI_IMPL_CLASS_NAME, INIT_METHOD_NAME, FIELD_RTTI_IMPL_INIT_SIGNATURE);
+        cv.visitMethodInsn(
+                INVOKESPECIAL, FIELD_RTTI_IMPL_CLASS_NAME, INIT_METHOD_NAME, FIELD_RTTI_IMPL_INIT_SIGNATURE
+        );
 
         // set the value
         cv.visitInsn(DUP);
@@ -206,7 +208,10 @@ public class FieldGetJoinPointCompiler extends AbstractJoinPointCompiler {
             cv.visitVarInsn(ALOAD, 0);
             cv.visitFieldInsn(GETFIELD, m_joinPointClassName, RETURNED_FIELD, m_returnType.getDescriptor());
         }
-        cv.visitMethodInsn(INVOKEVIRTUAL, FIELD_RTTI_IMPL_CLASS_NAME, SET_RETURN_VALUE_METHOD_NAME, SET_RETURN_VALUE_METHOD_SIGNATURE);
+        cv.visitMethodInsn(
+                INVOKEVIRTUAL, FIELD_RTTI_IMPL_CLASS_NAME, SET_RETURN_VALUE_METHOD_NAME,
+                SET_RETURN_VALUE_METHOD_SIGNATURE
+        );
 
         cv.visitInsn(ARETURN);
         cv.visitMaxs(0, 0);

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -13,7 +13,7 @@ package org.codehaus.aspectwerkz.joinpoint;
  * Provides access to only static data, is therefore much more performant than the usage of the {@link
  * org.codehaus.aspectwerkz.joinpoint.JoinPoint} interface.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public interface StaticJoinPoint {
     public static final String METHOD_EXECUTION = "METHOD_EXECUTION";

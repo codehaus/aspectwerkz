@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 /**
  * TODO test constructor and field interception
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public class Test extends TestCase {
     

@@ -31,7 +31,7 @@ import org.codehaus.aspectwerkz.org.objectweb.asm.ClassWriter;
  * Provides methods for definition of aspects and framework specific bytecode generation
  * used by the join point compiler.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public class AopAllianceAspectModel implements AspectModel, TransformationConstants {
 

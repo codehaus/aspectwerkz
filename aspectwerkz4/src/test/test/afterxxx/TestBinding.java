@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -34,7 +34,10 @@ public class TestBinding extends TestCase {
             throwChecked();
         } catch (Throwable t) {
             //System.out.println(s_log);
-            assertEquals("afterThrowingExact java.lang.ClassNotFoundException afterThrowingParentClass java.lang.ClassNotFoundException", s_log);
+            assertEquals(
+                    "afterThrowingExact java.lang.ClassNotFoundException afterThrowingParentClass java.lang.ClassNotFoundException",
+                    s_log
+            );
             return;
         }
         fail("should have encounter an exception");
@@ -42,11 +45,11 @@ public class TestBinding extends TestCase {
 
     //-- Test methods
     public int returnInt(int i) {
-        return 2*i;
+        return 2 * i;
     }
 
     public String returnString(String s) {
-        return s+s;
+        return s + s;
     }
 
     public void throwChecked() throws ClassNotFoundException {
