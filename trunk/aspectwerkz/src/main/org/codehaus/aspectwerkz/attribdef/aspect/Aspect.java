@@ -494,6 +494,8 @@ public abstract class Aspect implements Serializable, Mixin {
         m_uuid = (String)fields.get("m_uuid", null);
         m_name = (String)fields.get("m_name", null);
         m_aspectClass = (Class)fields.get("m_aspectClass", null);
+        m_targetInstance = fields.get("m_targetInstance", null);
+        m_targetClass = fields.get("m_targetClass", null);
         m_containerType = (ContainerType)fields.get("m_containerType", ContainerType.TRANSIENT);
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
         m_aspectDef = (AspectDefinition)fields.get("m_aspectDef", null);
