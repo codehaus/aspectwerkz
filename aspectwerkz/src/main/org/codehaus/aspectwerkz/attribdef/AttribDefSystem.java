@@ -471,8 +471,6 @@ public final class AttribDefSystem implements System {
      * @return the the mixin (aspect in this case)
      */
     public Mixin getMixin(final String name) {
-//        java.lang.System.out.println(name);
-//        (new Exception()).printStackTrace();
         if (name == null) throw new IllegalArgumentException("introduction name can not be null");
 
         Mixin introduction;
