@@ -54,9 +54,6 @@ import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
  * Visit() methods are returning Boolean.TRUE/FALSE or null when decision cannot be taken.
  * Using null allow composition of OR/AND with NOT in the best way.
  *
- * FIXME - poorly optimized:
- * if pcA = within(X) and pcB = pcA AND call(* foo(..)), then ALL classes gets matched !
- * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */

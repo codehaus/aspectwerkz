@@ -236,13 +236,14 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     public Object visit(ASTHasMethod node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
 
+        // we are matching on the CALLER info
+        // for execution() pointcut, this is equals to CALLEE info
         ReflectionInfo info = context.getWithinReflectionInfo();
         ClassInfo classInfo = (info instanceof MemberInfo) ?
             ((MemberInfo)info).getDeclaringType() : (ClassInfo)info;
 
         Node childNode = node.jjtGetChild(0);
         MethodInfo[] methodInfos = classInfo.getMethods();
-
         for (int i = 0; i < methodInfos.length; i++) {
             if (Boolean.TRUE.equals(childNode.jjtAccept(this, methodInfos[i]))) {
                 return Boolean.TRUE;
@@ -250,7 +251,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         }
 
         ConstructorInfo[] constructorInfos = classInfo.getConstructors();
-
         for (int i = 0; i < constructorInfos.length; i++) {
             if (Boolean.TRUE.equals(childNode.jjtAccept(this, constructorInfos[i]))) {
                 return Boolean.TRUE;
@@ -263,13 +263,14 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     public Object visit(ASTHasField node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
 
+        // we are matching on the CALLER info
+        // for execution() pointcut, this is equals to CALLEE info
         ReflectionInfo info = context.getWithinReflectionInfo();
         ClassInfo classInfo = (info instanceof MemberInfo) ?
             ((MemberInfo)info).getDeclaringType() : (ClassInfo)info;
 
         Node childNode = node.jjtGetChild(0);
         FieldInfo[] fieldInfos = classInfo.getFields();
-
         for (int i = 0; i < fieldInfos.length; i++) {
             if (Boolean.TRUE.equals(childNode.jjtAccept(this, fieldInfos[i]))) {
                 return Boolean.TRUE;

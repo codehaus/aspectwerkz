@@ -53,7 +53,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         if (context.hasBeenVisitingCflow()) {
             return Boolean.FALSE.equals(match);
         } else {
-            return false;
+            return true;
         }
     }
 
@@ -187,7 +187,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         }
     }
 
@@ -196,7 +196,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         }
     }
 }
