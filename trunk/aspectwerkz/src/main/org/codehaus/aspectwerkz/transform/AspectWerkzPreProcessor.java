@@ -81,8 +81,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         m_metaDataRepository = new WeakHashMap();
         m_definitionRepository = new WeakHashMap();
         m_stack = new ArrayList();
-
-//        m_stack.add(new AddSerialVersionUidTransformer());
+        m_stack.add(new AddSerialVersionUidTransformer());
         m_stack.add(new AdviseMemberFieldTransformer());
         m_stack.add(new AdviseStaticFieldTransformer());
         m_stack.add(new AdviseCallerSideMethodTransformer());
