@@ -48,6 +48,10 @@ public class AnnotationParserTest extends TestCase {
             DefaultString annotation = new DefaultString();
             AnnotationVisitor.parse(annotation, s_parser.parse("@DefaultString(\"foo\")"));
             assertEquals("foo", annotation.getValue());
+
+            DefaultInt annotationInt = new DefaultInt();
+            AnnotationVisitor.parse(annotationInt, s_parser.parse("@DefaultInt(3)"));
+            assertEquals(3, annotationInt.getValue());
         } catch (Throwable t) {
             fail(t.toString());
         }
@@ -61,6 +65,20 @@ public class AnnotationParserTest extends TestCase {
             assertEquals(String.class, annotation.getKlass());
             AnnotationVisitor.parse(annotation, s_parser.parse("@Complex(i=3, ls={1l,2l,6L},  klass=java.lang.String.class)"));
             assertEquals(String.class, annotation.getKlass());
+            AnnotationVisitor.parse(annotation, s_parser.parse("@Complex(i=3 ls={1l,2l,6L} klass=java.lang.String.class)"));
+            assertEquals(String.class, annotation.getKlass());
+        } catch (Throwable t) {
+            fail(t.toString());
+        }
+    }
+
+    public void testStringArray() {
+        try {
+            StringArray annotation = new StringArray();
+            AnnotationVisitor.parse(annotation, s_parser.parse("@StringArray(i=3  ss={\"hello\", \"foo\"})"));
+            assertEquals("foo", annotation.ss()[1]);
+            AnnotationVisitor.parse(annotation, s_parser.parse("@StringArray(i=3, ss={\"hello\", \"foo\"})"));
+            assertEquals("foo", annotation.ss()[1]);
         } catch (Throwable t) {
             fail(t.toString());
         }
@@ -89,6 +107,13 @@ public class AnnotationParserTest extends TestCase {
         public String getValue() {return this.s;}
     }
 
+    public static class DefaultInt extends TypedAnnotationProxy {
+        int i;
+        public void setValue(int i) {this.i = i;}
+        public int getValue() {return this.i;}
+    }
+
+
     public static class Complex extends TypedAnnotationProxy {
         int i;
         long[] ls;
@@ -99,6 +124,15 @@ public class AnnotationParserTest extends TestCase {
         public long[] getLs() {return this.ls;}
         public void setKlass(Class k) {this.klass = k;}
         public Class getKlass() {return this.klass;}
+    }
+
+    public static class StringArray extends TypedAnnotationProxy {
+        int i;
+        String[] ss;
+        public int i() {return i;}
+        public void setI(int i) {this.i = i;}
+        public String[] ss() {return ss;}
+        public void setSs(String[] ss) {this.ss = ss;}
     }
 
     public static class Untyped extends UntypedAnnotationProxy {
