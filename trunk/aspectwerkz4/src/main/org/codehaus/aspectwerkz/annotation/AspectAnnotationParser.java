@@ -18,6 +18,7 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 
 import java.util.Iterator;
@@ -400,14 +401,15 @@ public class AspectAnnotationParser {
      * @return the one of value or expression which is not null. Both cannot be specified at the same time
      */
     public static String getExpressionElseValue(String value, String expression) {
-        if (value != null && expression != null) {
+        if (!Strings.isNullOrEmpty(value) && !Strings.isNullOrEmpty(expression)) {
             throw new DefinitionException("Using both value and expression elements");
         } else {
-            if (expression != null) {
+            if (!Strings.isNullOrEmpty(expression)) {
                 return expression;
             } else {
                 return value;
             }
         }
     }
+
 }
