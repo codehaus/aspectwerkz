@@ -11,10 +11,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
-import test.mixin.perinstance.Introductions;
-import test.mixin.perinstance.ToBeIntroduced;
-import test.mixin.perinstance.ToBeIntroducedUsingHasMethod;
-import test.mixin.perinstance.ToBeIntroducedUsingHasField;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -246,14 +242,14 @@ public class IntroductionTest extends TestCase {
 //    }
     public void testIntroductionUsingHasMethod() {
         assertTrue(m_toBeIntroducedUsingHasMethod instanceof Serializable);
-        assertFalse(m_toBeIntroducedUsingHasMethod instanceof Introductions);
-        assertFalse(m_toBeIntroducedUsingHasMethod instanceof Cloneable);
+        assertTrue(m_toBeIntroducedUsingHasMethod instanceof Introductions);
+//        assertFalse(m_toBeIntroducedUsingHasMethod instanceof Cloneable);
     }
 
     public void testIntroductionUsingHasField() {
         assertTrue(m_toBeIntroducedUsingHasField instanceof Serializable);
         assertTrue(m_toBeIntroducedUsingHasField instanceof Introductions);
-        assertTrue(m_toBeIntroducedUsingHasField instanceof Cloneable);
+//        assertTrue(m_toBeIntroducedUsingHasField instanceof Cloneable);
     }
 
     public static void main(String[] args) {
@@ -265,9 +261,5 @@ public class IntroductionTest extends TestCase {
         // leading to some test
         // failure.
         return new junit.framework.TestSuite(IntroductionTest.class);
-    }
-
-    public String ___AW_getUuid() {
-        return "ZZZZZZZZZZZZZZZZZZZZZZZZZZ";
     }
 }

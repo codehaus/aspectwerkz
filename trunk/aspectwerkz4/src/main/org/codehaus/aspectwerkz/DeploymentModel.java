@@ -31,13 +31,13 @@ public final class DeploymentModel {
      * @return the matched deployment type
      */
     public static int getDeploymentModelAsInt(final String type) {
-        if ((type == null) || type.equals(SystemDefinition.PER_JVM)) {
+        if ((type == null) || type.equalsIgnoreCase(SystemDefinition.PER_JVM)) {
             return PER_JVM;
-        } else if (type.equals(SystemDefinition.PER_CLASS)) {
+        } else if (type.equalsIgnoreCase(SystemDefinition.PER_CLASS)) {
             return PER_CLASS;
-        } else if (type.equals(SystemDefinition.PER_INSTANCE)) {
+        } else if (type.equalsIgnoreCase(SystemDefinition.PER_INSTANCE)) {
             return PER_INSTANCE;
-        } else if (type.equals(SystemDefinition.PER_THREAD)) {
+        } else if (type.equalsIgnoreCase(SystemDefinition.PER_THREAD)) {
             return PER_THREAD;
         } else {
             throw new RuntimeException("invalid deployment model: " + type);

@@ -131,7 +131,7 @@ public class Mixins {
             SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
             for (Iterator iterator1 = systemDefinition.getMixinDefinitions().iterator(); iterator1.hasNext();) {
                 MixinDefinition mixinDef = (MixinDefinition) iterator1.next();
-                if (mixinClass.getName().replace('/', '.').equals(mixinDef.getClassName())) {
+                if (mixinClass.getName().replace('/', '.').equals(mixinDef.getMixinImpl().getName())) {
                     mixinDefinition = mixinDef;
                     break;
                 }

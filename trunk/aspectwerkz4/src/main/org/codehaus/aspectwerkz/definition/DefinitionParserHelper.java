@@ -144,7 +144,7 @@ public class DefinitionParserHelper {
         MixinDefinition doublon = null;
         for (Iterator intros = systemDef.getMixinDefinitions().iterator(); intros.hasNext();) {
             MixinDefinition intro = (MixinDefinition) intros.next();
-            if (intro.getClassName().equals(mixinDef.getClassName())) {
+            if (intro.getMixinImpl().getName().equals(mixinDef.getMixinImpl().getName())) {
                 doublon = intro;
                 intro.addExpressionInfos(mixinDef.getExpressionInfos());
                 break;

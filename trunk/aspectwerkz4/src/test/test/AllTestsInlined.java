@@ -24,7 +24,6 @@ public class AllTestsInlined extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("All tests");
 
-
         suite.addTestSuite(test.deployment.DeployerTest.class);
         suite.addTestSuite(MemberMethodAdviceTest.class);
         suite.addTestSuite(StaticMethodAdviceTest.class);

@@ -7,6 +7,8 @@
  **************************************************************************************/
 package test.mixin.perclass;
 
+import java.io.Serializable;
+
 /**
  * Here we use an expression
  * <p/>
@@ -14,7 +16,7 @@ package test.mixin.perclass;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class MyImpl implements Introductions {
+public class MyImpl implements Introductions, Serializable {
 
     public MyImpl(Class targetClass) {
     }
