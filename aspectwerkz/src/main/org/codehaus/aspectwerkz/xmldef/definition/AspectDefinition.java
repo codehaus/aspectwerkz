@@ -146,8 +146,6 @@ public class AspectDefinition {
     /**
      * Returns the around advices.
      *
-     * @TODO: needs to be able to retrieve the advices from a base class to the aspect
-     *
      * @return the around advices
      */
     public List getAroundAdvices() {
@@ -157,8 +155,6 @@ public class AspectDefinition {
     /**
      * Adds a new pre advice.
      *
-     * @TODO: needs to be able to retrieve the advices from a base class to the aspect
-     *
      * @param adviceMetaData the pre advice
      */
     public void addPreAdvice(final AdviceDefinition adviceMetaData) {
@@ -167,8 +163,6 @@ public class AspectDefinition {
 
     /**
      * Returns the pre advices.
-     *
-     * @TODO: needs to be able to retrieve the advices from a base class to the aspect
      *
      * @return the pre advices
      */
@@ -215,8 +209,7 @@ public class AspectDefinition {
     /**
      * Returns the method introductions.
      *
-     * @TODO: gets sorted evertime, have a flag?
-     * @TODO: needs to be able to retrieve the introductions from a base class to the aspect
+     * @TODO: gets sorted every time, have a flag?
      *
      * @return the introductions
      */
@@ -245,8 +238,6 @@ public class AspectDefinition {
     /**
      * Returns the pointcuts.
      *
-     * @TODO: needs to be able to retrieve the pointcuts from a base class to the aspect
-     *
      * @return the pointcuts
      */
     public Collection getPointcuts() {
@@ -256,12 +247,10 @@ public class AspectDefinition {
     /**
      * Returns a specific pointcut.
      *
-     * @TODO: needs to be able to retrieve the pointcuts from a base class to the aspect
-     *
      * @param pointcutName the pointcut name
      * @return the pointcut definition
      */
-    public PointcutDefinition getPointcut(final String pointcutName) {
+    public PointcutDefinition getPointcutDef(final String pointcutName) {
         for (Iterator it = m_pointcutDefs.iterator(); it.hasNext();) {
             PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
             if (pointcutDef.getName().equals(pointcutName)) {
@@ -311,7 +300,7 @@ public class AspectDefinition {
     /**
      * Returns all the advices for this aspect.
      *
-     * @TODO: gets sorted evertime, have a flag?
+     * @TODO: gets sorted every time, have a flag?
      *
      * @return all the advices
      */
