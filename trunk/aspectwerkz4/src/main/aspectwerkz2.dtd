@@ -196,7 +196,7 @@ Attributes:
 )>
 <!ATTLIST advice
 name CDATA #REQUIRED
-type #REQUIRED
+type CDATA #REQUIRED
 bind-to CDATA #IMPLIED
 attribute CDATA #IMPLIED
 >

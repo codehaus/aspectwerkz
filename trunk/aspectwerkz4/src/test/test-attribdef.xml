@@ -55,10 +55,10 @@
         <mixin class="test.adviseonintroducedinterface.Aspect$Mixin" deployment-model="perInstance"
             bind-to="within(test.adviseonintroducedinterface.Target)"/>
         <aspect class="test.implementsbug.TestModelObserver"/>
-        <aspect class="test.inheritedmixinbug.Baspect">
-            <pointcut name="autonamed_pointcut" expression="within(test.inheritedmixinbug.Target)"/>
-            <introduce class="test.inheritedmixinbug.Baspect$Bimpl" bind-to="autonamed_pointcut"/>
-        </aspect>
+
+        <pointcut name="autonamed_pointcut" expression="within(test.inheritedmixinbug.Target)"/>
+        <mixin class="test.inheritedmixinbug.Baspect$Bimpl" bind-to="autonamed_pointcut"/>
+
         <aspect class="test.aspectutilmethodbug.DemoAspect" deployment-model="perInstance"/>
         <aspect class="test.ComplexCFlowTest$Aspect"/>
         <aspect class="test.advisetostringbug.Aspect"/>
