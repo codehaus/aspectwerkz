@@ -59,7 +59,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.3 2003-05-17 11:00:06 jboner Exp $
+ * @version $Id: DefinitionManager.java,v 1.4 2003-06-05 09:36:08 jboner Exp $
  */
 public class DefinitionManager {
 
@@ -157,11 +157,14 @@ public class DefinitionManager {
             final String intfClassName = def.getInterface();
 
             Class implClass = null;
+            Aspect aspectForIntroduction = null;
             if (implClassName != null) {
 
                 // create an aspect for the introduction as well
-                AspectWerkz.register(new Aspect(
-                        Pattern.compileClassPattern(implClassName)));
+                aspectForIntroduction = new Aspect(
+                        Pattern.compileClassPattern(implClassName));
+
+                AspectWerkz.register(aspectForIntroduction);
 
                 // load the introduction class
                 try {
@@ -182,12 +185,6 @@ public class DefinitionManager {
                         new PersistentIntroductionMemoryStrategy(
                                 def.getName(), implClass));
 
-                List aspects = AspectWerkz.getAspects(implClassName);
-                for (Iterator it2 = aspects.iterator(); it2.hasNext();) {
-                    Aspect aspect = (Aspect)it2.next();
-                    aspect.createSetFieldPointcut(DirtyFieldCheckAdvice.PATTERN).
-                            addPostAdvice(DirtyFieldCheckAdvice.NAME);
-                }
                 if (s_persistenceManager == null) {
                     loadPersistenceManager();
                 }
@@ -245,18 +242,10 @@ public class DefinitionManager {
 
                 // persistence stuff
                 // create an aspect for the advice as well
-                AspectWerkz.register(new Aspect(def.getClassName()));
+                Aspect aspectForAdvice = new Aspect(def.getClassName());
 
                 if (def.isPersistent()) {
-                    advice.setMemoryStrategy(
-                            new PersistableAdviceMemoryStrategy(advice));
-
-                    List aspects = AspectWerkz.getAspects(def.getClassName());
-                    for (Iterator it2 = aspects.iterator(); it2.hasNext();) {
-                        Aspect aspect = (Aspect)it2.next();
-                        aspect.createSetFieldPointcut(DirtyFieldCheckAdvice.PATTERN).
-                                addPostAdvice(DirtyFieldCheckAdvice.NAME);
-                    }
+                    advice.setMemoryStrategy(new PersistableAdviceMemoryStrategy(advice));
                     if (s_persistenceManager == null) {
                         loadPersistenceManager();
                     }
@@ -267,6 +256,7 @@ public class DefinitionManager {
                             new TransientAdviceMemoryStrategy(advice));
                 }
 
+                AspectWerkz.register(aspectForAdvice);
                 AspectWerkz.register(def.getName(), advice);
             }
             catch (ClassNotFoundException e) {

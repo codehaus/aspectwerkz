@@ -29,7 +29,6 @@ import java.io.ObjectInputStream;
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.net.URL;
 
 import gnu.trove.THashMap;
@@ -55,7 +54,7 @@ import org.codehaus.aspectwerkz.persistence.DirtyFieldCheckAdvice;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.4 2003-05-14 17:39:08 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.5 2003-06-05 09:36:08 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -389,6 +388,7 @@ public class WeaveModel implements Serializable {
             final WeaveModel.WeaveMetaData classMetaData =
                     weaveModel.getWeaveMetaDataExactMatch(className);
 
+            // advise the advice with the dirty field check advice
             if (adviceDefinition.isPersistent()) {
                 classMetaData.addSetFieldPointcut(
                         DirtyFieldCheckAdvice.PATTERN,
@@ -430,6 +430,7 @@ public class WeaveModel implements Serializable {
             final WeaveModel.WeaveMetaData classMetaData =
                     weaveModel.getWeaveMetaDataExactMatch(className);
 
+            // advise the introduction with the dirty field check advice
             if (introductionDefinition.isPersistent()) {
                 classMetaData.addSetFieldPointcut(
                         DirtyFieldCheckAdvice.PATTERN,
@@ -989,7 +990,7 @@ public class WeaveModel implements Serializable {
      * Holds the weave meta-data for each class.
      *
      * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
-     * @version $Id: WeaveModel.java,v 1.4 2003-05-14 17:39:08 jboner Exp $
+     * @version $Id: WeaveModel.java,v 1.5 2003-06-05 09:36:08 jboner Exp $
      */
     public static class WeaveMetaData implements Serializable {
 

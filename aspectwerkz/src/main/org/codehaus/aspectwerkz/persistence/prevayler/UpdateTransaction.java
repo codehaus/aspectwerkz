@@ -18,9 +18,12 @@
  */
 package org.codehaus.aspectwerkz.persistence.prevayler;
 
+import java.io.Serializable;
+
 import org.prevayler.Transaction;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.util.SerializationUtils;
 import org.codehaus.aspectwerkz.persistence.prevayler.PrevalentSystem;
 import org.codehaus.aspectwerkz.persistence.ModifiedField;
 
@@ -28,7 +31,7 @@ import org.codehaus.aspectwerkz.persistence.ModifiedField;
  * Updates an object in the db.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: UpdateTransaction.java,v 1.1.1.1 2003-05-11 15:14:46 jboner Exp $
+ * @version $Id: UpdateTransaction.java,v 1.2 2003-06-05 09:36:08 jboner Exp $
  */
 public class UpdateTransaction implements Transaction {
 
@@ -59,7 +62,10 @@ public class UpdateTransaction implements Transaction {
                              final int deploymentModel) {
         if (modifiedField == null) throw new IllegalArgumentException("modified field can not be null");
         if (deploymentModel != DeploymentModel.PER_JVM && index == null) throw new IllegalArgumentException("index can not be null");
-        m_modifiedField = modifiedField;
+
+        // make a deep copy of the modified field
+        m_modifiedField = new ModifiedField(modifiedField.getName(),
+                SerializationUtils.clone((Serializable)modifiedField.getValue()));
         m_index = index;
         m_deploymentModel = deploymentModel;
     }

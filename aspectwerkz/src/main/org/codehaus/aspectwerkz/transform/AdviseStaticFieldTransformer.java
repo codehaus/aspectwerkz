@@ -55,7 +55,7 @@ import org.codehaus.aspectwerkz.definition.metadata.FieldMetaData;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticFieldTransformer.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @version $Id: AdviseStaticFieldTransformer.java,v 1.3 2003-06-05 09:36:08 jboner Exp $
  */
 public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -97,7 +97,6 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
                     break;
                 }
             }
-
             final ConstantPoolGen cpg = cg.getConstantPool();
             final String className = cg.getClassName();
             final InstructionFactory factory = new InstructionFactory(cg);
@@ -125,6 +124,7 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
                 // inserts the pre and post advices
                 while (ih != null) {
                     final Instruction ins = ih.getInstruction();
+
                     if (ins instanceof GETFIELD || ins instanceof GETSTATIC) {
                         final FieldInstruction gfIns = (FieldInstruction)ins;
 
@@ -264,6 +264,7 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
             }
             if (isClassAdvised) {
                 // if we have transformed methods, create the static class field
+
                 if (noClInitMethod && clInitMethod != null) {
                     clInitMethod = createStaticClassField(
                             cpg, cg,
@@ -272,7 +273,8 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
 
                     newMethods.add(clInitMethod);
                 }
-                else {
+                // TODO: think over all possible ways
+                else if (!noClInitMethod) {
                     methods[clinitIndex] = createStaticClassField(
                             cpg, cg,
                             methods[clinitIndex],

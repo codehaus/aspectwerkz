@@ -19,15 +19,21 @@
 package examples.persistence;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @introduction-def name=counter1
  *                   implementation=examples.persistence.CounterImpl1
- *                   deployment-model=perClass
- *                   persistent=true
+ *                   deployment-model=perInstance
  *                   attribute=counter1
+ *                   persistent=true
+ *
  */
 public interface Counter1 extends Serializable {
     int getCounter1();
     void increment1();
+
+    void addItem(String str);
+    List getList();
+    Object getItem(int index);
 }

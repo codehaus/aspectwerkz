@@ -44,11 +44,14 @@ public class Target {
         target.invoke();
 
         ((Counter1)target).increment1();
-        System.out.println("persistent introduction counter 1: " +
+        System.out.println("introduction - persistent int field 1: " +
                 ((Counter1)target).getCounter1());
 
         ((Counter2)target).increment2();
-        System.out.println("persistent introduction counter 2: " +
+        System.out.println("introduction - persistent int field 2: " +
                 ((Counter2)target).getCounter2());
+
+        ((Counter1)target).addItem("item" + ((Counter1)target).getList().size());
+        System.out.println("introduction - persistent java.util.List field: " + ((Counter1)target).getList());
     }
 }

@@ -45,7 +45,7 @@ public class InvocationCounterAdvice extends AroundAdvice {
 //        System.out.println("parameter 1= " + getParameter("param1"));
 //        System.out.println("parameter 2 = " + getParameter("param2"));
         m_counter++;
-        System.out.println("persistent advice counter: "+ m_counter);
+        System.out.println("advice - persistent int field: "+ m_counter);
         return joinPoint.proceed();
     }
 }

@@ -44,7 +44,7 @@ import org.codehaus.aspectwerkz.definition.regexp.Pattern;
  * for a specific class.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: Aspect.java,v 1.1.1.1 2003-05-11 15:13:27 jboner Exp $
+ * @version $Id: Aspect.java,v 1.2 2003-06-05 09:36:08 jboner Exp $
  */
 public class Aspect {
 
@@ -762,10 +762,6 @@ public class Aspect {
     protected MethodPointcut[] getMethodPointcutsAsArray(
             final List pointcutList,
             final String methodName) {
-//        if (pointcutList.isEmpty()) {
-//            throw new DefinitionException(
-//                    createNoMethodPointcutsMessage(methodName));
-//        }
         MethodPointcut[] pointcuts = new MethodPointcut[pointcutList.size()];
         int i = 0;
         for (Iterator it = pointcutList.iterator(); it.hasNext(); i++) {
@@ -785,10 +781,6 @@ public class Aspect {
     protected FieldPointcut[] getGetFieldPointcutsAsArray(
             final List pointcutList,
             final String fieldName) {
-//        if (pointcutList.isEmpty()) {
-//            throw new DefinitionException(
-//                    createNoGetFieldPointcutsMessage(fieldName));
-//        }
         FieldPointcut[] pointcuts = new FieldPointcut[pointcutList.size()];
         int i = 0;
         for (Iterator it = pointcutList.iterator(); it.hasNext(); i++) {
@@ -808,10 +800,6 @@ public class Aspect {
     protected FieldPointcut[] getSetFieldPointcutsAsArray(
             final List pointcutList,
             final String fieldName) {
-//        if (pointcutList.isEmpty()) {
-//            throw new DefinitionException(
-//                    createNoSetFieldPointcutsMessage(fieldName));
-//        }
         FieldPointcut[] pointcuts = new FieldPointcut[pointcutList.size()];
         int i = 0;
         for (Iterator it = pointcutList.iterator(); it.hasNext(); i++) {
@@ -831,10 +819,6 @@ public class Aspect {
     protected CallerSidePointcut[] getCallSidePointcutsAsArray(
             final List pointcutList,
             final String methodName) {
-//        if (pointcutList.isEmpty()) {
-//            throw new DefinitionException(
-//                    createNoCallSidePointcutsMessage(methodName));
-//        }
         CallerSidePointcut[] pointcuts = new CallerSidePointcut[pointcutList.size()];
         int i = 0;
         for (Iterator it = pointcutList.iterator(); it.hasNext(); i++) {
@@ -856,10 +840,6 @@ public class Aspect {
             final List pointcutList,
             final String methodName,
             final String exception) {
-//        if (pointcutList.isEmpty()) {
-//            throw new DefinitionException(
-//                    createNoThrowsPointcutsMessage(methodName + "#" + exception));
-//        }
         ThrowsPointcut[] pointcuts = new ThrowsPointcut[pointcutList.size()];
         int i = 0;
         for (Iterator it = pointcutList.iterator(); it.hasNext(); i++) {

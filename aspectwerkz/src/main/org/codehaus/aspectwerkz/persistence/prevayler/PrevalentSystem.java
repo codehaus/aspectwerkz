@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.MetaDataKeys;
  * Implements a prevaylent system for a specific persistent aspect component.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: PrevalentSystem.java,v 1.1.1.1 2003-05-11 15:14:40 jboner Exp $
+ * @version $Id: PrevalentSystem.java,v 1.2 2003-06-05 09:36:08 jboner Exp $
  */
 public class PrevalentSystem extends ClockedSystem {
 
@@ -234,6 +234,7 @@ public class PrevalentSystem extends ClockedSystem {
                                   final Object index) {
         if (modifiedField == null) throw new IllegalArgumentException("modified field can not be null");
         if (index == null) throw new IllegalArgumentException("index can not be null");
+
         try {
             m_perInstanceReadWriteLock.writeLock().acquire();
             try {
