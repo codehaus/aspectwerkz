@@ -69,9 +69,9 @@ public class MethodExecutionAspect {
     }
 
     /** @Around  execution(* awbench.method.Execution.aroundSJP()) */
-    public Object aroundSJP(StaticJoinPoint jp) throws Throwable {
+    public Object aroundSJP(StaticJoinPoint sjp) throws Throwable {
         s_count++;
-        return jp.proceed();
+        return sjp.proceed();
     }
 
     //TODO: add Rtti around
@@ -83,5 +83,19 @@ public class MethodExecutionAspect {
         s_count++;
     }
 
+    /** @Around  execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(int)) && args(i) && target(t) */
+    public Object aroundStackedWithArgAndTarget_1(StaticJoinPoint sjp, int i, Execution t) throws Throwable {
+        int j = i;
+        Execution u = t;
+        s_count++;
+        return sjp.proceed();
+    }
 
+    /** @Around  execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(int)) && args(i) && target(t) */
+    public Object aroundStackedWithArgAndTarget_2(StaticJoinPoint sjp, int i, Execution t) throws Throwable {
+        int j = i;
+        Execution u = t;
+        s_count++;
+        return sjp.proceed();
+    }
 }

@@ -93,5 +93,20 @@ public aspect MethodExecutionAspect {
         s_count++;
     }
 
-	
+	Object around(int i, Execution t) :
+	execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(int)) && args(i) && target(t) {
+        int j = i;
+        Execution u = t;
+        s_count++;
+        return proceed(j, u);
+    }
+
+	Object around(int i, Execution t) :
+	execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(int)) && args(i) && target(t) {
+        int j = i;
+        Execution u = t;
+        s_count++;
+        return proceed(j, u);
+    }
+
 }
