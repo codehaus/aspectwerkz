@@ -24,7 +24,7 @@
                     <br/>
                     <li>
                         The join point model supports: method execution and call, constructor execution and call,
-                        field access, field modification, catch handlers, cflow, within and withincode. All advice works with all join points.
+                        field access, field modification, catch handlers, cflow, within and withincode, hasmethod and hasfield. All advice works with all join points.
                     </li>
                     <br/>
                     <li>

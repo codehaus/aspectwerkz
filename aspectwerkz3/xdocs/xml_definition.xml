@@ -245,7 +245,7 @@
                     <br/>
                     <li>
                         <code>bind-to</code> - binds the mixin to a class using the
-                        <code>within(...)</code> pointcut
+                        <code>within(...), hasmethod(...) and/or hasfield(...)</code> pointcuts
                     </li>
                     <br/>
                 </ul>

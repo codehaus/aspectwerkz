@@ -1085,6 +1085,61 @@ public class ExpressionTest extends TestCase {
             NAMESPACE).getCflowExpression().match(new ExpressionContext(PointcutType.EXECUTION, method3, null)));
     }
 
+    // ============ hasXXX =============
+    public void tesHasMethod() throws Exception {
+        ClassInfo klass = JavaClassInfo.getClassInfo(Target.class);
+        ClassInfo string = JavaClassInfo.getClassInfo(String.class);
+        assertTrue(new ExpressionInfo(
+            "hasmethod(void modifiers1())",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass)));
+        assertFalse(new ExpressionInfo(
+            "hasmethod(void modifiers1())",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, klass, string)));
+        // will match at the AdvisedClassFilterExpression level
+        assertTrue(new ExpressionInfo(
+            "hasmethod(* getClass())",
+            NAMESPACE).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass)));
+        // but not at the Expression level
+        assertFalse(new ExpressionInfo(
+            "hasmethod(* getClass())",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass)));
+        // unless method is in class hierarchy
+        assertFalse(new ExpressionInfo(
+            "hasmethod(* java.lang.Object+.getClass())",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass)));
+        // even a fake method will match, since we extend java.lang.Object, for the AdvisedClassFilterExpression level
+        assertTrue(new ExpressionInfo(
+            "hasmethod(* java.lang.Object+.DOESNOTEXIST())",
+            NAMESPACE).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass)));
+        // but not at Expression level
+        assertFalse(new ExpressionInfo(
+            "hasmethod(* java.lang.Object+.DOESNOTEXIST())",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass)));
+    }
+
+    public void tesHasField() throws Exception {
+        ClassInfo klass = JavaClassInfo.getClassInfo(Target.class);
+        ClassInfo string = JavaClassInfo.getClassInfo(String.class);
+        assertTrue(new ExpressionInfo(
+            "hasfield(int modifier1)",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass)));
+        assertFalse(new ExpressionInfo(
+            "hasfield(* modifier1)",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, klass, string)));
+        // will match at the AdvisedClassFilterExpression level
+        assertTrue(new ExpressionInfo(
+            "hasfield(* value)",
+            NAMESPACE).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass)));
+        // but not at the Expression level
+        assertFalse(new ExpressionInfo(
+            "hasfield(* value)",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass)));
+        //value field exists in String.class
+        assertTrue(new ExpressionInfo(
+            "hasfield(* value)",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, klass, string)));
+    }
+
     // ============ within type tests =============
     public void testWithinType1() throws Exception {
         ClassInfo klass = JavaClassInfo.getClassInfo(Target.class);
