@@ -148,11 +148,12 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
     }
 
     /**
-     * AspectJ is not in need for RTTI, passes contextual info through args() binding etc.
+     * AspectJ is not in need for reflective information, passes contextual info through args() binding etc.
+     * or handles it itself using 'thisJoinPoint'.
      *
      * @return true
      */
-    public boolean requiresRttiInfo() {
+    public boolean requiresReflectiveInfo() {
         return false;
     }
 

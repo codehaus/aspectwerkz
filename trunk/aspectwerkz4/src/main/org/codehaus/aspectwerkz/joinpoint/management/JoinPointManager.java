@@ -11,7 +11,7 @@ import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.JoinPointFactory;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
-import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModelManager;
+import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.AdviceInfo;

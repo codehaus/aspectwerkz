@@ -21,7 +21,7 @@ import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.annotation.MixinAnnotationParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
-import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModelManager;
+import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -561,6 +561,7 @@ public class DocumentParser {
 //                            method = methodCurrent;
 //                            break;
 //                        }
+
                         if (methodCurrent.getName().equals(name)) {
                             method = methodCurrent;
                             break;
@@ -569,7 +570,7 @@ public class DocumentParser {
                 }
                 if (method == null) {
                     throw new DefinitionException(
-                            "Could not find advice method [" + name + "] in [" + aspectClassInfo.getName() + "]"
+                            "could not find advice method [" + name + "] in [" + aspectClassInfo.getName() + "] (are you using a compiler extension that you have not registered?)"
                     );
                 }
                 createAndAddAdviceDefsToAspectDef(type, bindTo, adviceName, method, aspectDef);

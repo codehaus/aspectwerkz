@@ -5,11 +5,12 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transform.inlining.spi;
+package org.codehaus.aspectwerkz.transform.inlining;
 
 import java.util.StringTokenizer;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;

@@ -1,1 +1,1 @@
-Class-Path: aopalliance-1.0jar
+Class-Path: aopalliance-1.0.jar

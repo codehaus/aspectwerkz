@@ -23,8 +23,9 @@ import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
+import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
-import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModelManager;
+import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.RuntimeCheckVisitor;
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
 import org.codehaus.aspectwerkz.joinpoint.management.AdviceInfoContainer;
@@ -182,7 +183,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             String type = aspectDef.getAspectModel();
             AspectModel aspectModel = AspectModelManager.getModelFor(type);
             aspectModelMap.put(type, aspectModel);
-            if (aspectModel.requiresRttiInfo()) {
+            if (aspectModel.requiresReflectiveInfo()) {
                 m_requiresJoinPoint = true; // if at least one model requries RTTI then build it
             }
         }
@@ -554,7 +555,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * @param aspectInfo
      * @param joinPointClassName
      */
-    public static void createAspectReferenceField(final ClassWriter cw, 
+    public static void createAspectReferenceField(final ClassWriter cw,
                                                   final AspectInfo aspectInfo,
                                                   final String joinPointClassName) {
         String aspectClassSignature = aspectInfo.getAspectClassSignature();
