@@ -129,37 +129,31 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             crLookahead.accept(new AlreadyAddedMethodVisitor(addedMethods), true);
 
             // chain the visitors by registering them from last to first
-            ClassVisitor chainedVisitor = cw;
+            ClassVisitor reversedChain = cw;
+            reversedChain = new JoinPointInitVisitor(reversedChain, context);
 
-            chainedVisitor = new JoinPointInitVisitor(chainedVisitor, context);
-            chainedVisitor = new AddInterfaceVisitor(chainedVisitor, classInfo, context);
-            chainedVisitor = new AddMixinMethodsVisitor(chainedVisitor, classInfo, context, addedMethods);
-            chainedVisitor = new MethodWrapperVisitor(chainedVisitor, classInfo, context, addedMethods);
-
-            if (!filterForGetSet) {
-                chainedVisitor = new FieldWrapperVisitor(chainedVisitor, classInfo, context, addedMethods);
-            }
-
-            chainedVisitor = new MethodExecutionVisitor(chainedVisitor, classInfo, context, addedMethods);
-            chainedVisitor = new ConstructorBodyVisitor(chainedVisitor, classInfo, context, addedMethods);
-
+            reversedChain = new MethodExecutionVisitor(reversedChain, classInfo, context, addedMethods);
+            reversedChain = new ConstructorBodyVisitor(reversedChain, classInfo, context, addedMethods);
             // TODO fix handler impl
             //visitor = new HandlerVisitor(first, loader, classInfo, context);
-
             if (!filterForCall) {
-                chainedVisitor = new MethodCallVisitor(chainedVisitor, loader, classInfo, context);
-                chainedVisitor = new ConstructorCallVisitor(
-                        chainedVisitor, loader, classInfo, context, newInvocationsByCallerMemberHash
+                reversedChain = new MethodCallVisitor(reversedChain, loader, classInfo, context);
+                reversedChain = new ConstructorCallVisitor(
+                        reversedChain, loader, classInfo, context, newInvocationsByCallerMemberHash
                 );
             }
-
             if (!filterForGetSet) {
-                chainedVisitor = new FieldSetFieldGetVisitor(chainedVisitor, loader, classInfo, context);
+                reversedChain = new FieldSetFieldGetVisitor(reversedChain, loader, classInfo, context);
+                reversedChain = new FieldWrapperVisitor(reversedChain, classInfo, context, addedMethods);
             }
+            reversedChain = new MethodWrapperVisitor(reversedChain, classInfo, context, addedMethods);
 
-            chainedVisitor = new FinalizingVisitor(chainedVisitor, classInfo, context);
+            // FIXME classinfo needs to be updated to be able to advise on introduced methods
+            reversedChain = new AddMixinMethodsVisitor(reversedChain, classInfo, context, addedMethods);
+            reversedChain = new AddInterfaceVisitor(reversedChain, classInfo, context);
+            reversedChain = new FinalizingVisitor(reversedChain, classInfo, context);
 
-            cr.accept(chainedVisitor, Attributes.getDefaultAttributes(), false);
+            cr.accept(reversedChain, Attributes.getDefaultAttributes(), false);
 
             // TODO: INNER CLASS OR NOT?
             // loop over emitted jp and flag them as inner classes

@@ -265,6 +265,4 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
             cv.visitInsn(ICONST_0);
         }
     }
-
-
 }

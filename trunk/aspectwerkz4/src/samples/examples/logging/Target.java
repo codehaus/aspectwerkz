@@ -81,6 +81,7 @@ public class Target {
                 Thread.currentThread().getContextClassLoader(), "samples"
         );
         DeploymentScope deploymentScope = def.getDeploymentScope("prepareMethodsToLog");
+
         Deployer.deploy(LoggingAspect.class, deploymentScope);
         run();
         Deployer.undeploy(LoggingAspect.class);

@@ -48,6 +48,10 @@ public interface TransformationConstants extends Constants {
     public static final String FOR_NAME_METHOD_NAME = "forName";
     public static final String LOAD_JOIN_POINT_METHOD_NAME = "loadJoinPoint";
     public static final String SYNTHETIC_MEMBER_PREFIX = "class$";
+    public static final String MIXINS_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/Mixins";
+    public static final String MIXIN_OF_METHOD_NAME = "mixinOf";
+    public static final String MIXIN_OF_METHOD_PER_CLASS_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;";
+    public static final String MIXIN_OF_METHOD_PER_INSTANCE_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;";
 
     // java types and signatures
     public static final String SHORT_CLASS_NAME = "java/lang/Short";
@@ -100,6 +104,7 @@ public interface TransformationConstants extends Constants {
     public static final boolean NON_OPTIMIZED_JOIN_POINT = false;
 
     // static and member field names
+    public static final String MIXIN_FIELD_NAME = "MIXIN_";
     public static final String SIGNATURE_FIELD_NAME = "SIGNATURE";
     public static final String META_DATA_FIELD_NAME = "META_DATA";
     public static final String ASPECT_FIELD_PREFIX = "ASPECT_";

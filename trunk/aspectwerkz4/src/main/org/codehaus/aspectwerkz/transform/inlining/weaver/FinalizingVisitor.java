@@ -68,7 +68,11 @@ public class FinalizingVisitor extends ClassAdapter implements TransformationCon
      * Finalizes the weaving process.
      */
     public void visitEnd() {
-        if (m_ctx.isAdvised() && !m_hasSerialVersionUIDField) {
+        if (!m_ctx.isAdvised()) {
+            super.visitEnd();
+            return;
+        }
+        if (!m_hasSerialVersionUIDField) {
             long uid = calculateSerialVersionUID(m_classInfo);
             super.visitField(ACC_STATIC | ACC_FINAL, SERIAL_VERSION_UID_FIELD_NAME, "J", new Long(uid), null);
         }

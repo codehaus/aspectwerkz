@@ -103,14 +103,18 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
         if (INIT_METHOD_NAME.equals(name) ||
             CLINIT_METHOD_NAME.equals(name) ||
             name.startsWith(ASPECTWERKZ_PREFIX) ||
-            name.startsWith(WRAPPER_METHOD_PREFIX)) {//TODO filter on synthetic method ?
+            name.startsWith(SYNTHETIC_MEMBER_PREFIX) ||
+            name.startsWith(WRAPPER_METHOD_PREFIX)) {
             return cv.visitMethod(access, name, desc, exceptions, attrs);
         }
 
         int hash = AsmHelper.calculateMethodHash(name, desc);
         MethodInfo methodInfo = m_classInfo.getMethod(hash);
         if (methodInfo == null) {
-            throw new Error("method info metadata structure could not be build for method: " + name + " " + desc);
+//            System.err.println(
+//                    "WARNING: introduced method could not be advised [" + name + ":" + desc + "] "
+//            );
+            return cv.visitMethod(access, name, desc, exceptions, attrs);
         }
 
         ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, methodInfo, methodInfo);

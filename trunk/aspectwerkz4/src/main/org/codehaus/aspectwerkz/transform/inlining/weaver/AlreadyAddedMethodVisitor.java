@@ -52,8 +52,8 @@ public class AlreadyAddedMethodVisitor extends AsmAnnotationHelper.NullClassVisi
                                    final String desc,
                                    final String[] exceptions,
                                    final Attribute attrs) {
-        if (name.startsWith(WRAPPER_METHOD_PREFIX)
-            || name.startsWith(ORIGINAL_METHOD_PREFIX)) {
+        if (name.startsWith(WRAPPER_METHOD_PREFIX) ||
+            name.startsWith(ORIGINAL_METHOD_PREFIX)) {
             //FIXME do it for ctor exe wrapper
             m_addedMethods.add(getMethodKey(name, desc));
         }

@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.transform.inlining.weaver;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
 
 import org.objectweb.asm.*;
 import org.codehaus.aspectwerkz.transform.Context;
@@ -69,21 +70,34 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
         Set systemDefinitions = m_ctx.getDefinitions();
         for (Iterator it = systemDefinitions.iterator(); it.hasNext();) {
             SystemDefinition systemDefinition = (SystemDefinition) it.next();
-            for (Iterator it2 = systemDefinition.getInterfaceIntroductionDefinitions(ctx).iterator(); it2.hasNext();) {
-                interfacesToAdd.addAll(((InterfaceIntroductionDefinition) it2.next()).getInterfaceClassNames());
+            final List interfaceIntroDefs = systemDefinition.getInterfaceIntroductionDefinitions(ctx);
+            for (Iterator it2 = interfaceIntroDefs.iterator(); it2.hasNext();) {
+                final InterfaceIntroductionDefinition interfaceIntroDef = (InterfaceIntroductionDefinition) it2.next();
+                interfacesToAdd.addAll(interfaceIntroDef.getInterfaceClassNames());
             }
-            for (Iterator it2 = systemDefinition.getMixinDefinitions(ctx).iterator(); it2.hasNext();) {
-                interfacesToAdd.addAll(((MixinDefinition) it2.next()).getInterfaceClassNames());
+            final List mixinDefinitions = systemDefinition.getMixinDefinitions(ctx);
+            for (Iterator it2 = mixinDefinitions.iterator(); it2.hasNext();) {
+                final MixinDefinition mixinDef = (MixinDefinition) it2.next();
+                final List interfaceList = mixinDef.getInterfaces();
+                for (Iterator it3 = interfaceList.iterator(); it3.hasNext();) {
+                    final ClassInfo classInfo = (ClassInfo) it3.next();
+                    interfacesToAdd.add(classInfo.getName());
+                }
             }
         }
 
         for (int i = 0; i < interfaces.length; i++) {
             interfacesToAdd.add(interfaces[i]);
         }
-        String[] newInterfaceArray = (String[]) interfacesToAdd.toArray(new String[interfacesToAdd.size()]);
 
-        for (int i = 0; i < newInterfaceArray.length; i++) {
-            newInterfaceArray[i] = newInterfaceArray[i].replace('.', '/');
+        int i = 0;
+        final String[] newInterfaceArray = new String[interfacesToAdd.size()];
+        for (Iterator it = interfacesToAdd.iterator(); it.hasNext();) {
+            newInterfaceArray[i++] = (String)it.next();
+        }
+
+        for (int j = 0; j < newInterfaceArray.length; j++) {
+            newInterfaceArray[j] = newInterfaceArray[j].replace('.', '/');
 
         }
         super.visit(version, access, name, superName, newInterfaceArray, sourceFile);
