@@ -60,6 +60,13 @@ public class SystemDefinitionContainer {
     private static ThreadLocal s_aspectNamesContext = new ThreadLocal();
 
     /**
+     * An internal flag to disable registration of the -Daspectwerkz.definition.file definition
+     * in the System class loader. This is used only in offline mode, where these definitions
+     * are registered programmatically at the compilation class loader level.
+     */
+    private static boolean s_disableSystemWideDefinition = false;
+
+    /**
      * Register a new ClassLoader in the system and gather all its definition and parents definitions
      *
      * @param loader the class loader to register
@@ -90,7 +97,7 @@ public class SystemDefinitionContainer {
                 s_classLoaderDefinitionLocations.put(loader, defsLocation);
 
                 // is this system classloader ?
-                if (loader == ClassLoader.getSystemClassLoader()) {
+                if (loader == ClassLoader.getSystemClassLoader() && !s_disableSystemWideDefinition) {
                     aspectNames.addAll(DefinitionLoader.getDefaultDefinitionAspectNames());
                     defs.addAll(DefinitionLoader.getDefaultDefinition(loader)); // -D..file=... sysdef
                     defsLocation.add(URL_JVM_OPTION_SYSTEM);
@@ -297,4 +304,10 @@ public class SystemDefinitionContainer {
         return s_classLoaderSystemDefinitions.keySet();
     }
 
+    /**
+     * Turns on the option to avoid -Daspectwerkz.definition.file handling.
+     */
+    public static void disableSystemWideDefinition() {
+        s_disableSystemWideDefinition = true;
+    }
 }
