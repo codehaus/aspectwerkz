@@ -24,7 +24,7 @@ import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.aspect.Aspect;
-import org.codehaus.aspectwerkz.aspect.DefaultIntroductionContainerStrategy;
+import org.codehaus.aspectwerkz.aspect.IntroductionContainer;
 import org.codehaus.aspectwerkz.aspect.Introduction;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
@@ -188,10 +188,9 @@ public class AspectRegistry {
                                             introDef.getName(), defaultImplClass, aspect, introDef
                                     );
                                     // prepare the container
-                                    DefaultIntroductionContainerStrategy introContainer = new DefaultIntroductionContainerStrategy(
+                                    mixin.setContainer(new IntroductionContainer(
                                             mixin, aspect.___AW_getContainer()
-                                    );
-                                    mixin.setContainer(introContainer);
+                                    ));
                                     final Mixin[] tmpMixins = new Mixin[m_mixins.length + 1];
                                     java.lang.System.arraycopy(m_mixins, 0, tmpMixins, 0, m_mixins.length);
                                     tmpMixins[m_mixins.length] = mixin;

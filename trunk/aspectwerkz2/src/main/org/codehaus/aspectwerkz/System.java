@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz;
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 
@@ -153,12 +152,9 @@ public final class System {
             return false;
         }
         else {
-//            for (Iterator it = cflowSet.iterator(); it.hasNext();) {
-//                ClassNameMethodMetaDataTuple tuple = (ClassNameMethodMetaDataTuple)it.next();
-                if (cflowExpression.matchCflow(cflowSet)) {//tuple.getClassMetaData(), tuple.getMethodMetaData())) {
-                    return true;
-                }
-            //}
+            if (cflowExpression.matchCflow(cflowSet)) {
+                return true;
+            }
         }
         return false;
     }

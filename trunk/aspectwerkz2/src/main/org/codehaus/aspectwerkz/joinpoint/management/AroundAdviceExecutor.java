@@ -73,7 +73,6 @@ class AroundAdviceExecutor {
             return JoinPointBase.invokeJoinPoint(joinPoint, m_joinPointType);
         }
 
-        //java.lang.System.out.println("around exe");
         m_stackIndex++;
         try {
             if (m_stackIndex == 0) {
@@ -82,36 +81,37 @@ class AroundAdviceExecutor {
                 }
             }
 
-        Object result = null;
-        if (m_currentAdviceIndex == m_adviceIndexes.length - 1) {
-            m_currentAdviceIndex = -1;
-            try {
-                result = JoinPointBase.invokeJoinPoint(joinPoint, m_joinPointType);
+            Object result = null;
+            if (m_currentAdviceIndex == m_adviceIndexes.length - 1) {
+                m_currentAdviceIndex = -1;
+                try {
+                    result = JoinPointBase.invokeJoinPoint(joinPoint, m_joinPointType);
+                }
+                finally {
+                    m_currentAdviceIndex = m_adviceIndexes.length - 1;
+                }
             }
-            finally {
-                m_currentAdviceIndex = m_adviceIndexes.length - 1;
+            else {
+                m_currentAdviceIndex++;
+                try {
+                    IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
+                    result = m_aspectManager.getAspect(index.getAspectIndex()).
+                            ___AW_invokeAdvice(index.getMethodIndex(), joinPoint);
+                }
+                finally {
+                    m_currentAdviceIndex--;
+                }
             }
-        }
-        else {
-            m_currentAdviceIndex++;
-            try {
-                IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
-                result = m_aspectManager.getAspect(index.getAspectIndex()).
-                        ___AW_invokeAdvice(index.getMethodIndex(), joinPoint);
-            }
-            finally {
-                m_currentAdviceIndex--;
-            }
-        }
 
-        if (m_stackIndex == 0) {
-            if (joinPoint.m_afterAdviceExecutor.hasAdvices()) {
-                joinPoint.m_afterAdviceExecutor.proceed(joinPoint);
+            if (m_stackIndex == 0) {
+                if (joinPoint.m_afterAdviceExecutor.hasAdvices()) {
+                    joinPoint.m_afterAdviceExecutor.proceed(joinPoint);
+                }
             }
-        }
 
-        return result;
-        } finally {
+            return result;
+        }
+        finally {
             m_stackIndex--;
         }
     }

@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,8 +16,8 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.aspect.Aspect;
-import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
+import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionExpression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
@@ -69,22 +68,8 @@ public class StartupManager {
     /**
      * The name of the default aspectwerkz definition file.
      */
+
     public static final String DEFAULT_DEFINITION_FILE = "aspectwerkz.xml";
-
-    /**
-     * The default aspect container class.
-     */
-    public static final String DEFAULT_ASPECT_CONTAINER =
-            "org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy";
-
-    /**
-     * The aspect container class to use.
-     */
-    public static final String ASPECT_CONTAINER_IMPLEMENTATION_CLASS =
-            java.lang.System.getProperty(
-                    "aspectwerkz.aspect.container.impl",
-                    DEFAULT_ASPECT_CONTAINER
-            );
 
     /**
      * Marks the manager as initialized or not.
@@ -132,31 +117,6 @@ public class StartupManager {
 
         registerAspects(uuid, definition);
         registerPointcuts(uuid, definition);
-    }
-
-    /**
-     * Creates a new container for the aspect.
-     *
-     * @param aspect the aspect's implementation class
-     */
-    public static AspectContainer createAspectContainer(final Aspect aspect) {
-        if (aspect == null) {
-            throw new IllegalArgumentException("aspect can not be null");
-        }
-
-        try {
-            Class klass = ContextClassLoader.loadClass(ASPECT_CONTAINER_IMPLEMENTATION_CLASS);
-            Constructor constructor = klass.getConstructor(new Class[]{Aspect.class});
-            return (AspectContainer)constructor.newInstance(new Object[]{aspect});
-        }
-        catch (Exception e) {
-            StringBuffer cause = new StringBuffer();
-            cause.append("could not create aspect container using specified class [");
-            cause.append(ASPECT_CONTAINER_IMPLEMENTATION_CLASS);
-            cause.append("]: ");
-            cause.append(e.getMessage());
-            throw new RuntimeException(cause.toString());
-        }
     }
 
     /**
@@ -238,15 +198,7 @@ public class StartupManager {
             }
 
             // create and set the container for the aspect
-            AspectContainer container = createAspectContainer(aspect);
-            if (container != null) {
-                aspect.___AW_setContainer(container);
-            }
-            else {
-                throw new DefinitionException(
-                        "could not create aspect container for aspect [" + aspect.___AW_getName() + ']'
-                );
-            }
+            aspect.___AW_setContainer(new AspectContainer(aspect));
 
             PointcutManager pointcutManager = new PointcutManager(uuid, aspectDef.getName(), deploymentModel);
 

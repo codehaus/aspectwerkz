@@ -61,7 +61,7 @@ public class JoinPointManager {
             JIT_COMPILATION_BOUNDRY = new Long(boundry).longValue();
         }
         else {
-            JIT_COMPILATION_BOUNDRY = 100L;
+            JIT_COMPILATION_BOUNDRY = 1L;
         }
     }
 
@@ -80,7 +80,6 @@ public class JoinPointManager {
     private final int m_classHash;
     private final ClassMetaData m_targetClassMetaData;
 
-    private JoinPointInfo[] m_joinPointInfo = new JoinPointInfo[0];
     private ThreadLocal[] m_joinPoints = new ThreadLocal[0];
 
     /**
@@ -319,6 +318,7 @@ public class JoinPointManager {
         if (parameters != null) {
             ((CodeSignature)joinPoint.getSignature()).setParameterValues(parameters);
         }
+        
         return ((JoinPointBase)joinPoint).proceed();
     }
 

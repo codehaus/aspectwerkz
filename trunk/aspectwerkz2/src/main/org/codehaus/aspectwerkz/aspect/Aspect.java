@@ -18,7 +18,6 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
@@ -170,7 +169,16 @@ public abstract class Aspect implements Serializable {
      * @return the advice method
      */
     public Method ___AW_getAdvice(final int methodIndex) {
-        return m_container.getMethod(methodIndex);
+        return m_container.getAdvice(methodIndex);
+    }
+
+    /**
+     * Retrieves all advice.
+     *
+     * @return the advice
+     */
+    public Method[] ___AW_getAdvice() {
+        return m_container.getAdvice();
     }
 
     /**
@@ -411,7 +419,7 @@ public abstract class Aspect implements Serializable {
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
         m_aspectDef = (AspectDefinition)fields.get("m_aspectDef", null);
         m_parameters = (Map)fields.get("m_parameters", null);
-        m_container = StartupManager.createAspectContainer(this);
+        m_container = new AspectContainer(this);
         m_system = SystemLoader.getSystem(m_uuid);
         m_system.initialize();
     }

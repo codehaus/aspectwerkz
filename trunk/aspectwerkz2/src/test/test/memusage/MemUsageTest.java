@@ -209,7 +209,7 @@ public class MemUsageTest extends TestCase {
                             "before sayHello" + k + " after",
                             klass.getMethod("sayHello" + k, new Class[]{}).invoke(instance, new Object[]{})
                     );
-                    ///*no aspect*/assertEquals("sayHello"+k, klass.getMethod("sayHello"+k, new Class[]{}).invoke(instance, new Object[]{}));
+                    ///*no aspect*/assertEquals("sayHello"+k, klass.getAdvice("sayHello"+k, new Class[]{}).invoke(instance, new Object[]{}));
                 }
             }
         }

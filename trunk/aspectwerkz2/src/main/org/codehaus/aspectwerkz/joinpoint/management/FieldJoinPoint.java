@@ -54,16 +54,8 @@ class FieldJoinPoint extends JoinPointBase {
      * @throws Throwable
      */
     public Object proceed() throws Throwable {
-//        if (m_beforeAdviceExecutor.hasAdvices()) {
-//            m_beforeAdviceExecutor.proceed(this);
-//        }
-
         final Object result = m_aroundAdviceExecutor.proceed(this);
         m_signature.setFieldValue(result);
-
-//        if (m_afterAdviceExecutor.hasAdvices()) {
-//            m_afterAdviceExecutor.proceed(this);
-//        }
         return result;
     }
 
