@@ -48,8 +48,21 @@
         <mkdir dir="${basedir}/_metaData"/>
         <mkdir dir="${basedir}/_txLogs"/>
         <mkdir dir="${dist.dir}"/>
-        <property name="pathseparator" value=";"/>
-        <property name="executableSuffix" value=".bat"/>
+
+        <!-- os specific -->
+        <condition property="pathseparator" value=";">
+            <os family="dos"/>
+        </condition>
+        <condition property="executableSuffix" value=".bat">
+            <os family="dos"/>
+        </condition>
+        <!-- os specific -->
+        <condition property="pathseparator" value=":">
+            <not><os family="dos"/></not>
+        </condition>
+        <condition property="executableSuffix" value="">
+            <not><os family="dos"/></not>
+        </condition>
         <property name="target.dir" value="${basedir}/target"/>
         <property name="lib.dir" value="${basedir}/lib"/>
         <property name="bin.dir" value="${basedir}/bin"/>
