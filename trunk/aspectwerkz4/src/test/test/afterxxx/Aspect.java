@@ -91,7 +91,7 @@ public class Aspect {
     }
 
     /**
-     * @AfterReturning(type="java.lang.String", expression="aroundFinallyReturning || aroundFinallyReturningThrowing ||
+     * @AfterReturning(type="java.lang.String", pointcut="aroundFinallyReturning || aroundFinallyReturningThrowing ||
      * aroundReturningThrowing || finallyReturning || finallyReturningThrowing ||
      * returningThrowing || aroundReturning || returning")
      */
@@ -100,7 +100,7 @@ public class Aspect {
     }
 
     /**
-     * @AfterThrowing(type="java.lang.RuntimeException", expression="aroundFinallyReturningThrowing ||
+     * @AfterThrowing(type="java.lang.RuntimeException", pointcut="aroundFinallyReturningThrowing ||
      * aroundReturningThrowing ||
      * finallyReturningThrowing || returningThrowing")
      */
@@ -109,7 +109,7 @@ public class Aspect {
     }
 
     /**
-     * @AfterThrowing(type="java.lang.IllegalArgumentException", expression="
+     * @AfterThrowing(type="java.lang.IllegalArgumentException", pointcut="
      * aroundFinallyReturningThrowing || aroundReturningThrowing ||
      * finallyReturningThrowing || returningThrowing")
      */
@@ -133,28 +133,28 @@ public class Aspect {
     }
 
     /**
-     * @AfterReturning(type="i", expression="execution(* test.afterxxx.TestBinding.returnInt(..))")
+     * @AfterReturning(type="i", pointcut="execution(* test.afterxxx.TestBinding.returnInt(..))")
      */
     public void logAfterBinding(int i) {
         TestBinding.log("afterReturningInt " + i);
     }
 
     /**
-     * @AfterReturning(type="s", expression="execution(* test.afterxxx.TestBinding.returnString(..))")
+     * @AfterReturning(type="s", pointcut="execution(* test.afterxxx.TestBinding.returnString(..))")
      */
     public void logAfterBinding(String s) {
         TestBinding.log("afterReturningString " + s);
     }
 
     /**
-     * @AfterThrowing(type="e", expression="execution(* test.afterxxx.TestBinding.throwChecked(..))")
+     * @AfterThrowing(type="e", pointcut="execution(* test.afterxxx.TestBinding.throwChecked(..))")
      */
     public void logAfterBindingExact(ClassNotFoundException e) {
         TestBinding.log("afterThrowingExact " + e.getClass().getName());
     }
 
     /**
-     * @AfterThrowing(type="e", expression="execution(* test.afterxxx.TestBinding.throwChecked(..))")
+     * @AfterThrowing(type="e", pointcut="execution(* test.afterxxx.TestBinding.throwChecked(..))")
      */
     public void logAfterBindingParentClass(Exception e) {
         TestBinding.log(" afterThrowingParentClass " + e.getClass().getName());

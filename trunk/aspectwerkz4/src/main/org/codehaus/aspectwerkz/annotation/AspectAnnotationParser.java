@@ -320,7 +320,7 @@ public class AspectAnnotationParser {
                 AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
                         getAdviceNameAsInSource(method),
                         AdviceType.AFTER_RETURNING,
-                        getExpressionElseValue(annotation.value(), annotation.expression()),
+                        getExpressionElseValue(annotation.value(), annotation.pointcut()),
                         annotation.type(),
                         aspectName,
                         aspectClassName,
@@ -337,7 +337,7 @@ public class AspectAnnotationParser {
                 AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
                         getAdviceNameAsInSource(method),
                         AdviceType.AFTER_THROWING,
-                        getExpressionElseValue(annotation.value(), annotation.expression()),
+                        getExpressionElseValue(annotation.value(), annotation.pointcut()),
                         annotation.type(),
                         aspectName,
                         aspectClassName,
@@ -402,15 +402,15 @@ public class AspectAnnotationParser {
 
     /**
      * Handles specific syntax for @AfterXXX annotation, where we can write it using the default "value" element
-     * or instead specify the pointcut using "expression", and optionally a "type" element.
+     * or instead specify the pointcut using "pointcut", and optionally a "type" element.
      *
      * @param value
-     * @param expression
+     * @param pointcut
      * @return the one of value or expression which is not null. Both cannot be specified at the same time
      */
-    public static String getExpressionElseValue(String value, String expression) {
-        if (!Strings.isNullOrEmpty(expression)) {
-            return expression;
+    public static String getExpressionElseValue(String value, String pointcut) {
+        if (!Strings.isNullOrEmpty(pointcut)) {
+            return pointcut;
         } else if (!Strings.isNullOrEmpty(value)) {
             return value;
         } else {

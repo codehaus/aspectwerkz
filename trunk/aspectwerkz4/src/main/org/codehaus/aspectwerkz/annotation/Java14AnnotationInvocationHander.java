@@ -56,7 +56,7 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
             || m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.Aspect")) {
             String trimed = m_rawAnnotationValue.trim();
             if (trimed.startsWith("type")
-                || trimed.startsWith("expression")
+                || trimed.startsWith("pointcut")
                 || trimed.startsWith("deploymentModel")) {
                 ;// not using untyped syntax
             } else {

@@ -64,7 +64,7 @@ public class MixinAnnotationParser {
         for (Iterator iterator = annotations.iterator(); iterator.hasNext();) {
             Mixin annotation = (Mixin) iterator.next();
             if (annotation != null) {
-                String expression = AspectAnnotationParser.getExpressionElseValue(annotation.value(), annotation.expression());
+                String expression = AspectAnnotationParser.getExpressionElseValue(annotation.value(), annotation.pointcut());
                 final ExpressionInfo expressionInfo = new ExpressionInfo(expression, systemDef.getUuid());
                 ExpressionNamespace.getNamespace(systemDef.getUuid()).addExpressionInfo(
                         DefinitionParserHelper.EXPRESSION_PREFIX + expression.hashCode(),

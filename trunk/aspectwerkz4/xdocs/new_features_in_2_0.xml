@@ -260,12 +260,12 @@ Deployer.undeploy(handle);
                     <li>
                         <code>@AfterReturning [TYPE]</code> -
                         <code>@AfterReturing(pointcut)</code> or
-                        <code>@AfterReturning(type=onReturnedType, expression=pointcut)</code>
+                        <code>@AfterReturning(type=onReturnedType, pointcut=pointcut)</code>
                     </li>
                     <li>
                         <code>@AfterThrowing [TYPE]</code> -
                         <code>@AfterThrowing(pointcut)</code> or
-                        <code>@AfterThrowing(type=onThrownedType, expression=pointcut))</code>
+                        <code>@AfterThrowing(type=onThrownedType, pointcut=pointcut))</code>
                     </li>
                 </ul>
             </p>
@@ -325,7 +325,7 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
                 </p>
                 <p>
                     <source><![CDATA[
-@AfterReturning(type="@Service *..*", expression="execution(@TxRequired * *.*(..)")
+@AfterReturning(type="@Service *..*", pointcut="execution(@TxRequired * *.*(..)")
 public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                     ]]></source>
                 </p>
@@ -335,7 +335,7 @@ public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 /**
- * @AfterReturning(type="@Service *..*", expression="execution(@TxRequired * *.*(..)")
+ * @AfterReturning(type="@Service *..*", pointcut="execution(@TxRequired * *.*(..)")
  */
 public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                     ]]></source>
@@ -366,7 +366,7 @@ public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                 </p>
                 <p>
                     <source><![CDATA[
-@AfterThrowing(type="RuntimeException+", expression="execution(@TxRequired * *.*(..)")
+@AfterThrowing(type="RuntimeException+", pointcut="execution(@TxRequired * *.*(..)")
 public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                     ]]></source>
                 </p>
@@ -376,7 +376,7 @@ public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 /**
- * @AfterThrowing(type="RuntimeException+", expression="execution(@TxRequired * *.*(..)")
+ * @AfterThrowing(type="RuntimeException+", pointcut="execution(@TxRequired * *.*(..)")
  */
 public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                     ]]></source>
@@ -689,7 +689,7 @@ public void someMetod() {}
 public class MyMixin { ... }
 
 @Mixin(
-    expression="within(*..domain.*)",
+    pointcut="within(*..domain.*)",
     deploymentModel="perClass",
     isTransient=true
 )
@@ -704,7 +704,7 @@ public class MyMixin { ... }
 
 /**
  * @Mixin(
- *   expression="within(*..domain.*)",
+ *   pointcut="within(*..domain.*)",
  *   deploymentModel="perClass",
  *   isTransient=true
  * )

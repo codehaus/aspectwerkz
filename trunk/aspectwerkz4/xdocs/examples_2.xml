@@ -255,7 +255,7 @@ public abstract class AbstractIntroductionAspect {
 public class IntroductionAspect extends AbstractIntroductionAspect {
 
     /**
-     * @Mixin(expression="within(examples.introduction.Target)",
+     * @Mixin(pointcut="within(examples.introduction.Target)",
      *        deploymentModel="perInstance")
      */
     public static class MyConcreteImpl extends MyImpl {
