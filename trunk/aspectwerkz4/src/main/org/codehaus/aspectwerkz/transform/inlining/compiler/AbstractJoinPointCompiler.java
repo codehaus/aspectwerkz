@@ -63,7 +63,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
     protected static final String THIS_CLASS_FIELD_NAME	  = "THIS_CLASS";
 
     // FIXME define these two using VM option - if dump dir specified then dump
-    public static final boolean DUMP_JIT_CLASSES = true;
+    public static final boolean DUMP_JIT_CLASSES = false;
     protected static final String DUMP_DIR = "_dump";
 
     protected final String m_callerClassName;

@@ -577,6 +577,13 @@
             <p>
                  The pointcut is a construct that picks out join points, i.e. selects well-defined points in the program flow.
             </p>
+            <subsection name="staticinitialization() pointcut">
+                <p>
+                    <code>staticinitialization(&lt;type pattern&gt;)</code> - picks out join points defining class
+                    static initialization.
+                </p>
+            </subsection>
+
             <subsection name="execution() pointcut">
                 <p>
                     <code>execution(&lt;method or constructor pattern&gt;)</code> - picks out join points defining method
@@ -618,7 +625,7 @@
                 <code>handler</code> pointcuts.
                 <br/>
                 It can be used with other pointcuts as well (
-                <code>execution</code>,
+                <code>staticinitialization</code>, <code>execution</code>,
                 <code>get/set</code>) to narrow
                 the scope of the pointcut. For example,
                 <code>execution(* method(..))</code> will match all methods in all classes
@@ -631,9 +638,14 @@
                 <code>withincode(&lt;method or constructor pattern&gt;)</code> - picks out a method
                 or constructor set.
                 <br/>
+                <code>withincode(staticinitialization(&lt;type pattern&gt;))</code> - picks out a static class
+                initalizer set.
+                <br/>
                 This pointcut can be used when you need to limit the scope on which join points you pick out.
                 Really useful (and and most cases necessary) to use together with
-                <code>call</code> and
+                <code>call</code>,
+                <code>get</code>,
+                <code>set</code> and
                 <code>handler</code> pointcuts.
                 </p>
             </subsection>
@@ -820,6 +832,8 @@ void before(Bar myBar) {
             <p>
                 Examples:
                 <source><![CDATA[
+staticinitialization(foo..*) && within(@AnnotatedFoo)
+
 execution(* foo.bar.Baz.*(..)) || call(* foo.bar.Baz.*(..))
 
 (set(* foo.bar.*) || get(* foo.bar.*)) && withincode(* foo.bar.Buzz.*(..))

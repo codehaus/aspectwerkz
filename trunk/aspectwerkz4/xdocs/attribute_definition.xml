@@ -95,7 +95,7 @@
                 <p>
                     In the aspect class you put the pointcut definitions as fields of the type
                     <code>org.codehaus.aspectwerkz.definition.Pointcut</code>
-                    along with metadata annotations which specifies the type of (execution, call, set, get, cflow or handler)
+                    along with metadata annotations which specifies the type of (staticinitialization, execution, call, set, get, cflow or handler)
                     and pattern for the pointcut.
                     <br/>
                     If the pointcut is used to retain parameters value of the matching target (method/constructor execution/call and field value set)

@@ -650,8 +650,7 @@ public class DocumentParser {
                 String type = adviceElement.attributeValue("type");
                 String bindTo = adviceElement.attributeValue("bind-to");
 
-                //FIXME is that comment OK ? if so remove - need to dig the consequence
-                String adviceName = /*aspectClassInfo.getName() + '.' +*/ name;
+                String adviceName = name;
                 MethodInfo method = null;
                 for (Iterator it3 = methodList.iterator(); it3.hasNext();) {
                     MethodInfo methodCurrent = (MethodInfo) it3.next();
@@ -676,7 +675,9 @@ public class DocumentParser {
                 if (method == null) {
                     throw new DefinitionException(
                             "could not find advice method [" + name + "] in [" + aspectClassInfo.getName() +
-                            "] (are you using a compiler extension that you have not registered?)"
+                            "] (are you using a compiler extension that you have not registered?)"+
+                            " (are you using XML defined advice, with StaticJoinPoint bindings without specifying the full" +
+                            "source like signature?)"
                     );
                 }
                 createAndAddAdviceDefsToAspectDef(type, bindTo, adviceName, method, aspectDef);
@@ -1044,9 +1045,6 @@ public class DocumentParser {
      * @return
      */
     private static boolean matchMethodAsAdvice(MethodInfo method, String adviceSignature) {
-        //!!!!
-        // FIXME - support more abbreviation f.e. Rtti and StaticJP
-
         // grab components from adviceSignature
         //TODO catch AOOBE for better syntax error reporting
         String[] signatureElements = Strings.extractMethodSignature(adviceSignature);
@@ -1061,7 +1059,8 @@ public class DocumentParser {
             // and adviceSignature has none
             if (signatureElements.length == 1 &&
                 method.getParameterTypes().length == 1 &&
-                method.getParameterTypes()[0].getName().equals(TransformationConstants.JOIN_POINT_JAVA_CLASS_NAME)) {
+                (method.getParameterTypes()[0].getName().equals(TransformationConstants.JOIN_POINT_JAVA_CLASS_NAME)
+                 || method.getParameterTypes()[0].getName().equals(TransformationConstants.STATIC_JOIN_POINT_JAVA_CLASS_NAME))) {
                 return true;
             } else {
                 return false;

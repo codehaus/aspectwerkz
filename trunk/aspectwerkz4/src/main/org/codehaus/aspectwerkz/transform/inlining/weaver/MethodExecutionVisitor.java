@@ -165,9 +165,6 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
                                    final String[] exceptions,
                                    final Attribute attrs,
                                    final MethodInfo methodInfo) {
-
-        // FIXME copy the annotations from original method to this method
-
         CodeVisitor mv = cv.visitMethod(access, name, desc, exceptions, attrs);
 
         // load "this" ie callee if target method is not static

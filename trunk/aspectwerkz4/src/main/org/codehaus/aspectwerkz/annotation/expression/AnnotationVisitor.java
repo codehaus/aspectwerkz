@@ -361,9 +361,6 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         }
     }
 
-    /**
-     * FIXME handle array types
-     */
     private Object handleClassIdentifier(String identifier) {
         int index = identifier.lastIndexOf('.');
         String className = identifier.substring(0, index);

@@ -261,7 +261,6 @@ public class DefinitionParserHelper {
                 if (parameterInfo.length == 2) {
                     paramName = parameterInfo[1];
                     paramType = parameterInfo[0];
-                    //FIXME -- ?? what ??
                 } else {
                     paramName = "anonymous_" + i;
                     paramType = (String) Pattern.ABBREVIATIONS.get(parameterInfo[0]);

@@ -20,7 +20,7 @@
 
                 <p>
 
-                    The latest official release is 2.0.RC2
+                    The latest official release is 2.0.RC3
 
                 </p>
 
@@ -31,11 +31,11 @@
                     <ul>
 
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-2.0.RC2.zip?download">2.0.RC2</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-2.0.RC3.zip?download">2.0.RC3</a>
                         </li>
 
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-2.0.RC1.zip?download">2.0.RC1</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-2.0.RC2.zip?download">2.0.RC2</a>
                         </li>
 
                         <br/>
@@ -64,6 +64,22 @@
 
         <section name="Release notes">
 
+            <subsection name="New features and changes in release 2.0.RC3">
+                <p>
+                    AspectWerkz 2.0.RC3 comes with small features completions and several bug fixes.
+                    <ul>
+                        <li>cflowbelow() is supported</li>
+                        <li>staticinitialization() pointcut (contributed by Alexandru Popescu / Mindstorm)</li>
+                        <li>patterns can be only annotation defined like within(@Foo), execution(@Tx) etc (contributed by Alexandru Popescu / Mindstorm)</li>
+                        <li>new <code>-keepjp</code> option in offline mode to keep internal statically compiled structure and speed up deployment time</li>
+                    </ul>
+                    <ul>
+                        <li>Aspects.aspectOf() fixed to support aspect reuse</li>
+                        <li>Advisable API fixed for call side pointcut</li>
+                    </ul>
+                </p>
+            </subsection>
+
             <subsection name="New features and changes in release 2.0.RC2">
                 <p>
                     AspectWerkz 2.0.RC2 comes with several major bug fixes, but comes with feature completion as compared
@@ -72,8 +88,8 @@
                     <br/>
                     Features completion from 1.0 final:
                     <ul>
-                        <li>cflow()</li> is supported
-                        <li>handler()</li> pointcut is supported
+                        <li>cflow() is supported</li>
+                        <li>handler() pointcut is supported</li>
                     </ul>
                     <br/>
                     New features:
@@ -104,8 +120,8 @@
                     </ul>
                 </p>
             </subsection>
-            
-            
+
+
             <subsection name="New features and changes in release 2.0.RC1">
 
                 <p>

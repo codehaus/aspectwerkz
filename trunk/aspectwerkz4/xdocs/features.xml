@@ -96,7 +96,7 @@
 
                     <li>
 
-                        <b>The join point model</b> supports: method execution and call, constructor execution and call,
+                        <b>The join point model</b> supports: staticinitialization, method execution and call, constructor execution and call,
 
                         field access, field modification, catch handlers, cflow, within and withincode, hasmethod and hasfield. All advice works with all join points.
 

@@ -170,36 +170,6 @@ public class ArgAspect {
         return null;
     }
 
-    // FIXME - Validate:
-    // 1. Use of PC (@Before pc1(..)) has the correct param list to the PC (match the signature)
-    // 2. All param names in the PC signature are defined in an args(..) construct
-
-    
-    
-    //TODO if not abstract, then must be "void"
-    //TODO: decide - should we ignore abstract marked pc annotation ??
-    //FOR NOW: grab em all, ignore return type, and abstract or not.
-    //void pc1(String s) {};
-    // in fact could be ANY method...
-
-    //TODO anonymous one
-    //@Before execution(* *..*(..)) && args(s, String)
-    //void beforeAdvice(String s) { . .. the advice body }
-
-    /**
-     * Expression execution(* *..*(..)) && args(s, String)
-     */
-    //abstract Pointcut pc1(int s);
-    //TODO: do we allow that ? AJ does not (pc name must be unique in AJ no matter sig)
-    //NOTE: AJ supports args(bindedName, Type), where Type acts at the matching level
-    //but not at the advice level
-    //we cannot do that since we don't have the bindedName in the matching advice sig
-    //unless we do some mixed syntax: args(String, int s). s is named, String is unamed
-    //thus advice would be (int s)
-    //DO it later.
-
-    //methodsToLog(String s) {};
-
     private void indent() {
         for (int i = 0; i < m_level; i++) {
             System.out.print("  ");

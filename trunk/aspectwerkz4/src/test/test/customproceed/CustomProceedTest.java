@@ -44,7 +44,6 @@ public class CustomProceedTest extends TestCase {
     }
 
     public void testMiscArgs2() {
-        //FIXME issue with multi. dim. array in ClassInfo leads to NO match.. see as well in argsAdviceTest.withArray
         LOG = "";
         int[][] arr = new int[1][1];
         arr[0][0] = -123;

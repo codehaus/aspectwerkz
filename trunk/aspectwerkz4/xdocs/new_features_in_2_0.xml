@@ -24,7 +24,7 @@
                         <a href="#Richer after advice semantics">Richer after advice semantics</a>
                     </li>
                     <li>
-                        <a href="#StaticJoinPoint vs. JoinPoint">StaticJoinPoint vs. JoinPoint</a>
+                        <a href="#StaticJoinPoint, JoinPoint, EnclosingStaticJoinPoint">StaticJoinPoint, JoinPoint, EnclosingStaticJoinPoint</a>
                     </li>
                     <li>
                         <a href="#this() and target()">this() and target()</a>
@@ -42,6 +42,9 @@
                         <a href="#Strongly typed proceed">Strongly typed proceed(..)</a>
                     </li>
                     <li>
+                        <a href="#staticinitialization() pointcut">staticinitialization() pointcut</a>
+                    </li>
+                    <li>
                         <a href="#Per instance interception">Per instance interception</a>
                     </li>
                     <li>
@@ -57,8 +60,8 @@
                         Build and develop for Java 5 -
                         <br/>
                         To build on Java 5 you will have to put the
-                        <code>./lib/aspectwerkz-jdk5-2.0.RC2.jar</code>
-                        on the classpath <b>instead of</b> <code>./lib/aspectwerkz-jdk14-2.0.RC2.jar</code>. Same if you want to run it inside an IDE, or use an Ant script.
+                        <code>./lib/aspectwerkz-jdk5-2.0.RC3.jar</code>
+                        on the classpath <b>instead of</b> <code>./lib/aspectwerkz-jdk14-2.0.RC3.jar</code>. Same if you want to run it inside an IDE, or use an Ant script.
                         This jar contains the Java 5 implementations of the AspectWerkz annotations.
                     </li>
                     <br/>
@@ -597,7 +600,7 @@ public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
             </subsection>
         </section>
 
-        <section name="StaticJoinPoint vs. JoinPoint">
+        <section name="StaticJoinPoint, JoinPoint, EnclosingStaticJoinPoint">
             <p>
                 Advice are methods in aspect class. The method signature must conform to some rules, depending on the pointcut
                 where the advice is bound to, when args(..), this(..) and/or target(..) are used to gain access to join point
@@ -671,6 +674,10 @@ Object around(JoinPoint jp, int myI, Bar myBar) throws Throwable {
 }
 
                 ]]></source>
+            </p>
+            <p>
+                The use of <code>EnclosingStaticJoinPoint</code> does not interfere on advice signature. EnclosingStaticJoinPoint
+                information is accessible from a StaticJoinPoint or JoinPoint instances.
             </p>
         </section>
 
@@ -1113,6 +1120,13 @@ public class MyAspect {
             </p>
         </section>
 
+        <section name="staticinitialization() pointcut">
+            <p>
+                Since 2.0.RC3, <code>staticinitialization(&lt;type pattern&gt;)</code> pointcut is supported. It can also be used
+                in conjunction with withincode in the form of <code>withincode(staticinitialization(&lt;type pattern&gt;))</code>
+            </p>
+        </section>
+ 
         <section name="Per instance interception">
             <p>
                 Aspects can be deployed as <code>perInstance</code> as described <a href="definition_issues.html#Deployment_models">here</a>.
@@ -1226,7 +1240,7 @@ public class Caller {
                 ]]></source>
             </p>
             <p>
-                Note: constructors are not made advisable ie open for this programmatic interception for now (2.0.RC2)
+                Note: constructors are not made advisable ie open for this programmatic interception for now (2.0.RC3)
             </p>
         </section>
 
