@@ -20,6 +20,7 @@ import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.impl.StaticInitializationRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.StaticInitializerSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
+import test.CallerSideAdviceTest;
 
 
 /**
@@ -47,9 +48,14 @@ public class StaticInitializationTest extends TestCase {
 	
 	public void testStaticInitializer() throws ClassNotFoundException {
 		Class reflectClazz = Class.forName("test.staticinitialization.ClinitTarget"); 
-		Class clazz = ClinitTarget.class; // HINT must do nothing
+        try {
+            // required to run the clinit on Java 1.5
+            reflectClazz.newInstance();
+        } catch (Exception e) {
+            fail(e.toString());
+        }
 
-		checkMessages();
+        checkMessages();
 		
 		checkStaticJoinPoints(reflectClazz, s_staticJoinPoints);
 		checkStaticJoinPoints(reflectClazz, s_joinPoints);
@@ -173,7 +179,11 @@ public class StaticInitializationTest extends TestCase {
 		}
 	}
 	
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(StaticInitializationTest.class);
-	}
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(suite());
+    }
+
+    public static junit.framework.Test suite() {
+        return new junit.framework.TestSuite(StaticInitializationTest.class);
+    }
 }

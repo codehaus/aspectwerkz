@@ -168,7 +168,7 @@ public class CflowAspectExpressionVisitor implements ExpressionParserVisitor {
         Node subNode = node.jjtGetChild(0);
         ExpressionInfo subExpression = new ExpressionInfo(subNode, m_namespace);
         subExpression.inheritPossibleArgumentFrom(m_expressionInfo);
-        ((List)data).add(new CflowBinding(cflowID, subExpression, false));
+        ((List)data).add(new CflowBinding(cflowID, subExpression, m_expressionInfo, false));
         return data;
     }
 
@@ -184,7 +184,7 @@ public class CflowAspectExpressionVisitor implements ExpressionParserVisitor {
         Node subNode = node.jjtGetChild(0);
         ExpressionInfo subExpression = new ExpressionInfo(subNode, m_namespace);
         subExpression.inheritPossibleArgumentFrom(m_expressionInfo);
-        ((List)data).add(new CflowBinding(cflowID, subExpression, true));
+        ((List)data).add(new CflowBinding(cflowID, subExpression, m_expressionInfo, true));
         return data;
     }
 

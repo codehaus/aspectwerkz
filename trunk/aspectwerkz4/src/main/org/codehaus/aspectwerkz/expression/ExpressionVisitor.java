@@ -224,18 +224,22 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         	
         	if(reflectInfo instanceof StaticInitializationInfo) {
         		ClassInfo declaringClassInfo = ((StaticInitializationInfo) reflectInfo).getDeclaringType();
-        		
+
+                // In an annotated subtree, only the last child node may represent the pattern
+                Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
+                if (!(patternNode instanceof ASTAttribute)) {
+                    Boolean matchPattern = (Boolean) patternNode.jjtAccept(this, reflectInfo);
+                    if (Boolean.FALSE.equals(matchPattern)) {
+                        return Boolean.FALSE;
+                    }
+                }
+
+                // match on annotation if no pattern node or matched already
             	boolean matchedAnnotations = visitAttributes(node, declaringClassInfo);
-            	if(!matchedAnnotations) {
+            	if (!matchedAnnotations) {
             		return Boolean.FALSE;
-            	}
-        		
-            	// In an annotated subtree, the last child node represents the pattern
-            	Node lastNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
-            	if(lastNode instanceof ASTAttribute) {
-            		return Boolean.TRUE;
             	} else {
-                    return lastNode.jjtAccept(this, reflectInfo);
+                    return Boolean.TRUE;
                 }
         	} else {
         		return Boolean.FALSE;
@@ -258,7 +262,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         	} else {
         		return Boolean.FALSE;
             }
-
 	        return visitAnnotatedNode(
 	        		node,
 					withinInfo);
@@ -317,41 +320,34 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 				: (ClassInfo) info;
         
         Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
-        boolean presentPattern = !(patternNode instanceof ASTAttribute);
+        boolean hasPatternNode = !(patternNode instanceof ASTAttribute);
 
         MethodInfo[] methodInfos = classInfo.getMethods();
         for (int i = 0; i < methodInfos.length; i++) {
-        	boolean matchAnnotations = visitAttributes(node, methodInfos[i]);
-        	
-        	if(!matchAnnotations) {
-        		continue;
-        	}
+            if (hasPatternNode) {
+                if(Boolean.FALSE.equals(patternNode.jjtAccept(this, methodInfos[i]))) {
+                    continue;
+                }
+            }
 
-     		if(presentPattern) {
-     			if(Boolean.TRUE.equals(patternNode.jjtAccept(this, methodInfos[i]))) {
-     				return Boolean.TRUE;
-     			}
-     		} else {
-     			return Boolean.TRUE;
-     		}
+            boolean matchAnnotations = visitAttributes(node, methodInfos[i]);
+            if (matchAnnotations) {
+                return Boolean.TRUE;
+            }
 		}
-        
 
         ConstructorInfo[] constructorInfos = classInfo.getConstructors();
         for (int i = 0; i < constructorInfos.length; i++) {
-        	boolean matchAnnotations = visitAttributes(node, constructorInfos[i]);
-        	
-        	if(!matchAnnotations) {
-        		continue;
-        	}
+            if (hasPatternNode) {
+                if(Boolean.FALSE.equals(patternNode.jjtAccept(this, constructorInfos[i]))) {
+                    continue;
+                }
+            }
 
-     		if(presentPattern) {
-     			if(Boolean.TRUE.equals(patternNode.jjtAccept(this, constructorInfos[i]))) {
-     				return Boolean.TRUE;
-     			}
-     		} else {
-     			return Boolean.TRUE;
-     		}
+            boolean matchAnnotations = visitAttributes(node, constructorInfos[i]);
+            if (matchAnnotations) {
+                return Boolean.TRUE;
+            }
         }
 
         return Boolean.FALSE;
@@ -367,22 +363,20 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                               ((MemberInfo) info).getDeclaringType() : (ClassInfo) info;
 
         Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
-        boolean presentPattern = !(patternNode instanceof ASTAttribute);
+        boolean hasPatternNode = !(patternNode instanceof ASTAttribute);
+
         FieldInfo[] fieldInfos = classInfo.getFields();
         for (int i = 0; i < fieldInfos.length; i++) {
-        	boolean matchAnnotations = visitAttributes(node, fieldInfos[i]);
-        	
-        	if(!matchAnnotations) {
-        		continue;
-        	}
-        	
-        	if(presentPattern) {
-        		if (Boolean.TRUE.equals(patternNode.jjtAccept(this, fieldInfos[i]))) {
-        			return Boolean.TRUE;
-        		}
-            } else {
-                return Boolean.TRUE;
+            if (hasPatternNode) {
+                if (Boolean.FALSE.equals(patternNode.jjtAccept(this, fieldInfos[i]))) {
+                    continue;
+                }
             }
+
+        	boolean matchAnnotations = visitAttributes(node, fieldInfos[i]);
+        	if (matchAnnotations) {
+        		return Boolean.TRUE;
+        	}
         }
 
         return Boolean.FALSE;
@@ -1043,31 +1037,22 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
      */
     protected Object visitAnnotatedNode(SimpleNode node,
 									    ReflectionInfo reflectInfo) {
-    	boolean matchedAnnotations = visitAttributes(node, reflectInfo);
-    	if(!matchedAnnotations) {
+        // In an annotated subtree, only the last child node may represent the pattern
+        Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
+        if (!(patternNode instanceof ASTAttribute)) {
+            if (Boolean.FALSE.equals((Boolean)patternNode.jjtAccept(this, reflectInfo))) {
+                return Boolean.FALSE;
+            }
+        }
+
+        boolean matchedAnnotations = visitAttributes(node, reflectInfo);
+    	if (!matchedAnnotations) {
     		return Boolean.FALSE;
-    	}
-    	
-    	// In an annotated subtree, the last child node represents the pattern
-    	Node lastNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
-    	if(lastNode instanceof ASTAttribute) {
-    		return Boolean.TRUE;
     	} else {
-            return lastNode.jjtAccept(this, reflectInfo);
+            return Boolean.TRUE;
         }
     }
 
-    /**
-     * 
-     * @param reflectInfo
-     * @return
-     */
-    private ClassInfo getContextTypeReflectionInfo(ReflectionInfo reflectInfo) {
-    	return reflectInfo instanceof MemberInfo
-				? ((MemberInfo) reflectInfo).getDeclaringType()
-				: (ClassInfo) reflectInfo;
-    }
-    
     /**
      * Access the ASTRoot we visit
      *

@@ -16,6 +16,7 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 
 import junit.framework.TestCase;
+import test.CallerSideAdviceTest;
 
 
 /**
@@ -41,7 +42,8 @@ public class StaticInitializationExpressionTest extends TestCase {
 						NAMESPACE).getExpression().match(
 				new ExpressionContext(PointcutType.STATIC_INITIALIZATION, declaringType.staticInitializer(), null))
 		);
-		
+
+
 		assertTrue(
 				new ExpressionInfo(
 						"staticinitialization(test.*.*) && within(test.staticinitialization.StaticInitializationExpressionTest)",
@@ -49,9 +51,26 @@ public class StaticInitializationExpressionTest extends TestCase {
 				new ExpressionContext(PointcutType.STATIC_INITIALIZATION, declaringType.staticInitializer(), declaringType))
 		);
 						
+        assertTrue(
+                new ExpressionInfo(
+                        "staticinitialization(test.staticinitialization.StaticInitializationExpressionTest)",
+                        NAMESPACE).getAdvisedClassFilterExpression().match(
+                new ExpressionContext(PointcutType.STATIC_INITIALIZATION, null, declaringType))
+        );
+
+        assertTrue(
+                new ExpressionInfo(
+                        "staticinitialization(test.staticinitialization.StaticInitializationExpressionTest)",
+                        NAMESPACE).getAdvisedClassFilterExpression().match(
+                new ExpressionContext(PointcutType.STATIC_INITIALIZATION, null, declaringType.staticInitializer()))
+        );
 	}
 	
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(StaticInitializationExpressionTest.class);
-	}
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(suite());
+    }
+
+    public static junit.framework.Test suite() {
+        return new junit.framework.TestSuite(StaticInitializationExpressionTest.class);
+    }
 }

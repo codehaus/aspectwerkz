@@ -38,6 +38,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
 import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
 import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
 import org.codehaus.aspectwerkz.expression.ast.ASTThis;
+import org.codehaus.aspectwerkz.expression.ast.Node;
 
 /**
  * TODO: do we need that, there is a dump() method in jjtree API
@@ -46,17 +47,17 @@ import org.codehaus.aspectwerkz.expression.ast.ASTThis;
  * @author Michael Nascimento
  */
 public class DumpVisitor implements ExpressionParserVisitor {
-    private ASTRoot m_root;
+    private Node m_root;
 
     private int indent = 0;
 
-    private DumpVisitor(final ASTRoot root) {
+    private DumpVisitor(final Node root) {
         m_root = root;
     }
 
-    public static void dumpAST(final ASTRoot root) {
+    public static void dumpAST(final Node root) {
         DumpVisitor dumper = new DumpVisitor(root);
-        dumper.visit(dumper.m_root, null);
+        dumper.visit((SimpleNode)dumper.m_root, null);
     }
 
     public Object visit(SimpleNode node, Object data) {

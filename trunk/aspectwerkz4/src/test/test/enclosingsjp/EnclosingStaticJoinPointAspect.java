@@ -22,7 +22,7 @@ import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 public class EnclosingStaticJoinPointAspect {
 
 	/**
-	 * @Before call(test.enclosingsjp.PointcutTarget.new())
+	 * @Before call(test.enclosingsjp.PointcutTarget.new()) && within(test.enclosingsjp..*)
 	 */
 	public void ctorCtorCall(StaticJoinPoint sjp) {
 		//System.out.println(".ctorCtorCall");
@@ -31,7 +31,7 @@ public class EnclosingStaticJoinPointAspect {
 	}
 	
 	/**
-	 * @Before call(* test.enclosingsjp.PointcutTarget.method1())
+	 * @Before call(* test.enclosingsjp.PointcutTarget.method1()) && within(test.enclosingsjp..*)
 	 */
 	public void ctorMethodCall(StaticJoinPoint sjp) {
 		//System.out.println(".ctorMethodCall");
@@ -57,7 +57,7 @@ public class EnclosingStaticJoinPointAspect {
 	}
 	
 	/**
-	 * @Before call(test.enclosingsjp.PointcutTarget.new()) && cflow(execution(test.enclosingsjp.EnclosingTarget.new()))
+	 * @Before call(test.enclosingsjp.PointcutTarget.new()) && within(test.enclosingsjp..*) && cflow(execution(test.enclosingsjp.EnclosingTarget.new()))
 	 * @param sjp
 	 */
 	public void ctorCtorCflow(StaticJoinPoint sjp) {
@@ -66,7 +66,7 @@ public class EnclosingStaticJoinPointAspect {
 	}
 	
 	/**
-	 * @Before call(test.enclosingsjp.PointcutTarget.new()) && cflowbelow(execution(test.enclosingsjp.EnclosingTarget.new()))
+	 * @Before call(test.enclosingsjp.PointcutTarget.new()) && within(test.enclosingsjp..*) && cflowbelow(execution(test.enclosingsjp.EnclosingTarget.new()))
 	 * @param sjp
 	 */
 	public void ctorCtorCflowbelowExecution(StaticJoinPoint sjp) {
@@ -75,7 +75,7 @@ public class EnclosingStaticJoinPointAspect {
 	}
 	
 	/**
-	 * @Before call(test.enclosingsjp.PointcutTarget.new()) && cflowbelow(call(test.enclosingsjp.EnclosingTarget.new()))
+	 * @Before within(test.enclosingsjp..*) && call(test.enclosingsjp.PointcutTarget.new()) && cflowbelow(call(test.enclosingsjp.EnclosingTarget.new()) && within(test.enclosingsjp..*))
 	 * @param sjp
 	 */
 	public void ctorCtorCflowbelowCall(StaticJoinPoint sjp) {
@@ -84,7 +84,7 @@ public class EnclosingStaticJoinPointAspect {
 	}
 	
 	/**
-	 * @Before call(test.enclosingsjp.PointcutTarget.new()) && cflowbelow(execution(* test.enclosingsjp.EnclosingSJPTest.testConstructorEnclosing()))
+	 * @Before within(test.enclosingsjp..*) && call(test.enclosingsjp.PointcutTarget.new()) && cflowbelow(execution(* test.enclosingsjp.EnclosingSJPTest.testConstructorEnclosing()))
 	 * @param sjp
 	 */
 	public void testCtorCflowbelow(StaticJoinPoint sjp) {
@@ -109,7 +109,7 @@ public class EnclosingStaticJoinPointAspect {
 	}
 	
 	/**
-	 * @Expression set(java.lang.Object test.enclosingsjp.EnclosingTarget.m_field) 
+	 * @Expression set(java.lang.Object test.enclosingsjp.EnclosingTarget.m_field) && within(test.enclosingsjp..*)
 	 */
 	private Pointcut enclosingSet;
 	
@@ -122,7 +122,7 @@ public class EnclosingStaticJoinPointAspect {
 	}
 	
 	/**
-	 * @Before enclosingSet && cflow(call(test.enclosingsjp.EnclosingTarget.new(java.lang.Object)))
+	 * @Before enclosingSet && cflow(call(test.enclosingsjp.EnclosingTarget.new(java.lang.Object)) && within(test.enclosingsjp..*))
 	 * @param sjp
 	 */
 	public void cflowCallSet(StaticJoinPoint sjp) {
@@ -140,7 +140,7 @@ public class EnclosingStaticJoinPointAspect {
 	}
 
 	/**
-	 * @Expression set(java.lang.Object test.enclosingsjp.PointcutTarget.m_field) || get(java.lang.Object test.enclosingsjp.PointcutTarget.m_field) 
+	 * @Expression("(set(java.lang.Object test.enclosingsjp.PointcutTarget.m_field) || get(java.lang.Object test.enclosingsjp.PointcutTarget.m_field)) && within(test.enclosingsjp..*)")
 	 */
 	private Pointcut getset;
 	
@@ -161,7 +161,7 @@ public class EnclosingStaticJoinPointAspect {
 	}
 
 	/**
-	 * @Before getset && cflowbelow(call(test.enclosingsjp.EnclosingTarget.new(*)))
+	 * @Before getset && cflowbelow(call(test.enclosingsjp.EnclosingTarget.new(*)) && within(test.enclosingsjp..*))
 	 */
 	public void methodCflowbelowGetSet(StaticJoinPoint sjp) {
 		//System.out.println(".methodCflowbelowGetSet");

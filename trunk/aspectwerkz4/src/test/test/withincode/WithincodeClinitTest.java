@@ -154,8 +154,15 @@ public class WithincodeClinitTest extends TestCase {
 	
 	public void testWithincode() {
 	    Class clazz = Target.class;
-	    
-	    checkMessages();
+
+        try {
+            // enfore clazz clinit triggering
+            Object fake = clazz.newInstance();
+        } catch (Exception e) {
+            fail(e.toString());
+        }
+
+        checkMessages();
 	    
 	    checkStaticJoinPoints();
 	    
@@ -249,5 +256,10 @@ public class WithincodeClinitTest extends TestCase {
 	public static void main(String[] args) {
 		junit.textui.TestRunner.run(WithincodeClinitTest.class);
 	}
+
+    public static junit.framework.Test suite() {
+        return new junit.framework.TestSuite(WithincodeClinitTest.class);
+    }
+
 
 }

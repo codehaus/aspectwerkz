@@ -2,9 +2,9 @@
 <aspectwerkz>
     <system id="tests">
         <exclude package="test.attribdeff"/>
-        <deployment-scope name="toString" expression="execution(String *.toString())"/>
+        <deployment-scope name="toString" expression="execution(String test.*.toString())"/>
         <advisable pointcut-type="execution" expression="within(test.intercept.execution.InterceptTest)"/>
-        <advisable pointcut-type="call" expression="within(test.intercept.call.Callee)"/>
+        <advisable pointcut-type="call" expression="within(test.intercept.call.InterceptTest)"/>
         <advisable pointcut-type="set" expression="within(test.intercept.set.InterceptTest)"/>
         <advisable pointcut-type="get" expression="within(test.intercept.get.InterceptTest)"/>
         <advisable pointcut-type="call|execution|set|get" expression="within(test.aspect.MemberMethodTestAspect)"/>

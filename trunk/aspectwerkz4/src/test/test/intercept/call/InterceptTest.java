@@ -27,8 +27,7 @@ public class InterceptTest extends TestCase {
     }
 
     public void testIsAdvisable() {
-        Callee callee = new Callee();
-        assertTrue(callee instanceof Advisable);
+        assertTrue(this instanceof Advisable);
     }
 
     public void testAddAround() {
@@ -38,7 +37,7 @@ public class InterceptTest extends TestCase {
         callee.adviseWithAround();
         assertEquals("adviseWithAround ", LOG);
 
-        ((Advisable) callee).aw_addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.call.Callee.adviseWithAround(..)",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
@@ -63,7 +62,7 @@ public class InterceptTest extends TestCase {
         callee.adviseWithAround2();
         assertEquals("adviseWithAround2 ", LOG);
 
-        ((Advisable) callee).aw_addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.call.Callee.adviseWithAround2(..)",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
@@ -79,7 +78,7 @@ public class InterceptTest extends TestCase {
         callee.adviseWithAround2();
         assertEquals("around1_pre_call adviseWithAround2 around1_post_call ", LOG);
 
-        ((Advisable) callee).aw_removeAdvice("* test.intercept.call.Callee.adviseWithAround2(..)", AroundAdvice.class);
+        ((Advisable) this).aw_removeAdvice("* test.intercept.call.Callee.adviseWithAround2(..)", AroundAdvice.class);
 
         LOG = "";
         callee.adviseWithAround2();
@@ -93,7 +92,7 @@ public class InterceptTest extends TestCase {
         callee.adviseWithAroundStack();
         assertEquals("adviseWithAroundStack ", LOG);
 
-        ((Advisable) callee).aw_addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.call.Callee.adviseWithAroundStack(..)",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
@@ -109,7 +108,7 @@ public class InterceptTest extends TestCase {
         callee.adviseWithAroundStack();
         assertEquals("around2_pre_call adviseWithAroundStack around2_post_call ", LOG);
 
-        ((Advisable) callee).aw_addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.call.Callee.adviseWithAroundStack(..)",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
@@ -135,7 +134,7 @@ public class InterceptTest extends TestCase {
         callee.adviseWithBefore();
         assertEquals("adviseWithBefore ", LOG);
 
-        ((Advisable) callee).aw_addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.call.Callee.adviseWithBefore(..)",
                 new BeforeAdvice() {
                     public void invoke(JoinPoint jp) throws Throwable {
@@ -156,7 +155,7 @@ public class InterceptTest extends TestCase {
         callee.adviseWithAfter();
         assertEquals("adviseWithAfter ", LOG);
 
-        ((Advisable) callee).aw_addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.call.Callee.adviseWithAfter(..)",
                 new AfterAdvice() {
                     public void invoke(JoinPoint jp) throws Throwable {
@@ -177,7 +176,7 @@ public class InterceptTest extends TestCase {
         callee.adviseWithAfterReturning();
         assertEquals("adviseWithAfterReturning ", LOG);
 
-        ((Advisable) callee).aw_addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.call.Callee.adviseWithAfterReturning(..)",
                 new AfterReturningAdvice() {
                     public void invoke(JoinPoint jp, Object returnValue) throws Throwable {
@@ -203,7 +202,7 @@ public class InterceptTest extends TestCase {
         }
         assertEquals("adviseWithAfterThrowing ", LOG);
 
-        ((Advisable) callee).aw_addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.call.Callee.adviseWithAfterThrowing(..)",
                 new AfterThrowingAdvice() {
                     public void invoke(JoinPoint jp, Throwable exception) throws Throwable {
