@@ -40,6 +40,7 @@ public class XmlDefinitionParser {
      */
     private final static Map DTD_PUBLIC_IDS = new HashMap();
     static {
+        DTD_PUBLIC_IDS.put("-//AspectWerkz//DTD//EN", "/aspectwerkz.dtd");
         DTD_PUBLIC_IDS.put("-//AspectWerkz//DTD 0.8//EN", "/aspectwerkz.dtd");
         DTD_PUBLIC_IDS.put("-//AspectWerkz//DTD 0.8.1//EN", "/aspectwerkz.dtd");
     }
