@@ -473,10 +473,16 @@ public class AdviseStaticMethodTransformer implements Transformer, Activator {
         }
         if (originalMethod.getReturnType() == CtClass.voidType) {
             body.append("mmjp.proceed();");
+        } else if (originalMethod.getReturnType().isPrimitive()) {
+            body.append("Object rproceed = mmjp.proceed();");
+            body.append("if (rproceed!=null) return ($r)rproceed;");
+            body.append("else return ");
+            body.append(JavassistHelper.getDefaultPrimitiveValue(originalMethod.getReturnType())).append(";");
         } else {
             body.append("return ($r)mmjp.proceed();");
         }
         body.append("}");
+
         CtMethod method = JavassistHelper.makeStatic(
                 originalMethod.getReturnType(),
                 originalMethod.getName(),//TODO rename correctly handled by j ?
