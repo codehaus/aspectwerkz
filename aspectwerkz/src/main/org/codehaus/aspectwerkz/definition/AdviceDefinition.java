@@ -20,14 +20,13 @@ package org.codehaus.aspectwerkz.definition;
 
 import java.io.Serializable;
 import java.util.Map;
-
-import gnu.trove.THashMap;
+import java.util.HashMap;
 
 /**
  * Holds the advice definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviceDefinition.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: AdviceDefinition.java,v 1.4 2003-06-17 14:45:14 jboner Exp $
  */
 public class AdviceDefinition implements Serializable {
 
@@ -36,7 +35,7 @@ public class AdviceDefinition implements Serializable {
     private String m_deploymentModel;
     private String m_isPersistent;
     private String m_attribute = "";
-    private Map m_parameters = new THashMap();
+    private Map m_parameters = new HashMap();
 
     /**
      * Returns the name of the advice.

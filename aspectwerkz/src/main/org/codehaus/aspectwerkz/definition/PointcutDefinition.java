@@ -18,19 +18,18 @@
  */
 package org.codehaus.aspectwerkz.definition;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.util.Iterator;
 import java.io.Serializable;
 
-import org.codehaus.aspectwerkz.definition.regexp.Pattern;
+import org.codehaus.aspectwerkz.regexp.Pattern;
+import org.codehaus.aspectwerkz.regexp.ClassPattern;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Holds the pointcut definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: PointcutDefinition.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: PointcutDefinition.java,v 1.4 2003-06-17 14:45:14 jboner Exp $
  */
 public class PointcutDefinition implements Serializable {
 
@@ -41,40 +40,50 @@ public class PointcutDefinition implements Serializable {
     public static final String CALLER_SIDE = "callerside";
 
     /**
+     * The name of the pointcut.
+     */
+    private String m_name = null;
+
+    /**
      * The type for the pointcut.
      */
-    private String m_type;
+    private String m_type = null;
 
     /**
-     * The pattern the pointcut should match.
+     * The class pattern the pointcut should matches.
      */
-    private List m_patterns = new ArrayList();
+    private String m_classPattern = null;
 
     /**
-     * If we have a caller side pointcut; the caller side pattern.
+     * The pattern the pointcut should matches.
      */
-    private String m_callerSidePattern;
+    private String m_pattern = null;
 
     /**
-     * The advices for this pointcut.
+     * A pre-compiled regexp pattern for this pointcut.
      */
-    private final List m_advices = new ArrayList();
+    private Pattern m_regexpPattern = null;
 
     /**
-     * The advice stacks for this pointcut.
+     * A pre-compiled regexp class pattern for this pointcut.
      */
-    private final List m_adviceStacks = new ArrayList();
+    private ClassPattern m_regexpClassPattern = null;
 
     /**
-     * Marks the pointcut as thread-safe.
-     */
-    private String m_threadSafe;
-
-    /**
+     * Returns the name of the pointcut.
      *
-     * A a list with pre-compiled regexp patterns for this pointcut.
+     * @return the name of the pointcut
      */
-    private List m_regexps = null;
+    public String getName() {
+        return m_name;
+    }
+
+    /**
+     * Sets the name of the pointcut.
+     */
+    public void setName(final String name) {
+        m_name = name;
+    }
 
     /**
      * Returns the type of the pointcut.
@@ -95,12 +104,31 @@ public class PointcutDefinition implements Serializable {
     }
 
     /**
+     * Returns the class pattern for the pointcut.
+     *
+     * @return the class pattern
+     */
+    public String getClassPattern() {
+        return m_classPattern;
+    }
+
+    /**
+     * Adds a class pattern for the pointcut.
+     *
+     * @param pattern the class pattern
+     */
+    public void setClassPattern(final String classPattern) {
+        m_classPattern = classPattern.trim();
+        m_regexpClassPattern = Pattern.compileClassPattern(m_classPattern);
+    }
+
+    /**
      * Returns the pattern for the pointcut.
      *
      * @return the pattern
      */
-    public List getPatterns() {
-        return m_patterns;
+    public String getPattern() {
+        return m_pattern;
     }
 
     /**
@@ -108,146 +136,53 @@ public class PointcutDefinition implements Serializable {
      *
      * @param pattern the pattern
      */
-    public void addPattern(final String pattern) {
-        m_patterns.add(pattern.trim());
+    public void setPattern(final String pattern) {
+        m_pattern = pattern.trim();
     }
 
     /**
-     * Returns the caller side pattern for the pointcut.
+     * Returns a pre-compiled Pattern for the class pattern.
      *
-     * @return the pattern
+     * @return a pre-compiled Pattern for the class pattern
      */
-    public String getCallerSidePattern() {
-        return m_callerSidePattern;
+    public ClassPattern getRegexpClassPattern() {
+        return m_regexpClassPattern;
     }
 
     /**
-     * Sets the caller side pattern for the pointcut.
+     * Returns a pre-compiled Pattern for the pattern.
      *
-     * @param pattern the pattern
+     * @return a pre-compiled Pattern for the pattern
      */
-    public void setCallerSidePattern(final String pattern) {
-        m_callerSidePattern = pattern.trim();
-    }
-
-    /**
-     * Returns the name of the advices as list.
-     *
-     * @return the name of the advices
-     */
-    public List getAdvices() {
-        return m_advices;
-    }
-
-    /**
-     * Adds the name of an advice.
-     *
-     * @param advice the names of the advice
-     */
-    public void addAdvice(final String advice) {
-        m_advices.add(advice.trim());
-    }
-
-    /**
-     * Returns the advice stacks.
-     *
-     * @return the advice stacks
-     */
-    public List getAdviceStacks() {
-        return m_adviceStacks;
-    }
-
-    /**
-     * Adds an advice stack.
-     *
-     * @param adviceStack the advice stack
-     */
-    public void addAdviceStack(final String adviceStack) {
-        m_adviceStacks.add(adviceStack.trim());
-    }
-
-    /**
-     * Returns the threadSafe attribute.
-     *
-     * @return the threadSafe parameter
-     */
-    public String getIsThreadSafe() {
-        return m_threadSafe;
-    }
-
-    /**
-     * Sets the threadSafe attribute.
-     *
-     * @param threadSafe marks the pointcut thread-safe or not
-     */
-    public void setThreadSafe(final String threadSafe) {
-        m_threadSafe = threadSafe.trim();
-    }
-
-    /**
-     * Checks if the pointcut is thread-safe.
-     *
-     * @return true if the pointcut is thread-safe
-     */
-    public boolean isThreadSafe() {
-        if (m_threadSafe != null &&
-                (m_threadSafe.equalsIgnoreCase("no") ||
-                m_threadSafe.equalsIgnoreCase("false"))) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
-
-    /**
-     * Returns list of pre-compiled Pattern instances.
-     *
-     * @return a list of pre-compiled Pattern instances
-     */
-    public List getRegexpPatterns() {
-        if (m_regexps == null) {
-            m_regexps = new ArrayList(m_patterns.size());
-
-            if (m_type.equalsIgnoreCase(METHOD)) {
-                for (Iterator it = m_patterns.iterator(); it.hasNext();) {
-                    m_regexps.add(Pattern.compileMethodPattern((String)it.next()));
+    public Pattern getRegexpPattern() {
+        if (m_regexpPattern == null) {
+            try {
+                if (m_type.equalsIgnoreCase(METHOD)) {
+                    m_regexpPattern = Pattern.compileMethodPattern(m_pattern);
+                }
+                else if (m_type.equalsIgnoreCase(GET_FIELD)) {
+                    m_regexpPattern = Pattern.compileFieldPattern(m_pattern);
+                }
+                else if (m_type.equalsIgnoreCase(SET_FIELD)) {
+                    m_regexpPattern = Pattern.compileFieldPattern(m_pattern);
+                }
+                else if (m_type.equalsIgnoreCase(THROWS)) {
+                    m_regexpPattern = Pattern.compileThrowsPattern(m_pattern);
+                }
+                else if (m_type.equalsIgnoreCase(CALLER_SIDE)) {
+                    m_regexpPattern = Pattern.compileCallerSidePattern(m_pattern);
+                }
+                else {
+                    throw new IllegalStateException("pointcut has an undefined type: " + m_type);
                 }
             }
-            else if (m_type.equalsIgnoreCase(GET_FIELD)) {
-                for (Iterator it = m_patterns.iterator(); it.hasNext();) {
-                    m_regexps.add(Pattern.compileFieldPattern((String)it.next()));
-                }
+            catch (DefinitionException e) {
+                throw new DefinitionException("pattern in pointcut definition <" + m_name + "> is not valid: " + m_pattern);
             }
-            else if (m_type.equalsIgnoreCase(SET_FIELD)) {
-                for (Iterator it = m_patterns.iterator(); it.hasNext();) {
-                    m_regexps.add(Pattern.compileFieldPattern((String)it.next()));
-                }
-            }
-            else if (m_type.equalsIgnoreCase(THROWS)) {
-                for (Iterator it = m_patterns.iterator(); it.hasNext();) {
-                    final StringTokenizer tokenizer = new StringTokenizer(
-                            (String)it.next(),
-                            AspectWerkzDefinition.THROWS_DELIMITER);
-                    final String method = tokenizer.nextToken();
-                    final String exception = tokenizer.nextToken();
-                    m_regexps.add(Pattern.compileMethodPattern(method));
-                }
-            }
-            else if (m_type.equalsIgnoreCase(CALLER_SIDE)) {
-                for (Iterator it = m_patterns.iterator(); it.hasNext();) {
-                    final StringTokenizer tokenizer = new StringTokenizer(
-                            (String)it.next(),
-                            AspectWerkzDefinition.CALLER_SIDE_DELIMITER);
-                    String classNamePattern = tokenizer.nextToken();
-                    String methodNamePattern = tokenizer.nextToken();
-                    m_regexps.add(Pattern.compileMethodPattern(methodNamePattern));
-                }
-            }
-            else {
-                throw new IllegalStateException("pointcut has an undefined type: " + m_type);
+            catch (Exception e) {
+                throw new WrappedRuntimeException(e);
             }
         }
-        return m_regexps;
+        return m_regexpPattern;
     }
 }
