@@ -1,13 +1,6 @@
 <?xml version="1.0"?>
 
 <aspectwerkz>
-    <!-- ============================================= -->
-    <!--  Introductions                                -->
-    <!-- ============================================= -->
-    <!--    <introduction-def name="mixin"-->
-    <!--        interface="examples.introduction.Mixin"-->
-    <!--        implementation="examples.introduction.MixinImpl"-->
-    <!--        deployment-model="perJVM"/>-->
 
     <!-- ============================================= -->
     <!--  Advices                                      -->
@@ -47,18 +40,16 @@
         <pointcut-def name="synchronized_calls" type="method" pattern="* examples.synchronization.Target.toSynchronize()"/>
     </aspect>
 
-    <package name="examples">
-        <aspect name="Caching">
-            <pointcut-def name="callee" type="method" pattern="int caching.Pi.getPiDecimal(int)"/>
-            <pointcut-def name="caller" type="callerSide" pattern="caching.*->int caching.Pi.getPiDecimal(int)"/>
-            <advice pointcut="callee">
-                <advice-ref name="cache"/>
-            </advice>
-            <advice pointcut="caller">
-                <advice-ref name="invocationCounter"/>
-            </advice>
-        </aspect>
-    </package>
+    <aspect name="Caching">
+        <pointcut-def name="callee" type="method" pattern="int examples.caching.Pi.getPiDecimal(int)"/>
+        <pointcut-def name="caller" type="callerSide" pattern="examples.caching.*->int examples.caching.Pi.getPiDecimal(int)"/>
+        <advice pointcut="callee">
+            <advice-ref name="cache"/>
+        </advice>
+        <advice pointcut="caller">
+            <advice-ref name="invocationCounter"/>
+        </advice>
+    </aspect>
 
     <aspect name="Asynchronous">
         <pointcut-def name="asynchronous_calls" type="method" pattern="* examples.asynchronous.Target.toRunAsynchronously()"/>
