@@ -139,6 +139,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
                         bytecodeBeforeLocalTransformation, 0,
                         klass.getBytecode().length
                 );
+                //log(className + " : " +transformer.getClass().getName());
             }
 
             // do the interface transformations before the code transformations

@@ -256,12 +256,12 @@ public final class TransformationUtil {
      * @param cg the class gen
      * @return the uid
      */
-    public static long calculateSerialVersionUid(final ClassGen cg) {
+    public static long calculateSerialVersionUid(final Context context, final ClassGen cg) {
         try {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(bout);
 
-            JavaClass klass = cg.getJavaClass();
+            JavaClass klass = context.getJavaClass(cg);
             Method[] methods = klass.getMethods();
 
             // class name.
