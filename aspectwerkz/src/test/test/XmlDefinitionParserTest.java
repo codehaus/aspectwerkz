@@ -66,6 +66,7 @@ public class XmlDefinitionParserTest extends TestCase {
         try {
             AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input.toURL());
             Iterator it1 = aspectwerkz.getAspectDefinitions().iterator();
+            it1.next();// SystemAspect @todo check this with Jonas (side effect of precedence fix)
             AspectDefinition aspect = (AspectDefinition)it1.next();
             assertEquals("Logger", aspect.getName());
             assertEquals("Service", aspect.getExtends());
@@ -87,8 +88,9 @@ public class XmlDefinitionParserTest extends TestCase {
     public void testPointcutTag() {
         try {
             final AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input.toURL());
-            Iterator it = ((AspectDefinition)aspectwerkz.getAspectDefinitions().iterator().
-                    next()).getPointcutDefs().iterator();
+            Iterator itl = aspectwerkz.getAspectDefinitions().iterator();
+            itl.next(); // SystemAspect @todo validate with Jonas (side effect of precedence fix)
+            Iterator it = ((AspectDefinition)itl.next()).getPointcutDefs().iterator();
             PointcutDefinition pointcut2 = (PointcutDefinition)it.next();
             assertEquals("method", pointcut2.getType());
             assertEquals("stop", pointcut2.getName());
