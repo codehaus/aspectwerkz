@@ -123,14 +123,13 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
             return false;
         }
         FieldInfo fieldInfo = (FieldInfo) o;
-        if (!m_declaringTypeName.equals(fieldInfo.getDeclaringType().getName().toString())) {
+        if (!m_declaringTypeName.equals(fieldInfo.getDeclaringType().getName())) {
             return false;
         }
-        if (!m_member.name.equals(fieldInfo.getName().toString())) {
+        if (!m_member.name.equals(fieldInfo.getName())) {
             return false;
         }
-        ClassInfo fieldType = fieldInfo.getType();
-        if (!m_type.getName().toString().equals(fieldType.getName().toString())) {
+        if (!m_typeName.equals(fieldInfo.getType().getName())) {
             return false;
         }
         return true;
@@ -138,12 +137,9 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
 
     public int hashCode() {
         int result = 29;
-        if (m_type == null) {
-            getType();
-        }
         result = (29 * result) + m_declaringTypeName.hashCode();
-        result = (29 * result) + m_member.name.toString().hashCode();
-        result = (29 * result) + getType().getName().toString().hashCode();
+        result = (29 * result) + m_member.name.hashCode();
+        result = (29 * result) + m_typeName.hashCode();
         return result;
     }
 }

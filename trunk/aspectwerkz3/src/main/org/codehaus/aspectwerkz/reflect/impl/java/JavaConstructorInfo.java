@@ -126,10 +126,10 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
             return false;
         }
         ConstructorInfo constructorInfo = (ConstructorInfo) o;
-        if (!m_declaringType.getName().toString().equals(constructorInfo.getDeclaringType().getName().toString())) {
+        if (!m_declaringType.getName().equals(constructorInfo.getDeclaringType().getName())) {
             return false;
         }
-        if (!m_member.getName().toString().equals(constructorInfo.getName().toString())) {
+        if (!m_member.getName().equals(constructorInfo.getName())) {
             return false;
         }
         Class[] parameterTypes1 = ((Constructor) m_member).getParameterTypes();
@@ -138,7 +138,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
             return false;
         }
         for (int i = 0; i < parameterTypes1.length; i++) {
-            if (!parameterTypes1[i].getName().toString().equals(parameterTypes2[i].getName().toString())) {
+            if (!parameterTypes1[i].getName().equals(parameterTypes2[i].getName())) {
                 return false;
             }
         }
@@ -147,11 +147,11 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     public int hashCode() {
         int result = 29;
-        result = (29 * result) + m_declaringType.getName().toString().hashCode();
-        result = (29 * result) + m_member.getName().toString().hashCode();
+        result = (29 * result) + m_declaringType.getName().hashCode();
+        result = (29 * result) + m_member.getName().hashCode();
         Class[] parameterTypes = ((Constructor) m_member).getParameterTypes();
         for (int i = 0; i < parameterTypes.length; i++) {
-            result = (29 * result) + parameterTypes[i].getName().toString().hashCode();
+            result = (29 * result) + parameterTypes[i].getName().hashCode();
         }
         return result;
     }
