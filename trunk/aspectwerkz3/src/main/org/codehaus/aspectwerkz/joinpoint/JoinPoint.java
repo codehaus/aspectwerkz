@@ -45,10 +45,4 @@ public interface JoinPoint extends StaticJoinPoint {
      */
     Object getTarget();    
 
-    /**
-     * Returns the RTTI for the join point.
-     *
-     * @return the RTTI
-     */
-    Rtti getRtti();
 }

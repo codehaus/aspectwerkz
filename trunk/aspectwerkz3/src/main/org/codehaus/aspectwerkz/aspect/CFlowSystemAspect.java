@@ -160,9 +160,10 @@ public class CFlowSystemAspect {
      * @return the created method info
      */
     private static MethodInfo createMethodInfo(final JoinPoint joinPoint) {
-        MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
-        Method method = rtti.getMethod();
-        return JavaMethodInfo.getMethodInfo(method);
+        throw new UnsupportedOperationException("todo - use Rtti explicitly");
+        //MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
+        //Method method = rtti.getMethod();
+        //return JavaMethodInfo.getMethodInfo(method);
     }
 
     /**
