@@ -23,7 +23,7 @@ public class Target {
 
     public static void main(String[] args) {
         //FIXME
-        System.out.println("2.0.RC1 does not support cflow()");
+        System.out.println("2.0.RC2-snapshot does not support cflow()");
         if (true) return;
 
         Target target = new Target();
