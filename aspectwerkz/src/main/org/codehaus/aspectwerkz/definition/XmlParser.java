@@ -211,8 +211,8 @@ public class XmlParser {
                     InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
                     return new InputSource(in);
                 } else {
-                    System.err.println("AspectWerkz - WARN - unsupported DTD " + publicId + " - consider upgrading to " + DTD_PUBLIC_ID);
-                    return null;
+                    System.err.println("AspectWerkz - WARN - deprecated DTD " + publicId + " - consider upgrading to " + DTD_PUBLIC_ID);
+                    return new InputSource();// avoid null pointer exception
                 }
             }
         };
