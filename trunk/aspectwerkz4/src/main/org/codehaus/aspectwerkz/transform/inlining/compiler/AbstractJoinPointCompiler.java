@@ -14,6 +14,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.cflow.CflowCompiler;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
@@ -63,7 +64,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
     protected static final String THIS_CLASS_FIELD_NAME	  = "THIS_CLASS";
 
     // FIXME define these two using VM option - if dump dir specified then dump
-    public static final boolean DUMP_JIT_CLASSES = false;
+    public static final boolean DUMP_JIT_CLASSES = true;
     protected static final String DUMP_DIR = "_dump";
 
     protected final String m_callerClassName;
@@ -907,7 +908,17 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         String aspectClassName = aspectInfo.getAspectClassName();
         // retrieve the aspect set it to the field
         DeploymentModel deploymentModel = aspectInfo.getDeploymentModel();
-        if (deploymentModel.equals(DeploymentModel.PER_JVM)) {
+        if (CflowCompiler.isCflowClass(aspectClassName)) {
+            System.out.println("??? " + aspectClassName);            
+            // handle Cflow native aspectOf
+            cv.visitMethodInsn(
+                    INVOKESTATIC,
+                    aspectClassName,
+                    "aspectOf",
+                    "()"+aspectClassSignature
+            );
+            cv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature);
+        } else if (deploymentModel.equals(DeploymentModel.PER_JVM)) {
             // AW-355, AW-415 we need a ClassLoader here
             cv.visitFieldInsn(GETSTATIC, joinPointClassName, THIS_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
             cv.visitMethodInsn(

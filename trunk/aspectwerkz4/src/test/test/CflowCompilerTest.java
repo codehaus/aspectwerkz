@@ -49,7 +49,8 @@ public class CflowCompilerTest extends TestCase {
         Boolean b = (Boolean) staticMethod.invoke(null, new Object[0]);
         assertFalse(b.booleanValue());
 
-        final AbstractCflowSystemAspect cflow = (AbstractCflowSystemAspect)cflowAspect.newInstance();
+        final AbstractCflowSystemAspect cflow = (AbstractCflowSystemAspect)
+                cflowAspect.getDeclaredMethod("aspectOf", new Class[0]).invoke(null, new Object[0]);
 
         assertFalse(cflow.inCflow());
         Thread t = new Thread() {

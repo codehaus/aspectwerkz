@@ -13,7 +13,11 @@ import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager;
+import org.codehaus.aspectwerkz.joinpoint.management.AdviceInfoContainer;
 import org.codehaus.aspectwerkz.util.ContextClassLoader;
+import org.codehaus.aspectwerkz.aspect.AdviceInfo;
+import org.codehaus.aspectwerkz.cflow.CflowBinding;
+import org.codehaus.aspectwerkz.cflow.CflowCompiler;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -344,8 +348,24 @@ public class AspectWerkzC {
                     File jpFile = new File(file.getParent(), jpClassNoPackage+".class");
                     utility.log(" [keepjp] " + jpFile.getCanonicalPath());
                     FileOutputStream jpFos = new FileOutputStream(jpFile);
-                    jpFos.write(compileJoinPoint(emittedJoinPoint, compilationLoader));
+                    JoinPointManager.CompiledJoinPoint compiledJp = compileJoinPoint(emittedJoinPoint, compilationLoader);
+                    jpFos.write(compiledJp.bytecode);
                     jpFos.close();
+
+                    // handle cflow if any
+                    CflowCompiler.CompiledCflowAspect[] compiledCflowAspects = compileCflows(compiledJp);
+                    if (compiledCflowAspects.length > 0) {
+                        String baseDirAbsolutePath = getBaseDir(file.getCanonicalPath(), className);
+                        for (int j = 0; j < compiledCflowAspects.length; j++) {
+                            CflowCompiler.CompiledCflowAspect compiledCflowAspect = compiledCflowAspects[j];
+                            File cflowFile = new File(baseDirAbsolutePath + File.separatorChar + compiledCflowAspect.className.replace('/', File.separatorChar) + ".class");
+                            (new File(cflowFile.getParent())).mkdirs();
+                            utility.log(" [keepjp] (cflow) " + cflowFile.getCanonicalPath());
+                            FileOutputStream cflowFos = new FileOutputStream(cflowFile);
+                            cflowFos.write(compiledCflowAspect.bytecode);
+                            cflowFos.close();
+                        }
+                    }
                 }
             }
 
@@ -461,16 +481,32 @@ public class AspectWerkzC {
                 if (keepJp && out != null && out.emittedJoinPoints!=null) {
                     for (int i = 0; i < out.emittedJoinPoints.length; i++) {
                         EmittedJoinPoint emittedJoinPoint = out.emittedJoinPoints[i];
-                        byte[] transformedJp = compileJoinPoint(emittedJoinPoint, compilationLoader);
-                        utility.log(" [compilejar] keepjp " + file.getName() + ":" + emittedJoinPoint.getJoinPointClassName());
-                        ZipEntry transformedZeJp = new ZipEntry(emittedJoinPoint.getJoinPointClassName()+".class");
-                        transformedZeJp.setSize(transformedJp.length);
-                        CRC32 crcJp = new CRC32();
-                        crcJp.update(transformedJp);
-                        transformedZeJp.setCrc(crcJp.getValue());
-                        transformedZeJp.setMethod(ze.getMethod());
-                        zos.putNextEntry(transformedZeJp);
-                        zos.write(transformedJp, 0, transformedJp.length);
+                        JoinPointManager.CompiledJoinPoint compiledJp = compileJoinPoint(emittedJoinPoint, compilationLoader);
+                        utility.log(" [compilejar] (keepjp) " + file.getName() + ":" + emittedJoinPoint.getJoinPointClassName());
+                        ZipEntry jpZe = new ZipEntry(emittedJoinPoint.getJoinPointClassName()+".class");
+                        jpZe.setSize(compiledJp.bytecode.length);
+                        CRC32 jpCrc = new CRC32();
+                        jpCrc.update(compiledJp.bytecode);
+                        jpZe.setCrc(jpCrc.getValue());
+                        jpZe.setMethod(ze.getMethod());
+                        zos.putNextEntry(jpZe);
+                        zos.write(compiledJp.bytecode, 0, compiledJp.bytecode.length);
+
+                        CflowCompiler.CompiledCflowAspect[] compiledCflowAspects = compileCflows(compiledJp);
+                        if (compiledCflowAspects.length > 0) {
+                            for (int j = 0; j < compiledCflowAspects.length; j++) {
+                                CflowCompiler.CompiledCflowAspect compiledCflowAspect = compiledCflowAspects[j];
+                                utility.log(" [compilejar] (keepjp) (cflow) " + file.getName() + ":" + compiledCflowAspect.className);
+                                ZipEntry cflowZe = new ZipEntry(compiledCflowAspect.className+".class");
+                                cflowZe.setSize(compiledCflowAspect.bytecode.length);
+                                CRC32 cflowCrc = new CRC32();
+                                cflowCrc.update(compiledCflowAspect.bytecode);
+                                cflowZe.setCrc(cflowCrc.getValue());
+                                cflowZe.setMethod(ze.getMethod());
+                                zos.putNextEntry(cflowZe);
+                                zos.write(compiledCflowAspect.bytecode, 0, compiledCflowAspect.bytecode.length);
+                            }
+                        }
                     }
                 }
             }
@@ -781,7 +817,15 @@ public class AspectWerkzC {
         }
     }
 
-    private byte[] compileJoinPoint(EmittedJoinPoint emittedJoinPoint, ClassLoader loader) throws IOException {
+    /**
+     * Handles the compilation of the given emitted joinpoint
+     *
+     * @param emittedJoinPoint
+     * @param loader
+     * @return
+     * @throws IOException
+     */
+    private JoinPointManager.CompiledJoinPoint compileJoinPoint(EmittedJoinPoint emittedJoinPoint, ClassLoader loader) throws IOException {
         try {
             Class callerClass = ContextClassLoader.forName(emittedJoinPoint.getCallerClassName().replace('/', '.'));
             Class calleeClass = ContextClassLoader.forName(emittedJoinPoint.getCalleeClassName().replace('/', '.'));
@@ -797,11 +841,64 @@ public class AspectWerkzC {
                     emittedJoinPoint.getCalleeMemberModifiers(),
                     emittedJoinPoint.getJoinPointHash(),
                     emittedJoinPoint.getJoinPointClassName(),
-                    calleeClass
+                    calleeClass,
+                    loader
             );
-            return jp.bytecode;
+            return jp;
         } catch (ClassNotFoundException e) {
             throw new IOException("Could not compile joinpoint : " + e.toString());
         }
+    }
+
+    /**
+     * Handles the compilation of the possible cflowAspect associated to the advices that affects the given
+     * joinpoint
+     *
+     * @param jp
+     * @return
+     */
+    private CflowCompiler.CompiledCflowAspect[] compileCflows(JoinPointManager.CompiledJoinPoint jp) {
+        List allCflowBindings = new ArrayList();
+        AdviceInfoContainer adviceInfoContainer = jp.compilationInfo.getInitialModel().getAdviceInfoContainer();
+
+        AdviceInfo[] advices = adviceInfoContainer.getAllAdviceInfos();
+        for (int i = 0; i < advices.length; i++) {
+            AdviceInfo adviceInfo = advices[i];
+            List cflowBindings = CflowBinding.getCflowBindingsForCflowOf(adviceInfo.getExpressionInfo());
+            allCflowBindings.addAll(cflowBindings);
+        }
+
+        List compiledCflows = new ArrayList();
+        for (Iterator iterator = allCflowBindings.iterator(); iterator.hasNext();) {
+            CflowBinding cflowBinding = (CflowBinding) iterator.next();
+            compiledCflows.add(CflowCompiler.compileCflowAspect(cflowBinding.getCflowID()));
+        }
+
+        return (CflowCompiler.CompiledCflowAspect[])compiledCflows.toArray(new CflowCompiler.CompiledCflowAspect[0]);
+    }
+
+    /**
+     * Given a path d/e/a/b/C.class and a class a.b.C, returns the base dir /d/e
+     *
+     * @param weavedClassFileFullPath
+     * @param weavedClassName
+     * @return
+     */
+    private static String getBaseDir(String weavedClassFileFullPath, String weavedClassName) {
+        String baseDirAbsolutePath = weavedClassFileFullPath;
+        int parentEndIndex = baseDirAbsolutePath.lastIndexOf(File.separatorChar);
+        for (int j = weavedClassName.toCharArray().length-1; j >= 0; j--) {
+            char c = weavedClassName.toCharArray()[j];
+            if (c == '.') {
+                if (parentEndIndex > 0) {
+                    baseDirAbsolutePath = baseDirAbsolutePath.substring(0, parentEndIndex);
+                    parentEndIndex = baseDirAbsolutePath.lastIndexOf(File.separatorChar);
+                }
+            }
+        }
+        if (parentEndIndex > 0) {
+            baseDirAbsolutePath = baseDirAbsolutePath.substring(0, parentEndIndex);
+        }
+        return baseDirAbsolutePath;
     }
 }

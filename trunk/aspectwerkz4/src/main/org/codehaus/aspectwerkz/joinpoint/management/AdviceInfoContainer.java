@@ -105,4 +105,29 @@ public class AdviceInfoContainer {
         return m_afterThrowingAdvices;
     }
 
+    /**
+     * Return all advice infos.
+     *
+     * @return
+     */
+    public AdviceInfo[] getAllAdviceInfos() {
+        int size = m_beforeAdvices.length + m_aroundAdvices.length + m_afterReturningAdvices.length
+                    + m_afterThrowingAdvices.length + m_afterFinallyAdvices.length;
+        AdviceInfo[] advices = new AdviceInfo[size];
+
+        int destPos = 0;
+        System.arraycopy(m_beforeAdvices, 0, advices, destPos, m_beforeAdvices.length);
+        destPos += m_beforeAdvices.length;
+        System.arraycopy(m_aroundAdvices, 0, advices, destPos, m_aroundAdvices.length);
+        destPos += m_aroundAdvices.length;
+        System.arraycopy(m_afterReturningAdvices, 0, advices, destPos, m_afterReturningAdvices.length);
+        destPos += m_afterReturningAdvices.length;
+        System.arraycopy(m_afterThrowingAdvices, 0, advices, destPos, m_afterThrowingAdvices.length);
+        destPos += m_afterThrowingAdvices.length;
+        System.arraycopy(m_afterFinallyAdvices, 0, advices, destPos, m_afterFinallyAdvices.length);
+        destPos += m_afterFinallyAdvices.length;
+
+        return advices;
+    }
+
 }

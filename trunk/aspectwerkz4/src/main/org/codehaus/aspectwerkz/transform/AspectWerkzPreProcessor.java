@@ -190,7 +190,13 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         // needed for JRockit (as well as all in all TFs)
         final String className = name.replace('/', '.');
 
-        // we do not filter anything in this mode
+        // we do not filter anything except JP in this mode
+        if (name.endsWith((TransformationConstants.JOIN_POINT_CLASS_SUFFIX))) {
+            Output output = new Output();
+            output.bytecode = bytecode;
+            output.emittedJoinPoints = null;
+            return output;
+        }
 
         Context context = _preProcess(className, bytecode, loader);
         Output output = new Output();
