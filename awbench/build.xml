@@ -158,7 +158,7 @@
     <!-- pre Run (annotationc, weave etc) -->
     <!-- ============================================================== -->
     <target name="pre:aspectwerkz">
-        <awc destdir="${d}/target" classpathref="project.classpath" srcdir="${d}/src/aspectwerkz"/>
+        <awc verbose="true" destdir="${d}/target" classpathref="project.classpath" srcdir="${d}/src/aspectwerkz"/>
         <awweave classpathref="project.classpath" targetdir="${d}/target"
             verbose="true"
             definition="${d}/src/aspectwerkz/META-INF/aop.xml"/>
