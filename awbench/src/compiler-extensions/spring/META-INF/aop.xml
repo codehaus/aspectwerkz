@@ -4,8 +4,14 @@
         <aspect class="awbench.extension.spring.MethodExecutionBeforeAdvice">
             <advice name="before" type="before" bind-to="execution(* awbench.method.Execution.before*(..)) || execution(* awbench.method.Execution.with*(..))"/>
         </aspect>
+        <aspect class="awbench.extension.spring.MethodExecutionAfterAdvice">
+            <advice name="afterReturning" type="after returning" bind-to="execution(* awbench.method.Execution.*After(..))"/>
+        </aspect>
         <aspect class="awbench.extension.spring.MethodExecutionAfterReturningAdvice">
-            <advice name="afterReturning" type="after returning" bind-to="execution(* awbench.method.Execution.*After*(..))"/>
+            <advice name="afterReturning" type="after returning(java.lang.String)" bind-to="execution(* awbench.method.Execution.afterReturningString())"/>
+        </aspect>
+        <aspect class="awbench.extension.spring.MethodExecutionAfterReturningAdvice">
+            <advice name="afterThrowing" type="after throwing(java.lang.RuntimeException)" bind-to="execution(* awbench.method.Execution.afterThrowingRTE())"/>
         </aspect>
         <aspect name="around1" class="awbench.extension.spring.MethodExecutionGetTargetAndArgsAroundAdvice">
             <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(..))"/>

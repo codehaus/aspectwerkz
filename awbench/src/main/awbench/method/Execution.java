@@ -52,6 +52,8 @@ public class Execution implements IExecution {
     }
 
     public void afterThrowingRTE() throws RuntimeException {
+        throw new RuntimeException("test exception");
+
     }
 
     public void aroundJP() {

@@ -53,6 +53,19 @@ FIXME thisJoinPoint argument
 	execution(* awbench.method.Execution.beforeAfter()) {
 		Run.ADVICE_HIT++;
 	}
+
+    after() returning(String s) :
+    execution(* awbench.method.Execution.afterReturningString()) {
+        String returnValue = s;
+        Run.ADVICE_HIT++;
+    }
+
+    after() throwing(RuntimeException e) :
+    execution(* awbench.method.Execution.afterThrowingRTE()) {
+        RuntimeException rte = e;
+        Run.ADVICE_HIT++;
+    }
+                                                    
 /*
 FIXME thisJoinPoint argument
 	// around gets inlined if thisJoinPoint is not used and thus way faster.
