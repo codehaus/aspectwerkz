@@ -29,6 +29,12 @@ public class AdviceInfo implements Serializable {
     private Method m_method;
 
     /**
+     * The advice name
+     * <aspectFQN>/<adviceMethodName>[(... call signature)]
+     */
+    private final String m_name;
+
+    /**
      * The aspect context.
      */
     private AspectContext m_aspectContext;
@@ -59,22 +65,24 @@ public class AdviceInfo implements Serializable {
     public AdviceInfo(final AspectContext aspectContext,
                       final Method method,
                       final AdviceType type,
-                      final String specialArgumentType) {
+                      final String specialArgumentType,
+                      final String adviceName) {
         m_aspectContext = aspectContext;
         m_method = method;
         m_type = type;
         m_specialArgumentType = AsmHelper.convertReflectDescToTypeDesc(specialArgumentType);
+        m_name = adviceName;//createAdviceName(m_aspectContext.getName(), methodCallSignature);
     }
 
     /**
      * Returns the name of the advice.
      *
      * @param aspectName
-     * @param adviceName
+     * @param adviceCallSignature
      * @return the name
      */
-    public static String createAdviceName(final String aspectName, final String adviceName) {
-        return new StringBuffer().append(aspectName).append('/').append(adviceName).toString();
+    public static String createAdviceName(final String aspectName, final String adviceCallSignature) {
+        return new StringBuffer().append(aspectName).append('/').append(adviceCallSignature).toString();
     }
 
     /**
@@ -92,7 +100,7 @@ public class AdviceInfo implements Serializable {
      * @return
      */
     public String getName() {
-        return createAdviceName(m_aspectContext.getName(), m_method.getName());
+        return m_name;
     }
 
     /**

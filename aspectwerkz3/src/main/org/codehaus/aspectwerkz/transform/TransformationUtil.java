@@ -125,6 +125,28 @@ public final class TransformationUtil {
     }
 
     /**
+     * Build the join point invoke method descriptor for ctor call join points.
+     *
+     * @return
+     */
+    public static String getInvokeSignatureForConstructorCallJoinPoints(final String calleeConstructorDesc,
+                                                                        final String callerTypeName,
+                                                                        final String calleeTypeName) {
+        StringBuffer sig = new StringBuffer("(");
+        int index = calleeConstructorDesc.lastIndexOf(')');
+        // callee ctor args
+        sig.append(calleeConstructorDesc.substring(1, index));
+        // caller
+        sig.append('L');
+        sig.append(callerTypeName);
+        sig.append(';');
+        sig.append(")L");
+        sig.append(calleeTypeName);
+        sig.append(';');
+        return sig.toString();
+    }
+
+    /**
      * Returns the method name used for constructor body
      *
      * @param calleeTypeName
