@@ -12,11 +12,8 @@ package examples.connectivity;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class Test2Impl implements Test2 {
-    public Test2Impl() {
-        System.out.println("Test2Impl.Test2Impl");
-    }
+
     public String test2() {
-        System.out.println("Test2Impl.test2");
-        return "message 2";
+        return "test 2";
     }
 }

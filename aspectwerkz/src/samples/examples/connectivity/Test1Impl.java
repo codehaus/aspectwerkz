@@ -7,16 +7,21 @@
  **************************************************************************************/
 package examples.connectivity;
 
+import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
+
 /**
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class Test1Impl implements Test1 {
-    public Test1Impl() {
-        System.out.println("Test1Impl.Test1Impl");
-    }
+
     public String test1() {
-        System.out.println("Test1Impl.test1");
-        return "message 1";
+        return "test 1";
+    }
+
+    public RemoteProxy getTest1() {
+        Test2 test2 = (Test2)new Target();
+        RemoteProxy proxy = RemoteProxy.createServerProxy(test2, "localhost", 7777);
+        return proxy;
     }
 }
