@@ -87,7 +87,7 @@
         </advice>
     </aspect>
 
-    <aspect name="Persistence">
+    <!--aspect name="Persistence">
         <introduction class="examples.persistence.Target">
             <introduction-ref name="persistent_introduction1"/>
             <introduction-ref name="persistent_introduction2"/>
@@ -98,7 +98,7 @@
         <advice pointcut="invoke">
             <advice-ref name="persistent_advice"/>
         </advice>
-    </aspect>
+    </aspect-->
 
 <!--        <aspect name="Logging">-->
 <!--            <pointcut-def name="logged_calls1" type="method" pattern="void examples.*.Target.*g1(..)"/>-->

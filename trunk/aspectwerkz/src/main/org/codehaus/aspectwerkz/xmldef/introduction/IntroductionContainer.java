@@ -26,7 +26,7 @@ import org.codehaus.aspectwerkz.ContainerType;
  * Interface for the introduction container implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: IntroductionContainer.java,v 1.1 2003-06-17 15:02:15 jboner Exp $
+ * @version $Id: IntroductionContainer.java,v 1.2 2003-06-17 16:07:55 jboner Exp $
  */
 public interface IntroductionContainer {
     /**

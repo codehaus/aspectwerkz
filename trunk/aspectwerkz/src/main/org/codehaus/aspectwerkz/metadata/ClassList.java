@@ -25,7 +25,7 @@ import java.io.Serializable;
  * A list of all the possible target classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ClassList.java,v 1.1 2003-06-17 14:58:31 jboner Exp $
+ * @version $Id: ClassList.java,v 1.2 2003-06-17 16:07:55 jboner Exp $
  */
 public class ClassList implements Serializable {
 

@@ -34,7 +34,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  * added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticMethodJoinPoint.java,v 1.4 2003-06-17 14:50:07 jboner Exp $
+ * @version $Id: StaticMethodJoinPoint.java,v 1.5 2003-06-17 16:07:55 jboner Exp $
  */
 public class StaticMethodJoinPoint extends MethodJoinPoint {
 

@@ -24,7 +24,7 @@ import java.io.Serializable;
  * Type-safe enum for the different container types.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ContainerType.java,v 1.1 2003-06-17 15:04:39 jboner Exp $
+ * @version $Id: ContainerType.java,v 1.2 2003-06-17 16:07:54 jboner Exp $
  */
 public class ContainerType implements Serializable {
 

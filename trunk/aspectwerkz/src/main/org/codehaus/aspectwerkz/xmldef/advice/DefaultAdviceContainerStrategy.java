@@ -30,7 +30,7 @@ import org.codehaus.aspectwerkz.ContainerType;
  * Implements the default advice container strategy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefaultAdviceContainerStrategy.java,v 1.1 2003-06-17 14:34:34 jboner Exp $
+ * @version $Id: DefaultAdviceContainerStrategy.java,v 1.2 2003-06-17 16:07:54 jboner Exp $
  */
 public class DefaultAdviceContainerStrategy implements AdviceContainer {
 

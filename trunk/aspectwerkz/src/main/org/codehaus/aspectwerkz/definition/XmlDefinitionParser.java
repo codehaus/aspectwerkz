@@ -37,7 +37,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Parses the XML definition file using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParser.java,v 1.1 2003-06-17 14:45:14 jboner Exp $
+ * @version $Id: XmlDefinitionParser.java,v 1.2 2003-06-17 16:07:54 jboner Exp $
  */
 public class XmlDefinitionParser {
 

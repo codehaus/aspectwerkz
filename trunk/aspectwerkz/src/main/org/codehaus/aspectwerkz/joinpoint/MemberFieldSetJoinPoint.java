@@ -32,7 +32,7 @@ import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
  * and method etc. Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberFieldSetJoinPoint.java,v 1.4 2003-06-17 14:50:07 jboner Exp $
+ * @version $Id: MemberFieldSetJoinPoint.java,v 1.5 2003-06-17 16:07:55 jboner Exp $
  */
 public class MemberFieldSetJoinPoint extends FieldJoinPoint {
 

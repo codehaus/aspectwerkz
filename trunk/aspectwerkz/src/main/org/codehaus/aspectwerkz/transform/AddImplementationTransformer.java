@@ -50,7 +50,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.7 2003-06-17 15:00:00 jboner Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.8 2003-06-17 16:07:55 jboner Exp $
  */
 public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF

@@ -48,7 +48,7 @@ import org.codehaus.aspectwerkz.metadata.MetaData;
  * Stores and indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkz.java,v 1.3 2003-06-17 15:02:15 jboner Exp $
+ * @version $Id: AspectWerkz.java,v 1.4 2003-06-17 16:07:54 jboner Exp $
  */
 public final class AspectWerkz {
 

@@ -41,7 +41,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * @todo if a parameter type or return type is an array => always returned as Object[] (fix bug in TransformationUtil.convertBcelTypeToClass(Type)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSideJoinPoint.java,v 1.6 2003-06-17 14:50:07 jboner Exp $
+ * @version $Id: CallerSideJoinPoint.java,v 1.7 2003-06-17 16:07:55 jboner Exp $
  */
 public class CallerSideJoinPoint implements JoinPoint {
 

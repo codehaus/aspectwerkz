@@ -30,7 +30,7 @@ import org.codehaus.aspectwerkz.ContainerType;
  * after or instead of specific points in the execution flow of the program.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Advice.java,v 1.3 2003-06-17 14:34:34 jboner Exp $
+ * @version $Id: Advice.java,v 1.4 2003-06-17 16:07:54 jboner Exp $
  */
 public interface Advice extends Serializable {
 

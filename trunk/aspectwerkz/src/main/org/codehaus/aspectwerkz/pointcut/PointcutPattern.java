@@ -26,7 +26,7 @@ import org.codehaus.aspectwerkz.regexp.ClassPattern;
  * pattern for a specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: PointcutPattern.java,v 1.1 2003-06-17 15:32:33 jboner Exp $
+ * @version $Id: PointcutPattern.java,v 1.2 2003-06-17 16:07:55 jboner Exp $
  */
 public class PointcutPattern {
 
