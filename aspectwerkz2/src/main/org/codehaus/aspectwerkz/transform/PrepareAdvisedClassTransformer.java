@@ -20,6 +20,7 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.MetaDataInspector;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -52,12 +53,16 @@ public class PrepareAdvisedClassTransformer implements Transformer {
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
 
-            if (classFilter(definition, classMetaData, ctClass, false)) {
+            if (classFilter(definition, classMetaData, ctClass)) {
                 return;
             }
 
-            addStaticClassField(ctClass);
-            addJoinPointManagerField(ctClass, definition);
+            if ( ! MetaDataInspector.hasField(classMetaData, TransformationUtil.STATIC_CLASS_FIELD)) {
+                addStaticClassField(ctClass);
+            }
+            if ( ! MetaDataInspector.hasField(classMetaData, TransformationUtil.JOIN_POINT_MANAGER_FIELD)) {
+                addJoinPointManagerField(ctClass, definition);
+            }
         }
     }
 
@@ -114,8 +119,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
     private boolean classFilter(
             final SystemDefinition definition,
             final ClassMetaData classMetaData,
-            final CtClass cg,
-            final boolean isActivatePhase) {
+            final CtClass cg) {
         if (cg.isInterface() ||
             TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
@@ -127,9 +131,9 @@ public class PrepareAdvisedClassTransformer implements Transformer {
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-//        if (definition.inPreparePackage(className) && !isActivatePhase) {//TODO remove this phase check
-//            return true;
-//        }
+        if (definition.inPreparePackage(className)) {
+            return false;
+        }
         if (definition.hasExecutionPointcut(classMetaData) ||
             definition.hasCallPointcut(classMetaData) ||
             definition.hasGetPointcut(classMetaData) ||

@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
+import org.codehaus.aspectwerkz.metadata.MetaDataMaker;
 
 /**
  * AspectWerkzPreProcessor is the entry point of the AspectWerkz layer 2.
@@ -133,7 +134,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         m_stack.add(new AddInterfaceTransformer());
         m_stack.add(new AddImplementationTransformer());
 
-//        m_stack.add(new PrepareTransformer());
+        m_stack.add(new PrepareTransformer());
 //        m_stack.add(new AddMetaDataTransformer());
 //        m_stack.add(new AddUuidTransformer());
 
@@ -229,7 +230,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         // handle the prepared Class cache
         if (context.isPrepared()) {
             ClassCacheTuple key = new ClassCacheTuple(loader, className);
-            log("cache prepared " + className);
+            System.out.println("cache prepared " + className);
             m_classByteCache.put(key, new ByteArray(klass.getBytecode()));
         }
 
@@ -297,6 +298,24 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             log("CANNOT FIND CACHED " + className);
             throw new RuntimeException("CANNOT FIND CACHED " + className);
         }
+
+        // flush Metadata
+        MetaDataMaker.invalidateClassMetaData(klazz.getName());
+        // transform
+        //TODO : prepareAdviseclass and PrepareTF are useless here
+        //? reimpl thru Activator marker interface or assume
+        //correct checks in TF as required for multi weaving
+        byte[] newBytes = preProcess(klazz.getName(), bytesO.getBytes(), klazz.getClassLoader());
+
+        // update cache
+        //TODO: since marked as prepare and PrepareTF match, class is already updated
+        // as an obersver of the TF
+        System.out.println("cache update " + className);
+        m_classByteCache.put(key, new ByteArray(newBytes));
+
+        if (true) return newBytes;
+
+        //TODO remove below ALEX
 
         // create a new transformation context
         final Context context = new Context(loader);

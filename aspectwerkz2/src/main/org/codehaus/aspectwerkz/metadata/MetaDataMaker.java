@@ -31,4 +31,10 @@ public class MetaDataMaker {
      * Caches the interface meta-data.
      */
     protected static final Map s_interfaceMetaDataCache = new WeakHashMap();
+
+    public static void invalidateClassMetaData(String className) {
+        synchronized (s_classMetaDataCache) {
+            s_classMetaDataCache.remove(className);
+        }
+    }
 }

@@ -26,7 +26,7 @@ public class ClassPreProcessorHelper {
     /**
      * ClassPreProcessor used if aspectwerkz.classloader.preprocessor property is defined to full qualified class name
      */
-    private static ClassPreProcessor preProcessor;
+    public static ClassPreProcessor preProcessor;
 
     /**
      * true if preProcesor already initalized
@@ -48,6 +48,16 @@ public class ClassPreProcessorHelper {
     }
 
     /**
+     * Returns the configured class preprocessor
+     * Should be called after initialization only
+     *
+     * @return the preprocessor or null if not initialized
+     */
+    public static ClassPreProcessor getClassPreProcessor() {
+        return preProcessor;
+    }
+
+    /**
      * Initialization of the ClassPreProcessor The ClassPreProcessor implementation is lazy loaded. This allow to put it
      * in the regular classpath whereas the instrumentation layer (layer 1) is in the bootclasspath
      */
@@ -64,6 +74,12 @@ public class ClassPreProcessorHelper {
             // force loading thru System class loader to allow
             // preprocessor implementation to be in standard classpath
             klass = Class.forName(s, true, ClassLoader.getSystemClassLoader());
+            // special hidden option to allow testing of HotSwap weaving when WeavingCL is used
+            // in such a case the CLPP must be in the WeavingCL hierarchy, which is parrallel
+            // to the regulare SystemCL
+            if (System.getProperty("aspectwerkz.transform.forceWCL")!=null) {
+                klass = Class.forName(s, true, Thread.currentThread().getContextClassLoader());
+            }
         }
         catch (ClassNotFoundException _ex) {
             System.err.println("AspectWerkz - WARN - Pre-processor class '" + s + "' not found");

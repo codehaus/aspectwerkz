@@ -65,7 +65,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
 
         // fields
         List fieldList = new ArrayList();
-        CtField[] fields = javaClass.getFields();
+        CtField[] fields = javaClass.getDeclaredFields();//TODO ALEX?
         for (int i = 0; i < fields.length; i++) {
             CtField field = fields[i];
             fieldList.add(createFieldMetaData(field));

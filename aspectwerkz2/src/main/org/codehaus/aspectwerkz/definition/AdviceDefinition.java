@@ -197,4 +197,17 @@ public class AdviceDefinition {
     public void setAttribute(final String attribute) {
         m_attribute = attribute;
     }
+
+    public AdviceDefinition copyAt(Expression expression) {
+        AdviceDefinition def = new AdviceDefinition(
+                getName(),
+                getAspectName(),
+                getAspectClassName(),
+                expression,
+                getMethod(),
+                getMethodIndex(),
+                m_aspectDefinition
+        );
+        return def;
+    }
 }

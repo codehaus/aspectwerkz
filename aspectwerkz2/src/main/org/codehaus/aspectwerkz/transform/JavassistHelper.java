@@ -88,6 +88,14 @@ public class JavassistHelper {
         }
     }
 
+    /**
+     * Checks if the given Class as already a method methodName
+     * Does not take into account the signature
+     *
+     * @param klass
+     * @param methodName
+     * @return true if klass has methodName
+     */
     public static boolean hasMethod(CtClass klass, String methodName) {
         try {
             klass.getDeclaredMethod(methodName);
@@ -95,6 +103,21 @@ public class JavassistHelper {
         } catch (NotFoundException e) {
             return false;
         }
+    }
 
+    /**
+     * Swapp bodies of the two given methods of the same declaring class
+     *
+     * @param methodA
+     * @param methodB
+     */
+    public static void swapBodies(CtMethod methodA, CtMethod methodB) {
+        String nameA = methodA.getName();
+        int modifiersA = methodA.getModifiers();
+        //TODO support for Attributes ?
+        methodA.setName(methodB.getName());
+        methodA.setModifiers(methodB.getModifiers());
+        methodB.setName(nameA);
+        methodB.setModifiers(modifiersA);
     }
 }

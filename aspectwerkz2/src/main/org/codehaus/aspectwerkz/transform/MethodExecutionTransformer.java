@@ -53,6 +53,7 @@ public class MethodExecutionTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws Exception {
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
@@ -94,10 +95,27 @@ public class MethodExecutionTransformer implements Transformer {
                 final int methodSequence = ((Integer)methodSequences.get(method.getName())).intValue();
                 final int methodHash = TransformationUtil.calculateHash(method);
 
-                CtMethod wrapperMethod = createWrapperMethod(ctClass, method, methodHash);
-                wrapperMethods.add(wrapperMethod);
+                // there was no empty method already
+                final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(method, methodSequence, ctClass.getName());
+                if (JavassistHelper.hasMethod(ctClass, prefixedMethodName)) {
+                    CtMethod wrapperMethod = ctClass.getDeclaredMethod(prefixedMethodName);
+                    if (wrapperMethod.getAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE) != null) {
+                        CtMethod nonEmptyWrapper = createWrapperMethod(ctClass, method, methodHash);
+                        wrapperMethod.setBody(nonEmptyWrapper, null);
+                        // swap wrapper and original bodies
+                        JavassistHelper.swapBodies(wrapperMethod, method);
+                    } else {
+                        // multi weaving
+                        continue;
+                    }
+                } else {
+                    // new execution pointcut
 
-                addPrefixToMethod(ctClass, method, methodSequence);
+                    CtMethod wrapperMethod = createWrapperMethod(ctClass, method, methodHash);
+                    wrapperMethods.add(wrapperMethod);
+
+                    addPrefixToMethod(ctClass, method, methodSequence);
+                }
             }
 
             if (isClassAdvised) {

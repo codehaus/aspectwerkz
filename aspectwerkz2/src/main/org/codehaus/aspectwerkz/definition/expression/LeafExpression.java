@@ -113,7 +113,8 @@ public abstract class LeafExpression extends Expression {
      */
     public boolean matchInOrNotIn(final ClassMetaData classMetaData) {
         if (!m_type.equals(PointcutType.CFLOW)) {
-            throw new RuntimeException("matchIn called on non CflowExpression " + m_type.toString());
+            //System.out.println("ORTHOGONAL throw new RuntimeException(\"matchIn called on non CflowExpression " + m_type.toString());
+            return false;
         }
         return match(classMetaData);
     }

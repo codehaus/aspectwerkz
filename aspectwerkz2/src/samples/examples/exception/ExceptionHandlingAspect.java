@@ -23,7 +23,7 @@ public class ExceptionHandlingAspect extends Aspect {
     Pointcut methods;
 
     /**
-     * @Around methods
+     * XAround methods
      */
     public Object logEntry(final JoinPoint joinPoint) throws Throwable {
         throw new UnsupportedOperationException("throws are currently not supported");
