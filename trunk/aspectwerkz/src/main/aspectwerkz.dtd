@@ -39,6 +39,7 @@ Change from 0.8.1 to 0.9
     (introduction-def | advice-def | advices-def | abstract-aspect | aspect | package)*
     add "exclude" and "include" element in "system" element
     "system/transformation-scope" removed, use "include" and "exclude"
+    add "param" for "use-aspect"
 ******************************************************************************************************************************-->
 
 
@@ -122,7 +123,7 @@ use-aspect
 Declares self defined aspect.
 DO NOT MIX "use-aspect" with "aspect" in the same "system"
 ******************************************************************************************************************************-->
-<!ELEMENT use-aspect EMPTY>
+<!ELEMENT use-aspect (param*)>
 <!ATTLIST use-aspect
     class CDATA #REQUIRED
 >
@@ -146,6 +147,11 @@ To specify other advice param, use nested element advice-def/param
 	deployment-model (perJVM | perClass | perInstance | perThread) #IMPLIED
 	attribute CDATA #IMPLIED
 >
+<!--*****************************************************************************************************************************
+param
+*********************************************************************************************************************************
+Declares param for a use-aspect element or a advice-def element
+******************************************************************************************************************************-->
 <!ELEMENT param EMPTY>
 <!ATTLIST param
 	name CDATA #REQUIRED
