@@ -254,7 +254,7 @@
     <target name="aspectwerkz:attribdef:test:aspectc"
         depends="clean, aspectwerkz:compile">
         <exec executable="java">
-            <arg line="-cp ${test.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.attribdef.definition.AspectC -verbose ${basedir}/src/test ${basedir}/target/test-classes"/>
+            <arg line="-cp ${test.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.attribdef.definition.AspectC ${basedir}/src/test ${basedir}/target/test-classes"/>
         </exec>
     </target>
 

@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.TypeConverter;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**
@@ -22,6 +23,11 @@ import org.codehaus.aspectwerkz.util.Strings;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public final class MethodComparator implements java.util.Comparator {
+
+    /**
+     * Post fix for arguments array type
+     */
+    private final static String ARRAY_POSTFIX = "[]";
 
     /**
      * Defines the type of comparator.
@@ -95,7 +101,8 @@ public final class MethodComparator implements java.util.Comparator {
             if (args1.length < args2.length) return -1;
             if (args1.length > args2.length) return 1;
             for (int i = 0; i < args1.length; i++) {
-                int result = args1[i].getName().compareTo(args2[i].getName());
+                //handles array types - AW-104
+                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
                 if (result != 0) return result;
             }
         }
@@ -134,7 +141,8 @@ public final class MethodComparator implements java.util.Comparator {
             if (args1.length < args2.length) return -1;
             if (args1.length > args2.length) return 1;
             for (int i = 0; i < args1.length; i++) {
-                int result = args1[i].getName().compareTo(args2[i].getName());
+                //handles array types - AW-104
+                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
                 if (result != 0) return result;
             }
         }
