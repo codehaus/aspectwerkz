@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms static methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticMethodTransformer.java,v 1.11 2003-07-07 08:09:25 jboner Exp $
+ * @version $Id: AdviseStaticMethodTransformer.java,v 1.12 2003-07-08 11:43:35 jboner Exp $
  */
 public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -1012,12 +1012,10 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
             uuid = null;
         }
         else {
-            if (m_weaveModel.hasMethodPointcut(
-                    cg.getClassName(), methodMetaData)) {
+            if (m_weaveModel.hasMethodPointcut(cg.getClassName(), methodMetaData)) {
                 uuid = m_weaveModel.getUuid();
             }
-            if (m_weaveModel.hasThrowsPointcut(
-                    cg.getClassName(), methodMetaData)) {
+            if (m_weaveModel.hasThrowsPointcut(cg.getClassName(), methodMetaData)) {
                 uuid = m_weaveModel.getUuid();
             }
         }

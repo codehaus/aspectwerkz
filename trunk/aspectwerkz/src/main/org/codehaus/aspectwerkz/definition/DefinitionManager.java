@@ -59,7 +59,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.14 2003-07-04 13:38:28 jboner Exp $
+ * @version $Id: DefinitionManager.java,v 1.15 2003-07-08 11:43:35 jboner Exp $
  */
 public class DefinitionManager {
 
@@ -145,10 +145,7 @@ public class DefinitionManager {
         try {
             Class klass = ContextClassLoader.loadClass(INTRODUCTION_CONTAINER_IMPLEMENTATION_CLASS);
             Constructor constructor = klass.getConstructor(new Class[]{Class.class});
-            IntroductionContainer container = (IntroductionContainer)constructor.
-                    newInstance(new Object[]{implClass});
-
-            return container;
+            return (IntroductionContainer)constructor.newInstance(new Object[]{implClass});
         }
         catch (Exception e) {
             StringBuffer cause = new StringBuffer();
@@ -171,10 +168,7 @@ public class DefinitionManager {
         try {
             Class klass = ContextClassLoader.loadClass(ADVICE_CONTAINER_IMPLEMENTATION_CLASS);
             Constructor constructor = klass.getConstructor(new Class[]{AbstractAdvice.class});
-            AdviceContainer container = (AdviceContainer)constructor.
-                    newInstance(new Object[]{prototype});
-
-            return container;
+            return (AdviceContainer)constructor.newInstance(new Object[]{prototype});
         }
         catch (Exception e) {
             StringBuffer cause = new StringBuffer();
@@ -197,8 +191,7 @@ public class DefinitionManager {
         try {
             for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
                 AspectDefinition aspectDefinition = (AspectDefinition)it.next();
-                AspectWerkz.getSystem(uuid).register(
-                        new Aspect(uuid, aspectDefinition.getName()));
+                AspectWerkz.getSystem(uuid).register(new Aspect(uuid, aspectDefinition.getName()));
             }
         }
         catch (NullPointerException e) {
@@ -253,8 +246,7 @@ public class DefinitionManager {
                     introDef.getName(),
                     intfClassName,
                     implClass,
-                    DeploymentModel.getDeploymentModelAsInt(
-                            introDef.getDeploymentModel()));
+                    DeploymentModel.getDeploymentModelAsInt(introDef.getDeploymentModel()));
 
             // create A set the container for the introduction
             IntroductionContainer container = createIntroductionContainer(implClass);
@@ -344,8 +336,7 @@ public class DefinitionManager {
                     newInstance(new Object[]{});
 
             int deploymentModel;
-            if (def.getDeploymentModel() == null ||
-                    def.getDeploymentModel().equals("")) {
+            if (def.getDeploymentModel() == null || def.getDeploymentModel().equals("")) {
                 deploymentModel = DeploymentModel.PER_JVM;
             }
             else {
@@ -436,9 +427,8 @@ public class DefinitionManager {
                     for (Iterator it3 = methodPointcutRefs.iterator(); it3.hasNext();) {
                         String pointcutName = (String)it3.next();
                         PointcutDefinition pointcutDefinition =
-                                aspectDefinition.getPointcut(pointcutName);
-                        if (pointcutDefinition != null &&
-                                pointcutDefinition.getType().
+                                aspectDefinition.getPointcutDef(pointcutName);
+                        if (pointcutDefinition != null && pointcutDefinition.getType().
                                 equalsIgnoreCase(PointcutDefinition.METHOD)) {
                             methodPointcut.addPointcutPattern(pointcutDefinition);
                             hasMethodPointcut = true;
@@ -490,8 +480,7 @@ public class DefinitionManager {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            Aspect aspect = AspectWerkz.getSystem(uuid).
-                    getAspect(aspectDefinition.getName());
+            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
 
             try {
                 // get all advice weaving rules defined in this aspect
@@ -500,18 +489,16 @@ public class DefinitionManager {
                     AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
 
                     // create set field pointcut
-                    FieldPointcut pointcut = new FieldPointcut(
-                            uuid, weavingRule.getExpression());
+                    FieldPointcut pointcut = new FieldPointcut(uuid, weavingRule.getExpression());
 
                     // add all referenced poincuts definitions
                     boolean hasSetFieldPointcut = false;
                     List pointcutRefs = weavingRule.getPointcutRefs();
                     for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
                         PointcutDefinition pointcutDefinition =
-                                aspectDefinition.getPointcut((String)it3.next());
+                                aspectDefinition.getPointcutDef((String)it3.next());
 
-                        if (pointcutDefinition != null &&
-                                pointcutDefinition.getType().
+                        if (pointcutDefinition != null && pointcutDefinition.getType().
                                 equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
                             pointcut.addPointcutDef(pointcutDefinition);
                             hasSetFieldPointcut = true;
@@ -583,8 +570,7 @@ public class DefinitionManager {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            Aspect aspect = AspectWerkz.getSystem(uuid).
-                    getAspect(aspectDefinition.getName());
+            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
 
             try {
                 // get all advice weaving rules defined in this aspect
@@ -593,17 +579,15 @@ public class DefinitionManager {
                     AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
 
                     // create get field pointcut
-                    FieldPointcut pointcut = new FieldPointcut(
-                            uuid, weavingRule.getExpression());
+                    FieldPointcut pointcut = new FieldPointcut(uuid, weavingRule.getExpression());
 
                     // add all referenced poincuts definitions
                     boolean hasGetFieldPointcut = false;
                     List pointcutRefs = weavingRule.getPointcutRefs();
                     for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
                         PointcutDefinition pointcutDefinition =
-                                aspectDefinition.getPointcut((String)it3.next());
-                        if (pointcutDefinition != null &&
-                                pointcutDefinition.getType().
+                                aspectDefinition.getPointcutDef((String)it3.next());
+                        if (pointcutDefinition != null && pointcutDefinition.getType().
                                 equalsIgnoreCase(PointcutDefinition.GET_FIELD)) {
                             pointcut.addPointcutDef(pointcutDefinition);
                             hasGetFieldPointcut = true;
@@ -673,8 +657,7 @@ public class DefinitionManager {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            Aspect aspect = AspectWerkz.getSystem(uuid).
-                    getAspect(aspectDefinition.getName());
+            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
 
             try {
                 // get all advice weaving rules defined in this aspect
@@ -683,17 +666,15 @@ public class DefinitionManager {
                     AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
 
                     // create throws pointcut
-                    ThrowsPointcut pointcut = new ThrowsPointcut(
-                            uuid, weavingRule.getExpression());
+                    ThrowsPointcut pointcut = new ThrowsPointcut(uuid, weavingRule.getExpression());
 
                     // add all referenced poincuts definitions
                     boolean hasThrowsPointcut = false;
                     List pointcutRefs = weavingRule.getPointcutRefs();
                     for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
                         PointcutDefinition pointcutDefinition =
-                                aspectDefinition.getPointcut((String)it3.next());
-                        if (pointcutDefinition != null &&
-                                pointcutDefinition.getType().
+                                aspectDefinition.getPointcutDef((String)it3.next());
+                        if (pointcutDefinition != null && pointcutDefinition.getType().
                                 equalsIgnoreCase(PointcutDefinition.THROWS)) {
                             pointcut.addPointcutDef(pointcutDefinition);
                             hasThrowsPointcut = true;
@@ -750,8 +731,7 @@ public class DefinitionManager {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            Aspect aspect = AspectWerkz.getSystem(uuid).
-                    getAspect(aspectDefinition.getName());
+            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
 
             try {
                 // get all advice weaving rules defined in this aspect
@@ -768,9 +748,8 @@ public class DefinitionManager {
                     List pointcutRefs = weavingRule.getPointcutRefs();
                     for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
                         PointcutDefinition pointcutDefinition =
-                                aspectDefinition.getPointcut((String)it3.next());
-                        if (pointcutDefinition != null &&
-                                pointcutDefinition.getType().
+                                aspectDefinition.getPointcutDef((String)it3.next());
+                        if (pointcutDefinition != null && pointcutDefinition.getType().
                                 equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
                             pointcut.addPointcutDef(pointcutDefinition);
                             hasCallerSidePointcut = true;
@@ -854,7 +833,7 @@ public class DefinitionManager {
 
                     // get the referenced cflow poincut definition
                     PointcutDefinition cflowPointcutDef =
-                            aspectDefinition.getPointcut(cflowExpression);
+                            aspectDefinition.getPointcutDef(cflowExpression);
 
                     // create method pointcut
                     MethodPointcut methodPointcut = new MethodPointcut(uuid, cflowExpression);
@@ -880,7 +859,7 @@ public class DefinitionManager {
                     // add a mapping between the cflow pattern A the method patterns affected
                     for (Iterator it3 = weavingRule.getPointcutRefs().iterator(); it3.hasNext();) {
                         PointcutDefinition pointcutDef =
-                                aspectDefinition.getPointcut((String)it3.next());
+                                aspectDefinition.getPointcutDef((String)it3.next());
                         if (pointcutDef != null && pointcutDef.getType().
                                 equalsIgnoreCase(PointcutDefinition.METHOD)) {
 

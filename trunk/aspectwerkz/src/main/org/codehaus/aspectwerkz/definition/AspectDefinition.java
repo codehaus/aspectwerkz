@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it A/or
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -29,7 +29,7 @@ import java.io.Serializable;
  * Holds the aspect definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectDefinition.java,v 1.6 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AspectDefinition.java,v 1.7 2003-07-08 11:43:35 jboner Exp $
  */
 public class AspectDefinition implements Serializable {
 
@@ -46,7 +46,7 @@ public class AspectDefinition implements Serializable {
     /**
      * The pointcuts for this aspect.
      */
-    private final Map m_pointcuts = new HashMap();
+    private final Map m_pointcutDefs = new HashMap();
 
     /**
      * The introduction weaving rules for this aspect.
@@ -57,6 +57,11 @@ public class AspectDefinition implements Serializable {
      * The advice weaving rules for this aspect.
      */
     private final List m_adviceWeavingRules = new ArrayList();
+
+    /**
+     * Flag to mark the aspect as abstract.
+     */
+    private boolean isAbstract = false;
 
     /**
      * Returns the pattern for the aspect
@@ -98,8 +103,8 @@ public class AspectDefinition implements Serializable {
       *
       * @return the pointcuts
       */
-     public Collection getPointcuts() {
-         return m_pointcuts.values();
+     public Collection getPointcutDefs() {
+         return m_pointcutDefs.values();
      }
 
      /**
@@ -107,8 +112,8 @@ public class AspectDefinition implements Serializable {
       *
       * @param pointcut a pointcut
       */
-     public void addPointcut(final PointcutDefinition pointcut) {
-         m_pointcuts.put(pointcut.getName(), pointcut);
+     public void addPointcutDef(final PointcutDefinition pointcut) {
+         m_pointcutDefs.put(pointcut.getName(), pointcut);
      }
 
     /**
@@ -125,8 +130,7 @@ public class AspectDefinition implements Serializable {
       *
       * @param weavingRule an introduction weaving rule
       */
-     public void addIntroductionWeavingRule(
-             final IntroductionWeavingRule weavingRule) {
+     public void addIntroductionWeavingRule(final IntroductionWeavingRule weavingRule) {
          m_introductionWeavingRules.add(weavingRule);
      }
 
@@ -144,8 +148,7 @@ public class AspectDefinition implements Serializable {
       *
       * @param weavingRule an advice weaving rule
       */
-     public void addAdviceWeavingRule(
-             final AdviceWeavingRule weavingRule) {
+     public void addAdviceWeavingRule(final AdviceWeavingRule weavingRule) {
          m_adviceWeavingRules.add(weavingRule);
      }
 
@@ -155,7 +158,25 @@ public class AspectDefinition implements Serializable {
      * @param pointcut the name of the pointcut
      * @return the pointcut definition
      */
-    public PointcutDefinition getPointcut(final String pointcut) {
-        return (PointcutDefinition)m_pointcuts.get(pointcut);
+    public PointcutDefinition getPointcutDef(final String pointcut) {
+        return (PointcutDefinition)m_pointcutDefs.get(pointcut);
+    }
+
+    /**
+     * Checks if the aspect is abstract.
+     *
+     * @return boolean
+     */
+    public boolean isAbstract() {
+        return isAbstract;
+    }
+
+    /**
+     * Marks the aspect as abstract.
+     *
+     * @param anAbstract boolean
+     */
+    public void setAbstract(boolean anAbstract) {
+        isAbstract = anAbstract;
     }
 }

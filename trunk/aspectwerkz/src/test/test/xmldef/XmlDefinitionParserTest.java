@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParserTest.java,v 1.3 2003-06-30 15:55:26 jboner Exp $
+ * @version $Id: XmlDefinitionParserTest.java,v 1.4 2003-07-08 11:43:35 jboner Exp $
  */
 public class XmlDefinitionParserTest extends TestCase {
 
@@ -85,19 +85,19 @@ public class XmlDefinitionParserTest extends TestCase {
 
     public void testPointcutTag() {
         try {
-            final AspectWerkzDefinition aspectwerkz =
-                   XmlDefinitionParser.parse(m_input);
-            Iterator it = ((AspectDefinition)aspectwerkz.getAspectDefinitions().iterator().next()).getPointcuts().iterator();
+            final AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parse(m_input);
+            Iterator it = ((AspectDefinition)aspectwerkz.getAspectDefinitions().iterator().
+                    next()).getPointcutDefs().iterator();
             PointcutDefinition pointcut2 = (PointcutDefinition)it.next();
             assertEquals("method", pointcut2.getType());
             assertEquals("stop", pointcut2.getName());
             assertEquals("services.*", pointcut2.getClassPattern());
             assertEquals("* stop(..)", pointcut2.getPattern());
             PointcutDefinition pointcut1 = (PointcutDefinition)it.next();
-            assertEquals("method", pointcut1.getType());
-            assertEquals("start", pointcut1.getName());
+            assertEquals("setField", pointcut1.getType());
+            assertEquals("setFieldTest", pointcut1.getName());
             assertEquals("services.*", pointcut1.getClassPattern());
-            assertEquals("* start(..)", pointcut1.getPattern());
+            assertEquals("boolean m_isRunning", pointcut1.getPattern());
         }
         catch (Exception e) {
             System.out.println(e);

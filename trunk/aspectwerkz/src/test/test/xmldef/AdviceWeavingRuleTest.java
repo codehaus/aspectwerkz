@@ -5,7 +5,7 @@ import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviceWeavingRuleTest.java,v 1.1 2003-06-17 15:19:42 jboner Exp $
+ * @version $Id: AdviceWeavingRuleTest.java,v 1.2 2003-07-08 11:43:35 jboner Exp $
  */
 public class AdviceWeavingRuleTest extends TestCase {
 
@@ -33,13 +33,13 @@ public class AdviceWeavingRuleTest extends TestCase {
             assertEquals("DD", (String)rule.getPointcutRefs().get(2));
 
             rule = new AdviceWeavingRule();
-            rule.setExpression("((AA || BB) && CC");
+            rule.setExpression("((AA || BB) && CC)");
             assertEquals("AA", (String)rule.getPointcutRefs().get(0));
             assertEquals("BB", (String)rule.getPointcutRefs().get(1));
             assertEquals("CC", (String)rule.getPointcutRefs().get(2));
 
             rule = new AdviceWeavingRule();
-            rule.setExpression("!(((AA && !BB) && CC) && DD");
+            rule.setExpression("!(((AA && !BB) && CC) && DD)");
             assertEquals("AA", (String)rule.getPointcutRefs().get(0));
             assertEquals("BB", (String)rule.getPointcutRefs().get(1));
             assertEquals("CC", (String)rule.getPointcutRefs().get(2));

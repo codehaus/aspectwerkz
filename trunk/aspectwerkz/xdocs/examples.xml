@@ -33,7 +33,7 @@
                         <a href="#Caller side pointcuts">Caller side pointcuts</a>
                     </li>
                     <li>
-                        <a href="#Control flow (cflow) pointcuts + runtime attributes ">Control flow (cflow) pointcuts + runtime attributes </a>
+                        <a href="#Control flow (cflow) pointcuts + runtime attributes">Control flow (cflow) pointcuts + runtime attributes</a>
                     </li>
                     <li>
                         <a href="#XML definition file for the examples">XML definition file for the examples</a>
@@ -386,7 +386,7 @@ public class InvocationCounterAdvice extends PreAdvice {
             </p>
         </section>
 
-        <section name="Control flow (cflow) pointcuts + runtime attributes ">
+        <section name="Control flow (cflow) pointcuts + runtime attributes">
             <p>
                 This example shows how control flow (cflow) pointcuts are implemented.
             </p>

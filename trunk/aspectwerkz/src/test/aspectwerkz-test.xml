@@ -74,129 +74,129 @@
     <!-- ============================================= -->
     <!--  Define the aspects                           -->
     <!-- ============================================= -->
-    <aspect name="MemberMethodAdviceTest">
-        <pointcut-def name="pc1" type="method" pattern="* test.MemberMethodAdviceTest.get*(..)"/>
-        <pointcut-def name="pc2" type="method" pattern="* test.MemberMethodAdviceTest.*Param**(..)"/>
-        <pointcut-def name="pc3" type="method" pattern="* test.MemberMethodAdviceTest.testThrowException(..)"/>
-        <pointcut-def name="pc4" type="method" pattern="* test.MemberMethodAdviceTest.methodAdvicedMethod(..)"/>
-        <pointcut-def name="pc5" type="method" pattern="* test.MemberMethodAdviceTest.meth*AdvicedMethod(..)"/>
-        <pointcut-def name="pc6" type="method" pattern="* test.MemberMethodAdviceTest.method*icedMethodNewThread(..)"/>
-        <pointcut-def name="pc7" type="method" pattern="* test.MemberMethodAdviceTest.method*dvicedMethodNewThread(..)"/>
-        <pointcut-def name="pc8" type="method" pattern="* test.MemberMethodAdviceTest.multipleMethodAdvicedMethod(..)"/>
-        <pointcut-def name="pc9" type="method" pattern="* test.MemberMethodAdviceTest.multipleChainedMethodAdvicedMethod(..)"/>
-        <pointcut-def name="pc10" type="method" pattern="* test.MemberMethodAdviceTest.joinPointMetaData(..)"/>
-        <pointcut-def name="pc11" type="method" pattern="void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..)"/>
-        <pointcut-def name="pc12" type="method" pattern="void test.MemberMethodAdviceTest.multiplePointcutsMethod(..)"/>
-        <pointcut-def name="pc13" type="method" pattern="void test.MemberMethodAdviceTest.multiplePointcutsMethod(..)"/>
-        <advice pointcut="pc1 OR pc2 OR pc3 OR pc4">
-            <advice-ref name="methodAdvice1"/>
-        </advice>
-        <advice pointcut="pc5">
-            <advice-ref name="methodAdvice2"/>
-        </advice>
-        <advice pointcut="pc6">
-            <advice-ref name="methodAdvice5"/>
-        </advice>
-        <advice pointcut="pc7">
-            <advice-ref name="methodAdvice5"/>
-        </advice>
-        <advice pointcut="pc8">
-            <advice-ref name="methodAdvice2"/>
-            <advice-ref name="methodAdvice3"/>
-            <advice-ref name="methodAdvice3"/>
-        </advice>
-        <advice pointcut="pc9">
-            <advice-ref name="methodAdvice1"/>
-            <advice-ref name="methodAdvice2"/>
-            <advice-ref name="methodAdvice3"/>
-        </advice>
-        <advice pointcut="pc10">
-            <advice-ref name="methodAdvice4"/>
-        </advice>
-        <advice pointcut="pc11">
-            <advice-ref name="methodAdvice6"/>
-        </advice>
-        <advice pointcut="pc12">
-            <advice-ref name="methodAdvice2"/>
-            <advice-ref name="methodAdvice2"/>
-        </advice>
-        <advice pointcut="pc13">
-            <advice-ref name="methodAdvice3"/>
-            <advice-ref name="methodAdvice3"/>
-        </advice>
-    </aspect>
+        <aspect name="MemberMethodAdviceTest">
+            <pointcut-def name="pc1" type="method" pattern="* test.MemberMethodAdviceTest.get*(..)"/>
+            <pointcut-def name="pc2" type="method" pattern="* test.MemberMethodAdviceTest.*Param**(..)"/>
+            <pointcut-def name="pc3" type="method" pattern="* test.MemberMethodAdviceTest.testThrowException(..)"/>
+            <pointcut-def name="pc4" type="method" pattern="* test.MemberMethodAdviceTest.methodAdvicedMethod(..)"/>
+            <pointcut-def name="pc5" type="method" pattern="* test.MemberMethodAdviceTest.meth*AdvicedMethod(..)"/>
+            <pointcut-def name="pc6" type="method" pattern="* test.MemberMethodAdviceTest.method*icedMethodNewThread(..)"/>
+            <pointcut-def name="pc7" type="method" pattern="* test.MemberMethodAdviceTest.method*dvicedMethodNewThread(..)"/>
+            <pointcut-def name="pc8" type="method" pattern="* test.MemberMethodAdviceTest.multipleMethodAdvicedMethod(..)"/>
+            <pointcut-def name="pc9" type="method" pattern="* test.MemberMethodAdviceTest.multipleChainedMethodAdvicedMethod(..)"/>
+            <pointcut-def name="pc10" type="method" pattern="* test.MemberMethodAdviceTest.joinPointMetaData(..)"/>
+            <pointcut-def name="pc11" type="method" pattern="void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..)"/>
+            <pointcut-def name="pc12" type="method" pattern="void test.MemberMethodAdviceTest.multiplePointcutsMethod(..)"/>
+            <pointcut-def name="pc13" type="method" pattern="void test.MemberMethodAdviceTest.multiplePointcutsMethod(..)"/>
+            <advice pointcut="pc1 OR pc2 OR pc3 OR pc4">
+                <advice-ref name="methodAdvice1"/>
+            </advice>
+            <advice pointcut="pc5">
+                <advice-ref name="methodAdvice2"/>
+            </advice>
+            <advice pointcut="pc6">
+                <advice-ref name="methodAdvice5"/>
+            </advice>
+            <advice pointcut="pc7">
+                <advice-ref name="methodAdvice5"/>
+            </advice>
+            <advice pointcut="pc8">
+                <advice-ref name="methodAdvice2"/>
+                <advice-ref name="methodAdvice3"/>
+                <advice-ref name="methodAdvice3"/>
+            </advice>
+            <advice pointcut="pc9">
+                <advice-ref name="methodAdvice1"/>
+                <advice-ref name="methodAdvice2"/>
+                <advice-ref name="methodAdvice3"/>
+            </advice>
+            <advice pointcut="pc10">
+                <advice-ref name="methodAdvice4"/>
+            </advice>
+            <advice pointcut="pc11">
+                <advice-ref name="methodAdvice6"/>
+            </advice>
+            <advice pointcut="pc12">
+                <advice-ref name="methodAdvice2"/>
+                <advice-ref name="methodAdvice2"/>
+            </advice>
+            <advice pointcut="pc13">
+                <advice-ref name="methodAdvice3"/>
+                <advice-ref name="methodAdvice3"/>
+            </advice>
+        </aspect>
 
-    <aspect name="StaticMethodAdviceTest">
-        <pointcut-def name="pc1" type="method" pattern="* test.StaticMethodAdviceTest.get*(..)"/>
-        <pointcut-def name="pc2" type="method" pattern="* test.StaticMethodAdviceTest.*Param*(..)"/>
-        <pointcut-def name="pc3" type="throws" pattern="* test.StaticMethodAdviceTest.exceptionThrower(..)#java.lang.UnsupportedOperationException"/>
-        <pointcut-def name="pc4" type="method" pattern="void test.StaticMethodAdviceTest.methodAdvicedMethod(..)"/>
-        <pointcut-def name="pc5" type="method" pattern="* test.StaticMethodAdviceTest.methodAdvicedMethod(..)"/>
-        <pointcut-def name="pc6" type="method" pattern="* test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..)"/>
-        <pointcut-def name="pc7" type="method" pattern="* test.StaticMethodAdviceTest.multipleMethodAdvicedMethod(..)"/>
-        <pointcut-def name="pc8" type="method" pattern="* test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..)"/>
-        <pointcut-def name="pc9" type="method" pattern="* test.StaticMethodAdviceTest.joinPointMetaData(..)"/>
-        <pointcut-def name="pc10" type="method" pattern="void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)"/>
-        <pointcut-def name="pc11" type="method" pattern="void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)"/>
-        <advice pointcut="pc1">
-            <advice-ref name="staticMethodAdvice1"/>
-        </advice>
-        <advice pointcut="pc2">
-            <advice-ref name="staticMethodAdvice1"/>
-        </advice>
-        <advice pointcut="pc3">
-            <advice-ref name="throwsAdvice1"/>
-        </advice>
-        <advice pointcut="pc4">
-            <advice-ref name="staticMethodAdvice2"/>
-        </advice>
-        <advice pointcut="pc5">
-            <advice-ref name="staticMethodAdvice1"/>
-        </advice>
-        <advice pointcut="pc6">
-            <advice-ref name="staticMethodAdvice5"/>
-            <advice-ref name="staticMethodAdvice5"/>
-        </advice>
-        <advice pointcut="pc7">
-            <advice-ref name="staticMethodAdvice2"/>
-            <advice-ref name="staticMethodAdvice3"/>
-            <advice-ref name="staticMethodAdvice3"/>
-        </advice>
-        <advice pointcut="pc8">
-            <advice-ref name="staticMethodAdvice1"/>
-            <advice-ref name="staticMethodAdvice2"/>
-            <advice-ref name="staticMethodAdvice3"/>
-        </advice>
-        <advice pointcut="pc9">
-            <advice-ref name="staticMethodAdvice4"/>
-        </advice>
-        <advice pointcut="pc10">
-            <advice-ref name="staticMethodAdvice2"/>
-            <advice-ref name="staticMethodAdvice2"/>
-        </advice>
-        <advice pointcut="pc11">
-            <advice-ref name="staticMethodAdvice3"/>
-            <advice-ref name="staticMethodAdvice3"/>
-        </advice>
-    </aspect>
+        <aspect name="StaticMethodAdviceTest">
+            <pointcut-def name="pc1" type="method" pattern="* test.StaticMethodAdviceTest.get*(..)"/>
+            <pointcut-def name="pc2" type="method" pattern="* test.StaticMethodAdviceTest.*Param*(..)"/>
+            <pointcut-def name="pc3" type="throws" pattern="* test.StaticMethodAdviceTest.exceptionThrower(..)#java.lang.UnsupportedOperationException"/>
+            <pointcut-def name="pc4" type="method" pattern="void test.StaticMethodAdviceTest.methodAdvicedMethod(..)"/>
+            <pointcut-def name="pc5" type="method" pattern="* test.StaticMethodAdviceTest.methodAdvicedMethod(..)"/>
+            <pointcut-def name="pc6" type="method" pattern="* test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..)"/>
+            <pointcut-def name="pc7" type="method" pattern="* test.StaticMethodAdviceTest.multipleMethodAdvicedMethod(..)"/>
+            <pointcut-def name="pc8" type="method" pattern="* test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..)"/>
+            <pointcut-def name="pc9" type="method" pattern="* test.StaticMethodAdviceTest.joinPointMetaData(..)"/>
+            <pointcut-def name="pc10" type="method" pattern="void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)"/>
+            <pointcut-def name="pc11" type="method" pattern="void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)"/>
+            <advice pointcut="pc1">
+                <advice-ref name="staticMethodAdvice1"/>
+            </advice>
+            <advice pointcut="pc2">
+                <advice-ref name="staticMethodAdvice1"/>
+            </advice>
+            <advice pointcut="pc3">
+                <advice-ref name="throwsAdvice1"/>
+            </advice>
+            <advice pointcut="pc4">
+                <advice-ref name="staticMethodAdvice2"/>
+            </advice>
+            <advice pointcut="pc5">
+                <advice-ref name="staticMethodAdvice1"/>
+            </advice>
+            <advice pointcut="pc6">
+                <advice-ref name="staticMethodAdvice5"/>
+                <advice-ref name="staticMethodAdvice5"/>
+            </advice>
+            <advice pointcut="pc7">
+                <advice-ref name="staticMethodAdvice2"/>
+                <advice-ref name="staticMethodAdvice3"/>
+                <advice-ref name="staticMethodAdvice3"/>
+            </advice>
+            <advice pointcut="pc8">
+                <advice-ref name="staticMethodAdvice1"/>
+                <advice-ref name="staticMethodAdvice2"/>
+                <advice-ref name="staticMethodAdvice3"/>
+            </advice>
+            <advice pointcut="pc9">
+                <advice-ref name="staticMethodAdvice4"/>
+            </advice>
+            <advice pointcut="pc10">
+                <advice-ref name="staticMethodAdvice2"/>
+                <advice-ref name="staticMethodAdvice2"/>
+            </advice>
+            <advice pointcut="pc11">
+                <advice-ref name="staticMethodAdvice3"/>
+                <advice-ref name="staticMethodAdvice3"/>
+            </advice>
+        </aspect>
 
-    <aspect name="DynamicDeploymentTest">
-        <pointcut-def name="pc1" type="method" pattern="* test.DynamicDeploymentTest.reorderAdvicesTestMethod(..)"/>
-        <pointcut-def name="pc2" type="method" pattern="* test.DynamicDeploymentTest.removeAdviceTestMethod(..)"/>
-        <pointcut-def name="pc3" type="method" pattern="* test.DynamicDeploymentTest.addAdviceTestMethod(..)"/>
-        <pointcut-def name="pc4" type="method" pattern="* test.DynamicDeploymentTest.createTransientAdviceTestMethod(..)"/>
-        <pointcut-def name="pc5" type="method" pattern="* test.DynamicDeploymentTest.createPersistentAdviceTestMethod(..)"/>
-        <advice pointcut="pc1 OR pc2">
-            <advice-ref name="methodAdvice2"/>
-            <advice-ref name="methodAdvice3"/>
-            <advice-ref name="methodAdvice3"/>
-        </advice>
-        <advice pointcut="pc3">
-            <advice-ref name="methodAdvice2"/>
-        </advice>
-        <advice pointcut="pc4"/>
-        <advice pointcut="pc5"/>
-    </aspect>
+        <aspect name="DynamicDeploymentTest">
+            <pointcut-def name="pc1" type="method" pattern="* test.DynamicDeploymentTest.reorderAdvicesTestMethod(..)"/>
+            <pointcut-def name="pc2" type="method" pattern="* test.DynamicDeploymentTest.removeAdviceTestMethod(..)"/>
+            <pointcut-def name="pc3" type="method" pattern="* test.DynamicDeploymentTest.addAdviceTestMethod(..)"/>
+            <pointcut-def name="pc4" type="method" pattern="* test.DynamicDeploymentTest.createTransientAdviceTestMethod(..)"/>
+            <pointcut-def name="pc5" type="method" pattern="* test.DynamicDeploymentTest.createPersistentAdviceTestMethod(..)"/>
+            <advice pointcut="pc1 OR pc2">
+                <advice-ref name="methodAdvice2"/>
+                <advice-ref name="methodAdvice3"/>
+                <advice-ref name="methodAdvice3"/>
+            </advice>
+            <advice pointcut="pc3">
+                <advice-ref name="methodAdvice2"/>
+            </advice>
+            <advice pointcut="pc4"/>
+            <advice pointcut="pc5"/>
+        </aspect>
 
     <aspect name="FieldAdviceTest">
         <pointcut-def name="pc1" type="setField" pattern="* test.FieldAdviceTest.m_setFieldPreAdvice*"/>
@@ -311,8 +311,6 @@
         <pointcut-def name="pc5" type="callerSide" pattern="test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPost()"/>
         <pointcut-def name="pc6" type="callerSide" pattern="test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPrePost()"/>
         <pointcut-def name="pc7" type="callerSide" pattern="test.CallerSideAdviceTest->void test.CallerSideTestHelper.passingParameterToAdviceMethod()"/>
-        <!--        <pointcut-def name="pc8" type="callerSide" pattern="test.CallerSideAdviceTest->test.CallerSideTestHelper.new(int)"/>-->
-        <!--        <pointcut-def name="pc8" type="callerSide" pattern="test.CallerSideAdviceTest->test.CallerSideTestHelper.new()"/>-->
         <advice pointcut="pc1">
             <advice-ref name="preAdvice6"/>
             <advice-ref name="preAdvice7"/>

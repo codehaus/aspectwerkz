@@ -5,7 +5,7 @@
 
     <name>AspectWerkz</name>
     <id>aspectwerkz</id>
-    <currentVersion>0.6.5</currentVersion>
+    <currentVersion>0.6.6</currentVersion>
 
     <organization>
         <name>Jonas Bon&#233;r</name>
@@ -114,10 +114,6 @@
             <id>concurrent</id>
             <version>1.3.1</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <id>picocontainer</id>-->
-<!--            <version>1.0-SNAPSHOT</version>-->
-<!--        </dependency>-->
 
         <!-- ============================================================== -->
         <!-- for building, testing and samples (not needed during runtime) -->

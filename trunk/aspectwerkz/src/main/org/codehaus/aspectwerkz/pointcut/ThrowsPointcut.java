@@ -23,8 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
-import org.apache.commons.jexl.Expression;
-import org.apache.commons.jexl.ExpressionFactory;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -40,7 +38,7 @@ import org.codehaus.aspectwerkz.definition.PointcutDefinition;
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsPointcut.java,v 1.6 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: ThrowsPointcut.java,v 1.7 2003-07-08 11:43:35 jboner Exp $
  */
 public class ThrowsPointcut extends AbstractPointcut {
 
@@ -101,8 +99,7 @@ public class ThrowsPointcut extends AbstractPointcut {
             }
         }
         try {
-            Expression e = ExpressionFactory.createExpression(m_expression);
-            Boolean result = (Boolean)e.evaluate(jexlContext);
+            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
 
             if (result.booleanValue()) {
                 return true;
@@ -144,9 +141,11 @@ public class ThrowsPointcut extends AbstractPointcut {
             }
         }
         try {
-            Expression e = ExpressionFactory.createExpression(m_expression);
-            Boolean result = (Boolean)e.evaluate(jexlContext);
+            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
 
+            if (result == null) {
+                return false;
+            }
             if (result.booleanValue()) {
                 return true;
             }

@@ -21,6 +21,7 @@ package org.codehaus.aspectwerkz.pointcut;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.io.ObjectInputStream;
 
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.Expression;
@@ -42,25 +43,30 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSidePointcut.java,v 1.7 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: CallerSidePointcut.java,v 1.8 2003-07-08 11:43:35 jboner Exp $
  */
 public class CallerSidePointcut implements Pointcut {
 
     /**
      * The pattern for the pointcut.
      */
-    protected final String m_expression;
+    protected String m_expression;
+
+    /**
+     * The Jexl expression.
+     */
+    protected transient Expression m_jexlExpr;
 
     /**
      * The pointcut definitions referenced in the m_expression.
      * Mapped to the name of the pointcut definition.
      */
-    protected final Map m_pointcutDefs = new HashMap();
+    protected Map m_pointcutDefs = new HashMap();
 
     /**
      * The UUID for the AspectWerkz system.
      */
-    protected final String m_uuid;
+    protected String m_uuid;
 
     /**
      * Holds the names of the pre advices.
@@ -103,6 +109,12 @@ public class CallerSidePointcut implements Pointcut {
         if (pattern == null || pattern.trim().length() == 0) throw new IllegalArgumentException("pattern of pointcut can not be null or an empty string");
         m_uuid = uuid;
         m_expression = pattern;
+        try {
+            m_jexlExpr = ExpressionFactory.createExpression(m_expression);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("could not create jexl expression from: " + m_expression);
+        }
     }
 
     /**
@@ -112,8 +124,8 @@ public class CallerSidePointcut implements Pointcut {
      */
     public void addPointcutDef(final PointcutDefinition pointcut) {
         m_pointcutDefs.put(pointcut.getName(), new PointcutPatternTuple(
-                        pointcut.getRegexpClassPattern(),
-                        pointcut.getRegexpPattern()));
+                pointcut.getRegexpClassPattern(),
+                pointcut.getRegexpPattern()));
     }
 
     /**
@@ -523,8 +535,11 @@ public class CallerSidePointcut implements Pointcut {
             }
         }
         try {
-            Expression e = ExpressionFactory.createExpression(m_expression);
-            Boolean result = (Boolean)e.evaluate(jexlContext);
+            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
+
+            if (result == null) {
+                return false;
+            }
             if (result.booleanValue()) {
                 return true;
             }
@@ -534,6 +549,31 @@ public class CallerSidePointcut implements Pointcut {
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
+        }
+    }
+
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws java.lang.Exception in case of failure
+     */
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
+
+        m_expression = (String)fields.get("m_expression", null);
+        m_pointcutDefs = (Map)fields.get("m_pointcutDefs", null);
+        m_preNames = (String[])fields.get("m_preNames", null);
+        m_postNames = (String[])fields.get("m_postNames", null);
+        m_preIndexes = (int[])fields.get("m_preIndexes", null);
+        m_postIndexes = (int[])fields.get("m_postIndexes", null);
+        m_uuid = (String)fields.get("m_uuid", null);
+
+        try {
+            m_jexlExpr = ExpressionFactory.createExpression(m_expression);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("could not create jexl expression from: " + m_expression);
         }
     }
 }

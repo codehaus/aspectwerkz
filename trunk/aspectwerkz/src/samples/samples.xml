@@ -6,9 +6,9 @@
     <!--  Introductions                                -->
     <!-- ============================================= -->
     <introduction-def name="mixin"
-                      interface="examples.introduction.Mixin"
-                      implementation="examples.introduction.MixinImpl"
-                      deployment-model="perJVM"/>
+        interface="examples.introduction.Mixin"
+        implementation="examples.introduction.MixinImpl"
+        deployment-model="perJVM"/>
 
     <!-- ============================================= -->
     <!--  Advices                                      -->
@@ -73,48 +73,23 @@
     </aspect>
 
 
-    <!-- ===== TEST ASPECTS BELOW (has nothing to do with the examples ===== -->
 
-    <!--    <aspect name="CFlow">-->
-    <!--        <pointcut-def name="step1" type="cflow" pattern="* examples.cflow.Target.step1()"/>-->
-    <!--        <pointcut-def name="step2" type="method" pattern="* examples.cflow.Target.step2()"/>-->
-    <!--        <advice cflow="step1" pointcut="step2">-->
-    <!--            <advice-ref name="log_control_flow"/>-->
-    <!--        </advice>-->
-    <!--    </aspect>-->
 
-    <!--    <advice-def name="log" advice="examples.logging.LoggingAdvice" deployment-model="perInstance">-->
-    <!--        <param name="param" value="value"/>-->
-    <!--    </advice-def>-->
-    <!--    <aspect name="Test1" >-->
-    <!--        <pointcut-def name="pointcut1" type="method" pattern="* examples.caching.Pi.*(..)"/>-->
-    <!--        <advice pointcut="pointcut1">-->
-    <!--            <advice-ref name="log"/>-->
-    <!--            <advice-ref name="log"/>-->
-    <!--            <advice-ref name="cache"/>-->
-    <!--        </advice>-->
-    <!--    </aspect>-->
-    <!--    <aspect name="Test2" >-->
-    <!--        <pointcut-def name="pointcut2" type="method" pattern="* examples.caching.Pi.*(..)"/>-->
-    <!--        <advice pointcut="pointcut2">-->
-    <!--            <advice-ref name="log"/>-->
-    <!--            <advice-ref name="log"/>-->
-    <!--        </advice>-->
-    <!--        <advice pointcut="pointcut2">-->
-    <!--            <advice-ref name="log"/>-->
-    <!--            <advice-ref name="log"/>-->
-    <!--        </advice>-->
-    <!--    </aspect>-->
+<!--     ===== TEST ASPECTS BELOW (has nothing to do with the examples =====-->
 
-<!--    <advice-def name="log"-->
-<!--        advice="examples.logging.LoggingAdvice"-->
-<!--        deployment-model="perInstance">-->
+<!--    <advice-def name="log" advice="examples.logging.LoggingAdvice" deployment-model="perInstance">-->
 <!--        <param name="param" value="value"/>-->
 <!--    </advice-def>-->
-<!--    <aspect name="LogAspect">-->
-<!--        <pointcut-def name="log_pointcut" type="method" pattern="* *.*(..)"/>-->
-<!--        <pointcut-def name="junit_classes" type="method" pattern="* org.junit..*.*(..)"/>-->
-<!--        <advice pointcut="log_pointcut AND !junit_classes">-->
+<!--    <aspect name="MethodInterceptor">-->
+<!--        <pointcut-def name="collab_calls" type="method" pattern="* *.*(..)"/>-->
+<!--        <pointcut-def name="vm" type="method" pattern="* org.virtualmock..*.*(..)"/>-->
+<!--        <pointcut-def name="junit" type="method" pattern="* junit..*.*(..)"/>-->
+<!--        <pointcut-def name="java_lang" type="method" pattern="* java.lang..*.*(..)"/>-->
+<!--        <pointcut-def name="java_util" type="method" pattern="* java.util..*.*(..)"/>-->
+<!--        <pointcut-def name="aspectwerkz" type="method" pattern="* org.codehaus.aspectwerkz..*.*(..)"/>-->
+<!--        <pointcut-def name="unit_test_suite" type="method" pattern="* examples.logging.AllTests.*(..)"/>-->
+<!--        <pointcut-def name="unit_test_class" type="method" pattern="* examples.logging.SampleTest.*(..)"/>-->
+<!--        <advice pointcut="collab_calls AND !vm AND !junit AND !java_lang AND !java_util AND !aspectwerkz AND !unit_test_suite AND !unit_test_class">-->
 <!--            <advice-ref name="log"/>-->
 <!--        </advice>-->
 <!--    </aspect>-->
