@@ -36,10 +36,99 @@ public class DocumentParser {
     }
 
     /**
+     * Parses the <tt>include</tt> elements.
+     *
+     * @param root the root element
+     * @param definition the definition object
+     * @param packageName the package name
+     */
+    public static void parseIncludePackageElements(final Element root,
+                                                   final AspectWerkzDefinition definition,
+                                                   final String packageName) {
+        for (Iterator it1 = root.elementIterator("include"); it1.hasNext();) {
+            String includePackage = "";
+            Element includeElement = (Element)it1.next();
+            for (Iterator it2 = includeElement.attributeIterator(); it2.hasNext();) {
+                Attribute attribute = (Attribute)it2.next();
+                if (attribute.getName().trim().equals("package")) {
+
+                    // handle base package
+                    if (packageName.endsWith(".*")) {
+                        includePackage = packageName.substring(0, packageName.length() - 2);
+                    }
+                    else if (packageName.endsWith(".")) {
+                        includePackage = packageName.substring(0, packageName.length() - 1);
+                    }
+
+                    // handle exclude package
+                    includePackage = packageName + attribute.getValue().trim();
+                    if (includePackage.endsWith(".*")) {
+                        includePackage = includePackage.substring(0, includePackage.length() - 2);
+                    }
+                    else if (includePackage.endsWith(".")) {
+                        includePackage = includePackage.substring(0, includePackage.length() - 1);
+                    }
+                    break;
+                }
+                else {
+                    continue;
+                }
+            }
+            if (includePackage.length() != 0) {
+                definition.addIncludePackage(includePackage);
+            }
+        }
+    }
+
+    /**
+     * Parses the <tt>exclude</tt> elements.
+     *
+     * @param root the root element
+     * @param definition the definition object
+     * @param packageName the package name
+     */
+    public static void parseExcludePackageElements(final Element root,
+                                                   final AspectWerkzDefinition definition,
+                                                   final String packageName) {
+        for (Iterator it1 = root.elementIterator("exclude"); it1.hasNext();) {
+            String excludePackage = "";
+            Element excludeElement = (Element)it1.next();
+            for (Iterator it2 = excludeElement.attributeIterator(); it2.hasNext();) {
+                Attribute attribute = (Attribute)it2.next();
+                if (attribute.getName().trim().equals("package")) {
+
+                    // handle base package
+                    if (packageName.endsWith(".*")) {
+                        excludePackage = packageName.substring(0, packageName.length() - 2);
+                    }
+                    else if (packageName.endsWith(".")) {
+                        excludePackage = packageName.substring(0, packageName.length() - 1);
+                    }
+
+                    // handle exclude package
+                    excludePackage = packageName + attribute.getValue().trim();
+                    if (excludePackage.endsWith(".*")) {
+                        excludePackage = excludePackage.substring(0, excludePackage.length() - 2);
+                    }
+                    else if (excludePackage.endsWith(".")) {
+                        excludePackage = excludePackage.substring(0, excludePackage.length() - 1);
+                    }
+                    break;
+                }
+                else {
+                    continue;
+                }
+            }
+            if (excludePackage.length() != 0) {
+                definition.addExcludePackage(excludePackage);
+            }
+        }
+    }
+
+    /**
      * Parses the <tt>system</tt> elements.
      *
      * @param root the root element
-     * @param definition the definition
      * @param basePackage the base package
      */
     private static List parseSystemElements(final Element root,

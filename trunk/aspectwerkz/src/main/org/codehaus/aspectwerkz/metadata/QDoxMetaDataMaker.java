@@ -29,7 +29,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
     /**
      * Construct class meta-data from a BCEL <code>JavaClass</code> object.
      *
-     * @param method is the <code>JavaClass</code> object to extract details from.
+     * @param javaClass is the <code>JavaClass</code> object to extract details from.
      * @return a <code>ClassMetaData</code> instance.
      */
     public static ClassMetaData createClassMetaData(final JavaClass javaClass) {

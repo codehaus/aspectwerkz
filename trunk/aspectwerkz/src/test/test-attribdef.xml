@@ -1,5 +1,6 @@
 <aspectwerkz>
     <system id="tests">
+        <exclude package="test.attribdeff"/>
         <package name="test.attribdef.aspect">
             <use-aspect class="MemberMethodTestAspect"/>
             <use-aspect class="StaticMethodTestAspect"/>

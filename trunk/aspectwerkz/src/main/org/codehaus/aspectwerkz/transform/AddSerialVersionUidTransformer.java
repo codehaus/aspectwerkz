@@ -85,7 +85,12 @@ public class AddSerialVersionUidTransformer implements AspectWerkzInterfaceTrans
         if (cg.isInterface()) {
             return true;
         }
-        if (m_definition.inTransformationScope(cg.getClassName())) {
+        String className = cg.getClassName();
+        if (m_definition.inExcludePackage(className)) {
+            return true;
+        }
+
+        if (m_definition.inIncludePackage(className)) {
             return false;
         }
         return true;

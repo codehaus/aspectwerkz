@@ -77,7 +77,7 @@ public interface AspectWerkzDefinition extends Serializable {
      *
      * @return the transformation scopes
      */
-    Set getTransformationScopes();
+    Set getIncludePackages();
 
     /**
      * Returns a collection with the aspect definitions registered.
@@ -131,11 +131,18 @@ public interface AspectWerkzDefinition extends Serializable {
     void addAspectToUse(String className);
 
     /**
-     * Adds a new transformation scope.
+     * Adds a new include package.
      *
-     * @param transformationScope the new scope
+     * @param includePackage the package to include
      */
-    void addTransformationScope(String transformationScope);
+    void addIncludePackage(String includePackage);
+
+    /**
+     * Adds a new exclude package.
+     *
+     * @param excludePackage the package to exclude
+     */
+    void addExcludePackage(String excludePackage);
 
     /**
      * Checks if there exists an advice with the name specified.
@@ -159,7 +166,15 @@ public interface AspectWerkzDefinition extends Serializable {
      * @param className the name or the class
      * @return boolean
      */
-    boolean inTransformationScope(String className);
+    boolean inIncludePackage(String className);
+
+    /**
+     * Checks if a class has an <tt>AspectMetaData</tt>.
+     *
+     * @param className the name or the class
+     * @return boolean
+     */
+    boolean inExcludePackage(String className);
 
     /**
      * Checks if a class has an <tt>Mixin</tt>.

@@ -58,8 +58,13 @@ public class DocumentParser {
 
         definition.setUuid(uuid);
 
-        // parse the transformation scopes
-        parseTransformationScopes(systemElement, definition, basePackage);
+        // parse the include and exclude elements
+        org.codehaus.aspectwerkz.definition.DocumentParser.parseIncludePackageElements(
+                systemElement, definition, basePackage
+        );
+        org.codehaus.aspectwerkz.definition.DocumentParser.parseExcludePackageElements(
+                systemElement, definition, basePackage
+        );
 
         boolean hasDef = false;
         // parse without package elements
@@ -76,42 +81,6 @@ public class DocumentParser {
         }
         else {
             return null;
-        }
-    }
-
-    /**
-     * Parses the <tt>transformation-scope</tt> elements.
-     *
-     * @param root the root element
-     * @param definition the definition object
-     * @param packageName the package name
-     */
-    private static void parseTransformationScopes(final Element root,
-                                                  final AspectWerkzDefinitionImpl definition,
-                                                  final String packageName) {
-        for (Iterator it1 = root.elementIterator("transformation-scope"); it1.hasNext();) {
-            String transformationScope = "";
-            Element scope = (Element)it1.next();
-            for (Iterator it2 = scope.attributeIterator(); it2.hasNext();) {
-                Attribute attribute = (Attribute)it2.next();
-                if (attribute.getName().trim().equals("package")) {
-                    transformationScope = attribute.getValue().trim();
-                    if (packageName.endsWith(".*")) {
-                        transformationScope = packageName.substring(0, packageName.length() - 2);
-                    }
-                    else if (packageName.endsWith(".")) {
-                        transformationScope = packageName.substring(0, packageName.length() - 1);
-                    }
-                    transformationScope = packageName + transformationScope;
-                    break;
-                }
-                else {
-                    continue;
-                }
-            }
-            if (transformationScope.length() != 0) {
-                definition.addTransformationScope(transformationScope);
-            }
         }
     }
 

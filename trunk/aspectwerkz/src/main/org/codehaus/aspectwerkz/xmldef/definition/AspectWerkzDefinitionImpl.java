@@ -78,9 +78,14 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     private String m_uuid = "default";
 
     /**
-     * The transformation scopes.
+     * The include packages.
      */
-    private final Set m_transformationScopeSet = new HashSet();
+    private final Set m_includePackages = new HashSet();
+
+    /**
+     * The exclude packages.
+     */
+    private final Set m_excludePackages = new HashSet();
 
     /**
      * Creates a new instance, creates and sets the system aspect.
@@ -130,12 +135,21 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Returns the transformation scopes.
+     * Returns the include packages.
      *
-     * @return the transformation scopes
+     * @return the include packages
      */
-    public Set getTransformationScopes() {
-        return m_transformationScopeSet;
+    public Set getIncludePackages() {
+        return m_includePackages;
+    }
+
+    /**
+     * Returns the exclude packages.
+     *
+     * @return the exclude packages
+     */
+    public Set getExcludePackages() {
+        return m_excludePackages;
     }
 
     /**
@@ -398,13 +412,24 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Adds a new transformation scope.
+     * Adds a new include package.
      *
-     * @param transformationScope the new scope
+     * @param includePackage the new include package
      */
-    public void addTransformationScope(final String transformationScope) {
-        synchronized (m_transformationScopeSet) {
-            m_transformationScopeSet.add(transformationScope);
+    public void addIncludePackage(final String includePackage) {
+        synchronized (m_includePackages) {
+            m_includePackages.add(includePackage);
+        }
+    }
+
+    /**
+     * Adds a new exclude package.
+     *
+     * @param excludePackage the new exclude package
+     */
+    public void addExcludePackage(final String excludePackage) {
+        synchronized (m_excludePackages) {
+            m_excludePackages.add(excludePackage);
         }
     }
 
@@ -496,12 +521,29 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      * @param className the name or the class
      * @return boolean
      */
-    public boolean inTransformationScope(final String className) {
+    public boolean inIncludePackage(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
-        if (m_transformationScopeSet.isEmpty()) {
+        if (m_includePackages.isEmpty()) {
             return true;
         }
-        for (Iterator it = m_transformationScopeSet.iterator(); it.hasNext();) {
+        for (Iterator it = m_includePackages.iterator(); it.hasNext();) {
+            String packageName = (String)it.next();
+            if (className.startsWith(packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a class has an <tt>AspectMetaData</tt>.
+     *
+     * @param className the name or the class
+     * @return boolean
+     */
+    public boolean inExcludePackage(final String className) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        for (Iterator it = m_excludePackages.iterator(); it.hasNext();) {
             String packageName = (String)it.next();
             if (className.startsWith(packageName)) {
                 return true;
