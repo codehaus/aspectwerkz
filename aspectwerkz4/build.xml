@@ -539,6 +539,7 @@
                 <pathelement path="${samples.classes}"/>
                 <pathelement path="${src.dir}/samples"/>
             </classpath>
+            <jvmarg line="-Daspectwerkz.definition.file=${basedir}/src/samples/aop.xml"/>
         </java>
     </target>
 
