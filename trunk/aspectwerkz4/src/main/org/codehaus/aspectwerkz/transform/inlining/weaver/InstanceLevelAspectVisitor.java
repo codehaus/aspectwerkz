@@ -296,10 +296,10 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                         return false;
                     }
                 }
-                
+                //FIXME: why dissymetric with per_this ?
                 if (DeploymentModel.PER_TARGET.equals(deploymentModel)) {
                     ExpressionInfo perTargetExpression = PerObjectHelper.getExpressionInfo(
-                            deploymentModel,
+                            (DeploymentModel.PointcutControlledDeploymentModel)deploymentModel,
                             adviceDef.getAspectDefinition().getQualifiedName(),
                             classInfo.getClassLoader()
                     );
