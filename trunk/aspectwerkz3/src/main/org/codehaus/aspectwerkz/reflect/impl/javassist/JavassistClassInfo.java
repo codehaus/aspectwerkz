@@ -18,6 +18,8 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.ref.WeakReference;
+
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
@@ -98,7 +100,7 @@ public class JavassistClassInfo implements ClassInfo {
     /**
      * The class loader that loaded the class.
      */
-    private transient final ClassLoader m_loader;
+    private transient final WeakReference m_loaderRef;
 
     /**
      * The attribute extractor.
@@ -119,10 +121,10 @@ public class JavassistClassInfo implements ClassInfo {
             throw new IllegalArgumentException("class loader can not be null");
         }
         m_class = klass;
-        m_loader = loader;
+        m_loaderRef = new WeakReference(loader);
         m_isInterface = klass.isInterface();
-        m_attributeExtractor = Attributes.getAttributeExtractor(m_class, m_loader);
-        m_classInfoRepository = ClassInfoRepository.getRepository(m_loader);
+        m_attributeExtractor = Attributes.getAttributeExtractor(m_class, loader);
+        m_classInfoRepository = ClassInfoRepository.getRepository(loader);
         if (klass.isPrimitive()) {
             m_name = klass.getName();
             m_isPrimitive = true;
@@ -140,12 +142,12 @@ public class JavassistClassInfo implements ClassInfo {
             CtMethod[] methods = m_class.getDeclaredMethods();
             m_methods = new MethodInfo[methods.length];
             for (int i = 0; i < methods.length; i++) {
-                m_methods[i] = new JavassistMethodInfo(methods[i], this, m_loader, m_attributeExtractor);
+                m_methods[i] = new JavassistMethodInfo(methods[i], this, loader, m_attributeExtractor);
             }
             CtConstructor[] constructors = m_class.getDeclaredConstructors();
             m_constructors = new ConstructorInfo[constructors.length];
             for (int i = 0; i < constructors.length; i++) {
-                m_constructors[i] = new JavassistConstructorInfo(constructors[i], this, m_loader, m_attributeExtractor);
+                m_constructors[i] = new JavassistConstructorInfo(constructors[i], this, loader, m_attributeExtractor);
             }
             CtField[] fields = m_class.getDeclaredFields();
             m_fields = new FieldInfo[fields.length];
@@ -153,7 +155,7 @@ public class JavassistClassInfo implements ClassInfo {
                 if (fields[i].getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
                     continue;
                 }
-                m_fields[i] = new JavassistFieldInfo(fields[i], this, m_loader, m_attributeExtractor);
+                m_fields[i] = new JavassistFieldInfo(fields[i], this, loader, m_attributeExtractor);
             }
         }
         m_classInfoRepository.addClassInfo(this);
@@ -228,7 +230,7 @@ public class JavassistClassInfo implements ClassInfo {
                 m_interfaces = new ClassInfo[interfaces.length];
                 for (int i = 0; i < interfaces.length; i++) {
                     CtClass anInterface = interfaces[i];
-                    ClassInfo classInfo = new JavassistClassInfo(anInterface, m_loader);
+                    ClassInfo classInfo = new JavassistClassInfo(anInterface, (ClassLoader)m_loaderRef.get());
                     m_interfaces[i] = classInfo;
                     if (!m_classInfoRepository.hasClassInfo(anInterface.getName())) {
                         m_classInfoRepository.addClassInfo(classInfo);
@@ -254,7 +256,7 @@ public class JavassistClassInfo implements ClassInfo {
                     if (m_classInfoRepository.hasClassInfo(superclass.getName())) {
                         m_superClass = m_classInfoRepository.getClassInfo(superclass.getName());
                     } else {
-                        m_superClass = new JavassistClassInfo(superclass, m_loader);
+                        m_superClass = new JavassistClassInfo(superclass, (ClassLoader)m_loaderRef.get());
                         m_classInfoRepository.addClassInfo(m_superClass);
                     }
                 }

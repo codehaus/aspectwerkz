@@ -20,6 +20,7 @@ import java.lang.ref.WeakReference;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.NotFoundException;
+import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the FieldInfo interface for Javassist.
@@ -30,7 +31,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
     /**
      * Caches the field infos.
      */
-    private static final Map s_cache = new WeakHashMap();
+    private static final TIntObjectHashMap s_cache = new TIntObjectHashMap();
 
     /**
      * The field type.
@@ -59,11 +60,11 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      * @return the field info
      */
     public static JavassistFieldInfo getFieldInfo(final CtField field, final ClassLoader loader) {
-        WeakReference fieldRef = new WeakReference(field);
-        JavassistFieldInfo fieldInfo = (JavassistFieldInfo)s_cache.get(fieldRef);
+        int hash = field.hashCode();
+        JavassistFieldInfo fieldInfo = (JavassistFieldInfo)((WeakReference)s_cache.get(hash)).get();
         if (fieldInfo == null) { //  declaring class is not loaded yet; load it and retry
             new JavassistClassInfo(field.getDeclaringClass(), loader);
-            fieldInfo = (JavassistFieldInfo)s_cache.get(fieldRef);
+            fieldInfo = (JavassistFieldInfo)((WeakReference)s_cache.get(hash)).get();
         }
         return fieldInfo;
     }
@@ -75,7 +76,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      * @param fieldInfo the field info
      */
     public static void addFieldInfo(final CtField field, final JavassistFieldInfo fieldInfo) {
-        s_cache.put(new WeakReference(field), fieldInfo);
+        s_cache.put(field.hashCode(), new WeakReference(fieldInfo));
     }
 
     /**
@@ -102,7 +103,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
                 if (m_classInfoRepository.hasClassInfo(type.getName())) {
                     m_type = m_classInfoRepository.getClassInfo(type.getName());
                 } else {
-                    m_type = new JavassistClassInfo(type, m_loader);
+                    m_type = new JavassistClassInfo(type, (ClassLoader)m_loaderRef.get());
                     m_classInfoRepository.addClassInfo(m_type);
                 }
             } catch (NotFoundException e) {

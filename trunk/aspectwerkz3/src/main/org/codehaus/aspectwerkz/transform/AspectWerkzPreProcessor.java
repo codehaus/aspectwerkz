@@ -152,7 +152,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     public byte[] _preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
         final String className = name.replace('/', '.'); // needed for JRockit (as well as all in all TFs)
-        Klass klass = null;
+        Klass klass;
         try {
             klass = new Klass(className, bytecode, loader);
         } catch (Exception e) {

@@ -31,7 +31,7 @@ public class ClassInfoRepository {
     /**
      * Class loader for the class repository.
      */
-    private transient final ClassLoader m_loader;
+    private transient final WeakReference m_loaderRef;
 
     /**
      * Creates a new repository.
@@ -39,7 +39,7 @@ public class ClassInfoRepository {
      * @param loader
      */
     private ClassInfoRepository(final ClassLoader loader) {
-        m_loader = loader;
+        m_loaderRef = new WeakReference(loader);
     }
 
     /**
@@ -82,7 +82,7 @@ public class ClassInfoRepository {
     public ClassInfo getClassInfo(final String className) {
         ClassInfo info = (ClassInfo)m_repository.get(className);
         if (info == null) {
-            return checkParentClassRepository(className, m_loader);
+            return checkParentClassRepository(className, (ClassLoader)m_loaderRef.get());
         }
         return (ClassInfo)m_repository.get(className);
     }
@@ -94,7 +94,7 @@ public class ClassInfoRepository {
      */
     public void addClassInfo(final ClassInfo classInfo) {
         // is the class loaded by a class loader higher up in the hierarchy?
-        if (checkParentClassRepository(classInfo.getName(), m_loader) == null) {
+        if (checkParentClassRepository(classInfo.getName(), (ClassLoader)m_loaderRef.get()) == null) {
             m_repository.put(classInfo.getName(), classInfo);
         } else {
             // TODO: remove class in child class repository and add it for the current (parent) CL

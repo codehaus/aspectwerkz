@@ -13,8 +13,8 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import java.lang.reflect.Method;
 import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+
+import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the MethodInfo interface for java.lang.reflect.*.
@@ -25,7 +25,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     /**
      * Caches the method infos.
      */
-    private static final Map s_cache = new WeakHashMap();
+    private static final TIntObjectHashMap s_cache = new TIntObjectHashMap();
 
     /**
      * The return type.
@@ -60,11 +60,11 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
      * @return the method info
      */
     public static JavaMethodInfo getMethodInfo(final Method method) {
-        WeakReference methodRef = new WeakReference(method);
-        JavaMethodInfo methodInfo = (JavaMethodInfo)s_cache.get(methodRef);
+        int hash = method.hashCode();
+        JavaMethodInfo methodInfo = (JavaMethodInfo)((WeakReference)s_cache.get(hash)).get();
         if (methodInfo == null) { //  declaring class is not loaded yet; load it and retry
             new JavaClassInfo(method.getDeclaringClass());
-            methodInfo = (JavaMethodInfo)s_cache.get(methodRef);
+            methodInfo = (JavaMethodInfo)((WeakReference)s_cache.get(hash)).get();
         }
         return methodInfo;
     }
@@ -76,7 +76,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
      * @param methodInfo the method info
      */
     public static void addMethodInfo(final Method method, final JavaMethodInfo methodInfo) {
-        s_cache.put(new WeakReference(method), methodInfo);
+        s_cache.put(method.hashCode(), new WeakReference(methodInfo));
     }
 
     /**

@@ -8,6 +8,8 @@
 package org.codehaus.aspectwerkz.transform;
 
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -37,6 +39,7 @@ import javassist.bytecode.Descriptor;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JavassistHelper {
+
     /**
      * Helper method for bogus CtMethod.make in Javassist for static methods
      *
@@ -557,7 +560,7 @@ public class JavassistHelper {
         List attributes = copyFrom.getMethodInfo().getAttributes();
         for (Iterator iterator = attributes.iterator(); iterator.hasNext();) {
             AttributeInfo attributeInfo = (AttributeInfo)iterator.next();
-            if (attributeInfo.getName().startsWith("Custom")) {
+            if (attributeInfo.getName().startsWith(AttributeEnhancer.CUSTOM_ATTRIBUTE)) {
                 copyTo.setAttribute(attributeInfo.getName(), attributeInfo.get());
             }
         }
