@@ -1,0 +1,7 @@
+<aspectwerkz>
+    <system id="unitofwork">
+        <package name="aspectwerkz.aosd.test">
+            <use-aspect class="unitofwork.UnitOfWorkProtocol"/>
+        </package>
+    </system>
+</aspectwerkz>
