@@ -249,7 +249,10 @@ public abstract class MethodJoinPoint implements JoinPoint {
      */
     public String getMethodName() {
         // grab the original method name, ex: "__originalMethod SEP <nameToExtract>  SEP 3"
-        final String[] tokens = Strings.splitString(m_originalMethod.getName(), TransformationUtil.DELIMITER);
+        final String[] tokens = Strings.splitString(
+                m_originalMethod.getName(),
+                TransformationUtil.DELIMITER
+        );
         return tokens[1];
     }
 
@@ -317,7 +320,43 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * @throws Throwable
      */
     public Object proceed() throws Throwable {
-        return m_controller.proceed(this);
+        Object result = m_controller.proceed(this);
+        if (result != null) {
+            return result;
+        }
+
+        // if the result is null and the return type is a primitive set it to the
+        // default value for the primitive and wrap it in its the matching object type
+        Class returnType = getReturnType();
+        if (returnType.isPrimitive()) {
+            if (int.class.equals(returnType)) {
+                result = Util.INTEGER_DEFAULT_VALUE;
+            }
+            else if (float.class.equals(returnType)) {
+                result = Util.FLOAT_DEFAULT_VALUE;
+            }
+            else if (double.class.equals(returnType)) {
+                result = Util.DOUBLE_DEFAULT_VALUE;
+            }
+            else if (byte.class.equals(returnType)) {
+                byte b = 0;
+                result = Util.BYTE_DEFAULT_VALUE;
+            }
+            else if (long.class.equals(returnType)) {
+                result = Util.LONG_DEFAULT_VALUE;
+            }
+            else if (short.class.equals(returnType)) {
+                short s = 0;
+                result = Util.SHORT_DEFAULT_VALUE;
+            }
+            else if (boolean.class.equals(returnType)) {
+                result = Util.BOOLEAN_DEFAULT_VALUE;
+            }
+            else if (char.class.equals(returnType)) {
+                result = Util.CHARACTER_DEFAULT_VALUE;
+            }
+        }
+        return result;
     }
 
     /**
@@ -559,3 +598,4 @@ public abstract class MethodJoinPoint implements JoinPoint {
         return o.hashCode();
     }
 }
+
