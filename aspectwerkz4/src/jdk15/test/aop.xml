@@ -1,9 +1,0 @@
-<!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz2.dtd">
-<aspectwerkz>
-    <system id="jdk5test">
-        <aspect class="test.deployment.HotdeployableAspect"/>
-        <aspect class="test.FieldGetOutOfWeaver$Aspect"/>
-        <aspect class="test.InterfaceDefinedMethodTestCase$Aspect"/>
-        <aspect class="test.CtorExecution$Aspect"/>
-    </system>
-</aspectwerkz>
