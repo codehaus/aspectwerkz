@@ -34,7 +34,6 @@ public interface AnnotationParserConstants {
   int JAVA_TYPE_MAYBEARRAY = 23;
   int JAVA_TYPE = 24;
   int JAVA_LETTER = 25;
-  int CHAR_LETTER = 26;
 
   int DEFAULT = 0;
 
@@ -65,7 +64,6 @@ public interface AnnotationParserConstants {
     "<JAVA_TYPE_MAYBEARRAY>",
     "<JAVA_TYPE>",
     "<JAVA_LETTER>",
-    "<CHAR_LETTER>",
     "\"\\r\\n\"",
   };
 

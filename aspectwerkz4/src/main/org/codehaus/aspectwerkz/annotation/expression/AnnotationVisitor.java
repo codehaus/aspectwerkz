@@ -99,11 +99,15 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
 
     public Object visit(ASTAnnotation node, Object data) {
         int nr = node.jjtGetNumChildren();
+
         if (nr == 1 && !(node.jjtGetChild(0) instanceof ASTKeyValuePair)) {
             // single "value" default
-            Object value = node.jjtGetChild(0).jjtAccept(this, data);
-            m_annotationElementValueHoldersByName.put("value",
-                    new AnnotationElement("value", value));
+        		Object value = node.jjtGetChild(0).jjtAccept(this, data);
+
+        		if(!(node.jjtGetChild(0) instanceof ASTAnnotation)) { // child already set the value
+               m_annotationElementValueHoldersByName.put("value",
+                     new AnnotationElement("value", value));
+        		}
         } else {
             for (int i = 0; i < nr; i++) {
                 node.jjtGetChild(i).jjtAccept(this, data);
@@ -125,7 +129,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
                     nestedAnnotationElementValueHoldersByName,
                     elementMethod.elementType
                     );
-            nestedAnnotationVisitor.visit((SimpleNode)node.jjtGetChild(0), data);
+            nestedAnnotationVisitor.visit((ASTAnnotation)node.jjtGetChild(0), data);
             m_annotationElementValueHoldersByName.put(elementName,
                     new AnnotationElement(elementName,
                             AnnotationManager.instantiateNestedAnnotation(elementMethod.elementType, nestedAnnotationElementValueHoldersByName)));
@@ -342,7 +346,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
                             nestedAnnotationElementValueHoldersByName,
                             componentType
                             );
-                    nestedAnnotationVisitor.visit((SimpleNode)node.jjtGetChild(i), data);
+                    nestedAnnotationVisitor.visit((ASTAnnotation)node.jjtGetChild(i), data);
                     nestedTyped[i] = AnnotationManager.instantiateNestedAnnotation(componentType, nestedAnnotationElementValueHoldersByName);
                 }
                 return nestedTyped;

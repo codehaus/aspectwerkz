@@ -42,8 +42,8 @@ public class AnnotationParser/*@bgen(jjtree)*/implements AnnotationParserTreeCon
       case 0:
         jj_consume_token(0);
         break;
-      case 27:
-        jj_consume_token(27);
+      case 26:
+        jj_consume_token(26);
         break;
       case NEWLINE:
         jj_consume_token(NEWLINE);
@@ -494,6 +494,51 @@ public class AnnotationParser/*@bgen(jjtree)*/implements AnnotationParserTreeCon
     finally { jj_save(3, xla); }
   }
 
+  static final private boolean jj_3R_7() {
+    if (jj_scan_token(COMMA)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_22() {
+    if (jj_scan_token(JAVA_TYPE_MAYBEARRAY)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_3() {
+    if (jj_3R_6()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_7()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  static final private boolean jj_3R_26() {
+    if (jj_scan_token(HEXNUMBER)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_20() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_17() {
+    if (jj_3R_27()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_16() {
+    if (jj_3R_26()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_15() {
+    if (jj_3R_25()) return true;
+    return false;
+  }
+
   static final private boolean jj_3_3() {
     if (jj_scan_token(ANNOTATION)) return true;
     if (jj_scan_token(LEFT_PARENTHEZIS)) return true;
@@ -550,14 +595,14 @@ public class AnnotationParser/*@bgen(jjtree)*/implements AnnotationParserTreeCon
     return false;
   }
 
-  static final private boolean jj_3_4() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_5()) return true;
+  static final private boolean jj_3R_10() {
+    if (jj_3R_20()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_10() {
-    if (jj_3R_20()) return true;
+  static final private boolean jj_3_4() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_5()) return true;
     return false;
   }
 
@@ -656,51 +701,6 @@ public class AnnotationParser/*@bgen(jjtree)*/implements AnnotationParserTreeCon
     return false;
   }
 
-  static final private boolean jj_3R_7() {
-    if (jj_scan_token(COMMA)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_22() {
-    if (jj_scan_token(JAVA_TYPE_MAYBEARRAY)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_3() {
-    if (jj_3R_6()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_7()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  static final private boolean jj_3R_26() {
-    if (jj_scan_token(HEXNUMBER)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_20() {
-    if (jj_scan_token(STRING)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_17() {
-    if (jj_3R_27()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_16() {
-    if (jj_3R_26()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_15() {
-    if (jj_3R_25()) return true;
-    return false;
-  }
-
   static private boolean jj_initialized_once = false;
   static public AnnotationParserTokenManager token_source;
   static SimpleCharStream jj_input_stream;
@@ -717,7 +717,7 @@ public class AnnotationParser/*@bgen(jjtree)*/implements AnnotationParserTreeCon
       jj_la1_0();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x8002001,0xa11cf0,0x200000,0x40000,0xa11cf0,0xa11cf0,};
+      jj_la1_0 = new int[] {0x4002001,0xa11cf0,0x200000,0x40000,0xa11cf0,0xa11cf0,};
    }
   static final private JJCalls[] jj_2_rtns = new JJCalls[4];
   static private boolean jj_rescan = false;
@@ -912,8 +912,8 @@ public class AnnotationParser/*@bgen(jjtree)*/implements AnnotationParserTreeCon
 
   static public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[28];
-    for (int i = 0; i < 28; i++) {
+    boolean[] la1tokens = new boolean[27];
+    for (int i = 0; i < 27; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
@@ -929,7 +929,7 @@ public class AnnotationParser/*@bgen(jjtree)*/implements AnnotationParserTreeCon
         }
       }
     }
-    for (int i = 0; i < 28; i++) {
+    for (int i = 0; i < 27; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

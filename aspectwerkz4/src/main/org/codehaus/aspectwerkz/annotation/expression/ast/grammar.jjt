@@ -11,6 +11,7 @@
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
  */
 
 options {
@@ -71,8 +72,40 @@ TOKEN :
 | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 | < #DIGIT: ["0"-"9"] >
 | < BOOLEAN : "true" | "false" | "TRUE" | "FALSE" >
-| < STRING : "\"" (<CHAR_LETTER>)* "\"" >
-| < CHAR : "'" <CHAR_LETTER> "'" >
+| < STRING :   "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+        | ("\\u"
+        	["0"-"9","A"-"F","a"-"f"]
+        	["0"-"9","A"-"F","a"-"f"]
+        	["0"-"9","A"-"F","a"-"f"]
+        	["0"-"9","A"-"F","a"-"f"]
+          )
+      )*
+      "\""
+ >
+| < CHAR :       "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+        | ("\\u"
+        	["0"-"9","A"-"F","a"-"f"]
+        	["0"-"9","A"-"F","a"-"f"]
+        	["0"-"9","A"-"F","a"-"f"]
+        	["0"-"9","A"-"F","a"-"f"]
+          )
+      )
+      "'"
+ > /* AW-328 */
 | < NEWLINE : "\n" >
 | < LEFT_PARENTHEZIS : "(" >
 | < RIGHT_PARENTHEZIS : ")" >
@@ -86,8 +119,8 @@ TOKEN :
 | < JAVA_TYPE_MAYBEARRAY: <JAVA_TYPE> (("[]")*".class")? >
 | < JAVA_TYPE: <JAVA_NAME> (<DOT> <JAVA_NAME>)* >
 | < #JAVA_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
-| < #CHAR_LETTER : (~["\n","\r", "\\", "\""]) >
 }
+
 
 /**
  * Entry point.
@@ -101,7 +134,7 @@ ASTRoot Root() #Root : {}
 /**
  * Annotation.
  */
-void Annotation() #Annotation : {}
+void Annotation() #Annotation : { }
 {
     LOOKAHEAD(3)
     <ANNOTATION> <LEFT_PARENTHEZIS> (LOOKAHEAD(4) KeyValuePairList() | Value()) <RIGHT_PARENTHEZIS>
@@ -116,10 +149,10 @@ void Annotation() #Annotation : {}
 /**
  * KeyValuePairList.
  */
-void KeyValuePairList() : {}
+void KeyValuePairList() : { }
 {
     KeyValuePair()
-    ( <COMMA> KeyValuePair() )*
+    (<COMMA> KeyValuePair() )*
 }
 
 /**
