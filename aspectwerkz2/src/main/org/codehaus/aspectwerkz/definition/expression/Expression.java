@@ -7,12 +7,18 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression;
 
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+
 import java.io.Serializable;
+
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
-
-import org.codehaus.aspectwerkz.metadata.*;
 
 /**
  * Base abstract class for the expressions. <p/>An expression is wether an ExpressionExpression (algebra) wether a
@@ -23,8 +29,8 @@ import org.codehaus.aspectwerkz.metadata.*;
  * @TODO: implement readObject() for the subclasses
  * @TODO: add serialVersionUID field to the subclasses
  */
-public abstract class Expression implements Serializable {
-
+public abstract class Expression implements Serializable
+{
     /**
      * The name of the pointcut for this expression (if the expression is a top level expression, e.g. is bound to a
      * named pointcut).
@@ -59,11 +65,9 @@ public abstract class Expression implements Serializable {
      * @param name       the name of the expression
      * @param type       the expression type
      */
-    Expression(
-            final ExpressionNamespace namespace,
-            final String expression,
-            final String name,
-            final PointcutType type) {
+    Expression(final ExpressionNamespace namespace, final String expression,
+        final String name, final PointcutType type)
+    {
         this(namespace, expression, "", name, type);
     }
 
@@ -76,31 +80,37 @@ public abstract class Expression implements Serializable {
      * @param name             the name of the expression
      * @param type             the expression type
      */
-    Expression(
-            final ExpressionNamespace namespace,
-            final String expression,
-            final String packageNamespace,
-            final String name,
-            final PointcutType type) {
-        if (namespace == null) {
+    Expression(final ExpressionNamespace namespace, final String expression,
+        final String packageNamespace, final String name,
+        final PointcutType type)
+    {
+        if (namespace == null)
+        {
             throw new IllegalArgumentException("namespace can not be null");
         }
-        if (expression == null) {
+
+        if (expression == null)
+        {
             throw new IllegalArgumentException("expression can not be null");
         }
 
         m_namespace = namespace;
         m_expression = expression;
         m_name = name;
-        if (type!=null) {
+
+        if (type != null)
+        {
             // avoid having null type registered
             // see ExpressionExpressoin late type registration
             m_types.add(type);
         }
-        if (packageNamespace == null) {
+
+        if (packageNamespace == null)
+        {
             m_package = packageNamespace;
         }
-        else {
+        else
+        {
             m_package = "";
         }
     }
@@ -110,7 +120,8 @@ public abstract class Expression implements Serializable {
      *
      * @return the name
      */
-    public String getName() {
+    public String getName()
+    {
         return m_name;
     }
 
@@ -119,7 +130,8 @@ public abstract class Expression implements Serializable {
      *
      * @return the expression as a string
      */
-    public String getExpression() {
+    public String getExpression()
+    {
         return m_expression;
     }
 
@@ -128,7 +140,8 @@ public abstract class Expression implements Serializable {
      *
      * @return the namespace for the expression
      */
-    public ExpressionNamespace getNamespace() {
+    public ExpressionNamespace getNamespace()
+    {
         return m_namespace;
     }
 
@@ -137,7 +150,8 @@ public abstract class Expression implements Serializable {
      *
      * @return true if expression is of given type
      */
-    public boolean isOfType(PointcutType type) {
+    public boolean isOfType(PointcutType type)
+    {
         return m_types.contains(type);
     }
 
@@ -146,7 +160,8 @@ public abstract class Expression implements Serializable {
      *
      * @return the expression types
      */
-    public Set getTypes() {
+    public Set getTypes()
+    {
         return m_types;
     }
 
@@ -159,7 +174,8 @@ public abstract class Expression implements Serializable {
      * @param assumedType the expression type we match with (for orthogonal support)
      * @return boolean
      */
-    public abstract boolean match(final ClassMetaData classMetaData, final PointcutType assumedType);
+    public abstract boolean match(final ClassMetaData classMetaData,
+        final PointcutType assumedType);
 
     /**
      * Checks if the expression matches a certain join point. <p/>Only checks for a class match to allow early
@@ -194,7 +210,8 @@ public abstract class Expression implements Serializable {
      * @param assumedType the expression type we match with (for orthogonal support)
      * @return boolean
      */
-    public abstract boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData, PointcutType assumedType);
+    public abstract boolean match(final ClassMetaData classMetaData,
+        final MemberMetaData memberMetaData, PointcutType assumedType);
 
     /**
      * Checks if the expression matches a certain join point.
@@ -206,7 +223,8 @@ public abstract class Expression implements Serializable {
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    public abstract boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData);
+    public abstract boolean match(final ClassMetaData classMetaData,
+        final MemberMetaData memberMetaData);
 
     /**
      * Checks if the expression matches a cflow stack.
@@ -229,7 +247,8 @@ public abstract class Expression implements Serializable {
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    public abstract boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData);
+    public abstract boolean matchInOrNotIn(final ClassMetaData classMetaData,
+        final MemberMetaData memberMetaData);
 
     /**
      * Checks if the expression matches a certain join point. <p/>Special case in the API which tries to match exception
@@ -241,11 +260,9 @@ public abstract class Expression implements Serializable {
      * @param assumedType the expression type we match with (for orthogonal support)
      * @return boolean
      */
-    public abstract boolean match(
-            final ClassMetaData classMetaData,
-            final MemberMetaData memberMetaData,
-            final String exceptionType,
-            final PointcutType assumedType);
+    public abstract boolean match(final ClassMetaData classMetaData,
+        final MemberMetaData memberMetaData, final String exceptionType,
+        final PointcutType assumedType);
 
     /**
      * Return a Map(name->Expression) of expression involved in the IN and NOT IN sub-expression of this Expression (can
@@ -264,36 +281,39 @@ public abstract class Expression implements Serializable {
      * @param assumedType
      * @return simplified expression
      */
-    public abstract Expression extractCflowExpression(ClassMetaData classMetaData,
-                                                      MemberMetaData memberMetaData,
-                                                      PointcutType assumedType);
+    public abstract Expression extractCflowExpression(
+        ClassMetaData classMetaData, MemberMetaData memberMetaData,
+        PointcutType assumedType);
 
     /**
      * Overridden toString.
      *
      * @return the string representation of the Expression instance
      */
-    public String toString() {
-        return '[' + super.toString() + ": " +
-               m_name + ',' +
-               m_namespace + ',' +
-               m_package + ',' +
-               m_expression + ']';
+    public String toString()
+    {
+        return '[' + super.toString() + ": " + m_name + ',' + m_namespace + ','
+        + m_package + ',' + m_expression + ']';
     }
 
-    public boolean isNullMetaData(MethodMetaData methodMetaData) {
+    public boolean isNullMetaData(MethodMetaData methodMetaData)
+    {
         return MethodMetaData.NullMethodMetaData.NULL_METHOD_METADATA.equals(methodMetaData);
     }
 
-    public boolean isNullMetaData(FieldMetaData fieldMetaData) {
+    public boolean isNullMetaData(FieldMetaData fieldMetaData)
+    {
         return FieldMetaData.NullFieldMetaData.NULL_FIELD_METADATA.equals(fieldMetaData);
     }
 
-    public boolean isNullMetaData(ConstructorMetaData constructorMetaData) {
-        return ConstructorMetaData.NullConstructorMetaData.NULL_CONSTRUCTOR_METADATA.equals(constructorMetaData);
+    public boolean isNullMetaData(ConstructorMetaData constructorMetaData)
+    {
+        return ConstructorMetaData.NullConstructorMetaData.NULL_CONSTRUCTOR_METADATA
+        .equals(constructorMetaData);
     }
 
-    public boolean isNullMetaData(MemberMetaData memberMetaData) {
+    public boolean isNullMetaData(MemberMetaData memberMetaData)
+    {
         return (memberMetaData instanceof MemberMetaData.NullMemberMetaData);
     }
 }

@@ -7,13 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
+
 /**
  * Marker interface for the member meta-data classes (field and method).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface MemberMetaData extends MetaData {
-
+public interface MemberMetaData extends MetaData
+{
     /**
      * Returns the name.
      *
@@ -28,9 +29,19 @@ public interface MemberMetaData extends MetaData {
      */
     int getModifiers();
 
-    static class NullMemberMetaData extends NullMetaData implements MemberMetaData {
+    static class NullMemberMetaData extends NullMetaData
+        implements MemberMetaData
+    {
         public final static NullMemberMetaData NULL_MEMBER_METADATA = new NullMemberMetaData();
-        public String getName() {return "";}
-        public int getModifiers() {return -1;}
+
+        public String getName()
+        {
+            return "";
+        }
+
+        public int getModifiers()
+        {
+            return -1;
+        }
     }
 }

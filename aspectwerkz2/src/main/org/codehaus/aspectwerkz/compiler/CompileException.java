@@ -15,33 +15,40 @@ import java.io.PrintWriter;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CompileException extends Exception {
-
+public class CompileException extends Exception
+{
     private Throwable nested;
 
-    public CompileException(String msg, Throwable e) {
+    public CompileException(String msg, Throwable e)
+    {
         super(msg);
         nested = e;
     }
 
-    public void printStackTrace() {
+    public void printStackTrace()
+    {
         printStackTrace(System.err);
     }
 
-    public void printStackTrace(PrintWriter writer) {
+    public void printStackTrace(PrintWriter writer)
+    {
         super.printStackTrace(writer);
-        if (nested != null) {
+
+        if (nested != null)
+        {
             writer.println("nested:");
             nested.printStackTrace(writer);
         }
     }
 
-    public void printStackTrace(PrintStream out) {
+    public void printStackTrace(PrintStream out)
+    {
         super.printStackTrace(out);
-        if (nested != null) {
+
+        if (nested != null)
+        {
             out.println("nested:");
             nested.printStackTrace(out);
         }
     }
-
 }

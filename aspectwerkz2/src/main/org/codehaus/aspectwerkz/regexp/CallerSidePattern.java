@@ -7,13 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.regexp;
 
-import java.util.StringTokenizer;
-
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
+
+import java.util.StringTokenizer;
 
 /**
  * Implements the regular expression pattern matcher for caller side methods in AspectWerkz.
@@ -21,8 +21,8 @@ import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @TODO remove when we have the 'within' construct
  */
-public class CallerSidePattern extends Pattern {
-
+public class CallerSidePattern extends Pattern
+{
     /**
      * The full pattern as a string.
      */
@@ -49,12 +49,26 @@ public class CallerSidePattern extends Pattern {
     protected Pattern m_memberPattern;
 
     /**
+     * Private constructor.
+     *
+     * @param type    the pattern type
+     * @param pattern the pattern
+     */
+    CallerSidePattern(final int type, final String pattern)
+    {
+        m_pattern = pattern;
+        m_type = type;
+        parse(m_pattern);
+    }
+
+    /**
      * Matches a caller side pointcut.
      *
      * @param className the class name
      * @return true if we have a matches
      */
-    public boolean matches(final String className) {
+    public boolean matches(final String className)
+    {
         return m_calleeClassPattern.matches(className);
     }
 
@@ -64,11 +78,14 @@ public class CallerSidePattern extends Pattern {
      * @param methodMetaData the method meta-data
      * @return true if we have a matches
      */
-    public boolean matches(final MethodMetaData methodMetaData) {
-        if (!(m_memberPattern instanceof MethodPattern)) {
+    public boolean matches(final MethodMetaData methodMetaData)
+    {
+        if (!(m_memberPattern instanceof MethodPattern))
+        {
             return false;
         }
-        return ((MethodPattern)m_memberPattern).matches(methodMetaData);
+
+        return ((MethodPattern) m_memberPattern).matches(methodMetaData);
     }
 
     /**
@@ -77,11 +94,14 @@ public class CallerSidePattern extends Pattern {
      * @param constructorMetaData the constructor meta-data
      * @return true if we have a matches
      */
-    public boolean matches(final ConstructorMetaData constructorMetaData) {
-        if (!(m_memberPattern instanceof ConstructorPattern)) {
+    public boolean matches(final ConstructorMetaData constructorMetaData)
+    {
+        if (!(m_memberPattern instanceof ConstructorPattern))
+        {
             return false;
         }
-        return ((ConstructorPattern)m_memberPattern).matches(constructorMetaData);
+
+        return ((ConstructorPattern) m_memberPattern).matches(constructorMetaData);
     }
 
     /**
@@ -91,14 +111,21 @@ public class CallerSidePattern extends Pattern {
      * @param memberMetaData the method meta-data
      * @return true if we have a matches
      */
-    public boolean matches(final String className, final MemberMetaData memberMetaData) {
-        if (memberMetaData instanceof MethodMetaData) {
-            return m_calleeClassPattern.matches(className) && matches((MethodMetaData)memberMetaData);
+    public boolean matches(final String className,
+        final MemberMetaData memberMetaData)
+    {
+        if (memberMetaData instanceof MethodMetaData)
+        {
+            return m_calleeClassPattern.matches(className)
+            && matches((MethodMetaData) memberMetaData);
         }
-        else if (memberMetaData instanceof ConstructorMetaData) {
-            return m_calleeClassPattern.matches(className) && matches((ConstructorMetaData)memberMetaData);
+        else if (memberMetaData instanceof ConstructorMetaData)
+        {
+            return m_calleeClassPattern.matches(className)
+            && matches((ConstructorMetaData) memberMetaData);
         }
-        else {
+        else
+        {
             return false;
         }
     }
@@ -108,7 +135,8 @@ public class CallerSidePattern extends Pattern {
      *
      * @return the pattern
      */
-    public String getPattern() {
+    public String getPattern()
+    {
         return m_pattern;
     }
 
@@ -117,39 +145,40 @@ public class CallerSidePattern extends Pattern {
      *
      * @param pattern the method pattern
      */
-    protected void parse(final String pattern) {
-        StringTokenizer tokenizer = new StringTokenizer(m_pattern, SystemDefinition.CALLER_SIDE_DELIMITER);
-        try {
+    protected void parse(final String pattern)
+    {
+        StringTokenizer tokenizer = new StringTokenizer(m_pattern,
+                SystemDefinition.CALLER_SIDE_DELIMITER);
+
+        try
+        {
             String classPattern = tokenizer.nextToken();
             String memberPattern = tokenizer.nextToken();
+
             m_calleeClassPattern = Pattern.compileClassPattern(classPattern);
 
-            switch (m_type) {
-                case Pattern.METHOD:
-                    m_memberPattern = Pattern.compileMethodPattern(memberPattern);
-                    break;
-                case Pattern.CONSTRUCTOR:
-                    m_memberPattern = Pattern.compileConstructorPattern(memberPattern);
-                    break;
-                case Pattern.FIELD:
-                    // will probably never be implemented
-                    break;
+            switch (m_type)
+            {
+            case Pattern.METHOD:
+                m_memberPattern = Pattern.compileMethodPattern(memberPattern);
+
+                break;
+
+            case Pattern.CONSTRUCTOR:
+                m_memberPattern = Pattern.compileConstructorPattern(memberPattern);
+
+                break;
+
+            case Pattern.FIELD:
+
+                // will probably never be implemented
+                break;
             }
         }
-        catch (Exception e) {
-            throw new DefinitionException("member pattern is not well formed: " + pattern, e);
+        catch (Exception e)
+        {
+            throw new DefinitionException("member pattern is not well formed: "
+                + pattern, e);
         }
-    }
-
-    /**
-     * Private constructor.
-     *
-     * @param type    the pattern type
-     * @param pattern the pattern
-     */
-    CallerSidePattern(final int type, final String pattern) {
-        m_pattern = pattern;
-        m_type = type;
-        parse(m_pattern);
     }
 }

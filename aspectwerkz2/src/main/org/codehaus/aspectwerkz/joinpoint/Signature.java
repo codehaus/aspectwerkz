@@ -7,13 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint;
 
+
 /**
  * Provides static and reflective information about the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface Signature {
-
+public interface Signature
+{
     /**
      * Returns the declaring class.
      *

@@ -7,65 +7,81 @@
  **************************************************************************************/
 package test;
 
+
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CallerSideTestHelper {
-
-    public CallerSideTestHelper() {
+public class CallerSideTestHelper
+{
+    public CallerSideTestHelper()
+    {
     }
 
-    public CallerSideTestHelper(int i) {
+    public CallerSideTestHelper(int i)
+    {
     }
 
-    public void passingParameterToAdviceMethod() {
+    public void passingParameterToAdviceMethod()
+    {
     }
 
-    public String invokeMemberMethodAround() {
+    public String invokeMemberMethodAround()
+    {
         return "invokeMemberMethodAround";
     }
 
-    public String invokeMemberMethodAround(String a, String b) {
+    public String invokeMemberMethodAround(String a, String b)
+    {
         return "invokeMemberMethodAround";
     }
 
-    public String invokeStaticMethodAround() {
+    public String invokeStaticMethodAround()
+    {
         return "invokeMemberMethodAround";
     }
 
-    public int invokeMemberMethodAroundPrimitiveType() {
+    public int invokeMemberMethodAroundPrimitiveType()
+    {
         return 2;
     }
 
-    public int invokeStaticMethodAroundPrimitiveType() {
+    public int invokeStaticMethodAroundPrimitiveType()
+    {
         return 3;
     }
 
-    public void invokeMemberMethodAroundVoidType() {
+    public void invokeMemberMethodAroundVoidType()
+    {
         return;
     }
 
-    public String invokeMemberMethodPre() {
+    public String invokeMemberMethodPre()
+    {
         return "invokeMemberMethodPre";
     }
 
-    public String invokeMemberMethodPost() {
+    public String invokeMemberMethodPost()
+    {
         return "invokeMemberMethodPost";
     }
 
-    public String invokeMemberMethodPrePost() {
+    public String invokeMemberMethodPrePost()
+    {
         return "invokeMemberMethodPrePost";
     }
 
-    public static String invokeStaticMethodPre() {
+    public static String invokeStaticMethodPre()
+    {
         return "invokeStaticMethodPre";
     }
 
-    public static String invokeStaticMethodPost() {
+    public static String invokeStaticMethodPost()
+    {
         return "invokeStaticMethodPost";
     }
 
-    public static String invokeStaticMethodPrePost() {
+    public static String invokeStaticMethodPrePost()
+    {
         return "invokeStaticMethodPrePost";
     }
 }

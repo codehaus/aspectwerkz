@@ -7,15 +7,15 @@
  **************************************************************************************/
 package test.performance;
 
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class PerJVMPerformanceAspect {
-
+public class PerJVMPerformanceAspect
+{
     /**
      * @Expression class(test.performance.PerformanceTest)
      */
@@ -29,43 +29,55 @@ public class PerJVMPerformanceAspect {
     /**
      * @Around pc
      */
-    public Object advice1(final JoinPoint joinPoint) throws Throwable {
+    public Object advice1(final JoinPoint joinPoint)
+        throws Throwable
+    {
         return joinPoint.proceed();
     }
 
     /**
      * Around pc
      */
-    public Object advice2(final JoinPoint joinPoint) throws Throwable {
+    public Object advice2(final JoinPoint joinPoint)
+        throws Throwable
+    {
         return joinPoint.proceed();
     }
 
     /**
      * Around pc
      */
-    public Object advice3(final JoinPoint joinPoint) throws Throwable {
+    public Object advice3(final JoinPoint joinPoint)
+        throws Throwable
+    {
         return joinPoint.proceed();
     }
 
     /**
      * Around pc
      */
-    public Object advice4(final JoinPoint joinPoint) throws Throwable {
+    public Object advice4(final JoinPoint joinPoint)
+        throws Throwable
+    {
         return joinPoint.proceed();
     }
 
     /**
      * Around pc
      */
-    public Object advice5(final JoinPoint joinPoint) throws Throwable {
+    public Object advice5(final JoinPoint joinPoint)
+        throws Throwable
+    {
         return joinPoint.proceed();
     }
 
     /**
      * @Introduce mixin
      */
-    public static class PerJVMImpl implements PerJVM {
-        public void runPerJVM() {
+    public static class PerJVMImpl implements PerJVM
+    {
+        public void runPerJVM()
+        {
         }
     }
 }

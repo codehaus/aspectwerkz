@@ -10,16 +10,17 @@ package org.codehaus.aspectwerkz.metadata;
 import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 
 import java.io.Serializable;
-import java.util.List;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base interface for the metadata hierarchy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface MetaData extends Serializable {
-
+public interface MetaData extends Serializable
+{
     /**
      * Returns the attributes.
      *
@@ -34,11 +35,19 @@ public interface MetaData extends Serializable {
      */
     void addAttribute(CustomAttribute attribute);
 
-    static class NullMetaData implements MetaData {
+    static class NullMetaData implements MetaData
+    {
         protected final static List EMPTY_LIST = new ArrayList(0);
         protected final static String[] EMPTY_STRING_ARRAY = new String[0];
 
-        public List getAttributes() {return EMPTY_LIST;}
-        public void addAttribute(CustomAttribute attribute) {;}
+        public List getAttributes()
+        {
+            return EMPTY_LIST;
+        }
+
+        public void addAttribute(CustomAttribute attribute)
+        {
+            ;
+        }
     }
 }

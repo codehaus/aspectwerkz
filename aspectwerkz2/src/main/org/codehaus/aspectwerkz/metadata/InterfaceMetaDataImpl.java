@@ -17,8 +17,8 @@ import java.util.List;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class InterfaceMetaDataImpl implements InterfaceMetaData {
-
+public class InterfaceMetaDataImpl implements InterfaceMetaData
+{
     /**
      * The name of the class.
      */
@@ -39,7 +39,8 @@ public class InterfaceMetaDataImpl implements InterfaceMetaData {
      *
      * @return the attributes
      */
-    public List getAttributes() {
+    public List getAttributes()
+    {
         return m_attributes;
     }
 
@@ -48,7 +49,8 @@ public class InterfaceMetaDataImpl implements InterfaceMetaData {
      *
      * @param attribute the attribute
      */
-    public void addAttribute(final CustomAttribute attribute) {
+    public void addAttribute(final CustomAttribute attribute)
+    {
         m_attributes.add(attribute);
     }
 
@@ -57,7 +59,8 @@ public class InterfaceMetaDataImpl implements InterfaceMetaData {
      *
      * @return the name of the class
      */
-    public String getName() {
+    public String getName()
+    {
         return m_name;
     }
 
@@ -66,7 +69,8 @@ public class InterfaceMetaDataImpl implements InterfaceMetaData {
      *
      * @param name the name of the class
      */
-    public void setName(final String name) {
+    public void setName(final String name)
+    {
         m_name = name;
     }
 
@@ -75,7 +79,8 @@ public class InterfaceMetaDataImpl implements InterfaceMetaData {
      *
      * @return the interfaces
      */
-    public List getInterfaces() {
+    public List getInterfaces()
+    {
         return m_interfaces;
     }
 
@@ -84,8 +89,8 @@ public class InterfaceMetaDataImpl implements InterfaceMetaData {
      *
      * @param interfaces the interfaces
      */
-    public void setInterfaces(final List interfaces) {
+    public void setInterfaces(final List interfaces)
+    {
         m_interfaces = interfaces;
     }
 }
-

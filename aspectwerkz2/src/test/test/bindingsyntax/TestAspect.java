@@ -14,32 +14,43 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  *
  * @Aspect
  */
-public class TestAspect {
-
+public class TestAspect
+{
     /**
      * Around
      */
-    public Object advice1(final JoinPoint joinPoint) throws Throwable {
+    public Object advice1(final JoinPoint joinPoint)
+        throws Throwable
+    {
         String last = AdviceBindingTest.flow;
+
         AdviceBindingTest.flow += " ";
+
         //System.out.println(AdviceBindingTest.flow + " -> Advice_1");
         Object r = joinPoint.proceed();
+
         //System.out.println(AdviceBindingTest.flow + " <- Advice_1");
         AdviceBindingTest.flow = last;
-        return '1' + (String)r;
-    }
 
+        return '1' + (String) r;
+    }
 
     /**
      * Around
      */
-    public Object advice2(final JoinPoint joinPoint) throws Throwable {
+    public Object advice2(final JoinPoint joinPoint)
+        throws Throwable
+    {
         String last = AdviceBindingTest.flow;
+
         AdviceBindingTest.flow += " ";
+
         //System.out.println(AdviceBindingTest.flow + " -> Advice_2");
         Object r = joinPoint.proceed();
+
         //System.out.println(AdviceBindingTest.flow + " <- Advice_2");
         AdviceBindingTest.flow = last;
-        return '2' + (String)r;
+
+        return '2' + (String) r;
     }
 }

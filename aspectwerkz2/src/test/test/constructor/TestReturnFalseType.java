@@ -7,10 +7,13 @@
  **************************************************************************************/
 package test.constructor;
 
+
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class TestReturnFalseType {
-    public TestReturnFalseType() {
+public class TestReturnFalseType
+{
+    public TestReturnFalseType()
+    {
     }
 }

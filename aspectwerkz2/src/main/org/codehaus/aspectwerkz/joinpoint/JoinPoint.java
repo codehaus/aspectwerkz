@@ -7,13 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint;
 
+
 /**
  * Implements the join point concept, e.g. defines a well defined point in the program flow.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface JoinPoint {
-
+public interface JoinPoint
+{
     static final String METHOD_EXECUTION = "METHOD_EXECUTION";
     static final String METHOD_CALL = "METHOD_CALL";
     static final String CONSTRUCTOR_EXECUTION = "CONSTRUCTOR_EXECUTION";

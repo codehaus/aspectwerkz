@@ -7,10 +7,12 @@
  **************************************************************************************/
 package test.clapp;
 
+
 /**
  * Empty class
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class DummyReentrantClass {
+public class DummyReentrantClass
+{
 }

@@ -7,76 +7,92 @@
  **************************************************************************************/
 package test.pointcutexpression;
 
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+
 import test.Loggable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect
  */
-public class TestAspect {
-
+public class TestAspect
+{
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.*())
      */
     Pointcut generic;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.A())
      */
     Pointcut A;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.B())
      */
     Pointcut B;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.C())
      */
     Pointcut C;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.D())
      */
     Pointcut D;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.E())
      */
     Pointcut E;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.F())
      */
     Pointcut F;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.G())
      */
     Pointcut G;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.H())
      */
     Pointcut H;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.I())
      */
     Pointcut I;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.J())
      */
     Pointcut J;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.K())
      */
     Pointcut K;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.L())
      */
     Pointcut L;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.M())
      */
     Pointcut M;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.N())
      */
     Pointcut N;
+
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.O())
      */
@@ -85,60 +101,90 @@ public class TestAspect {
     /**
      * @Around B || C
      */
-    public Object advice1(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
+    public Object advice1(final JoinPoint joinPoint)
+        throws Throwable
+    {
+        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
+
+        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+
         return result;
     }
 
     /**
      * @Around D && !E
      */
-    public Object advice2(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
+    public Object advice2(final JoinPoint joinPoint)
+        throws Throwable
+    {
+        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
+
+        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+
         return result;
     }
 
     /**
      * @Around (F || G) && H
      */
-    public Object advice3(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
+    public Object advice3(final JoinPoint joinPoint)
+        throws Throwable
+    {
+        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
+
+        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+
         return result;
     }
 
     /**
      * @Around (I || J) && generic
      */
-    public Object advice4(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
+    public Object advice4(final JoinPoint joinPoint)
+        throws Throwable
+    {
+        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
+
+        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+
         return result;
     }
 
     /**
      * @Around !K && !(L || M) && N
      */
-    public Object advice5(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
+    public Object advice5(final JoinPoint joinPoint)
+        throws Throwable
+    {
+        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
+
+        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+
         return result;
     }
 
     /**
      * @Around O
      */
-    public Object advice6(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
+    public Object advice6(final JoinPoint joinPoint)
+        throws Throwable
+    {
+        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
+
+        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+
         return result;
     }
 }

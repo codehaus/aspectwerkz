@@ -7,8 +7,7 @@
  **************************************************************************************/
 package test.memusage;
 
-public interface Hello {
-
+public interface Hello
+{
     public String sayHello0();
-
 }

@@ -7,9 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
+import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
 
 import java.util.List;
@@ -19,8 +19,8 @@ import java.util.List;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-class MethodJoinPoint extends JoinPointBase {
-
+class MethodJoinPoint extends JoinPointBase
+{
     private final MethodSignature m_signature;
     private final MethodRttiImpl m_rtti;
 
@@ -37,22 +37,17 @@ class MethodJoinPoint extends JoinPointBase {
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public MethodJoinPoint(
-            final String uuid,
-            final int type,
-            final Class targetClass,
-            final Signature signature,
-            final Rtti rtti,
-            final List cflowExpressions,
-            final AroundAdviceExecutor aroundAdviceExecutor,
-            final BeforeAdviceExecutor beforeAdviceExecutor,
-            final AfterAdviceExecutor afterAdviceExecutor) {
-        super(
-                uuid, type, targetClass, cflowExpressions,
-                aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor
-        );
-        m_signature = (MethodSignature)signature;
-        m_rtti = (MethodRttiImpl)rtti;
+    public MethodJoinPoint(final String uuid, final int type,
+        final Class targetClass, final Signature signature, final Rtti rtti,
+        final List cflowExpressions,
+        final AroundAdviceExecutor aroundAdviceExecutor,
+        final BeforeAdviceExecutor beforeAdviceExecutor,
+        final AfterAdviceExecutor afterAdviceExecutor)
+    {
+        super(uuid, type, targetClass, cflowExpressions, aroundAdviceExecutor,
+            beforeAdviceExecutor, afterAdviceExecutor);
+        m_signature = (MethodSignature) signature;
+        m_rtti = (MethodRttiImpl) rtti;
     }
 
     /**
@@ -62,9 +57,12 @@ class MethodJoinPoint extends JoinPointBase {
      * @return the result from the next invocation
      * @throws Throwable
      */
-    public Object proceed() throws Throwable {
+    public Object proceed() throws Throwable
+    {
         Object result = m_aroundAdviceExecutor.proceed(this);
+
         m_rtti.setReturnValue(result);
+
         return result;
     }
 
@@ -73,7 +71,8 @@ class MethodJoinPoint extends JoinPointBase {
      *
      * @return the signature
      */
-    public Signature getSignature() {
+    public Signature getSignature()
+    {
         return m_signature;
     }
 
@@ -82,7 +81,8 @@ class MethodJoinPoint extends JoinPointBase {
      *
      * @return the RTTI
      */
-    public Rtti getRtti() {
+    public Rtti getRtti()
+    {
         return m_rtti;
     }
 
@@ -92,7 +92,8 @@ class MethodJoinPoint extends JoinPointBase {
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */
-    public String toString() {
+    public String toString()
+    {
         return super.toString();
     }
 }

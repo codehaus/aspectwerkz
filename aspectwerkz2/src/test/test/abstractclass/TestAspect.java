@@ -7,15 +7,15 @@
  **************************************************************************************/
 package test.abstractclass;
 
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect
  */
-public class TestAspect {
-
+public class TestAspect
+{
     /**
      * @Expression execution(* test.abstractclass.AbstractTarget.*(..))
      */
@@ -24,7 +24,9 @@ public class TestAspect {
     /**
      * @Around pc
      */
-    public Object advice(final JoinPoint joinPoint) throws Throwable {
+    public Object advice(final JoinPoint joinPoint)
+        throws Throwable
+    {
         return joinPoint.proceed();
     }
 }

@@ -9,10 +9,10 @@ package org.codehaus.aspectwerkz.definition.expression.visitor;
 
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionContext;
-import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
-import org.codehaus.aspectwerkz.definition.expression.CflowExpression;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.ast.AndNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
 import org.codehaus.aspectwerkz.definition.expression.ast.BooleanLiteral;
 import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisitor;
 import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionScript;
@@ -22,7 +22,6 @@ import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
 
 /**
  * Evaluate the expression, ignore the CFLOW sub-expressions<br/>
@@ -38,142 +37,184 @@ import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class EvaluateVisitor implements ExpressionParserVisitor {
-
-    public Object visit(SimpleNode node, Object data) {
+public class EvaluateVisitor implements ExpressionParserVisitor
+{
+    public Object visit(SimpleNode node, Object data)
+    {
         Object res = node.jjtGetChild(0).jjtAccept(this, data);
+
         return res;
     }
 
-    public Object visit(ExpressionScript node, Object data) {
+    public Object visit(ExpressionScript node, Object data)
+    {
         return node.jjtGetChild(0).jjtAccept(this, data);
     }
 
-    public Object visit(OrNode node, Object data) {
-        Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
-        if (lhs.booleanValue()) {
+    public Object visit(OrNode node, Object data)
+    {
+        Boolean lhs = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+
+        if (lhs.booleanValue())
+        {
             return Boolean.TRUE;
         }
-        Boolean rhs = (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
+
+        Boolean rhs = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+
         return rhs;
     }
 
-    public Object visit(AndNode node, Object data) {
-        Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
-        if (lhs == null) {
-            lhs = Boolean.TRUE;// cflow in AND, always TRUE
+    public Object visit(AndNode node, Object data)
+    {
+        Boolean lhs = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+
+        if (lhs == null)
+        {
+            lhs = Boolean.TRUE; // cflow in AND, always TRUE
         }
-        if (!lhs.booleanValue()) {
+
+        if (!lhs.booleanValue())
+        {
             return Boolean.FALSE;
         }
-        Boolean rhs = (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
-        if (rhs == null) {
-            rhs = Boolean.TRUE;// cflow in AND, always TRUE
+
+        Boolean rhs = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+
+        if (rhs == null)
+        {
+            rhs = Boolean.TRUE; // cflow in AND, always TRUE
         }
+
         return rhs;
     }
 
-    public Object visit(NotNode node, Object data) {
-        ExpressionContext ctx = (ExpressionContext)data;
-        Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
-        if (lhs == null) {
-            return Boolean.TRUE;//ignore the "NOT cflow(..)"
+    public Object visit(NotNode node, Object data)
+    {
+        ExpressionContext ctx = (ExpressionContext) data;
+        Boolean lhs = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+
+        if (lhs == null)
+        {
+            return Boolean.TRUE; //ignore the "NOT cflow(..)"
         }
-        else if (lhs.booleanValue()) {
+        else if (lhs.booleanValue())
+        {
             return Boolean.FALSE;
         }
-        else {
+        else
+        {
             return Boolean.TRUE;
         }
     }
 
-    public Object visit(Identifier node, Object data) {
-        ExpressionContext ctx = (ExpressionContext)data;
+    public Object visit(Identifier node, Object data)
+    {
+        ExpressionContext ctx = (ExpressionContext) data;
         String leafName = node.name;
         Expression expression = ctx.getNamespace().getExpression(leafName);
-        if (expression != null) {
-            if (PointcutType.isCflowTypeOnly(expression.getTypes())) {
-                return null;//Boolean.TRUE;//match at TF time
-            } else {
+
+        if (expression != null)
+        {
+            if (PointcutType.isCflowTypeOnly(expression.getTypes()))
+            {
+                return null; //Boolean.TRUE;//match at TF time
+            }
+            else
+            {
                 //TODO WITHIN
                 return new Boolean(expression.match(ctx.getClassMetaData(),
-                        ctx.getMemberMetaData(), ctx.getExceptionType(), ctx.getPointcutType())
-                );
+                        ctx.getMemberMetaData(), ctx.getExceptionType(),
+                        ctx.getPointcutType()));
             }
         }
-        else {
+        else
+        {
             throw new RuntimeException("no such registered expression");
         }
     }
 
-    public Object visit(BooleanLiteral node, Object data) {
+    public Object visit(BooleanLiteral node, Object data)
+    {
         return node.jjtGetChild(0).jjtAccept(this, data);
     }
 
-    public Object visit(TrueNode node, Object data) {
+    public Object visit(TrueNode node, Object data)
+    {
         return Boolean.TRUE;
     }
 
-    public Object visit(FalseNode node, Object data) {
+    public Object visit(FalseNode node, Object data)
+    {
         return Boolean.FALSE;
     }
 
-    public Object visit(Anonymous node, Object data) {
-        ExpressionContext ctx = (ExpressionContext)data;
+    public Object visit(Anonymous node, Object data)
+    {
+        ExpressionContext ctx = (ExpressionContext) data;
         String expr = node.name;
 
-        if (expr.startsWith("cflow(")) {
-            return null;//Boolean.TRUE;
-        } else {
+        if (expr.startsWith("cflow("))
+        {
+            return null; //Boolean.TRUE;
+        }
+        else
+        {
             Expression expression = null;
             ExpressionNamespace ns = ctx.getNamespace();
-            if (expr.startsWith("execution(")) {
-                expression = ns.createExecutionExpression(
-                        expr.substring(10, expr.length()-1),
-                        "",""
-                );
-            } else if (expr.startsWith("call(")) {
-                expression = ns.createCallExpression(
-                        expr.substring(5, expr.length()-1),
-                        "",""
-                );
-            } else if (expr.startsWith("set(")) {
-                expression = ns.createSetExpression(
-                        expr.substring(4, expr.length()-1),
-                        "",""
-                );
-            } else if (expr.startsWith("get(")) {
-                expression = ns.createGetExpression(
-                        expr.substring(4, expr.length()-1),
-                        "",""
-                );
-            } else if (expr.startsWith("class(")) {
-                expression = ns.createClassExpression(
-                        expr.substring(6, expr.length()-1),
-                        "",""
-                );
-            } else if (expr.startsWith("handler(")) {
-                expression = ns.createHandlerExpression(
-                        expr.substring(8, expr.length()-1),
-                        "",""
-                );
-            } else if (expr.startsWith("attribute(")) {
-                expression = ns.createAttributeExpression(
-                        expr.substring(10, expr.length()-1),
-                        ""
-                );
-            } else {
-                throw new RuntimeException("unknown anonymous: "+expr);
+
+            if (expr.startsWith("execution("))
+            {
+                expression = ns.createExecutionExpression(expr.substring(10,
+                            expr.length() - 1), "", "");
             }
-            if (expression.match(
-                    ctx.getClassMetaData(), ctx.getMemberMetaData(), ctx.getExceptionType(), ctx.getPointcutType())) {
+            else if (expr.startsWith("call("))
+            {
+                expression = ns.createCallExpression(expr.substring(5,
+                            expr.length() - 1), "", "");
+            }
+            else if (expr.startsWith("set("))
+            {
+                expression = ns.createSetExpression(expr.substring(4,
+                            expr.length() - 1), "", "");
+            }
+            else if (expr.startsWith("get("))
+            {
+                expression = ns.createGetExpression(expr.substring(4,
+                            expr.length() - 1), "", "");
+            }
+            else if (expr.startsWith("class("))
+            {
+                expression = ns.createClassExpression(expr.substring(6,
+                            expr.length() - 1), "", "");
+            }
+            else if (expr.startsWith("handler("))
+            {
+                expression = ns.createHandlerExpression(expr.substring(8,
+                            expr.length() - 1), "", "");
+            }
+            else if (expr.startsWith("attribute("))
+            {
+                expression = ns.createAttributeExpression(expr.substring(10,
+                            expr.length() - 1), "");
+            }
+            else
+            {
+                throw new RuntimeException("unknown anonymous: " + expr);
+            }
+
+            if (expression.match(ctx.getClassMetaData(),
+                    ctx.getMemberMetaData(), ctx.getExceptionType(),
+                    ctx.getPointcutType()))
+            {
                 return Boolean.TRUE;
-            } else {
+            }
+            else
+            {
                 return Boolean.FALSE;
             }
         }
     }
 
     //------------------------
-
 }

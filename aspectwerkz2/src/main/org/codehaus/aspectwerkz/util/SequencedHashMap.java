@@ -1,9 +1,10 @@
 package org.codehaus.aspectwerkz.util;
 
+
 /*
- * $Header: /home/projects/aspectwerkz/scm-cvs/aspectwerkz2/src/main/org/codehaus/aspectwerkz/util/SequencedHashMap.java,v 1.6 2004-02-23 07:51:27 jboner Exp $
- * $Revision: 1.6 $
- * $Date: 2004-02-23 07:51:27 $
+ * $Header: /home/projects/aspectwerkz/scm-cvs/aspectwerkz2/src/main/org/codehaus/aspectwerkz/util/SequencedHashMap.java,v 1.7 2004-06-02 14:05:34 jboner Exp $
+ * $Revision: 1.7 $
+ * $Date: 2004-06-02 14:05:34 $
  *
  * ====================================================================
  *
@@ -60,11 +61,11 @@ package org.codehaus.aspectwerkz.util;
  * <http://www.apache.org/>.
  *
  */
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
 import java.util.ArrayList;
@@ -94,95 +95,17 @@ import java.util.Set;
  * @author <a href="mailto:hps@intermeta.de">Henning P. Schmiedehausen</a>
  * @since 2.0
  */
-public class SequencedHashMap implements Map, Cloneable, Externalizable {
+public class SequencedHashMap implements Map, Cloneable, Externalizable
+{
+    // constants to define what the iterator should return on "next"
+    private static final int KEY = 0;
+    private static final int VALUE = 1;
+    private static final int ENTRY = 2;
+    private static final int REMOVED_MASK = 0x80000000;
 
-    /**
-     * {@link java.util.Map.Entry} that doubles as a node in the linked list of sequenced mappings.
-     */
-    private static class Entry implements Map.Entry {
-        // Note: This class cannot easily be made clonable.  While the actual
-        // implementation of a clone would be simple, defining the semantics is
-        // difficult.  If a shallow clone is implemented, then entry.next.prev !=
-        // entry, which is unintuitive and probably breaks all sorts of assumptions
-        // in code that uses this implementation.  If a deep clone is
-        // implementated, then what happens when the linked list is cyclical (as is
-        // the case with SequencedHashMap)?  It's impossible to know in the clone
-        // when to stop cloning, and thus you end up in a recursive loop,
-        // continuously cloning the "next" in the list.
-
-        private final Object key;
-        private Object value;
-
-        // package private to allow the SequencedHashMap to access and manipulate
-        // them.
-        Entry next = null;
-        Entry prev = null;
-
-        public Entry(Object key, Object value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        // per Map.Entry.getKey()
-        public Object getKey() {
-            return this.key;
-        }
-
-        // per Map.Entry.getValue()
-        public Object getValue() {
-            return this.value;
-        }
-
-        // per Map.Entry.setValue()
-        public Object setValue(Object value) {
-            Object oldValue = this.value;
-            this.value = value;
-            return oldValue;
-        }
-
-        public int hashCode() {
-            // implemented per api docs for Map.Entry.hashCode()
-            return ((getKey() == null ? 0 : getKey().hashCode()) ^
-                    (getValue() == null ? 0 : getValue().hashCode()));
-        }
-
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (obj == this) {
-                return true;
-            }
-            if (!(obj instanceof Map.Entry)) {
-                return false;
-            }
-
-            Map.Entry other = (Map.Entry)obj;
-
-            // implemented per api docs for Map.Entry.equals(Object)
-            return ((getKey() == null ?
-                     other.getKey() == null :
-                     getKey().equals(other.getKey())) &&
-                    (getValue() == null ?
-                     other.getValue() == null :
-                     getValue().equals(other.getValue())));
-        }
-
-        public String toString() {
-            return "[" + getKey() + '=' + getValue() + ']';
-        }
-    }
-
-    /**
-     * Construct an empty sentinel used to hold the head (sentinel.next) and the tail (sentinel.prev) of the list.  The
-     * sentinal has a <code>null</code> key and value.
-     */
-    private static final Entry createSentinel() {
-        Entry s = new Entry(null, null);
-        s.prev = s;
-        s.next = s;
-        return s;
-    }
+    // add a serial version uid, so that if we change things in the future
+    // without changing the format, we can still deserialize properly.
+    private static final long serialVersionUID = 3380552487888102930L;
 
     /**
      * Sentinel used to hold the head and tail of the list of entries.
@@ -204,7 +127,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
     /**
      * Construct a new sequenced hash map with default initial size and load factor.
      */
-    public SequencedHashMap() {
+    public SequencedHashMap()
+    {
         sentinel = createSentinel();
         entries = new HashMap();
     }
@@ -215,7 +139,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      * @param initialSize the initial size for the hash table
      * @see HashMap#HashMap(int)
      */
-    public SequencedHashMap(int initialSize) {
+    public SequencedHashMap(int initialSize)
+    {
         sentinel = createSentinel();
         entries = new HashMap(initialSize);
     }
@@ -227,7 +152,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      * @param loadFactor  the load factor for the hash table.
      * @see HashMap#HashMap(int,float)
      */
-    public SequencedHashMap(int initialSize, float loadFactor) {
+    public SequencedHashMap(int initialSize, float loadFactor)
+    {
         sentinel = createSentinel();
         entries = new HashMap(initialSize, loadFactor);
     }
@@ -236,15 +162,31 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      * Construct a new sequenced hash map and add all the elements in the specified map.  The order in which the
      * mappings in the specified map are added is defined by {@link #putAll(Map)}.
      */
-    public SequencedHashMap(Map m) {
+    public SequencedHashMap(Map m)
+    {
         this();
         putAll(m);
     }
 
     /**
+     * Construct an empty sentinel used to hold the head (sentinel.next) and the tail (sentinel.prev) of the list.  The
+     * sentinal has a <code>null</code> key and value.
+     */
+    private static final Entry createSentinel()
+    {
+        Entry s = new Entry(null, null);
+
+        s.prev = s;
+        s.next = s;
+
+        return s;
+    }
+
+    /**
      * Removes an internal entry from the linked list.  This does not remove it from the underlying map.
      */
-    private void removeEntry(Entry entry) {
+    private void removeEntry(Entry entry)
+    {
         entry.next.prev = entry.prev;
         entry.prev.next = entry.next;
     }
@@ -252,7 +194,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
     /**
      * Inserts a new internal entry to the tail of the linked list.  This does not add the entry to the underlying map.
      */
-    private void insertEntry(Entry entry) {
+    private void insertEntry(Entry entry)
+    {
         entry.next = sentinel;
         entry.prev = sentinel.prev;
         sentinel.prev.next = entry;
@@ -264,7 +207,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
     /**
      * Implements {@link Map#size()}.
      */
-    public int size() {
+    public int size()
+    {
         // use the underlying Map's size since size is not maintained here.
         return entries.size();
     }
@@ -272,7 +216,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
     /**
      * Implements {@link Map#isEmpty()}.
      */
-    public boolean isEmpty() {
+    public boolean isEmpty()
+    {
         // for quick check whether the map is entry, we can check the linked list
         // and see if there's anything in it.
         return sentinel.next == sentinel;
@@ -281,7 +226,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
     /**
      * Implements {@link Map#containsKey(Object)}.
      */
-    public boolean containsKey(Object key) {
+    public boolean containsKey(Object key)
+    {
         // pass on to underlying map implementation
         return entries.containsKey(key);
     }
@@ -289,39 +235,49 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
     /**
      * Implements {@link Map#containsValue(Object)}.
      */
-    public boolean containsValue(Object value) {
+    public boolean containsValue(Object value)
+    {
         // unfortunately, we cannot just pass this call to the underlying map
         // because we are mapping keys to entries, not keys to values.  The
         // underlying map doesn't have an efficient implementation anyway, so this
         // isn't a big deal.
-
         // do null comparison outside loop so we only need to do it once.  This
         // provides a tighter, more efficient loop at the expense of slight
         // code duplication.
-        if (value == null) {
-            for (Entry pos = sentinel.next; pos != sentinel; pos = pos.next) {
-                if (pos.getValue() == null) {
+        if (value == null)
+        {
+            for (Entry pos = sentinel.next; pos != sentinel; pos = pos.next)
+            {
+                if (pos.getValue() == null)
+                {
                     return true;
                 }
             }
         }
-        else {
-            for (Entry pos = sentinel.next; pos != sentinel; pos = pos.next) {
-                if (value.equals(pos.getValue())) {
+        else
+        {
+            for (Entry pos = sentinel.next; pos != sentinel; pos = pos.next)
+            {
+                if (value.equals(pos.getValue()))
+                {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
     /**
      * Implements {@link Map#get(Object)}.
      */
-    public Object get(Object o) {
+    public Object get(Object o)
+    {
         // find entry for the specified key object
-        Entry entry = (Entry)entries.get(o);
-        if (entry == null) {
+        Entry entry = (Entry) entries.get(o);
+
+        if (entry == null)
+        {
             return null;
         }
 
@@ -335,7 +291,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      *
      * @return The first entry in the sequence, or <code>null</code> if the map is empty.
      */
-    public Map.Entry getFirst() {
+    public Map.Entry getFirst()
+    {
         // sentinel.next points to the "first" element of the sequence -- the head
         // of the list, which is exactly the entry we need to return.  We must test
         // for an empty list though because we don't want to return the sentinel!
@@ -349,7 +306,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      *
      * @return The first key in the sequence, or <code>null</code> if the map is empty.
      */
-    public Object getFirstKey() {
+    public Object getFirstKey()
+    {
         // sentinel.next points to the "first" element of the sequence -- the head
         // of the list -- and the requisite key is returned from it.  An empty list
         // does not need to be tested.  In cases where the list is empty,
@@ -366,7 +324,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      *
      * @return The first value in the sequence, or <code>null</code> if the map is empty.
      */
-    public Object getFirstValue() {
+    public Object getFirstValue()
+    {
         // sentinel.next points to the "first" element of the sequence -- the head
         // of the list -- and the requisite value is returned from it.  An empty
         // list does not need to be tested.  In cases where the list is empty,
@@ -393,7 +352,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      *
      * @return The last entry in the sequence, or <code>null</code> if the map is empty.
      */
-    public Map.Entry getLast() {
+    public Map.Entry getLast()
+    {
         // sentinel.prev points to the "last" element of the sequence -- the tail
         // of the list, which is exactly the entry we need to return.  We must test
         // for an empty list though because we don't want to return the sentinel!
@@ -407,7 +367,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      *
      * @return The last key in the sequence, or <code>null</code> if the map is empty.
      */
-    public Object getLastKey() {
+    public Object getLastKey()
+    {
         // sentinel.prev points to the "last" element of the sequence -- the tail
         // of the list -- and the requisite key is returned from it.  An empty list
         // does not need to be tested.  In cases where the list is empty,
@@ -424,7 +385,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      *
      * @return The last value in the sequence, or <code>null</code> if the map is empty.
      */
-    public Object getLastValue() {
+    public Object getLastValue()
+    {
         // sentinel.prev points to the "last" element of the sequence -- the tail
         // of the list -- and the requisite value is returned from it.  An empty
         // list does not need to be tested.  In cases where the list is empty,
@@ -437,16 +399,18 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
     /**
      * Implements {@link Map#put(Object, Object)}.
      */
-    public Object put(Object key, Object value) {
+    public Object put(Object key, Object value)
+    {
         modCount++;
 
         Object oldValue = null;
 
         // lookup the entry for the specified key
-        Entry e = (Entry)entries.get(key);
+        Entry e = (Entry) entries.get(key);
 
         // check to see if it already exists
-        if (e != null) {
+        if (e != null)
+        {
             // remove from list so the entry gets "moved" to the end of list
             removeEntry(e);
 
@@ -459,13 +423,14 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
             // someone does not implement their hashCode() and/or equals(Object)
             // method properly and then use it as a key in this map.
         }
-        else {
+        else
+        {
             // add new entry
             e = new Entry(key, value);
             entries.put(key, e);
         }
-        // assert(entry in map, but not list)
 
+        // assert(entry in map, but not list)
         // add to list
         insertEntry(e);
 
@@ -475,8 +440,10 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
     /**
      * Implements {@link Map#remove(Object)}.
      */
-    public Object remove(Object key) {
+    public Object remove(Object key)
+    {
         Entry e = removeImpl(key);
+
         return (e == null) ? null : e.getValue();
     }
 
@@ -484,13 +451,18 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      * Fully remove an entry from the map, returning the old entry or null if there was no such entry with the specified
      * key.
      */
-    private Entry removeImpl(Object key) {
-        Entry e = (Entry)entries.remove(key);
-        if (e == null) {
+    private Entry removeImpl(Object key)
+    {
+        Entry e = (Entry) entries.remove(key);
+
+        if (e == null)
+        {
             return null;
         }
+
         modCount++;
         removeEntry(e);
+
         return e;
     }
 
@@ -502,10 +474,14 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      * @param t the mappings that should be added to this map.
      * @throws NullPointerException if <code>t</code> is <code>null</code>
      */
-    public void putAll(Map t) {
+    public void putAll(Map t)
+    {
         Iterator iter = t.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry)iter.next();
+
+        while (iter.hasNext())
+        {
+            Map.Entry entry = (Map.Entry) iter.next();
+
             put(entry.getKey(), entry.getValue());
         }
     }
@@ -513,7 +489,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
     /**
      * Implements {@link Map#clear()}.
      */
-    public void clear() {
+    public void clear()
+    {
         modCount++;
 
         // remove all from the underlying map
@@ -527,25 +504,31 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
     /**
      * Implements {@link Map#equals(Object)}.
      */
-    public boolean equals(Object obj) {
-        if (obj == null) {
+    public boolean equals(Object obj)
+    {
+        if (obj == null)
+        {
             return false;
         }
-        if (obj == this) {
+
+        if (obj == this)
+        {
             return true;
         }
 
-        if (!(obj instanceof Map)) {
+        if (!(obj instanceof Map))
+        {
             return false;
         }
 
-        return entrySet().equals(((Map)obj).entrySet());
+        return entrySet().equals(((Map) obj).entrySet());
     }
 
     /**
      * Implements {@link Map#hashCode()}.
      */
-    public int hashCode() {
+    public int hashCode()
+    {
         return entrySet().hashCode();
     }
 
@@ -555,17 +538,24 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
      * required, use {@link #entrySet()}.{@link Set#iterator() iterator()} and iterate over the entries in the map
      * formatting them as appropriate.
      */
-    public String toString() {
+    public String toString()
+    {
         StringBuffer buf = new StringBuffer();
+
         buf.append('[');
-        for (Entry pos = sentinel.next; pos != sentinel; pos = pos.next) {
+
+        for (Entry pos = sentinel.next; pos != sentinel; pos = pos.next)
+        {
             buf.append(pos.getKey());
             buf.append('=');
             buf.append(pos.getValue());
-            if (pos.next != sentinel) {
+
+            if (pos.next != sentinel)
+            {
                 buf.append(',');
             }
         }
+
         buf.append(']');
 
         return buf.toString();
@@ -574,156 +564,489 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
     /**
      * Implements {@link Map#keySet()}.
      */
-    public Set keySet() {
-        return new AbstractSet() {
+    public Set keySet()
+    {
+        return new AbstractSet()
+            {
+                // required impls
+                public Iterator iterator()
+                {
+                    return new OrderedIterator(KEY);
+                }
 
-            // required impls
-            public Iterator iterator() {
-                return new OrderedIterator(KEY);
-            }
+                public boolean remove(Object o)
+                {
+                    Entry e = SequencedHashMap.this.removeImpl(o);
 
-            public boolean remove(Object o) {
-                Entry e = SequencedHashMap.this.removeImpl(o);
-                return (e != null);
-            }
+                    return (e != null);
+                }
 
-            // more efficient impls than abstract set
-            public void clear() {
-                SequencedHashMap.this.clear();
-            }
+                // more efficient impls than abstract set
+                public void clear()
+                {
+                    SequencedHashMap.this.clear();
+                }
 
-            public int size() {
-                return SequencedHashMap.this.size();
-            }
+                public int size()
+                {
+                    return SequencedHashMap.this.size();
+                }
 
-            public boolean isEmpty() {
-                return SequencedHashMap.this.isEmpty();
-            }
+                public boolean isEmpty()
+                {
+                    return SequencedHashMap.this.isEmpty();
+                }
 
-            public boolean contains(Object o) {
-                return SequencedHashMap.this.containsKey(o);
-            }
-
-        };
+                public boolean contains(Object o)
+                {
+                    return SequencedHashMap.this.containsKey(o);
+                }
+            };
     }
 
     /**
      * Implements {@link Map#values()}.
      */
-    public Collection values() {
-        return new AbstractCollection() {
-            // required impl
-            public Iterator iterator() {
-                return new OrderedIterator(VALUE);
-            }
-
-            public boolean remove(Object value) {
-                // do null comparison outside loop so we only need to do it once.  This
-                // provides a tighter, more efficient loop at the expense of slight
-                // code duplication.
-                if (value == null) {
-                    for (Entry pos = sentinel.next; pos != sentinel; pos = pos.next) {
-                        if (pos.getValue() == null) {
-                            SequencedHashMap.this.removeImpl(pos.getKey());
-                            return true;
-                        }
-                    }
-                }
-                else {
-                    for (Entry pos = sentinel.next; pos != sentinel; pos = pos.next) {
-                        if (value.equals(pos.getValue())) {
-                            SequencedHashMap.this.removeImpl(pos.getKey());
-                            return true;
-                        }
-                    }
+    public Collection values()
+    {
+        return new AbstractCollection()
+            {
+                // required impl
+                public Iterator iterator()
+                {
+                    return new OrderedIterator(VALUE);
                 }
 
-                return false;
-            }
+                public boolean remove(Object value)
+                {
+                    // do null comparison outside loop so we only need to do it once.  This
+                    // provides a tighter, more efficient loop at the expense of slight
+                    // code duplication.
+                    if (value == null)
+                    {
+                        for (Entry pos = sentinel.next; pos != sentinel;
+                            pos = pos.next)
+                        {
+                            if (pos.getValue() == null)
+                            {
+                                SequencedHashMap.this.removeImpl(pos.getKey());
 
-            // more efficient impls than abstract collection
-            public void clear() {
-                SequencedHashMap.this.clear();
-            }
+                                return true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (Entry pos = sentinel.next; pos != sentinel;
+                            pos = pos.next)
+                        {
+                            if (value.equals(pos.getValue()))
+                            {
+                                SequencedHashMap.this.removeImpl(pos.getKey());
 
-            public int size() {
-                return SequencedHashMap.this.size();
-            }
+                                return true;
+                            }
+                        }
+                    }
 
-            public boolean isEmpty() {
-                return SequencedHashMap.this.isEmpty();
-            }
+                    return false;
+                }
 
-            public boolean contains(Object o) {
-                return SequencedHashMap.this.containsValue(o);
-            }
-        };
+                // more efficient impls than abstract collection
+                public void clear()
+                {
+                    SequencedHashMap.this.clear();
+                }
+
+                public int size()
+                {
+                    return SequencedHashMap.this.size();
+                }
+
+                public boolean isEmpty()
+                {
+                    return SequencedHashMap.this.isEmpty();
+                }
+
+                public boolean contains(Object o)
+                {
+                    return SequencedHashMap.this.containsValue(o);
+                }
+            };
     }
 
     /**
      * Implements {@link Map#entrySet()}.
      */
-    public Set entrySet() {
-        return new AbstractSet() {
-            // helper
-            private Entry findEntry(Object o) {
-                if (o == null) {
-                    return null;
-                }
-                if (!(o instanceof Map.Entry)) {
-                    return null;
-                }
+    public Set entrySet()
+    {
+        return new AbstractSet()
+            {
+                // helper
+                private Entry findEntry(Object o)
+                {
+                    if (o == null)
+                    {
+                        return null;
+                    }
 
-                Map.Entry e = (Map.Entry)o;
-                Entry entry = (Entry)entries.get(e.getKey());
-                if (entry != null && entry.equals(e)) {
-                    return entry;
-                }
-                else {
-                    return null;
-                }
-            }
+                    if (!(o instanceof Map.Entry))
+                    {
+                        return null;
+                    }
 
-            // required impl
-            public Iterator iterator() {
-                return new OrderedIterator(ENTRY);
-            }
+                    Map.Entry e = (Map.Entry) o;
+                    Entry entry = (Entry) entries.get(e.getKey());
 
-            public boolean remove(Object o) {
-                Entry e = findEntry(o);
-                if (e == null) {
-                    return false;
+                    if ((entry != null) && entry.equals(e))
+                    {
+                        return entry;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
 
-                return SequencedHashMap.this.removeImpl(e.getKey()) != null;
-            }
+                // required impl
+                public Iterator iterator()
+                {
+                    return new OrderedIterator(ENTRY);
+                }
 
-            // more efficient impls than abstract collection
-            public void clear() {
-                SequencedHashMap.this.clear();
-            }
+                public boolean remove(Object o)
+                {
+                    Entry e = findEntry(o);
 
-            public int size() {
-                return SequencedHashMap.this.size();
-            }
+                    if (e == null)
+                    {
+                        return false;
+                    }
 
-            public boolean isEmpty() {
-                return SequencedHashMap.this.isEmpty();
-            }
+                    return SequencedHashMap.this.removeImpl(e.getKey()) != null;
+                }
 
-            public boolean contains(Object o) {
-                return findEntry(o) != null;
-            }
-        };
+                // more efficient impls than abstract collection
+                public void clear()
+                {
+                    SequencedHashMap.this.clear();
+                }
+
+                public int size()
+                {
+                    return SequencedHashMap.this.size();
+                }
+
+                public boolean isEmpty()
+                {
+                    return SequencedHashMap.this.isEmpty();
+                }
+
+                public boolean contains(Object o)
+                {
+                    return findEntry(o) != null;
+                }
+            };
     }
 
-    // constants to define what the iterator should return on "next"
-    private static final int KEY = 0;
-    private static final int VALUE = 1;
-    private static final int ENTRY = 2;
-    private static final int REMOVED_MASK = 0x80000000;
+    // APIs maintained from previous version of SequencedHashMap for backwards
+    // compatibility
 
-    private class OrderedIterator implements Iterator {
+    /**
+     * Creates a shallow copy of this object, preserving the internal structure by copying only references.  The keys
+     * and values themselves are not <code>clone()</code>'d.  The cloned object maintains the same sequence.
+     *
+     * @return A clone of this instance.
+     * @throws CloneNotSupportedException if clone is not supported by a subclass.
+     */
+    public Object clone() throws CloneNotSupportedException
+    {
+        // yes, calling super.clone() silly since we're just blowing away all
+        // the stuff that super might be doing anyway, but for motivations on
+        // this, see:
+        // http://www.javaworld.com/javaworld/jw-01-1999/jw-01-object.html
+        SequencedHashMap map = (SequencedHashMap) super.clone();
+
+        // create new, empty sentinel
+        map.sentinel = createSentinel();
+
+        // create a new, empty entry map
+        // note: this does not preserve the initial capacity and load factor.
+        map.entries = new HashMap();
+
+        // add all the mappings
+        map.putAll(this);
+
+        // Note: We cannot just clone the hashmap and sentinel because we must
+        // duplicate our internal structures.  Cloning those two will not clone all
+        // the other entries they reference, and so the cloned hash map will not be
+        // able to maintain internal consistency because there are two objects with
+        // the same entries.  See discussion in the Entry implementation on why we
+        // cannot implement a clone of the Entry (and thus why we need to recreate
+        // everything).
+        return map;
+    }
+
+    /**
+     * Returns the Map.Entry at the specified index
+     *
+     * @throws ArrayIndexOutOfBoundsException if the specified index is <code>&lt; 0</code> or <code>&gt;</code> the
+     *                                        size of the map.
+     */
+    private Map.Entry getEntry(int index)
+    {
+        Entry pos = sentinel;
+
+        if (index < 0)
+        {
+            throw new ArrayIndexOutOfBoundsException(index + " < 0");
+        }
+
+        // loop to one before the position
+        int i = -1;
+
+        while ((i < (index - 1)) && (pos.next != sentinel))
+        {
+            i++;
+            pos = pos.next;
+        }
+
+        // pos.next is the requested position
+        // if sentinel is next, past end of list
+        if (pos.next == sentinel)
+        {
+            throw new ArrayIndexOutOfBoundsException(index + " >= " + (i + 1));
+        }
+
+        return pos.next;
+    }
+
+    /**
+     * Returns the key at the specified index.
+     *
+     * @throws ArrayIndexOutOfBoundsException if the <code>index</code> is <code>&lt; 0</code> or <code>&gt;</code> the
+     *                                        size of the map.
+     */
+    public Object get(int index)
+    {
+        return getEntry(index).getKey();
+    }
+
+    /**
+     * Returns the value at the specified index.
+     *
+     * @throws ArrayIndexOutOfBoundsException if the <code>index</code> is <code>&lt; 0</code> or <code>&gt;</code> the
+     *                                        size of the map.
+     */
+    public Object getValue(int index)
+    {
+        return getEntry(index).getValue();
+    }
+
+    /**
+     * Returns the index of the specified key.
+     */
+    public int indexOf(Object key)
+    {
+        Entry e = (Entry) entries.get(key);
+        int pos = 0;
+
+        while (e.prev != sentinel)
+        {
+            pos++;
+            e = e.prev;
+        }
+
+        return pos;
+    }
+
+    /**
+     * Returns a key iterator.
+     */
+    public Iterator iterator()
+    {
+        return keySet().iterator();
+    }
+
+    /**
+     * Returns the last index of the specified key.
+     */
+    public int lastIndexOf(Object key)
+    {
+        // keys in a map are guarunteed to be unique
+        return indexOf(key);
+    }
+
+    /**
+     * Returns a List view of the keys rather than a set view.  The returned list is unmodifiable.  This is required
+     * because changes to the values of the list (using {@link java.util.ListIterator#set(Object)}) will effectively
+     * remove the value from the list and reinsert that value at the end of the list, which is an unexpected side effect
+     * of changing the value of a list.  This occurs because changing the key, changes when the mapping is added to the
+     * map and thus where it appears in the list.
+     * <p/>
+     * <P>An alternative to this method is to use {@link #keySet()}
+     *
+     * @return The ordered list of keys.
+     * @see #keySet()
+     */
+    public List sequence()
+    {
+        List l = new ArrayList(size());
+        Iterator iter = keySet().iterator();
+
+        while (iter.hasNext())
+        {
+            l.add(iter.next());
+        }
+
+        return Collections.unmodifiableList(l);
+    }
+
+    /**
+     * Removes the element at the specified index.
+     *
+     * @param index The index of the object to remove.
+     * @return The previous value coressponding the <code>key</code>, or <code>null</code> if none existed.
+     * @throws ArrayIndexOutOfBoundsException if the <code>index</code> is <code>&lt; 0</code> or <code>&gt;</code> the
+     *                                        size of the map.
+     */
+    public Object remove(int index)
+    {
+        return remove(get(index));
+    }
+
+    // per Externalizable.readExternal(ObjectInput)
+
+    /**
+     * Deserializes this map from the given stream.
+     *
+     * @param in the stream to deserialize from
+     * @throws IOException            if the stream raises it
+     * @throws ClassNotFoundException if the stream raises it
+     */
+    public void readExternal(ObjectInput in)
+        throws IOException, ClassNotFoundException
+    {
+        int size = in.readInt();
+
+        for (int i = 0; i < size; i++)
+        {
+            Object key = in.readObject();
+            Object value = in.readObject();
+
+            put(key, value);
+        }
+    }
+
+    /**
+     * Serializes this map to the given stream.
+     *
+     * @param out the stream to serialize to
+     * @throws IOException if the stream raises it
+     */
+    public void writeExternal(ObjectOutput out)
+        throws IOException
+    {
+        out.writeInt(size());
+
+        for (Entry pos = sentinel.next; pos != sentinel; pos = pos.next)
+        {
+            out.writeObject(pos.getKey());
+            out.writeObject(pos.getValue());
+        }
+    }
+
+    /**
+     * {@link java.util.Map.Entry} that doubles as a node in the linked list of sequenced mappings.
+     */
+    private static class Entry implements Map.Entry
+    {
+        // Note: This class cannot easily be made clonable.  While the actual
+        // implementation of a clone would be simple, defining the semantics is
+        // difficult.  If a shallow clone is implemented, then entry.next.prev !=
+        // entry, which is unintuitive and probably breaks all sorts of assumptions
+        // in code that uses this implementation.  If a deep clone is
+        // implementated, then what happens when the linked list is cyclical (as is
+        // the case with SequencedHashMap)?  It's impossible to know in the clone
+        // when to stop cloning, and thus you end up in a recursive loop,
+        // continuously cloning the "next" in the list.
+        private final Object key;
+        private Object value;
+
+        // package private to allow the SequencedHashMap to access and manipulate
+        // them.
+        Entry next = null;
+        Entry prev = null;
+
+        public Entry(Object key, Object value)
+        {
+            this.key = key;
+            this.value = value;
+        }
+
+        // per Map.Entry.getKey()
+        public Object getKey()
+        {
+            return this.key;
+        }
+
+        // per Map.Entry.getValue()
+        public Object getValue()
+        {
+            return this.value;
+        }
+
+        // per Map.Entry.setValue()
+        public Object setValue(Object value)
+        {
+            Object oldValue = this.value;
+
+            this.value = value;
+
+            return oldValue;
+        }
+
+        public int hashCode()
+        {
+            // implemented per api docs for Map.Entry.hashCode()
+            return (((getKey() == null) ? 0 : getKey().hashCode())
+            ^ ((getValue() == null) ? 0 : getValue().hashCode()));
+        }
+
+        public boolean equals(Object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            if (obj == this)
+            {
+                return true;
+            }
+
+            if (!(obj instanceof Map.Entry))
+            {
+                return false;
+            }
+
+            Map.Entry other = (Map.Entry) obj;
+
+            // implemented per api docs for Map.Entry.equals(Object)
+            return (((getKey() == null) ? (other.getKey() == null)
+                                        : getKey().equals(other.getKey()))
+            && ((getValue() == null) ? (other.getValue() == null)
+                                     : getValue().equals(other.getValue())));
+        }
+
+        public String toString()
+        {
+            return "[" + getKey() + '=' + getValue() + ']';
+        }
+    }
+
+    private class OrderedIterator implements Iterator
+    {
         /**
          * Holds the type that should be returned from the iterator.  The value should be either {@link #KEY}, {@link
          * #VALUE}, or {@link #ENTRY}.  To save a tiny bit of memory, this field is also used as a marker for when
@@ -750,7 +1073,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
          * method returns the type specified by <code>returnType</code> which must be either {@link #KEY}, {@link
          * #VALUE}, or {@link #ENTRY}.
          */
-        public OrderedIterator(int returnType) {
+        public OrderedIterator(int returnType)
+        {
             //// Since this is a private inner class, nothing else should have
             //// access to the constructor.  Since we know the rest of the outer
             //// class uses the iterator correctly, we can leave of the following
@@ -758,7 +1082,6 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
             //if(returnType >= 0 && returnType <= 2) {
             //  throw new IllegalArgumentException("Invalid iterator type");
             //}
-
             // Set the "removed" bit so that the iterator starts in a state where
             // "next" must be called before "remove" will succeed.
             this.returnType = returnType | REMOVED_MASK;
@@ -770,7 +1093,8 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
          * @return <code>true</code> if there are more elements left to be returned from the iterator;
          *         <code>false</code> otherwise.
          */
-        public boolean hasNext() {
+        public boolean hasNext()
+        {
             return pos.next != sentinel;
         }
 
@@ -782,11 +1106,15 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
          * @throws ConcurrentModificationException
          *                                if a modification occurs in the underlying map.
          */
-        public Object next() {
-            if (modCount != expectedModCount) {
+        public Object next()
+        {
+            if (modCount != expectedModCount)
+            {
                 throw new ConcurrentModificationException();
             }
-            if (pos.next == sentinel) {
+
+            if (pos.next == sentinel)
+            {
                 throw new NoSuchElementException();
             }
 
@@ -794,18 +1122,23 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
             returnType = returnType & ~REMOVED_MASK;
 
             pos = pos.next;
-            switch (returnType) {
-                case KEY:
-                    return pos.getKey();
-                case VALUE:
-                    return pos.getValue();
-                case ENTRY:
-                    return pos;
-                default:
-                    // should never happen
-                    throw new Error("bad iterator type: " + returnType);
-            }
 
+            switch (returnType)
+            {
+            case KEY:
+                return pos.getKey();
+
+            case VALUE:
+                return pos.getValue();
+
+            case ENTRY:
+                return pos;
+
+            default:
+
+                // should never happen
+                throw new Error("bad iterator type: " + returnType);
+            }
         }
 
         /**
@@ -816,11 +1149,15 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
          * @throws ConcurrentModificationException
          *                               if a modification occurs in the underlying map.
          */
-        public void remove() {
-            if ((returnType & REMOVED_MASK) != 0) {
+        public void remove()
+        {
+            if ((returnType & REMOVED_MASK) != 0)
+            {
                 throw new IllegalStateException("remove() must follow next()");
             }
-            if (modCount != expectedModCount) {
+
+            if (modCount != expectedModCount)
+            {
                 throw new ConcurrentModificationException();
             }
 
@@ -833,191 +1170,4 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
             returnType = returnType | REMOVED_MASK;
         }
     }
-
-    // APIs maintained from previous version of SequencedHashMap for backwards
-    // compatibility
-
-    /**
-     * Creates a shallow copy of this object, preserving the internal structure by copying only references.  The keys
-     * and values themselves are not <code>clone()</code>'d.  The cloned object maintains the same sequence.
-     *
-     * @return A clone of this instance.
-     * @throws CloneNotSupportedException if clone is not supported by a subclass.
-     */
-    public Object clone() throws CloneNotSupportedException {
-        // yes, calling super.clone() silly since we're just blowing away all
-        // the stuff that super might be doing anyway, but for motivations on
-        // this, see:
-        // http://www.javaworld.com/javaworld/jw-01-1999/jw-01-object.html
-        SequencedHashMap map = (SequencedHashMap)super.clone();
-
-        // create new, empty sentinel
-        map.sentinel = createSentinel();
-
-        // create a new, empty entry map
-        // note: this does not preserve the initial capacity and load factor.
-        map.entries = new HashMap();
-
-        // add all the mappings
-        map.putAll(this);
-
-        // Note: We cannot just clone the hashmap and sentinel because we must
-        // duplicate our internal structures.  Cloning those two will not clone all
-        // the other entries they reference, and so the cloned hash map will not be
-        // able to maintain internal consistency because there are two objects with
-        // the same entries.  See discussion in the Entry implementation on why we
-        // cannot implement a clone of the Entry (and thus why we need to recreate
-        // everything).
-
-        return map;
-    }
-
-    /**
-     * Returns the Map.Entry at the specified index
-     *
-     * @throws ArrayIndexOutOfBoundsException if the specified index is <code>&lt; 0</code> or <code>&gt;</code> the
-     *                                        size of the map.
-     */
-    private Map.Entry getEntry(int index) {
-        Entry pos = sentinel;
-
-        if (index < 0) {
-            throw new ArrayIndexOutOfBoundsException(index + " < 0");
-        }
-
-        // loop to one before the position
-        int i = -1;
-        while (i < (index - 1) && pos.next != sentinel) {
-            i++;
-            pos = pos.next;
-        }
-        // pos.next is the requested position
-
-        // if sentinel is next, past end of list
-        if (pos.next == sentinel) {
-            throw new ArrayIndexOutOfBoundsException(index + " >= " + (i + 1));
-        }
-
-        return pos.next;
-    }
-
-    /**
-     * Returns the key at the specified index.
-     *
-     * @throws ArrayIndexOutOfBoundsException if the <code>index</code> is <code>&lt; 0</code> or <code>&gt;</code> the
-     *                                        size of the map.
-     */
-    public Object get(int index) {
-        return getEntry(index).getKey();
-    }
-
-    /**
-     * Returns the value at the specified index.
-     *
-     * @throws ArrayIndexOutOfBoundsException if the <code>index</code> is <code>&lt; 0</code> or <code>&gt;</code> the
-     *                                        size of the map.
-     */
-    public Object getValue(int index) {
-        return getEntry(index).getValue();
-    }
-
-    /**
-     * Returns the index of the specified key.
-     */
-    public int indexOf(Object key) {
-        Entry e = (Entry)entries.get(key);
-        int pos = 0;
-        while (e.prev != sentinel) {
-            pos++;
-            e = e.prev;
-        }
-        return pos;
-    }
-
-    /**
-     * Returns a key iterator.
-     */
-    public Iterator iterator() {
-        return keySet().iterator();
-    }
-
-    /**
-     * Returns the last index of the specified key.
-     */
-    public int lastIndexOf(Object key) {
-        // keys in a map are guarunteed to be unique
-        return indexOf(key);
-    }
-
-    /**
-     * Returns a List view of the keys rather than a set view.  The returned list is unmodifiable.  This is required
-     * because changes to the values of the list (using {@link java.util.ListIterator#set(Object)}) will effectively
-     * remove the value from the list and reinsert that value at the end of the list, which is an unexpected side effect
-     * of changing the value of a list.  This occurs because changing the key, changes when the mapping is added to the
-     * map and thus where it appears in the list.
-     * <p/>
-     * <P>An alternative to this method is to use {@link #keySet()}
-     *
-     * @return The ordered list of keys.
-     * @see #keySet()
-     */
-    public List sequence() {
-        List l = new ArrayList(size());
-        Iterator iter = keySet().iterator();
-        while (iter.hasNext()) {
-            l.add(iter.next());
-        }
-
-        return Collections.unmodifiableList(l);
-    }
-
-    /**
-     * Removes the element at the specified index.
-     *
-     * @param index The index of the object to remove.
-     * @return The previous value coressponding the <code>key</code>, or <code>null</code> if none existed.
-     * @throws ArrayIndexOutOfBoundsException if the <code>index</code> is <code>&lt; 0</code> or <code>&gt;</code> the
-     *                                        size of the map.
-     */
-    public Object remove(int index) {
-        return remove(get(index));
-    }
-
-    // per Externalizable.readExternal(ObjectInput)
-
-    /**
-     * Deserializes this map from the given stream.
-     *
-     * @param in the stream to deserialize from
-     * @throws IOException            if the stream raises it
-     * @throws ClassNotFoundException if the stream raises it
-     */
-    public void readExternal(ObjectInput in)
-            throws IOException, ClassNotFoundException {
-        int size = in.readInt();
-        for (int i = 0; i < size; i++) {
-            Object key = in.readObject();
-            Object value = in.readObject();
-            put(key, value);
-        }
-    }
-
-    /**
-     * Serializes this map to the given stream.
-     *
-     * @param out the stream to serialize to
-     * @throws IOException if the stream raises it
-     */
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(size());
-        for (Entry pos = sentinel.next; pos != sentinel; pos = pos.next) {
-            out.writeObject(pos.getKey());
-            out.writeObject(pos.getValue());
-        }
-    }
-
-    // add a serial version uid, so that if we change things in the future
-    // without changing the format, we can still deserialize properly.
-    private static final long serialVersionUID = 3380552487888102930L;
-
 }

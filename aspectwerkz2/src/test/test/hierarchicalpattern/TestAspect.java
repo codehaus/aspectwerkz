@@ -7,20 +7,22 @@
  **************************************************************************************/
 package test.hierarchicalpattern;
 
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+
 import test.Loggable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect
  */
-public class TestAspect {
-
+public class TestAspect
+{
     /**
      * @Expression execution(* test.hierarchicalpattern.DummyInterface1+.testMethod1(..))
      */
     Pointcut pc1;
+
     /**
      * @Expression execution(* test.hierarchicalpattern.DummyInterface2+.testMethod2(..))
      */
@@ -29,10 +31,15 @@ public class TestAspect {
     /**
      * @Around pc1 || pc2
      */
-    public Object advice(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
+    public Object advice(final JoinPoint joinPoint)
+        throws Throwable
+    {
+        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
+
+        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+
         return result;
     }
 }

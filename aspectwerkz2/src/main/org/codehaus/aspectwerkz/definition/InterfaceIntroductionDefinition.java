@@ -7,10 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
+import org.codehaus.aspectwerkz.definition.expression.Expression;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
  * Holds the meta-data for the interface introductions. <p/>This definition holds only pure interface introduction.
@@ -19,8 +19,8 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class InterfaceIntroductionDefinition {
-
+public class InterfaceIntroductionDefinition
+{
     /**
      * The name of the interface introduction.
      */
@@ -48,18 +48,23 @@ public class InterfaceIntroductionDefinition {
      * @param expression         the expression
      * @param interfaceClassName the class name of the interface
      */
-    public InterfaceIntroductionDefinition(
-            final String name,
-            final Expression expression,
-            final String interfaceClassName) {
-        if (name == null) {
+    public InterfaceIntroductionDefinition(final String name,
+        final Expression expression, final String interfaceClassName)
+    {
+        if (name == null)
+        {
             throw new IllegalArgumentException("name can not be null");
         }
-        if (expression == null) {
+
+        if (expression == null)
+        {
             throw new IllegalArgumentException("expression can not be null");
         }
-        if (interfaceClassName == null) {
-            throw new IllegalArgumentException("interface class name can not be null");
+
+        if (interfaceClassName == null)
+        {
+            throw new IllegalArgumentException(
+                "interface class name can not be null");
         }
 
         m_name = name;
@@ -73,7 +78,8 @@ public class InterfaceIntroductionDefinition {
      *
      * @return the name
      */
-    public String getName() {
+    public String getName()
+    {
         return m_name;
     }
 
@@ -82,7 +88,8 @@ public class InterfaceIntroductionDefinition {
      *
      * @return the expressions array
      */
-    public Expression[] getExpressions() {
+    public Expression[] getExpressions()
+    {
         return m_expressions;
     }
 
@@ -91,8 +98,9 @@ public class InterfaceIntroductionDefinition {
      *
      * @return the class name of the interface
      */
-    public String getInterfaceClassName() {
-        return (String)m_interfaceClassNames.get(0);
+    public String getInterfaceClassName()
+    {
+        return (String) m_interfaceClassNames.get(0);
     }
 
     /**
@@ -100,7 +108,8 @@ public class InterfaceIntroductionDefinition {
      *
      * @return the class name of the interface
      */
-    public List getInterfaceClassNames() {
+    public List getInterfaceClassNames()
+    {
         return m_interfaceClassNames;
     }
 
@@ -109,7 +118,8 @@ public class InterfaceIntroductionDefinition {
      *
      * @return the attribute
      */
-    public String getAttribute() {
+    public String getAttribute()
+    {
         return m_attribute;
     }
 
@@ -118,23 +128,36 @@ public class InterfaceIntroductionDefinition {
      *
      * @param attribute the attribute
      */
-    public void setAttribute(final String attribute) {
+    public void setAttribute(final String attribute)
+    {
         m_attribute = attribute;
     }
 
-    public void addExpression(Expression expression) {
-        final Expression[] tmpExpressions = new Expression[m_expressions.length + 1];
-        java.lang.System.arraycopy(m_expressions, 0, tmpExpressions, 0, m_expressions.length);
+    public void addExpression(Expression expression)
+    {
+        final Expression[] tmpExpressions = new Expression[m_expressions.length
+            + 1];
+
+        java.lang.System.arraycopy(m_expressions, 0, tmpExpressions, 0,
+            m_expressions.length);
         tmpExpressions[m_expressions.length] = expression;
         m_expressions = new Expression[m_expressions.length + 1];
-        java.lang.System.arraycopy(tmpExpressions, 0, m_expressions, 0, tmpExpressions.length);
+        java.lang.System.arraycopy(tmpExpressions, 0, m_expressions, 0,
+            tmpExpressions.length);
     }
 
-    public void addExpressions(Expression[] expressions) {
-        final Expression[] tmpExpressions = new Expression[m_expressions.length + expressions.length];
-        java.lang.System.arraycopy(m_expressions, 0, tmpExpressions, 0, m_expressions.length);
-        java.lang.System.arraycopy(expressions, 0, tmpExpressions, m_expressions.length, expressions.length);
-        m_expressions = new Expression[m_expressions.length + expressions.length];
-        java.lang.System.arraycopy(tmpExpressions, 0, m_expressions, 0, tmpExpressions.length);
+    public void addExpressions(Expression[] expressions)
+    {
+        final Expression[] tmpExpressions = new Expression[m_expressions.length
+            + expressions.length];
+
+        java.lang.System.arraycopy(m_expressions, 0, tmpExpressions, 0,
+            m_expressions.length);
+        java.lang.System.arraycopy(expressions, 0, tmpExpressions,
+            m_expressions.length, expressions.length);
+        m_expressions = new Expression[m_expressions.length
+            + expressions.length];
+        java.lang.System.arraycopy(tmpExpressions, 0, m_expressions, 0,
+            tmpExpressions.length);
     }
 }

@@ -7,13 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
+
 /**
  * Attribute for the get pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class GetAttribute implements Attribute {
-
+public class GetAttribute implements Attribute
+{
     private static final long serialVersionUID = -8420415687853171098L;
 
     /**
@@ -26,10 +27,14 @@ public class GetAttribute implements Attribute {
      *
      * @param expression the expression
      */
-    public GetAttribute(final String expression) {
-        if (expression == null || expression.equals("")) {
-            throw new IllegalArgumentException("expression is not valid for get pointcut");
+    public GetAttribute(final String expression)
+    {
+        if ((expression == null) || expression.equals(""))
+        {
+            throw new IllegalArgumentException(
+                "expression is not valid for get pointcut");
         }
+
         m_expression = expression;
     }
 
@@ -38,7 +43,8 @@ public class GetAttribute implements Attribute {
      *
      * @return the expression for the pointcut
      */
-    public String getExpression() {
+    public String getExpression()
+    {
         return m_expression;
     }
 }

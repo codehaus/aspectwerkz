@@ -7,13 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+
 import java.io.IOException;
 
 import javassist.ByteArrayClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.LoaderClassPath;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * The AspectWerkz class concept.
@@ -23,8 +24,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class Klass {
-
+public class Klass
+{
     /**
      * The name of the class.
      */
@@ -51,7 +52,9 @@ public class Klass {
      * @param name     the name
      * @param bytecode the byte code
      */
-    public Klass(final String name, final byte[] bytecode, final ClassLoader loader) {
+    public Klass(final String name, final byte[] bytecode,
+        final ClassLoader loader)
+    {
         m_name = name.replace('/', '.');
         m_ctClass = fromByte(name, bytecode, loader);
         m_initialBytecode = bytecode;
@@ -62,7 +65,8 @@ public class Klass {
      *
      * @return the name
      */
-    public String getName() {
+    public String getName()
+    {
         return m_name;
     }
 
@@ -71,7 +75,8 @@ public class Klass {
      *
      * @return the class gen
      */
-    public CtClass getCtClass() {
+    public CtClass getCtClass()
+    {
         return m_ctClass;
     }
 
@@ -81,10 +86,14 @@ public class Klass {
      * @return the initial class gen
      * @throws IOException
      */
-    public CtClass getInitialCtClass() throws IOException {
-        if (m_initialCtClass == null) {
-            m_initialCtClass = fromByte(m_name, m_initialBytecode, null);//TODO BREAK
+    public CtClass getInitialCtClass()
+        throws IOException
+    {
+        if (m_initialCtClass == null)
+        {
+            m_initialCtClass = fromByte(m_name, m_initialBytecode, null); //TODO BREAK
         }
+
         return m_initialCtClass;
     }
 
@@ -93,11 +102,14 @@ public class Klass {
      *
      * @return
      */
-    public byte[] getBytecode() {
-        try {
+    public byte[] getBytecode()
+    {
+        try
+        {
             return m_ctClass.toBytecode();
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -108,14 +120,20 @@ public class Klass {
      * @param bytecode the byte code
      * @return the Javassist class gen
      */
-    public static CtClass fromByte(final String name, final byte[] bytecode, final ClassLoader loader) {
-        try {
+    public static CtClass fromByte(final String name, final byte[] bytecode,
+        final ClassLoader loader)
+    {
+        try
+        {
             ClassPool cp = new ClassPool(null);
+
             cp.insertClassPath(new ByteArrayClassPath(name, bytecode));
             cp.appendClassPath(new LoaderClassPath(loader));
+
             return cp.get(name);
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             throw new WrappedRuntimeException(e);
         }
     }

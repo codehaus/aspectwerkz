@@ -7,9 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.HashMap;
 
 /**
  * Base class for the meta-data makers.
@@ -21,16 +21,8 @@ import java.util.HashMap;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class MetaDataMaker {
-
-    private JavassistMetaDataMaker m_javassistMetaDataMaker;
-    private ReflectionMetaDataMaker m_reflectionMetaDataMaker;
-
-    public MetaDataMaker() {
-        m_javassistMetaDataMaker = new JavassistMetaDataMaker(this);
-        m_reflectionMetaDataMaker = new ReflectionMetaDataMaker(this);
-    }
-
+public class MetaDataMaker
+{
     /**
      * The MetaDataMaker repository per ClassLoader
      */
@@ -40,6 +32,8 @@ public class MetaDataMaker {
      * The name of all constructors in the pattern language.
      */
     public static final String CONSTRUCTOR_NAME = "new";
+    private JavassistMetaDataMaker m_javassistMetaDataMaker;
+    private ReflectionMetaDataMaker m_reflectionMetaDataMaker;
 
     /**
      * Caches the class meta-data.
@@ -51,39 +45,58 @@ public class MetaDataMaker {
      */
     protected final Map m_interfaceMetaDataCache = new HashMap();
 
+    public MetaDataMaker()
+    {
+        m_javassistMetaDataMaker = new JavassistMetaDataMaker(this);
+        m_reflectionMetaDataMaker = new ReflectionMetaDataMaker(this);
+    }
+
     /**
      * Removes klass metadata
      * We need to handle the ClassLoader hierarchy
      *
      * @param klass whose metadata must be removed
      */
-    public static synchronized void invalidateClassMetaData(Class klass) {
+    public static synchronized void invalidateClassMetaData(Class klass)
+    {
         ClassLoader loader = klass.getClassLoader();
-        while (loader != null) {
-            MetaDataMaker maker = (MetaDataMaker)s_metaDataMakers.get(loader);
-            if (maker != null) {
+
+        while (loader != null)
+        {
+            MetaDataMaker maker = (MetaDataMaker) s_metaDataMakers.get(loader);
+
+            if (maker != null)
+            {
                 maker.m_classMetaDataCache.remove(klass.getName());
             }
+
             loader = loader.getParent();
         }
     }
 
-    private static synchronized MetaDataMaker getMetaDataMaker(ClassLoader loader) {
-        MetaDataMaker metaDataMaker = (MetaDataMaker)s_metaDataMakers.get(loader);
-        if (metaDataMaker == null) {
+    private static synchronized MetaDataMaker getMetaDataMaker(
+        ClassLoader loader)
+    {
+        MetaDataMaker metaDataMaker = (MetaDataMaker) s_metaDataMakers.get(loader);
+
+        if (metaDataMaker == null)
+        {
             metaDataMaker = new MetaDataMaker();
             s_metaDataMakers.put(loader, metaDataMaker);
         }
+
         return metaDataMaker;
     }
 
-    public static JavassistMetaDataMaker getJavassistMetaDataMaker(ClassLoader loader) {
+    public static JavassistMetaDataMaker getJavassistMetaDataMaker(
+        ClassLoader loader)
+    {
         return getMetaDataMaker(loader).m_javassistMetaDataMaker;
     }
 
-    public static ReflectionMetaDataMaker getReflectionMetaDataMaker(ClassLoader loader) {
+    public static ReflectionMetaDataMaker getReflectionMetaDataMaker(
+        ClassLoader loader)
+    {
         return getMetaDataMaker(loader).m_reflectionMetaDataMaker;
     }
-
-
 }

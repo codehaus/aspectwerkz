@@ -12,22 +12,27 @@ import junit.framework.TestCase;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class SuperClassConstructorTest extends TestCase {
-
-    public void testSuperClassConstructorCallsOverriddenAdvisedMemberMethod() {
-        try {
+public class SuperClassConstructorTest extends TestCase
+{
+    public void testSuperClassConstructorCallsOverriddenAdvisedMemberMethod()
+    {
+        try
+        {
             new D();
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             fail();
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         junit.textui.TestRunner.run(suite());
     }
 
-    public static junit.framework.Test suite() {
+    public static junit.framework.Test suite()
+    {
         return new junit.framework.TestSuite(SuperClassConstructorTest.class);
     }
 }

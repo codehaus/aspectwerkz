@@ -7,17 +7,17 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.lang.reflect.Method;
-
 import org.codehaus.aspectwerkz.definition.expression.Expression;
+
+import java.lang.reflect.Method;
 
 /**
  * Holds the meta-data for the advices.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AdviceDefinition {
-
+public class AdviceDefinition
+{
     public static final String AROUND_ADVICE = "AROUND_ADVICE";
     public static final String BEFORE_ADVICE = "BEFORE_ADVICE";
     public static final String AFTER_ADVICE = "AFTER_ADVICE";
@@ -78,38 +78,51 @@ public class AdviceDefinition {
      * @param method          the method
      * @param methodIndex     the method index
      */
-    public AdviceDefinition(
-            final String name,
-            final String type,
-            final String aspectName,
-            final String aspectClassName,
-            final Expression expression,
-            final Method method,
-            final int methodIndex,
-            final AspectDefinition aspectDef) {
-        if (name == null) {
+    public AdviceDefinition(final String name, final String type,
+        final String aspectName, final String aspectClassName,
+        final Expression expression, final Method method,
+        final int methodIndex, final AspectDefinition aspectDef)
+    {
+        if (name == null)
+        {
             throw new IllegalArgumentException("name can not be null");
         }
-        if (!type.equals(AROUND_ADVICE) && !type.equals(BEFORE_ADVICE) && !type.equals(AFTER_ADVICE)) {
+
+        if (!type.equals(AROUND_ADVICE) && !type.equals(BEFORE_ADVICE)
+            && !type.equals(AFTER_ADVICE))
+        {
             throw new IllegalArgumentException("illegal advice type");
         }
-        if (aspectName == null) {
+
+        if (aspectName == null)
+        {
             throw new IllegalArgumentException("aspect name can not be null");
         }
-        if (aspectClassName == null) {
+
+        if (aspectClassName == null)
+        {
             throw new IllegalArgumentException("class name can not be null");
         }
-        if (expression == null) {
+
+        if (expression == null)
+        {
             throw new IllegalArgumentException("expression can not be null");
         }
-        if (method == null) {
+
+        if (method == null)
+        {
             throw new IllegalArgumentException("method can not be null");
         }
-        if (methodIndex < 0) {
+
+        if (methodIndex < 0)
+        {
             throw new IllegalArgumentException("method index is not valid");
         }
-        if (aspectDef == null) {
-            throw new IllegalArgumentException("aspect definition can not be null");
+
+        if (aspectDef == null)
+        {
+            throw new IllegalArgumentException(
+                "aspect definition can not be null");
         }
 
         m_name = name;
@@ -127,7 +140,8 @@ public class AdviceDefinition {
      *
      * @return the name
      */
-    public String getName() {
+    public String getName()
+    {
         return m_name;
     }
 
@@ -136,7 +150,8 @@ public class AdviceDefinition {
      *
      * @param name the name
      */
-    public void setName(final String name) {
+    public void setName(final String name)
+    {
         m_name = name.trim();
     }
 
@@ -145,7 +160,8 @@ public class AdviceDefinition {
      *
      * @return the expression
      */
-    public Expression getExpression() {
+    public Expression getExpression()
+    {
         return m_expression;
     }
 
@@ -154,7 +170,8 @@ public class AdviceDefinition {
      *
      * @return the class name
      */
-    public String getAspectClassName() {
+    public String getAspectClassName()
+    {
         return m_aspectClassName;
     }
 
@@ -163,7 +180,8 @@ public class AdviceDefinition {
      *
      * @return the aspect name
      */
-    public String getAspectName() {
+    public String getAspectName()
+    {
         return m_aspectName;
     }
 
@@ -172,7 +190,8 @@ public class AdviceDefinition {
      *
      * @return the method
      */
-    public Method getMethod() {
+    public Method getMethod()
+    {
         return m_method;
     }
 
@@ -181,7 +200,8 @@ public class AdviceDefinition {
      *
      * @return the method index
      */
-    public int getMethodIndex() {
+    public int getMethodIndex()
+    {
         return m_methodIndex;
     }
 
@@ -190,7 +210,8 @@ public class AdviceDefinition {
      *
      * @return the deployment model
      */
-    public String getDeploymentModel() {
+    public String getDeploymentModel()
+    {
         return m_aspectDefinition.getDeploymentModel();
     }
 
@@ -199,7 +220,8 @@ public class AdviceDefinition {
      *
      * @return the attribute
      */
-    public String getAttribute() {
+    public String getAttribute()
+    {
         return m_attribute;
     }
 
@@ -208,7 +230,8 @@ public class AdviceDefinition {
      *
      * @param attribute the attribute
      */
-    public void setAttribute(final String attribute) {
+    public void setAttribute(final String attribute)
+    {
         m_attribute = attribute;
     }
 
@@ -218,17 +241,11 @@ public class AdviceDefinition {
      * @param expression
      * @return
      */
-    public AdviceDefinition copyAt(final Expression expression) {
-        return new AdviceDefinition(
-                getName(),
-                getType(),
-                getAspectName(),
-                getAspectClassName(),
-                expression,
-                getMethod(),
-                getMethodIndex(),
-                m_aspectDefinition
-        );
+    public AdviceDefinition copyAt(final Expression expression)
+    {
+        return new AdviceDefinition(getName(), getType(), getAspectName(),
+            getAspectClassName(), expression, getMethod(), getMethodIndex(),
+            m_aspectDefinition);
     }
 
     /**
@@ -239,7 +256,8 @@ public class AdviceDefinition {
      *
      * @return the advice type
      */
-    public String getType() {
+    public String getType()
+    {
         return m_type;
     }
 
@@ -248,7 +266,8 @@ public class AdviceDefinition {
      *
      * @return the expression as a string
      */
-    public String getExpressionAsString() {
+    public String getExpressionAsString()
+    {
         return getExpression().getExpression();
     }
 }

@@ -7,13 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
+
 /**
  * Attribute for the handler pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class HandlerAttribute implements Attribute {
-
+public class HandlerAttribute implements Attribute
+{
     /**
      * @TODO: recalculate
      */
@@ -29,10 +30,14 @@ public class HandlerAttribute implements Attribute {
      *
      * @param expression the expression
      */
-    public HandlerAttribute(final String expression) {
-        if (expression == null || expression.equals("")) {
-            throw new IllegalArgumentException("expression is not valid for handler pointcut");
+    public HandlerAttribute(final String expression)
+    {
+        if ((expression == null) || expression.equals(""))
+        {
+            throw new IllegalArgumentException(
+                "expression is not valid for handler pointcut");
         }
+
         m_expression = expression;
     }
 
@@ -41,7 +46,8 @@ public class HandlerAttribute implements Attribute {
      *
      * @return the expression for the pointcut
      */
-    public String getExpression() {
+    public String getExpression()
+    {
         return m_expression;
     }
 }

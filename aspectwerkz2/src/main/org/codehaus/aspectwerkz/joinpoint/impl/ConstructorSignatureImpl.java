@@ -7,18 +7,18 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.impl;
 
-import java.lang.reflect.Constructor;
-
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
+
+import java.lang.reflect.Constructor;
 
 /**
  * Implementation for the constructor signature.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ConstructorSignatureImpl implements ConstructorSignature {
-
+public class ConstructorSignatureImpl implements ConstructorSignature
+{
     private final Class m_declaringType;
     private final ConstructorTuple m_constructorTuple;
 
@@ -26,7 +26,9 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @param declaringType
      * @param constructorTuple
      */
-    public ConstructorSignatureImpl(final Class declaringType, final ConstructorTuple constructorTuple) {
+    public ConstructorSignatureImpl(final Class declaringType,
+        final ConstructorTuple constructorTuple)
+    {
         m_declaringType = declaringType;
         m_constructorTuple = constructorTuple;
     }
@@ -36,7 +38,8 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      *
      * @return the constructor tuple
      */
-    public ConstructorTuple getConstructorTuple() {
+    public ConstructorTuple getConstructorTuple()
+    {
         return m_constructorTuple;
     }
 
@@ -45,7 +48,8 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      *
      * @return the constructor
      */
-    public Constructor getConstructor() {
+    public Constructor getConstructor()
+    {
         return m_constructorTuple.getOriginalConstructor();
     }
 
@@ -54,7 +58,8 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      *
      * @return the declaring class
      */
-    public Class getDeclaringType() {
+    public Class getDeclaringType()
+    {
         return m_declaringType;
     }
 
@@ -68,7 +73,8 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      *
      * @return the mofifiers
      */
-    public int getModifiers() {
+    public int getModifiers()
+    {
         return m_constructorTuple.getOriginalConstructor().getModifiers();
     }
 
@@ -77,7 +83,8 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      *
      * @return
      */
-    public String getName() {
+    public String getName()
+    {
         return m_constructorTuple.getName();
     }
 
@@ -86,7 +93,8 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      *
      * @return the exception types
      */
-    public Class[] getExceptionTypes() {
+    public Class[] getExceptionTypes()
+    {
         return m_constructorTuple.getOriginalConstructor().getExceptionTypes();
     }
 
@@ -95,7 +103,8 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      *
      * @return the parameter types
      */
-    public Class[] getParameterTypes() {
+    public Class[] getParameterTypes()
+    {
         return m_constructorTuple.getOriginalConstructor().getParameterTypes();
     }
 
@@ -105,7 +114,8 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */
-    public String toString() {
+    public String toString()
+    {
         return super.toString();
     }
 }

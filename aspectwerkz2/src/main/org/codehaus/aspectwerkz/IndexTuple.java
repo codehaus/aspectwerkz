@@ -17,8 +17,8 @@ import java.io.Serializable;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class IndexTuple implements Serializable {
-
+public class IndexTuple implements Serializable
+{
     /**
      * Index for the aspect.
      */
@@ -45,7 +45,9 @@ public class IndexTuple implements Serializable {
      * @param aspectIndex the aspect index
      * @param methodIndex the method index
      */
-    public IndexTuple(final int aspectIndex, final int methodIndex, final String uuid, final AspectManager aspectManager) {
+    public IndexTuple(final int aspectIndex, final int methodIndex,
+        final String uuid, final AspectManager aspectManager)
+    {
         m_aspectIndex = aspectIndex;
         m_methodIndex = methodIndex;
         m_uuid = uuid;
@@ -57,7 +59,8 @@ public class IndexTuple implements Serializable {
      *
      * @return the aspect index
      */
-    public int getAspectIndex() {
+    public int getAspectIndex()
+    {
         return m_aspectIndex;
     }
 
@@ -66,7 +69,8 @@ public class IndexTuple implements Serializable {
      *
      * @return the method index
      */
-    public int getMethodIndex() {
+    public int getMethodIndex()
+    {
         return m_methodIndex;
     }
 
@@ -75,16 +79,20 @@ public class IndexTuple implements Serializable {
      *
      * @return the aspect manager
      */
-    public AspectManager getAspectManager() {
+    public AspectManager getAspectManager()
+    {
         return m_aspectManager;
     }
 
-    public String toString() {
+    public String toString()
+    {
         StringBuffer sb = new StringBuffer("IndexTuple[");
+
         sb.append(m_aspectManager).append(",");
         sb.append(m_aspectIndex).append(",");
         sb.append(m_methodIndex).append("]");
         sb.append(hashCode());
+
         return sb.toString();
     }
 }

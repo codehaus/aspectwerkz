@@ -7,8 +7,8 @@
  **************************************************************************************/
 package test.mixindeployment;
 
-import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * The aspect mixin is deployed as perInstance
@@ -16,8 +16,8 @@ import org.codehaus.aspectwerkz.CrossCuttingInfo;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @Aspect perJVM
  */
-public class IntroductionDeploymentAspect {
-
+public class IntroductionDeploymentAspect
+{
     /**
      * @Expression class(test.mixindeployment.IntroductionDeploymentTest$TargetA)
      */
@@ -33,8 +33,8 @@ public class IntroductionDeploymentAspect {
      *
      * @Introduce a || b deploymentModel=perInstance
      */
-    public static class MarkerImpl implements Marker {
-
+    public static class MarkerImpl implements Marker
+    {
         /**
          * The cross-cutting info.
          */
@@ -46,15 +46,18 @@ public class IntroductionDeploymentAspect {
          *
          * @param info the cross-cutting info
          */
-        public MarkerImpl(final CrossCuttingInfo info) {
+        public MarkerImpl(final CrossCuttingInfo info)
+        {
             m_info = info;
         }
 
-        public Object getTargetInstance() {
+        public Object getTargetInstance()
+        {
             return m_info.getMixinTargetInstance(this.getClass().getName(), this);
         }
 
-        public Class getTargetClass() {
+        public Class getTargetClass()
+        {
             return m_info.getMixinTargetClass(this.getClass().getName(), this);
         }
     }
@@ -64,8 +67,8 @@ public class IntroductionDeploymentAspect {
      *
      * @Introduce class(test.mixindeployment.IntroductionDeploymentTest$TargetC) deploymentModel=perClass
      */
-    public static class AnotherMarkerImpl implements Marker {
-
+    public static class AnotherMarkerImpl implements Marker
+    {
         /**
          * The cross-cutting info.
          */
@@ -77,16 +80,19 @@ public class IntroductionDeploymentAspect {
          *
          * @param info the cross-cutting info
          */
-        public AnotherMarkerImpl(final CrossCuttingInfo info) {
+        public AnotherMarkerImpl(final CrossCuttingInfo info)
+        {
             m_info = info;
         }
 
-        public Object getTargetInstance() {
+        public Object getTargetInstance()
+        {
             // will return null
             return m_info.getMixinTargetInstance(this.getClass().getName(), this);
         }
 
-        public Class getTargetClass() {
+        public Class getTargetClass()
+        {
             return m_info.getMixinTargetClass(this.getClass().getName(), this);
         }
     }

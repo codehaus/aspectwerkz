@@ -12,12 +12,12 @@ import java.lang.reflect.Constructor;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface ConstructorSignature extends CodeSignature {
-
+public interface ConstructorSignature extends CodeSignature
+{
     /**
      * Returns the constructor.
      *
      * @return the constructor
      */
     public Constructor getConstructor();
-}                                             
+}

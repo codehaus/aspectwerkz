@@ -12,6 +12,7 @@ import java.io.Serializable;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface PerThread extends Serializable {
+public interface PerThread extends Serializable
+{
     void runPerThread();
 }

@@ -14,68 +14,81 @@ import junit.framework.TestCase;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class StaticFieldAdviceTest extends TestCase {
-
+public class StaticFieldAdviceTest extends TestCase
+{
     public static int s_fieldA = 0;
-
     public static int s_fieldB = 0;
-
     public int m_fieldA = 0;
-
     public int m_fieldB = 0;
 
-    public void testStaticFieldAccessedOutsideStaticCtx() {
+    public void testStaticFieldAccessedOutsideStaticCtx()
+    {
         assertEquals(1, accessStaticFieldA());
     }
 
-    public void testStaticFieldAccessedInsideStaticCtx() {
+    public void testStaticFieldAccessedInsideStaticCtx()
+    {
         assertEquals(1, StaticFieldAdviceTest.accessStaticFieldB());
     }
 
-    public void testFieldAccessedOutsideStaticCtx() {
+    public void testFieldAccessedOutsideStaticCtx()
+    {
         assertEquals(1, accessFieldA());
     }
 
-    public void testFieldAccessedInsideStaticCtx() {
+    public void testFieldAccessedInsideStaticCtx()
+    {
         assertEquals(1, StaticFieldAdviceTest.accessFieldB(this));
     }
 
     // -- methods --
-
-    private int accessStaticFieldA() {
+    private int accessStaticFieldA()
+    {
         //static field access in member method
         s_fieldA = 1;
+
         int value = s_fieldA;
+
         return value;
     }
 
-    private static int accessStaticFieldB() {
+    private static int accessStaticFieldB()
+    {
         //static field access in static method
         s_fieldB = 1;
+
         int value = s_fieldB;
+
         return value;
     }
 
-    private int accessFieldA() {
+    private int accessFieldA()
+    {
         //static field access in member method
         m_fieldA = 1;
+
         int value = m_fieldA;
+
         return value;
     }
 
-    private static int accessFieldB(StaticFieldAdviceTest myself) {
+    private static int accessFieldB(StaticFieldAdviceTest myself)
+    {
         //field access in static method
         myself.m_fieldB = 1;
+
         int value = myself.m_fieldB;
+
         return value;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         junit.textui.TestRunner.run(suite());
     }
 
-    public static junit.framework.Test suite() {
+    public static junit.framework.Test suite()
+    {
         return new junit.framework.TestSuite(StaticFieldAdviceTest.class);
     }
-
 }
