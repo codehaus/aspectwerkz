@@ -188,7 +188,7 @@ Allow for advice declaration for use in several aspects
 Use nested bind-to element for multiple binding
 Attributes:
 	name: method name implementing the advice
-	type: advice type [TODO for after finally(:type:) we cannot represent it in DTD - should be moved to name anyway ?
+	type: advice type (around | before | after | after finally | after returning | after throwing), "after xxx(TYPE varName)"
     bind-to: pointcut expression
 ******************************************************************************************************************************-->
 <!ELEMENT advice (
@@ -196,7 +196,7 @@ Attributes:
 )>
 <!ATTLIST advice
 name CDATA #REQUIRED
-type (around | before | after | afterFinally | afterReturning | afterThrowing) #REQUIRED
+type #REQUIRED
 bind-to CDATA #IMPLIED
 attribute CDATA #IMPLIED
 >
