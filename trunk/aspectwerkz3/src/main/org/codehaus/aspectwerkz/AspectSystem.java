@@ -252,7 +252,8 @@ public final class AspectSystem {
         }
         TIntObjectHashMap cflows = (TIntObjectHashMap)m_cflowStack.get();
         if (cflows == null) {
-            return false;
+            //return false;
+            cflows = new TIntObjectHashMap();
         }
         if (expression.matchCflowStack(cflows.getValues(), expressionContext)) {
             return true;
