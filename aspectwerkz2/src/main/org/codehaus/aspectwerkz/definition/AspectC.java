@@ -41,7 +41,8 @@ import org.codehaus.aspectwerkz.metadata.QDoxParser;
  */
 public class AspectC {
 
-    public static final String ATTR_GENERIC_PREFIX = "Attribute.";
+    public static final String ATTR_GENERIC_PREFIX1 = "AW.";
+    public static final String ATTR_GENERIC_PREFIX2 = "Attribute.";
     public static final String ATTR_ASPECT = "Aspect";
     public static final String ATTR_EXPRESSION = "Expression";
     public static final String ATTR_EXECUTION = "Execution";
@@ -655,7 +656,7 @@ public class AspectC {
      * @return boolean
      */
     private boolean isCustomTag(final DocletTag tag) {
-        return tag.getName().startsWith(ATTR_GENERIC_PREFIX);
+        return tag.getName().startsWith(ATTR_GENERIC_PREFIX1) || tag.getName().startsWith(ATTR_GENERIC_PREFIX2);
     }
 
     /**
@@ -677,7 +678,7 @@ public class AspectC {
      */
     public static void main(String[] args) {
         if (args.length < 2) {
-            System.out.println("AspectWerkz (c) 2002-2003 Jonas Bonér, Alexandre Vasseur");
+            System.out.println("AspectWerkz (c) 2002-2004 Jonas Bonér, Alexandre Vasseur");
             System.out.println(
                     "usage: java [options...] org.codehaus.aspectwerkz.definition.AspectC [-verbose] <path to src dir> <path to classes dir> [<path to destination dir>]"
             );
