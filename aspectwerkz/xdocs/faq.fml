@@ -120,6 +120,7 @@
                     The 0.8 Aspect model is now called <a href="core_concepts.html#Model 1 - XML centric">Model 1 - XML centric</a> and basically core classes
                     have been moved to <code>org.codehaus.aspectwerkz.xmldef.</code> package (except JoinPoint and related).
                 </p>
+            </answer>
         </faq>
         <faq id="migration/changes">
             <question>
