@@ -11,6 +11,8 @@ import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
 import org.codehaus.aspectwerkz.expression.PointcutType;
+import org.codehaus.aspectwerkz.expression.CflowExpressionVisitorRuntime;
+import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
@@ -34,13 +36,13 @@ import java.util.Map;
  * Base class for the join point implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public abstract class JoinPointBase implements JoinPoint, Serializable {
     protected Class m_targetClass;
     protected int m_type;
     protected String m_typeAsString;
     protected transient AspectSystem m_system;
-    protected List m_cflowExpressions;
     protected boolean m_checkCflow;
     protected AroundAdviceExecutor m_aroundAdviceExecutor;
     protected BeforeAdviceExecutor m_beforeAdviceExecutor;
@@ -48,26 +50,27 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     protected WeakReference m_targetInstanceRef;
     protected Map m_metaData = new HashMap();
     protected PointcutType m_pointcutType;
+    protected JoinPointMetaData m_joinPointMetaData;
 
     /**
      * Creates a new join point base instance.
      *
      * @param type
      * @param targetClass
-     * @param cflowExpressions
+     * @param joinPointMetaData
      * @param aroundAdviceExecutor
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public JoinPointBase(final int type, final Class targetClass, final List cflowExpressions,
+    public JoinPointBase(final int type, final Class targetClass, final JoinPointMetaData joinPointMetaData,
                          final AroundAdviceExecutor aroundAdviceExecutor,
                          final BeforeAdviceExecutor beforeAdviceExecutor, final AfterAdviceExecutor afterAdviceExecutor) {
         m_type = type;
         m_typeAsString = getJoinPointTypeAsString(type);
         m_pointcutType = getPointcutType(type);
         m_targetClass = targetClass;
-        m_cflowExpressions = cflowExpressions;
-        m_checkCflow = cflowExpressions.size() > 0;
+        m_checkCflow = joinPointMetaData.cflowExpressions.size() > 0;
+        m_joinPointMetaData = joinPointMetaData;
         m_aroundAdviceExecutor = aroundAdviceExecutor;
         m_beforeAdviceExecutor = beforeAdviceExecutor;
         m_afterAdviceExecutor = afterAdviceExecutor;
@@ -80,15 +83,35 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * @param uuid
      * @param type
      * @param targetClass
-     * @param cflowExpressions
+     * @param joinPointMetaData
      * @param aroundAdviceExecutor
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public JoinPointBase(final String uuid, final int type, final Class targetClass, final List cflowExpressions,
+    public JoinPointBase(final String uuid, final int type, final Class targetClass, final JoinPointMetaData joinPointMetaData,
                          final AroundAdviceExecutor aroundAdviceExecutor,
                          final BeforeAdviceExecutor beforeAdviceExecutor, final AfterAdviceExecutor afterAdviceExecutor) {
-        this(type, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
+        this(type, targetClass, joinPointMetaData, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
+    }
+
+    public JoinPointBase(final String uuid, final int type, final Class targetClass, final List cflow, ExpressionContext ctx,
+                         final AroundAdviceExecutor aroundAdviceExecutor,
+                         final BeforeAdviceExecutor beforeAdviceExecutor, final AfterAdviceExecutor afterAdviceExecutor) {
+        //TODO clean me
+        m_type = type;
+        m_typeAsString = getJoinPointTypeAsString(type);
+        m_pointcutType = getPointcutType(type);
+        m_targetClass = targetClass;
+        m_joinPointMetaData = new JoinPointMetaData();
+        m_joinPointMetaData.expressionContext = ctx;
+        m_joinPointMetaData.cflowExpressions = cflow;
+
+        m_checkCflow = m_joinPointMetaData.cflowExpressions.size() > 0;
+
+        m_aroundAdviceExecutor = aroundAdviceExecutor;
+        m_beforeAdviceExecutor = beforeAdviceExecutor;
+        m_afterAdviceExecutor = afterAdviceExecutor;
+        m_system = SystemLoader.getSystem(targetClass.getClassLoader());
     }
 
     /**
@@ -379,9 +402,9 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     public boolean isInCflow() {
         if (m_checkCflow) {
             boolean isInCFlow = false;
-            for (Iterator iterator = m_cflowExpressions.iterator(); iterator.hasNext();) {
-                CflowExpressionVisitor cflowExpression = (CflowExpressionVisitor)iterator.next();
-                if (m_system.isInControlFlowOf(cflowExpression)) {
+            for (Iterator iterator = m_joinPointMetaData.cflowExpressions.iterator(); iterator.hasNext();) {
+                CflowExpressionVisitorRuntime cflowExpressionRuntime = (CflowExpressionVisitorRuntime)iterator.next();
+                if (m_system.isInControlFlowOf(cflowExpressionRuntime, m_joinPointMetaData.expressionContext)) {
                     isInCFlow = true;
                     break;
                 }
@@ -406,8 +429,8 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         m_type = fields.get("m_type", 0);
         m_typeAsString = getJoinPointTypeAsString(m_type);
         m_targetClass = (Class)fields.get("m_targetClass", null);
-        m_cflowExpressions = (List)fields.get("m_cflowExpressions", null);
-        m_checkCflow = m_cflowExpressions.size() > 0;
+        m_joinPointMetaData = (JoinPointMetaData)fields.get("m_joinPointMetaData", null);
+        m_checkCflow = m_joinPointMetaData.cflowExpressions.size() > 0;
         m_aroundAdviceExecutor = (AroundAdviceExecutor)fields.get("m_aroundAdviceExecutor", null);
         m_beforeAdviceExecutor = (BeforeAdviceExecutor)fields.get("m_beforeAdviceExecutor", null);
         m_afterAdviceExecutor = (AfterAdviceExecutor)fields.get("m_afterAdviceExecutor", null);

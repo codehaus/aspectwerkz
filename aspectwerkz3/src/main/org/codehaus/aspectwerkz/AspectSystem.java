@@ -18,8 +18,13 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
+import org.codehaus.aspectwerkz.expression.CflowExpressionVisitorRuntime;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
+import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.management.JoinPointMetaData;
+
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -237,10 +242,11 @@ public final class AspectSystem {
     /**
      * Checks if we are in the control flow of a join point picked out by a specific pointcut expression.
      *
-     * @param expression the cflow expression
+     * @param expression the cflow expression runtime visitor
+     * @param expressionContext the join point expression context whose pointcut contains cflows sub expression(s)
      * @return boolean
      */
-    public boolean isInControlFlowOf(final CflowExpressionVisitor expression) {
+    public boolean isInControlFlowOf(final CflowExpressionVisitorRuntime expression, ExpressionContext expressionContext) {
         if (expression == null) {
             throw new IllegalArgumentException("expression can not be null");
         }
@@ -251,9 +257,9 @@ public final class AspectSystem {
         if (cflows == null) {
             return false;
         }
-            if (expression.matchCflowStack(cflows.getValues())) {
-                return true;
-            }
+        if (expression.matchCflowStack(cflows.getValues(), expressionContext)) {
+            return true;
+        }
         return false;
     }
 

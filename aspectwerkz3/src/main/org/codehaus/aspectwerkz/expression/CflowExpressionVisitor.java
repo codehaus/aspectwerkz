@@ -29,7 +29,7 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
     /**
      * Do we have a cflow pointcut in the expression?
      */
-    private boolean m_hasCflowPointcut = false;
+    private boolean m_hasCflowPointcut = true;
 
     /**
      * Creates a new cflow expression.
@@ -51,29 +51,6 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
         return m_hasCflowPointcut;
     }
 
-    /**
-     * Matches the cflow information stack.
-     *
-     * @param contexts
-     * @return
-     */
-    public boolean matchCflowStack(final Object[] contexts) {
-        for (int i = 0; i < contexts.length; i++) {
-            ExpressionContext context = (ExpressionContext)contexts[i];
-            Boolean match = (Boolean)visit(m_root, context);
-            if (context.hasBeenVisitingCflow()) {
-                // we have been visiting and evaluated a cflow sub expression
-                m_hasCflowPointcut = true;
-                return context.getCflowEvaluation();
-            } else if (context.inCflowSubAST()) {
-                // we are in a referenced expression within a cflow subtree
-                return match.booleanValue();
-            }
-            context.setInCflowSubAST(false);
-            context.setHasBeenVisitingCflow(false);
-        }
-        return false;
-    }
 
     /**
      * Matches the cflow epression
@@ -104,7 +81,7 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
             for (int i = 0; i < nrOfChildren; i++) {
                 node.jjtGetChild(i).jjtAccept(this, data);
             }
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         }
     }
 
@@ -117,7 +94,7 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
             for (int i = 0; i < nrOfChildren; i++) {
                 node.jjtGetChild(i).jjtAccept(this, data);
             }
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         }
     }
 
@@ -135,20 +112,20 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
         ExpressionContext context = (ExpressionContext)data;
         context.setInCflowSubAST(true);
         Boolean result = (Boolean)node.jjtGetChild(0).jjtAccept(this, context);
-        context.setCflowEvaluation(result.booleanValue());
+        if (context.getCflowEvaluation()==false) context.setCflowEvaluation(result.booleanValue());
         context.setHasBeenVisitingCflow(true);
         context.setInCflowSubAST(false);
-        return Boolean.FALSE;
+        return Boolean.valueOf(context.getCflowEvaluation());
     }
 
     public Object visit(ASTCflowBelow node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
         context.setInCflowSubAST(true);
         Boolean result = (Boolean)node.jjtGetChild(0).jjtAccept(this, context);
-        context.setCflowEvaluation(result.booleanValue());
+        if (context.getCflowEvaluation()==false) context.setCflowEvaluation(result.booleanValue());
         context.setHasBeenVisitingCflow(true);
         context.setInCflowSubAST(false);
-        return Boolean.FALSE;
+        return Boolean.valueOf(context.getCflowEvaluation());
     }
 
     // ============ Pointcut reference  =============

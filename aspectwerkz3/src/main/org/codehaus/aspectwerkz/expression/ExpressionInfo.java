@@ -23,6 +23,7 @@ public class ExpressionInfo {
     private static final ExpressionParser s_parser = new ExpressionParser(System.in);
     private final ExpressionVisitor m_expression;
     private final CflowExpressionVisitor m_cflowExpression;
+    private final CflowExpressionVisitorRuntime m_cflowExpressionRuntime;
     private final AdvisedClassFilterExpressionVisitor m_advisedClassFilterExpression;
     private final AdvisedCflowClassFilterExpressionVisitor m_advisedCflowClassFilterExpression;
     private final boolean m_hasCflowPointcut;
@@ -39,6 +40,7 @@ public class ExpressionInfo {
             m_expression = new ExpressionVisitor(expression, namespace, root);
             m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(expression, namespace, root);
             m_cflowExpression = new CflowExpressionVisitor(expression, namespace, root);
+            m_cflowExpressionRuntime = new CflowExpressionVisitorRuntime(expression, namespace, root);
             m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(expression, namespace,
                                                                                                root);
             m_hasCflowPointcut = new CflowPointcutFinderVisitor(expression, namespace, root).hasCflowPointcut();
@@ -72,6 +74,10 @@ public class ExpressionInfo {
      */
     public CflowExpressionVisitor getCflowExpression() {
         return m_cflowExpression;
+    }
+
+    public CflowExpressionVisitorRuntime getCflowExpressionRuntime() {
+        return m_cflowExpressionRuntime;
     }
 
     /**

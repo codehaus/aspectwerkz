@@ -221,7 +221,7 @@ class JoinPointRegistry {
 
                 // collect the cflow expressions for the matching pointcuts (if they have one)
                 if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                    cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                    cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpressionRuntime());
                 }
             }
         }
@@ -237,6 +237,7 @@ class JoinPointRegistry {
         metaData.adviceIndexes = adviceIndexInfo;
         metaData.cflowExpressions = cflowExpressionList;
         metaData.cflowPointcut = cflowPointcut;
+        metaData.expressionContext = ctx;
         joinPointMetaDataMap.put(type, metaData);
     }
 }

@@ -28,16 +28,16 @@ class CatchClauseJoinPoint extends JoinPointBase {
      * @param targetClass
      * @param signature
      * @param rtti
-     * @param cflowExpressions
+     * @param joinPointMetaData
      * @param aroundAdviceExecutor
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
     public CatchClauseJoinPoint(final Class targetClass, final Signature signature, final Rtti rtti,
-                                final List cflowExpressions, final AroundAdviceExecutor aroundAdviceExecutor,
+                                final JoinPointMetaData joinPointMetaData, final AroundAdviceExecutor aroundAdviceExecutor,
                                 final BeforeAdviceExecutor beforeAdviceExecutor,
                                 final AfterAdviceExecutor afterAdviceExecutor) {
-        super(JoinPointType.HANDLER, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor,
+        super(JoinPointType.HANDLER, targetClass, joinPointMetaData, aroundAdviceExecutor, beforeAdviceExecutor,
               afterAdviceExecutor);
         m_signature = (CatchClauseSignature)signature;
         m_rtti = (CatchClauseRtti)rtti;

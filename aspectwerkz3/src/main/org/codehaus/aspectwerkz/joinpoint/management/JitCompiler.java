@@ -93,8 +93,8 @@ public class JitCompiler {
     private static final String AROUND_ADVICE_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)Ljava/lang/Object;";
     private static final String BEFORE_ADVICE_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)V";
     private static final String AFTER_ADVICE_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)V";
-    private static final String JOIN_POINT_BASE_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;ILjava/lang/Class;Ljava/util/List;Lorg/codehaus/aspectwerkz/joinpoint/management/AroundAdviceExecutor;Lorg/codehaus/aspectwerkz/joinpoint/management/BeforeAdviceExecutor;Lorg/codehaus/aspectwerkz/joinpoint/management/AfterAdviceExecutor;)V";
-    private static final String JIT_JOIN_POINT_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;ILjava/lang/Class;Lorg/codehaus/aspectwerkz/joinpoint/Signature;Lorg/codehaus/aspectwerkz/joinpoint/Rtti;Ljava/util/List;)V";
+    private static final String JOIN_POINT_BASE_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;ILjava/lang/Class;Ljava/util/List;Lorg/codehaus/aspectwerkz/expression/ExpressionContext;Lorg/codehaus/aspectwerkz/joinpoint/management/AroundAdviceExecutor;Lorg/codehaus/aspectwerkz/joinpoint/management/BeforeAdviceExecutor;Lorg/codehaus/aspectwerkz/joinpoint/management/AfterAdviceExecutor;)V";
+    private static final String JIT_JOIN_POINT_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;ILjava/lang/Class;Lorg/codehaus/aspectwerkz/joinpoint/Signature;Lorg/codehaus/aspectwerkz/joinpoint/Rtti;Ljava/util/List;Lorg/codehaus/aspectwerkz/expression/ExpressionContext;)V";
     private static final String SYSTEM_LOADER_CLASS_NAME = "org/codehaus/aspectwerkz/SystemLoader";
     private static final String INIT_METHOD_NAME = "<init>";
     private static final String GET_SYSTEM_METHOD_NAME = "getSystem";
@@ -267,12 +267,13 @@ public class JitCompiler {
             // create the generated class
             Constructor constructor = joinPointClass.getDeclaredConstructor(new Class[] {
                                                                                 String.class, int.class, Class.class,
-                                                                                Signature.class, Rtti.class, List.class
+                                                                                Signature.class, Rtti.class, List.class,
+                                                                                ExpressionContext.class
                                                                             });
             return (JoinPoint)constructor.newInstance(new Object[] {
                                                           "___AW_JIT_COMPILED", new Integer(joinPointType),
                                                           declaringClass, rttiInfo.signature, rttiInfo.rtti,
-                                                          rttiInfo.cflowExpressions
+                                                          rttiInfo.cflowExpressions, rttiInfo.expressionContext
                                                       });
         } catch (Throwable e) {
             e.printStackTrace();
@@ -350,6 +351,7 @@ public class JitCompiler {
         cv.visitVarInsn(Constants.ILOAD, 2);
         cv.visitVarInsn(Constants.ALOAD, 3);
         cv.visitVarInsn(Constants.ALOAD, 6);
+        cv.visitVarInsn(Constants.ALOAD, 7);
         cv.visitInsn(Constants.ACONST_NULL);
         cv.visitInsn(Constants.ACONST_NULL);
         cv.visitInsn(Constants.ACONST_NULL);
@@ -1415,11 +1417,12 @@ public class JitCompiler {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
                         Pointcut pointcut = (Pointcut)it.next();
                         if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpressionRuntime());
                         }
                     }
                 }
                 tuple.cflowExpressions = cflowExpressionList;
+                tuple.expressionContext = ctx;
                 break;
             case JoinPointType.METHOD_CALL:
                 methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
@@ -1434,11 +1437,12 @@ public class JitCompiler {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
                         Pointcut pointcut = (Pointcut)it.next();
                         if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpressionRuntime());
                         }
                     }
                 }
                 tuple.cflowExpressions = cflowExpressionList;
+                tuple.expressionContext = ctx;
                 break;
             case JoinPointType.CONSTRUCTOR_EXECUTION:
                 ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash);
@@ -1455,11 +1459,12 @@ public class JitCompiler {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
                         Pointcut pointcut = (Pointcut)it.next();
                         if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpressionRuntime());
                         }
                     }
                 }
                 tuple.cflowExpressions = cflowExpressionList;
+                tuple.expressionContext = ctx;
                 break;
             case JoinPointType.CONSTRUCTOR_CALL:
                 constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash);
@@ -1475,11 +1480,12 @@ public class JitCompiler {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
                         Pointcut pointcut = (Pointcut)it.next();
                         if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpressionRuntime());
                         }
                     }
                 }
                 tuple.cflowExpressions = cflowExpressionList;
+                tuple.expressionContext = ctx;
                 break;
             case JoinPointType.FIELD_SET:
                 Field field = AspectRegistry.getField(declaringClass, joinPointHash);
@@ -1493,11 +1499,12 @@ public class JitCompiler {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
                         Pointcut pointcut = (Pointcut)it.next();
                         if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpressionRuntime());
                         }
                     }
                 }
                 tuple.cflowExpressions = cflowExpressionList;
+                tuple.expressionContext = ctx;
                 break;
             case JoinPointType.FIELD_GET:
                 field = AspectRegistry.getField(declaringClass, joinPointHash);
@@ -1513,11 +1520,12 @@ public class JitCompiler {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
                         Pointcut pointcut = (Pointcut)it.next();
                         if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpressionRuntime());
                         }
                     }
                 }
                 tuple.cflowExpressions = cflowExpressionList;
+                tuple.expressionContext = ctx;
                 break;
             case JoinPointType.HANDLER:
                 CatchClauseSignatureImpl catchClauseSignature = new CatchClauseSignatureImpl(declaringClass,
@@ -1532,11 +1540,12 @@ public class JitCompiler {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
                         Pointcut pointcut = (Pointcut)it.next();
                         if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpressionRuntime());
                         }
                     }
                 }
                 tuple.cflowExpressions = cflowExpressionList;
+                tuple.expressionContext = ctx;
                 break;
             case JoinPointType.STATIC_INITALIZATION:
                 throw new UnsupportedOperationException("static initialization is not support yet");
@@ -1562,9 +1571,10 @@ public class JitCompiler {
     /**
      * Struct for static info.
      */
-    static class RttiInfo {
+    public static class RttiInfo {
         public Signature signature = null;
         public Rtti rtti = null;
         public List cflowExpressions = null;
+        public ExpressionContext expressionContext = null;
     }
 }
