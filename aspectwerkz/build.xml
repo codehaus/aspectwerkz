@@ -154,7 +154,7 @@
     <target name="aspectwerkz:transform"
         depends="aspectwerkz:init, aspectwerkz:compile, aspectwerkz:xmldef:attributes:samples">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-offline ${basedir}/src/samples/aspectwerkz.xml -verbose -verify -cp ${extensions.classes} ${samples.classes} "/>
+            <arg line="-offline ${basedir}/src/samples/aspectwerkz.xml -verify -cp ${extensions.classes} ${samples.classes} "/>
         </exec>
     </target>
 
