@@ -6,7 +6,7 @@
     <system id="samples">
         <prepare package="examples.logging." />
         <package name="examples">
-            <aspect class="caching.Fibonacci$FibonacciCacheAspect" deployment-model="perInstance"/>
+<!--            <aspect class="caching.Fibonacci$FibonacciCacheAspect" deployment-model="perInstance"/>-->
             <aspect class="caching.CachingAspect">
                 <param name="timeout" value="10"/>
             </aspect>

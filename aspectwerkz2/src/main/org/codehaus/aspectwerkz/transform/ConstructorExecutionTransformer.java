@@ -17,8 +17,6 @@ import javassist.CtConstructor;
 import javassist.CtMethod;
 import javassist.CtNewConstructor;
 import javassist.NotFoundException;
-import javassist.CtNewMethod;
-import javassist.Modifier;
 import javassist.bytecode.CodeAttribute;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
@@ -163,7 +161,6 @@ public class ConstructorExecutionTransformer implements Transformer {
      *
      * @param ctClass     the class
      * @param constructor the current method
-     * @return the new prefixed constructor
      */
     private void addPrefixToConstructor(final CtClass ctClass, final CtConstructor constructor)
             throws NotFoundException, CannotCompileException {
@@ -207,10 +204,10 @@ public class ConstructorExecutionTransformer implements Transformer {
             final CtClass ctClass,
             final boolean isActivatePhase) {
         if (ctClass.isInterface() ||
-            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
             return true;
         }
-        String className = ctClass.getName();
+        String className = ctClass.getName().replace('/', '.');
         if (definition.inExcludePackage(className)) {
             return true;
         }

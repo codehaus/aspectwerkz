@@ -135,12 +135,15 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     /**
      * Transform bytecode according to the transformer stack
      *
-     * @param className class name
+     * @param name class name
      * @param bytecode  bytecode to transform
      * @param loader    classloader loading the class
      * @return modified (or not) bytecode
      */
-    public byte[] preProcess(final String className, final byte[] bytecode, final ClassLoader loader) {
+    public byte[] preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
+
+        final String className = name.replace('/', '.'); // needed for JRockit (as well as all in all TFs)
+
         if (filter(className)) {
             return bytecode;
         }
@@ -300,7 +303,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * @param className
      * @param klass
      */
-    private void dumpBefore(final String className, final Klass klass) {
+    public static void dumpBefore(final String className, final Klass klass) {
         if (DUMP_BEFORE) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
@@ -321,7 +324,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * @param className
      * @param klass
      */
-    private void dumpAfter(final String className, final Klass klass) {
+    public static void dumpAfter(final String className, final Klass klass) {
         if (DUMP_AFTER) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
@@ -334,21 +337,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                     e.printStackTrace();
                 }
             }
-        }
-    }
-
-    /**
-     * Loads the aspect classes.
-     * @TODO: not used, remove?
-     */
-    private void loadAspects() {
-        try {
-            for (Iterator iterator = DefinitionLoader.getAspectClassNames().iterator(); iterator.hasNext();) {
-                ContextClassLoader.loadClass((String)iterator.next());
-            }
-        }
-        catch (ClassNotFoundException e) {
-            throw new WrappedRuntimeException(e);
         }
     }
 }

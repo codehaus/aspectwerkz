@@ -16,8 +16,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -35,6 +35,10 @@ import org.dom4j.Element;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class DocumentParser {
+
+    private static final String JAVA_VENDOR = "java.vendor";
+    private static final String JAVA_VM_VENDOR = "java.vm.vendor";
+    private static final String VENDOR_BEA = "BEA";
 
     /**
      * The attribute parser, retrieves the custom attributes from the bytecode of the classes.
@@ -262,21 +266,36 @@ public class DocumentParser {
      * @param loader          the class loader
      * @param aspectClassName the name of the class implementing the aspect
      * @return the class
+     * @TODO: contains conditional code for jrockit, best would be if both versions used the 'jrockit version' of the alg (most clean in TF since no TF pre-init is needed), problem with some AW class not found.
+     * @TODO: verify on IBM
      */
     private static Class loadAspectClass(final ClassLoader loader, final String aspectClassName) {
         Class aspectClass;
         try {
-//            ClassLoader cl = new URLClassLoader(
-//                    new URL[]{
-//                        new File("c:/src/aspectwerkz2/target/samples-classes").toURL(),
-//                        new File("c:/src/aspectwerkz2/target/classes").toURL()
-//                    },
-//                    null
-//            );
-//            aspectClass = cl.loadClass(aspectClassName);
-            aspectClass = ContextClassLoader.loadClass(aspectClassName);
+            if (java.lang.System.getProperty(JAVA_VENDOR).startsWith(VENDOR_BEA) ||
+                java.lang.System.getProperty(JAVA_VM_VENDOR).startsWith(VENDOR_BEA)) {
+                // jrockit
+
+                // get URL to class
+                String classFileName = aspectClassName.replace('.', '/') + ".class";
+                URL url = ContextClassLoader.getResource(classFileName);
+                String path = Strings.replaceSubString("/" + url.getPath(), classFileName, "");
+
+                // create custom CL with no parent
+                ClassLoader cl = new URLClassLoader(
+                        new URL[]{new File(path).toURL()},
+                        null
+                );
+
+                aspectClass = cl.loadClass(aspectClassName);
+            }
+            else {
+                // hotspot
+                aspectClass = ContextClassLoader.loadClass(aspectClassName);
+            }
         }
         catch (Exception e) {
+            e.printStackTrace();
             throw new WrappedRuntimeException(e);
         }
         return aspectClass;

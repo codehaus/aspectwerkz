@@ -14,6 +14,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Iterator;
 
 import javassist.CtClass;
 import javassist.CtConstructor;
@@ -22,6 +23,7 @@ import javassist.CtMethod;
 import javassist.NotFoundException;
 import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 
 /**
  * Contains constants and utility method used by the transformers.
@@ -82,7 +84,7 @@ public final class TransformationUtil {
                                                                DELIMITER;
     public static final String CONSTRUCTOR_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "constructor" +
                                                                DELIMITER;
-//
+
     public static final String FIELD_JOIN_POINT_PRE_EXECUTION_METHOD = "pre";
     public static final String FIELD_JOIN_POINT_POST_EXECUTION_METHOD = "post";
     public static final String CALLER_SIDE_JOIN_POINT_PRE_EXECUTION_METHOD = "pre";
@@ -124,7 +126,7 @@ public final class TransformationUtil {
     public static final String IDENTIFIABLE_INTERFACE = "org.codehaus.aspectwerkz.Identifiable";
     public static final String META_DATA_INTERFACE = "org.codehaus.aspectwerkz.MetaDataEnhanceable";
     public static final String UUID_CLASS = "org.codehaus.aspectwerkz.util.UuidGenerator";
-    public static final String CROSS_CUTTABLE_CLASS = "org.codehaus.aspectwerkz.CrossCutting";
+    public static final String CROSS_CUTTING_CLASS = "org.codehaus.aspectwerkz.CrossCutting";
     public static final String CROSS_CUTTING_INFO_CLASS = "org.codehaus.aspectwerkz.CrossCuttingInfo";
 
     public static final String EMPTY_WRAPPER_ATTRIBUTE = ASPECTWERKZ_PREFIX + "empty";
@@ -157,6 +159,7 @@ public final class TransformationUtil {
                 !method.getName().equals("wait") &&
                 !method.getName().equals("notify") &&
                 !method.getName().equals("notifyAll") &&
+                !method.getName().equals(GET_CROSS_CUTTING_INFO_METHOD) &&
                 !method.getName().startsWith(CLASS_LOOKUP_METHOD) &&
                 !method.getName().startsWith(GET_UUID_METHOD) &&
                 !method.getName().startsWith(GET_META_DATA_METHOD) &&
@@ -220,7 +223,7 @@ public final class TransformationUtil {
      * @param className     the name of the super class
      * @return true if we have a match else false
      */
-    public static boolean hasSuperClass(final ClassMetaData classMetaData, final String className) {
+    public static boolean extendsSuperClass(final ClassMetaData classMetaData, final String className) {
         if (classMetaData == null || className == null) {
             return false;
         }
@@ -231,7 +234,52 @@ public final class TransformationUtil {
             return true;
         }
         else {
-            return TransformationUtil.hasSuperClass(classMetaData.getSuperClass(), className);
+            return TransformationUtil.extendsSuperClass(classMetaData.getSuperClass(), className);
+        }
+    }
+
+    /**
+     * Checks if a class implements a certain inteface, somewhere up in the class hierarchy.
+     *
+     * @param classMetaData
+     * @param interfaceName
+     * @return true if we have a match else false
+     */
+    public static boolean implementsInterface(final ClassMetaData classMetaData, final String interfaceName) {
+        if (classMetaData == null || interfaceName == null) {
+            return false;
+        }
+        else if (classMetaData.getName().equals(null)) {
+            return true;
+        }
+        else {
+            for (Iterator it = classMetaData.getInterfaces().iterator(); it.hasNext();) {
+                if (implementsInterface((InterfaceMetaData)it.next(), interfaceName)) {
+                    return true;
+                }
+            }
+            return TransformationUtil.implementsInterface(classMetaData.getSuperClass(), interfaceName);
+        }
+    }
+
+    /**
+     * Checks if an interface implements a certain inteface, somewhere up in the class hierarchy.
+     *
+     * @param interfaceMetaData
+     * @param interfaceName
+     * @return true if we have a match else false
+     */
+    public static boolean implementsInterface(final InterfaceMetaData interfaceMetaData, final String interfaceName) {
+        if (interfaceMetaData.getName().equals(interfaceName)) {
+            return true;
+        }
+        else {
+            for (Iterator it = interfaceMetaData.getInterfaces().iterator(); it.hasNext();) {
+                if (implementsInterface((InterfaceMetaData)it.next(), interfaceName)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -357,7 +405,7 @@ public final class TransformationUtil {
         hash = 37 * hash + method.getName().hashCode();
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             CtClass type = method.getParameterTypes()[i];
-            String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(type.getName());
+            String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(type.getName().replace('/', '.'));
             hash = 37 * hash + name.hashCode();
         }
         return hash;
@@ -374,7 +422,7 @@ public final class TransformationUtil {
         hash = 37 * hash + constructor.getName().hashCode();
         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
             Class type = constructor.getParameterTypes()[i];
-            hash = 37 * hash + type.getName().hashCode();
+            hash = 37 * hash + type.getName().replace('/', '.').hashCode();
         }
         return hash;
     }
@@ -390,7 +438,7 @@ public final class TransformationUtil {
         hash = 37 * hash + constructor.getName().hashCode();
         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
             CtClass type = constructor.getParameterTypes()[i];
-            String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(type.getName());
+            String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(type.getName().replace('/', '.'));
             hash = 37 * hash + name.hashCode();
         }
         return hash;
@@ -419,7 +467,7 @@ public final class TransformationUtil {
     public static int calculateHash(final CtField field) throws NotFoundException {
         int hash = 17;
         hash = 37 * hash + field.getName().hashCode();
-        String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(field.getType().getName());
+        String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(field.getType().getName().replace('/', '.'));
         hash = 37 * hash + name.hashCode();
         return hash;
     }
@@ -427,7 +475,7 @@ public final class TransformationUtil {
     /**
      * Returns the prefixed method name.
      *
-     * @param methodName         the method name
+     * @param methodName     the method name
      * @param methodSequence the method sequence
      * @param className      the class name
      * @return the name of the join point
@@ -455,7 +503,7 @@ public final class TransformationUtil {
     public static int getJoinPointIndex(final CtClass klass) {
         byte[] attribute = klass.getAttribute(JOIN_POINT_INDEX_ATTRIBUTE);
         if (attribute == null) {
-         klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE, new byte[]{new Integer(0).byteValue()});
+            klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE, new byte[]{new Integer(0).byteValue()});
             return 0;
         }
         return new Integer(attribute[0]).intValue();

@@ -60,20 +60,24 @@ public class PrepareAspectClassTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws Exception {
         for (Iterator it = m_aspectClassNames.iterator(); it.hasNext();) {
-            String className = (String)it.next();
 
-            if (className.equals(klass.getName())) {
+            String className = (String)it.next();
+            String klassName = klass.getName();
+
+            if (className.equals(klassName)) {
                 ClassLoader loader = context.getLoader();
                 Set aspects = (Set)m_loadedAspects.get(loader);
                 if (aspects == null) {
                     aspects = new HashSet();
                     m_loadedAspects.put(loader, aspects);
                 }
-                else if (aspects.contains(klass.getName())) {
-                    return;
+                else {
+                    if (aspects.contains(klassName)) {
+                        return;
+                    }
                 }
 
-                aspects.add(klass.getName());
+                aspects.add(klassName);
 
                 final CtClass ctClass = klass.getCtClass();
                 ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
@@ -82,7 +86,7 @@ public class PrepareAspectClassTransformer implements Transformer {
                     addCrossCuttingInfoField(ctClass);
                     context.markAsAdvised();
                 }
-                if (!MetaDataInspector.hasInterface(classMetaData, TransformationUtil.CROSS_CUTTABLE_CLASS)) {
+                if (!MetaDataInspector.hasInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
                     addCrossCuttableInterface(ctClass);
                     context.markAsAdvised();
                 }
@@ -102,7 +106,8 @@ public class PrepareAspectClassTransformer implements Transformer {
      */
     private void addInitializingConstructor(final CtClass ctClass) throws CannotCompileException, NotFoundException {
         StringBuffer body = new StringBuffer();
-        body.append("{ ");
+        body.append('{');
+
         body.append(TransformationUtil.CROSS_CUTTING_INFO_CLASS_FIELD);
         body.append(" = $1; }");
         CtConstructor newCtor = new CtConstructor(
@@ -119,7 +124,9 @@ public class PrepareAspectClassTransformer implements Transformer {
                 return;
             }
         }
-        throw new RuntimeException("cross-cutting class does not define default no-argument constructor [" + ctClass.getName() + "]");
+        throw new RuntimeException(
+                "cross-cutting class does not define default no-argument constructor [" + ctClass.getName().replace('/', '.') + "]"
+        );
     }
 
     /**
@@ -191,6 +198,6 @@ public class PrepareAspectClassTransformer implements Transformer {
      * @param ctClass the class
      */
     private void addCrossCuttableInterface(final CtClass ctClass) throws NotFoundException {
-        ctClass.addInterface(ctClass.getClassPool().get(TransformationUtil.CROSS_CUTTABLE_CLASS));
+        ctClass.addInterface(ctClass.getClassPool().get(TransformationUtil.CROSS_CUTTING_CLASS));
     }
 }

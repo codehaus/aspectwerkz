@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.transform;
 
 import java.util.Iterator;
+import java.util.List;
 
 import javassist.CtClass;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
@@ -23,6 +24,19 @@ import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
  */
 public final class AddInterfaceTransformer implements Transformer {
 
+
+    /**
+     * List with the definitions.
+     */
+    private List m_definitions;
+
+    /**
+     *
+     */
+    public AddInterfaceTransformer() {
+        m_definitions = DefinitionLoader.getDefinitions();
+    }
+
     /**
      * Adds an interfaces to the classes specified.
      *
@@ -30,8 +44,7 @@ public final class AddInterfaceTransformer implements Transformer {
      * @param klass   the class
      */
     public void transform(final Context context, final Klass klass) {
-        // loop over all the definitions
-        for (Iterator it = DefinitionLoader.getDefinitions().iterator(); it.hasNext();) {
+        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
@@ -57,10 +70,10 @@ public final class AddInterfaceTransformer implements Transformer {
             final ClassMetaData classMetaData,
             final SystemDefinition definition) {
         if (ctClass.isInterface() ||
-            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
             return true;
         }
-        String className = ctClass.getName();
+        String className = ctClass.getName().replace('/', '.');
         if (definition.inExcludePackage(className)) {
             return true;
         }
