@@ -35,14 +35,6 @@ import java.util.ArrayList;
  */
 public class JitCompiler {
 
-    /**
-     * @TODO: document JVM option
-     * <p/>
-     * The path where the JIT class should be dumped to disk. If not speficied then no dump.
-     */
-//    private static final String JIT_CLASS_DUMP_DIR = "_dump";
-    private static final String JIT_CLASS_DUMP_DIR = java.lang.System.getProperty("aspectwerkz.jit.dump.path", null);
-
     private static final List EMTPTY_ARRAY_LIST = new ArrayList();
 
     private static final String JIT_CLASS_PREFIX = "org/codehaus/aspectwerkz/joinpoint/management/___AW_JP_";
@@ -219,10 +211,6 @@ public class JitCompiler {
                 );
 
                 cw.visitEnd();
-
-                if (JIT_CLASS_DUMP_DIR != null) {
-                    AsmHelper.dumpClass(JIT_CLASS_DUMP_DIR, className, cw);
-                }
 
                 // load the generated class
                 joinPointClass = AsmHelper.loadClass(cw.toByteArray(), className.replace('/', '.'));

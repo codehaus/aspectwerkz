@@ -25,22 +25,21 @@
 
         <menu name="Documentation">
             <item name="Introduction" href="/introduction.html"/>
-            <item name="Core concepts" href="/core_concepts.html"/>
-            <item name="Definition issues" href="/definition_issues.html"/>
+            <item name="Implementation issues" href="/implementation.html"/>
+            <item name="General definition issues" href="/definition_issues.html"/>
+            <item name="Attribute definition" href="/attribute_definition.html"/>
+            <item name="XML definition" href="/xml_definition.html"/>
             <item name="Startup and runtime issues" href="/startup_and_runtime_issues.html"/>
             <item name="Online mode architecture" href="/online.html"/>
-            <item name="Examples" href="#">
-                <item name="XML defined Aspects" href="/examples.html"/>
-                <item name="Self-defined Aspects" href="/examples_2.html"/>
-            </item>
+            <item name="Examples" href="/examples_2.html"/>
             <item name="JavaDoc" href="/apidocs/index.html"/>
             <item name="FAQ" href="/faq.html"/>
         </menu>
 
         <menu name="Misc.">
-            <item name="Testimonials" href="/testimonials.html"/>
-            <item name="Releases/Release Notes" href="/releases.html"/>
-            <item name="Build/Install" href="/build.html"/>
+<!--            <item name="Testimonials" href="/testimonials.html"/>-->
+            <item name="Releases & Release notes" href="/releases.html"/>
+            <item name="Build & Install" href="/build.html"/>
             <item name="CVS Access" href="/cvs.html"/>
             <item name="Tasks" href="/tasks.html"/>
             <!--            <item name="Clover report" href="/clover/index.html"/>-->

@@ -1,0 +1,315 @@
+<?xml version="1.0"?>
+
+<document>
+
+    <properties>
+        <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
+        <author email="alex at gnilux dot com">alexandre vasseur</author>
+        <title>Implementation issues</title>
+    </properties>
+
+    <body>
+        <section name="Table of Contents">
+            <p>
+                <ol>
+                    <b>Implementation issues</b>
+                    <br/>
+                    <li>
+                        <a href="#Aspects">Aspect models</a>
+                        <br/>
+                    </li>
+                    <li>
+                        <a href="#Advice">Advice</a>
+                        <br/>
+                    </li>
+                    <li>
+                        <a href="#JoinPoint instance">Advice</a>
+                        <br/>
+                    </li>                    <li>
+                        <a href="#Introductions">Introductions</a>
+                        <br/>
+                    </li>
+                    <li>
+                        <a href="#Example of an Aspect">Example of an Aspect</a>
+                        <br/>
+                    </li>
+                    <li>
+                        <a href="#Choosing a model">Choosing a model</a>
+                    </li>
+                </ol>
+            </p>
+        </section>
+
+        <section name="Aspects">
+            <p>
+                The <code>Aspect</code> class implements the aspect concept.
+                Aspects are <code>AspectWerkz</code>'s unit of modularity for crosscutting concerns.
+                They are defined in terms of pointcuts, advice and introductions.
+            </p>
+
+            <p>
+                An aspect is a regular Java class that must satisfy one criteria:
+                <ul>
+                    <li>
+                        extend
+                        <code>org.codehaus.aspectwerkz.aspect.Aspect</code> whether
+                        directly or indirectly by extending another subclass.
+                    </li>
+                </ul>
+                The <code>Aspect</code> class provides some useful operations to access runtime information.
+                For example:
+                <ul>
+                    <li>
+                        <code>___AW_getTargetClass()</code> to access the target class
+                    </li>
+                </ul>
+                See JavaDoc of <code>Aspect</code> class for a complete list.
+            </p>
+
+            <p>
+                The aspect can then be defined using XML or attributes, see the
+                <a href="xml_definition.html">XML definition</a> section or the
+                <a href="attribute_definition.html">Attribute definition</a> section for more information.
+            </p>
+
+            <subsection name="Abstract aspects - aspect inheritance">
+                <p>
+                    Since the Aspects are pure Java classes, you have the possibility of
+                    defining abstract aspects that you can reuse by implementing another aspect
+                    that inherits the abstract aspect.
+                </p>
+                <p>
+                    Aspect inheritance is exactly regular class inheritance. An abstract aspect
+                    is defined using the
+                    <code>abstract</code> keyword as a regular abstract class and is inherited
+                    using the
+                    <code>extends</code> keyword.
+                </p>
+            </subsection>
+        </section>
+
+        <section name="Advice">
+                <p>
+                    In the aspect class the advice are regular methods. The methods needs to conform to a specfic signature:
+                   <ul>
+                        <li>
+                            For <code>Around</code> advice:
+                            <code>public Object &lt;name of method&gt;(JoinPoint joinPoint) throws Throwable</code> signature.
+                        </li>
+                        <br/>
+                        <li>
+                            For <code>Before</code> and <code>After</code> advice:
+                            <code>public void &lt;name of method&gt;(JoinPoint joinPoint) throws Throwable</code> signature.
+                        </li>
+                    </ul>
+                    The advice can then be defined using XML or attributes, see the
+                    <a href="xml_definition.html">XML definition</a> section or the
+                    <a href="attribute_definition.html">Attribute definition</a> section for more information.
+                    </p>
+                <p>
+                    Here is a simple example of an <code>Around</code> advice. (For more examples see the
+                    <a href="examples_2.html">Examples section</a>.) The <code>JoinPoint</code> object that is passed to
+                    the method contains metadata and RTTI of the current
+                    join point. To invoke the next advice in the chain (or the target method if there are no more advice)
+                    simply call <code>joinPoint.proceed()</code> which will return the result from the next advice (or the target method).
+                </p>
+                <p>
+                    <source><![CDATA[
+public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
+    // do some stuff
+    Object result = joinPoint.proceed();
+    // do some more stuff
+    return result;
+}
+                ]]></source>
+                </p>
+
+       </section>
+
+        <section name="JoinPoint instance">
+            <p>
+                Each advice is passed a <code>JoinPoint</code> instance. The <code>JoinPoint</code> class implements
+                the join point concept, i.e. a well-defined point in the program flow.
+            </p>
+            <p>
+                The <code>JoinPoint</code> instance contains RTTI (runtime type information) about the join point we are
+                currently executing over. RTTI is retrieved through one of the
+                <a href="#Signature interfaces">Signature interfaces</a> retrieved by invoking <code>getSignature()</code>.
+            </p>
+
+            <p>
+                The <code>JoinPoint</code> clas has a method called <code>proceed()</code>, this method is used in
+                <code>Around</code> advice to either:
+                 <ul>
+                    <li>
+                        Invoke the next advice in the chain.
+                    </li>
+                    <br/>
+                    <li>
+                        Invoke the target join point (if there are no more advice).
+                    </li>
+                </ul>
+                The <code>proceed()</code> method returns the result from the method invocation and in the
+                <code>Around</code> advice you have the option of either returning the value returned from the
+                <code>proceed()</code> method or faking the value and returning something else.
+            </p>
+
+            <p>
+                <b>Warning</b>: if the <code>proceed()</code> method is invoked within an <code>Before</code> or <code>After</code>
+                advice it will currently result in infinite recursion.
+            </p>
+
+            <p>
+                The <code>JoinPoint</code> class has some other interesting methods as well, see the JavaDoc for details.
+            </p>
+        </section>
+
+        <section name="Signature interfaces">
+            <p>
+                One of the <code>Signature</code> interfaces are used for retrieving static and dynamic information
+                about the join point we are currently executing at. The interfaces forms a hierarchy in which you can
+                be both fine-grained and course-grained depending on you needs. Just cast to the appropriate interface.
+            </p>
+
+            <p>
+                The <code>Signature</code> can ber retrieved from the <code>JoinPoint</code> by invoking
+                the <code>getSignature()</code> method.
+            </p>
+            <p>
+                The interfaces are:
+                <ul>
+                    <li>
+                        <code>org.codehaus.aspectwerkz.joinpoint.Signature</code>
+                    </li>
+                    <br/>
+                    <li>
+                        <code>org.codehaus.aspectwerkz.joinpoint.MemberSignature</code>
+                    </li>
+                    <br/>
+                    <li>
+                        <code>org.codehaus.aspectwerkz.joinpoint.CodeSignature</code>
+                    </li>
+                    <br/>
+                    <li>
+                        <code>org.codehaus.aspectwerkz.joinpoint.MethodSignature</code>
+                    </li>
+                    <br/>
+                    <li>
+                        <code>org.codehaus.aspectwerkz.joinpoint.ConstructorSignature</code>
+                    </li>
+                    <br/>
+                    <li>
+                        <code>org.codehaus.aspectwerkz.joinpoint.FieldSignature</code>
+                    </li>
+                    <br/>
+                    <li>
+                        <code>org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature</code>
+                    </li>
+                    <br/>
+                </ul>
+            </p>
+
+        </section>
+
+       <section name="Introductions">
+            <p>
+                Introductions makes it possible to extend a class with a new interface and/or a new implementation
+                (methods and fields). <code>AspectWerkz</code> supports two different types of introductions:
+                <ul>
+                    <li>
+                        Interface introductions - in which you introduce an interface to the target class.
+                    </li>
+                    <br/>
+                    <li>
+                        Implementation introductions - where you introduce implementations to a target class.
+                    </li>
+                </ul>
+
+            </p>
+
+            <p>
+                Implementation introductions (interface with concrete implementation), in <code>AspectWerkz</code> implemented as
+                <i>Mixins</i>, are defined as public static inner classes of the aspect class.
+            </p>
+            <p>
+                It is mandatory for the inner class to be accessible with a no-arg constructor, thus to be public or
+                to explicitly have a no-arg constructor. The inner class implements the interface(s) to introduce on the target class.
+           </p>
+            <p>
+                Example of an implementation introduction that will introduce the implemetatation of the inner class
+                along with the interfaces the inner class implements to the target classes defined in the definition.
+                    <source><![CDATA[
+public MyAspect extends Aspect {
+
+    public static class MyIntroduction extends SuperIntroduction implements ToBeIntroduced {
+        // methods to be introduced
+        ...
+    }
+}
+                    ]]></source>
+            </p>
+
+            <subsection name="Implementation swapping">
+                <p>
+                    It is possible to replace the introduction implementation at runtime using a call like
+                    <source><![CDATA[
+SystemLoader.getSystem("systemId").getMixin("test.attribdef.aspect.IntroductionTestAspect$MyImpl").
+    ___AW_swapImplementation("test.attribdef.aspect.IntroductionTestAspectMyImplReplacement");
+                    ]]></source>
+                </p>
+                <p>
+                    The swapped implementation must implement the introduced interfaces, but can be an anonymous class
+                    or an aspect inner class. Only the default introduced implementation must be an inner class.
+                </p>
+            </subsection>
+        </section>
+
+        <section name="Example of an Aspect">
+                <p>
+                   This is a simple example showing how an aspect implementation with a couple of advice
+                    and an introduction could look like:
+                    <source><![CDATA[
+public class MyAspect extends Aspect {
+
+     public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
+         // do some stuff
+         Object result = joinPoint.proceed();
+         // do some other stuff
+         return result;
+     }
+
+     public void myBeforeAdvice(JoinPoint joinPoint) throws Throwable {
+         // do some stuff
+     }
+
+    public static class MyIntroduction extends SuperMixin implements ContractualInterface {
+        ... // introduced methods and fields
+    }
+}
+                        ]]></source>
+                </p>
+        </section>
+
+        <section name="Choosing a definition model">
+            <p>
+                The XML definition model allows to define the pointcut expressions in an external file. It can be used
+                to provide aspects that needs to be tuned without an extra development phase (apart from editing an XML file).
+                The main disadvantage with this approach is that the implementation is separated from the definition which
+                makes the code harder to refactor, maintain and reuse.
+            </p>
+            <p>
+                The attribute definition model allows you to have truly self-contained aspect components.
+                Those are easier to maintain, refactor and reuse as well as build libraries upon. The drawbacks are that it
+                requires an additional post-compilation step (until Java 1.5) to annotate them with the metadata and
+                introduces tighter coupling, makes the aspect harder to configure etc.
+            </p>
+            <p>
+                We have exprerienced that a combination of both definition formats can be beneficial. For example define
+                the reusable aspects and advice using attributes but do the pointcut definition in the external XML file.
+                This allows you to make certain decisions later in the development cycle, for example at deployment time
+                instead of at compile time.
+            </p>
+        </section>
+    </body>
+
+</document>
