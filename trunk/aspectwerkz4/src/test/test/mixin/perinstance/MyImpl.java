@@ -10,10 +10,10 @@ package test.mixin.perinstance;
 /**
  * Here we use an expression:
  *
- * @Introduce within(test.mixin.perinstance.ToBeIntroduced) OR
+ * @Mixin(expression="within(test.mixin.perinstance.ToBeIntroduced) OR
  *            hasfield(int test.mixin.perinstance.*.thisFieldNameShouldHopefullyBeUnique_perinstance) OR
- *            hasmethod(void test.mixin.perinstance.*.thisMethodNameShouldHopefullyBeUnique_perinstance(..))
- *            isTransient=true
+ *            hasmethod(void test.mixin.perinstance.*.thisMethodNameShouldHopefullyBeUnique_perinstance(..))",
+ *            isTransient=true)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */

@@ -23,7 +23,7 @@ public class PerInstancePerformanceAspect {
     }
 
     /**
-     * @Introduce within(test.performance.PerformanceTest)
+     * @Mixin within(test.performance.PerformanceTest)
      */
     public static class PerInstanceImpl implements PerInstance {
         public void runPerInstance() {

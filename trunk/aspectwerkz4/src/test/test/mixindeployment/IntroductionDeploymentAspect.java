@@ -19,7 +19,7 @@ public class IntroductionDeploymentAspect {
     /**
      * Set to parse
      *
-     * @Introduce within(test.mixindeployment.IntroductionDeploymentTest$TargetA) ||
+     * @Mixin within(test.mixindeployment.IntroductionDeploymentTest$TargetA) ||
      * within(test.mixindeployment.IntroductionDeploymentTest$TargetB)
      * deploymentModel=perInstance
      */
@@ -51,7 +51,7 @@ public class IntroductionDeploymentAspect {
     /**
      * Note: explicit within(..) pointcut is needed
      *
-     * @Introduce within(test.mixindeployment.IntroductionDeploymentTest$TargetC)
+     * @Mixin within(test.mixindeployment.IntroductionDeploymentTest$TargetC)
      * deploymentModel=perClass
      */
     public static class AnotherMarkerImpl implements Marker {
@@ -82,7 +82,7 @@ public class IntroductionDeploymentAspect {
     /**
      * Note: will fail with a StackOverflow if perInstance - due to hashCode use to fetch mixin impl.
      *
-     * @Introduce within(test.mixindeployment.IntroductionDeploymentTest$TargetD)
+     * @Mixin within(test.mixindeployment.IntroductionDeploymentTest$TargetD)
      * deploymentModel=perClass
      */
     public static class HashcodeImpl implements Hashcode {

@@ -136,7 +136,7 @@ public class AspectAnnotationParser {
                     }
                 } else if (AOPAnnotationConstants.ANNOTATION_IMPLEMENTS().equals(annotationInfo.getName())) {
                     DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
-                            ((ImplementsAnnotationProxy) annotationInfo.getAnnotation()).expression(),
+                            ((Implements) annotationInfo.getAnnotation()).value(),
                             field.getName(),
                             field.getType().getName(),
                             aspectDef
@@ -316,7 +316,7 @@ public class AspectAnnotationParser {
                 AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
                         getAdviceNameAsInSource(method),
                         AdviceType.AFTER_RETURNING,
-                        getAfterXXExpression(annotation.value(), annotation.expression()),
+                        getExpressionElseValue(annotation.value(), annotation.expression()),
                         annotation.type(),
                         aspectName,
                         aspectClassName,
@@ -333,7 +333,7 @@ public class AspectAnnotationParser {
                 AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
                         getAdviceNameAsInSource(method),
                         AdviceType.AFTER_THROWING,
-                        getAfterXXExpression(annotation.value(), annotation.expression()),
+                        getExpressionElseValue(annotation.value(), annotation.expression()),
                         annotation.type(),
                         aspectName,
                         aspectClassName,
@@ -399,14 +399,14 @@ public class AspectAnnotationParser {
      * @param expression
      * @return the one of value or expression which is not null. Both cannot be specified at the same time
      */
-    public static String getAfterXXExpression(String value, String expression) {
+    public static String getExpressionElseValue(String value, String expression) {
         if (value != null && expression != null) {
-            throw new DefinitionException("Using @AfterXX with both value and expression elements");
+            throw new DefinitionException("Using both value and expression elements");
         } else {
-            if (value != null) {
-                return value;
-            } else {
+            if (expression != null) {
                 return expression;
+            } else {
+                return value;
             }
         }
     }

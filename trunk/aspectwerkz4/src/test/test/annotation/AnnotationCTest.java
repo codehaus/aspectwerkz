@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @BeforeAction some untype that starts with Before
- * @BeforeAction(other   untyped)
+ * @BeforeAction (other   untyped)
  * @BeforeAction("yet another untyped")
  * @packaged.BeforeAction
  * @Void
@@ -70,7 +70,7 @@ public class AnnotationCTest extends TestCase {
         }
         lookFor = new String[]{
             "[some untype that starts with Before]",
-            "[other untyped]",// some space chars have been lost 
+            "[(other untyped)]",
             "[yet another untyped]",
 
         };

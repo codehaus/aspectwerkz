@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.annotation;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**
- * The 'Introduce' annotation proxy.
+ * The 'Mixin' annotation proxy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */

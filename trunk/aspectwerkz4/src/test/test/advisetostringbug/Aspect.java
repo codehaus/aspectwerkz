@@ -12,7 +12,7 @@ package test.advisetostringbug;
 public class Aspect {
 
     /**
-     * @Introduce within(test.advisetostringbug.A+)
+     * @Mixin within(test.advisetostringbug.A+)
      */
     public static class BImpl implements B {
         public void toString(boolean b, String s) {

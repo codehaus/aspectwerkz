@@ -51,9 +51,13 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
         // for @AfterReturning and @AfterThrowing, we allow untyped style as well but this
         // is not easy to determine
         if (m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.AfterReturning")
-            || m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.AfterThrowing")) {
+            || m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.AfterThrowing")
+            || m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.Mixin")
+            || m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.Aspect")) {
             String trimed = m_rawAnnotationValue.trim();
-            if (trimed.startsWith("type") || trimed.startsWith("expression")) {
+            if (trimed.startsWith("type")
+                || trimed.startsWith("expression")
+                || trimed.startsWith("deploymentModel")) {
                 ;// not using untyped syntax
             } else {
                 m_rawAnnotationValue = "\"" + m_rawAnnotationValue + "\"";
@@ -70,9 +74,9 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
                 // FIXME
                 if (m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.Aspect")) {
                     if (m_rawAnnotationValue.indexOf("name") < 0) {
-                        representation.append("\"");
+                        //representation.append("\"");
                         representation.append(m_rawAnnotationValue);
-                        representation.append("\"");
+                        //representation.append("\"");
                     }
                 } else {
                     representation.append(m_rawAnnotationValue);

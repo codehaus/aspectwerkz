@@ -33,5 +33,5 @@ public abstract class AOPAnnotationConstants {
 
     // TODO change implements to introduce
     public static String ANNOTATION_IMPLEMENTS() { return"Implements"; }
-    public static String ANNOTATION_INTRODUCE() { return"Introduce"; }
+    public static String ANNOTATION_MIXIN() { return"Mixin"; }
 }

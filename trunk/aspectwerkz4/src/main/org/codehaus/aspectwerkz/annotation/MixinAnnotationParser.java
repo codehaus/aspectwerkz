@@ -60,21 +60,19 @@ public class MixinAnnotationParser {
             throw new IllegalArgumentException("class can not be null");
         }
         final SystemDefinition systemDef = mixinDef.getSystemDefinition();
-        final List annotations = AsmAnnotations.getAnnotations(AOPAnnotationConstants.ANNOTATION_INTRODUCE(), classInfo);
+        final List annotations = AsmAnnotations.getAnnotations(AOPAnnotationConstants.ANNOTATION_MIXIN(), classInfo);
         for (Iterator iterator = annotations.iterator(); iterator.hasNext();) {
-            IntroduceAnnotationProxy annotation = (IntroduceAnnotationProxy) iterator.next();
+            Mixin annotation = (Mixin) iterator.next();
             if (annotation != null) {
-                String expression = annotation.expression();
+                String expression = AspectAnnotationParser.getExpressionElseValue(annotation.value(), annotation.expression());
                 final ExpressionInfo expressionInfo = new ExpressionInfo(expression, systemDef.getUuid());
                 ExpressionNamespace.getNamespace(systemDef.getUuid()).addExpressionInfo(
                         DefinitionParserHelper.EXPRESSION_PREFIX + expression.hashCode(),
                         expressionInfo
                 );
                 mixinDef.addExpressionInfo(expressionInfo);
-                boolean isTransient = annotation.isTransient();
-                if (isTransient) {
-                    mixinDef.setTransient(isTransient);
-                }
+                mixinDef.setTransient(annotation.isTransient());
+                mixinDef.setDeploymentModel(annotation.deploymentModel());
             }
         }
     }

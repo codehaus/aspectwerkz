@@ -11,7 +11,6 @@ import org.codehaus.aspectwerkz.extension.hotswap.EWorldUtil;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
-import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.util.Map;
