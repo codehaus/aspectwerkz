@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+
 <document>
 
     <properties>
@@ -160,21 +161,16 @@
                 You have two options depending on your needs and settings:
                 <ul>
                     <li>
-                        <p>
-                            Feed the system with the XML definition using the: <br/>
-                            <code>-Daspectwerkz.definition.file=&lt;path_to_definition_file&gt;</code>
-                            command line option.
-                        </p>
+                        Feed the system with the XML definition using the: <br/>
+                        <code>-Daspectwerkz.definition.file=&lt;path_to_definition_file&gt;</code>
+                        command line option.
                     </li><br/>
                     <li>
-                        <p>
-                            Put the definition in a file called exactly
-                            <code>aspectwerkz.xml</code> and put it on the
-                            class path. Then the system will try to load the
-                            definition as a resource.
-                        </p>
+                        Put the definition in a file called exactly
+                        <code>aspectwerkz.xml</code> and put it on the
+                        class path. Then the system will try to load the
+                        definition as a resource.
                     </li><br/>
-
                 </ul>
             </p>
             <p>
@@ -233,19 +229,16 @@
                 <p>
                     <ul>
                         <li>
-                            <p>
-                                For replacing an <code>Introduction</code> implementation use:
+                            For replacing an <code>Introduction</code> implementation use:
 <source><![CDATA[
 AspectWerkz.getSystem(uuid).getIntroduction("mixins/Mixin").
         swapImplementation("mixins.NewMixinImpl");
 ]]></source>
-                                (the new implementation has to implement the same interface as
-                                the previous one)
-                            </p>
+                            (the new implementation has to implement the same interface as
+                            the previous one)
                         </li><br/>
                         <li>
-                            <p>
-                                For creating a new <code>Advice</code> use:
+                            For creating a new <code>Advice</code> use:
 <source><![CDATA[
 // The parameters are:
 // 1. the name of advice
@@ -256,11 +249,9 @@ AspectWerkz.getSystem(uuid).getIntroduction("mixins/Mixin").
 AspectWerkz.getSystem(uuid).createAdvice(
         "advices/NewAdvice", "advices.NewAdvice", "perInstance", myClassLoader);
 ]]></source>
-                            </p>
                         </li><br/>
                         <li>
-                            <p>
-                                For removing an <code>Advice</code> from a specific pointcut use:
+                            For removing an <code>Advice</code> from a specific pointcut use:
 <source><![CDATA[
 List methodPointcuts = AspectWerkz.getSystem(uuid).getAspect("MyAspect").
                 getMethodPointcuts(className, methodMetaData);
@@ -271,11 +262,9 @@ for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
     }
 }
 ]]></source>
-                            </p>
                         </li><br/>
                         <li>
-                            <p>
-                                For adding a new <code>Advice</code> to a specific pointcut use:
+                            For adding a new <code>Advice</code> to a specific pointcut use:
 <source><![CDATA[
 List methodPointcuts = AspectWerkz.getSystem(uuid).getAspect("MyAspect").
                 getMethodPointcuts(className, methodMetaData);
@@ -286,11 +275,9 @@ for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
     }
 }
 ]]></source>
-                            </p>
                         </li><br/>
                         <li>
-                            <p>
-                                For changing the order of the <code>Advices</code> at a specific pointcut use:
+                            For changing the order of the <code>Advices</code> at a specific pointcut use:
 <source><![CDATA[
 List methodPointcuts = AspectWerkz.getSystem(uuid).getAspect("MyAspect").
         getMethodPointcuts(className, methodMetaData);
@@ -303,7 +290,6 @@ for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
     pointcut.setAdviceIndexTuples(advices);
 }
 ]]></source>
-                            </p>
                         </li><br/>
                     </ul>
                 </p>
