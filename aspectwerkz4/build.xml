@@ -508,7 +508,8 @@
                 <pathelement path="${java.home}/../lib/tools.jar"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/aop.xml"/>
+            <!-- use -Xdebug on 1.4 for HotSwap support thru native module -->
+            <jvmarg line="-Xdebug -Daspectwerkz.definition.file=${basedir}/src/samples/aop.xml"/>
         </java>
     </target>
 

@@ -321,7 +321,7 @@ public class DocumentParser {
             final Element packageElement = ((Element) it1.next());
             final String packageName = basePackage + getPackage(packageElement);
             parseAspectElements(loader, packageElement, definition, packageName, globalPointcuts);
-            parseMixinElements(loader, systemElement, definition, basePackage);
+            parseMixinElements(loader, packageElement, definition, packageName);
         }
     }
 
