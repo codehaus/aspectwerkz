@@ -31,6 +31,7 @@ import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodWrapperVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.AlreadyAddedMethodAdapter;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.AddInterfaceVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.AddMixinMethodsVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.InstanceLevelAspectVisitor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -135,6 +136,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             final ClassReader readerPhase2 = new ClassReader(bytesPhase1);
             ClassVisitor reversedChainPhase2 = writerPhase2;
             reversedChainPhase2 = new JoinPointInitVisitor(reversedChainPhase2, context);
+            reversedChainPhase2 = new InstanceLevelAspectVisitor(reversedChainPhase2, classInfo, context);
             reversedChainPhase2 = new MethodExecutionVisitor(reversedChainPhase2, classInfo, context, addedMethods);
             reversedChainPhase2 = new ConstructorBodyVisitor(reversedChainPhase2, classInfo, context, addedMethods);
             //reversedChainPhase2 = new HandlerVisitor(reversedChainPhase2, loader, classInfo, context, addedMethods); // TODO fix handler impl

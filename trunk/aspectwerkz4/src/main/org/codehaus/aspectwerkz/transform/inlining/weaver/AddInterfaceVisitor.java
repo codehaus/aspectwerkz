@@ -11,9 +11,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
 
 import org.objectweb.asm.*;
 import org.codehaus.aspectwerkz.transform.Context;
@@ -26,9 +23,6 @@ import org.codehaus.aspectwerkz.definition.MixinDefinition;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
-import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 
 /**
  * Adds an interface to the target class.

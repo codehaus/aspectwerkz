@@ -92,6 +92,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     }
 
     /**
+     * asm
      * Creates a new perJVM cross-cutting instance, if it already exists then return it.
      *
      * @return the cross-cutting instance
