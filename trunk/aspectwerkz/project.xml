@@ -108,6 +108,26 @@
 
     <dependencies>
         <dependency>
+            <!-- FAKE dependancy to have a header in maven generated stuff -->
+            <id>Notes</id>
+            <jar>-</jar>
+            <version><![CDATA[
+<pre>
+Many dependancies are not needed depending the mode you are using:
+Runtime only (once post compiled):
+    trove, dom4j, jexl, jrexx, concurrent
+    (piccolo or other SAX impl.)
+Post compilation / Aspect compilation:
+    bcel, ant, qdox (and runtime ones)
+Class load time weaving and runtime:
+    JDK tools.jar, bcel (and runtime ones)
+Building and testing the project:
+    ant, junit, junitperf (and all others)
+Extensions:
+    jisp, prevayler, jrockitmanagement...</pre>]]>
+            </version>
+        </dependency>
+        <dependency>
             <id>tools</id>
             <jar>tools.jar</jar>
             <version>included in JDK/JRE</version>
@@ -126,7 +146,7 @@
         </dependency>
         <dependency>
             <id>qdox</id>
-            <version>1.3</version>
+            <version>1.3 (latest)</version>
         </dependency>
         <dependency>
             <id>commons-jexl</id>
@@ -184,15 +204,15 @@
 
     <reports>
         <report>maven-license-plugin</report>
-        <report>maven-tasklist-plugin</report>
-        <report>maven-jdepend-plugin</report>
-        <report>maven-pmd-plugin</report>
-        <report>maven-changes-plugin</report>
-        <report>maven-jxr-plugin</report>
-        <report>maven-javadoc-plugin</report>
-        <report>maven-changelog-plugin</report>
-        <report>maven-file-activity-plugin</report>
-        <report>maven-developer-activity-plugin</report>
+<!--        <report>maven-tasklist-plugin</report>-->
+<!--        <report>maven-jdepend-plugin</report>-->
+<!--        <report>maven-pmd-plugin</report>-->
+<!--        <report>maven-changes-plugin</report>-->
+<!--        <report>maven-jxr-plugin</report>-->
+<!--        <report>maven-javadoc-plugin</report>-->
+<!--        <report>maven-changelog-plugin</report>-->
+<!--        <report>maven-file-activity-plugin</report>-->
+<!--        <report>maven-developer-activity-plugin</report>-->
         <!--        <report>maven-checkstyle-plugin</report>-->
         <!--        <report>maven-statcvs-plugin</report>-->
         <!--        <report>maven-simian-plugin</report>-->
