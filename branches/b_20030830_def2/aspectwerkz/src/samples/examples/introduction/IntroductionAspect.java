@@ -20,11 +20,6 @@ public class IntroductionAspect extends AbstractAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Pointcut class(examples.introduction.Target)
-     */
-    void classes() {}
-
-    /**
      * @Class examples.introduction.Target
      */
     Pointcut classes;

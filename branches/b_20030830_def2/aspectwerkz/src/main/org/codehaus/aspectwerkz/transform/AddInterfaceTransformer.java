@@ -19,6 +19,7 @@ import org.apache.bcel.classfile.ConstantUtf8;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.InterfaceIntroductionDefinition;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 
@@ -59,6 +60,8 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
         m_definition.loadAspects(context.getLoader());
 
         final ClassGen cg = klass.getClassGen();
+        final ConstantPoolGen cpg = cg.getConstantPool();
+
         ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
 
         if (classFilter(cg, classMetaData)) {
@@ -69,7 +72,17 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
         }
         m_transformed.add(cg.getClassName());
 
-        ConstantPoolGen cpg = cg.getConstantPool();
+        addInterfaceIntroductions2(cg, cpg, classMetaData);
+    }
+
+    /**
+     * Adds the interface introductions to the class.
+     *
+     * @param cg the class gen
+     * @param cpg the constant pool gen
+     * @param interfaces the in
+     */
+    private void addInterfaceIntroductions1(final ClassGen cg, final ConstantPoolGen cpg) {
         int[] interfaces = cg.getInterfaces();
 
         List introductionNames = m_definition.getIntroductionNamesForClass(cg.getClassName());
@@ -94,6 +107,41 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
                     throw new DefinitionException("trying to weave null interface to " + cg.getClassName() + ": definition file is not consistentadd");
                 }
                 TransformationUtil.addInterfaceToClass(cg, interfaceName);
+            }
+        }
+    }
+
+    /**
+     * Adds the interface introductions to the class.
+     *
+     * @param cg the class gen
+     * @param cpg the constant pool gen
+     * @param classMetaData the class meta-data
+     * @param interfaces the in
+     */
+    private void addInterfaceIntroductions2(final ClassGen cg,
+                                            final ConstantPoolGen cpg,
+                                            final ClassMetaData classMetaData) {
+        int[] interfaces = cg.getInterfaces();
+
+        List introDefs = m_definition.getInterfaceIntroductions(classMetaData);
+        for (Iterator it = introDefs.iterator(); it.hasNext();) {
+
+            InterfaceIntroductionDefinition introductionDef = (InterfaceIntroductionDefinition)it.next();
+            String className = introductionDef.getInterfaceClassName();
+
+            boolean addInterface = true;
+            for (int l = 0; l < interfaces.length; l++) {
+                ConstantClass cc = (ConstantClass)cpg.getConstant(interfaces[l]);
+                ConstantUtf8 cu = (ConstantUtf8)cpg.getConstant(cc.getNameIndex());
+
+                if (implementsInterface(cu, className)) {
+                    addInterface = false;
+                    break;
+                }
+            }
+            if (addInterface && className != null) {
+                TransformationUtil.addInterfaceToClass(cg, className);
             }
         }
     }

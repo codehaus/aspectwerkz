@@ -294,12 +294,10 @@ public class AspectWerkzDefinition implements Serializable {
      *
      * @param pattern the pattern
      * @param pointcutDef the pointcut definition
-     * @param packageName the name of the package
      */
     public static void createClassPattern(final String pattern,
-                                          final PointcutDefinition pointcutDef,
-                                          final String packageName) {
-        String classPattern = packageName + "." + pattern;
+                                          final PointcutDefinition pointcutDef) {
+        String classPattern = pattern;
         if (classPattern.endsWith("+")) {
             classPattern = classPattern.substring(0, classPattern.length() - 1);
             pointcutDef.markAsHierarchical();
@@ -313,11 +311,9 @@ public class AspectWerkzDefinition implements Serializable {
      *
      * @param pattern the pattern
      * @param pointcutDef the pointcut definition
-     * @param packageName the name of the package
      */
     public static void createMethodPattern(final String pattern,
-                                           final PointcutDefinition pointcutDef,
-                                           final String packageName) {
+                                           final PointcutDefinition pointcutDef) {
         int indexFirstSpace = pattern.indexOf(' ');
         String returnType = pattern.substring(0, indexFirstSpace + 1);
         String classNameWithMethodName = pattern.substring(
@@ -328,7 +324,7 @@ public class AspectWerkzDefinition implements Serializable {
 
         final String methodPattern = classNameWithMethodName.substring(
                 indexLastDot + 1, classNameWithMethodName.length()).trim();
-        String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
+        String classPattern = classNameWithMethodName.substring(0, indexLastDot);
         if (classPattern.endsWith("+")) {
             classPattern = classPattern.substring(0, classPattern.length() - 1);
             pointcutDef.markAsHierarchical();
@@ -347,11 +343,9 @@ public class AspectWerkzDefinition implements Serializable {
      *
      * @param pattern the pattern
      * @param pointcutDef the pointcut definition
-     * @param packageName the name of the package
      */
     public static void createFieldPattern(final String pattern,
-                                          final PointcutDefinition pointcutDef,
-                                          final String packageName) {
+                                          final PointcutDefinition pointcutDef) {
         int indexFirstSpace = pattern.indexOf(' ');
         String fieldType = pattern.substring(0, indexFirstSpace + 1);
         String classNameWithFieldName = pattern.substring(
@@ -360,7 +354,7 @@ public class AspectWerkzDefinition implements Serializable {
 
         final String fieldPattern = classNameWithFieldName.substring(
                 indexLastDot + 1, classNameWithFieldName.length()).trim();
-        String classPattern = packageName + classNameWithFieldName.substring(0, indexLastDot).trim();
+        String classPattern = classNameWithFieldName.substring(0, indexLastDot).trim();
         if (classPattern.endsWith("+")) {
             classPattern = classPattern.substring(0, classPattern.length() - 1);
             pointcutDef.markAsHierarchical();
@@ -378,11 +372,9 @@ public class AspectWerkzDefinition implements Serializable {
      *
      * @param pattern the pattern
      * @param pointcutDef the pointcut definition
-     * @param packageName the name of the package
      */
     public static void createThrowsPattern(final String pattern,
-                                           final PointcutDefinition pointcutDef,
-                                           final String packageName) {
+                                           final PointcutDefinition pointcutDef) {
         String classAndMethodName = pattern.substring(0, pattern.indexOf('#')).trim();
         final String exceptionName = pattern.substring(pattern.indexOf('#') + 1).trim();
         int indexFirstSpace = classAndMethodName.indexOf(' ');
@@ -394,7 +386,7 @@ public class AspectWerkzDefinition implements Serializable {
         int indexLastDot = classNameWithMethodName.lastIndexOf('.');
         final String methodPattern = classNameWithMethodName.substring(
                 indexLastDot + 1, classNameWithMethodName.length()).trim();
-        String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
+        String classPattern = classNameWithMethodName.substring(0, indexLastDot);
         if (classPattern.endsWith("+")) {
             classPattern = classPattern.substring(0, classPattern.length() - 1);
             pointcutDef.markAsHierarchical();
@@ -418,13 +410,12 @@ public class AspectWerkzDefinition implements Serializable {
      * @param packageName the name of the package
      */
     public static void createCallerSidePattern(String pattern,
-                                               final PointcutDefinition pointcutDef,
-                                               final String packageName) {
+                                               final PointcutDefinition pointcutDef) {
         if (pattern.indexOf('>') == -1) {
             pattern = "*->" + pattern; // if no caller side pattern is specified => default to *
         }
 
-        String callerClassPattern = packageName + pattern.substring(0, pattern.indexOf('-')).trim();
+        String callerClassPattern = pattern.substring(0, pattern.indexOf('-')).trim();
         if (callerClassPattern.endsWith("+")) {
             callerClassPattern = callerClassPattern.substring(0, callerClassPattern.length() - 1);
             pointcutDef.markAsHierarchical();
@@ -440,7 +431,7 @@ public class AspectWerkzDefinition implements Serializable {
         int indexLastDot = classNameWithMethodName.lastIndexOf('.');
         String calleeMethodPattern = classNameWithMethodName.substring(
                 indexLastDot + 1, classNameWithMethodName.length()).trim();
-        String calleeClassPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
+        String calleeClassPattern = classNameWithMethodName.substring(0, indexLastDot);
 
         if (calleeClassPattern.endsWith("+")) {
             calleeClassPattern = calleeClassPattern.substring(0, calleeClassPattern.length() - 1);
@@ -527,7 +518,7 @@ public class AspectWerkzDefinition implements Serializable {
         final Collection introductionDefs = new ArrayList();
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
-            introductionDefs.addAll(aspectDef.getIntroductions());
+            introductionDefs.addAll(aspectDef.getMethodIntroductions());
         }
         return introductionDefs;
     }
@@ -642,9 +633,9 @@ public class AspectWerkzDefinition implements Serializable {
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
-            List introductions = aspectDef.getIntroductions();
+            List introductions = aspectDef.getMethodIntroductions();
             for (Iterator it2 = introductions.iterator(); it2.hasNext();) {
-                IntroductionDefinition introDef = (IntroductionDefinition)it2.next();
+                MethodIntroductionDefinition introDef = (MethodIntroductionDefinition)it2.next();
                 if (introDef.getName().equals(introductionName)) {
                     return introDef.getAspectClassName();
                 }
@@ -661,14 +652,14 @@ public class AspectWerkzDefinition implements Serializable {
      * @param introductionName the name of the introduction
      * @return the introduction definition
      */
-    public IntroductionDefinition getIntroductionDefinition(final String introductionName) {
+    public MethodIntroductionDefinition getIntroductionDefinition(final String introductionName) {
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
-            List introductions = aspectDef.getIntroductions();
+            List introductions = aspectDef.getMethodIntroductions();
             for (Iterator it2 = introductions.iterator(); it2.hasNext();) {
-                IntroductionDefinition introDef = (IntroductionDefinition)it2.next();
+                MethodIntroductionDefinition introDef = (MethodIntroductionDefinition)it2.next();
                 if (introDef.getName().equals(introductionName)) {
                     return introDef;
                 }
@@ -688,8 +679,8 @@ public class AspectWerkzDefinition implements Serializable {
         final List introDefs = new ArrayList();
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
-            for (Iterator it2 = aspectDef.getIntroductions().iterator(); it2.hasNext();) {
-                IntroductionDefinition introDef = (IntroductionDefinition)it2.next();
+            for (Iterator it2 = aspectDef.getMethodIntroductions().iterator(); it2.hasNext();) {
+                MethodIntroductionDefinition introDef = (MethodIntroductionDefinition)it2.next();
                 if (introDef.getWeavingRule().matchClassPointcut(classMetaData)) {
                     introDefs.add(introDef);
                 }
@@ -848,7 +839,7 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
-     * Checks if a class has an <tt>Introduction</tt>.
+     * Checks if a class has an <tt>Mixin</tt>.
      *
      * @param classMetaData the class meta-data
      * @return boolean
@@ -859,8 +850,16 @@ public class AspectWerkzDefinition implements Serializable {
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
-            for (Iterator it2 = aspectDef.getIntroductions().iterator(); it2.hasNext();) {
-                IntroductionDefinition introDef = (IntroductionDefinition)it2.next();
+            for (Iterator it2 = aspectDef.getMethodIntroductions().iterator(); it2.hasNext();) {
+                MethodIntroductionDefinition introDef = (MethodIntroductionDefinition)it2.next();
+
+                IntroductionWeavingRule weavingRule = introDef.getWeavingRule();
+                if (weavingRule.matchClassPointcut(classMetaData)) {
+                    return true;
+                }
+            }
+            for (Iterator it2 = aspectDef.getInterfaceIntroductions().iterator(); it2.hasNext();) {
+                InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition)it2.next();
                 if (introDef.getWeavingRule().matchClassPointcut(classMetaData)) {
                     return true;
                 }
@@ -1120,6 +1119,29 @@ public class AspectWerkzDefinition implements Serializable {
 //            }
         }
         return false;
+    }
+
+    /**
+     * Returns the interface introductions for a certain class.
+     *
+     * @param classMetaData the class meta-data
+     * @return the names
+     */
+    public List getInterfaceIntroductions(final ClassMetaData classMetaData) {
+        if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+
+        List introductionDefs = new ArrayList();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            for (Iterator it2 = aspectDef.getInterfaceIntroductions().iterator(); it2.hasNext();) {
+                InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition)it2.next();
+                if (introDef.getWeavingRule().matchClassPointcut(classMetaData)) {
+                    introductionDefs.add(introDef);
+                }
+            }
+        }
+        return introductionDefs;
     }
 
     /**

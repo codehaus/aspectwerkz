@@ -301,7 +301,6 @@
     <goal name="aspectwerkz:samples:introduction">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
         </exec>

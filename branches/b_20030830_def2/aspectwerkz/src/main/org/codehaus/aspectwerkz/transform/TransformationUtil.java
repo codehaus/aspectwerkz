@@ -68,7 +68,7 @@ public final class TransformationUtil {
     public static final String CLASS_LOOKUP_METHOD = "class$";
 
     public static final String ASPECT_WERKZ_CLASS = "org.codehaus.aspectwerkz.AspectWerkz";
-    public static final String INTRODUCTION_CLASS = "org.codehaus.aspectwerkz.introduction.Introduction";
+    public static final String MIXIN_CLASS = "org.codehaus.aspectwerkz.Mixin";
     public static final String THREAD_LOCAL_CLASS = "org.codehaus.aspectwerkz.util.SerializableThreadLocal";
     public static final String MEMBER_METHOD_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.MemberMethodJoinPoint";
     public static final String STATIC_METHOD_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.StaticMethodJoinPoint";
@@ -82,6 +82,9 @@ public final class TransformationUtil {
     public static final String META_DATA_INTERFACE = "org.codehaus.aspectwerkz.MetaDataEnhanceable";
     public static final String UUID_CLASS = "org.codehaus.aspectwerkz.util.UuidGenerator";
     public static final String SERIAL_VERSION_UID_FIELD = "serialVersionUID";
+    public static final String RETRIEVE_SYSTEM_METHOD = "getSystem";
+    public static final String RETRIEVE_MIXIN_METHOD = "getMixin";
+    public static final String INVOKE_MIXIN_METHOD = "___AW_invokeIntroduction";
 
     public static final ObjectType MEMBER_METHOD_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.MemberMethodJoinPoint");
     public static final ObjectType STATIC_METHOD_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.StaticMethodJoinPoint");

@@ -102,12 +102,12 @@ public class PointcutDefinition {
         m_name = field.getName();
 
         if (isMethodPointcut()) {
-            AspectWerkzDefinition.createMethodPattern(m_expression, this, "");
+            AspectWerkzDefinition.createMethodPattern(m_expression, this);
             m_regexpPattern = Pattern.compileMethodPattern(m_pattern);
             m_type = TYPE_METHOD;
         }
         else if (isFieldPointcut()) {
-            AspectWerkzDefinition.createFieldPattern(m_expression, this, "");
+            AspectWerkzDefinition.createFieldPattern(m_expression, this);
             m_regexpPattern = Pattern.compileFieldPattern(m_pattern);
             if (type.equals(Pointcut.SET)) {
                 m_type = TYPE_SET_FIELD;
@@ -117,20 +117,20 @@ public class PointcutDefinition {
             }
         }
         else if (isClassPointcut()) {
-            AspectWerkzDefinition.createClassPattern(m_expression, this, "");
+            AspectWerkzDefinition.createClassPattern(m_expression, this);
             m_regexpPattern = Pattern.compileClassPattern(m_pattern);
             m_type = TYPE_CLASS;
         }
 //        else if (m_type.equalsIgnoreCase(TYPE_THROWS)) {
-//            AspectWerkzDefinition.createThrowsPattern(m_expression, this, "");
+//            AspectWerkzDefinition.createThrowsPattern(m_expression, this);
 //            m_regexpPattern = Pattern.compileThrowsPattern(m_pattern);
 //        }
 //        else if (m_type.equalsIgnoreCase(TYPE_CALLER_SIDE)) {
-//            AspectWerkzDefinition.createCallerSidePattern(m_expression, this, "");
+//            AspectWerkzDefinition.createCallerSidePattern(m_expression, this);
 //            m_regexpPattern = Pattern.compileCallerSidePattern(m_pattern);
 //        }
 //        else if (m_type.equalsIgnoreCase(TYPE_CFLOW)) {
-//            AspectWerkzDefinition.create(m_expression, this, "");
+//            AspectWerkzDefinition.create(m_expression, this);
 //            m_regexpPattern = Pattern.compile(m_pattern);
 //        }
         else {
