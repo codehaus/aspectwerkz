@@ -416,12 +416,17 @@ public final class TransformationUtil {
      */
     public static boolean isSerializable(final Context context, final ClassGen cg) {
         boolean isSerializable = false;
-        JavaClass[] allInterfaces = context.getJavaClass(cg).getAllInterfaces();
-        for (int i = 0; i < allInterfaces.length; i++) {
-            JavaClass anInterface = allInterfaces[i];
-            if (anInterface.getClassName().equals("java.io.Serializable")) {
-                isSerializable = true;
+        try {
+            JavaClass[] allInterfaces = context.getJavaClass(cg).getAllInterfaces();
+            for (int i = 0; i < allInterfaces.length; i++) {
+                JavaClass anInterface = allInterfaces[i];
+                if (anInterface.getClassName().equals("java.io.Serializable")) {
+                    isSerializable = true;
+                }
             }
+        }
+        catch (ClassNotFoundException e) {
+            throw new WrappedRuntimeException(e);
         }
         return isSerializable;
     }

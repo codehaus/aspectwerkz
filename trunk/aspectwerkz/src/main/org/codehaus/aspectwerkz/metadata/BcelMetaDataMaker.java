@@ -18,6 +18,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.Type;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Convenience methods to construct <code>MetaData</code> instances from BCEL classes.
@@ -61,20 +62,25 @@ public class BcelMetaDataMaker extends MetaDataMaker {
         }
         classMetaData.setFields(fieldList);
 
-        // interfaces
-        List interfaceList = new ArrayList();
-        JavaClass[] interfaces = javaClass.getInterfaces();
-        for (int i = 0; i < interfaces.length; i++) {
-            JavaClass anInterface = interfaces[i];
-            interfaceList.add(createInterfaceMetaData(anInterface));
-        }
-        classMetaData.setInterfaces(interfaceList);
+        try {
+            // interfaces
+            List interfaceList = new ArrayList();
+            JavaClass[] interfaces = javaClass.getInterfaces();
+            for (int i = 0; i < interfaces.length; i++) {
+                JavaClass anInterface = interfaces[i];
+                interfaceList.add(createInterfaceMetaData(anInterface));
+            }
+            classMetaData.setInterfaces(interfaceList);
 
-        // super class
-        JavaClass superClass = javaClass.getSuperClass();
-        if (superClass != null) { // has super class?
-            ClassMetaData superClassMetaData = createClassMetaData(superClass);
-            classMetaData.setSuperClass(superClassMetaData);
+            // super class
+            JavaClass superClass = javaClass.getSuperClass();
+            if (superClass != null) { // has super class?
+                ClassMetaData superClassMetaData = createClassMetaData(superClass);
+                classMetaData.setSuperClass(superClassMetaData);
+            }
+        }
+        catch (ClassNotFoundException e) {
+            throw new WrappedRuntimeException(e);
         }
 
         synchronized (s_classMetaDataCache) {
@@ -99,13 +105,18 @@ public class BcelMetaDataMaker extends MetaDataMaker {
         InterfaceMetaData interfaceMetaData = new InterfaceMetaData();
         interfaceMetaData.setName(javaClass.getClassName());
 
-        List interfaceList = new ArrayList();
-        JavaClass[] interfaces = javaClass.getInterfaces();
-        for (int i = 0; i < interfaces.length; i++) {
-            JavaClass anInterface = interfaces[i];
-            interfaceList.add(createInterfaceMetaData(anInterface));
+        try {
+            List interfaceList = new ArrayList();
+            JavaClass[] interfaces = javaClass.getInterfaces();
+            for (int i = 0; i < interfaces.length; i++) {
+                JavaClass anInterface = interfaces[i];
+                interfaceList.add(createInterfaceMetaData(anInterface));
+            }
+            interfaceMetaData.setInterfaces(interfaceList);
         }
-        interfaceMetaData.setInterfaces(interfaceList);
+        catch (ClassNotFoundException e) {
+            throw new WrappedRuntimeException(e);
+        }
 
         synchronized (s_interfaceMetaDataCache) {
             s_interfaceMetaDataCache.put(interfaceMetaData.getName(), interfaceMetaData);

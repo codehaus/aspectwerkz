@@ -164,10 +164,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                     uuid,
                     controllerClassName));
 
-            methods[i] = addPrefixToMethod(
-                    cpg, cg, mg,
-                    methods[i],
-                    methodSequence).getMethod();
+            methods[i] = addPrefixToMethod(mg, methods[i], methodSequence);
 
             mg.setMaxStack();
         }
@@ -326,20 +323,14 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * Adds a prefix to the original method.
      * To make it callable only from within the framework itself.
      *
-     * @param cp the ConstantPoolGen
-     * @param cg the ClassGen
      * @param mg the MethodGen
      * @param method the current method
      * @param methodSequence the methods sequence number
      * @return the modified method
      */
-    private MethodGen addPrefixToMethod(final ConstantPoolGen cp,
-                                        final ClassGen cg,
-                                        final MethodGen mg,
-                                        final Method method,
-                                        final int methodSequence) {
-
-        final StringBuffer methodName = getPrefixedMethodName(method, methodSequence);
+    private Method addPrefixToMethod(final MethodGen mg,
+                                     final Method method,
+                                     final int methodSequence) {
 
         // change the method access flags (should always be set to private)
         int accessFlags = mg.getAccessFlags();
@@ -356,37 +347,11 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             accessFlags &= ~Constants.ACC_PUBLIC;
         }
 
-        // update the method
-        final MethodGen prefixedMethod = new MethodGen(
-                accessFlags,
-                mg.getReturnType(),
-                mg.getArgumentTypes(),
-                mg.getArgumentNames(),
-                methodName.toString(),
-                cg.getClassName(),
-                mg.getInstructionList(),
-                cp);
-
-        // add the exceptions
-        final String[] exceptions = mg.getExceptions();
-        for (int i = 0; i < exceptions.length; i++) {
-            prefixedMethod.addException(exceptions[i]);
-        }
-
-        // add the exception handlers
-        final CodeExceptionGen[] exceptionHandlers = mg.getExceptionHandlers();
-        for (int i = 0; i < exceptionHandlers.length; i++) {
-            prefixedMethod.addExceptionHandler(
-                    exceptionHandlers[i].getStartPC(),
-                    exceptionHandlers[i].getEndPC(),
-                    exceptionHandlers[i].getHandlerPC(),
-                    exceptionHandlers[i].getCatchType());
-        }
-
-        prefixedMethod.setMaxStack();
-        prefixedMethod.setMaxLocals();
-
-        return prefixedMethod;
+        mg.setName(getPrefixedMethodName(method, methodSequence).toString());
+        mg.setAccessFlags(accessFlags);
+        mg.setMaxStack();
+        mg.setMaxLocals();
+        return mg.getMethod();
     }
 
     /**
