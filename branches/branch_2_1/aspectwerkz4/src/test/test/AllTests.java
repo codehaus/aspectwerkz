@@ -15,6 +15,7 @@ import test.expression.ExpressionParserTest;
 import test.expression.AnnotationExpressionTest;
 import test.expression.AdvisedClassFilterExpressionTest;
 import test.enclosingsjp.EnclosingSJPTest;
+import test.perx.AssociationScopeTest;
 import test.staticinitialization.StaticInitializationTest;
 import test.staticinitialization.StaticInitializationExpressionTest;
 import test.withincode.WithincodeClinitTest;
@@ -90,6 +91,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(WithincodeClinitTest.class);
 
         suite.addTestSuite(test.ClassInfoTest.class);
+        suite.addTestSuite(AssociationScopeTest.class);
         // AW-361, should not throw an NPE
         SystemDefinitionContainer.getDefinitionsFor(null);
         SystemDefinitionContainer.getDefinitionsAt(null);

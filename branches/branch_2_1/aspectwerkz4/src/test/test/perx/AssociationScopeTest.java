@@ -21,10 +21,6 @@ import junit.framework.TestCase;
 /**
  * perX test
  * 
- * FIXME: not working
- * java.lang.VerifyError: (class: test/perx/AssociationScopeTest, method: aw$original$_AW_$suite$_AW_$test_perx_AssociationScopeTest signature: ()Ljunit/framework/Test;) 
- * Unable to pop operand off an empty stack
- * 
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class AssociationScopeTest extends TestCase {
@@ -62,7 +58,7 @@ public class AssociationScopeTest extends TestCase {
 	public void testAspectsOf() {
 		A a = new A();
         try {
-            Object aspectInstance = Aspects.aspectOf("tests/perThis", a);
+            Object aspectInstance = Aspects.aspectOf("per-scopes/perThis", a);
             fail("perX aspect is not yet available");
         } catch(NoAspectBoundException nabe) {
             ;
@@ -71,7 +67,7 @@ public class AssociationScopeTest extends TestCase {
 		a.m();
 		
         try {
-            Object aspectInstance = Aspects.aspectOf("tests/perThis", a);
+            Object aspectInstance = Aspects.aspectOf("per-scopes/perThis", a);
         } catch(NoAspectBoundException nabe) {
             fail("perX aspect should be available now");
         }

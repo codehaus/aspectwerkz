@@ -167,7 +167,6 @@
             <pointcut name="test" expression="execution(* test.bindingsyntax.*.doRD*(..))"/>
             <advice bind-to="test" type="around" name="advice1"/>
         </aspect>
-
     </system>
 
     <system id="polymorphic">
@@ -177,5 +176,22 @@
             <advice name="ctor1Advise(JoinPoint)" type="before" bind-to="execution(test.polymorphic.*.new(int))"/>
             <advice name="ctor2Advise(JoinPoint foo)" type="before" bind-to="in AND call(test.polymorphic.*.new(String))"/>
         </aspect>
+    </system>
+    
+    <system id="per-scopes">
+    		<include package="test.perx.*"/>
+    		<pointcut name="perPointcut">
+					within(test.perx.*) 
+					AND 
+					!within(test.perx.PerXAspect)
+				</pointcut>
+				<aspect name="perTarget" class="test.perx.PerXAspect" deployment-model="perTarget(call(void test.perx.A.*()))">
+					<param name="logPrefix" value="perTarget"/>
+					<advice name="beforeAll(org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint sjp)" type="before" bind-to="perPointcut"/>
+				</aspect>
+				<aspect name="perThis" class="test.perx.PerXAspect" deployment-model="perThis(execution(void test.perx.A.*()))">
+					<param name="logPrefix" value="perThis"/>
+					<advice name="beforeAll(org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint sjp)" type="before" bind-to="perPointcut"/>
+				</aspect>
     </system>
 </aspectwerkz>

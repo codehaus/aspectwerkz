@@ -26,42 +26,46 @@ public class PerXAspect {
 	
 	public void beforeAll(StaticJoinPoint sjp) {
 		AssociationScopeTest.SCOPE_LOG += m_logPrefix + " ";
-		AssociationScopeTest.JOINPOINTTYPES.add(sjp.getType().toString());
-        
-//		StringBuffer buf = new StringBuffer("-----\n");
-//		
-//		buf.append("IN:").append(m_logPrefix).append("\n");
-//		
-//		JoinPointType jpt = sjp.getType();
-//		
-//		buf.append(jpt.toString()).append("(");
-//		switch (jpt.hashCode()) {
-//			case JoinPointType.CONSTRUCTOR_CALL_INT:
-//				buf.append(sjp.getCalleeClass().getName())
-//						.append(".<init>)");
-//				break;
-//			case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
-//				buf.append(sjp.getCallerClass().getName())
-//						.append(".<init>)");
-//				break;
-//			case JoinPointType.METHOD_CALL_INT:
-//				buf.append(sjp.getCalleeClass().getName())
-//						.append(".").append(sjp.getSignature().getName())
-//						.append("())");
-//				break;
-//			case JoinPointType.METHOD_EXECUTION_INT:
-//				buf.append(sjp.getCallerClass().getName())
-//						.append(".").append(sjp.getSignature().getName())
-//						.append("())");
-//				break;
-//			default:
-//				buf.append(sjp.getSignature().getName())
-//					.append("())");
-//		}
-//		
-//		buf.append(")");
-//		buf.append("[CALLERCLASS:").append(sjp.getCallerClass().getName()).append(",");
-//		buf.append("CALLEECLASS:").append(sjp.getCalleeClass().getName()).append("]");
-//		System.out.println(buf.toString());
+        AssociationScopeTest.JOINPOINTTYPES.add(sjp.getType().toString());
 	}
+    
+    private void printStaticJoinPoint(final StaticJoinPoint sjp) {
+        StringBuffer buf = new StringBuffer("-----\n");
+        
+        buf.append("IN:").append(m_logPrefix).append("\n");
+        
+        JoinPointType jpt = sjp.getType();
+        
+        buf.append(jpt.toString()).append("(");
+        switch (jpt.hashCode()) {
+            case JoinPointType.CONSTRUCTOR_CALL_INT:
+                buf.append(sjp.getCalleeClass().getName())
+                        .append(".<init>)");
+                break;
+            case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
+                buf.append(sjp.getCallerClass().getName())
+                        .append(".<init>)");
+                break;
+            case JoinPointType.METHOD_CALL_INT:
+                buf.append(sjp.getCalleeClass().getName())
+                        .append(".")
+                        .append(sjp.getSignature().getName())
+                        .append("())");
+                break;
+            case JoinPointType.METHOD_EXECUTION_INT:
+                buf.append(sjp.getCallerClass().getName())
+                        .append(".")
+                        .append(sjp.getSignature().getName())
+                        .append("())");
+                break;
+            default:
+                buf.append(sjp.getSignature().getName())
+                    .append("())");
+        }
+        
+        buf.append(")");
+        buf.append("[CALLERCLASS:").append(sjp.getCallerClass().getName()).append(",");
+        buf.append("CALLEECLASS:").append(sjp.getCalleeClass().getName()).append("]");
+        System.out.println(buf.toString());
+    }
 }
