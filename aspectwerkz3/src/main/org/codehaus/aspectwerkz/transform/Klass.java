@@ -9,8 +9,6 @@ package org.codehaus.aspectwerkz.transform;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
-import java.io.IOException;
-
 import javassist.ByteArrayClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -24,17 +22,21 @@ import javassist.LoaderClassPath;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class Klass
-{
+public class Klass {
     /**
      * The name of the class.
      */
     private final String m_name;
 
     /**
-     * The Javassist class gen.
+     * The classloader defining the class
      */
-    private final CtClass m_ctClass;
+    private final ClassLoader m_loader;
+
+    /**
+     * The Javassist CtClass, lazyly loaded.
+     */
+    private CtClass m_ctClass;
 
     /**
      * The Javassist initial class gen to calculate serial ver uid based on initial bytecode Lazily initialized
@@ -52,11 +54,9 @@ public class Klass
      * @param name     the name
      * @param bytecode the byte code
      */
-    public Klass(final String name, final byte[] bytecode,
-        final ClassLoader loader)
-    {
+    public Klass(final String name, final byte[] bytecode, final ClassLoader loader) {
         m_name = name.replace('/', '.');
-        m_ctClass = fromByte(name, bytecode, loader);
+        m_loader = loader;
         m_initialBytecode = bytecode;
     }
 
@@ -65,8 +65,7 @@ public class Klass
      *
      * @return the name
      */
-    public String getName()
-    {
+    public String getName() {
         return m_name;
     }
 
@@ -75,8 +74,10 @@ public class Klass
      *
      * @return the class gen
      */
-    public CtClass getCtClass()
-    {
+    public CtClass getCtClass() {
+        if (m_ctClass == null) {
+            m_ctClass = fromByte(m_name, m_initialBytecode, m_loader);
+        }
         return m_ctClass;
     }
 
@@ -84,16 +85,14 @@ public class Klass
      * Returns the Javassist initial class gen for the class.
      *
      * @return the initial class gen
-     * @throws IOException
      */
-    public CtClass getInitialCtClass()
-        throws IOException
-    {
-        if (m_initialCtClass == null)
-        {
-            m_initialCtClass = fromByte(m_name, m_initialBytecode, null); //TODO BREAK
+    public CtClass getInitialCtClass() {
+        if (m_initialCtClass == null) {
+            m_initialCtClass = fromByte(
+                    m_name, m_initialBytecode,
+                    m_loader
+            );
         }
-
         return m_initialCtClass;
     }
 
@@ -102,14 +101,11 @@ public class Klass
      *
      * @return
      */
-    public byte[] getBytecode()
-    {
-        try
-        {
-            return m_ctClass.toBytecode();
+    public byte[] getBytecode() {
+        try {
+            return getCtClass().toBytecode();
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -120,11 +116,10 @@ public class Klass
      * @param bytecode the byte code
      * @return the Javassist class gen
      */
-    public static CtClass fromByte(final String name, final byte[] bytecode,
-        final ClassLoader loader)
-    {
-        try
-        {
+    public static CtClass fromByte(
+            final String name, final byte[] bytecode,
+            final ClassLoader loader) {
+        try {
             ClassPool cp = new ClassPool(null);
 
             cp.insertClassPath(new ByteArrayClassPath(name, bytecode));
@@ -132,8 +127,7 @@ public class Klass
 
             return cp.get(name);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }

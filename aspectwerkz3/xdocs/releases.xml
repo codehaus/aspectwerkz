@@ -12,13 +12,18 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 0.10.RC2
+                    The latest official release is 1.0-beta1
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.10.RC2.zip?download">0.10.RC2 in zip format.</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0-beta1.zip?download">1.0-beta1 in zip format.</a>
+                        </li>
+                        <br/>
+
+                        <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.10.zip?download">0.10 in zip format.</a>
                         </li>
                         <br/>
 

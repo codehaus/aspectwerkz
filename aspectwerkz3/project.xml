@@ -6,7 +6,7 @@
     <name>AspectWerkz - Dynamic AOP for Java</name>
     <id>aspectwerkz</id>
 
-    <currentVersion>0.10.RC2</currentVersion>
+    <currentVersion>1.0-beta1</currentVersion>
 
     <organization>
         <name>Jonas Bon&#233;r, Alexandre Vasseur</name>
@@ -26,7 +26,7 @@
             <name>LGPL</name>
             <url>http://www.gnu.org/copyleft/lesser.html</url>
         </license>
-    </licenses>
+     </licenses>
 
     <url>http://aspectwerkz.codehaus.org/</url>
     <issueTrackingUrl>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10105</issueTrackingUrl>
@@ -46,9 +46,9 @@
 
     <versions>
         <version>
-            <id>0.10.RC2</id>
-            <name>0.10.RC2</name>
-            <tag>rel_0_10_RC2</tag>
+            <id>1.0-beta1</id>
+            <name>1.0-beta1</name>
+            <tag>rel_1_0_beta1</tag>
         </version>
     </versions>
 
@@ -94,27 +94,6 @@
             <name>Ron Bodkin</name>
             <roles>
                 <role>Original idea of Self-Defined Aspects</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Tibor Varga</name>
-            <email>vta@medios.fi</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Stefan Finkenzeller</name>
-            <email>stefan.finkenzeller@gmx.net</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Carlos Villea</name>
-            <email>carlos@bluebox.com.br</email>
-            <roles>
-                <role>Developer</role>
             </roles>
         </contributor>
     </contributors>

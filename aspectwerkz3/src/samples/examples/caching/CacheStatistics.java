@@ -48,13 +48,25 @@ public class CacheStatistics {
     public static int getNrOfMethodInvocationsFor(
             final String methodName,
             final Class[] parameterTypes) {
-        return ((Integer)s_methodInvocations.get(calculateHash(methodName, parameterTypes))).intValue();
+        Integer number = (Integer)s_methodInvocations.get(calculateHash(methodName, parameterTypes));
+        if (number != null) {
+            return number.intValue();
+        }
+        else {
+            return 0;
+        }
     }
 
     public static int getNrOfCacheInvocationsFor(
             final String methodName,
             final Class[] parameterTypes) {
-        return ((Integer)s_cacheInvocations.get(calculateHash(methodName, parameterTypes))).intValue();
+        Integer number = (Integer)s_cacheInvocations.get(calculateHash(methodName, parameterTypes));
+        if (number != null) {
+            return number.intValue();
+        }
+        else {
+            return 0;
+        }
     }
 
     private static Long calculateHash(

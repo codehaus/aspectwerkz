@@ -237,7 +237,7 @@ public class JitCompiler
             ClassLoader loader = targetClass.getClassLoader();
 
             // try to load the class without generating it
-            Class joinPointClass = AsmHelper.loadClass(loader, className);
+            Class joinPointClass = AsmHelper.loadClass(loader, className.replace('/', '.')); // AW-160 + AW-163
 
             if (joinPointClass == null)
             {
