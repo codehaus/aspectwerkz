@@ -34,6 +34,7 @@
             <advice bind-to="handler" type="before" name="before"/>
         </aspect>
         <aspect class="test.orthogonal.OrthogonalTestAspect"/>
+        <aspect class="test.callAndExecution.TestAspect"/>
 
 
         <!-- The following tests different forms of precedence -->
