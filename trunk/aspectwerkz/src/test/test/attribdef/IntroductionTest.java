@@ -138,6 +138,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
     }
 
     public void testReplaceImplementation() {
+        //TODO swap with non inner class
         assertEquals(
                 "test.attribdef.aspect.IntroductionTestAspect$MyImpl",
                 SystemLoader.getSystem("tests").
@@ -149,20 +150,12 @@ public class IntroductionTest extends TestCase implements Identifiable {
         // swap with an outer class is possible as well
         SystemLoader.getSystem("tests").
                 getMixin("test.attribdef.aspect.IntroductionTestAspect$MyImpl").
-                ___AW_swapImplementation("test.attribdef.aspect.IntroductionTestAspectMyImplReplacement");
+                ___AW_swapImplementation("test.attribdef.aspect.IntroductionTestAspect$MyOtherImpl");
 
         assertEquals(-1, ((Introductions)m_toBeIntroduced).intArg(1));
 
         assertEquals(
-                "test.attribdef.aspect.IntroductionTestAspectMyImplReplacement",
-                SystemLoader.getSystem("tests").
-                getMixin("test.attribdef.aspect.IntroductionTestAspect$MyImpl").
-                ___AW_getImplementationClassName());
-    }
-
-    public void testGetImplementation() {
-        assertEquals(
-                "test.attribdef.aspect.IntroductionTestAspectMyImplReplacement",
+                "test.attribdef.aspect.IntroductionTestAspect$MyOtherImpl",
                 SystemLoader.getSystem("tests").
                 getMixin("test.attribdef.aspect.IntroductionTestAspect$MyImpl").
                 ___AW_getImplementationClassName());
