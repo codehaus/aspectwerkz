@@ -78,8 +78,7 @@ SimpleNode ExpressionScript() :
 void Expression() #void :
 {}
 {
-	AndExpression()
-	( <OR> AndExpression() #OrNode(2) )*
+	AndExpression() ( <OR> AndExpression() #OrNode(2) )*
 }
 void AndExpression() #void :
 {}

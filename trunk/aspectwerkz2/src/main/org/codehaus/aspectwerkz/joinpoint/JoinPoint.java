@@ -8,6 +8,8 @@
 package org.codehaus.aspectwerkz.joinpoint;
 
 /**
+ * Implements the join point concept, e.g. defines a well defined point in the program flow.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface JoinPoint {
@@ -20,7 +22,6 @@ public interface JoinPoint {
     static final String FIELD_GET = "FIELD_GET";
     static final String CATCH_CLAUSE = "HANDLER";
     static final String STATIC_INITALIZATION = "STATIC_INITALIZATION";
-    static final String THROWS = "THROWS";
 
     /**
      * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
@@ -54,6 +55,8 @@ public interface JoinPoint {
 
     /**
      * Sets the target instance.
+     *
+     * @TODO: this method is bad for the API, dangerous
      *
      * @param targetInstance the target instance
      */

@@ -22,8 +22,11 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
+ * Contains static and dynamic information for classes that has been defined as cross-cutting.
+ * Should be accessed through the {@link org.codehaus.aspectwerkz.CrossCutting} interface that
+ * is applied to all cross-cutting classes.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @TODO document
  */
 public class CrossCuttingInfo implements Serializable {
 
@@ -243,14 +246,6 @@ public class CrossCuttingInfo implements Serializable {
      * @return the cross-cuttable class' constructor
      */
     public Constructor getAspectConstructor() {
-//        if (m_aspectConstructor == null) {
-//            try {
-//                m_aspectConstructor = m_aspectClass.getConstructor(new Class[]{CrossCuttingInfo.class});
-//            }
-//            catch (NoSuchMethodException e) {
-//                throw new WrappedRuntimeException(e);
-//            }
-//        }
         return m_aspectConstructor;
     }
 
@@ -270,13 +265,13 @@ public class CrossCuttingInfo implements Serializable {
      */
     public void setAspectClass(final Class klass) {
         m_aspectClass = klass;
-              try {
-                m_aspectConstructor = m_aspectClass.getConstructor(new Class[]{CrossCuttingInfo.class});
-            }
-            catch (NoSuchMethodException e) {
-                throw new WrappedRuntimeException(e);
-            }
-                    }
+        try {
+            m_aspectConstructor = m_aspectClass.getConstructor(new Class[]{CrossCuttingInfo.class});
+        }
+        catch (NoSuchMethodException e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
 
     /**
      * Sets the container.
