@@ -26,7 +26,7 @@ import org.codehaus.aspectwerkz.extension.persistence.definition.PersistenceDefi
  * Base class for all persistence manager implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractPersistenceManager.java,v 1.2 2003-06-09 07:04:12 jboner Exp $
+ * @version $Id: AbstractPersistenceManager.java,v 1.3 2003-06-17 15:11:29 jboner Exp $
  */
 public abstract class AbstractPersistenceManager implements PersistenceManager {
 
@@ -44,26 +44,6 @@ public abstract class AbstractPersistenceManager implements PersistenceManager {
      * Marks the manager as initialized.
      */
     protected boolean m_initialized = false;
-
-    /**
-     * Advises the all the persistent classes.
-     *
-     * @param definition the persistence definition
-     */
-    protected void advisePersistentObjects(final PersistenceDefinition definition) {
-        // register the DirtyFieldCheckAdvice
-//        AspectWerkz.register(
-//                DirtyFieldCheckAdvice.NAME, new DirtyFieldCheckAdvice());
-
-//        List persistentObjects = definition.getPersistentObjects();
-//        for (Iterator it = persistentObjects.iterator(); it.hasNext();) {
-//            PersistentObjectDefinition def = (PersistentObjectDefinition)it.next();
-//
-//            AspectWerkz.createAspect(def.getClassName()).
-//                    createSetFieldPointcut(DirtyFieldCheckAdvice.PATTERN).
-//                    addPostAdvice(DirtyFieldCheckAdvice.NAME);
-//        }
-    }
 
     /**
      * Stores/Updates an object in the database.
