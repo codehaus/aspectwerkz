@@ -50,6 +50,13 @@ public class Aspects {
         return getContainerQNamed(aspectClass, null);
     }
 
+    /**
+     * Returns or create the aspect container for the given aspect class with the given qualified name
+     *
+     * @param aspectClass
+     * @param qName
+     * @return
+     */
     private static AspectContainer getContainerQNamed(final Class aspectClass, final String qName) {
         ContainerKey key = ContainerKey.get(aspectClass, qName);
         synchronized (ASPECT_CONTAINERS) {
@@ -65,6 +72,7 @@ public class Aspects {
 
     /**
      * Returns the singleton aspect instance for the aspect with the given qualified name.
+     * The aspect is looked up from the thread context classloader
      *
      * @param qName the qualified name of the aspect
      * @return the singleton aspect instance
@@ -75,6 +83,7 @@ public class Aspects {
 
     /**
      * Returns the singleton aspect instance for the aspect with the given qualified name.
+     * The class loader from where to lookup the aspect must be the callER side class loader for get/set/call joinpoints.
      *
      * @param loader the classloader to look from
      * @param qName the qualified name of the aspect
@@ -95,21 +104,7 @@ public class Aspects {
                     throw new Error("Could not load aspect " + qName + " from " + loader);
                 }
             } else {
-                // can occur when the jointpoint target is a rt.jar class
-                // f.e. System.out and field get since loader will be null
-                // in such a case, trim the uuid...
-                int index = qName.lastIndexOf("/");
-                if (index > 0) {
-                    className = qName.substring(index+1);
-                    try {
-                        Class aspectClass = ContextClassLoader.forName(loader, className);
-                        return aspectOfQNamed(aspectClass, qName);
-                    } catch (ClassNotFoundException ee) {
-                        throw new Error("Could not load aspect " + qName + " from " + loader);
-                    }
-                } else {
-                    throw new Error("Could not load aspect " + qName + " from " + loader);
-                }
+                throw new Error("Could not load aspect " + qName + " from " + loader);
             }
         }
     }

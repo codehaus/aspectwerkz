@@ -152,7 +152,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         m_requiresThisOrTarget = requiresThisOrTarget();
         m_requiresJoinPoint = requiresJoinPoint();
 
-        // setup models at the end so that they can ovveride m_requiresJoinPoint
+        // setup models at the end so that they can override m_requiresJoinPoint
         setupReferencedAspectModels();
 
         m_cw = AsmHelper.newClassWriter(true);
@@ -322,11 +322,11 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         for (int i = 0; i < adviceInfos.length; i++) {
             AdviceInfo adviceInfo = adviceInfos[i];
 
-            // if we have a perinstance deployed aspect and a static member target -> skip and go on
+            // if we have a perinstance deployed aspect and a static member CALLER -> skip and go on
             DeploymentModel deploymentModel = adviceInfo.getAdviceDefinition().getAspectDefinition()
                     .getDeploymentModel();
             if (deploymentModel.equals(DeploymentModel.PER_INSTANCE) &&
-                Modifier.isStatic(m_calleeMemberModifiers)) {
+                Modifier.isStatic(m_callerMethodModifiers)) {
                 continue;
             }
 
@@ -894,6 +894,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
 
     /**
      * Creates instantiation of aspects using the Aspects.aspectOf() methods which uses the AspectContainer impls.
+     * We are using the THIS_CLASS classloader since the aspect can be visible from that one only f.e. for get/set/call
      *
      * @param cv
      * @param aspectInfo
@@ -907,8 +908,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         // retrieve the aspect set it to the field
         DeploymentModel deploymentModel = aspectInfo.getDeploymentModel();
         if (deploymentModel.equals(DeploymentModel.PER_JVM)) {
-            // AW-355, we need a ClassLoader here
-            cv.visitFieldInsn(GETSTATIC, joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+            // AW-355, AW-415 we need a ClassLoader here
+            cv.visitFieldInsn(GETSTATIC, joinPointClassName, THIS_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
             cv.visitMethodInsn(
                     INVOKEVIRTUAL, CLASS_CLASS, GETCLASSLOADER_METHOD_NAME,
                     CLASS_CLASS_GETCLASSLOADER_METHOD_SIGNATURE
@@ -924,7 +925,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
             cv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature);
         } else if (deploymentModel.equals(DeploymentModel.PER_CLASS)) {
             cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
-            cv.visitFieldInsn(GETSTATIC, joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+            cv.visitFieldInsn(GETSTATIC, joinPointClassName, THIS_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
             cv.visitMethodInsn(
                     INVOKESTATIC,
                     ASPECTS_CLASS_NAME,
@@ -1042,12 +1043,12 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         for (int i = 0; i < m_aspectInfos.length; i++) {
             AspectInfo aspectInfo = m_aspectInfos[i];
             if (aspectInfo.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
-                // gen code: aspectField = (<TYPE>)((HasInstanceLocalAspect)target).aw$getAspect(className, qualifiedName)
+                // gen code: aspectField = (<TYPE>)((HasInstanceLocalAspect)CALLER).aw$getAspect(className, qualifiedName)
                 loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
-                if (calleeIndex >= 0) {
-                    cv.visitVarInsn(ALOAD, calleeIndex);
+                if (callerIndex >= 0) {
+                    cv.visitVarInsn(ALOAD, callerIndex);
                 } else {
-                    // target instance not available - skipping
+                    // caller instance not available - skipping
                 }
                 cv.visitLdcInsn(aspectInfo.getAspectClassName().replace('/', '.'));
                 cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());

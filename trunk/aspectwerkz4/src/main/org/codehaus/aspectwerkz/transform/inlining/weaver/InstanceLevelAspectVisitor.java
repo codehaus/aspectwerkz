@@ -231,7 +231,7 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
             return true;
         }
 
-        ExpressionContext ctx = new ExpressionContext(PointcutType.WITHIN, classInfo, classInfo);
+        ExpressionContext ctx = new ExpressionContext(PointcutType.WITHIN, null, classInfo);
 
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition systemDef = (SystemDefinition) it.next();
