@@ -199,6 +199,18 @@ public class MethodPatternTest extends TestCase {
         assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.Integer[]"}));
     }
 
+    public void testMatchParameterType15() {
+        //AW-91
+        MethodPattern methodPattern = Pattern.compileMethodPattern("* method(Integer[])");
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.Integer[]"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.Integer"}));
+
+        methodPattern = Pattern.compileMethodPattern("* method(Integer[][])");
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.Integer[][]"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.Integer"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.Integer[]"}));
+    }
+
     public void testMatchReturnType1() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method()");
         assertTrue(methodPattern.matchReturnType("int"));
@@ -268,6 +280,7 @@ public class MethodPatternTest extends TestCase {
     }
 
     public void testMatchReturnType8() {
+        //AW-91
         MethodPattern methodPattern = Pattern.compileMethodPattern("java.lang.Integer[] method()");
         assertTrue(methodPattern.matchReturnType("java.lang.Integer[]"));
 
@@ -276,9 +289,6 @@ public class MethodPatternTest extends TestCase {
 
         methodPattern = Pattern.compileMethodPattern("Integer[][] method()");
         assertTrue(methodPattern.matchReturnType("java.lang.Integer[][]"));
-
-
-
     }
 
 
