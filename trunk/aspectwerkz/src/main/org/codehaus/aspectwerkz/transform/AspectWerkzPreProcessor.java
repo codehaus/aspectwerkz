@@ -35,21 +35,6 @@ import java.util.Iterator;
  */
 public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.ClassPreProcessor {
 
-    private static ThreadLocal context = new ThreadLocal() {
-
-        public Object initialValue() {
-            return null;
-        }
-    };
-
-    public static ClassLoader alexContextGet() {
-        return (ClassLoader)context.get();
-    }
-
-    private static void alexContextSet(ClassLoader cl) {
-        context.set(cl);
-    }
-
     private final static String AW_TRANSFORM_DUMP = System.getProperty("aspectwerkz.transform.dump", "");
 
     private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
@@ -102,11 +87,11 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
      * @param loader classloader loading the class
      * @return modified (or not) bytecode
      */
-    public /*synchronized*/ byte[] preProcess(String className, byte[] bytecode, ClassLoader loader) {
-
+    public byte[] preProcess(String className, byte[] bytecode, ClassLoader loader) {
         if (filter(className)) {
             return bytecode;
         }
+        //@todo review log
         //log(loader + ":" + className);
 
         // prepare BCEL ClassGen
@@ -120,32 +105,11 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
             return bytecode;
         }
 
-        // TODO: remove ThreadLocal stuff
-        // set Repository, from where to start finding interfaces and parent classes
-        // klass.getClassGen().getJavaClass().setRepository(new ClassLoaderRepository(loader));
-        alexContextSet(loader);
-
         // create a new transformation context
         Context context = new Context(loader);
 
-        //dump
-        //@todo dump is not compliant with multiple CL weaving same class differently
-        if (AW_TRANSFORM_DUMP.length() > 0) {
-            if (className.startsWith(AW_TRANSFORM_DUMP)) {
-                try {
-                    klass.getClassGen().getJavaClass().dump(
-                            "_dump/before/" + className.replace('.', '/') + ".class");
-                }
-                catch (Exception e) {
-                    System.err.println("failed to dump " + className);
-                    e.printStackTrace();
-                }
-            }
-        }
-        int stackIndex = 0;
         for (Iterator i = stack.iterator(); i.hasNext();) {
             Object transformer = i.next();
-            stackIndex++;
 
             // if VERBOSE keep a copy of initial bytecode before transfo
             byte[] bytecodeBeforeLocalTransformation = null;
@@ -177,42 +141,16 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
 
             // if VERBOSE confirm modification
             if (VERBOSE && !java.util.Arrays.equals(klass.getBytecode(), bytecodeBeforeLocalTransformation)) {
-                //double check
-                byte[] after = klass.getBytecode();
-                int afterL = after.length;
-                System.out.println("length: " + bytecodeBeforeLocalTransformation.length + "\t" + afterL);
-                /*for (int bi = 0; bi < afterL; bi++) {
-                    if (after[bi] != bytecodeBeforeLocalTransformation[bi])
-                        System.out.println(bi+"\t"+after[bi]+"\t"+bytecodeBeforeLocalTransformation[bi]);
-                }*/
-
-                System.out.println(className + " <- " + transformer.getClass().getName());
-                // dump modified
-                if (AW_TRANSFORM_DUMP.length() > 0) {
-                    if (className.startsWith(AW_TRANSFORM_DUMP)) {
-                        try {
-                            klass.getClassGen().getJavaClass().
-                                    dump("_dump/" + stackIndex + "_" +
-                                    transformer.getClass().getName() + "/" +
-                                    className.replace('.', '/') + ".class");
-                        }
-                        catch (Exception e) {
-                            System.err.println("failed to dump " + className);
-                            e.printStackTrace();
-                        }
-                    }
-                }
+                log(className + " <- " + transformer.getClass().getName());
             }
-
         }
 
-        //dump
-        //@todo dump is not compliant with multiple CL weaving same class differently
+        //dump (not compliant with multiple CL weaving same class differently, since based on class FQN name)
         if (AW_TRANSFORM_DUMP.length() > 0) {
             if (className.startsWith(AW_TRANSFORM_DUMP)) {
                 try {
                     klass.getClassGen().getJavaClass().
-                            dump("_dump/after/" + className.replace('.', '/') + ".class");
+                            dump("_dump/" + className.replace('.', '/') + ".class");
                 }
                 catch (Exception e) {
                     System.err.println("failed to dump " + className);

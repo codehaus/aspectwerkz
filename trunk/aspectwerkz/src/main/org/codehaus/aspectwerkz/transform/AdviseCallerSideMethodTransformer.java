@@ -83,7 +83,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         final ClassGen cg = klass.getClassGen();
 
         // filter caller classes
-        if (classFilter(cg)) {
+        if (classFilter(context, cg)) {
             return;
         }
 
@@ -154,10 +154,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                     // create the class meta-data
                     ClassMetaData calleeSideClassMetaData;
                     try {
-                        //@todo alex
-                        JavaClass javaClass = (new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet())).loadClass(calleeClassName);
-                        javaClass.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
-                        //JavaClass klass = Repository.getRepository().loadClass(calleeClassName);
+                        JavaClass javaClass = context.getRepository().loadClass(calleeClassName);
                         calleeSideClassMetaData = BcelMetaDataMaker.createClassMetaData(javaClass);
                     }
                     catch (ClassNotFoundException e) {
@@ -669,21 +666,22 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
     /**
      * Filters the classes to be transformed.
      *
+     * The method needs to be context aware to look for caller side pointcut
+     *
+     * @param context the transformation context
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg) {
+    private boolean classFilter(final Context context, final ClassGen cg) {
         if (cg.isInterface()) {
             return true;
         }
         if (!m_weaveModel.inTransformationScope(cg.getClassName())) {
             return true;
         }
-        //@todo alex
-        JavaClass alex = cg.getJavaClass();
-        alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
-        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
-        //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+
         if (m_weaveModel.hasCallerSidePointcut(classMetaData)) {
             return false;
         }

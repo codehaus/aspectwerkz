@@ -57,7 +57,7 @@ public class AddSerialVersionUidTransformer implements AspectWerkzInterfaceTrans
         if (classFilter(cg)) {
             return;
         }
-        if (!TransformationUtil.isSerializable(cg)) {
+        if (!TransformationUtil.isSerializable(context, cg)) {
             return;
         }
         if (TransformationUtil.hasSerialVersionUid(cg)) {
