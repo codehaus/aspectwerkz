@@ -102,7 +102,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the invocation
      */
-    public Object invokeAdvice(final int methodIndex, final JoinPoint joinPoint) {
+    public Object invokeAdvice(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
         Object result = null;
         switch (m_infoPrototype.getDeploymentModel()) {
             case DeploymentModel.PER_JVM:
@@ -152,14 +152,14 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerJvm(final int methodIndex, final JoinPoint joinPoint) {
+    private Object invokeAdvicePerJvm(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
         Object result;
         try {
             createPerJvmAspect();
             Method method = m_adviceRepository[methodIndex];
             result = method.invoke(m_perJvm, new Object[] { joinPoint });
         } catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
+            throw e.getTargetException();
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
@@ -173,14 +173,14 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) {
+    private Object invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
         final Class targetClass = joinPoint.getTargetClass();
         Object result;
         try {
             createPerClassAspect(targetClass);
             result = m_adviceRepository[methodIndex].invoke(m_perClass.get(targetClass), new Object[] { joinPoint });
         } catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
+            throw e.getTargetException();
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
@@ -194,7 +194,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerInstance(final int methodIndex, final JoinPoint joinPoint) {
+    private Object invokeAdvicePerInstance(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
         Object result = null;
         Object targetInstance = joinPoint.getTargetInstance();
         if (targetInstance == null) { // can be null if f.e. an aspect has deployment model perInstance and has caller side pointcuts defined
@@ -205,7 +205,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
             result = m_adviceRepository[methodIndex].invoke(m_perInstance.get(targetInstance),
                                                             new Object[] { joinPoint });
         } catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
+            throw e.getTargetException();
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
@@ -219,7 +219,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    private Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint) {
+    private Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
         Object result;
         try {
             final Thread currentThread = Thread.currentThread();
@@ -227,7 +227,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
             Method method = m_adviceRepository[methodIndex];
             result = method.invoke(m_perThread.get(currentThread), new Object[] { joinPoint });
         } catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
+            throw e.getTargetException();
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
