@@ -72,9 +72,11 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
     public void transformCode(final Context context, final Klass klass) {
 
         final ClassGen cg = klass.getClassGen();
+        ClassMetaData classMetaData = BcelMetaDataMaker.
+                createClassMetaData(context.getJavaClass(cg));
 
         // filter caller classes
-        if (classFilter(context, cg)) {
+        if (classFilter(classMetaData, cg)) {
             return;
         }
 
@@ -657,23 +659,17 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
     /**
      * Filters the classes to be transformed.
      *
-     * The method needs to be context aware to look for caller side pointcut
-     *
-     * @param context the transformation context
+     * @param classMetaData the meta-data for the class
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final Context context, final ClassGen cg) {
+    private boolean classFilter(final ClassMetaData classMetaData, final ClassGen cg) {
         if (cg.isInterface()) {
             return true;
         }
         if (!m_definition.inTransformationScope(cg.getClassName())) {
             return true;
         }
-
-        ClassMetaData classMetaData = BcelMetaDataMaker.
-                createClassMetaData(context.getJavaClass(cg));
-
         if (m_definition.hasCallerSidePointcut(classMetaData)) {
             return false;
         }

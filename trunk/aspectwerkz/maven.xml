@@ -263,26 +263,26 @@
     <!-- =================================================== -->
     <!--  runs the transparent persistence test -->
     <!-- =================================================== -->
-    <!--    <goal name="aspectwerkz:samples:transparentpersistence">-->
-    <!--        <attainGoal name="aspectwerkz:init"/>-->
-    <!--        <attainGoal name="aspectwerkz:compile"/>-->
-    <!--        <attainGoal name="aspectwerkz:attributes:extensions"/>-->
-    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="false">-->
-    <!--            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml examples.transparentpersistence.Client"/>-->
-    <!--        </exec>-->
-    <!--    </goal>-->
+    <goal name="aspectwerkz:samples:transparentpersistence">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:attributes:extensions"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="false">
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml examples.transparentpersistence.Client"/>
+        </exec>
+    </goal>
 
     <!-- =================================================== -->
     <!--  runs the introduction test -->
     <!-- =================================================== -->
-    <!--    <goal name="aspectwerkz:samples:introduction">-->
-    <!--        <attainGoal name="aspectwerkz:init"/>-->
-    <!--        <attainGoal name="aspectwerkz:compile"/>-->
-    <!--        <attainGoal name="aspectwerkz:attributes:samples"/>-->
-    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
-    <!--            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.introduction.Target"/>-->
-    <!--        </exec>-->
-    <!--    </goal>-->
+    <goal name="aspectwerkz:samples:introduction">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:attributes:samples"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.introduction.Target"/>
+        </exec>
+    </goal>
 
     <!-- =================================================== -->
     <!--  compiles attributes for the samples, merges w/ the samples.xml -->

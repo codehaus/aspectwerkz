@@ -70,12 +70,12 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
      */
     public void transformCode(final Context context, final Klass klass) {
         final ClassGen cg = klass.getClassGen();
-        if (classFilter(cg)) {
-            return;
-        }
-
         ClassMetaData classMetaData = BcelMetaDataMaker.
                 createClassMetaData(context.getJavaClass(cg));
+
+        if (classFilter(classMetaData, cg)) {
+            return;
+        }
 
         final Method[] methods = cg.getMethods();
 
@@ -532,14 +532,20 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
     /**
      * Filters the classes to be transformed.
      *
+     * @param classMetaData the meta-data for the class
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg) {
+    private boolean classFilter(final ClassMetaData classMetaData, final ClassGen cg) {
         if (cg.isInterface()) {
             return true;
         }
-        if (m_definition.inTransformationScope(cg.getClassName())) {
+        if (!m_definition.inTransformationScope(cg.getClassName())) {
+            return true;
+        }
+
+        if (m_definition.hasSetFieldPointcut(classMetaData) ||
+                m_definition.hasGetFieldPointcut(classMetaData)) {
             return false;
         }
         return true;

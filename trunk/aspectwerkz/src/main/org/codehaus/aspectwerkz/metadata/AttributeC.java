@@ -1219,23 +1219,23 @@ public class AttributeC {
      */
     public static void main(String[] args) {
         if (args.length < 2) {
-            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.metadata.AttributeC <path to src dir> <file name> -m <file name to merge with> -u <uuid for definition>");
-            System.out.println("       -m <file name to merge with> tells the compiler which file it should append the compiled attributes to");
-            System.out.println("       -u <uuid for definition> is optional (if not specified one will be generated)");
+            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.metadata.AttributeC <path to src dir> <file name> -merge <file name to merge with> -uuid <uuid for definition>");
+            System.out.println("       -merge (or -m) <file name to merge with> tells the compiler which file it should append the compiled attributes to");
+            System.out.println("       -uuid (or -u) <uuid for definition> is optional (if not specified one will be generated)");
             System.exit(0);
         }
         String mergeFile = null;
         String uuid = null;
-        if (args[2].equals("-m") && args[3] != null) {
+        if ((args[2].equals("-m") || args[2].equals("-merge")) && args[3] != null) {
             mergeFile = args[3];
         }
-        else if (args[2].equals("-u") && args[3] != null) {
+        else if ((args[2].equals("-u") || args[2].equals("-uuid")) && args[3] != null) {
             uuid = args[3];
         }
-        if (args[4].equals("-m") && args[5] != null) {
+        if ((args[4].equals("-m") || args[4].equals("-merge")) && args[5] != null) {
             mergeFile = args[5];
         }
-        else if (args[4].equals("-u") && args[5] != null) {
+        else if ((args[4].equals("-u") || args[4].equals("-uuid")) && args[5] != null) {
             uuid = args[5];
         }
 

@@ -675,6 +675,32 @@ public class AspectWerkzDefinition implements Serializable {
 
     /**
      * Checks if a method has a <tt>MethodPointcut</tt>.
+     * Only checks for a class match to allow early filtering.
+     *
+     * @param classMetaData the class meta-data
+     * @return boolean
+     */
+    public boolean hasMethodPointcut(final ClassMetaData classMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            if (aspectDef.isAbstract()) {
+                continue;
+            }
+            List weavingRules = aspectDef.getAdviceWeavingRules();
+            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
+                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                if (weavingRule.matchMethodPointcut(classMetaData)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a method has a <tt>MethodPointcut</tt>.
      *
      * @param classMetaData the class meta-data
      * @param methodMetaData the method meta-data
@@ -694,6 +720,32 @@ public class AspectWerkzDefinition implements Serializable {
             for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
                 AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
                 if (weavingRule.matchMethodPointcut(classMetaData, methodMetaData)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a class has a <tt>GetFieldPointcut</tt>.
+     * Only checks for a class match to allow early filtering.
+     *
+     * @param classMetaData the class meta-data
+     * @return boolean
+     */
+    public boolean hasGetFieldPointcut(final ClassMetaData classMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            if (aspectDef.isAbstract()) {
+                continue;
+            }
+            List weavingRules = aspectDef.getAdviceWeavingRules();
+            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
+                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                if (weavingRule.matchGetFieldPointcut(classMetaData)) {
                     return true;
                 }
             }
@@ -730,6 +782,32 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
+     * Checks if a class has a <tt>SetFieldPointcut</tt>.
+     * Only checks for a class match to allow early filtering.
+     *
+     * @param classMetaData the class meta-data
+     * @return boolean
+     */
+    public boolean hasSetFieldPointcut(final ClassMetaData classMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            if (aspectDef.isAbstract()) {
+                continue;
+            }
+            List weavingRules = aspectDef.getAdviceWeavingRules();
+            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
+                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                if (weavingRule.matchSetFieldPointcut(classMetaData)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Checks if a class and field has a <tt>SetFieldPointcut</tt>.
      *
      * @param classMetaData the class meta-data
@@ -750,6 +828,32 @@ public class AspectWerkzDefinition implements Serializable {
             for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
                 AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
                 if (weavingRule.matchSetFieldPointcut(classMetaData, fieldMetaData)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
+     * Only checks for a class match to allow early filtering.
+     *
+     * @param classMetaData the class meta-data
+     * @return boolean
+     */
+    public boolean hasThrowsPointcut(final ClassMetaData classMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            if (aspectDef.isAbstract()) {
+                continue;
+            }
+            List weavingRules = aspectDef.getAdviceWeavingRules();
+            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
+                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                if (weavingRule.matchThrowsPointcut(classMetaData)) {
                     return true;
                 }
             }

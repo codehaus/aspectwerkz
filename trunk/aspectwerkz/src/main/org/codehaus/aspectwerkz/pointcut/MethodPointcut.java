@@ -95,6 +95,44 @@ public class MethodPointcut extends AbstractPointcut {
 
     /**
      * Tries to finds a match at some superclass in the hierarchy.
+     * Only checks for a class match to allow early filtering.
+     * Recursive.
+     *
+     * @param jexlContext the Jexl context
+     * @param name the name of the pointcut to evaluate
+     * @param classMetaData the class meta-data
+     * @param pointcutPattern the pointcut pattern
+     * @return boolean
+     */
+    public static boolean matchMethodPointcutSuperClasses(final JexlContext jexlContext,
+                                                          final String name,
+                                                          final ClassMetaData classMetaData,
+                                                          final PointcutPatternTuple pointcutPattern) {
+        if (classMetaData == null) {
+            return false;
+        }
+
+        // match the class/super class
+        if (pointcutPattern.getClassPattern().matches(classMetaData.getName())) {
+            jexlContext.getVars().put(name, Boolean.TRUE);
+            return true;
+        }
+        else {
+            // match the interfaces for the class
+            if (matchMethodPointcutInterfaces(
+                    jexlContext, name, classMetaData.getInterfaces(),
+                    classMetaData, pointcutPattern)) {
+                return true;
+            }
+
+            // no match; get the next superclass
+            return matchMethodPointcutSuperClasses(
+                    jexlContext, name, classMetaData.getSuperClass(), pointcutPattern);
+        }
+    }
+
+    /**
+     * Tries to finds a match at some superclass in the hierarchy.
      * Recursive.
      *
      * @param jexlContext the Jexl context
@@ -132,6 +170,46 @@ public class MethodPointcut extends AbstractPointcut {
                     jexlContext, name, classMetaData.getSuperClass(),
                     methodMetaData, pointcutPattern);
         }
+    }
+
+    /**
+     * Tries to finds a match at some interface in the hierarchy.
+     * Only checks for a class match to allow early filtering.
+     * Recursive.
+     *
+     * @param jexlContext the Jexl context
+     * @param name the name of the pointcut to evaluate
+     * @param interfaces the interfaces
+     * @param classMetaData the class meta-data
+     * @param pointcutPattern the pointcut pattern
+     * @return boolean
+     */
+    private static boolean matchMethodPointcutInterfaces(final JexlContext jexlContext,
+                                                         final String name,
+                                                         final List interfaces,
+                                                         final ClassMetaData classMetaData,
+                                                         final PointcutPatternTuple pointcutPattern) {
+        if (interfaces.isEmpty()) {
+            return false;
+        }
+        for (Iterator it = interfaces.iterator(); it.hasNext();) {
+            InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
+            if (pointcutPattern.getClassPattern().matches(interfaceMD.getName())) {
+                jexlContext.getVars().put(name, Boolean.TRUE);
+                return true;
+            }
+            else {
+                if (matchMethodPointcutInterfaces(
+                        jexlContext, name, interfaceMD.getInterfaces(),
+                        classMetaData, pointcutPattern)) {
+                    return true;
+                }
+                else {
+                    continue;
+                }
+            }
+        }
+        return false;
     }
 
     /**

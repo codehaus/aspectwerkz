@@ -27,7 +27,6 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
-import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
 
 /**
  * Implements the pointcut concept for field access.
@@ -535,6 +534,44 @@ public class FieldPointcut implements Pointcut {
 
     /**
      * Tries to finds a match at some superclass in the hierarchy.
+     * Only checks for a class match to allow early filtering.
+     * Recursive.
+     *
+     * @param jexlContext the Jexl context
+     * @param name the name of the pointcut to evaluate
+     * @param classMetaData the class meta-data
+     * @param pointcutPattern the pointcut pattern
+     * @return boolean
+     */
+    public static boolean matchFieldPointcutSuperClasses(final JexlContext jexlContext,
+                                                         final String name,
+                                                         final ClassMetaData classMetaData,
+                                                         final PointcutPatternTuple pointcutPattern) {
+        if (classMetaData == null) {
+            return false;
+        }
+
+        // match the class/super class
+        if (pointcutPattern.getClassPattern().matches(classMetaData.getName())) {
+            jexlContext.getVars().put(name, Boolean.TRUE);
+            return true;
+        }
+        else {
+            // match the interfaces for the class
+            if (matchFieldPointcutInterfaces(
+                    jexlContext, name, classMetaData.getInterfaces(),
+                    classMetaData, pointcutPattern)) {
+                return true;
+            }
+
+            // no match; get the next superclass
+            return matchFieldPointcutSuperClasses(
+                    jexlContext, name, classMetaData.getSuperClass(), pointcutPattern);
+        }
+    }
+
+    /**
+     * Tries to finds a match at some superclass in the hierarchy.
      * Recursive.
      *
      * @param jexlContext the Jexl context
@@ -572,6 +609,47 @@ public class FieldPointcut implements Pointcut {
                     jexlContext, name, classMetaData.getSuperClass(),
                     fieldMetaData, pointcutPattern);
         }
+    }
+
+    /**
+     * Tries to finds a match at some interface in the hierarchy.
+     * Only checks for a class match to allow early filtering.
+     * Recursive.
+     *
+     * @param jexlContext the Jexl context
+     * @param name the name of the pointcut to evaluate
+     * @param interfaces the interfaces
+     * @param classMetaData the class meta-data
+     * @param pointcutPattern the pointcut pattern
+     * @return boolean
+     */
+    private static boolean matchFieldPointcutInterfaces(final JexlContext jexlContext,
+                                                        final String name,
+                                                        final List interfaces,
+                                                        final ClassMetaData classMetaData,
+                                                        final PointcutPatternTuple pointcutPattern) {
+        if (interfaces.isEmpty()) {
+            return false;
+        }
+
+        for (Iterator it = interfaces.iterator(); it.hasNext();) {
+            InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
+            if (pointcutPattern.getClassPattern().matches(interfaceMD.getName())) {
+                jexlContext.getVars().put(name, Boolean.TRUE);
+                return true;
+            }
+            else {
+                if (matchFieldPointcutInterfaces(
+                        jexlContext, name, interfaceMD.getInterfaces(),
+                        classMetaData, pointcutPattern)) {
+                    return true;
+                }
+                else {
+                    continue;
+                }
+            }
+        }
+        return false;
     }
 
     /**
