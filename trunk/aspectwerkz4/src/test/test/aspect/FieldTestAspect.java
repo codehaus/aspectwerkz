@@ -195,6 +195,15 @@ public class FieldTestAspect {
         return null;
     }
 
+    /**
+     * @Before get(* java.lang.System) && withincode(* test.FieldAdviceTest.testPublicFieldOutOfWeaverScope())
+     */
+    public void beforePublicFieldOutOfWeaverScope() {
+        FieldAdviceTest.log("adviceOnPublicField ");
+    }
+
+
+
     //FIXME - activate when proceed(args) will be supported
 
 //    /**

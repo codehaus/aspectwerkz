@@ -9,10 +9,14 @@ package test;
 
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Method;
+import java.util.SortedSet;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
@@ -90,6 +94,37 @@ public class ClassInfoTest extends TestCase {
         } catch (Throwable t) {
             fail(t.toString());
         }
+    }
+
+    public void testGetMethods() throws Exception {
+        Class intfClazz = SortedSet.class;
+        Method inIntfMethod = intfClazz.getMethod("first", new Class[0]);
+        assertNotNull("first() is declared in java.util.SortedSet", inIntfMethod);
+
+        Method inSuperMethod = intfClazz.getMethod("isEmpty", new Class[0]);
+        assertNotNull("isEmpty() is declared in java.util.Set", inSuperMethod);
+
+        int inIntfMethodHash = ReflectHelper.calculateHash(inIntfMethod);
+        int inSuperMethodHash = ReflectHelper.calculateHash(inSuperMethod);
+
+        ClassInfo clazzInfo = AsmClassInfo.getClassInfo("java.util.SortedSet", ClassInfoTest.class.getClassLoader());
+        assertNotNull("java.util.SortedSet should be found", clazzInfo);
+
+        MethodInfo inIntfMethodInfo = clazzInfo.getMethod(inIntfMethodHash);
+        assertNotNull("first() method info should be found directly", inIntfMethodInfo);
+
+        MethodInfo inSuperMethodInfo = clazzInfo.getMethod(inSuperMethodHash);
+//        assertNotNull("isEmpty() method info from super interface", inSuperMethodInfo);
+
+        ClassInfo clazzInfo2 = JavaClassInfo.getClassInfo(java.util.SortedSet.class);
+        assertNotNull("java.util.SortedSet should be found", clazzInfo);
+
+        MethodInfo inIntfMethodInfo2 = clazzInfo2.getMethod(inIntfMethodHash);
+        assertNotNull("first() method info should be found directly", inIntfMethodInfo2);
+
+        MethodInfo inSuperMethodInfo2 = clazzInfo2.getMethod(inSuperMethodHash);
+        assertNotNull("isEmpty() method info from super interface", inSuperMethodInfo2);
+
     }
 
     //-- JUnit
