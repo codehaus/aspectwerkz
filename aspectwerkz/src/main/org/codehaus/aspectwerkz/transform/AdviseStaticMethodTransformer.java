@@ -55,7 +55,7 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
  * Transforms static methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticMethodTransformer.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @version $Id: AdviseStaticMethodTransformer.java,v 1.3 2003-05-14 17:39:08 jboner Exp $
  */
 public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -612,7 +612,10 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
                 cg.getClassName(),
                 il, cp);
 
-        method.addException("java.lang.Throwable");
+        String[] exceptions = originalMethod.getExceptions();
+        for (int i = 0; i < exceptions.length; i++) {
+            method.addException(exceptions[i]);
+        }
 
         int idxParam = 0;
         int idxStack = 0;
@@ -627,11 +630,9 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
                     cg.getClassName(),
                     joinPoint.toString(),
                     new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
-//                    new ObjectType("java.lang.ThreadLocal"),
                     Constants.GETSTATIC));
             il.append(factory.createInvoke(
                     "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
-//                    "java.lang.ThreadLocal",
                     "get",
                     Type.OBJECT,
                     Type.NO_ARGS,
@@ -667,12 +668,10 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
                     cg.getClassName(),
                     joinPoint.toString(),
                     new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
-//                    new ObjectType("java.lang.ThreadLocal"),
                     Constants.GETSTATIC));
             il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
             il.append(factory.createInvoke(
                     "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
-//                    "java.lang.ThreadLocal",
                     "set",
                     Type.VOID,
                     new Type[]{Type.OBJECT},

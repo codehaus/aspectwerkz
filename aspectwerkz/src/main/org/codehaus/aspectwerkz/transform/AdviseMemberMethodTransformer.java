@@ -55,7 +55,7 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.3 2003-05-14 17:39:08 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -197,7 +197,6 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             field = new FieldGen(
                     Constants.ACC_PRIVATE | Constants.ACC_FINAL,
                     new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
-//                    new ObjectType("java.lang.ThreadLocal"),
                     joinPoint.toString(),
                     cp);
         }
@@ -249,13 +248,11 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             if (isThreadSafe) {
                 ihPost = il.insert(ih, factory.createLoad(Type.OBJECT, 0));
                 il.insert(ih, factory.createNew("org.codehaus.aspectwerkz.util.SerializableThreadLocal"));
-//                il.insert(ih, factory.createNew("java.lang.ThreadLocal"));
 
                 il.insert(ih, InstructionConstants.DUP);
 
                 il.insert(ih, factory.createInvoke(
                         "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
-//                        "java.lang.ThreadLocal",
                         "<init>",
                         Type.VOID,
                         new Type[]{},
@@ -265,7 +262,6 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                         cg.getClassName(),
                         joinPoint.toString(),
                         new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
-//                        new ObjectType("java.lang.ThreadLocal"),
                         Constants.PUTFIELD));
             }
             else {
@@ -395,11 +391,15 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
 
         final InstructionList il = new InstructionList();
 
-        final Type[] parameterTypes = Type.getArgumentTypes(originalMethod.getSignature());
-        final Type returnType = Type.getReturnType(originalMethod.getSignature());
-        final String[] parameterNames = originalMethod.getArgumentNames();
+        final Type[] parameterTypes =
+                Type.getArgumentTypes(originalMethod.getSignature());
+        final Type returnType =
+                Type.getReturnType(originalMethod.getSignature());
+        final String[] parameterNames =
+                originalMethod.getArgumentNames();
 
-        final StringBuffer joinPoint = getJoinPointName(originalMethod.getMethod(), methodSequence);
+        final StringBuffer joinPoint = getJoinPointName(
+                originalMethod.getMethod(), methodSequence);
 
         final MethodGen method = new MethodGen(
                 accessFlags,
@@ -410,7 +410,10 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                 cg.getClassName(),
                 il, cp);
 
-        method.addException("java.lang.Throwable");
+        String[] exceptions = originalMethod.getExceptions();
+        for (int i = 0; i < exceptions.length; i++) {
+            method.addException(exceptions[i]);
+        }
 
         int indexParam = 1;
         int indexStack = 0;
@@ -425,11 +428,9 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                     cg.getClassName(),
                     joinPoint.toString(),
                     new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
-//                    new ObjectType("java.lang.ThreadLocal"),
                     Constants.GETFIELD));
             il.append(factory.createInvoke(
                     "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
-//                    "java.lang.ThreadLocal",
                     "get",
                     Type.OBJECT,
                     Type.NO_ARGS,
@@ -461,12 +462,10 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                     cg.getClassName(),
                     joinPoint.toString(),
                     new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
-//                    new ObjectType("java.lang.ThreadLocal"),
                     Constants.GETFIELD));
             il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
             il.append(factory.createInvoke(
                     "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
-//                    "java.lang.ThreadLocal",
                     "set",
                     Type.VOID,
                     new Type[]{Type.OBJECT},
