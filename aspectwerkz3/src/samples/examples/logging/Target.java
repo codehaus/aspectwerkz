@@ -34,13 +34,13 @@ public class Target {
      * @log level=0 sconstant=org.codehaus.aspectwerkz.transform.TransformationUtil.ASPECTWERKZ_PREFIX
      */
     public static void toLog1() {
-        new Target().toLog2("parameter");
+        new Target().toLog2(new String[] {"parameter"});
     }
 
     /**
      * @log level=3 sarr={"Hello","World", "Jonas's car"}
      */
-    protected void toLog2(java.lang.String arg) {
+    protected void toLog2(java.lang.String[] arg) {
         new Target().toLog3();
     }
 
