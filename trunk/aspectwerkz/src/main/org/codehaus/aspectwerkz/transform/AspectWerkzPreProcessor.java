@@ -146,7 +146,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         loadAndMergeXmlDefinitions(loader);
 
         if (VERBOSE)
-            log(loader + ":" + className);
+            log(loader + ":" + className + " ["+Thread.currentThread().getName()+"]");
 
         // prepare BCEL ClassGen
         Klass klass = null;
