@@ -1,15 +1,15 @@
 /*
- * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it A/or
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR and PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -38,14 +38,17 @@ import org.codehaus.aspectwerkz.advice.PreAdvice;
 import org.codehaus.aspectwerkz.advice.PostAdvice;
 import org.codehaus.aspectwerkz.advice.AbstractAdvice;
 import org.codehaus.aspectwerkz.advice.AdviceContainer;
-import org.codehaus.aspectwerkz.advice.CFlowAdvice;
+import org.codehaus.aspectwerkz.advice.CFlowPreAdvice;
+import org.codehaus.aspectwerkz.advice.CFlowPostAdvice;
 import org.codehaus.aspectwerkz.introduction.Introduction;
 import org.codehaus.aspectwerkz.introduction.IntroductionContainer;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
- * Manages the aspect definitions.<p/>
+ * Manages the startup procedure, walks through the definition and instantiates
+ * the aspects/advices/introduction/pointcuts.
+ * <p/>
  *
  * Reads the definition, either as a class of as an XML file.
  * <p/>
@@ -53,15 +56,15 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>-Daspectwerkz.definition.file=PathToFile</code>
  * as parameter to the JVM.
  * <p/>
- * If the above given parameter is not specified, the <code>DefinitionManager</code>
+ * If the above given parameter is not specified, the <code>StartupManager</code>
  * tries locate a file called <code>aspectwerkz.xml</code> in the classpath
- * A if this fails the last attempt is to use the
+ * and if this fails the last attempt is to use the
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.16 2003-07-19 20:36:15 jboner Exp $
+ * @version $Id: StartupManager.java,v 1.1 2003-07-22 14:14:21 jboner Exp $
  */
-public class DefinitionManager {
+public class StartupManager {
 
     /**
      * The path to the aspectwerkz home directory.
@@ -181,7 +184,7 @@ public class DefinitionManager {
     }
 
     /**
-     * Creates A registers the aspects defined.
+     * Creates and registers the aspects defined.
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the definition
@@ -248,7 +251,7 @@ public class DefinitionManager {
                     implClass,
                     DeploymentModel.getDeploymentModelAsInt(introDef.getDeploymentModel()));
 
-            // create A set the container for the introduction
+            // create and set the container for the introduction
             IntroductionContainer container = createIntroductionContainer(implClass);
             if (container != null) {
                 newIntroduction.setContainer(container);
@@ -306,7 +309,7 @@ public class DefinitionManager {
     }
 
     /**
-     * Creates A registers the advices defined.
+     * Creates and registers the advices defined.
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the aspectwerkz definition
@@ -320,7 +323,7 @@ public class DefinitionManager {
     }
 
     /**
-     * Creates A registers the advice specified.
+     * Creates and registers the advice specified.
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the advice definition
@@ -357,7 +360,7 @@ public class DefinitionManager {
                 newAdvice.setParameter((String)entry.getKey(), (String)entry.getValue());
             }
 
-            // create A set the container for the advice
+            // create and set the container for the advice
             newAdvice.setContainer(createAdviceContainer(newAdvice));
 
             AspectWerkz.getSystem(uuid).register(def.getName(), newAdvice);
@@ -380,7 +383,7 @@ public class DefinitionManager {
     }
 
     /**
-     * Creates A registers the aspects defined.
+     * Creates and registers the aspects defined.
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
@@ -430,7 +433,7 @@ public class DefinitionManager {
                                 aspectDefinition.getPointcutDef(pointcutName);
                         if (pointcutDefinition != null && pointcutDefinition.getType().
                                 equalsIgnoreCase(PointcutDefinition.METHOD)) {
-                            methodPointcut.addPointcutPattern(pointcutDefinition);
+                            methodPointcut.addPointcutDef(pointcutDefinition);
                             hasMethodPointcut = true;
                         }
                     }
@@ -510,7 +513,7 @@ public class DefinitionManager {
                         continue;
                     }
 
-                    // add pre A post advices
+                    // add pre and post advices
                     List adviceRefs = weavingRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
                         String adviceRef = (String)it3.next();
@@ -599,7 +602,7 @@ public class DefinitionManager {
                         continue;
                     }
 
-                    // add pre A post advices
+                    // add pre and post advices
                     List adviceRefs = weavingRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
                         String adviceRef = (String)it3.next();
@@ -761,7 +764,7 @@ public class DefinitionManager {
                         continue;
                     }
 
-                    // add pre A post advices
+                    // add pre and post advices
                     List adviceRefs = weavingRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
                         String adviceRef = (String)it3.next();
@@ -835,28 +838,37 @@ public class DefinitionManager {
                     PointcutDefinition cflowPointcutDef =
                             aspectDefinition.getPointcutDef(cflowExpression);
 
-                    // create method pointcut
-                    MethodPointcut methodPointcut = new MethodPointcut(uuid, cflowExpression);
+                    // create caller side pointcut
+                    CallerSidePointcut callerSidePointcut =
+                            new CallerSidePointcut(uuid, cflowExpression);
                     if (!(cflowPointcutDef != null && cflowPointcutDef.getType().
                             equalsIgnoreCase(PointcutDefinition.CFLOW))) {
                         continue;
                     }
-                    // register the cflow advice in the system (if it does not already exist)
-                    if (!AspectWerkz.getSystem(uuid).hasAspect(CFlowAdvice.NAME)) {
-                        AdviceDefinition adviceDef = CFlowAdvice.getDefinition();
+                    // register the cflow advices in the system (if they does not already exist)
+                    if (!AspectWerkz.getSystem(uuid).hasAspect(CFlowPreAdvice.NAME)) {
+                        AdviceDefinition adviceDef = CFlowPreAdvice.getDefinition();
+                        // add the advice to the aspectwerkz definition
+                        definition.addAdvice(adviceDef);
+                        // add the advice to the aspectwerkz system
+                        registerAdvice(uuid, adviceDef);
+                    }
+                    if (!AspectWerkz.getSystem(uuid).hasAspect(CFlowPostAdvice.NAME)) {
+                        AdviceDefinition adviceDef = CFlowPostAdvice.getDefinition();
                         // add the advice to the aspectwerkz definition
                         definition.addAdvice(adviceDef);
                         // add the advice to the aspectwerkz system
                         registerAdvice(uuid, adviceDef);
                     }
                     // add the pointcut definition to the method pointcut
-                    methodPointcut.addPointcutPattern(cflowPointcutDef);
-                    // add a reference to the cflow advice to the cflow pointcut
-                    methodPointcut.addAdvice(CFlowAdvice.NAME);
+                    callerSidePointcut.addPointcutDef(cflowPointcutDef);
+                    // add references to the cflow advices to the cflow pointcut
+                    callerSidePointcut.addPreAdvice(CFlowPreAdvice.NAME);
+                    callerSidePointcut.addPostAdvice(CFlowPostAdvice.NAME);
                     // add the method pointcut
-                    aspect.addMethodPointcut(methodPointcut);
+                    aspect.addCallerSidePointcut(callerSidePointcut);
 
-                    // add a mapping between the cflow pattern A the method patterns affected
+                    // add a mapping between the cflow pattern and the method patterns affected
                     for (Iterator it3 = weavingRule.getPointcutRefs().iterator(); it3.hasNext();) {
                         PointcutDefinition pointcutDef =
                                 aspectDefinition.getPointcutDef((String)it3.next());
@@ -882,6 +894,6 @@ public class DefinitionManager {
     /**
      * Private constructor to prevent instantiability.
      */
-    private DefinitionManager() {
+    private StartupManager() {
     }
 }

@@ -18,30 +18,29 @@
  */
 package org.codehaus.aspectwerkz.advice;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 
 /**
- * Registers the join point as the start of a control flow (cflow) in the AspectWerkz system.
+ * Registers the join point as the end of a control flow (cflow) in the AspectWerkz system.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CFlowAdvice.java,v 1.3 2003-07-11 10:45:18 jboner Exp $
+ * @version $Id: CFlowPostAdvice.java,v 1.1 2003-07-22 14:14:21 jboner Exp $
  */
-public class CFlowAdvice extends AroundAdvice {
+public class CFlowPostAdvice extends PostAdvice {
 
     /**
      * A unique name for the advice.
      */
-    public static final String NAME = "org$codehaus$aspectwerkz$advice$CFlowAdvice";
+    public static final String NAME = "org$codehaus$aspectwerkz$advice$CFlowPostAdvice";
 
     /**
      * The deployment model for the advice.
@@ -56,22 +55,19 @@ public class CFlowAdvice extends AroundAdvice {
     /**
      * Creates a new cflow advice.
      */
-    public CFlowAdvice() {
+    public CFlowPostAdvice() {
         super();
     }
 
     /**
-     * Registers the join point as the start of a control flow (cflow) in the system.
+     * Registers the join point as the end of a control flow (cflow) in the system.
      *
      * @param joinPoint the join point
      * @return the result from the invocation
      * @throws Throwable the exception from the invocation
      */
-    public Object execute(final JoinPoint joinPoint) throws Throwable {
-        getSystem().enteringControlFlow(getMetaData(joinPoint));
-        Object result = joinPoint.proceed();
+    public void execute(final JoinPoint joinPoint) throws Throwable {
         getSystem().exitingControlFlow(getMetaData(joinPoint));
-        return result;
     }
 
     /**
@@ -82,7 +78,7 @@ public class CFlowAdvice extends AroundAdvice {
     public static AdviceDefinition getDefinition() {
         AdviceDefinition definition = new AdviceDefinition();
         definition.setName(NAME);
-        definition.setAdviceClassName(CFlowAdvice.class.getName());
+        definition.setAdviceClassName(CFlowPostAdvice.class.getName());
         definition.setDeploymentModel(DEPLOYMENT_MODEL);
         return definition;
     }
@@ -90,37 +86,36 @@ public class CFlowAdvice extends AroundAdvice {
     /**
      * Creates meta-data for the method.
      *
-     * @todo should perhaps use a cache
-     *
      * @return the created method meta-data
      */
-    private MethodMetaData createMetaData(final MethodJoinPoint joinPoint) {
+    private static MethodMetaData createMetaData(final CallerSideJoinPoint joinPoint) {
         return ReflectionMetaDataMaker.createMethodMetaData(
-                joinPoint.getMethodName(),
-                joinPoint.getParameterTypes(),
-                joinPoint.getReturnType());
+                joinPoint.getCalleeMethodName(),
+                joinPoint.getCalleeMethodParameterTypes(),
+                joinPoint.getCalleeMethodReturnType());
     }
 
     /**
      * Creates A returns the meta-data for the join point. Uses a cache.
      *
+     * @todo should use a cache (used to cache on the Method instance but at caller side pointcuts no Method instance is available)
+     *
      * @param joinPoint the join point
      * @return the meta-data
      */
     private ClassNameMethodMetaDataTuple getMetaData(final JoinPoint joinPoint) {
-        MethodJoinPoint jp = ((MethodJoinPoint)joinPoint);
-        Method method = jp.getMethod();
-
+        CallerSideJoinPoint jp = ((CallerSideJoinPoint)joinPoint);
         ClassNameMethodMetaDataTuple metaData;
-        Object cachedMetaData = m_metaDataCache.get(method);
-        if (cachedMetaData == null) {
-            metaData = new ClassNameMethodMetaDataTuple(
-                    joinPoint.getTargetClass().getName(), createMetaData(jp));
-            m_metaDataCache.put(method, metaData);
-        }
-        else {
-            metaData = (ClassNameMethodMetaDataTuple)cachedMetaData;
-        }
+
+//        Method method = jp.getMethod();
+//        Object cachedMetaData = m_metaDataCache.get(method);
+//        if (cachedMetaData == null) {
+            metaData = new ClassNameMethodMetaDataTuple(jp.getCalleeClassName(), createMetaData(jp));
+//            m_metaDataCache.put(method, metaData);
+//        }
+//        else {
+//            metaData = (ClassNameMethodMetaDataTuple)cachedMetaData;
+//        }
         return metaData;
     }
 }
