@@ -11,11 +11,12 @@ import junit.framework.TestCase;
 
 import org.codehaus.aspectwerkz.SystemLoader;
 import test.Loggable;
+import test.WeavedTestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class PointcutExpressionTest extends TestCase implements Loggable {
+public class PointcutExpressionTest extends WeavedTestCase implements Loggable {
 
     private String m_logString = "";
 
