@@ -1,14 +1,9 @@
 build
 dist
 target
-dump
-xdocs
 tags
 scrapbook
-_attributes
-_jisp
-_txLogs
-_metaData
+_dump
 .classpath
 .project
 .nbattrs
@@ -16,9 +11,6 @@ _metaData
 *.*~
 *.sh
 *.bat
-*.ipr
-*.iws
 *.log
-*.txt
 lib/aspectwerkz*.jar
 
