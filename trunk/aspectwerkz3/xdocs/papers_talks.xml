@@ -72,7 +72,33 @@
         <section name="Talks">
             <p>
                 <ul>
-                    <!-- TODO j1 + BUG + eW, only after J1 show -->
+                    <li>
+                        <b>JavaOne 2004, AspectWerkz AOP BOF, AOP in J2EE technical session (June 2004)</b>
+                        <br/>
+                        <i>Dynamic Aspect Oriented Programming with AspectWerkz</i>
+                        <br/>
+                        <i>Aspect Oriented Programming (AOP) in J2EE environments</i>
+                        Jonas Bon&#233;r's and Alexandre Vasseur's 1 hour BOF and 1 hour technical session at JavaOne 2004.
+                        The BOF goes thru the HelloWorld AOP tutorial and then delivers some more advanced content around AspectWerkz.
+                        The technical session provides concrete demos and code sample about AOP in J2EE, AOP container, annotation driven AOP for
+                        caching concerns, JMX monitoring and JAAS security with Spring based configuration of the aspects, under BEA WebLogic Server. It also gives a small comparison between
+                        JBossAOP and AspectWerkz cross-platform AOP container.
+                        <br/>
+                        [
+                        <a href="/downloads/papers/JavaOne2004-TS1391-J2EEAOP.pdf">Technical session pdf</a><br/>
+                        <a href="/downloads/papers/JavaOne2004-BOF1392-AspectWerkzAOP.pdf">BOF pdf</a>]
+                    </li>
+                    <br/>
+                    <li>
+                        <b>BEA eWorld 2004, Dynamic AOP: SOA for the application (May 2004)</b>
+                        <br/>
+                        Jonas Bon&#233;r's and Alexandre Vasseur's 1 hour talk providing tech preview of BEA JRockit JVM support for AOP
+                        with concrete demos and code samples.
+                        <br/>
+                        [
+                        <a href="/downloads/papers/eWorld2004-1040_boner_aop-soa.pdf">pdf</a>]
+                    </li>
+                    <br/>
                     <li>
                         <b>AOSD 2004, AspectWerkz tutorial (March 2004)</b>
                         <br/>
