@@ -138,4 +138,13 @@ public class FieldRttiImpl implements FieldRtti {
     public String toString() {
         return super.toString();
     }
+
+    /**
+     * TODO: Needed for stupid JIT compiler. Remove for 2.0.
+     *
+     * @return
+     */
+    public Object[] getParameterValues() {
+        return new Object[]{m_fieldValue};
+    }
 }
