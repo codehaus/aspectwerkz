@@ -306,7 +306,7 @@ public class Target {
             </p>
             <p>
                 Note: if you add more than one <code>Introduction</code> to a class
-                then <b>you</b> have to make shure that the names of the methods
+                then <b>you</b> have to make sure that the names of the methods
                 do not collide.
 <source><![CDATA[
 public interface Mixin {
