@@ -102,6 +102,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         final Map methodSequences = new HashMap();
         final List newMethods = new ArrayList();
         boolean isClassAdvised = false;
+        boolean isMethodChanged = false;
 
         for (int i = 0; i < methods.length; i++) {
 
@@ -117,6 +118,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 continue;
             }
             InstructionHandle ih = il.getStart();
+            isMethodChanged = false;
             // search for all InvokeInstruction instructions and
             // inserts the call side pointcuts
             while (ih != null) {
@@ -187,6 +189,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                                 ((Integer)methodSequences.get(calleeMethodName)).intValue();
 
                         isClassAdvised = true;
+                        isMethodChanged = true;
 
                         insertPreAdvice(
                                 il, ih, cg,
@@ -270,8 +273,10 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 ih = ih.getNext();
             }
 
-            mg.setMaxStack();
-            methods[i] = mg.getMethod();
+            if (isMethodChanged) {
+                mg.setMaxStack();
+                methods[i] = mg.getMethod();
+            }
         }
 
         if (isClassAdvised) {
