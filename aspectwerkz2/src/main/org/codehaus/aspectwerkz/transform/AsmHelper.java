@@ -157,8 +157,10 @@ public class AsmHelper {
      */
     public static void dumpClass(final String dumpDir, final String className, final ClassWriter cw)
             throws IOException {
-//        System.out.println("Dumping class: " + className + " to: " + dumpDir);
-        FileOutputStream os = new FileOutputStream(dumpDir + File.separator + className.replace('/', '_') + ".class");
+        System.out.println("Dumping class: " + className + " to: " + dumpDir);
+        File dir = new File(dumpDir + File.separator + className.substring(0, className.lastIndexOf('/')));
+        dir.mkdirs();
+        FileOutputStream os = new FileOutputStream(dumpDir + File.separator + className.replace('/', '/') + ".class");
         os.write(cw.toByteArray());
         os.close();
     }

@@ -87,7 +87,7 @@ class MethodJoinPoint extends JoinPointBase {
     }
 
     /**
-     * Returns a string representation of the join point.
+     * Returns a string representation of the join puoint.
      *
      * @return a string representation
      * @TODO: implement toString to something meaningful

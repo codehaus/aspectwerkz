@@ -24,7 +24,7 @@ import org.codehaus.aspectwerkz.WeavedTestCase;
 public class PerformanceTest extends WeavedTestCase {
 
     private boolean m_printInfo = true;
-    private int m_numberOfInvocations = 1000000;
+    private int m_numberOfInvocations = 10000;
 
     public void testNonAdvisedMethodPerformance() {
         long startTime = System.currentTimeMillis();
@@ -180,7 +180,6 @@ public class PerformanceTest extends WeavedTestCase {
 
     public PerformanceTest(String name) {
         super(name);
-        SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.lang.reflect.Constructor;
 
+import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
@@ -22,10 +24,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.aspect.management.PointcutManager;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
+import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
-import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
  * Manages the startup procedure, walks through the definition and instantiates the
@@ -73,6 +73,7 @@ public class StartupManager {
             "org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy";
 
     /**
+     * Loads the system definition (one AspectManager = one SystemDefinition).
      * The aspect container class to use.
      *
      * @TODO: does NOT work with AOPC. Needs to be specified in XML.
@@ -90,24 +91,13 @@ public class StartupManager {
     /**
      * Loads the system definition.
      *
-     * @param uuid       the UUID for the weave model to load
+     * @param aspectManager the aspectManager for the system
      * @param definition the definition for the system
      */
-    public static void initializeSystem(final String uuid, final SystemDefinition definition) {
-        if (uuid == null) {
-            throw new IllegalArgumentException("uuid can not be null");
-        }
-        if (definition == null) {
-            throw new IllegalArgumentException("definition can not be null");
-        }
-
-        if (s_initialized) {
-            return;
-        }
-        s_initialized = true;
-
-        registerAspects(uuid, definition);
-        registerPointcuts(uuid, definition);
+    public static void initializeSystem(final AspectManager aspectManager, final SystemDefinition definition) {
+        // note: initialization check is maintained by AspectRegistry due to a lazy policy
+        registerAspects(aspectManager, definition);
+        registerPointcuts(aspectManager, definition);
     }
 
     /**
@@ -117,20 +107,21 @@ public class StartupManager {
      * @param definition the definition for the system
      */
     public static void reinitializeSystem(final String uuid, final SystemDefinition definition) {
-        if (!s_initialized) {
-            initializeSystem(uuid, definition);
-        }
-        else {
-            if (uuid == null) {
-                throw new IllegalArgumentException("uuid can not be null");
-            }
-            if (definition == null) {
-                throw new IllegalArgumentException("definition can not be null");
-            }
-
-            //registerAspects(uuid, definition);
-            registerPointcuts(uuid, definition);
-        }
+        //TODO//AVAOPC
+        return;
+//        if (! s_initialized.containsKey(uuid)) {
+//            initializeSystem(uuid, definition);
+//        } else {
+//            if (uuid == null) {
+//                throw new IllegalArgumentException("uuid can not be null");
+//            }
+//            if (definition == null) {
+//                throw new IllegalArgumentException("definition can not be null");
+//            }
+//
+//            //registerAspects(uuid, definition);
+//            registerPointcuts(uuid, definition);
+//        }
     }
 
     /**
@@ -153,6 +144,7 @@ public class StartupManager {
             cause.append(ASPECT_CONTAINER_IMPLEMENTATION_CLASS);
             cause.append("] due to: ");
             cause.append(e.toString());
+            e.printStackTrace();
             throw new DefinitionException(cause.toString());
         }
     }
@@ -160,14 +152,14 @@ public class StartupManager {
     /**
      * Creates and registers the aspects defined.
      *
-     * @param uuid       the UUID for the AspectWerkz system to use
+     * @param aspectManager the aspectManager for the system
      * @param definition the definition
      */
-    private static void registerAspects(final String uuid, final SystemDefinition definition) {
+    private static void registerAspects(final AspectManager aspectManager, final SystemDefinition definition) {
         try {
             for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
                 AspectDefinition aspectDef = (AspectDefinition)it.next();
-                registerAspect(uuid, aspectDef, definition.getParameters(aspectDef.getName()));
+                registerAspect(aspectManager, aspectDef, definition.getParameters(aspectDef.getName()));
             }
         }
         catch (NullPointerException e) {
@@ -181,17 +173,17 @@ public class StartupManager {
     /**
      * Registers and creates a new aspect container for the aspect.
      *
-     * @param uuid      the UUID for the AspectWerkz system to use
+     * @param aspectManager the aspectManager for the system
      * @param aspectDef the aspect definition
      */
-    private static void registerAspect(final String uuid, final AspectDefinition aspectDef, final Map parameters) {
+    private static void registerAspect(final AspectManager aspectManager, final AspectDefinition aspectDef, final Map parameters) {
         try {
             String aspectClassName = aspectDef.getClassName();
 
             // load the aspect class
             final Class aspectClass;
             try {
-                aspectClass = ContextClassLoader.loadClass(aspectClassName);
+                aspectClass = aspectManager.m_system.getDefiningClassLoader().loadClass(aspectClassName);
             }
             catch (ClassNotFoundException e) {
                 throw new RuntimeException(aspectClassName + " could not be found on classpath: " + e.toString());
@@ -206,7 +198,7 @@ public class StartupManager {
             }
 
             final CrossCuttingInfo crossCuttingInfoPrototype = new CrossCuttingInfo(
-                    uuid,
+                    aspectManager.getUuid(),//AVAOPC////TODO: we could set the WHOLE AspectManager that defines the Aspect instead
                     aspectClass,
                     aspectDef.getName(),
                     deploymentModel,
@@ -217,11 +209,8 @@ public class StartupManager {
             final AspectContainer container = createAspectContainer(crossCuttingInfoPrototype);
             crossCuttingInfoPrototype.setContainer(container);
 
-            // register the aspect in the system
-            SystemLoader.getSystem(uuid).getAspectManager().register(
-                    container,
-                    new PointcutManager(uuid, aspectDef.getName(), deploymentModel)
-            );
+            PointcutManager pointcutManager = new PointcutManager(aspectDef.getName(), deploymentModel);
+            aspectManager.register(container,  pointcutManager);
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -231,34 +220,35 @@ public class StartupManager {
     /**
      * Creates and registers the aspects defined.
      *
-     * @param uuid       the UUID for the AspectWerkz system to use
+     * @param aspectManager the aspectManager for the system
      * @param definition the AspectWerkz definition
      */
-    private static void registerPointcuts(final String uuid, final SystemDefinition definition) {
+    private static void registerPointcuts(final AspectManager aspectManager, final SystemDefinition definition) {
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
 
-            PointcutManager pointcutManager = SystemLoader.getSystem(uuid).
-                    getAspectManager().getPointcutManager(aspectDef.getName());
+            PointcutManager pointcutManager = aspectManager.getPointcutManager(aspectDef.getName());
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpression().getExpression());
                 if (pointcut == null) {
-                    pointcut = new Pointcut(uuid, adviceDef.getExpression());
+                    pointcut = new Pointcut(aspectManager, adviceDef.getExpression());
                     pointcutManager.addPointcut(pointcut);
                 }
-                pointcut.addAroundAdvice(adviceDef.getName());
+                // add aspect name as prefix to allow advice reuse
+                pointcut.addAroundAdvice(aspectDef.getName()+"/"+adviceDef.getName());
             }
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpression().getExpression());
                 if (pointcut == null) {
-                    pointcut = new Pointcut(uuid, adviceDef.getExpression());
+                    pointcut = new Pointcut(aspectManager, adviceDef.getExpression());
                     pointcutManager.addPointcut(pointcut);
                 }
-                pointcut.addBeforeAdvice(adviceDef.getName());
+                // add aspect name as prefix to allow advice reuse
+                pointcut.addBeforeAdvice(aspectDef.getName()+"/"+adviceDef.getName());
                 //TODO - check me: Handler PC supports only beforeAdvice
                 //TODO - .. this is not explicit here
             }
@@ -267,28 +257,28 @@ public class StartupManager {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpression().getExpression());
                 if (pointcut == null) {
-                    pointcut = new Pointcut(uuid, adviceDef.getExpression());
+                    pointcut = new Pointcut(aspectManager, adviceDef.getExpression());
                     pointcutManager.addPointcut(pointcut);
                 }
-                pointcut.addAfterAdvice(adviceDef.getName());
+                // add aspect name as prefix to allow advice reuse
+                pointcut.addAfterAdvice(aspectDef.getName()+"/"+adviceDef.getName());
             }
         }
 
-        registerCFlowPointcuts(uuid, definition);
+        registerCFlowPointcuts(aspectManager, definition);
     }
 
     /**
      * Registers the cflow pointcuts.
      *
-     * @param uuid       the UUID for the AspectWerkz system to use
+     * @param aspectManager the aspectManager for the system
      * @param definition the AspectWerkz definition
      */
-    private static void registerCFlowPointcuts(final String uuid, final SystemDefinition definition) {
+    private static void registerCFlowPointcuts(final AspectManager aspectManager, final SystemDefinition definition) {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it1.next();
-            PointcutManager aspect = SystemLoader.getSystem(uuid).getAspectManager().
-                    getPointcutManager(aspectDef.getName());
+            PointcutManager aspect = aspectManager.getPointcutManager(aspectDef.getName());
 
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
@@ -321,12 +311,11 @@ public class StartupManager {
                         }
 
                         // create call pointcut
-                        Pointcut pointcut = new Pointcut(uuid, value);
+                        Pointcut pointcut = new Pointcut(aspectManager, value);
 
                         // register the cflow advices in the system and create the cflow system aspect
                         // (if it does not already exist)
-                        org.codehaus.aspectwerkz.System system = SystemLoader.getSystem(uuid);
-                        if (!system.getAspectManager().hasAspect(CFlowSystemAspect.NAME)) {
+                        if (!aspectManager.hasAspect(CFlowSystemAspect.NAME)) {
                             AspectDefinition cflowAspect = new AspectDefinition(
                                     CFlowSystemAspect.NAME,
                                     CFlowSystemAspect.CLASS_NAME
@@ -378,39 +367,18 @@ public class StartupManager {
                             definition.addAspect(cflowAspect);
 
                             // add the advice to the aspectwerkz system
-                            registerAspect(uuid, cflowAspect, new HashMap());
+                            registerAspect(aspectManager, cflowAspect, new HashMap());
                         }
 
                         // add references to the cflow advices to the cflow pointcut
-                        pointcut.addBeforeAdvice(CFlowSystemAspect.PRE_ADVICE);
-                        pointcut.addAfterAdvice(CFlowSystemAspect.POST_ADVICE);
+                        // add aspect name as prefix to allow advice reuse
+                        pointcut.addBeforeAdvice(CFlowSystemAspect.NAME+"/"+CFlowSystemAspect.PRE_ADVICE);
+                        pointcut.addAfterAdvice(CFlowSystemAspect.NAME+"/"+CFlowSystemAspect.POST_ADVICE);
 
                         // add the call pointcut
                         aspect.addPointcut(pointcut);
                     }
                 }
-                //TODO ALEX - is this commented code needed?
-
-//                    // add a mapping between the cflow pattern and the method patterns affected
-//                    for (Iterator it3 = weavingRule.getPointcutRefs().iterator(); it3.hasNext();) {
-//                        PointcutDefinition pointcutDef = aspectDef.getPointcutDef((String)it3.next());
-//                        if (pointcutDef != null && pointcutDef.getType().
-//                                equalsIgnoreCase(PointcutDefinition.METHOD)) {
-//
-//                            pointcutManager.addMethodToCFlowMethodMap(
-//                                    pointcutDef.getPointcutPatternTuple(),
-//                                    cflowPointcutDef.getPointcutPatternTuple());
-//                        }
-//                    }
-//                }
-//            }
-//            catch (NullPointerException e) {
-//                throw new DefinitionException("cflow pointcuts in aspect <" + pointcutManager.getName() + "> are not properly defined");
-//            }
-//            catch (Exception e) {
-//                throw new WrappedRuntimeException(e);
-//            }
-//        }
             }
         }
     }

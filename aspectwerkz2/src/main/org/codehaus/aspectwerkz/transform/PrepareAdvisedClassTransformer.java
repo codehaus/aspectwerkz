@@ -18,9 +18,11 @@ import javassist.NotFoundException;
 
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MetaDataInspector;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
  * Prepares classes that are instrumented. 
@@ -39,7 +41,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      * Creates a new instance of the transformer.
      */
     public PrepareAdvisedClassTransformer() {
-        m_definitions = DefinitionLoader.getDefinitions();
+        //m_definitions = DefinitionLoader.getDefinitions();
     }
 
     /**
@@ -49,6 +51,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws Exception {
+        m_definitions = SystemDefinitionContainer.getDefinitionsContext();
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
@@ -56,14 +59,14 @@ public class PrepareAdvisedClassTransformer implements Transformer {
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
 
             if (classFilter(definition, classMetaData, ctClass)) {
-                return;
+                continue;//AAVAOPC - next system TF
             }
 
-            if (!MetaDataInspector.hasField(classMetaData, TransformationUtil.STATIC_CLASS_FIELD)) {
+            if ( ! JavassistHelper.hasField(ctClass, TransformationUtil.STATIC_CLASS_FIELD)) {
                 addStaticClassField(ctClass);
                 context.markAsAdvised();
             }
-            if (!MetaDataInspector.hasField(classMetaData, TransformationUtil.JOIN_POINT_MANAGER_FIELD)) {
+            if ( ! JavassistHelper.hasField(ctClass, TransformationUtil.JOIN_POINT_MANAGER_FIELD)) {
                 addJoinPointManagerField(ctClass, definition);
                 context.markAsAdvised();
             }
@@ -76,13 +79,16 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      * @param ctClass the class
      */
     private void addStaticClassField(final CtClass ctClass) throws NotFoundException, CannotCompileException {
-        CtField field = new CtField(
-                ctClass.getClassPool().get("java.lang.Class"),
-                       TransformationUtil.STATIC_CLASS_FIELD,
-                ctClass
-        );
-        field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
-        ctClass.addField(field, "java.lang.Class#forName(\"" + ctClass.getName().replace('/', '.') + "\")");
+        if ( ! JavassistHelper.hasField(ctClass, TransformationUtil.STATIC_CLASS_FIELD)) {
+            System.out.println("PrepareAdvisedClassTransformer.addStaticClassField " + ctClass.getName());
+            CtField field = new CtField(
+                    ctClass.getClassPool().get("java.lang.Class"),
+                    TransformationUtil.STATIC_CLASS_FIELD,
+                    ctClass
+            );
+            field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
+            ctClass.addField(field, "java.lang.Class#forName(\"" + ctClass.getName().replace('/','.') + "\")");
+        }
     }
 
     /**
@@ -94,22 +100,25 @@ public class PrepareAdvisedClassTransformer implements Transformer {
     private void addJoinPointManagerField(final CtClass ctClass, final SystemDefinition definition)
             throws NotFoundException, CannotCompileException {
 
-        CtField field = new CtField(
-                ctClass.getClassPool().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS),
-                TransformationUtil.JOIN_POINT_MANAGER_FIELD,
-                ctClass
-        );
-        field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
-        StringBuffer body = new StringBuffer();
-        body.append(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
-        body.append('#');
-        body.append(TransformationUtil.GET_JOIN_POINT_MANAGER);
-        body.append('(');
-        body.append(TransformationUtil.STATIC_CLASS_FIELD);
-        body.append(", \"");
-        body.append(definition.getUuid());
-        body.append("\")");
-        ctClass.addField(field, body.toString());
+        if ( ! JavassistHelper.hasField(ctClass, TransformationUtil.JOIN_POINT_MANAGER_FIELD)) {
+
+            CtField field = new CtField(
+                    ctClass.getClassPool().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS),
+                    TransformationUtil.JOIN_POINT_MANAGER_FIELD,
+                    ctClass
+            );
+            field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
+            StringBuffer body = new StringBuffer();
+            body.append(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
+            body.append('#');
+            body.append(TransformationUtil.GET_JOIN_POINT_MANAGER);
+            body.append('(');
+            body.append(TransformationUtil.STATIC_CLASS_FIELD);
+            body.append(", \"");
+            body.append(definition.getUuid());
+            body.append("\")");
+            ctClass.addField(field, body.toString());
+        }
     }
 
     /**

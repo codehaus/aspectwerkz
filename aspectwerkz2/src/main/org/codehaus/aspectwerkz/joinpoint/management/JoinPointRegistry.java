@@ -18,12 +18,13 @@ import java.util.Map;
 import gnu.trove.TLongObjectHashMap;
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
-import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.ISystem;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
+import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
 
 /**
  * Manages the registration of join points and advices for these join points.
@@ -59,7 +60,7 @@ class JoinPointRegistry {
      * @param definedClass
      * @param definedClassMetaData
      * @param system
-     * @TODO: cache the metadata created in the method - map it to the method hash (see pointcut for caching)
+     * TODO: cache the metadata created in the method - map it to the method hash (see pointcut for caching)
      */
     public void registerJoinPoint(
             final int joinPointType,
@@ -68,7 +69,7 @@ class JoinPointRegistry {
             final int classHash,
             final Class definedClass,
             final ClassMetaData definedClassMetaData,
-            final System system) {
+            final ISystem system) {
 
         if (!m_joinPointAdvicesMap.containsKey(classHash)) {
             m_joinPointAdvicesMap.put(classHash, new TLongObjectHashMap());
@@ -147,19 +148,29 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerMethodExecutionJoinPoint(
-            final System system,
+            final ISystem system,
             final Class definedClass,
             final ClassMetaData definedClassMetaData,
             final int joinPointHash,
             final Map pointcutTypeToAdvicesMap) {
 
+        System.out.println("JoinPointRegistry.registerMethodExecutionJoinPoint");
+
         List executionAdvices = new ArrayList();
-        MethodTuple methodTuple = system.getAspectManager().getMethodTuple(definedClass, joinPointHash);
-        Method wrapperMethod = methodTuple.getWrapperMethod();
-        List executionPointcuts = system.getAspectManager().getExecutionPointcuts(
-                definedClassMetaData,
-                ReflectionMetaDataMaker.createMethodMetaData(wrapperMethod)
-        );
+        List executionPointcuts = new ArrayList(); // cache ?
+        for (int i = 0; i < system.getAspectManagers().length; i++) {
+            executionPointcuts.addAll(system.getAspectManagers()[i].getExecutionPointcuts(
+                    definedClassMetaData,
+                    ReflectionMetaDataMaker.createMethodMetaData(
+                            AspectRegistry.getMethodTuple(definedClass, joinPointHash).getWrapperMethod()
+                    )
+            ));
+        }
+        System.out.println("executionPointcuts.size = " + executionPointcuts.size());
+//        system.getAspectManager().getExecutionPointcuts(
+//                definedClassMetaData,
+//                ReflectionMetaDataMaker.createMethodMetaData(wrapperMethod)
+//        );
         for (Iterator it = executionPointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
@@ -169,6 +180,7 @@ class JoinPointRegistry {
             );
             executionAdvices.add(advices);
         }
+        System.out.println("executionAdvices.size = " + executionAdvices.size());
         AdviceContainer[] adviceContainers = new AdviceContainer[executionAdvices.size()];
         int i = 0;
         for (Iterator iterator = executionAdvices.iterator(); iterator.hasNext(); i++) {
@@ -189,21 +201,22 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerMethodCallJoinPoint(
-            final System system,
+            final ISystem system,
             final Class definedClass,
             final ClassMetaData definedClassMetaData,
             final int joinPointHash,
             final Map pointcutTypeToAdvicesMap) {
 
         List methodCallAdvices = new ArrayList();
-        List methodCallPointcuts = system.getAspectManager().getCallPointcuts(
+        List methodCallPointcuts = new ArrayList();
+        for (int i = 0; i < system.getAspectManagers().length; i++) {
+            methodCallPointcuts.addAll(system.getAspectManagers()[i].getCallPointcuts(
                 definedClassMetaData,
                 ReflectionMetaDataMaker.createMethodMetaData(
-                        system.getAspectManager().
-                        getMethodTuple(definedClass, joinPointHash)
-                        .getWrapperMethod()
+                        AspectRegistry.getMethodTuple(definedClass, joinPointHash).getWrapperMethod()
                 )
-        );
+            ));
+        }
         for (Iterator it = methodCallPointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
@@ -232,20 +245,22 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerConstructorExecutionJoinPoint(
-            final System system,
+            final ISystem system,
             final Class definedClass,
             final ClassMetaData definedClassMetaData,
             final int joinPointHash,
             final Map pointcutTypeToAdvicesMap) {
 
         List executionAdvices = new ArrayList();
-        ConstructorTuple constructorTuple = system.getAspectManager().getConstructorTuple(definedClass, joinPointHash);
-        Constructor wrapperConstructor = constructorTuple.getWrapperConstructor();
-
-        List executionPointcuts = system.getAspectManager().getExecutionPointcuts(
-                definedClassMetaData,
-                ReflectionMetaDataMaker.createConstructorMetaData(wrapperConstructor)
-        );
+        List executionPointcuts = new ArrayList();
+        for (int i = 0; i < system.getAspectManagers().length; i++) {
+            executionPointcuts.addAll(system.getAspectManagers()[i].getExecutionPointcuts(
+                    definedClassMetaData,
+                    ReflectionMetaDataMaker.createConstructorMetaData(
+                            AspectRegistry.getConstructorTuple(definedClass, joinPointHash).getWrapperConstructor()
+                    )
+            ));
+        }
         for (Iterator it = executionPointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
@@ -274,21 +289,22 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerConstructorCallJoinPoint(
-            final System system,
+            final ISystem system,
             final Class definedClass,
             final ClassMetaData definedClassMetaData,
             final int joinPointHash,
             final Map pointcutTypeToAdvicesMap) {
 
         List constructorCallAdvices = new ArrayList();
-        List constructorCallPointcuts = system.getAspectManager().getCallPointcuts(
-                definedClassMetaData,
-                ReflectionMetaDataMaker.createConstructorMetaData(
-                        system.getAspectManager().
-                        getConstructorTuple(definedClass, joinPointHash)
-                        .getWrapperConstructor()
-                )
-        );
+        List constructorCallPointcuts = new ArrayList();
+        for (int i = 0; i < system.getAspectManagers().length; i++) {
+            constructorCallPointcuts.addAll(system.getAspectManagers()[i].getCallPointcuts(
+                    definedClassMetaData,
+                    ReflectionMetaDataMaker.createConstructorMetaData(
+                            AspectRegistry.getConstructorTuple(definedClass, joinPointHash).getWrapperConstructor()
+                    )
+            ));
+        }
         for (Iterator it = constructorCallPointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
@@ -316,16 +332,19 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerFieldSetJoinPoint(
-            final System system,
+            final ISystem system,
             final ClassMetaData definedClassMetaData,
             final String signature,
             final Map pointcutTypeToAdvicesMap) {
 
         List setAdvices = new ArrayList();
-        List setPointcuts = system.getAspectManager().getSetPointcuts(
-                definedClassMetaData,
-                ReflectionMetaDataMaker.createFieldMetaData(signature)
-        );
+        List setPointcuts = new ArrayList();
+        for (int i = 0; i < system.getAspectManagers().length; i++) {
+            setPointcuts.addAll(system.getAspectManagers()[i].getSetPointcuts(
+                    definedClassMetaData,
+                    ReflectionMetaDataMaker.createFieldMetaData(signature)
+            ));
+        }
         for (Iterator it = setPointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
@@ -353,16 +372,19 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerFieldGetJoinPoint(
-            final System system,
+            final ISystem system,
             final ClassMetaData definedClassMetaData,
             final String signature,
             final Map pointcutTypeToAdvicesMap) {
 
         List getAdvices = new ArrayList();
-        List getPointcuts = system.getAspectManager().getGetPointcuts(
-                definedClassMetaData,
-                ReflectionMetaDataMaker.createFieldMetaData(signature)
-        );
+        List getPointcuts = new ArrayList();
+        for (int i = 0; i < system.getAspectManagers().length; i++) {
+            getPointcuts.addAll(system.getAspectManagers()[i].getGetPointcuts(
+                    definedClassMetaData,
+                    ReflectionMetaDataMaker.createFieldMetaData(signature)
+            ));
+        }
         for (Iterator it = getPointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(
@@ -389,11 +411,14 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerHandlerJoinPoint(
-            final System system,
+            final ISystem system,
             final ClassMetaData exceptionClassMetaData,
             final Map pointcutTypeToAdvicesMap) {
         List handlerAdvices = new ArrayList();
-        List handlerPointcuts = system.getAspectManager().getHandlerPointcuts(exceptionClassMetaData);
+        List handlerPointcuts = new ArrayList();
+        for (int i = 0; i < system.getAspectManagers().length; i++) {
+            handlerPointcuts.addAll(system.getAspectManagers()[i].getHandlerPointcuts(exceptionClassMetaData));
+        }
         for (Iterator it = handlerPointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
             AdviceContainer advices = new AdviceContainer(

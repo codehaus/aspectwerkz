@@ -75,7 +75,6 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
 
     public CFlowTest(String name) {
         super(name);
-        SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

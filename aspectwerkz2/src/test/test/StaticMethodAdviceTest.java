@@ -241,7 +241,6 @@ public class StaticMethodAdviceTest extends TestCase {
 
     public StaticMethodAdviceTest(String name) {
         super(name);
-        SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

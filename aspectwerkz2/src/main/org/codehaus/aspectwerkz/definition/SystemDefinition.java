@@ -485,7 +485,9 @@ public class SystemDefinition {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
-
+        //TODO matching on pointcut instead of advice might be better to allow
+        //pc creation even without advice
+        //AVAOPC
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {

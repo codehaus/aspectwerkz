@@ -112,6 +112,23 @@ public class JavassistHelper {
      * Does not take into account the signature
      *
      * @param klass
+     * @param fieldName
+     * @return true if klass has methodName
+     */
+    public static boolean hasField(CtClass klass, String fieldName) {
+        try {
+            klass.getDeclaredField(fieldName);
+            return true;
+        } catch (NotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Checks if the given Class as already a method methodName
+     * Does not take into account the signature
+     *
+     * @param klass
      * @param methodName
      * @return true if klass has methodName
      */

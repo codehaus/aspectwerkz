@@ -17,8 +17,9 @@ import java.util.Map;
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
-import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.ISystem;
+import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
@@ -42,6 +43,7 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
  * class' instance holds one instance of this class.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author AVAOPC
  */
 public class JoinPointManager {
 
@@ -83,8 +85,9 @@ public class JoinPointManager {
     private static final Map s_managers = new HashMap();
     private static final JoinPointRegistry s_registry = new JoinPointRegistry();
 
-    private final String m_uuid;
-    private final System m_system;
+    private final ISystem m_system;
+    //AVAOPC//private final String m_uuid;
+
     private final Class m_targetClass;
     private final int m_classHash;
     private final ClassMetaData m_targetClassMetaData;
@@ -99,7 +102,7 @@ public class JoinPointManager {
      * @return the join point manager instance for this class
      */
     public final static JoinPointManager getJoinPointManager(final Class targetClass, final String uuid) {
-        if (s_managers.containsKey(targetClass)) {
+        if (s_managers.containsKey(targetClass)) {//TODO AVAOPC should be Weak ?
             return (JoinPointManager)s_managers.get(targetClass);
         }
         else {
@@ -633,6 +636,7 @@ public class JoinPointManager {
             final Class targetClass,
             final Object thisInstance,
             final Object targetInstance) {
+
         joinPointInfo.invocations++;
         if (joinPointInfo.state == JoinPointState.REDEFINED) {
             joinPointInfo.invocations = 0L;
@@ -641,9 +645,10 @@ public class JoinPointManager {
             Map advices = s_registry.getAdvicesForJoinPoint(m_classHash, joinPointHash);
             if (advices.containsKey(pointcutType)) {
                 AdviceContainer[] adviceIndexes = (AdviceContainer[])advices.get(pointcutType);
+                System.out.println("**JoinPointManager.handleJitCompilation");
                 joinPointInfo.joinPoint = JitCompiler.compileJoinPoint(
                         joinPointHash, joinPointType, pointcutType, adviceIndexes,
-                        declaringClass, targetClass, m_uuid, thisInstance, targetInstance
+                        declaringClass, targetClass, m_system, thisInstance, targetInstance
                 );
                 joinPointInfo.isJitCompiled = true;
             }
@@ -668,16 +673,24 @@ public class JoinPointManager {
             final AdviceContainer[] adviceIndexes,
             final Object thisInstance,
             final Object targetInstance) {
-        MethodTuple methodTuple = m_system.getAspectManager().getMethodTuple(declaringClass, methodHash);
+        MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, methodHash);
         Class declaringType = methodTuple.getDeclaringClass();
         MethodSignatureImpl signature = new MethodSignatureImpl(declaringType, methodTuple);
         Rtti rtti = new MethodRttiImpl(signature, thisInstance, targetInstance);
 
-        List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
-                ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-                ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
-                null, PointcutType.EXECUTION//TODO CAN BE @CALL - see proceedWithCallJoinPoint
-        );
+        List cflowExpressions = new ArrayList();
+        for (int i = 0; i < m_system.getAspectManagers().length; i++) {
+            cflowExpressions.addAll(m_system.getAspectManagers()[i].getCFlowExpressions(
+                    ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+                    ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
+                    null, PointcutType.EXECUTION//TODO CAN BE @CALL - see proceedWithCallJoinPoint
+            ));
+        }
+//        m_system.getAspectManager().getCFlowExpressions(
+//                ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+//                ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
+//                null, PointcutType.EXECUTION//TODO CAN BE @CALL - see proceedWithCallJoinPoint
+//        );
 
         // TODO: ALEX - cflow is a pain to debug
         for (Iterator it = cflowExpressions.iterator(); it.hasNext();) {
@@ -686,7 +699,7 @@ public class JoinPointManager {
 
         // TODO: cflow for before and after advices needed
         return new MethodJoinPoint(
-                m_uuid, joinPointType, m_targetClass, signature, rtti, cflowExpressions,
+                "m_uuid", joinPointType, m_targetClass, signature, rtti, cflowExpressions,
                 createAroundAdviceExecutor(adviceIndexes, joinPointType),
                 createBeforeAdviceExecutor(adviceIndexes),
                 createAfterAdviceExecutor(adviceIndexes)
@@ -711,7 +724,8 @@ public class JoinPointManager {
             final AdviceContainer[] adviceIndexes,
             final Object thisInstance,
             final Object targetInstance) {
-        ConstructorTuple constructorTuple = m_system.getAspectManager().getConstructorTuple(
+
+        ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(
                 declaringClass, constructorHash
         );
 
@@ -725,7 +739,7 @@ public class JoinPointManager {
 //                ReflectionMetaDataMaker.createConstructorMetaData(constructor)
 //        );
         return new ConstructorJoinPoint(
-                m_uuid, joinPointType, m_targetClass, signature, rtti, EMTPY_ARRAY_LIST,
+                "m_uuid", joinPointType, m_targetClass, signature, rtti, EMTPY_ARRAY_LIST,
                 createAroundAdviceExecutor(adviceIndexes, joinPointType),
                 createBeforeAdviceExecutor(adviceIndexes),
                 createAfterAdviceExecutor(adviceIndexes)
@@ -753,7 +767,7 @@ public class JoinPointManager {
             final Object thisInstance,
             final Object targetInstance) {
 
-        Field field = m_system.getAspectManager().getField(declaringClass, fieldHash);
+        Field field = AspectRegistry.getField(declaringClass, fieldHash);
         FieldSignatureImpl signature = new FieldSignatureImpl(declaringClass, field);
         Rtti rtti = new FieldRttiImpl(signature, thisInstance, targetInstance);
 
@@ -764,7 +778,7 @@ public class JoinPointManager {
 //                 ReflectionMetaDataMaker.createFieldMetaData(fieldSignature)
 //         );
         return new FieldJoinPoint(
-                m_uuid, joinPointType, m_targetClass, signature, rtti, EMTPY_ARRAY_LIST,
+                "m_uuid", joinPointType, m_targetClass, signature, rtti, EMTPY_ARRAY_LIST,
                 createAroundAdviceExecutor(adviceIndexes, joinPointType),
                 createBeforeAdviceExecutor(adviceIndexes),
                 createAfterAdviceExecutor(adviceIndexes)
@@ -800,7 +814,7 @@ public class JoinPointManager {
 //                ReflectionMetaDataMaker.createCatchClauseMetaData(signature)
 //        );
         return new CatchClauseJoinPoint(
-                m_uuid, m_targetClass, signature, rtti, EMTPY_ARRAY_LIST,
+                "m_uuid", m_targetClass, signature, rtti, EMTPY_ARRAY_LIST,
                 createAroundAdviceExecutor(adviceIndexes, JoinPointType.HANDLER),
                 createBeforeAdviceExecutor(adviceIndexes),
                 createAfterAdviceExecutor(adviceIndexes)
@@ -919,8 +933,9 @@ public class JoinPointManager {
      * @param uuid
      */
     private JoinPointManager(final Class targetClass, final String uuid) {
-        m_uuid = uuid;
-        m_system = SystemLoader.getSystem(m_uuid);
+        //AVAOPC//m_uuid = uuid;
+        m_system = SystemLoader.getSystem(targetClass.getClassLoader());//AVAOPC
+        //m_system = SystemLoader.getSystem(uuid);//AVAOPC
         m_targetClass = targetClass;
         m_classHash = m_targetClass.hashCode();
         m_targetClassMetaData = ReflectionMetaDataMaker.createClassMetaData(m_targetClass);

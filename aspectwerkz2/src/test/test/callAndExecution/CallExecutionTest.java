@@ -42,7 +42,6 @@ public class CallExecutionTest extends WeavedTestCase {
 
     public CallExecutionTest(String name) {
         super(name);
-        SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

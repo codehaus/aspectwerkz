@@ -65,7 +65,6 @@ public class OrthogonalTest extends WeavedTestCase implements Loggable {
 
     public OrthogonalTest(String name) {
         super(name);
-        SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

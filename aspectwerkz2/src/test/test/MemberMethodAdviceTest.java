@@ -298,7 +298,6 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
 
     public MemberMethodAdviceTest(String name) {
         super(name);
-        SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

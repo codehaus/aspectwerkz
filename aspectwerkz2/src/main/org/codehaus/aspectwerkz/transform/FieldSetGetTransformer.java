@@ -23,6 +23,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
  * Advises SET and GET join points.
@@ -46,7 +47,7 @@ public class FieldSetGetTransformer implements Transformer {
      * Creates a new instance of the transformer.
      */
     public FieldSetGetTransformer() {
-        m_definitions = DefinitionLoader.getDefinitions();
+        //m_definitions = DefinitionLoader.getDefinitions();
     }
 
     /**
@@ -57,6 +58,7 @@ public class FieldSetGetTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass)
             throws NotFoundException, CannotCompileException {
+        m_definitions = SystemDefinitionContainer.getDefinitionsContext();
 
         m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());
 
@@ -69,7 +71,7 @@ public class FieldSetGetTransformer implements Transformer {
 
             // filter caller classes
             if (classFilter(definition, classMetaData, ctClass)) {
-                return;
+                continue;
             }
 
             ctClass.instrument(

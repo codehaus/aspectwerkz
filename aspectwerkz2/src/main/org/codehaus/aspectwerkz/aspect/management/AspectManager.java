@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.HashMap;
 
+import org.codehaus.aspectwerkz.*;
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
@@ -39,15 +40,22 @@ import org.codehaus.aspectwerkz.util.Util;
  * Handles deployment, redeployment, management, configuration or redefinition of the aspects.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ *
  * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it should remove a
  * certain advice from the pointcut - notification of the JoinPoinManager.
  */
 public final class AspectManager {
 
     /**
-     * The UUID for the system.
+     * The system this AspectManager is defined in.
      */
-    private final String m_uuid;
+    public final ISystem m_system;
+
+    /**
+     * The index of this AspectManager in the defining system
+     */
+    private final int m_indexInSystem;
 
     /**
      * The definition.
@@ -117,13 +125,15 @@ public final class AspectManager {
     /**
      * Creates a new aspect manager.
      *
-     * @param uuid       the system UUID
+     * @param system       the system
      * @param definition the system definition
+     * @param indexInSystem the index of this AspectManager in the defining system
      */
-    public AspectManager(final String uuid, final SystemDefinition definition) {
-        m_uuid = uuid;
+    public AspectManager(final ISystem system, final SystemDefinition definition, final int indexInSystem) {
+        m_system = system;
         m_definition = definition;
-        m_aspectRegistry = new AspectRegistry(m_uuid, m_definition);
+        m_indexInSystem = indexInSystem;
+        m_aspectRegistry = new AspectRegistry(this, m_definition);
     }
 
     /**
@@ -221,8 +231,7 @@ public final class AspectManager {
 
         AspectContainer container = StartupManager.createAspectContainer(crossCuttingInfo);
         crossCuttingInfo.setContainer(container);
-
-        m_aspectRegistry.register(container, new PointcutManager(m_uuid, name, deploymentModel));
+        m_aspectRegistry.register(container, new PointcutManager(name, deploymentModel));
     }
 
    /**
@@ -231,7 +240,7 @@ public final class AspectManager {
      * @return the UUID
      */
     public String getUuid() {
-        return m_uuid;
+       return m_definition.getUuid();
     }
 
     /**
@@ -325,6 +334,7 @@ public final class AspectManager {
      * @return the index of the advice
      */
     public IndexTuple getAdviceIndexFor(final String name) {
+        //java.lang.System.out.println("AspectManager.getAdviceIndexFor " + name + " = " + m_aspectRegistry.getAdviceIndexFor(name));
         return m_aspectRegistry.getAdviceIndexFor(name);
     }
 
@@ -596,4 +606,20 @@ public final class AspectManager {
     public Field getField(final Class klass, final int fieldHash) {
         return m_aspectRegistry.getField(klass, fieldHash);
     }
+
+    public int getIndex() {
+        return m_indexInSystem;
+    }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer("AspectManager@");
+        sb.append(this.hashCode());
+        sb.append("[").append(m_definition.getUuid());
+        sb.append(" @ ").append(m_system.getDefiningClassLoader());
+        sb.append(" { ").append(m_indexInSystem).append(" }");
+        sb.append("]");
+        return sb.toString();
+    }
+
+
 }

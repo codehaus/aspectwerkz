@@ -175,4 +175,10 @@ public class MemberMethodTestAspect {
     public void after(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("post ");
     }
+
+    public static void main(String a[]) {
+        //do nothing
+        System.out.println("MemberMethodTestAspect.main");
+        
+    }
 }

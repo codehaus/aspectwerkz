@@ -15,6 +15,7 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
  * Adds an interfaces to classes.
@@ -26,15 +27,9 @@ public final class AddInterfaceTransformer implements Transformer {
 
 
     /**
-     * List with the definitions.
-     */
-    private List m_definitions;
-
-    /**
      *
      */
     public AddInterfaceTransformer() {
-        m_definitions = DefinitionLoader.getDefinitions();
     }
 
     /**
@@ -44,14 +39,18 @@ public final class AddInterfaceTransformer implements Transformer {
      * @param klass   the class
      */
     public void transform(final Context context, final Klass klass) {
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+        // loop over all the definitions
+        List definitions = SystemDefinitionContainer.getDefinitionsContext();
+        //before AOPC was DefinitionLoader.getDefinitions().iterator()
+
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
 
             if (classFilter(ctClass, classMetaData, definition)) {
-                return;
+                continue;
             }
             IntroductionTransformer.addInterfaceIntroductions(definition, ctClass, context, classMetaData);
         }

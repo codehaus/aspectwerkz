@@ -8,11 +8,12 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.*;
-import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.transform.AsmHelper;
+import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
+import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
  * the target join point statically.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @AVH AVAOPC
  */
 public class JitCompiler {
 
@@ -65,8 +67,8 @@ public class JitCompiler {
     private static final String OBJECT_CLASS_SIGNATURE = "Ljava/lang/Object;";
     private static final String CLASS_CLASS_SIGNATURE = "Ljava/lang/Class;";
     private static final String JOIN_POINT_BASE_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/management/JoinPointBase";
-    private static final String SYSTEM_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/System;";
-    private static final String SYSTEM_CLASS_NAME = "org/codehaus/aspectwerkz/System";
+    private static final String SYSTEM_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/ISystem;";
+    private static final String SYSTEM_CLASS_NAME = "org/codehaus/aspectwerkz/ISystem";
     private static final String ASPECT_MANAGER_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/AspectManager";
     private static final String ASPECT_CONTAINER_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/AspectContainer";
     private static final String THROWABLE_CLASS_NAME = "java/lang/Throwable";
@@ -78,9 +80,9 @@ public class JitCompiler {
     private static final String SYSTEM_LOADER_CLASS_NAME = "org/codehaus/aspectwerkz/SystemLoader";
     private static final String INIT_METHOD_NAME = "<init>";
     private static final String GET_SYSTEM_METHOD_NAME = "getSystem";
-    private static final String GET_SYSTEM_METHOD_NAME_SIGNATURE = "(Ljava/lang/String;)Lorg/codehaus/aspectwerkz/System;";
+    private static final String GET_SYSTEM_METHOD_NAME_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/ISystem;";
     private static final String GET_ASPECT_MANAGER_METHOD_NAME = "getAspectManager";
-    private static final String GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE = "()Lorg/codehaus/aspectwerkz/aspect/management/AspectManager;";
+    private static final String GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE = "(I)Lorg/codehaus/aspectwerkz/aspect/management/AspectManager;";
     private static final String GET_ASPECT_CONTAINER_METHOD_NAME = "getAspectContainer";
     private static final String GET_ASPECT_METHOD_SIGNATURE = "(I)Lorg/codehaus/aspectwerkz/aspect/AspectContainer;";
     private static final String SHORT_VALUE_METHOD_NAME = "shortValue";
@@ -164,7 +166,7 @@ public class JitCompiler {
      * @param advice         a list with the advice
      * @param declaringClass the declaring class
      * @param targetClass    the currently executing class
-     * @param uuid           the system UUID
+     * @param system           the system
      * @param thisInstance
      * @param targetInstance
      * @return the JIT compiled join point
@@ -176,7 +178,7 @@ public class JitCompiler {
             final AdviceContainer[] advice,
             final Class declaringClass,
             final Class targetClass,
-            final String uuid,
+            final ISystem system,
             final Object thisInstance,
             final Object targetInstance) {
 
@@ -193,7 +195,8 @@ public class JitCompiler {
                 return null; // no advice => bail out
             }
 
-            System system = SystemLoader.getSystem(uuid);
+            //ISystem system = SystemLoader.getSystem(targetClass.getClassLoader());//AVAOPC
+            //ISystem system = null;//SystemLoader.getSystem(uuid);//AVAOPC
 
             RttiInfo rttiInfo = setRttiInfo(
                     joinPointType, joinPointHash, declaringClass, system, targetInstance, targetInstance
@@ -209,7 +212,7 @@ public class JitCompiler {
             buf.append('_');
             buf.append(new Integer(joinPointHash).toString());
             buf.append('_');
-            buf.append(uuid);
+            buf.append(system.getDefiningClassLoader().hashCode());
             final String className = buf.toString().replace('.', '_').replace('-', '_');
 
             // use the loader that loaded the target class
@@ -234,6 +237,7 @@ public class JitCompiler {
                 );
 
                 cw.visitEnd();
+                AsmHelper.dumpClass("_dump", className, cw);
 
                 // load the generated class
                 joinPointClass = AsmHelper.loadClass(loader, cw.toByteArray(), className.replace('/', '.'));
@@ -247,7 +251,7 @@ public class JitCompiler {
             );
             return (JoinPoint)constructor.newInstance(
                     new Object[]{
-                        uuid, new Integer(joinPointType),
+                        "fake_uuid_from_AOPC_migration", new Integer(joinPointType),
                         declaringClass,
                         rttiInfo.signature,
                         rttiInfo.rtti,
@@ -346,7 +350,7 @@ public class JitCompiler {
             final IndexTuple[] aroundAdvices,
             final IndexTuple[] beforeAdvices,
             final IndexTuple[] afterAdvices,
-            final System system) {
+            final ISystem system) {
 
         CodeVisitor cv =
                 cw.visitMethod(
@@ -441,7 +445,7 @@ public class JitCompiler {
 
         // init the system field
         cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitVarInsn(Constants.ALOAD, 1);
+        cv.visitVarInsn(Constants.ALOAD, 3);
         cv.visitMethodInsn(
                 Constants.INVOKESTATIC, SYSTEM_LOADER_CLASS_NAME, GET_SYSTEM_METHOD_NAME,
                 GET_SYSTEM_METHOD_NAME_SIGNATURE
@@ -482,15 +486,15 @@ public class JitCompiler {
      * @param className
      */
     private static boolean initAspectField(
-            final System system,
+            final ISystem system,
             final IndexTuple adviceTuple,
             final ClassWriter cw,
             final String aspectFieldName,
             final CodeVisitor cv,
             final String className) {
+        //if (true) return false;
 
-        CrossCuttingInfo info = system.getAspectManager().
-                getAspectContainer(adviceTuple.getAspectIndex()).getCrossCuttingInfo();
+        CrossCuttingInfo info = system.getAspectManagers()[adviceTuple.getAspectManagerIndex()].getAspectContainer(adviceTuple.getAspectIndex()).getCrossCuttingInfo();
         String aspectClassName = info.getAspectClass().getName().replace('.', '/');
 
         String aspectClassSignature = L + aspectClassName + SEMICOLON;
@@ -502,8 +506,11 @@ public class JitCompiler {
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitFieldInsn(Constants.GETFIELD, className, SYSTEM_FIELD_NAME, SYSTEM_CLASS_SIGNATURE);
+        //ALEX AVAOPC
+        cv.visitIntInsn(Constants.BIPUSH, adviceTuple.getAspectManagerIndex());
+        //ALEX AVAOPC
         cv.visitMethodInsn(
-                Constants.INVOKEVIRTUAL, SYSTEM_CLASS_NAME, GET_ASPECT_MANAGER_METHOD_NAME,
+                Constants.INVOKEINTERFACE, SYSTEM_CLASS_NAME, GET_ASPECT_MANAGER_METHOD_NAME,//AVAOPC ISystem
                 GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE
         );
         cv.visitIntInsn(Constants.BIPUSH, adviceTuple.getAspectIndex());
@@ -537,6 +544,8 @@ public class JitCompiler {
 
         cv.visitTypeInsn(Constants.CHECKCAST, aspectClassName);
         cv.visitFieldInsn(Constants.PUTFIELD, className, aspectFieldName, aspectClassSignature);
+
+        System.out.println("aspectClassName = " + aspectClassName + " " + adviceTuple.getAspectManagerIndex() + " " + adviceTuple.getAspectIndex());
 
         return false;
     }
@@ -671,7 +680,7 @@ public class JitCompiler {
             final int joinPointType,
             final ClassWriter cw,
             final String className,
-            final System system,
+            final ISystem system,
             final Class declaringClass,
             final int joinPointHash,
             final RttiInfo signatureCflowExprStruct,
@@ -730,7 +739,7 @@ public class JitCompiler {
      */
     private static void invokeJoinPoint(
             final int joinPointType,
-            final System system,
+            final ISystem system,
             final Class declaringClass,
             final int joinPointHash,
             final CodeVisitor cv,
@@ -750,7 +759,7 @@ public class JitCompiler {
 //               invokeConstructorCallJoinPoint(
 //                        system, declaringClass, joinPointHash, joinPointType, cv, className
 //                );
-                ConstructorTuple constructorTuple = system.getAspectManager().getConstructorTuple(
+                ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(
                         declaringClass, joinPointHash
                 );
                 if (constructorTuple.getOriginalConstructor().equals(constructorTuple.getWrapperConstructor())) {
@@ -801,14 +810,14 @@ public class JitCompiler {
      * @param className
      */
     private static void invokeMethodExecutionJoinPoint(
-            final System system,
+            final ISystem system,
             final Class declaringClass,
             final int joinPointHash,
             final CodeVisitor cv,
             final int joinPointType,
             final String className) {
 
-        MethodTuple methodTuple = system.getAspectManager().getMethodTuple(declaringClass, joinPointHash);
+        MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
         Method targetMethod = methodTuple.getOriginalMethod();
         String declaringClassName = targetMethod.getDeclaringClass().getName().replace('.', '/');
         String methodName = targetMethod.getName();
@@ -837,14 +846,14 @@ public class JitCompiler {
      * @param className
      */
     private static void invokeMethodCallJoinPoint(
-            final System system,
+            final ISystem system,
             final Class declaringClass,
             final int joinPointHash,
             final CodeVisitor cv,
             final int joinPointType,
             final String className) {
 
-        MethodTuple methodTuple = system.getAspectManager().getMethodTuple(declaringClass, joinPointHash);
+        MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
         Method targetMethod = methodTuple.getWrapperMethod();
         String declaringClassName = targetMethod.getDeclaringClass().getName().replace('.', '/');
         String methodName = targetMethod.getName();
@@ -873,14 +882,14 @@ public class JitCompiler {
      * @param className
      */
     private static void invokeConstructorCallJoinPoint(
-            final System system,
+            final ISystem system,
             final Class declaringClass,
             final int joinPointHash,
             final int joinPointType,
             final CodeVisitor cv,
             final String className) {
 
-        ConstructorTuple constructorTuple = system.getAspectManager().getConstructorTuple(
+        ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(
                 declaringClass, joinPointHash
         );
         Constructor targetConstructor = constructorTuple.getWrapperConstructor();
@@ -908,14 +917,14 @@ public class JitCompiler {
      * @param className
      */
     private static void invokeConstrutorExecutionJoinPoint(
-            final System system,
+            final ISystem system,
             final Class declaringClass,
             final int joinPointHash,
             final int joinPointType,
             final CodeVisitor cv,
             final String className) {
 
-        ConstructorTuple constructorTuple = system.getAspectManager().getConstructorTuple(
+        ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(
                 declaringClass, joinPointHash
         );
         Constructor targetConstructor = constructorTuple.getOriginalConstructor();
@@ -1273,9 +1282,8 @@ public class JitCompiler {
             final IndexTuple[] aroundAdvices,
             final IndexTuple[] beforeAdvices,
             final IndexTuple[] afterAdvices,
-            final System system,
+            final ISystem system,
             final RttiInfo signatureCflowExprStruct) {
-
         // creates the labels needed for the switch and try-finally blocks
         int nrOfCases = aroundAdvices.length;
 
@@ -1356,7 +1364,7 @@ public class JitCompiler {
             boolean hasBeforeAfterAdvice,
             final IndexTuple[] beforeAdvices,
             final IndexTuple[] afterAdvices,
-            final System system,
+            final ISystem system,
             final String className,
             final CodeVisitor cv,
             final Label[] switchCaseLabels,
@@ -1368,7 +1376,7 @@ public class JitCompiler {
             // add invocations to the before advices
             for (int i = 0; i < beforeAdvices.length; i++) {
                 IndexTuple beforeAdvice = beforeAdvices[i];
-                AspectContainer container = system.getAspectManager().getAspectContainer(beforeAdvice.getAspectIndex());
+                AspectContainer container = system.getAspectManagers()[beforeAdvice.getAspectManagerIndex()].getAspectContainer(beforeAdvice.getAspectIndex());
                 Method adviceMethod = container.getAdvice(beforeAdvice.getMethodIndex());
                 String aspectClassName = container.getCrossCuttingInfo().
                         getAspectClass().getName().replace('.', '/');
@@ -1393,7 +1401,7 @@ public class JitCompiler {
             // add invocations to the after advices
             for (int i = afterAdvices.length - 1; i >= 0; i--) {
                 IndexTuple afterAdvice = afterAdvices[i];
-                AspectContainer container = system.getAspectManager().getAspectContainer(afterAdvice.getAspectIndex());
+                AspectContainer container = system.getAspectManagers()[afterAdvice.getAspectManagerIndex()].getAspectContainer(afterAdvice.getAspectIndex());
                 Method adviceMethod = container.getAdvice(afterAdvice.getMethodIndex());
                 String aspectClassName = container.getCrossCuttingInfo().
                         getAspectClass().getName().replace('.', '/');
@@ -1433,7 +1441,7 @@ public class JitCompiler {
     private static void invokesAroundAdvice(
             boolean hasBeforeAfterAdvice,
             final IndexTuple[] aroundAdvices,
-            final System system,
+            final ISystem system,
             final String className,
             final CodeVisitor cv,
             final Label[] switchCaseLabels,
@@ -1445,7 +1453,7 @@ public class JitCompiler {
         }
         for (; i < aroundAdvices.length; i++, j++) {
             IndexTuple aroundAdvice = aroundAdvices[i];
-            AspectContainer container = system.getAspectManager().getAspectContainer(aroundAdvice.getAspectIndex());
+            AspectContainer container = system.getAspectManagers()[aroundAdvice.getAspectManagerIndex()].getAspectContainer(aroundAdvice.getAspectIndex());
             Method adviceMethod = container.getAdvice(aroundAdvice.getMethodIndex());
             String aspectClassName = container.getCrossCuttingInfo().
                     getAspectClass().getName().replace('.', '/');
@@ -1743,38 +1751,46 @@ public class JitCompiler {
             final int joinPointType,
             final int joinPointHash,
             final Class declaringClass,
-            final System system,
+            final ISystem system,
             final Object thisInstance,
             final Object targetInstance) {
 
         RttiInfo tuple = new RttiInfo();
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
-                MethodTuple methodTuple = system.getAspectManager().getMethodTuple(declaringClass, joinPointHash);
+                MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
                 MethodSignatureImpl methodSignature = new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
                 tuple.signature = methodSignature;
                 tuple.rtti = new MethodRttiImpl(methodSignature, thisInstance, targetInstance);
-                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
+                tuple.cflowExpressions = new ArrayList();
+                for (int i = 0; i < system.getAspectManagers().length; i++) {
+                    AspectManager aspectManager = system.getAspectManagers()[i];
+                    tuple.cflowExpressions.addAll(aspectManager.getCFlowExpressions(
                         ReflectionMetaDataMaker.createClassMetaData(declaringClass),
                         ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
                         null, PointcutType.EXECUTION //TODO CAN BE @CALL - see proceedWithCallJoinPoint
-                );
+                    ));
+                }
                 break;
 
             case JoinPointType.METHOD_CALL:
-                methodTuple = system.getAspectManager().getMethodTuple(declaringClass, joinPointHash);
+                methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
                 methodSignature = new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
                 tuple.signature = methodSignature;
                 tuple.rtti = new MethodRttiImpl(methodSignature, thisInstance, targetInstance);
-                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
+                tuple.cflowExpressions = new ArrayList();
+                for (int i = 0; i < system.getAspectManagers().length; i++) {
+                    AspectManager aspectManager = system.getAspectManagers()[i];
+                    tuple.cflowExpressions.addAll(aspectManager.getCFlowExpressions(
                         ReflectionMetaDataMaker.createClassMetaData(declaringClass),
                         ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
                         null, PointcutType.CALL //TODO CAN BE @CALL - see proceedWithCallJoinPoint
-                );
+                    ));
+                }
                 break;
 
             case JoinPointType.CONSTRUCTOR_CALL:
-                ConstructorTuple constructorTuple = system.getAspectManager().getConstructorTuple(
+                ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(
                         declaringClass, joinPointHash
                 );
                 ConstructorSignatureImpl constructorSignature = new ConstructorSignatureImpl(
@@ -1783,52 +1799,61 @@ public class JitCompiler {
                 tuple.signature = constructorSignature;
                 tuple.rtti = new ConstructorRttiImpl(constructorSignature, thisInstance, targetInstance);
 
-                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
-                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-                        ReflectionMetaDataMaker.createConstructorMetaData(constructorTuple.getWrapperConstructor()),
-                        null, PointcutType.CALL
-                );
+                // TODO: enable cflow for constructors
+//AVAOPC
+//                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
+//                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+//                        ReflectionMetaDataMaker.createConstructorMetaData(constructorTuple.getWrapperConstructor()),
+//                        null, PointcutType.CALL
+//                );
                 break;
 
             case JoinPointType.CONSTRUCTOR_EXECUTION:
-                constructorTuple = system.getAspectManager().getConstructorTuple(declaringClass, joinPointHash);
+                constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash);
                 constructorSignature = new ConstructorSignatureImpl(
                         constructorTuple.getDeclaringClass(), constructorTuple
                 );
                 tuple.signature = constructorSignature;
                 tuple.rtti = new ConstructorRttiImpl(constructorSignature, thisInstance, targetInstance);
-
-                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
+                tuple.cflowExpressions = new ArrayList();
+                for (int i = 0; i < system.getAspectManagers().length; i++) {
+                    AspectManager aspectManager = system.getAspectManagers()[i];
+                    tuple.cflowExpressions.addAll(aspectManager.getCFlowExpressions(
                         ReflectionMetaDataMaker.createClassMetaData(declaringClass),
                         ReflectionMetaDataMaker.createConstructorMetaData(constructorTuple.getWrapperConstructor()),
                         null, PointcutType.EXECUTION
-                );
+                    ));
+                }
                 break;
 
             case JoinPointType.FIELD_SET:
-                Field field = system.getAspectManager().getField(declaringClass, joinPointHash);
+                Field field = AspectRegistry.getField(declaringClass, joinPointHash);
                 FieldSignatureImpl fieldSignature = new FieldSignatureImpl(field.getDeclaringClass(), field);
                 tuple.signature = fieldSignature;
                 tuple.rtti = new FieldRttiImpl(fieldSignature, thisInstance, targetInstance);
 
-                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
-                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-                        ReflectionMetaDataMaker.createFieldMetaData(field),
-                        null, PointcutType.SET
-                );
+                // TODO: enable cflow
+                //AVAOPC
+//                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
+//                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+//                        ReflectionMetaDataMaker.createFieldMetaData(field),
+//                        null, PointcutType.SET
+//                );
                 break;
 
             case JoinPointType.FIELD_GET:
-                field = system.getAspectManager().getField(declaringClass, joinPointHash);
+                field = AspectRegistry.getField(declaringClass, joinPointHash);
                 fieldSignature = new FieldSignatureImpl(field.getDeclaringClass(), field);
                 tuple.signature = fieldSignature;
                 tuple.rtti = new FieldRttiImpl(fieldSignature, thisInstance, targetInstance);
 
-                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
-                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-                        ReflectionMetaDataMaker.createFieldMetaData(field),
-                        null, PointcutType.GET
-                );
+                // TODO: enable cflow
+                //AVAOPC
+//                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
+//                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+//                        ReflectionMetaDataMaker.createFieldMetaData(field),
+//                        null, PointcutType.GET
+//                );
                 break;
 
             case JoinPointType.HANDLER:

@@ -152,12 +152,16 @@ public class DocumentParser {
         if (parsePackageElements(loader, systemElement, definition, basePackage)) {
             hasDef = true;
         }
-        if (hasDef) {
-            return definition;
-        }
-        else {
-            return null;
-        }
+
+        return definition;
+
+        // AVAOPC
+//        if (hasDef) {
+//            return definition;
+//        }
+//        else {
+//            return null;
+//        }
     }
 
     /**
@@ -269,9 +273,32 @@ public class DocumentParser {
      * @return the class
      */
     private static Class loadAspectClass(final ClassLoader loader, final String aspectClassName) {
+        //TODO AVAOPC Jonas has broken that in CrossCutting add.
         Class aspectClass;
         try {
-            aspectClass = ContextClassLoader.loadClass(aspectClassName);
+            aspectClass = loader.loadClass(aspectClassName);
+
+//            if (java.lang.System.getProperty(JAVA_VENDOR).startsWith(VENDOR_BEA) ||
+//                java.lang.System.getProperty(JAVA_VM_VENDOR).startsWith(VENDOR_BEA)) {
+//                // jrockit
+//
+//                // get URL to class
+//                String classFileName = aspectClassName.replace('.', '/') + ".class";
+//                URL url = ContextClassLoader.getResource(classFileName);
+//                String path = Strings.replaceSubString("/" + url.getPath(), classFileName, "");
+//
+//                // create custom CL with no parent
+//                ClassLoader cl = new URLClassLoader(
+//                        new URL[]{new File(path).toURL()},
+//                        null
+//                );
+//
+//                aspectClass = cl.loadClass(aspectClassName);
+//            }
+//            else {
+//                // hotspot
+//                aspectClass = ContextClassLoader.loadClass(aspectClassName);
+//            }
         }
         catch (Exception e) {
             e.printStackTrace();

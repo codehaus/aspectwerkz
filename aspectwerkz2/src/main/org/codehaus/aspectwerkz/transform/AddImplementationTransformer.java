@@ -23,6 +23,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
  * Adds an Introductions to classes.
@@ -32,16 +33,10 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  */
 public class AddImplementationTransformer implements Transformer {
 
-      /**
-     * List with the definitions.
-     */
-    private List m_definitions;
-
     /**
      *
      */
     public AddImplementationTransformer() {
-        m_definitions = DefinitionLoader.getDefinitions();
     }
 
     /**
@@ -51,15 +46,17 @@ public class AddImplementationTransformer implements Transformer {
      * @param klass   the class
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException {
+        List definitions = SystemDefinitionContainer.getDefinitionsContext();
+        //before AOPC was m_definitions DefinitionLoader.getDefinitions().iterator()
 
         // loop over all the definitions
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
             if (classFilter(ctClass, classMetaData, definition)) {
-                return;
+                continue;
             }
             IntroductionTransformer.addMethodIntroductions(definition, context, classMetaData, ctClass, this);
         }
@@ -154,16 +151,19 @@ public class AddImplementationTransformer implements Transformer {
     private void addAspectManagerField(final CtClass ctClass, final SystemDefinition definition)
             throws NotFoundException, CannotCompileException {
 
-        boolean hasField = false;
-        CtField[] fields = ctClass.getDeclaredFields();
-        for (int i = 0; i < fields.length; i++) {
-            CtField field = fields[i];
-            if (field.getName().equals(TransformationUtil.ASPECT_MANAGER_FIELD)) {
-                hasField = true;
-                break;
-            }
-        }
-        if (!hasField) {
+        if ( ! JavassistHelper.hasField(ctClass, TransformationUtil.ASPECT_MANAGER_FIELD)) {
+            System.out.println("AddImplementationTransformer.addAspectManagerField " + ctClass.getName());
+
+//        boolean hasField = false;
+//        CtField[] fields = ctClass.getDeclaredFields();
+//        for (int i = 0; i < fields.length; i++) {
+//            CtField field = fields[i];
+//            if (field.getName().equals(TransformationUtil.ASPECT_MANAGER_FIELD)) {
+//                hasField = true;
+//                break;
+//            }
+//        }
+//        if (!hasField) {
             CtField field = new CtField(
                     ctClass.getClassPool().get(TransformationUtil.ASPECT_MANAGER_CLASS),
                     TransformationUtil.ASPECT_MANAGER_FIELD,
@@ -171,16 +171,33 @@ public class AddImplementationTransformer implements Transformer {
             );
 
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
+//            StringBuffer body = new StringBuffer();
+//            body.append(TransformationUtil.SYSTEM_LOADER_CLASS);
+//            body.append('.');
+//            body.append(TransformationUtil.GET_SYSTEM_METHOD);
+//            body.append("(\"");
+//            body.append(definition.getUuid());
+//            body.append("\")");
+//            body.append('.');
+//            body.append(TransformationUtil.GET_ASPECT_MANAGER_METHOD);
+//            body.append("();");
             StringBuffer body = new StringBuffer();
-            body.append(TransformationUtil.SYSTEM_LOADER_CLASS);
-            body.append('.');
-            body.append(TransformationUtil.GET_SYSTEM_METHOD);
-            body.append("(\"");
+            body.append("org.codehaus.aspectwerkz.SystemLoader");
+            body.append("#getSystem(");
+            body.append(TransformationUtil.STATIC_CLASS_FIELD);
+            body.append(".getClassLoader())");//definition.getUuid());
+            body.append(".getAspectManager(\"");
             body.append(definition.getUuid());
-            body.append("\")");
-            body.append('.');
-            body.append(TransformationUtil.GET_ASPECT_MANAGER_METHOD);
-            body.append("();");
+            body.append("\");");
+
+            //TODO  AVAOPC
+            /*
+            what about having several field to access the AspectManager
+            whose system is introducing methods ?
+            should we have a simpler TF model
+            and hardcode the AspectManager index ??
+            [problem for undeploy of a system]
+            */
 
             ctClass.addField(field, body.toString());
         }

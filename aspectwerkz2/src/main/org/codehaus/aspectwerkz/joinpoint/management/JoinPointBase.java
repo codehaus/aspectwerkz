@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.ISystem;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
@@ -36,7 +36,7 @@ public abstract class JoinPointBase implements JoinPoint {
     protected final Class m_targetClass;
     protected final int m_type;
     protected final String m_typeAsString;
-    protected final System m_system;
+    protected final ISystem m_system;
     protected final List m_cflowExpressions;
     protected final boolean m_checkCflow;
 
@@ -74,7 +74,8 @@ public abstract class JoinPointBase implements JoinPoint {
         m_aroundAdviceExecutor = aroundAdviceExecutor;
         m_beforeAdviceExecutor = beforeAdviceExecutor;
         m_afterAdviceExecutor = afterAdviceExecutor;
-        m_system = SystemLoader.getSystem(m_uuid);
+        m_system = SystemLoader.getSystem(targetClass.getClassLoader());//AVAOPC
+        //m_system = SystemLoader.getSystem(m_uuid);//AVAOPC
     }
 
     /**
@@ -149,7 +150,7 @@ public abstract class JoinPointBase implements JoinPoint {
      * @param joinPoint the join point instance
      * @return the newly created instance
      * @throws Throwable the exception from the original constructor
-     * @TODO: FIX BUG - When a constructor has both a CALL and EXECUTION join point, only the CALL will be executed,
+     * TODO: FIX BUG - When a constructor has both a CALL and EXECUTION join point, only the CALL will be executed,
      * redirecting to the wrapper constructor
      */
     public static Object invokeTargetConstructorCall(final JoinPoint joinPoint) throws Throwable {

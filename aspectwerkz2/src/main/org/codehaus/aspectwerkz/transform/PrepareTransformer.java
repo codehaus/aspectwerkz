@@ -25,7 +25,9 @@ import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
- * Prepare class for further hotswap for execution pointcut TODO support for constructor pointcuts
+ * Prepare class for further hotswap for execution pointcut
+ * TODO support for constructor pointcuts
+ * TODO AOPC def model
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -60,7 +62,7 @@ public class PrepareTransformer implements Transformer {
 
             // do we need to prepare the class
             if (classFilter(definition, ctClass)) {
-                return;
+                continue;
             }
 
             final CtMethod[] methods = ctClass.getDeclaredMethods();
