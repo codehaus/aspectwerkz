@@ -223,7 +223,11 @@ public class ContextImpl implements Context {
      */
     public void dump(final String dumpDir) {
         try {
-            File dir = new File(dumpDir + File.separator + m_className.substring(0, m_className.lastIndexOf('/')));
+            int lastSegmentIndex = m_className.lastIndexOf('/');
+            if (lastSegmentIndex < 0) {
+                lastSegmentIndex = 0;
+            }
+            File dir = new File(dumpDir + File.separator + m_className.substring(0, lastSegmentIndex));
             dir.mkdirs();
             FileOutputStream os = new FileOutputStream(
                     dumpDir

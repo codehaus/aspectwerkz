@@ -175,6 +175,17 @@
                 <path refid="project.class.path"/>
             </classpath>
         </javac>
+        <javac destdir="${test.classes}" deprecation="true" debug="true" optimize="false">
+            <src>
+                <pathelement location="src/jdk15/test">
+                </pathelement>
+            </src>
+            <classpath>
+                <pathelement path="${jdk15.classes}"/>
+                <pathelement path="${main.classes}"/>
+                <path refid="project.class.path"/>
+            </classpath>
+        </javac>
     </target>
 
     <!-- =================================================== -->
@@ -297,15 +308,32 @@
         </java>
     </target>
 
-
+    <!-- =================================================== -->
+    <!--  tests that have been weaved offline -->
+    <!-- =================================================== -->
     <target name="test:offline" depends="init, dist, test:annotationc, test:weave">
         <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
         <java
-            classname="test.AllTestsInlined"
+            classname="test.AllTests"
             classpath="${offline.classpath}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar"
             fork="true">
             <jvmarg value="-Daspectwerkz.transform.dump=*"/>
             <jvmarg value="-Daspectwerkz.definition.file=${src.dir}/test/aop.xml"/>
+        </java>
+        <antcall target="test:offline:jdk15"/>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  JDK 5 tests that have been weaved offline -->
+    <!-- =================================================== -->
+    <target name="test:offline:jdk15" depends="init, dist, test:annotationc, test:weave" if="jdk15">
+        <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-jdk5-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
+        <java
+            classname="test.AllJdk5Tests"
+            classpath="${offline.classpath}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar"
+            fork="true">
+            <jvmarg value="-Daspectwerkz.transform.dump=*"/>
+            <jvmarg value="-Daspectwerkz.definition.file=${src.dir}/jdk15/test/aop.xml"/>
         </java>
     </target>
 
@@ -349,7 +377,17 @@
     <!-- =================================================== -->
     <target name="test" depends="clean, dist, test:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${basedir}/lib/aspectwerkz-extensions-${version}.jar${pathseparator}${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/aop.xml test.AllTestsInlined"/>
+            <arg line="-cp ${basedir}/lib/aspectwerkz-extensions-${version}.jar${pathseparator}${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/aop.xml test.AllTests"/>
+        </exec>
+        <antcall target="test:jdk15"/>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  all tests for JDK 5 -->
+    <!-- =================================================== -->
+    <target name="test:jdk15" depends="clean, dist, test:annotationc">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${basedir}/lib/aspectwerkz-extensions-${version}.jar${pathseparator}${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/jdk15/test/aop.xml test.AllJdk5Tests"/>
         </exec>
     </target>
 
