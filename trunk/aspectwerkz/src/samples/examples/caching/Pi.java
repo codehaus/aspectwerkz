@@ -20,12 +20,12 @@ package examples.caching;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Pi.java,v 1.6 2003-07-03 13:10:50 jboner Exp $
+ * @version $Id: Pi.java,v 1.7 2003-07-04 13:00:17 jboner Exp $
  */
 public class Pi {
 
     /**
-     * @aspectwerkz.advice.callerside callerclass=examples.caching.* invocation_counter
+     * aspectwerkz.advice.callerside callerclass=examples.caching.* invocationCounter
      */
     public static int getPiDecimal(int n) {
         System.out.println("using method");

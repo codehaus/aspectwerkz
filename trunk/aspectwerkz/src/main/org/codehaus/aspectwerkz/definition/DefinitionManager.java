@@ -59,7 +59,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.12 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: DefinitionManager.java,v 1.13 2003-07-04 13:00:17 jboner Exp $
  */
 public class DefinitionManager {
 
@@ -72,8 +72,8 @@ public class DefinitionManager {
     /**
      * The path to the definition file.
      */
-    public static final String DEFINITION_FILE =
-            System.getProperty("aspectwerkz.definition.file", null);
+    public static final String DEFINITION_FILE = System
+            .getProperty("aspectwerkz.definition.file", null);
 
     /**
      * The definition class name.
@@ -349,8 +349,7 @@ public class DefinitionManager {
                 deploymentModel = DeploymentModel.PER_JVM;
             }
             else {
-                deploymentModel = DeploymentModel.
-                        getDeploymentModelAsInt(def.getDeploymentModel());
+                deploymentModel = DeploymentModel.getDeploymentModelAsInt(def.getDeploymentModel());
             }
 
             // TODO: use custom security to protect the [AbstractAspect.m_uuid] field from getting modified by the user, setting the field opens up for changes in other AspectWerkz system running in the same JVM
@@ -437,6 +436,8 @@ public class DefinitionManager {
                     for (Iterator it3 = methodPointcutRefs.iterator(); it3.hasNext();) {
                         PointcutDefinition pointcutDefinition =
                                 aspectDefinition.getPointcut((String)it3.next());
+                        System.out.println("pointcutDefinition.getName() = " + pointcutDefinition.getName());
+
                         if (pointcutDefinition != null &&
                                 pointcutDefinition.getType().
                                 equalsIgnoreCase(PointcutDefinition.METHOD)) {
