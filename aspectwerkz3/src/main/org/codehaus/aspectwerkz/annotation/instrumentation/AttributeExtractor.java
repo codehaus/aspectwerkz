@@ -36,8 +36,6 @@ public interface AttributeExtractor {
      */
     Object[] getMethodAttributes(String methodName, String[] methodParamTypes);
 
-//    Object[] getMethodAttributes(Method method);
-
     /**
      * Return all the attributes associated with a constructor that have a particular method signature.
      * 

@@ -65,7 +65,7 @@ public class AspectAnnotationParser {
      * @param aspectDef  the aspect definition
      * @param definition the aspectwerkz definition
      */
-    public void parse0(final Class klass, final AspectDefinition aspectDef, final SystemDefinition definition) {
+    private void parse0(final Class klass, final AspectDefinition aspectDef, final SystemDefinition definition) {
         if (klass == null) {
             throw new IllegalArgumentException("class to parse can not be null");
         }
