@@ -24,7 +24,7 @@ public class AllTestsInlined extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("All tests");
 
-        suite.addTestSuite(FieldAdviceTest.class);
+        suite.addTestSuite(MemberMethodAdviceTest.class);
         suite.addTestSuite(StaticMethodAdviceTest.class);//RTTI missing - fails with NPE
         suite.addTestSuite(CallerSideAdviceTest.class);
         suite.addTestSuite(test.callAndExecution.CallExecutionTest.class);
@@ -35,17 +35,17 @@ public class AllTestsInlined extends TestCase {
         suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
         suite.addTestSuite(test.args.ArgsAdviceTest.class);
         suite.addTestSuite(test.aopc.AspectSystemTest.class);//fails for a weird ClassCastE (to solve)
-        suite.addTestSuite(test.advisetostringbug.Test.class);
 
+        suite.addTestSuite(FieldAdviceTest.class);
         // NOT YET COMPLETED
 
-//        suite.addTestSuite(ClassPatternTest.class);
-//        suite.addTestSuite(ExceptionTest.class);
-//        suite.addTestSuite(MethodComparatorTest.class);
-//        suite.addTestSuite(StringsTest.class);
-//        suite.addTestSuite(test.SerialVerUidTest.class);
-//        suite.addTestSuite(test.expression.ExpressionTest.class);
-//        suite.addTestSuite(MemberMethodAdviceTest.class);
+        suite.addTestSuite(ClassPatternTest.class);
+        suite.addTestSuite(ExceptionTest.class);
+        suite.addTestSuite(MethodComparatorTest.class);
+        suite.addTestSuite(StringsTest.class);
+        suite.addTestSuite(test.SerialVerUidTest.class);
+        suite.addTestSuite(test.expression.ExpressionTest.class);
+//        suite.addTestSuite(test.advisetostringbug.Test.class);//mixin
 //        suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
 //        suite.addTestSuite(test.handler.HandlerTest.class);
 //        suite.addTestSuite(test.orthogonal.OrthogonalTest.class);//field

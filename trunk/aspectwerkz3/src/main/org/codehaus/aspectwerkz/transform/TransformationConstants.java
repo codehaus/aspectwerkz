@@ -25,7 +25,7 @@ public interface TransformationConstants {
     public static final String JOIN_POINT_PREFIX = ASPECTWERKZ_PREFIX + "jp";
     public static final String ORIGINAL_METHOD_PREFIX = ASPECTWERKZ_PREFIX + DELIMITER;
     public static final String CROSS_CUTTING_INFO_CLASS_FIELD = ASPECTWERKZ_PREFIX + "crossCuttingInfo";
-    public static final String WRAPPER_METHOD_PREFIX = "access$";
+    public static final String WRAPPER_METHOD_PREFIX = "iaccess$";
     public static final String INVOKE_WRAPPER_METHOD_PREFIX = "INVOKE" + DELIMITER;
     public static final String PUTFIELD_WRAPPER_METHOD_PREFIX = "PUTFIELD" + DELIMITER;
     public static final String GETFIELD_WRAPPER_METHOD_PREFIX = "GETFIELD" + DELIMITER;
