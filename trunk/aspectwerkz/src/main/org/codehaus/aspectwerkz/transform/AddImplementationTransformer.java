@@ -50,7 +50,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.9 2003-06-20 06:14:27 jboner Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.10 2003-06-26 19:27:17 jboner Exp $
  */
 public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -61,18 +61,18 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     private final Set m_transformed = new HashSet();
 
     /**
-     * Holds the createWeaveModel model.
+     * Holds the weave model.
      */
     private final WeaveModel m_weaveModel;
 
     /**
-     * Retrieves the createWeaveModel model.
+     * Retrieves the weave model.
      */
     public AddImplementationTransformer() {
         super();
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one createWeaveModel model is specified");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -131,7 +131,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
                         getIntroductionMethodsMetaData(introductionName);
             }
             catch (Exception e) {
-                throw new DefinitionException("trying to createWeaveModel introduction with null or emtpy string as name to class " + cg.getClassName() + ": definition file is not consistent");
+                throw new DefinitionException("trying to weave introduction with null or emtpy string as name to class " + cg.getClassName() + ": definition file is not consistent");
             }
 
             if (methodMetaDataList == null) {
@@ -182,7 +182,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
      * @param methodMetaData the meta-data for the method
      * @param introductionIndex the introduction index
      * @param methodIndex the method index
-     * @param uuid the uuid for the createWeaveModel model
+     * @param uuid the uuid for the weave model
      */
     private void createProxyMethod(final ExtensionSet es,
                                    final ClassGen cg,

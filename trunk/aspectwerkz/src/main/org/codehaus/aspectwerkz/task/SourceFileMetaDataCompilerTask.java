@@ -29,7 +29,7 @@ import org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler;
  * <code>Introduction</code>s.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: SourceFileMetaDataCompilerTask.java,v 1.5 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: SourceFileMetaDataCompilerTask.java,v 1.6 2003-06-26 19:27:17 jboner Exp $
  */
 public class SourceFileMetaDataCompilerTask extends MetaDataCompilerTask {
 
@@ -53,8 +53,8 @@ public class SourceFileMetaDataCompilerTask extends MetaDataCompilerTask {
      * @throws BuildException
      */
     public void execute() throws BuildException {
-        System.out.println("compiling createWeaveModel model...");
+        System.out.println("compiling weave model...");
         SourceFileMetaDataCompiler.compile(m_definitionFile, m_sourceDir, m_metaDataDir, m_uuid);
-        System.out.println("createWeaveModel model for classes in " + m_sourceDir + " have been compiled to " + m_metaDataDir);
+        System.out.println("weave model for classes in " + m_sourceDir + " have been compiled to " + m_metaDataDir);
     }
 }

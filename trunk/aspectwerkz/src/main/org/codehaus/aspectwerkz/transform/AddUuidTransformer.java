@@ -49,7 +49,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * Adds an UuidGenerator to all transformed classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddUuidTransformer.java,v 1.6 2003-06-20 06:14:27 jboner Exp $
+ * @version $Id: AddUuidTransformer.java,v 1.7 2003-06-26 19:27:17 jboner Exp $
  */
 public final class AddUuidTransformer extends AbstractInterfaceTransformer
         implements CodeTransformerComponent {
@@ -62,19 +62,19 @@ public final class AddUuidTransformer extends AbstractInterfaceTransformer
     private final Set m_hasBeenTransformed = new HashSet();
 
     /**
-     * Holds the createWeaveModel model.
+     * Holds the weave model.
      */
     private final WeaveModel m_weaveModel;
 
     /**
-     * Retrieves the createWeaveModel model.
+     * Retrieves the weave model.
      */
     public AddUuidTransformer() {
         super();
 
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one createWeaveModel model is specified");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);

@@ -43,7 +43,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * to all target objects.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddReadObjectTransformer.java,v 1.5 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: AddReadObjectTransformer.java,v 1.6 2003-06-26 19:27:17 jboner Exp $
  */
 public class AddReadObjectTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:ON
@@ -55,18 +55,18 @@ public class AddReadObjectTransformer extends AbstractInterfaceTransformer {
     private final Set m_hasBeenTransformed = new HashSet();
 
     /**
-     * Holds a list with all the createWeaveModel models.
+     * Holds a list with all the weave models.
      */
     private final WeaveModel m_weaveModel;
 
     /**
-     * Retrieves the createWeaveModel model.
+     * Retrieves the weave model.
      */
     public AddReadObjectTransformer() {
         super();
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one createWeaveModel model is specified");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);

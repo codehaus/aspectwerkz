@@ -33,6 +33,7 @@ import java.io.FileFilter;
 import gnu.trove.TObjectIntHashMap;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.metadata.MetaDataCompiler;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -45,7 +46,7 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.4 2003-06-20 06:14:27 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.5 2003-06-26 19:27:17 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -218,8 +219,7 @@ public class WeaveModel implements Serializable {
         weaveModelName.append(MetaDataCompiler.WEAVE_MODEL_SUFFIX);
 
         synchronized (s_weaveModels) {
-            InputStream in = Thread.currentThread().getContextClassLoader().
-                    getResourceAsStream(weaveModelName.toString());
+            InputStream in = ContextClassLoader.getResourceAsStream(weaveModelName.toString());
             if (in == null) throw new RuntimeException("weave model with UUID <" + uuid + "> could not be found on classpath");
 
             try {

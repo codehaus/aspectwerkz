@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an interfaces to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddInterfaceTransformer.java,v 1.9 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: AddInterfaceTransformer.java,v 1.10 2003-06-26 19:27:17 jboner Exp $
  */
 public final class AddInterfaceTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -49,18 +49,18 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
     private final Set m_transformed = new HashSet();
 
     /**
-     * The createWeaveModel model.
+     * The weave model.
      */
     private final WeaveModel m_weaveModel;
 
     /**
-     * Retrieves the createWeaveModel model.
+     * Retrieves the weave model.
      */
     public AddInterfaceTransformer() {
         super();
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one createWeaveModel model is specified");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -109,7 +109,7 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
                 }
                 if (addInterface) {
                     if (interfaceName == null || interfaceName.equals("")) {
-                        throw new DefinitionException("trying to createWeaveModel null interface to " + cg.getClassName() + ": definition file is not consistentadd");
+                        throw new DefinitionException("trying to weave null interface to " + cg.getClassName() + ": definition file is not consistentadd");
                     }
                     es.addInterfaceToClass(cg.getClassName(), interfaceName);
                 }

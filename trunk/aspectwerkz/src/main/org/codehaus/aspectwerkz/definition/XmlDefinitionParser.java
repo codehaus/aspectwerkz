@@ -37,7 +37,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Parses the XML definition file using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParser.java,v 1.3 2003-06-19 17:45:23 jboner Exp $
+ * @version $Id: XmlDefinitionParser.java,v 1.4 2003-06-26 19:27:17 jboner Exp $
  */
 public class XmlDefinitionParser {
 
@@ -315,6 +315,7 @@ public class XmlDefinitionParser {
                     aspectDef.addIntroductionWeavingRule((IntroductionWeavingRule)it.next());
                 }
             }
+
             parseAspectNestedElements(aspect, aspectDef);
             definition.addAspect(aspectDef);
         }
@@ -333,15 +334,30 @@ public class XmlDefinitionParser {
             Element nestedAdviceElement = (Element)it2.next();
             if (nestedAdviceElement.getName().trim().equals("pointcut-def") ||
                     nestedAdviceElement.getName().trim().equals("pointcut")) {
-                parsePointcutElements(nestedAdviceElement, aspectDef);
+                try {
+                    parsePointcutElements(nestedAdviceElement, aspectDef);
+                }
+                catch (Exception e) {
+                    throw new DefinitionException("pointcut definition in aspect " + aspectDef.getName() + " is not well-formed: " + e.getMessage());
+                }
             }
             else if (nestedAdviceElement.getName().trim().equals("introduce") ||
                     nestedAdviceElement.getName().trim().equals("introduction")) {
-                parseIntroduceElements(nestedAdviceElement, aspectDef);
+                try {
+                    parseIntroduceElements(nestedAdviceElement, aspectDef);
+                }
+                catch (Exception e) {
+                    throw new DefinitionException("introduction definition in aspect " + aspectDef.getName() + " is not well-formed: " + e.getMessage());
+                }
             }
             else if (nestedAdviceElement.getName().trim().equals("advise") ||
                     nestedAdviceElement.getName().trim().equals("advice")) {
-                parseAdviseElements(nestedAdviceElement, aspectDef);
+                try {
+                    parseAdviseElements(nestedAdviceElement, aspectDef);
+                }
+                catch (Exception e) {
+                    throw new DefinitionException("advice definition in aspect " + aspectDef.getName() + " is not well-formed: " + e.getMessage());
+                }
             }
         }
     }
@@ -388,7 +404,6 @@ public class XmlDefinitionParser {
                         indexLastDot + 1, classNameWithMethodName.length()).trim();
                 String classPattern = classNameWithMethodName.substring(
                         0, indexLastDot);
-
                 StringBuffer buf = new StringBuffer();
                 buf.append(returnType);
                 buf.append(methodPattern);
@@ -410,7 +425,6 @@ public class XmlDefinitionParser {
                         indexLastDot + 1, classNameWithFieldName.length()).trim();
                 String classPattern = classNameWithFieldName.substring(
                         0, indexLastDot).trim();
-
                 StringBuffer buf = new StringBuffer();
                 buf.append(fieldType);
                 buf.append(fieldPattern);
@@ -423,7 +437,6 @@ public class XmlDefinitionParser {
                         0, pattern.indexOf('#')).trim();
                 String exceptionName = pattern.substring(
                         pattern.indexOf('#') + 1).trim();
-
                 int indexFirstSpace = classAndMethodName.indexOf(' ');
                 String returnType = classAndMethodName.substring(
                         0, indexFirstSpace + 1);
@@ -436,7 +449,6 @@ public class XmlDefinitionParser {
                         indexLastDot + 1, classNameWithMethodName.length()).trim();
                 String classPattern = classNameWithMethodName.substring(
                         0, indexLastDot);
-
                 StringBuffer buf = new StringBuffer();
                 buf.append(returnType);
                 buf.append(methodPattern);
@@ -465,7 +477,6 @@ public class XmlDefinitionParser {
                 String calleeClassPattern = classNameWithMethodName.substring(
                         0, indexLastDot);
                 calleeMethodPattern = returnType + calleeMethodPattern + parameterTypes;
-
                 StringBuffer buf = new StringBuffer();
                 buf.append(calleeClassPattern);
                 buf.append('#');

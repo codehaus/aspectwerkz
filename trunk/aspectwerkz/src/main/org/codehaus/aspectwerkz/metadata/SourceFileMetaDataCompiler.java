@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-import com.thoughtworks.qdox.model.Type;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaField;
@@ -31,8 +30,6 @@ import com.thoughtworks.qdox.model.JavaClass;
 
 import org.codehaus.aspectwerkz.metadata.MetaDataCompiler;
 import org.codehaus.aspectwerkz.metadata.QDoxParser;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
@@ -42,7 +39,6 @@ import org.codehaus.aspectwerkz.definition.AttributeTag;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionWeavingRule;
 import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
@@ -56,7 +52,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: SourceFileMetaDataCompiler.java,v 1.3 2003-06-20 06:14:27 jboner Exp $
+ * @version $Id: SourceFileMetaDataCompiler.java,v 1.4 2003-06-26 19:27:17 jboner Exp $
  */
 public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
@@ -89,7 +85,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
      * @param definitionFile the definition file to use
      * @param sourcePath the path to the sources
      * @param metaDataDir the path to the dir where to store the meta-data
-     * @param uuid the user-defined UUID for the createWeaveModel model
+     * @param uuid the user-defined UUID for the weave model
      */
     public static void compile(final String definitionFile,
                                final String sourcePath,
@@ -107,7 +103,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
         parseAttributeDefinitions(
                 definition, qdoxParser.getAllClassesNames(), qdoxParser);
 
-        final WeaveModel weaveModel = createWeaveModel(uuid, definition);
+        final WeaveModel weaveModel = weave(uuid, definition);
         compileIntroductionMetaData(weaveModel, qdoxParser);
         saveWeaveModelToFile(metaDataDir, weaveModel);
     }
@@ -124,6 +120,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final String[] allClasses,
             final QDoxParser qdoxParser) {
 
+        // handle the definition attributes
         for (int i = 0; i < allClasses.length; i++) {
             String className = allClasses[i];
             if (!qdoxParser.parse(className)) {
@@ -131,7 +128,14 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             }
             weaveIntroductionDefinitionAttributes(qdoxParser, definition);
             weaveAdviceDefinitionAttributes(qdoxParser, definition);
+        }
 
+        // handle the definition references
+        for (int i = 0; i < allClasses.length; i++) {
+            String className = allClasses[i];
+            if (!qdoxParser.parse(className)) {
+                continue;
+            }
             weaveIntroductionAttributes(
                     definition, className, qdoxParser);
             weaveMethodPointcutAttributes(
@@ -692,7 +696,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
     /**
      * Compiles the class meta-data for all introduced implementations.
      *
-     * @param model the createWeaveModel model
+     * @param model the weave model
      * @param qdoxParser the QDox parser
      * @param metaDataDir the meta-data dir
      */
@@ -733,12 +737,12 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
         final List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
-            methodList.add(createMethodMetaData(methods[i]));
+            methodList.add(QdoxMetaDataMaker.createMethodMetaData(methods[i]));
         }
 
         final List fieldList = new ArrayList(fields.length);
         for (int i = 0; i < fields.length; i++) {
-            fieldList.add(createFieldMetaData(fields[i]));
+           fieldList.add(QdoxMetaDataMaker.createFieldMetaData(fields[i]));
         }
 
         final ClassMetaData classMetaData = new ClassMetaData();
@@ -747,74 +751,6 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
         classMetaData.setFields(fieldList);
 
         return classMetaData;
-    }
-
-    /**
-     * Create a new <code>MethodMetaData</code> based on the QDox
-     * <code>JavaMethod</code passed as parameter.
-     *
-     * @param method the QDox method
-     * @return the method meta-data
-     */
-    public static MethodMetaData createMethodMetaData(final JavaMethod method) {
-        final MethodMetaData methodMetaData = new MethodMetaData();
-
-        methodMetaData.setName(method.getName());
-        methodMetaData.setModifiers(TransformationUtil.
-                getModifiersAsInt(method.getModifiers()));
-
-        if (method.getReturns() != null) {
-            StringBuffer returnValue =
-                    new StringBuffer(method.getReturns().getValue());
-            int dimensions = method.getReturns().getDimensions();
-            if (dimensions > 0) {
-                returnValue.append('[');
-                returnValue.append(dimensions);
-                returnValue.append(']');
-            }
-            methodMetaData.setReturnType(returnValue.toString());
-        }
-
-        JavaParameter[] parameters = method.getParameters();
-        String[] parameterTypes = new String[parameters.length];
-        for (int j = 0; j < parameters.length; j++) {
-            StringBuffer parameterValue =
-                    new StringBuffer(parameters[j].getType().getValue());
-            int dimensions = parameters[j].getType().getDimensions();
-            if (dimensions > 0) {
-                parameterValue.append('[');
-                parameterValue.append(dimensions);
-                parameterValue.append(']');
-            }
-            parameterTypes[j] = parameterValue.toString();
-        }
-        methodMetaData.setParameterTypes(parameterTypes);
-
-        Type[] exceptions = method.getExceptions();
-        String[] exceptionTypes = new String[exceptions.length];
-        for (int j = 0; j < exceptions.length; j++) {
-            exceptionTypes[j] = exceptions[j].getValue();
-        }
-        methodMetaData.setExceptionTypes(exceptionTypes);
-        return methodMetaData;
-    }
-
-    /**
-     * Create a new <code>FieldMetaData</code> based on the QDox
-     * <code>JavaField</code passed as parameter.
-     *
-     * @param field the QDox field
-     * @return the field meta-data
-     */
-    private static FieldMetaData createFieldMetaData(final JavaField field) {
-        final FieldMetaData fieldMetaData = new FieldMetaData();
-
-        fieldMetaData.setName(field.getName());
-        fieldMetaData.setModifiers(TransformationUtil.
-                getModifiersAsInt(field.getModifiers()));
-        fieldMetaData.setType(field.getType().getValue());
-
-        return fieldMetaData;
     }
 
     /**

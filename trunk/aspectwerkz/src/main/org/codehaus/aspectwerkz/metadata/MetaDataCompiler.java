@@ -31,12 +31,12 @@ import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
  * Base class for the meta-data compilers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MetaDataCompiler.java,v 1.2 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: MetaDataCompiler.java,v 1.3 2003-06-26 19:27:17 jboner Exp $
  */
 public abstract class MetaDataCompiler {
 
     /**
-     * The name of the createWeaveModel model file.
+     * The name of the weave model file.
      */
     public static final String WEAVE_MODEL = "weaveModel_";
 
@@ -52,7 +52,7 @@ public abstract class MetaDataCompiler {
      * @param definition the definition
      * @return the weave model
      */
-    protected static WeaveModel createWeaveModel(
+    protected static WeaveModel weave(
             final String uuid,
             final AspectWerkzDefinition definition) {
 
@@ -81,10 +81,10 @@ public abstract class MetaDataCompiler {
     }
 
     /**
-     * Save the createWeaveModel model to disk.
+     * Save the weave model to disk.
      *
      * @param metaDataDir the dir to save to
-     * @param weaveModel the createWeaveModel model so save
+     * @param weaveModel the weave model so save
      */
     protected static void saveWeaveModelToFile(final String metaDataDir,
                                                final WeaveModel weaveModel) {

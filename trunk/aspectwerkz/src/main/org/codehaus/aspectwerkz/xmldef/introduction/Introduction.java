@@ -22,8 +22,8 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.Identifiable;
 import org.codehaus.aspectwerkz.ContainerType;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
@@ -43,7 +43,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * @see aspectwerkz.DeploymentModel
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Introduction.java,v 1.4 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: Introduction.java,v 1.5 2003-06-26 19:27:17 jboner Exp $
  */
 public class Introduction implements Serializable {
 
@@ -190,8 +190,7 @@ public class Introduction implements Serializable {
         synchronized (m_implClass) {
             try {
                 m_implementation = className;
-                m_implClass = Thread.currentThread().
-                        getContextClassLoader().loadClass(className);
+                m_implClass = ContextClassLoader.loadClass(className);
                 Class[] interfaces = m_implClass.getInterfaces();
                 boolean implementsInterface = false;
                 for (int i = 0; i < interfaces.length; i++) {
@@ -272,7 +271,6 @@ public class Introduction implements Serializable {
     public int getDeploymentModel() {
         return m_deploymentModel;
     }
-
 
     /**
      * Sets the container.
@@ -359,72 +357,35 @@ public class Introduction implements Serializable {
      * Checks if the implementation class implementents the correct interface.
      */
     private void checkIfInterfaceImplementationMatches() {
-        try {
-            Class[] interfaces = m_implClass.getInterfaces();
-            boolean implementsInterface = false;
-            for (int i = 0; i < interfaces.length; i++) {
-                if (interfaces[i].getName().equals(m_interface)) {
-                    implementsInterface = true;
-                }
-            }
-            if (!implementsInterface) throw new RuntimeException("introduced implementation " + m_implementation + " has to implement introduced interface " + m_interface);
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
+        if (!findInterface(m_implClass, m_interface)) {
+            throw new DefinitionException("introduced implementation " + m_implementation + " has to implement introduced interface " + m_interface);
         }
     }
 
-// --- over-ridden methods ---
-//
-//    public boolean equals(final Object o) {
-//        if (this == o) return true;
-//        if (!(o instanceof Introduction)) return false;
-//        final Introduction obj = (Introduction)o;
-//        return areEqualsOrBothNull(obj.m_interface, this.m_interface) &&
-//                areEqualsOrBothNull(obj.m_implementation, this.m_implementation) &&
-//                areEqualsOrBothNull(obj.m_methods, this.m_methods) &&
-//                areEqualsOrBothNull(obj.m_expression, this.m_expression) &&
-//                areEqualsOrBothNull(obj.m_perClass, this.m_perClass) &&
-//                areEqualsOrBothNull(obj.m_perInstance, this.m_perInstance) &&
-//                areEqualsOrBothNull(obj.m_perClass, this.m_perClass) &&
-//                areEqualsOrBothNull(obj.m_instancePerJvm, this.m_instancePerJvm);
-//    }
-//
-//    protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
-//        if (null == o1) return (null == o2);
-//        return o1.equals(o2);
-//    }
-//
-//    public String toString() {
-//        return "["
-//                + super.toString()
-//                + ": "
-//                + m_interface
-//                + "," + m_implementation
-//                + "," + m_methods
-//                + "," + m_expression
-//                + "," + m_perClass
-//                + "," + m_perInstance
-//                + "," + m_perClass
-//                + "," + m_instancePerJvm
-//                + "]";
-//    }
-//
-//    public int hashCode() {
-//        int result = 17;
-//        result = 37 * result + hashCodeOrZeroIfNull(m_interface);
-//        result = 37 * result + hashCodeOrZeroIfNull(m_implementation);
-//        result = 37 * result + hashCodeOrZeroIfNull(m_methods);
-//        result = 37 * result + hashCodeOrZeroIfNull(m_expression);
-//        result = 37 * result + hashCodeOrZeroIfNull(m_perClass);
-//        result = 37 * result + hashCodeOrZeroIfNull(m_perInstance);
-//        result = 37 * result + hashCodeOrZeroIfNull(m_perClass);
-//        result = 37 * result + hashCodeOrZeroIfNull(m_instancePerJvm);
-//        return result;
-//    }
-//
-//    protected static int hashCodeOrZeroIfNull(final Object o) {
-//        if (null == o) return 19;
-//        return o.hashCode();
-//    }
+    /**
+     * Recursively traverse the interface hierarchy implemented by the given root class in
+     * order to find one that matches the given name.
+     *
+     * @param root is the class or interface to start the search at.
+     * @param requiredInterface that we are looking for.
+     * @return <code>true</code> if we found the interface, <code>false</code> otherwise.
+     */
+    private boolean findInterface(final Class root, final String requiredInterface) {
+
+        // The implementation uses a single loop over the directly
+        // implemented interfaces. In the loop, first we check if the
+        // current interface is the one we're looking for, and then if not
+        // we call this same method starting at that current interface.
+        Class[] interfaces = root.getInterfaces();
+
+        for (int i = 0; i < interfaces.length; i++) {
+            Class implemented = interfaces[i];
+
+            if (implemented.getName().equals(requiredInterface)
+                    || findInterface(implemented, requiredInterface)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

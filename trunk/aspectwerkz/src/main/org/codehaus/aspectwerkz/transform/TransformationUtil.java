@@ -18,6 +18,8 @@
  */
 package org.codehaus.aspectwerkz.transform;
 
+import java.lang.reflect.Array;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
@@ -30,12 +32,13 @@ import org.apache.bcel.generic.ArrayType;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 
 /**
  * Holds the constants and utility method used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: TransformationUtil.java,v 1.7 2003-06-20 06:14:27 jboner Exp $
+ * @version $Id: TransformationUtil.java,v 1.8 2003-06-26 19:27:17 jboner Exp $
  */
 public final class TransformationUtil {
 
@@ -88,70 +91,6 @@ public final class TransformationUtil {
     public static final ObjectType STATIC_FIELD_GET_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.StaticFieldGetJoinPoint");
     public static final ObjectType STATIC_FIELD_SET_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.StaticFieldSetJoinPoint");
     public static final ObjectType CALLER_SIDE_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint");
-
-    /**
-     * Creates a MethodMetaData class out of the BCEL Method class
-     *
-     * @param instruction the instruction
-     * @return the method meta-data
-     */
-    public static MethodMetaData createMethodMetaData(
-            final InvokeInstruction instruction,
-            final ConstantPoolGen cpg) {
-
-        MethodMetaData methodMetaData = new MethodMetaData();
-
-        String signature = instruction.getSignature(cpg);
-        methodMetaData.setName(instruction.getName(cpg));
-
-        Type[] parameterTypes = Type.getArgumentTypes(signature);
-        String[] parameterTypeNames = new String[parameterTypes.length];
-        for (int j = 0; j < parameterTypes.length; j++) {
-            parameterTypeNames[j] = parameterTypes[j].toString();
-
-        }
-        methodMetaData.setParameterTypes(parameterTypeNames);
-        methodMetaData.setReturnType(Type.getReturnType(signature).toString());
-        return methodMetaData;
-    }
-
-    /**
-     * Creates a MethodMetaData class out of the BCEL Method class
-     *
-     * @param method the method
-     * @return
-     */
-    public static MethodMetaData createMethodMetaData(final Method method) {
-        MethodMetaData methodMetaData =
-                new MethodMetaData();
-        methodMetaData.setName(method.getName());
-
-        Type[] parameterTypes = method.getArgumentTypes();
-        String[] parameterTypeNames = new String[parameterTypes.length];
-        for (int j = 0; j < parameterTypes.length; j++) {
-            parameterTypeNames[j] = parameterTypes[j].toString();
-
-        }
-        methodMetaData.setParameterTypes(parameterTypeNames);
-        methodMetaData.setReturnType(method.getReturnType().toString());
-        return methodMetaData;
-    }
-
-    /**
-     * Creates a FieldMetaData class out of the BCEL Method class
-     *
-     * @param instruction the field instruction
-     * @param cpg the constant pool
-     * @return the field meta-data
-     */
-    public static FieldMetaData createFieldMetaData(
-            final FieldInstruction instruction,
-            final ConstantPoolGen cpg) {
-        FieldMetaData fieldMetaData = new FieldMetaData();
-        fieldMetaData.setName(instruction.getFieldName(cpg));
-        fieldMetaData.setType(instruction.getFieldType(cpg).toString());
-        return fieldMetaData;
-    }
 
     /**
      * Converts String access types to BCEL access types.
@@ -243,15 +182,10 @@ public final class TransformationUtil {
         else if (type.equals("byte")) {
             bcelReturnType = Type.BYTE;
         }
-        else if (type.endsWith("]")) {
+        else if (type.endsWith("[]")) {     // to be consistent with convertBcelTypeToClass
             int index = type.indexOf('[');
-            int dimension = Integer.parseInt(
-                    type.substring(index + 1, type.length() - 1));
-            bcelReturnType = new ArrayType(
-                    type.substring(0, index), dimension);
-        }
-        else if (type.startsWith("[")) { // TODO: is this clause really needed?
-            bcelReturnType = Type.getType(type);
+            int dimensions = type.length() - index >> 1;     // we need number of dimensions
+            bcelReturnType = new ArrayType(type.substring(0, index), dimensions);
         }
         else {
             bcelReturnType = new ObjectType(type);
@@ -262,14 +196,11 @@ public final class TransformationUtil {
     /**
      * Converts a BCEL type to a class.
      *
-     * @todo how do I create an array class of certain type from a type?
      * @param bcelType the BCEL type
      * @return the class
      */
     public static Class convertBcelTypeToClass(final Type bcelType) {
-
         final String type = bcelType.toString();
-
         Class klass;
         if (type.equals("void")) {
             klass = null;
@@ -299,22 +230,24 @@ public final class TransformationUtil {
             klass = char.class;
         }
         else if (type.endsWith("[]")) {
-            // array type
-            klass = new Object[]{}.getClass();
+            int index = type.indexOf('[');
+            int dimension = type.length() - index >> 1; // we need number of dimensions
+
+            try {
+                klass = Array.newInstance(
+                        ContextClassLoader.loadClass(type.substring(0, index)),
+                        new int[dimension]).getClass();
+            }
+            catch (ClassNotFoundException e) {
+                throw new WrappedRuntimeException(e);
+            }
         }
         else {
-            // regular object type
             try {
-                klass = Thread.currentThread().
-                        getContextClassLoader().loadClass(type);
+                klass = ContextClassLoader.loadClass(type);
             }
-            catch (Exception e1) {
-                try {
-                    klass = Class.forName(type);
-                }
-                catch (ClassNotFoundException e2) {
-                    throw new WrappedRuntimeException(e2);
-                }
+            catch (ClassNotFoundException e) {
+                throw new WrappedRuntimeException(e);
             }
         }
         return klass;

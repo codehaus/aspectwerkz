@@ -50,29 +50,30 @@ import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
 
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 
 /**
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticFieldTransformer.java,v 1.6 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: AdviseStaticFieldTransformer.java,v 1.7 2003-06-26 19:27:17 jboner Exp $
  */
 public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
-     * Holds the createWeaveModel model.
+     * Holds the weave model.
      */
     private final WeaveModel m_weaveModel;
 
     /**
-     * Retrieves the createWeaveModel model.
+     * Retrieves the weave model.
      */
     public AdviseStaticFieldTransformer() {
         super();
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one createWeaveModel model is specified");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -144,7 +145,7 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
                                 TransformationUtil.STATIC_FIELD_GET_JOIN_POINT_CLASS;
 
                         final FieldMetaData fieldMetaData =
-                                TransformationUtil.createFieldMetaData(gfIns, cpg);
+                                BcelMetaDataMaker.createFieldMetaData(gfIns, cpg);
 
                         String uuid = getFieldFilter(cg, fieldMetaData);
                         if (uuid != null) {
@@ -215,7 +216,7 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
                                 TransformationUtil.STATIC_FIELD_SET_JOIN_POINT_CLASS;
 
                         final FieldMetaData fieldMetaData =
-                                TransformationUtil.createFieldMetaData(pfIns, cpg);
+                                BcelMetaDataMaker.createFieldMetaData(pfIns, cpg);
 
                         String uuid = setFieldFilter(cg, fieldMetaData);
                         if (uuid != null) {
@@ -415,7 +416,7 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
      * @param factory the objectfactory
      * @param joinPointType the type of the joinpoint
      * @param joinPointClass the class for the joinpoint
-     * @param uuid the UUID for the createWeaveModel model
+     * @param uuid the UUID for the weave model
      * @return the new method
      */
     private Method createClInitMethodWithStaticJoinPointField(
@@ -490,7 +491,7 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
      * @param factory the objectfactory
      * @param joinPointType the type of the joinpoint
      * @param joinPointClass the class for the joinpoint
-     * @param uuid the UUID for the createWeaveModel model
+     * @param uuid the UUID for the weave model
      * @return the modified clinit method
      */
     private Method createStaticJoinPointField(final ConstantPoolGen cp,
@@ -673,7 +674,7 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
      *
      * @param cg the class to filter
      * @param fieldMetaData the field to filter
-     * @return the UUID for the createWeaveModel model
+     * @return the UUID for the weave model
      */
     private String setFieldFilter(final ClassGen cg,
                                   final FieldMetaData fieldMetaData) {
@@ -688,7 +689,7 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
      *
      * @param cg the class to filter
      * @param fieldMetaData the field to filter
-     * @return the UUID for the createWeaveModel model
+     * @return the UUID for the weave model
      */
     private String getFieldFilter(final ClassGen cg,
                                   final FieldMetaData fieldMetaData) {
