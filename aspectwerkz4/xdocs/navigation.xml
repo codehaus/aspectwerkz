@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="aspectwerkz" repository="aspectwerkz" href="http://aspectwerkz.codehaus.org">
     <properties>
-        <title>AspectWerkz</title>
+        <title>Navigation</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
     </properties>
     <body>
@@ -12,7 +12,7 @@
             <item name="Wiki" href="http://docs.codehaus.org/display/AW/Home"/>
             <item name="IRC" href="irc://irc.codehaus.org/aspectwerkz"/>
             <item name="Codehaus" href="http://codehaus.org"/>
-            <item name="Create an Issue" href="http://jira.codehaus.org/secure/CreateIssue.jspa"/>
+            <item name="Create an issue" href="http://jira.codehaus.org/secure/CreateIssue.jspa"/>
         </links>
         <menu name="General Information">
             <item name="Overview" href="/index.html"/>
@@ -28,8 +28,10 @@
             <item name="Annotation definition" href="/attribute_definition.html"/>
             <item name="XML definition" href="/xml_definition.html"/>
             <item name="Annnotation driven development" href="/annotations.html"/>
-            <item name="Weaving" href="/startup_and_runtime_issues.html"/>
-            <item name="Integration schemes" href="/online.html"/>
+            <item name="Deployment" href="/deployment.html"/>
+            <item name="Weaving" href="/weaving.html"/>
+            <item name="Dynamic AOP" href="/dynamic_aop.html"/>
+            <item name="AOP container extensions" href="/extensions.html"/>
             <item name="Examples" href="/examples_2.html"/>
             <item name="IDE integration" href="/ide_integration.html"/>
             <item name="JavaDoc" href="/apidocs/index.html"/>
@@ -37,11 +39,11 @@
         </menu>
         <menu name="Misc.">
             <item name="Releases &amp; Release notes" href="/releases.html"/>
-            <item name="Build &amp; Install" href="/build.html"/>
-            <item name="CVS Access" href="/cvs.html"/>
+            <item name="Build &amp; install" href="/build.html"/>
+            <item name="CVS access" href="/cvs.html"/>
             <item name="Mailing lists" href="/lists.html"/>
             <item name="Tasks" href="/tasks.html"/>
-            <item name="Papers &amp; Talks" href="/papers_talks.html"/>
+            <item name="Papers, articles &amp; talks" href="/papers_talks.html"/>
         </menu>
     </body>
 </project>
