@@ -47,6 +47,8 @@ public class JitCompiler {
     private static final String TARGET_INSTANCE_FIELD_NAME = "m_targetInstance";
     private static final String TARGET_CLASS_FIELD_NAME = "m_targetClass";
     private static final String AROUND_ADVICE_FIELD_PREFIX = "m_around";
+    private static final String BEFORE_ADVICE_FIELD_PREFIX = "m_before";
+    private static final String AFTER_ADVICE_FIELD_PREFIX = "m_after";
 
     private static final String SHORT_CLASS_NAME = "java/lang/Short";
     private static final String INTEGER_CLASS_NAME = "java/lang/Integer";
@@ -64,7 +66,9 @@ public class JitCompiler {
     private static final String ASPECT_MANAGER_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/AspectManager";
     private static final String ASPECT_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/Aspect";
     private static final String THROWABLE_CLASS_NAME = "java/lang/Throwable";
-    private static final String ADVICE_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)Ljava/lang/Object;";
+    private static final String AROUND_ADVICE_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)Ljava/lang/Object;";
+    private static final String BEFORE_ADVICE_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)V";
+    private static final String AFTER_ADVICE_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)V";
     private static final String JOIN_POINT_BASE_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;ILjava/lang/Class;Lorg/codehaus/aspectwerkz/joinpoint/management/AroundAdviceExecutor;Lorg/codehaus/aspectwerkz/joinpoint/management/BeforeAdviceExecutor;Lorg/codehaus/aspectwerkz/joinpoint/management/AfterAdviceExecutor;)V";
     private static final String JIT_JOIN_POINT_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;ILjava/lang/Class;Lorg/codehaus/aspectwerkz/joinpoint/Signature;)V";
     private static final String SYSTEM_LOADER_CLASS_NAME = "org/codehaus/aspectwerkz/SystemLoader";
@@ -140,7 +144,7 @@ public class JitCompiler {
      * @param joinPointHash  the join point hash
      * @param joinPointType  the join point joinPointType
      * @param pointcutType   the pointcut type
-     * @param advices        a list with the advices
+     * @param advice         a list with the advice
      * @param declaringClass the declaring class
      * @param targetClass    the currently executing class
      * @param uuid           the system UUID
@@ -150,7 +154,7 @@ public class JitCompiler {
             final int joinPointHash,
             final int joinPointType,
             final PointcutType pointcutType,
-            final AdviceContainer[] advices,
+            final AdviceContainer[] advice,
             final Class declaringClass,
             final Class targetClass,
             final String uuid) {
@@ -160,17 +164,12 @@ public class JitCompiler {
                 return null;
             }
 
-            IndexTuple[] aroundAdvices = JoinPointManager.extractAroundAdvices(advices);
-            IndexTuple[] beforeAdvices = JoinPointManager.extractBeforeAdvices(advices);
-            IndexTuple[] afterAdvices = JoinPointManager.extractAfterAdvices(advices);
+            IndexTuple[] aroundAdvice = JoinPointManager.extractAroundAdvice(advice);
+            IndexTuple[] beforeAdvice = JoinPointManager.extractBeforeAdvice(advice);
+            IndexTuple[] afterAdvice = JoinPointManager.extractAfterAdvice(advice);
 
-            // TODO: currently if before or after found => bail out
-            // TODO: handle before and after advices
-            if (beforeAdvices.length != 0) {
-                return null;
-            }
-            if (afterAdvices.length != 0) {
-                return null;
+            if (aroundAdvice.length == 0 && beforeAdvice.length == 0 && afterAdvice.length == 0) {
+                return null; // no advice => bail out
             }
 
             StringBuffer buf = new StringBuffer();
@@ -195,13 +194,13 @@ public class JitCompiler {
                 ClassWriter cw = new ClassWriter(true);
 
                 createMemberFields(joinPointType, cw, className);
-                if (createInitMethod(joinPointType, cw, className, aroundAdvices, beforeAdvices, afterAdvices, system)) {
+                if (createInitMethod(joinPointType, cw, className, aroundAdvice, beforeAdvice, afterAdvice, system)) {
                     return null;  // bail out, one of the advice has deployment model that is not supported, use regular join point instance
                 }
                 createGetSignatureMethod(joinPointType, cw, className);
                 createProceedMethod(
                         joinPointType, cw, className, system, declaringClass, joinPointHash,
-                        aroundAdvices, beforeAdvices, afterAdvices
+                        aroundAdvice, beforeAdvice, afterAdvice
                 );
 
                 cw.visitEnd();
@@ -227,6 +226,7 @@ public class JitCompiler {
             );
         }
         catch (Throwable e) {
+            e.printStackTrace();
             java.lang.System.err.println(
                     "WARNING: could not dynamically create, compile and load a JoinPoint class for join point with hash [" +
                     joinPointHash + "] with target class [" + targetClass + "]: " + e.toString()
@@ -319,12 +319,12 @@ public class JitCompiler {
                 JOIN_POINT_BASE_INIT_METHOD_SIGNATURE
         );
 
-        // init stack frame
+        // init the stack frame field
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitInsn(Constants.ICONST_M1);
         cv.visitFieldInsn(Constants.PUTFIELD, className, STACKFRAME_FIELD_NAME, I);
 
-        // init signature
+        // init the signature field
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 4);
         switch (joinPointType) {
@@ -360,7 +360,7 @@ public class JitCompiler {
                 throw new UnsupportedOperationException("static initialization is not support yet");
         }
 
-        // init system
+        // init the system field
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 1);
         cv.visitMethodInsn(
@@ -369,50 +369,88 @@ public class JitCompiler {
         );
         cv.visitFieldInsn(Constants.PUTFIELD, className, SYSTEM_FIELD_NAME, SYSTEM_CLASS_SIGNATURE);
 
-        // init around advice
+        // init the aspect fields
         for (int i = 0; i < aroundAdvices.length; i++) {
-            IndexTuple aroundAdvice = aroundAdvices[i];
-            Aspect aspect = system.getAspectManager().getAspect(aroundAdvice.getAspectIndex());
-            String aspectClassName = aspect.getClass().getName().replace('.', '/');
+            if (initAspectField(system, aroundAdvices[i], cw, AROUND_ADVICE_FIELD_PREFIX + i, cv, className)) {
+                return true;
+            }
+        }
+        for (int i = 0; i < beforeAdvices.length; i++) {
+            if (initAspectField(system, beforeAdvices[i], cw, BEFORE_ADVICE_FIELD_PREFIX + i, cv, className)) {
+                return true;
+            }
+        }
+        for (int i = 0; i < afterAdvices.length; i++) {
+            if (initAspectField(system, afterAdvices[i], cw, AFTER_ADVICE_FIELD_PREFIX + i, cv, className)) {
+                return true;
+            }
+        }
 
-            String aspectFieldName = AROUND_ADVICE_FIELD_PREFIX + i;
-            String aspectClassSignature = L + aspectClassName + SEMICOLON;
+        cv.visitInsn(Constants.RETURN);
+        cv.visitMaxs(0, 0);
 
-            // add the aspect field
-            cw.visitField(Constants.ACC_PRIVATE, aspectFieldName, aspectClassSignature, null, null);
+        return false;
+    }
 
-            // handle the init in the constructor
-            cv.visitVarInsn(Constants.ALOAD, 0);
-            cv.visitVarInsn(Constants.ALOAD, 0);
-            cv.visitFieldInsn(Constants.GETFIELD, className, SYSTEM_FIELD_NAME, SYSTEM_CLASS_SIGNATURE);
-            cv.visitMethodInsn(
-                    Constants.INVOKEVIRTUAL, SYSTEM_CLASS_NAME, GET_ASPECT_MANAGER_METHOD_NAME,
-                    GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE
-            );
-            cv.visitIntInsn(Constants.BIPUSH, aroundAdvice.getAspectIndex());
-            cv.visitMethodInsn(
-                    Constants.INVOKEVIRTUAL, ASPECT_MANAGER_CLASS_NAME,
-                    GET_ASPECT_METHOD_NAME, GET_ASPECT_METHOD_SIGNATURE
-            );
+    /**
+     * Create and initialize the aspect field for a specific advice.
+     *
+     * @param system
+     * @param adviceTuple
+     * @param cw
+     * @param aspectFieldName
+     * @param cv
+     * @param className
+     */
+    private static boolean initAspectField(
+            final System system,
+            final IndexTuple adviceTuple,
+            final ClassWriter cw,
+            final String aspectFieldName,
+            final CodeVisitor cv,
+            final String className) {
 
-            switch (aspect.___AW_getDeploymentModel()) {
-                case DeploymentModel.PER_JVM:
-                    cv.visitMethodInsn(
-                            Constants.INVOKEVIRTUAL, ASPECT_CLASS_NAME,
-                            GET_PER_JVM_ASPECT_METHOD_NAME,
-                            GET_PER_JVM_ASPECT_METHOD_SIGNATURE
-                    );
-                    break;
+        Aspect aspect = system.getAspectManager().getAspect(adviceTuple.getAspectIndex());
+        String aspectClassName = aspect.getClass().getName().replace('.', '/');
 
-                case DeploymentModel.PER_CLASS:
-                    cv.visitVarInsn(Constants.ALOAD, 0);
-                    cv.visitFieldInsn(Constants.GETFIELD, className, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
-                    cv.visitMethodInsn(
-                            Constants.INVOKEVIRTUAL, ASPECT_CLASS_NAME,
-                            GET_PER_CLASS_ASPECT_METHOD_NAME,
-                            GET_PER_CLASS_ASPECT_METHOD_SIGNATURE
-                    );
-                    break;
+        String aspectClassSignature = L + aspectClassName + SEMICOLON;
+
+        // add the aspect field
+        cw.visitField(Constants.ACC_PRIVATE, aspectFieldName, aspectClassSignature, null, null);
+
+        // handle the init in the constructor
+        cv.visitVarInsn(Constants.ALOAD, 0);
+        cv.visitVarInsn(Constants.ALOAD, 0);
+        cv.visitFieldInsn(Constants.GETFIELD, className, SYSTEM_FIELD_NAME, SYSTEM_CLASS_SIGNATURE);
+        cv.visitMethodInsn(
+                Constants.INVOKEVIRTUAL, SYSTEM_CLASS_NAME, GET_ASPECT_MANAGER_METHOD_NAME,
+                GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE
+        );
+        cv.visitIntInsn(Constants.BIPUSH, adviceTuple.getAspectIndex());
+        cv.visitMethodInsn(
+                Constants.INVOKEVIRTUAL, ASPECT_MANAGER_CLASS_NAME,
+                GET_ASPECT_METHOD_NAME, GET_ASPECT_METHOD_SIGNATURE
+        );
+
+        switch (aspect.___AW_getDeploymentModel()) {
+            case DeploymentModel.PER_JVM:
+                cv.visitMethodInsn(
+                        Constants.INVOKEVIRTUAL, ASPECT_CLASS_NAME,
+                        GET_PER_JVM_ASPECT_METHOD_NAME,
+                        GET_PER_JVM_ASPECT_METHOD_SIGNATURE
+                );
+                break;
+
+            case DeploymentModel.PER_CLASS:
+                cv.visitVarInsn(Constants.ALOAD, 0);
+                cv.visitFieldInsn(Constants.GETFIELD, className, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+                cv.visitMethodInsn(
+                        Constants.INVOKEVIRTUAL, ASPECT_CLASS_NAME,
+                        GET_PER_CLASS_ASPECT_METHOD_NAME,
+                        GET_PER_CLASS_ASPECT_METHOD_SIGNATURE
+                );
+                break;
+// TODO: how to to perInstance and perThread?
 //                            case DeploymentModel.PER_INSTANCE:
 //                                cv.visitVarInsn(Constants.ALOAD, 0);
 //                                cv.visitFieldInsn(
@@ -430,14 +468,10 @@ public class JitCompiler {
 
                 default:
                     return true;
-            }
-
-            cv.visitTypeInsn(Constants.CHECKCAST, aspectClassName);
-            cv.visitFieldInsn(Constants.PUTFIELD, className, aspectFieldName, aspectClassSignature);
         }
 
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(0, 0);
+        cv.visitTypeInsn(Constants.CHECKCAST, aspectClassName);
+        cv.visitFieldInsn(Constants.PUTFIELD, className, aspectFieldName, aspectClassSignature);
 
         return false;
     }
@@ -450,7 +484,10 @@ public class JitCompiler {
      * @param className
      */
     private static void createGetSignatureMethod(
-            final int joinPointType, final ClassWriter cw, final String className) {
+            final int joinPointType,
+            final ClassWriter cw,
+            final String className) {
+
         CodeVisitor cv =
                 cw.visitMethod(
                         Constants.ACC_PUBLIC, GET_SIGNATURE_METHOD_NAME, GET_SIGNATURE_METHOD_SIGNATURE, null,
@@ -504,9 +541,9 @@ public class JitCompiler {
      * @param system
      * @param declaringClass
      * @param joinPointHash
-     * @param aroundAdvices
-     * @param beforeAdvices
-     * @param afterAdvices
+     * @param aroundAdvice
+     * @param beforeAdvice
+     * @param afterAdvice
      */
     private static void createProceedMethod(
             final int joinPointType,
@@ -515,9 +552,9 @@ public class JitCompiler {
             final System system,
             final Class declaringClass,
             final int joinPointHash,
-            final IndexTuple[] aroundAdvices,
-            final IndexTuple[] beforeAdvices,
-            final IndexTuple[] afterAdvices) {
+            final IndexTuple[] aroundAdvice,
+            final IndexTuple[] beforeAdvice,
+            final IndexTuple[] afterAdvice) {
 
         CodeVisitor cv = cw.visitMethod(
                 Constants.ACC_PUBLIC, PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE,
@@ -526,9 +563,52 @@ public class JitCompiler {
 
         incrementStackFrameCounter(cv, className);
 
-        LabelData labelData = invokeAroundAdvice(cv, className, aroundAdvices, system);
+        LabelData labelData = invokeAdvice(cv, className, aroundAdvice, beforeAdvice, afterAdvice, system);
 
         resetStackFrameCounter(cv, className);
+
+        invokeJoinPoint(joinPointType, system, declaringClass, joinPointHash, cv, className);
+
+        cv.visitInsn(Constants.ARETURN);
+
+        cv.visitLabel(labelData.handlerLabel);
+        cv.visitVarInsn(Constants.ASTORE, 2);
+        cv.visitLabel(labelData.endLabel);
+        cv.visitVarInsn(Constants.ALOAD, 0);
+        cv.visitInsn(Constants.ICONST_M1);
+        cv.visitFieldInsn(Constants.PUTFIELD, className, STACKFRAME_FIELD_NAME, I);
+        cv.visitVarInsn(Constants.ALOAD, 2);
+        cv.visitInsn(Constants.ATHROW);
+
+        // handle the final try-finally clause
+        cv.visitTryCatchBlock(labelData.startLabel, labelData.returnLabels[0], labelData.handlerLabel, null);
+        for (int i = 1; i < labelData.switchCaseLabels.length; i++) {
+            Label switchCaseLabel = labelData.switchCaseLabels[i];
+            Label returnLabel = labelData.returnLabels[i];
+            cv.visitTryCatchBlock(switchCaseLabel, returnLabel, labelData.handlerLabel, null);
+        }
+        cv.visitTryCatchBlock(labelData.handlerLabel, labelData.endLabel, labelData.handlerLabel, null);
+
+        cv.visitMaxs(0, 0);
+    }
+
+    /**
+     * Invokes the specific join point.
+     *
+     * @param joinPointType
+     * @param system
+     * @param declaringClass
+     * @param joinPointHash
+     * @param cv
+     * @param className
+     */
+    private static void invokeJoinPoint(
+            final int joinPointType,
+            final System system,
+            final Class declaringClass,
+            final int joinPointHash,
+            final CodeVisitor cv,
+            final String className) {
 
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
@@ -579,19 +659,6 @@ public class JitCompiler {
             case JoinPointType.STATIC_INITALIZATION:
                 throw new UnsupportedOperationException("static initialization is not support yet");
         }
-
-        cv.visitInsn(Constants.ARETURN);
-
-        // handle the final try-finally nastyness
-        cv.visitTryCatchBlock(labelData.startLabel, labelData.returnLabels[0], labelData.handlerLabel, null);
-        for (int i = 1; i < labelData.switchCaseLabels.length; i++) {
-            Label switchCaseLabel = labelData.switchCaseLabels[i];
-            Label returnLabel = labelData.returnLabels[i];
-            cv.visitTryCatchBlock(switchCaseLabel, returnLabel, labelData.handlerLabel, null);
-        }
-        cv.visitTryCatchBlock(labelData.handlerLabel, labelData.endLabel, labelData.handlerLabel, null);
-
-        cv.visitMaxs(0, 0);
     }
 
     /**
@@ -611,6 +678,7 @@ public class JitCompiler {
             final CodeVisitor cv,
             final int joinPointType,
             final String className) {
+
         MethodTuple methodTuple = system.getAspectManager().getMethodTuple(declaringClass, joinPointHash);
         Method targetMethod = methodTuple.getOriginalMethod();
         String declaringClassName = targetMethod.getDeclaringClass().getName().replace('.', '/');
@@ -646,6 +714,7 @@ public class JitCompiler {
             final int joinPointType,
             final CodeVisitor cv,
             final String className) {
+
         ConstructorTuple constructorTuple = system.getAspectManager().getConstructorTuple(
                 declaringClass, joinPointHash
         );
@@ -682,6 +751,7 @@ public class JitCompiler {
             final int joinPointType,
             final CodeVisitor cv,
             final String className) {
+
         ConstructorTuple constructorTuple = system.getAspectManager().getConstructorTuple(
                 declaringClass, joinPointHash
         );
@@ -1022,22 +1092,26 @@ public class JitCompiler {
     }
 
     /**
-     * Handles the around advice invocations.
+     * Handles the advice invocations.
      * <p/>
-     * Creates a switch clause in which the around advice chain is called recursively.
+     * Creates a switch clause in which the advice chain is called recursively.
      * <p/>
      * Wraps the switch clause in a try-finally statement in which the finally block resets the stack frame counter.
      *
      * @param cv
      * @param className
      * @param aroundAdvices
+     * @param beforeAdvices
+     * @param afterAdvices
      * @param system
      * @return the labels needed to implement the last part of the try-finally clause
      */
-    private static LabelData invokeAroundAdvice(
+    private static LabelData invokeAdvice(
             final CodeVisitor cv,
             final String className,
             final IndexTuple[] aroundAdvices,
+            final IndexTuple[] beforeAdvices,
+            final IndexTuple[] afterAdvices,
             final System system) {
 
         // try-finally management
@@ -1048,10 +1122,19 @@ public class JitCompiler {
         cv.visitFieldInsn(Constants.GETFIELD, className, STACKFRAME_FIELD_NAME, I);
 
         // creates the labels needed for the switch and try-finally blocks
-        Label[] switchCaseLabels = new Label[aroundAdvices.length];
-        Label[] returnLabels = new Label[aroundAdvices.length];
+        int nrOfCases = aroundAdvices.length;
+
+        boolean hasBeforeAfterAdvice = beforeAdvices.length + afterAdvices.length > 0;
+        if (hasBeforeAfterAdvice) {
+            nrOfCases += 1; // one more case
+        }
+
+        Label[] switchCaseLabels = new Label[nrOfCases];
+        Label[] returnLabels = new Label[nrOfCases];
+        int[] caseNumbers = new int[nrOfCases];
         for (int i = 0; i < switchCaseLabels.length; i++) {
             switchCaseLabels[i] = new Label();
+            caseNumbers[i] = i;
         }
         for (int i = 0; i < returnLabels.length; i++) {
             returnLabels[i] = new Label();
@@ -1062,52 +1145,19 @@ public class JitCompiler {
         Label endLabel = new Label();
 
         // create the switch table
-        cv.visitTableSwitchInsn(0, switchCaseLabels.length - 1, defaultCaseLabel, switchCaseLabels);
+        cv.visitLookupSwitchInsn(defaultCaseLabel, caseNumbers, switchCaseLabels);
 
-        // add invocations to the around advices
-        for (int i = 0; i < aroundAdvices.length; i++) {
-            IndexTuple aroundAdvice = aroundAdvices[i];
-            Aspect aspect = system.getAspectManager().getAspect(aroundAdvice.getAspectIndex());
-            Method adviceMethod = aspect.___AW_getAdvice(aroundAdvice.getMethodIndex());
-            String aspectClassName = aspect.getClass().getName().replace('.', '/');
+        invokeBeforeAfterAdvice(
+                hasBeforeAfterAdvice, beforeAdvices, afterAdvices,
+                system, className, cv, switchCaseLabels, returnLabels
+        );
 
-            String aspectFieldName = AROUND_ADVICE_FIELD_PREFIX + i;
-            String aspectClassSignature = L + aspectClassName + SEMICOLON;
+        invokesAroundAdvice(
+                hasBeforeAfterAdvice, aroundAdvices,
+                system, className, cv, switchCaseLabels, returnLabels
+        );
 
-            cv.visitLabel(switchCaseLabels[i]);
-            cv.visitVarInsn(Constants.ALOAD, 0);
-            cv.visitFieldInsn(Constants.GETFIELD, className, aspectFieldName, aspectClassSignature);
-            cv.visitVarInsn(Constants.ALOAD, 0);
-            cv.visitMethodInsn(
-                    Constants.INVOKEVIRTUAL, aspectClassName, adviceMethod.getName(), ADVICE_METHOD_SIGNATURE
-            );
-
-            // try-finally management
-            cv.visitVarInsn(Constants.ASTORE, 2);
-            cv.visitLabel(returnLabels[i]);
-            cv.visitVarInsn(Constants.ALOAD, 0);
-            cv.visitInsn(Constants.ICONST_M1);
-            cv.visitFieldInsn(Constants.PUTFIELD, className, STACKFRAME_FIELD_NAME, I);
-            cv.visitVarInsn(Constants.ALOAD, 2);
-
-            cv.visitInsn(Constants.ARETURN);
-        }
         cv.visitLabel(defaultCaseLabel);
-
-        // try-finally management
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitInsn(Constants.ICONST_M1);
-        cv.visitFieldInsn(Constants.PUTFIELD, className, STACKFRAME_FIELD_NAME, I);
-        cv.visitJumpInsn(Constants.GOTO, gotoLabel);
-        cv.visitLabel(handlerLabel);
-        cv.visitVarInsn(Constants.ASTORE, 3);
-        cv.visitLabel(endLabel);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitInsn(Constants.ICONST_M1);
-        cv.visitFieldInsn(Constants.PUTFIELD, className, STACKFRAME_FIELD_NAME, I);
-        cv.visitVarInsn(Constants.ALOAD, 3);
-        cv.visitInsn(Constants.ATHROW);
-        cv.visitLabel(gotoLabel);
 
         // put the labels in a data structure and return them
         LabelData labelData = new LabelData();
@@ -1118,6 +1168,136 @@ public class JitCompiler {
         labelData.handlerLabel = handlerLabel;
         labelData.endLabel = endLabel;
         return labelData;
+    }
+
+    /**
+     * Invokes before and after advice.
+     *
+     * @param hasBeforeAfterAdvice
+     * @param beforeAdvices
+     * @param afterAdvices
+     * @param system
+     * @param className
+     * @param cv
+     * @param switchCaseLabels
+     * @param returnLabels
+     */
+    private static void invokeBeforeAfterAdvice(
+            boolean hasBeforeAfterAdvice,
+            final IndexTuple[] beforeAdvices,
+            final IndexTuple[] afterAdvices,
+            final System system,
+            final String className,
+            final CodeVisitor cv,
+            final Label[] switchCaseLabels,
+            final Label[] returnLabels) {
+
+        if (hasBeforeAfterAdvice) {
+            cv.visitLabel(switchCaseLabels[0]);
+
+            // add invocations to the before advices
+            for (int i = 0; i < beforeAdvices.length; i++) {
+                IndexTuple beforeAdvice = beforeAdvices[i];
+                Aspect aspect = system.getAspectManager().getAspect(beforeAdvice.getAspectIndex());
+                Method adviceMethod = aspect.___AW_getAdvice(beforeAdvice.getMethodIndex());
+                String aspectClassName = aspect.getClass().getName().replace('.', '/');
+
+                String aspectFieldName = BEFORE_ADVICE_FIELD_PREFIX + i;
+                String aspectClassSignature = L + aspectClassName + SEMICOLON;
+
+                cv.visitVarInsn(Constants.ALOAD, 0);
+                cv.visitFieldInsn(Constants.GETFIELD, className, aspectFieldName, aspectClassSignature);
+                cv.visitVarInsn(Constants.ALOAD, 0);
+                cv.visitMethodInsn(
+                        Constants.INVOKEVIRTUAL, aspectClassName, adviceMethod.getName(),
+                        BEFORE_ADVICE_METHOD_SIGNATURE
+                );
+            }
+
+            // add invocation to this.proceed
+            cv.visitVarInsn(Constants.ALOAD, 0);
+            cv.visitMethodInsn(Constants.INVOKEVIRTUAL, className, PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE);
+            cv.visitVarInsn(Constants.ASTORE, 1);
+
+            // add invocations to the after advices
+            for (int i = afterAdvices.length - 1; i >= 0; i--) {
+                IndexTuple afterAdvice = afterAdvices[i];
+                Aspect aspect = system.getAspectManager().getAspect(afterAdvice.getAspectIndex());
+                Method adviceMethod = aspect.___AW_getAdvice(afterAdvice.getMethodIndex());
+                String aspectClassName = aspect.getClass().getName().replace('.', '/');
+
+                String aspectFieldName = AFTER_ADVICE_FIELD_PREFIX + i;
+                String aspectClassSignature = L + aspectClassName + SEMICOLON;
+
+                cv.visitVarInsn(Constants.ALOAD, 0);
+                cv.visitFieldInsn(Constants.GETFIELD, className, aspectFieldName, aspectClassSignature);
+                cv.visitVarInsn(Constants.ALOAD, 0);
+                cv.visitMethodInsn(
+                        Constants.INVOKEVIRTUAL, aspectClassName, adviceMethod.getName(),
+                        AFTER_ADVICE_METHOD_SIGNATURE
+                );
+            }
+
+            cv.visitLabel(returnLabels[0]);
+            cv.visitVarInsn(Constants.ALOAD, 0);
+            cv.visitInsn(Constants.ICONST_M1);
+            cv.visitFieldInsn(Constants.PUTFIELD, className, STACKFRAME_FIELD_NAME, I);
+            cv.visitVarInsn(Constants.ALOAD, 1);
+            cv.visitInsn(Constants.ARETURN);
+        }
+    }
+
+    /**
+     * Invokes around advice.
+     *
+     * @param hasBeforeAfterAdvice
+     * @param aroundAdvices
+     * @param system
+     * @param className
+     * @param cv
+     * @param switchCaseLabels
+     * @param returnLabels
+     */
+    private static void invokesAroundAdvice(
+            boolean hasBeforeAfterAdvice,
+            final IndexTuple[] aroundAdvices,
+            final System system,
+            final String className,
+            final CodeVisitor cv,
+            final Label[] switchCaseLabels,
+            final Label[] returnLabels) {
+
+        int i = 0, j = 0;
+        if (hasBeforeAfterAdvice) {
+            j = 1;
+        }
+        for (; i < aroundAdvices.length; i++, j++) {
+            IndexTuple aroundAdvice = aroundAdvices[i];
+            Aspect aspect = system.getAspectManager().getAspect(aroundAdvice.getAspectIndex());
+            Method adviceMethod = aspect.___AW_getAdvice(aroundAdvice.getMethodIndex());
+            String aspectClassName = aspect.getClass().getName().replace('.', '/');
+
+            String aspectFieldName = AROUND_ADVICE_FIELD_PREFIX + i;
+            String aspectClassSignature = L + aspectClassName + SEMICOLON;
+
+            cv.visitLabel(switchCaseLabels[j]);
+            cv.visitVarInsn(Constants.ALOAD, 0);
+            cv.visitFieldInsn(Constants.GETFIELD, className, aspectFieldName, aspectClassSignature);
+            cv.visitVarInsn(Constants.ALOAD, 0);
+            cv.visitMethodInsn(
+                    Constants.INVOKEVIRTUAL, aspectClassName, adviceMethod.getName(), AROUND_ADVICE_METHOD_SIGNATURE
+            );
+
+            // try-finally management
+            cv.visitVarInsn(Constants.ASTORE, 2);
+            cv.visitLabel(returnLabels[j]);
+            cv.visitVarInsn(Constants.ALOAD, 0);
+            cv.visitInsn(Constants.ICONST_M1);
+            cv.visitFieldInsn(Constants.PUTFIELD, className, STACKFRAME_FIELD_NAME, I);
+            cv.visitVarInsn(Constants.ALOAD, 2);
+
+            cv.visitInsn(Constants.ARETURN);
+        }
     }
 
     /**
