@@ -104,4 +104,12 @@ public class IntroductionTestAspectMyImplReplacement implements Serializable, In
     public boolean getBoolean() throws RuntimeException {
         return true;
     }
+
+    public void exceptionThrower() throws Throwable {
+        throw new UnsupportedOperationException("this is a test");
+    }
+
+    public void exceptionThrowerChecked() throws CheckedException {
+        throw new CheckedException();
+    }
 }
