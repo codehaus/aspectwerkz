@@ -59,10 +59,14 @@ public class AspectDefinition {
     private final List m_afterAdvices = new ArrayList();
 
     /**
-     * The interface introductions.
-     * pure interface or implementations
+     * The interface introductions (pure interfaces)
      */
     private final List m_interfaceIntroductions = new ArrayList();
+
+    /**
+     * The implementation introductions
+     */
+    private final List m_introductions = new ArrayList();
 
     /**
      * The pointcuts.
@@ -187,12 +191,21 @@ public class AspectDefinition {
     }
 
     /**
-     * Adds a new interface introduction.
+     * Adds a new pure interface introduction.
+     *
+     * @param interfaceIntroductionMetaData the introduction
+     */
+    public void addInterfaceIntroduction(final InterfaceIntroductionDefinition interfaceIntroductionMetaData) {
+        m_interfaceIntroductions.add(interfaceIntroductionMetaData);
+    }
+
+    /**
+     * Adds a new implementation introduction.
      *
      * @param introductionMetaData the introduction
      */
-    public void addInterfaceIntroduction(final IntroductionDefinition introductionMetaData) {
-        m_interfaceIntroductions.add(introductionMetaData);
+    public void addIntroduction(final IntroductionDefinition introductionMetaData) {
+        m_introductions.add(introductionMetaData);
     }
 
     /**
@@ -202,6 +215,15 @@ public class AspectDefinition {
      */
     public List getInterfaceIntroductions() {
         return m_interfaceIntroductions;
+    }
+
+    /**
+     * Returns the implementation introductions.
+     *
+     * @return the introductions
+     */
+    public List getIntroductions() {
+        return m_introductions;
     }
 
     /**

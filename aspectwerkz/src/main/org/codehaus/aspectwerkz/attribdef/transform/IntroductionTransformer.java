@@ -24,6 +24,7 @@ import org.codehaus.aspectwerkz.transform.AddImplementationTransformer;
 import org.codehaus.aspectwerkz.attribdef.definition.AspectWerkzDefinitionImpl;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.IntroductionDefinition;
+import org.codehaus.aspectwerkz.attribdef.definition.InterfaceIntroductionDefinition;
 
 /**
  * Handles the attribdef specific algorithms for adding the introductions.
@@ -51,11 +52,10 @@ public class IntroductionTransformer {
         int[] interfaces = cg.getInterfaces();
 
         boolean isClassAdvised = false;
-        List introDefs = def.getIntroductionDefinitionsForClass(classMetaData);
+        List introDefs = def.getInterfaceIntroductions(classMetaData);
         for (Iterator it = introDefs.iterator(); it.hasNext();) {
-
-            IntroductionDefinition introductionDef = (IntroductionDefinition)it.next();
-            for (Iterator iit = introductionDef.getInterfaceIntroductions().iterator(); iit.hasNext();) {
+            InterfaceIntroductionDefinition introductionDef = (InterfaceIntroductionDefinition)it.next();
+            for (Iterator iit = introductionDef.getInterfaceClassNames().iterator(); iit.hasNext();) {
                 String className = (String) iit.next();
 
                 boolean addInterface = true;
@@ -100,7 +100,7 @@ public class IntroductionTransformer {
                                               final AddImplementationTransformer transformer) {
         AspectWerkzDefinitionImpl def = (AspectWerkzDefinitionImpl)definition;
 
-        List introductionDefs = def.getIntroductionDefinitionsForClass(classMetaData);
+        List introductionDefs = def.getIntroductionDefinitions(classMetaData);
         boolean isClassAdvised = false;
         for (Iterator it = introductionDefs.iterator(); it.hasNext();) {
             IntroductionDefinition introDef = (IntroductionDefinition) it.next();
