@@ -97,7 +97,7 @@ public class FieldWrapperVisitor extends ClassAdapter implements TransformationC
 
         ExpressionContext[] ctxs = new ExpressionContext[]{
             new ExpressionContext(PointcutType.SET, fieldInfo, null),
-            new ExpressionContext(PointcutType.GET, fieldInfo, null)//TODO are we sure that within=null means match
+            new ExpressionContext(PointcutType.GET, fieldInfo, null)
         };
 
         if (fieldFilter(m_ctx.getDefinitions(), ctxs, fieldInfo)) {

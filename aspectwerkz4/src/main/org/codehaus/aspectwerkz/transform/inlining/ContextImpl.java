@@ -76,6 +76,7 @@ public class ContextImpl implements Context {
      */
     private final List m_emittedJoinPoints = new ArrayList();
 
+    private long m_serialVerUid;
     /**
      * Creates a new context.
      *
@@ -259,5 +260,13 @@ public class ContextImpl implements Context {
      */
     public List getEmittedJoinPoints() {
         return m_emittedJoinPoints;
+    }
+
+    public void setSerialVerUid(long initialSerialVerUid) {
+        m_serialVerUid = initialSerialVerUid;
+    }
+
+    public long getSerialVerUid() {
+        return m_serialVerUid;
     }
 }

@@ -1437,7 +1437,7 @@ public class ExpressionTest extends TestCase {
                         new ExpressionContext(PointcutType.WITHIN, s_declaringType, null)
                 )
         );//fails on CALL
-        assertTrue(//DIGME
+        assertFalse(
                 new ExpressionInfo(
                         "call(void test.expression.Target.modifiers1()) && withincode(void test.expression.TargetNOMATCH.modifiers1())",
                         NAMESPACE

@@ -34,6 +34,7 @@ public class AddSerialVersionUidVisitor extends ClassAdapter implements Transfor
     private final ContextImpl m_ctx;
     private final ClassInfo m_classInfo;
     private boolean m_hasSerialVersionUIDField = false;
+    private boolean m_computeOnly = true;
 
     /**
      * Creates a new finalizing visitor.
@@ -42,10 +43,11 @@ public class AddSerialVersionUidVisitor extends ClassAdapter implements Transfor
      * @param classInfo
      * @param ctx
      */
-    public AddSerialVersionUidVisitor(final ClassVisitor cv, final ClassInfo classInfo, final Context ctx) {
+    public AddSerialVersionUidVisitor(final ClassVisitor cv, final ClassInfo classInfo, final Context ctx, final boolean computeOnly) {
         super(cv);
         m_ctx = (ContextImpl) ctx;
         m_classInfo = classInfo;
+        m_computeOnly = computeOnly;
     }
 
     /**
@@ -68,13 +70,14 @@ public class AddSerialVersionUidVisitor extends ClassAdapter implements Transfor
      * Finalizes the weaving process.
      */
     public void visitEnd() {
-        if (!m_ctx.isAdvised()) {
-            super.visitEnd();
-            return;
-        }
         if (!m_hasSerialVersionUIDField) {
-            long uid = calculateSerialVersionUID(m_classInfo);
-            super.visitField(ACC_STATIC | ACC_FINAL, SERIAL_VERSION_UID_FIELD_NAME, "J", new Long(uid), null);
+            if (m_computeOnly) {
+                long uid = calculateSerialVersionUID(m_classInfo);
+                m_ctx.setSerialVerUid(uid);
+            } else {
+                long uid = m_ctx.getSerialVerUid();
+                super.visitField(ACC_STATIC | ACC_FINAL, SERIAL_VERSION_UID_FIELD_NAME, "J", new Long(uid), null);
+            }
         }
         super.visitEnd();
     }

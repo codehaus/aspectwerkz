@@ -4,5 +4,6 @@
         <aspect class="test.deployment.HotdeployableAspect"/>
         <aspect class="test.FieldGetOutOfWeaver$Aspect"/>
         <aspect class="test.InterfaceDefinedMethodTestCase$Aspect"/>
+        <aspect class="test.CtorExecution$Aspect"/>
     </system>
 </aspectwerkz>

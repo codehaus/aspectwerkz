@@ -97,17 +97,12 @@ public class InterfaceDefinedMethodTestCase extends TestCase {
             return sjp.proceed();
         }
 
-        @Before("cflow(call(* test.InterfaceDefinedMethodTestCase.withinNot()))" +
+        @Before("cflow(within(test.InterfaceDefinedMethodTestCase) && call(* test.InterfaceDefinedMethodTestCase.withinNot()))" +
                 "&& !withincode(* test.InterfaceDefinedMethodTestCase.withinNot())" +
                 "&& within(test.InterfaceDefinedMethodTestCase)")
         public void neverCalled(StaticJoinPoint sjp) {
             s_log += "withincode ";
             //System.out.println(sjp.getType() + " " + sjp.getSignature());
-        }
-
-        @Before("cflow(get(* * )) && !within(test.InterfaceDefinedMethodTestCase$Aspect)")
-        public void all(StaticJoinPoint jp) {
-            System.out.println(jp.getSignature());
         }
     }
 

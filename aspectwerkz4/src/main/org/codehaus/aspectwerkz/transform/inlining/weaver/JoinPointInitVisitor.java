@@ -148,6 +148,8 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
             mv.visitInsn(RETURN);
             mv.visitMaxs(0, 0);
         }
+
+        cv.visitEnd();
     }
 
     /**

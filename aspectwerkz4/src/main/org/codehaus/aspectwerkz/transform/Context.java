@@ -71,7 +71,8 @@ public interface Context {
     public abstract void resetAdvised();
 
     /**
-     * Checks if the class being transformed has beed advised.
+     * Checks if the class being transformed has been advised.
+     * This should only be used after ALL actual transformations.
      *
      * @return boolean
      */

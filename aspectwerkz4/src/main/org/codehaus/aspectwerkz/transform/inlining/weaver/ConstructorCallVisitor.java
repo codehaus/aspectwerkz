@@ -411,14 +411,37 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
         return (29 * hash) + desc.hashCode();
     }
 
+    /**
+     * Lookahead index of NEW instruction for NEW + DUP + INVOKESPECIAL instructions
+     * Remember the NEW instruction index
+     * <p/>
+     * Special case when withincode ctor of called ctor:
+     * <pre>public Foo() { super(new Foo()); }</pre>
+     * In such a case, it is not possible to intercept the call to new Foo() since this cannot be
+     * referenced as long as this(..) or super(..) has not been called.
+     *
+     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+     */
     public static class LookaheadNewDupInvokeSpecialInstructionClassAdapter
             extends AsmAnnotationHelper.NullClassAdapter {
+
+        private String m_callerTypeName;
+        private String m_callerMemberName;
 
         // list of new invocations by caller member hash
         public TLongObjectHashMap m_newInvocationsByCallerMemberHash;
 
         public LookaheadNewDupInvokeSpecialInstructionClassAdapter(TLongObjectHashMap newInvocations) {
             m_newInvocationsByCallerMemberHash = newInvocations;
+        }
+
+        public void visit(final int version,
+                          final int access,
+                          final String name,
+                          final String superName,
+                          final String[] interfaces,
+                          final String sourceFile) {
+            m_callerTypeName = name;
         }
 
         public CodeVisitor visitMethod(final int access,
@@ -433,32 +456,47 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                 ;//ignore
             }
 
+            m_callerMemberName = name;
+
             TIntObjectHashMap newInvocations = new TIntObjectHashMap(5);
             m_newInvocationsByCallerMemberHash.put(getMemberHash(name, desc), newInvocations);
-            return new LookaheadNewDupInvokeSpecialInstructionCodeAdapter(newInvocations);
+            return new LookaheadNewDupInvokeSpecialInstructionCodeAdapter(
+                    newInvocations,
+                    m_callerMemberName
+            );
         }
     }
 
     public static class LookaheadNewDupInvokeSpecialInstructionCodeAdapter
             extends AsmAnnotationHelper.NullCodeAdapter {
 
+        private String m_callerMemberName;
+
         private TIntObjectHashMap m_newInvocations;
 
         private Stack m_newIndexStack = new Stack();
         private int m_newIndex = -1;
+        private int m_newCount = 0;
+        private int m_invokeSpecialCount = 0;
+        private boolean m_isObjectInitialized = false;
 
         /**
          * Creates a new instance.
          */
-        public LookaheadNewDupInvokeSpecialInstructionCodeAdapter(TIntObjectHashMap newInvocations) {
+        public LookaheadNewDupInvokeSpecialInstructionCodeAdapter(TIntObjectHashMap newInvocations,
+                                                                  final String callerMemberName) {
             m_newInvocations = newInvocations;
-            //super(ca, loader, callerClassInfo, callerClassName, callerMethodName, callerMethodDesc);
+            m_callerMemberName = callerMemberName;
+            // do not skip call to NEW before this/super initialization when not in a ctor
+            if (!m_callerMemberName.equals(INIT_METHOD_NAME)) {
+                m_isObjectInitialized = true;
+            }
         }
 
         public void visitTypeInsn(int opcode, String desc) {
             if (opcode == NEW) {
                 m_newIndex++;
-                //System.out.println("INDEX " + desc + " is " + m_newIndex);
+                m_newCount++;
                 m_newIndexStack.push(new Integer(m_newIndex));
             }
         }
@@ -467,14 +505,36 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                                     final String calleeClassName,
                                     final String calleeMethodName,
                                     final String calleeMethodDesc) {
-            if (INIT_METHOD_NAME.equals(calleeMethodName)) {
+            if (opcode == INVOKESPECIAL) {
+                m_invokeSpecialCount++;
+            }
+
+            if (m_callerMemberName.equals(INIT_METHOD_NAME)) {
+                // in ctor
+                // make sure we are after object initialization ie after
+                // the INVOKESPECIAL for this(..) / super(..)
+                // that is we have seen an INVOKESPECIAL while newCount == 0
+                // or while newCount == invokeSpecialCount - 1
+                // [ ie same with numberOfInvokeSpecialCount = 1 ]
+                if (opcode == INVOKESPECIAL) {
+                    if (m_newCount == m_invokeSpecialCount -1) {
+                        m_isObjectInitialized = true;
+                    } else {
+                        // skip - remove the NEW index from the stack
+                        if (!m_newIndexStack.isEmpty()) {
+                            m_newIndexStack.pop();
+                        }
+                    }
+                }
+            }
+
+            if (m_isObjectInitialized && INIT_METHOD_NAME.equals(calleeMethodName)) {
                 if (!m_newIndexStack.isEmpty()) {
                     int index = ((Integer) m_newIndexStack.pop()).intValue();
                     NewInvocationStruct newInvocationStruct = new NewInvocationStruct();
                     newInvocationStruct.className = calleeClassName;
                     newInvocationStruct.ctorDesc = calleeMethodDesc;
-                    // constructorInfo will be build at weave time and not at lookahead time
-                    //System.out.println("ADD " + index + " " + calleeClassName  + calleeMethodDesc);
+                    // constructorInfo and matching will be done at weave time and not at lookahead time
                     m_newInvocations.put(index, newInvocationStruct);
                 }
             }
