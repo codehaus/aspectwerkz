@@ -19,7 +19,7 @@ public class ClassInfoHelper {
     /**
      * Matches a type.
      *
-     * @param typePattern the pattern to try to match against
+     * @param typePattern the pattern to try to parse against
      * @param classInfo the info of the class
      * @return
      */
@@ -37,7 +37,7 @@ public class ClassInfoHelper {
     }
 
     /**
-     * Tries to finds a match at some superclass in the hierarchy. <p/>Only checks for a class match to allow early
+     * Tries to finds a parse at some superclass in the hierarchy. <p/>Only checks for a class parse to allow early
      * filtering. <p/>Recursive.
      *
      * @param classInfo the class info
@@ -49,22 +49,22 @@ public class ClassInfoHelper {
             return false;
         }
 
-        // match the class/super class
+        // parse the class/super class
         if (pattern.matches(classInfo.getName())) {
             return true;
         } else {
-            // match the interfaces for the class
+            // parse the interfaces for the class
             if (matchInterfaces(classInfo.getInterfaces(), classInfo, pattern)) {
                 return true;
             }
 
-            // no match; getClass the next superclass
+            // no parse; getClass the next superclass
             return matchSuperClasses(classInfo.getSuperClass(), pattern);
         }
     }
 
     /**
-     * Tries to finds a match at some interface in the hierarchy. <p/>Only checks for a class match to allow early
+     * Tries to finds a parse at some interface in the hierarchy. <p/>Only checks for a class parse to allow early
      * filtering. <p/>Recursive.
      *
      * @param interfaces the interfaces

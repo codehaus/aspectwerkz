@@ -12,6 +12,10 @@ import org.apache.xmlbeans.impl.jam.JClass;
 import org.apache.xmlbeans.impl.jam.annotation.AnnotationProxy;
 import org.apache.xmlbeans.impl.jam.internal.elements.AnnotationValueImpl;
 import org.apache.xmlbeans.impl.jam.internal.elements.ElementContext;
+import org.codehaus.aspectwerkz.annotation.expression.AnnotationVisitor;
+import org.codehaus.aspectwerkz.annotation.expression.DumpVisitor;
+import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
 import org.codehaus.aspectwerkz.util.Strings;
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -23,6 +27,11 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public abstract class TypedAnnotationProxy extends AnnotationProxy implements Annotation, Serializable {
+    private static AnnotationParser s_parser = new AnnotationParser(System.in);
+
+    /**
+     * @TODO: do we need a readObject() method that builds up this list after unmarshalling?
+     */
     protected transient List m_values = null;
 
     public JAnnotationValue[] getValues() {
@@ -41,42 +50,30 @@ public abstract class TypedAnnotationProxy extends AnnotationProxy implements An
         if (value == null) {
             throw new IllegalArgumentException("value can not be null");
         }
-        String valueAsString = (String)value;
-
-        // grab the setter method
-        Method setterMethod = null;
-        Class valueType = null;
+        String annotation = (String)value;
         try {
-            Class clazz = this.getClass();
-            Method[] methods = clazz.getMethods();
-            for (int i = 0; i < methods.length; i++) {
-                Method method = methods[i];
-                if (method.getName().equals(name)) {
-                    valueType = method.getReturnType();
-                    setterMethod = clazz.getMethod("set" + name, new Class[] { valueType });
-                    break;
+            AnnotationVisitor.parse(this, s_parser.parse(annotation));
+        } catch (ParseException e) {
+            System.err.println("could not parse annotation: " + annotation);
+        }
+
+        /*
+                // add a typed annotation value for later retrieval
+                addTypedAnnotationValue(valueType, name, value);
+
+                // transform the string value to a typed value
+                Object typedValue = convertStringValueToTypedValue(valueType, valueAsString);
+
+                // invoke the setter method
+                try {
+                    setterMethod.invoke(this, new Object[]{typedValue});
+                } catch (Exception e) {
+                    throw new RuntimeException(
+                            "could not invoke setter method for value [" + name + "] due to: "
+                            + e.toString()
+                    );
                 }
-            }
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException("could not find setter method for value [" + name + "] due to: " + e.toString());
-        }
-        if (setterMethod == null) {
-            return;
-        }
-
-        // add a typed annotation value for later retrieval
-        addTypedAnnotationValue(valueType, name, value);
-
-        // transform the string value to a typed value
-        Object typedValue = convertStringValueToTypedValue(valueType, valueAsString);
-
-        // invoke the setter method
-        try {
-            setterMethod.invoke(this, new Object[] { typedValue });
-        } catch (Exception e) {
-            throw new RuntimeException("could not invoke setter method for value [" + name + "] due to: "
-                                       + e.toString());
-        }
+        */
     }
 
     private Object convertStringValueToTypedValue(Class valueType, String valueAsString) {
@@ -143,14 +140,6 @@ public abstract class TypedAnnotationProxy extends AnnotationProxy implements An
         return realValue;
     }
 
-    /**
-     * @param valueType
-     * @param valueAsString
-     * @param realValue
-     * @return
-     * @TODO: multi dimensional arrays
-     * @TODO: array with constant reference types
-     */
     private Object handleArrayType(Class valueType, String valueAsString, Object realValue) {
         if ((valueAsString.charAt(0) == '{') && (valueAsString.charAt(valueAsString.length() - 1) == '}')) {
             valueAsString = valueAsString.substring(1, valueAsString.length() - 1);

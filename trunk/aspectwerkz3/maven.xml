@@ -106,7 +106,7 @@
     <!--  offline transformation of the samples -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:transform">
-        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <attainGoal name="aspectwerkz:samples:annotationc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-offline ${basedir}/src/samples/samples-attribdef.xml -verbose -verify -cp ${extensions.classes} ${samples.classes}"/>
         </exec>
@@ -184,7 +184,7 @@
     <!-- =================================================== -->
     <!-- TODO : enhance this for jira AW-93 -->
     <goal name="aspectwerkz:test">
-        <attainGoal name="aspectwerkz:test:aspectc"/>
+        <attainGoal name="aspectwerkz:test:annotationc"/>
         <copy todir="${test.classes}">
             <fileset dir="${src.dir}/test" includes="**/aop.xml"/>
         </copy>
@@ -193,13 +193,13 @@
         </exec>
     </goal>
     <goal name="aspectwerkz:test:nojit">
-        <attainGoal name="aspectwerkz:test:aspectc"/>
+        <attainGoal name="aspectwerkz:test:annotationc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-Daspectwerkz.jit.off=true -cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
         </exec>
     </goal>
     <goal name="aspectwerkz:test:bootcl">
-        <attainGoal name="aspectwerkz:test:aspectc"/>
+        <attainGoal name="aspectwerkz:test:annotationc"/>
         <exec executable="java">
             <arg line="-Daspectwerkz.classloader.clbootclasspath=./_boot -cp c:\java\hotspot\j2sdk1.4.2_01\lib\tools.jar;.\lib\aspectwerkz-core-1.0-beta1.jar;.\lib\javassist-3.0beta.jar org.codehaus.aspectwerkz.hook.ProcessStarter -Xbootclasspath/p:.\lib\aspectwerkz-core-1.0-beta1.jar;.\lib\javassist-3.0beta.jar -Daspectwerkz.jit.boundry=1 -cp .\lib\aspectwerkz-1.0-beta1.jar;.\lib\asm-1.4.3.jar;.\lib\bcel.jar;.\lib\dom4j-1.4.jar;.\lib\qdox-1.4.jar;.\lib\concurrent-1.3.1.jar;.\lib\trove-1.0.2.jar;.\lib\piccolo-1.03.jar;.\lib\jrexx-1.1.1.jar;${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
         </exec>
@@ -210,7 +210,7 @@
     <!--    TODO: port the perf tests  + port the tests in xmldef that are not duplicated in attribdef (most of them) -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:test:perf">
-        <attainGoal name="aspectwerkz:test:aspectc"/>
+        <attainGoal name="aspectwerkz:test:annotationc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-Daspectwerkz.jit.off=true -cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllPerfTests"/>
         </exec>
@@ -222,7 +222,7 @@
     <!--  refer to test.xmldef.clapp javadoc -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:test:clapp">
-        <attainGoal name="aspectwerkz:test:aspectc"/>
+        <attainGoal name="aspectwerkz:test:annotationc"/>
         <java classname="test.clapp.CrazyClassLoaderApp" fork="true">
             <classpath>
                 <pathelement path="${test.classes}"/>
@@ -238,7 +238,7 @@
     <!--  runs the logging sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:logging">
-        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <attainGoal name="aspectwerkz:samples:annotationc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-Daspectwerkz.jit.off=true -cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.logging.Target"/>
         </exec>
@@ -248,7 +248,7 @@
     <!--  runs the runtime weaving logging sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:hotswaplogging">
-        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <attainGoal name="aspectwerkz:samples:annotationc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-Daspectwerkz.transform.verbose=false -Daspectwerkz.jit.off=true -cp ${samples.classes} -cp ${lib.dir}/aspectwerkz-extensions-${pom.currentVersion}.jar -Daspectwerkz.definition.file=${src.dir}/samples/samples-hotswap.xml -Daspectwerkz.transform.dump=* examples.logging.HotSwapTarget"/>
         </exec>
@@ -302,7 +302,7 @@
     <!--  runs the fibonacci sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:fibonacci">
-        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <attainGoal name="aspectwerkz:samples:annotationc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.caching.Fibonacci"/>
         </exec>
@@ -312,7 +312,7 @@
     <!--  runs the caching sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:caching">
-        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <attainGoal name="aspectwerkz:samples:annotationc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.caching.CacheTest"/>
         </exec>
@@ -322,7 +322,7 @@
     <!--  runs the cflow sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:cflow">
-        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <attainGoal name="aspectwerkz:samples:annotationc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
         </exec>
@@ -332,7 +332,7 @@
     <!--  runs the introduction sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:introduction">
-        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <attainGoal name="aspectwerkz:samples:annotationc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
         </exec>
@@ -342,7 +342,7 @@
     <!--  runs the exception handling sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:exception">
-        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <attainGoal name="aspectwerkz:samples:annotationc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
         </exec>
@@ -352,7 +352,7 @@
     <!--  runs the remote sample - client side -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:remote:client">
-        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <attainGoal name="aspectwerkz:samples:annotationc"/>
         <exec executable="java">
             <arg line="-cp ${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${samples.classes} examples.connectivity.Client"/>
         </exec>
@@ -362,7 +362,7 @@
     <!--  runs the remote sample - server side -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:remote:server">
-        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <attainGoal name="aspectwerkz:samples:annotationc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.remote.server.run=true -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml examples.connectivity.Server"/>
         </exec>
@@ -371,26 +371,24 @@
     <!-- =================================================== -->
     <!--  compiles aspects for the attribdef samples -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:aspectc">
+    <goal name="aspectwerkz:samples:annotationc">
         <attainGoal name="clean"/>
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
         <exec executable="java">
-            <arg line="-cp ${java.home}/../lib/tools.jar${pathseparator}${samples.classes}${pathseparator}${lib.dir}/jam-20040623-java13.jar${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.annotation.AnnotationC  -src ${basedir}/src/samples -classes ${basedir}/target/samples-classes -verbose -custom ${basedir}/src/samples/annotation.properties"/>
-<!--            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.definition.AspectC ${basedir}/src/samples -verbose ${basedir}/target/samples-classes"/>-->
+            <arg line="-cp ${java.home}/../lib/tools.jar${pathseparator}${samples.classes}${pathseparator}${lib.dir}/jam-20040623-java13.jar${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.annotation.AnnotationC  -src ${basedir}/src/samples -classes ${basedir}/target/samples-classes -custom ${basedir}/src/samples/annotation.properties"/>
         </exec>
     </goal>
 
     <!-- =================================================== -->
     <!--  compiles aspects for the attribdef tests -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:test:aspectc">
+    <goal name="aspectwerkz:test:annotationc">
         <attainGoal name="clean"/>
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
         <exec executable="java">
             <arg line="-cp ${java.home}/../lib/tools.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/jam-20040623-java13.jar${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.annotation.AnnotationC -verbose -src ${basedir}/src/test -classes ${basedir}/target/test-classes -custom ${basedir}/src/test/annotation.properties"/>
-<!--            <arg line="-cp ${test.classes}${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.definition.AspectC ${basedir}/src/test -verbose ${basedir}/target/test-classes"/>-->
         </exec>
     </goal>
 

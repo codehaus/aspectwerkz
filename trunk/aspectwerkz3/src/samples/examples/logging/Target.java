@@ -13,7 +13,7 @@ package examples.logging;
 public class Target {
 
     /**
-     * @log level=1  f=5.8F iconstant=org.codehaus.aspectwerkz.DeploymentModel.PER_CLASS
+     * @log level=1  flt=5.8F iconstant=org.codehaus.aspectwerkz.DeploymentModel.PER_CLASS
      */
     private int m_counter1;
 

@@ -100,6 +100,26 @@ public class DumpVisitor implements AnnotationParserVisitor {
         return data;
     }
 
+    public Object visit(ASTInteger node, Object data) {
+        System.out.println(indentString() + node);
+        return data;
+    }
+
+    public Object visit(ASTFloat node, Object data) {
+        System.out.println(indentString() + node);
+        return data;
+    }
+
+    public Object visit(ASTHex node, Object data) {
+        System.out.println(indentString() + node);
+        return data;
+    }
+
+    public Object visit(ASTOct node, Object data) {
+        System.out.println(indentString() + node);
+        return data;
+    }
+
     private String indentString() {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < indent; ++i) {

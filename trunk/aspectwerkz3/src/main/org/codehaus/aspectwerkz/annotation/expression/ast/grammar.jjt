@@ -55,48 +55,36 @@ PARSER_END(AnnotationParser)
 //------------------ Global lexical scope ------------------
 
 SKIP : /* WHITE SPACE */
-{
-    " "
-|
-    "\t"
-}
+{ " " | "\t" }
+
 TOKEN :
 {
-    < DIGIT :  ["0"-"9"] >
-|
-    < DOT : "." >
-|
-    < BOOLEAN : "true" | "false" | "TRUE" | "FALSE" >
-|
-    < STRING : "\"" (<CHAR_LETTER>)* "\"" >
-|
-    < CHAR : "'" <CHAR_LETTER> "'"  >
-|
-    < NEWLINE : "\n" >
-|
-    < LEFT_PARENTHEZIS : "(" >
-|
-    < RIGHT_PARENTHEZIS : ")" >
-|
-    < LEFT_BRACKET : "{" >
-|
-    < RIGHT_BRACKET : "}" >
-|
-    < COMMA : "," >
-|
-    < EQUALS : "=" >
-|
-    < AT : "@" >
-|
-    < CHAR_LETTER : (~["\n","\r", "'","\\", "\""]) >
-|
-    < ANNOTATION : <AT> <JAVA_NAME> >
-|
-    < IDENTIFIER: <JAVA_NAME> (<DOT> <JAVA_NAME>)* >
-|
-    < JAVA_NAME: (<JAVA_LETTER>)+ >
-|
-    < #JAVA_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
+  < DOT : "." >
+| < INTEGER: ("-")? ["1"-"9"] (["0"-"9"])* (["l", "L"])? | "0" >
+| < HEXNUMBER: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ (["l","L"])? >
+| < OCTNUMBER: "0" (["0"-"7"])* (["l","L"])? >
+| < FLOAT: (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
+      | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+      | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]>
+| < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+| < #DIGIT: ["0"-"9"] >
+| < BOOLEAN : "true" | "false" | "TRUE" | "FALSE" >
+| < STRING : "\"" (<CHAR_LETTER>)* "\"" >
+| < CHAR : "'" <CHAR_LETTER> "'" >
+| < NEWLINE : "\n" >
+| < LEFT_PARENTHEZIS : "(" >
+| < RIGHT_PARENTHEZIS : ")" >
+| < LEFT_BRACKET : "{" >
+| < RIGHT_BRACKET : "}" >
+| < COMMA : "," >
+| < EQUALS : "=" >
+| < AT : "@" >
+| < CHAR_LETTER : (~["\n","\r", "'","\\", "\""]) >
+| < ANNOTATION : <AT> <JAVA_NAME> >
+| < JAVA_TYPE: <JAVA_NAME> (<DOT> <JAVA_NAME>)* >
+| < JAVA_NAME: (<JAVA_LETTER>)+ >
+| < #JAVA_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
 }
 
 /**
@@ -124,7 +112,7 @@ void KeyValuePair() #KeyValuePair :
     Token key, value;
 }
 {
-    key=<IDENTIFIER>
+    key=<JAVA_TYPE>
     {
         jjtThis.setKey(key.image);
     }
@@ -139,17 +127,16 @@ void KeyValuePair() #KeyValuePair :
  */
 void Value() : {}
 {
-//    Annotation()
-//    |
-    Char()
-    |
-    String()
-    |
-    Array()
-    |
-    Identifier()
-    |
-    Boolean()
+// Annotation() |
+      Char()
+    | String()
+    | Array()
+    | Identifier()
+    | Boolean()
+    | Integer()
+    | Float()
+    | Hex()
+    | Oct()
 }
 
 /**
@@ -160,7 +147,7 @@ void Identifier() #Identifier :
     Token value;
 }
 {
-    value=<IDENTIFIER>
+    value=<JAVA_TYPE>
     {
         jjtThis.setValue(value.image);
     }
@@ -216,3 +203,58 @@ void Array() #Array : {}
     "{" [Value() (LOOKAHEAD(2) "," Value())* [","]] "}"
 }
 
+/**
+ * Integer.
+ */
+void Integer() #Integer :
+{
+    Token value;
+}
+{
+    value=<INTEGER>
+    {
+        jjtThis.setValue(value.image);
+    }
+}
+
+/**
+ * Float.
+ */
+void Float() #Float :
+{
+    Token value;
+}
+{
+    value=<FLOAT>
+    {
+        jjtThis.setValue(value.image);
+    }
+}
+
+/**
+ * Hex.
+ */
+void Hex() #Hex :
+{
+    Token value;
+}
+{
+    value=<HEXNUMBER>
+    {
+        jjtThis.setValue(value.image);
+    }
+}
+
+/**
+ * Oct.
+ */
+void Oct() #Oct :
+{
+    Token value;
+}
+{
+    value=<OCTNUMBER>
+    {
+        jjtThis.setValue(value.image);
+    }
+}

@@ -17,7 +17,7 @@ import org.codehaus.aspectwerkz.CrossCuttingInfo;
  */
 public class IntroductionDeploymentAspect {
     /**
-     * Set to match
+     * Set to parse
      *
      * @Introduce within(test.mixindeployment.IntroductionDeploymentTest$TargetA) ||
      *            within(test.mixindeployment.IntroductionDeploymentTest$TargetB)
