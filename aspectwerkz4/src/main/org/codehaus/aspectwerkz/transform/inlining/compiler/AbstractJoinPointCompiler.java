@@ -415,7 +415,6 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
 
             createClassHeader();
             createMandatoryMethodInAspectModels();
-            createCustomProceedMethods();
             createFieldsCommonToAllJoinPoints();
             createJoinPointSpecificFields();
             createStaticInitializer();
@@ -431,6 +430,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             if (m_requiresJoinPoint) {
                 createGetRttiMethod();
             }
+            createCustomProceedMethods();
             m_cw.visitEnd();
 
             if (DUMP_CLASSES) {
@@ -638,6 +638,17 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                     },
                     null
             );
+
+            // update the argument fields in the join point instance
+            int argStackIndex = 1;
+            for (int i = 0; i < m_fieldNames.length; i++) {
+                String fieldName = m_fieldNames[i];
+                cv.visitVarInsn(ALOAD, 0);
+                Type type = m_argumentTypes[i];
+                argStackIndex = AsmHelper.loadType(cv, argStackIndex, type);
+                cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, fieldName, type.getDescriptor());
+            }
+
             cv.visitVarInsn(ALOAD, 0);
             cv.visitMethodInsn(INVOKESPECIAL, m_joinPointClassName, PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE);
 
@@ -848,7 +859,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         // compute the callee and caller index from the invoke(..) signature
         int calleeIndex = INDEX_NOTAVAILABLE;
         int argStartIndex = 0;
-        if (!Modifier.isStatic(m_calleeMemberModifiers) && m_joinPointType != JoinPointType.CONSTRUCTOR_CALL &&
+        if (!Modifier.isStatic(m_calleeMemberModifiers) &&
+            m_joinPointType != JoinPointType.CONSTRUCTOR_CALL &&
             m_joinPointType != JoinPointType.HANDLER) {
             calleeIndex = 0;
             argStartIndex++;
@@ -1257,7 +1269,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         // store the jp on the stack
         cv.visitVarInsn(ASTORE, joinPointInstanceIndex);
 
-        // affect the target method arg to the jp (jp.m_arg<i> = <arg_i>)
+        // set the argument fields in the join point instance (jp.m_arg<i> = <arg_i>)
         int argStackIndex = argStartIndex;
         for (int i = 0; i < m_fieldNames.length; i++) {
             String fieldName = m_fieldNames[i];
@@ -1350,7 +1362,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             // get the aspect instance
             loadAspect(cv, NON_OPTIMIZED_JOIN_POINT, 0, adviceInfo.getAspectInfo());
 
-            // load the arguments to the advice from the join point instance plus build up the advice method signature
+            // load the arguments to the advice from the join point instance plus build up the
+            // advice method signature
             int[] argIndexes = adviceInfo.getAdviceMethodArgIndexes();
             for (int j = 0; j < argIndexes.length; j++) {
                 int argIndex = argIndexes[j];
@@ -1860,8 +1873,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * @param cv
      * @param stackFreeIndex
      */
-    protected final void createParametersArrayAt(final CodeVisitor cv,
-                                                 final int stackFreeIndex) {
+    protected final void createArgumentArrayAt(final CodeVisitor cv, final int stackFreeIndex) {
         AsmHelper.loadIntegerConstant(cv, m_fieldNames.length);
         cv.visitTypeInsn(ANEWARRAY, OBJECT_CLASS_NAME);
         cv.visitVarInsn(ASTORE, stackFreeIndex);
@@ -1872,7 +1884,6 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             AsmHelper.prepareWrappingOfPrimitiveType(cv, m_argumentTypes[i]);
             cv.visitVarInsn(ALOAD, 0);
             cv.visitFieldInsn(GETFIELD, m_joinPointClassName, ARGUMENT_FIELD + i, m_argumentTypes[i].getDescriptor());
-            //index = AsmHelper.loadType(cv, index, m_argumentTypes[i]);
             AsmHelper.wrapPrimitiveType(cv, m_argumentTypes[i]);
             cv.visitInsn(AASTORE);
         }

@@ -33,16 +33,22 @@ public class CustomProceedTest extends TestCase {
 
     public void testStringArg() {
         LOG = "";
-        setString("testing ");
+        setString("testing");
         assertEquals("around3 testing gnitset ", LOG);
     }
 
-    public void testMiscArgs() {
+    public void testMiscArgs1() {
+        LOG = "";
+        setMisc1(-12345, "testing");
+        assertEquals("around4 -12345 testing 12345 gnitset ", LOG);
+    }
+
+    public void testMiscArgs2() {
         LOG = "";
         int[][] arr = new int[1][1];
         arr[0][0] = -123;
-        setMisc(-12345, "testing", arr);
-        assertEquals("around4 -12345 testing -123 12345 gnitset 123 ", LOG);
+        setMisc2(-12345, "testing", arr);
+        assertEquals("around5 -12345 testing -123 12345 gnitset 123 ", LOG);
     }
 
     public static void main(String[] args) {
@@ -68,7 +74,14 @@ public class CustomProceedTest extends TestCase {
         log(" ");
     }
 
-    public void setMisc(long i, String s, int[][] matrix) {
+    public void setMisc1(long i, String s) {
+        log(new Long(i).toString());
+        log(" ");
+        log(s);
+        log(" ");
+    }
+
+    public void setMisc2(long i, String s, int[][] matrix) {
         log(new Long(i).toString());
         log(" ");
         log(s);
