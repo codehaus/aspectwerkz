@@ -200,6 +200,20 @@ public class AsmClassInfo implements ClassInfo {
     /**
      * Returns the class info for a specific class.
      * 
+     * @param className
+     * @param loader
+     * @return the class info
+     */
+    public static ClassInfo getClassInfo(final String className, final ClassLoader loader) {
+        return createClassInfoFromStream(className, loader);
+    }
+    
+        
+    /**
+     * Returns the class info for a specific class.
+     * 
+     * @param bytecode
+     * @param loader
      * @return the class info
      */
     public static ClassInfo getClassInfo(final byte[] bytecode, final ClassLoader loader) {
@@ -215,6 +229,8 @@ public class AsmClassInfo implements ClassInfo {
     /**
      * Returns the class info for a specific class.
      * 
+     * @param stream
+     * @param loader
      * @return the class info
      */
     public static ClassInfo getClassInfo(final InputStream stream, final ClassLoader loader) {
@@ -261,6 +277,8 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * Creates a ClassInfo based on the stream retrieved from the class loader through <code>getResourceAsStream</code>.
+     * 
+     * @TODO replace all calls to this method with call to getClassInfo(name, loader) and make the method private
      * 
      * @param className
      * @param loader
