@@ -21,6 +21,7 @@
         </menu>
         <menu name="Documentation">
             <item name="Introduction" href="/introduction.html"/>
+            <item name="Tutorials" href="http://docs.codehaus.org/display/AW/Tutorials"/>
             <item name="Implementation issues" href="/implementation.html"/>
             <item name="General definition issues" href="/definition_issues.html"/>
             <item name="Attribute definition" href="/attribute_definition.html"/>
@@ -29,6 +30,7 @@
             <item name="Weaving" href="/online.html"/>
             <item name="Examples" href="/examples_2.html"/>
             <item name="JavaDoc" href="/apidocs/index.html"/>
+            <item name="IDE integration" href="/ide_integration.html"/>
             <item name="FAQ" href="/faq.html"/>
         </menu>
         <menu name="Misc.">
