@@ -9,7 +9,8 @@
 
     <body>
         <links>
-            <item name="Weblog" href="http://www.freeroller.net/page/jboner/Weblog/"/>
+            <item name="News" href="http://blogs.codehaus.org/projects/aspectwerkz/"/>
+            <item name="Jonas' weblog" href="http://www.freeroller.net/page/jboner/Weblog/"/>
             <item name="IRC" href="irc://irc.codehaus.org/aspectwerkz"/>
             <item name="Codehaus" href="http://codehaus.org"/>
 <!--            <item name="BCEL" href="http://jakarta.apache.org/bcel/"/>-->
@@ -23,6 +24,7 @@
             <item name="Overview" href="/index.html"/>
             <item name="Features" href="/features.html"/>
             <item name="License" href="/license.html"/>
+            <item name="News" href="http://blogs.codehaus.org/projects/aspectwerkz/"/>
         </menu>
 
         <menu name="Documentation">
