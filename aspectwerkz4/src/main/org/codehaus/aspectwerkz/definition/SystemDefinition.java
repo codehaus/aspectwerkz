@@ -283,19 +283,19 @@ public class SystemDefinition {
     /**
      * Adds a new mixin definition.
      *
-     * @param introDef the mixin definition
+     * @param mixinDef the mixin definition
      */
-    public void addMixinDefinition(final MixinDefinition introDef) {
-        if (introDef == null) {
+    public void addMixinDefinition(final MixinDefinition mixinDef) {
+        if (mixinDef == null) {
             throw new IllegalArgumentException("mixin definition can not be null");
         }
         synchronized (m_mixinMap) {
-            if (m_mixinMap.containsKey(introDef.getMixinImpl().getName())) {
-                MixinDefinition def = (MixinDefinition) m_mixinMap.get(introDef.getMixinImpl().getName());
-                def.addExpressionInfos(introDef.getExpressionInfos());
+            if (m_mixinMap.containsKey(mixinDef.getMixinImpl().getName())) {
+                MixinDefinition def = (MixinDefinition) m_mixinMap.get(mixinDef.getMixinImpl().getName());
+                def.addExpressionInfos(mixinDef.getExpressionInfos());
                 return;
             }
-            m_mixinMap.put(introDef.getMixinImpl().getName(), introDef);
+            m_mixinMap.put(mixinDef.getMixinImpl().getName(), mixinDef);
         }
     }
 
