@@ -141,14 +141,6 @@ public class AspectC {
             log("\tdeployment model [" + deploymentModel + "]");
             return true;
         }
-//        DocletTag[] aspectTags = javaClass.getTagsByName(ATTR_ASPECT);
-//        for (int j = 0; j < aspectTags.length; j++) {
-//            String deploymentModel = aspectTags[j].getValue();
-//            enhancer.insertClassAttribute(new AspectAttribute(deploymentModel));
-//            log("compiling aspect [" + javaClass.getName() + "]");
-//            log("\tdeployment model [" + deploymentModel + "]");
-//            return true;
-//        }
         return false;
     }
 
