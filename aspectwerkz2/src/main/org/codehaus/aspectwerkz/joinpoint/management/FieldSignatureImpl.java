@@ -14,7 +14,7 @@ import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class FieldSignatureImpl implements FieldSignature {
+class FieldSignatureImpl implements FieldSignature {
 
     private final Class m_declaringType;
     private final Field m_field;

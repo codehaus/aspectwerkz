@@ -14,7 +14,7 @@ import org.codehaus.aspectwerkz.IndexTuple;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AdviceContainer {
+class AdviceContainer {
 
     private final IndexTuple[] m_aroundAdvices;
     private final IndexTuple[] m_beforeAdvices;

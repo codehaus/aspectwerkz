@@ -18,6 +18,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 /**
+ * Base class for the join point implementations. 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public abstract class JoinPointBase implements JoinPoint {
@@ -176,19 +178,48 @@ public abstract class JoinPointBase implements JoinPoint {
     /**
      * Invokes the original constructor.
      *
+     * @TODO: FIX BUG - should invoke the wraper ctor to make sure the it works with execution pc, but it does not work
+     *
      * @param joinPoint the join point instance
      * @return the newly created instance
      * @throws Throwable the exception from the original constructor
      */
     public static Object invokeTargetConstructorCall(final JoinPoint joinPoint) throws Throwable {
         ConstructorSignatureImpl signature = (ConstructorSignatureImpl)joinPoint.getSignature();
-        Constructor targetConstructor = signature.getConstructorTuple().getWrapperConstructor();
+
+        // TODO: BUG - should invoke the wraper ctor to make sure the it works with execution pc, but it does not work
+//        Constructor targetConstructor = signature.getConstructorTuple().getWrapperConstructor();
+//        Object[] parameterValues = signature.getParameterValues();
+//        try {
+//            return targetConstructor.newInstance(parameterValues);
+//        }
+//        catch (InvocationTargetException e) {
+//            throw e.getTargetException();
+//        }
+
         Object[] parameterValues = signature.getParameterValues();
-        try {
-            return targetConstructor.newInstance(parameterValues);
+        Constructor wrapperConstructor = signature.getConstructorTuple().getWrapperConstructor();
+        Constructor originalConstructor = signature.getConstructorTuple().getOriginalConstructor();
+        if (originalConstructor.equals(wrapperConstructor)) {
+            try {
+                return wrapperConstructor.newInstance(parameterValues);
+            }
+            catch (InvocationTargetException e) {
+                throw e.getTargetException();
+            }
         }
-        catch (InvocationTargetException e) {
-            throw e.getTargetException();
+        else {
+            java.lang.System.err.println("WARNING: When a constructor has both a CALL and EXECUTION join point, only the CALL will be executed. This limitation is due to a bug that has currently not been fixed yet.");
+            Object[] parameters = new Object[parameterValues.length + 1];
+            for (int i = 0; i < parameterValues.length; i++) {
+                parameters[i] = parameterValues[i];
+            }
+            try {
+                return originalConstructor.newInstance(parameters);
+            }
+            catch (InvocationTargetException e) {
+                throw e.getTargetException();
+            }
         }
     }
 

@@ -34,7 +34,7 @@ import org.codehaus.aspectwerkz.pointcut.HandlerPointcut;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class JoinPointRegistry {
+class JoinPointRegistry {
 
     /**
      * Pre allocated empty array list.

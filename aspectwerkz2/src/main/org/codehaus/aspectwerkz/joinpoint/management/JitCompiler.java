@@ -40,7 +40,7 @@ public class JitCompiler {
 //    private static final String JIT_CLASS_DUMP_DIR = "_dump";
     private static final String JIT_CLASS_DUMP_DIR = java.lang.System.getProperty("aspectwerkz.jit.dump.path", null);
 
-    private static final String JIT_CLASS_PREFIX = "org/codehaus/aspectwerkz/jit/___AW_JP_";
+    private static final String JIT_CLASS_PREFIX = "org/codehaus/aspectwerkz/joinpoint/management/___AW_JP_";
     private static final String STACKFRAME_FIELD_NAME = "m_stackFrame";
     private static final String SIGNATURE_FIELD_NAME = "m_signature";
     private static final String SYSTEM_FIELD_NAME = "m_system";
