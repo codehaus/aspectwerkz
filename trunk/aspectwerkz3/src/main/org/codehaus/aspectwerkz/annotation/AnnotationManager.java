@@ -142,6 +142,9 @@ public class AnnotationManager {
                 } catch (Exception e) {
                     throw new WrappedRuntimeException(e);
                 }
+                System.out.println("value: " + value);
+                System.out.println("name: " + annotation.getName());
+                System.out.println("istyped: " + annotation.isTyped());
                 if (annotation.isTyped()) {
                     StringBuffer buf = new StringBuffer();
                     buf.append('@');
