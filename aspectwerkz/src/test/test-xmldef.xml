@@ -621,7 +621,9 @@
         </aspect>
 
         <!-- ============================================= -->
-        <!--  AW-92 static field TF outside static context -->
+        <!-- AW-92 static field TF outside static context -->
+        <!-- the advice tries to cast to the correct member / static member JP -->
+        <!-- we do not check here that the advice is really executed -->
         <!-- ============================================= -->
         <advice-def name="staticField" class="test.xmldef.staticfield.MyPreAdvice1" />
         <advice-def name="memberField" class="test.xmldef.staticfield.MyPreAdvice2" />
@@ -635,7 +637,28 @@
                 <advice-ref name="memberField"/>
             </bind-advice>
         </aspect>
-
+        <advice-def name="postStaticField" class="test.xmldef.staticfield.MyPostAdvice1" />
+        <advice-def name="postMemberField" class="test.xmldef.staticfield.MyPostAdvice2" />
+        <aspect name="collectionField">
+            <pointcut-def name="pcSet" type="setField" pattern="* test.xmldef.staticfield.CollectionFieldTest.s_field"/>
+            <pointcut-def name="pcSetMember" type="setField" pattern="* test.xmldef.staticfield.CollectionFieldTest.m_field"/>
+            <pointcut-def name="pcGet" type="getField" pattern="* test.xmldef.staticfield.CollectionFieldTest.s_field"/>
+            <pointcut-def name="pcGetMember" type="getField" pattern="* test.xmldef.staticfield.CollectionFieldTest.m_field"/>
+            <!-- check correct JP no matter the context and advice execution -->
+            <bind-advice pointcut="pcSet">
+                <advice-ref name="staticField"/>
+            </bind-advice>
+            <bind-advice pointcut="pcSetMember">
+                <advice-ref name="memberField"/>
+            </bind-advice>
+            <!-- check advice execution -->
+            <bind-advice pointcut="pcGet">
+                <advice-ref name="postStaticField"/>
+            </bind-advice>
+            <bind-advice pointcut="pcGetMember">
+                <advice-ref name="postMemberField"/>
+            </bind-advice>
+        </aspect>
     </system>
 
 </aspectwerkz>

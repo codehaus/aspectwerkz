@@ -7,28 +7,23 @@
  **************************************************************************************/
 package test.xmldef.staticfield;
 
-import org.codehaus.aspectwerkz.xmldef.advice.PreAdvice;
+import org.codehaus.aspectwerkz.xmldef.advice.PostAdvice;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.MemberFieldSetJoinPoint;
 
 /**
  * Test case for AW-92
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class MyPreAdvice2 extends PreAdvice {
+public class MyPostAdvice1 extends PostAdvice {
 
-    public MyPreAdvice2() {
+    public MyPostAdvice1() {
         super();
     }
 
     public void execute(final JoinPoint joinPoint) throws Throwable {
         FieldJoinPoint fjp = (FieldJoinPoint)joinPoint;
 
-        // if member field not handled correctly but handled as a static field
-        // this will throw a class cast exception
-        MemberFieldSetJoinPoint mfjp = (MemberFieldSetJoinPoint)fjp;
-
-        CollectionFieldTest.s_log += "MyPreAdvice2 ";
+        CollectionFieldTest.s_log += "MyPostAdvice1 ";
     }
 }
