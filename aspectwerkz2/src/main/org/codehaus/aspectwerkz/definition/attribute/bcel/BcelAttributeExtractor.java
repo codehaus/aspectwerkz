@@ -76,7 +76,9 @@ public class BcelAttributeExtractor implements AttributeExtractor {
                     attributes.add(attribute);
                 }
                 catch (Exception e) {
-                    throw new WrappedRuntimeException(e);
+                    //TODO AVAOSD jp index offlined deployed make it breaks
+                    // since Unkonw attr not wrapped in Attr
+                    // SKIP throw new WrappedRuntimeException(e);
                 }
             }
         }

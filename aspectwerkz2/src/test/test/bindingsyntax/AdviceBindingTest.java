@@ -7,7 +7,7 @@
  **************************************************************************************/
 package test.bindingsyntax;
 
-import test.WeavedTestCase;
+import org.codehaus.aspectwerkz.WeavedTestCase;
 
 public class AdviceBindingTest extends WeavedTestCase {
 

@@ -126,6 +126,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         // NOTE: order is important
         m_stack = new ArrayList();
         m_stack.add(new PrepareAdvisedClassTransformer());
+        m_stack.add(new MethodCallUnTransformer());
         m_stack.add(new FieldSetGetTransformer());
         m_stack.add(new MethodCallTransformer());
         m_stack.add(new ConstructorCallTransformer());
@@ -305,7 +306,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz.getClassLoader());
 
         // update cache
-        log("cache update " + className);
+        //log("cache update " + className);
         m_classByteCache.put(key, new ByteArray(newBytes));
 
         return newBytes;

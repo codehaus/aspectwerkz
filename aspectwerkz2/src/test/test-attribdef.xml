@@ -11,7 +11,9 @@
             <aspect class="FieldTestAspect"/>
             <aspect class="CallerSideTestAspect"/>
             <aspect class="CFlowTestAspect"/>
-            <aspect class="IntroductionTestAspect"/>
+            <aspect class="IntroductionTestAspect">
+                <introduction class="IntroductionTestAspect$MyImpl" bind-to="class(test.ToBeIntroduced)"/>
+            </aspect>
             <aspect class="DynamicDeploymentTestAspect"/>
         </package>
         <package name="test.performance">

@@ -10,6 +10,7 @@ package test;
 import junit.framework.TestCase;
 
 import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -22,7 +23,7 @@ public class CallerSideAdviceTest extends WeavedTestCase {
         s_logString = "";
         try {
             CallerSideTestHelper helper = new CallerSideTestHelper();
-            helper.invokeMemberMethodAround();
+            helper.invokeMemberMethodAround("a", "b");
             assertEquals("before after ", s_logString);
         }
         catch (Exception e) {

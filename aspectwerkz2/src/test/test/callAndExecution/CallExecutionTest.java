@@ -8,7 +8,7 @@
 package test.callAndExecution;
 
 import org.codehaus.aspectwerkz.SystemLoader;
-import test.WeavedTestCase;
+import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>

@@ -54,8 +54,6 @@ public class WeavingClassLoader extends URLClassLoader {
     }
 
     public static void main(String args[]) throws Exception {
-        System.setProperty("aspectwerkz.transform.forceWCL", "yes");// see ClassPreProcessorHelper
-
         String path = System.getProperty("java.class.path");
         ArrayList paths = new ArrayList();
         StringTokenizer st = new StringTokenizer(path, File.pathSeparator);

@@ -14,8 +14,10 @@ import java.util.List;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.System;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
+import org.codehaus.aspectwerkz.definition.attribute.IntroduceAttribute;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -186,16 +188,18 @@ public class DocumentParser {
             s_attributeParser.parse(aspectClass, aspectDef, definition);
             definition.addAspect(aspectDef);
 
+            parseParameterElements(aspect, definition, aspectDef);
+            parsePointcutElements(aspect, aspectDef);
+            parseAdviceElements(loader, aspect, aspectDef, aspectClass);
+            parseIntroductionElements(loader, aspect, aspectDef, aspectClass, packageName);
+
+            // register introduction of aspect into the system (?? optim for TF ?) TODO check why
             for (Iterator mixins = aspectDef.getInterfaceIntroductions().iterator(); mixins.hasNext();) {
                 definition.addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition)mixins.next());
             }
             for (Iterator mixins = aspectDef.getIntroductions().iterator(); mixins.hasNext();) {
                 definition.addIntroductionDefinition((IntroductionDefinition)mixins.next());
             }
-
-            parseParameterElements(aspect, definition, aspectDef);
-            parsePointcutElements(aspect, aspectDef);
-            parseAdviceElements(loader, aspect, aspectDef, aspectClass);
 
             hasDef = true;
         }
@@ -290,6 +294,83 @@ public class DocumentParser {
     }
 
     /**
+     * Parses the introduction.
+     *
+     * @param loader        the current class loader
+     * @param aspectElement the aspect element
+     * @param aspectDef     the system definition
+     * @param aspectClass   the aspect class
+     * @param packageName
+     */
+    private static void parseIntroductionElements(
+            final ClassLoader loader,
+            final Element aspectElement,
+            final AspectDefinition aspectDef,
+            final Class aspectClass,
+            final String packageName) {
+
+        for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
+            Element adviceElement = (Element)it2.next();
+            if (adviceElement.getName().trim().equals("introduction")) {
+                String klass = adviceElement.attributeValue("class");
+                String ynterface = adviceElement.attributeValue("interface");
+                String name = adviceElement.attributeValue("name");
+                String bindTo = adviceElement.attributeValue("bind-to");
+                String deploymentModel = adviceElement.attributeValue("deployment-model");
+
+                // make sure at least class or interface is specified
+                if (klass == null && ynterface == null) {
+                    throw new DefinitionException("class or interface should be defined for introduction:"
+                            + aspectDef.getName());
+                }
+
+                // deployment-model defaults to perJVM
+                if (deploymentModel == null || deploymentModel.length() <= 0) {
+                    deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_JVM);
+                }
+
+                // pure interface introduction
+                if (klass == null || klass.length() <= 0) {
+                    if (name == null || name.length() <= 0) {
+                        name = packageName + ynterface;
+                    }
+                    DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
+                            bindTo, name, packageName + ynterface, aspectDef
+                    );
+                } else {
+                    // mixin introduction
+                    if (name == null || name.length() <= 0) {
+                        name = packageName + klass;
+                    }
+                    Class mixin = null;
+                    try {
+                        mixin = aspectClass.getClassLoader().loadClass(packageName + klass);
+                    }
+                    catch (ClassNotFoundException e) {
+                        throw new DefinitionException("could not find mixin implementation: "
+                                + packageName + klass + " " + e.getMessage());
+                    }
+                    List introducedInterfaceNames = new ArrayList();
+                    if (ynterface == null || ynterface.length() <= 0) {
+                        Class[] introduced = mixin.getInterfaces();
+                        for (int i=0; i < introduced.length; i++) {
+                            introducedInterfaceNames.add(introduced[i].getName());
+                        }
+                    }
+                    else {
+                        introducedInterfaceNames.add(packageName + ynterface);
+                    }
+                    Method[] methods = (Method[])TransformationUtil.createSortedMethodList(mixin).toArray(new Method[]{});//gatherMixinSortedMethods(mixin, introduceAttr.getIntroducedInterfaceNames());
+                    DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
+                            bindTo, name, (String[])introducedInterfaceNames.toArray(new String[]{}), methods,
+                            deploymentModel, aspectDef
+                    );
+                }
+            }
+        }
+    }
+
+    /**
      * Creates the advice definitions and adds them to the aspect definition.
      *
      * @param type        the type of advice
@@ -339,7 +420,7 @@ public class DocumentParser {
      * Retrieves and returns the package.
      *
      * @param packageElement the package element
-     * @return the package as a string
+     * @return the package as a string ending with DOT, or empty string
      */
     private static String getPackage(final Element packageElement) {
         String packageName = "";
