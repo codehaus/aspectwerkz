@@ -11,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.lang.reflect.Method;
 
 import org.codehaus.aspectwerkz.ContainerType;
 import org.codehaus.aspectwerkz.DeploymentModel;
@@ -137,79 +138,40 @@ public abstract class Aspect implements Serializable {
      * @param joinPoint   the join point
      * @return the result from the invocation
      */
-    public Object ___AW_invokeAdvice(final int methodIndex, final JoinPoint joinPoint) {
-        try {
-            Object result = null;
-            switch (m_deploymentModel) {
+    public Object ___AW_invokeAdvice(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
+        Object result = null;
+        switch (m_deploymentModel) {
 
-                case DeploymentModel.PER_JVM:
-                    result = ___AW_invokeAdvicePerJvm(methodIndex, joinPoint);
-                    break;
+            case DeploymentModel.PER_JVM:
+                result = m_container.invokeAdvicePerJvm(methodIndex, joinPoint);
+                break;
 
-                case DeploymentModel.PER_CLASS:
-                    result = ___AW_invokeAdvicePerClass(methodIndex, joinPoint);
-                    break;
+            case DeploymentModel.PER_CLASS:
+                result = m_container.invokeAdvicePerClass(methodIndex, joinPoint);
+                break;
 
-                case DeploymentModel.PER_INSTANCE:
-                    result = ___AW_invokeAdvicePerInstance(methodIndex, joinPoint);
-                    break;
+            case DeploymentModel.PER_INSTANCE:
+                result = m_container.invokeAdvicePerInstance(methodIndex, joinPoint);
+                break;
 
-                case DeploymentModel.PER_THREAD:
-                    result = ___AW_invokeAdvicePerThread(methodIndex, joinPoint);
-                    break;
+            case DeploymentModel.PER_THREAD:
+                result = m_container.invokeAdvicePerThread(methodIndex, joinPoint);
+                break;
 
-                default:
-                    throw new RuntimeException("invalid deployment model: " + m_deploymentModel);
-            }
-            return result;
+            default:
+                throw new RuntimeException("invalid deployment model: " + m_deploymentModel);
         }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
+        return result;
     }
 
     /**
-     * Invokes an introduced method on a per JVM basis.
+     * Retrieves an advice method with the index specified.
      *
      * @param methodIndex the method index
-     * @param joinPoint   the join point
-     * @return the result from the method invocation
+     * @return the advice method
      */
-    private Object ___AW_invokeAdvicePerJvm(final int methodIndex, final JoinPoint joinPoint) {
-        return m_container.invokeAdvicePerJvm(methodIndex, joinPoint);
-    }
-
-    /**
-     * Invokes an introduced method on a per class basis.
-     *
-     * @param methodIndex the method index
-     * @param joinPoint   the join point
-     * @return the result from the method invocation
-     */
-    private Object ___AW_invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) {
-        return m_container.invokeAdvicePerClass(methodIndex, joinPoint);
-    }
-
-    /**
-     * Invokes an introduced method on a per instance basis.
-     *
-     * @param methodIndex the method index
-     * @param joinPoint   the join point
-     * @return the result from the method invocation
-     */
-    private Object ___AW_invokeAdvicePerInstance(final int methodIndex, final JoinPoint joinPoint) {
-        return m_container.invokeAdvicePerInstance(methodIndex, joinPoint);
-    }
-
-    /**
-     * Invokes an introduced method on a per thread basis.
-     *
-     * @param methodIndex the method index
-     * @param joinPoint   the join point
-     * @return the result from the method invocation
-     */
-    private Object ___AW_invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint) {
-        return m_container.invokeAdvicePerThread(methodIndex, joinPoint);
+    public Method ___AW_getAdvice(final int methodIndex) {
+        return m_container.getMethod(methodIndex);
     }
 
     /**
@@ -393,6 +355,44 @@ public abstract class Aspect implements Serializable {
      */
     public Class ___AW_getMixinTargetClass(String mixinName, Object mixinImpl) {
         return m_container.getIntroductionContainer(mixinName).getTargetClass(mixinImpl);
+    }
+
+    /**
+     * Returns the perJVM aspect.
+     *
+     * @return the perJVM aspect
+     */
+    public Aspect ___AW_getPerJvmAspect() {
+        return m_container.getPerJvmAspect();
+    }
+
+    /**
+     * Returns the perClass aspect.
+     *
+     * @param callingClass the calling class
+     * @return the perClass aspect
+     */
+    public Aspect ___AW_getPerClassAspect(final Class callingClass) {
+        return m_container.getPerClassAspect(callingClass);
+    }
+
+    /**
+     * Returns the perInstance aspect.
+     *
+     * @param callingInstance the calling instance
+     * @return the perInstance aspect
+     */
+    public Aspect ___AW_getPerInstanceAspect(final Object callingInstance) {
+        return m_container.getPerInstanceAspect(callingInstance);
+    }
+
+    /**
+     * Returns the perThread aspect.
+     *
+     * @return the perThread aspect
+     */
+    public Aspect ___AW_getPerThreadAspect() {
+        return m_container.getPerThreadAspect();
     }
 
     /**

@@ -110,10 +110,6 @@ public class DefinitionLoader {
      * @return the aspectwerkz definition
      */
     public static SystemDefinition getDefinition(final ClassLoader loader, final String uuid) {
-        if (s_definitions.containsKey(uuid)) {
-            return (SystemDefinition)s_definitions.get(uuid);
-        }
-
         final boolean isDirty = false;
         final List definitions;
         if (DEFINITION_FILE == null) {

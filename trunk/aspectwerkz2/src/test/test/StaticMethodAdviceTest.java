@@ -42,19 +42,19 @@ public class StaticMethodAdviceTest extends TestCase {
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
     }
 
-    public void testGetJoinPointMetaData() {
-        String param = "parameter";
-        String pointcutName = joinPointMetaData(param);
-        assertEquals(
-                getClass().getName() +
-                "___AW_$_AW_$joinPointMetaData$_AW_$1$_AW_$test_StaticMethodAdviceTest" +
-                param +
-                param.getClass().getName() +
-                "java.lang.String" +
-                "result",
-                pointcutName
-        );
-    }
+//    public void testGetJoinPointMetaData() {
+//        String param = "parameter";
+//        String pointcutName = joinPointMetaData(param);
+//        assertEquals(
+//                getClass().getName() +
+//                "___AW_$_AW_$joinPointMetaData$_AW_$1$_AW_$test_StaticMethodAdviceTest" +
+//                param +
+//                param.getClass().getName() +
+//                "java.lang.String" +
+//                "result",
+//                pointcutName
+//        );
+//    }
 
     public void testHasPointcutButNoAdvice() {
         try {
@@ -202,14 +202,14 @@ public class StaticMethodAdviceTest extends TestCase {
         m_logString += wasHere;
     }
 
-    public static void nonAdvisedMethod() {
+    private static void nonAdvisedMethod() {
     }
 
     public static void methodAdvicedMethod() {
         log("invocation ");
     }
 
-    public static void methodAdvicedMethodNewThread() {
+    private static void methodAdvicedMethodNewThread() {
         log("invocation ");
     }
 
@@ -217,7 +217,7 @@ public class StaticMethodAdviceTest extends TestCase {
         log("invocation ");
     }
 
-    public static void multipleChainedMethodAdvicedMethod() {
+    private static void multipleChainedMethodAdvicedMethod() {
         log("invocation ");
     }
 
@@ -274,7 +274,7 @@ public class StaticMethodAdviceTest extends TestCase {
     public static void noParams() throws RuntimeException {
     }
 
-    public static long longParam(long arg) {
+    private static long longParam(long arg) {
         return arg;
     }
 
@@ -302,7 +302,7 @@ public class StaticMethodAdviceTest extends TestCase {
         return arg;
     }
 
-    public static char charParam(char arg) {
+    private static char charParam(char arg) {
         return arg;
     }
 
@@ -310,7 +310,7 @@ public class StaticMethodAdviceTest extends TestCase {
         return arg;
     }
 
-    public static int variousParams1(String str, int i, float f, Object o, long l) throws RuntimeException {
+    private static int variousParams1(String str, int i, float f, Object o, long l) throws RuntimeException {
         return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
     }
 
@@ -342,7 +342,7 @@ public class StaticMethodAdviceTest extends TestCase {
         return 1;
     }
 
-    public static double getDouble() throws RuntimeException {
+    private static double getDouble() throws RuntimeException {
         return 1.1D;
     }
 
@@ -358,7 +358,7 @@ public class StaticMethodAdviceTest extends TestCase {
         return 'A';
     }
 
-    public static boolean getBoolean() throws RuntimeException {
+    private static boolean getBoolean() throws RuntimeException {
         return true;
     }
 

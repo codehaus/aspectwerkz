@@ -16,7 +16,6 @@ import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtMethod;
 import javassist.CtNewConstructor;
-import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.bytecode.CodeAttribute;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
@@ -127,20 +126,8 @@ public class ConstructorExecutionTransformer implements Transformer {
      */
     private CtConstructor addPrefixToConstructor(final CtClass ctClass, final CtConstructor constructor)
             throws NotFoundException, CannotCompileException {
-        // change the method access flags (should always be set to protected)
+
         int accessFlags = constructor.getModifiers();
-        if ((accessFlags & Modifier.PROTECTED) == 0) {
-            // set the protected flag
-            accessFlags |= Modifier.PROTECTED;
-        }
-        if ((accessFlags & Modifier.PRIVATE) != 0) {
-            // clear the private flag
-            accessFlags &= ~Modifier.PRIVATE;
-        }
-        if ((accessFlags & Modifier.PUBLIC) != 0) {
-            // clear the public flag
-            accessFlags &= ~Modifier.PUBLIC;
-        }
 
         CtClass[] parameterTypes = constructor.getParameterTypes();
         CtClass[] newParameterTypes = new CtClass[parameterTypes.length + 1];

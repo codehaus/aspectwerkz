@@ -67,19 +67,19 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
     }
 
-    public void testGetJoinPointMetaData() {
-        String param = "parameter";
-        assertEquals(
-                getClass().getName() +
-                "___AW_$_AW_$joinPointMetaData$_AW_$1$_AW_$test_MemberMethodAdviceTest" +
-                hashCode() +
-                param +
-                param.getClass().getName() +
-                "java.lang.String" +
-                "result",
-                joinPointMetaData(param)
-        );
-    }
+//    public void testGetJoinPointMetaData() {
+//        String param = "parameter";
+//        assertEquals(
+//                getClass().getName() +
+//                "___AW_$_AW_$joinPointMetaData$_AW_$1$_AW_$test_MemberMethodAdviceTest" +
+//                hashCode() +
+//                param +
+//                param.getClass().getName() +
+//                "java.lang.String" +
+//                "result",
+//                joinPointMetaData(param)
+//        );
+//    }
 
     public void testHasPointcutButNoAdvice() {
         try {
@@ -245,10 +245,10 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         m_logString += wasHere;
     }
 
-    public void nonAdvisedMethod() {
+    private void nonAdvisedMethod() {
     }
 
-    public void methodAdvicedMethod() {
+    private void methodAdvicedMethod() {
         log("invocation ");
     }
 
@@ -292,7 +292,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         log("invocation ");
     }
 
-    public void methodAdviceWithMultiplePreAndPostAdviced() {
+    private void methodAdviceWithMultiplePreAndPostAdviced() {
         log("invocation ");
     }
 
@@ -345,7 +345,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         return arg;
     }
 
-    public float floatParam(float arg) {
+    private float floatParam(float arg) {
         return arg;
     }
 
@@ -361,7 +361,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         return arg;
     }
 
-    public Object objectParam(Object arg) {
+    protected Object objectParam(Object arg) {
         return arg;
     }
 
@@ -373,7 +373,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
     }
 
-    public int variousParams2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
+    private int variousParams2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
         return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
     }
 
@@ -385,7 +385,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         return arr;
     }
 
-    public void getVoid() throws RuntimeException {
+    protected void getVoid() throws RuntimeException {
     }
 
     public long getLong() throws RuntimeException {
@@ -416,7 +416,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         return 'A';
     }
 
-    public boolean getBoolean() throws RuntimeException {
+    private boolean getBoolean() throws RuntimeException {
         return true;
     }
 

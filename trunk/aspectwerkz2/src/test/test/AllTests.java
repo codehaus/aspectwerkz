@@ -12,8 +12,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * This tests can be run without online / offline or other post compilation mode. Used to test standalone component of
- * AspectWerkz.
+ * This tests can be run without online / offline or other post compilation mode.
+ * Used to test standalone component of AspectWerkz.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>

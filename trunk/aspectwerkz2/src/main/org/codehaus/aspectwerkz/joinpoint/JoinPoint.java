@@ -46,6 +46,13 @@ public interface JoinPoint {
     Object getTargetInstance();
 
     /**
+     * Sets the target instance. 
+     *
+     * @param targetInstance the target instance
+     */
+    void setTargetInstance(Object targetInstance);
+
+    /**
      * Returns the target class.
      *
      * @return the target class
@@ -58,11 +65,4 @@ public interface JoinPoint {
      * @return the type
      */
     String getType();
-
-    /**
-     * Returns a string representation of the join point.
-     *
-     * @return a string representation
-     */
-    String toString();
 }

@@ -231,18 +231,18 @@ public class MethodExecutionTransformer implements Transformer {
     private void addPrefixToMethod(final CtClass cg, final CtMethod ctMethod, final int methodSequence) {
         // change the method access flags (should always be set to protected)
         int accessFlags = ctMethod.getModifiers();
-        if ((accessFlags & Modifier.PROTECTED) == 0) {
-            // set the protected flag
-            accessFlags |= Modifier.PROTECTED;
-        }
-        if ((accessFlags & Modifier.PRIVATE) != 0) {
-            // clear the private flag
-            accessFlags &= ~Modifier.PRIVATE;
-        }
-        if ((accessFlags & Modifier.PUBLIC) != 0) {
-            // clear the public flag
-            accessFlags &= ~Modifier.PUBLIC;
-        }
+//        if ((accessFlags & Modifier.PROTECTED) == 0) {
+//            // set the protected flag
+//            accessFlags |= Modifier.PROTECTED;
+//        }
+//        if ((accessFlags & Modifier.PRIVATE) != 0) {
+//            // clear the private flag
+//            accessFlags &= ~Modifier.PRIVATE;
+//        }
+//        if ((accessFlags & Modifier.PUBLIC) != 0) {
+//            // clear the public flag
+//            accessFlags &= ~Modifier.PUBLIC;
+//        }
 
         String prefixedMethodName = TransformationUtil.getPrefixedMethodName(ctMethod, methodSequence, cg.getName());
         ctMethod.setName(prefixedMethodName);

@@ -31,12 +31,12 @@ public class Klass {
     private final String m_name;
 
     /**
-     * The BCEL class gen.
+     * The Javassist class gen.
      */
     private final CtClass m_ctClass;
 
     /**
-     * The BCEL initial class gen to calculate serial ver uid based on initial bytecode Lazily initialized
+     * The Javassist initial class gen to calculate serial ver uid based on initial bytecode Lazily initialized
      */
     private CtClass m_initialCtClass;
 
@@ -69,7 +69,7 @@ public class Klass {
     }
 
     /**
-     * Returns the BCEL class gen for the class.
+     * Returns the Javassist class gen for the class.
      *
      * @return the class gen
      */
@@ -78,7 +78,7 @@ public class Klass {
     }
 
     /**
-     * Returns the BCEL initial class gen for the class.
+     * Returns the Javassist initial class gen for the class.
      *
      * @return the initial class gen
      * @throws IOException
@@ -105,10 +105,10 @@ public class Klass {
     }
 
     /**
-     * Transforms byte code to a BCEL class gen.
+     * Transforms byte code to a Javassist class gen.
      *
      * @param bytecode the byte code
-     * @return the BCEL class gen
+     * @return the Javassist class gen
      */
     public static CtClass fromByte(String name, final byte[] bytecode, ClassLoader loader) {
         try {

@@ -13,7 +13,7 @@ import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @Aspect
+ * @Aspect perClass
  */
 public class PerClassPerformanceAspect extends Aspect {
 

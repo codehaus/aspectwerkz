@@ -56,14 +56,6 @@ public interface AspectContainer {
     Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint);
 
     /**
-     * Returns a specific method by the method index.
-     *
-     * @param index the method index
-     * @return the method
-     */
-    Method getMethod(int index);
-
-    /**
      * Returns the container type.
      *
      * @return the container type
@@ -73,24 +65,24 @@ public interface AspectContainer {
     /**
      * @return the sole instance of a PER_JVM aspect
      */
-    public Aspect getPerJvmAspect();
+    Aspect getPerJvmAspect();
 
     /**
      * @param callingClass
      * @return the class attached instance of a PER_CLASS aspect
      */
-    public Aspect getPerClassAspect(final Class callingClass);
+    Aspect getPerClassAspect(Class callingClass);
 
     /**
      * @param callingInstance
      * @return the instance attached instance of a PER_INSTANCE aspect
      */
-    public Aspect getPerInstanceAspect(final Object callingInstance);
+    Aspect getPerInstanceAspect(Object callingInstance);
 
     /**
      * @return the thread attached instance of a PER_CLASS aspect
      */
-    public Aspect getPerThreadAspect();
+    Aspect getPerThreadAspect();
 
     /**
      * Attach the introduction container to this aspect container to mirror the "aspect contains 0-n introduction"
@@ -98,7 +90,7 @@ public interface AspectContainer {
      * @param name           of the introduction
      * @param introContainer introduction container
      */
-    public void addIntroductionContainer(String name, IntroductionContainer introContainer);
+    void addIntroductionContainer(String name, IntroductionContainer introContainer);
 
     /**
      * Returns the introduction container of given name (introduction name) or null if not linked.
@@ -106,8 +98,15 @@ public interface AspectContainer {
      * @param name of the introduction
      * @return introduction container
      */
-    public IntroductionContainer getIntroductionContainer(String name);
+    IntroductionContainer getIntroductionContainer(String name);
 
+    /**
+     * Returns a specific method by the method index.
+     *
+     * @param index the method index
+     * @return the method
+     */
+    Method getMethod(int index);
 }
 
 
