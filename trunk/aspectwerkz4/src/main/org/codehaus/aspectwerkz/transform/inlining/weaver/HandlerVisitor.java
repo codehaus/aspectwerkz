@@ -192,6 +192,9 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
      */
     private int m_labelIndex = -1;
 
+    private int m_lineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
+
+
     /**
      * Creates a new instance.
      *
@@ -243,8 +246,6 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
     public class CatchClauseCodeAdapter extends CodeAdapter {
-
-        private int m_lineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
 
         /**
          * Creates a new instance.

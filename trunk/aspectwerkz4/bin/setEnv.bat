@@ -9,4 +9,4 @@
 
 @ECHO OFF
 
-set CLASSPATH=%ASPECTWERKZ_HOME%\lib\aspectwerkz-2.0.RC2.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-jdk14-2.0.RC2.jar;%ASPECTWERKZ_HOME%\lib\dom4j-1.4.jar;%ASPECTWERKZ_HOME%\lib\qdox-1.4.jar;%ASPECTWERKZ_HOME%\lib\concurrent-1.3.1.jar;%ASPECTWERKZ_HOME%\lib\trove-1.0.2.jar;%ASPECTWERKZ_HOME%\lib\jrexx-1.1.1.jar;%CLASSPATH%
+set CLASSPATH=%ASPECTWERKZ_HOME%\lib\aspectwerkz-2.0.RC3-snapshot.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-jdk14-2.0.RC3-snapshot.jar;%ASPECTWERKZ_HOME%\lib\dom4j-1.4.jar;%ASPECTWERKZ_HOME%\lib\qdox-1.4.jar;%ASPECTWERKZ_HOME%\lib\concurrent-1.3.1.jar;%ASPECTWERKZ_HOME%\lib\trove-1.0.2.jar;%ASPECTWERKZ_HOME%\lib\jrexx-1.1.1.jar;%CLASSPATH%
