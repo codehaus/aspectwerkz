@@ -12,7 +12,7 @@
             <aspect class="CallerSideTestAspect"/>
             <aspect class="CFlowTestAspect"/>
             <aspect class="IntroductionTestAspect">
-                <introduction class="IntroductionTestAspect$MyImpl" bind-to="class(test.ToBeIntroduced)"/>
+                <introduce class="IntroductionTestAspect$MyImpl" bind-to="class(test.ToBeIntroduced)"/>
             </aspect>
             <aspect class="DynamicDeploymentTestAspect"/>
         </package>
@@ -32,7 +32,7 @@
         <aspect class="test.superclassconstructor.TestAspect"/>
         <aspect class="test.constructor.ConstructorTestAspect"/>
         <aspect class="test.handler.HandlerTestAspect">
-            <pointcut name="handler" pattern="handler(test.handler.HandlerTestBeforeException)"/>
+            <pointcut name="handler" expression="handler(test.handler.HandlerTestBeforeException)"/>
             <advice bind-to="handler" type="before" name="before"/>
         </aspect>
         <aspect class="test.orthogonal.OrthogonalTestAspect"/>
@@ -46,45 +46,45 @@
         <!-- Nomenclature: A and RA: RA is the reversed precedence of A -->
         <!-- Binding syntax - two advices. Precdence differs in both aspects -->
         <aspect class="test.bindingsyntax.TestAspect" name="BindingSyntaxA">
-            <pointcut name="test" pattern="execution(* test.bindingsyntax.*.doA*(..))"/>
+            <pointcut name="test" expression="execution(* test.bindingsyntax.*.doA*(..))"/>
             <advice bind-to="test" type="around" name="advice1"/>
             <advice bind-to="test" type="around" name="advice2"/>
         </aspect>
         <aspect class="test.bindingsyntax.TestAspect" name="BindingSyntaxRA">
-            <pointcut name="test" pattern="execution(* test.bindingsyntax.*.doRA*(..))"/>
+            <pointcut name="test" expression="execution(* test.bindingsyntax.*.doRA*(..))"/>
             <advice bind-to="test" type="around" name="advice2"/>
             <advice bind-to="test" type="around" name="advice1"/>
         </aspect>
 
         <!-- Binding syntax - same pointcut with a different name. Binding precedence differs in both aspects -->
         <aspect class="test.bindingsyntax.TestAspect" name="BindingSyntaxC">
-            <pointcut name="test2" pattern="execution(* test.bindingsyntax.*.doC*(..))"/>
-            <pointcut name="test" pattern="execution(* test.bindingsyntax.*.doC*(..))"/>
+            <pointcut name="test2" expression="execution(* test.bindingsyntax.*.doC*(..))"/>
+            <pointcut name="test" expression="execution(* test.bindingsyntax.*.doC*(..))"/>
             <advice bind-to="test" type="around" name="advice1"/>
             <advice bind-to="test2" type="around" name="advice2"/>
         </aspect>
         <aspect class="test.bindingsyntax.TestAspect" name="BindingSyntaxRC">
-            <pointcut name="test2" pattern="execution(* test.bindingsyntax.*.doRC*(..))"/>
-            <pointcut name="test" pattern="execution(* test.bindingsyntax.*.doRC*(..))"/>
+            <pointcut name="test2" expression="execution(* test.bindingsyntax.*.doRC*(..))"/>
+            <pointcut name="test" expression="execution(* test.bindingsyntax.*.doRC*(..))"/>
             <advice bind-to="test2" type="around" name="advice2"/>
             <advice bind-to="test" type="around" name="advice1"/>
         </aspect>
 
         <!--  bindingsyntax : two aspects. In both case the aspects are declared in a different order -->
         <aspect class="test.bindingsyntax.TestAspect" name="BindingSyntaxD_1">
-            <pointcut name="test" pattern="execution(* test.bindingsyntax.*.doD*(..))"/>
+            <pointcut name="test" expression="execution(* test.bindingsyntax.*.doD*(..))"/>
             <advice bind-to="test" type="around" name="advice1"/>
         </aspect>
         <aspect class="test.bindingsyntax.TestAspect" name="BindingSyntaxD_2">
-            <pointcut name="test" pattern="execution(* test.bindingsyntax.*.doD*(..))"/>
+            <pointcut name="test" expression="execution(* test.bindingsyntax.*.doD*(..))"/>
             <advice bind-to="test" type="around" name="advice2"/>
         </aspect>
         <aspect class="test.bindingsyntax.TestAspect" name="BindingSyntaxRD_2">
-            <pointcut name="test" pattern="execution(* test.bindingsyntax.*.doRD*(..))"/>
+            <pointcut name="test" expression="execution(* test.bindingsyntax.*.doRD*(..))"/>
             <advice bind-to="test" type="around" name="advice2"/>
         </aspect>
         <aspect class="test.bindingsyntax.TestAspect" name="BindingSyntaxRD_1">
-            <pointcut name="test" pattern="execution(* test.bindingsyntax.*.doRD*(..))"/>
+            <pointcut name="test" expression="execution(* test.bindingsyntax.*.doRD*(..))"/>
             <advice bind-to="test" type="around" name="advice1"/>
         </aspect>
     </system>

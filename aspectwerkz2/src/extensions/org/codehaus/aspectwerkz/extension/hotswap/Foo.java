@@ -12,7 +12,11 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.ByteArrayClassPath;
 import javassist.LoaderClassPath;
+import javassist.NotFoundException;
+import javassist.CannotCompileException;
 import org.codehaus.aspectwerkz.hook.ClassLoaderPatcher;
+
+import java.io.IOException;
 
 /**
  * A simple class to test the in process HotSwap
@@ -51,9 +55,18 @@ public class Foo {
         ClassPool cp2 = new ClassPool(null);
         cp2.appendClassPath(new LoaderClassPath(Foo.class.getClassLoader()));
 
-        cp2.writeFile("java.lang.ClassLoader", "__ii__");
-        //byte[] bytecode = ClassLoaderPatcher.getPatchedClassLoader("org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl");
-        client.hotswap(ClassLoader.class, cp2.get("java.lang.ClassLoader").toBytecode());
+        try {
+            // swap java.lang.ClassLoader with itself
+            cp2.writeFile("java.lang.ClassLoader", "_dump");
+            //byte[] bytecode = ClassLoaderPatcher.getPatchedClassLoader("org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl");
+            client.hotswap(ClassLoader.class, cp2.get("java.lang.ClassLoader").toBytecode());
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
 
+        // swap java.lang.String with itself
+        cp2.writeFile("java.lang.String", "_dump");
+        //byte[] bytecode = ClassLoaderPatcher.getPatchedClassLoader("org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl");
+        client.hotswap(String.class, cp2.get("java.lang.String").toBytecode());
     }
 }

@@ -242,8 +242,8 @@ public class DocumentParser {
             Element pointcutElement = (Element)it2.next();
             if (pointcutElement.getName().trim().equals("pointcut")) {
                 String name = pointcutElement.attributeValue("name");
-                String pattern = pointcutElement.attributeValue("pattern");
-                DefinitionParserHelper.createAndAddPointcutDefToAspectDef(name, pattern, aspectDef);
+                String expression = pointcutElement.attributeValue("expression");
+                DefinitionParserHelper.createAndAddPointcutDefToAspectDef(name, expression, aspectDef);
             }
         }
     }
@@ -310,61 +310,66 @@ public class DocumentParser {
             final String packageName) {
 
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
-            Element adviceElement = (Element)it2.next();
-            if (adviceElement.getName().trim().equals("introduction")) {
-                String klass = adviceElement.attributeValue("class");
-                String ynterface = adviceElement.attributeValue("interface");
-                String name = adviceElement.attributeValue("name");
-                String bindTo = adviceElement.attributeValue("bind-to");
-                String deploymentModel = adviceElement.attributeValue("deployment-model");
-
-                // make sure at least class or interface is specified
-                if (klass == null && ynterface == null) {
-                    throw new DefinitionException("class or interface should be defined for introduction:"
-                            + aspectDef.getName());
-                }
+            Element introduceElement = (Element)it2.next();
+            if (introduceElement.getName().trim().equals("introduce")) {
+                String klass = introduceElement.attributeValue("class");
+                String name = introduceElement.attributeValue("name");
+                String bindTo = introduceElement.attributeValue("bind-to");
+                String deploymentModel = introduceElement.attributeValue("deployment-model");
 
                 // deployment-model defaults to perJVM
                 if (deploymentModel == null || deploymentModel.length() <= 0) {
                     deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_JVM);
                 }
 
+                // default name = FQN
+                if (name == null || name.length() <= 0) {
+                    name = packageName + klass;
+                }
+
+                // load the mixin to determine if it is a pure interface introduction
+                Class mixin = null;
+                try {
+                    mixin = aspectClass.getClassLoader().loadClass(packageName + klass);
+                }
+                catch (ClassNotFoundException e) {
+                    throw new DefinitionException("could not find mixin implementation: "
+                            + packageName + klass + " " + e.getMessage());
+                }
+
                 // pure interface introduction
-                if (klass == null || klass.length() <= 0) {
-                    if (name == null || name.length() <= 0) {
-                        name = packageName + ynterface;
-                    }
+                if (mixin.isInterface()) {
                     DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
-                            bindTo, name, packageName + ynterface, aspectDef
+                            bindTo, name, packageName + klass, aspectDef
                     );
-                } else {
+                    // handles nested "bind-to" elements
+                    for (Iterator it1 = introduceElement.elementIterator("bind-to"); it1.hasNext();) {
+                        Element bindToElement = (Element)it1.next();
+                        String pointcut = bindToElement.attributeValue("pointcut");
+                        DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
+                                pointcut, name, packageName + klass, aspectDef
+                        );
+                    }
+                }
+                else {
                     // mixin introduction
-                    if (name == null || name.length() <= 0) {
-                        name = packageName + klass;
+                    Class[] introduced = mixin.getInterfaces();
+                    String[] introducedInterfaceNames = new String[introduced.length];
+                    for (int i=0; i < introduced.length; i++) {
+                        introducedInterfaceNames[i] = introduced[i].getName();
                     }
-                    Class mixin = null;
-                    try {
-                        mixin = aspectClass.getClassLoader().loadClass(packageName + klass);
-                    }
-                    catch (ClassNotFoundException e) {
-                        throw new DefinitionException("could not find mixin implementation: "
-                                + packageName + klass + " " + e.getMessage());
-                    }
-                    List introducedInterfaceNames = new ArrayList();
-                    if (ynterface == null || ynterface.length() <= 0) {
-                        Class[] introduced = mixin.getInterfaces();
-                        for (int i=0; i < introduced.length; i++) {
-                            introducedInterfaceNames.add(introduced[i].getName());
-                        }
-                    }
-                    else {
-                        introducedInterfaceNames.add(packageName + ynterface);
-                    }
-                    Method[] methods = (Method[])TransformationUtil.createSortedMethodList(mixin).toArray(new Method[]{});//gatherMixinSortedMethods(mixin, introduceAttr.getIntroducedInterfaceNames());
+                    Method[] methods = (Method[])TransformationUtil.createSortedMethodList(mixin).toArray(new Method[]{});
                     DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
-                            bindTo, name, (String[])introducedInterfaceNames.toArray(new String[]{}), methods,
-                            deploymentModel, aspectDef
+                            bindTo, name, introducedInterfaceNames, methods, deploymentModel, aspectDef
                     );
+                    // handles nested "bind-to" elements
+                    for (Iterator it1 = introduceElement.elementIterator("bind-to"); it1.hasNext();) {
+                        Element bindToElement = (Element)it1.next();
+                        String pointcut = bindToElement.attributeValue("pointcut");
+                        DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
+                                pointcut, name, introducedInterfaceNames, methods, deploymentModel, aspectDef
+                        );
+                    }
                 }
             }
         }

@@ -133,7 +133,6 @@ Attributes:
     name: unique name of the aspect in the system. Defaults to FQN (see class)
     class: FQN of Aspect (can have metdata or not)
     deployment-model: aspect life cycle, defaults to perJVM
-
 ******************************************************************************************************************************-->
 <!ELEMENT aspect (
     param*,
@@ -161,12 +160,12 @@ pointcut
 *********************************************************************************************************************************
 Attributes:
 	name
-	pattern
+	expression
 ******************************************************************************************************************************-->
 <!ELEMENT pointcut EMPTY>
 <!ATTLIST pointcut
 name CDATA #REQUIRED
-pattern CDATA #REQUIRED
+expression CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
 advice
@@ -197,21 +196,19 @@ Allow to bind an advice several times instead of using an OR expression
 pointcut CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
-introduction
+introduce
 *********************************************************************************************************************************
 Attributes:
-    class: mixin class, introduced interfaces are looked up from it, unless interface is specified
-    interface: if specified, introduce only this interface - if class is null, it is a interface only introduction
+    class: mixin class, introduced interfaces are looked up from it. It can be an interface only.
 	name: mixin name
-    bind-to: pointcut expression (only call(..) makes sense)
-NOTE: at least one of class / introduction should be specified
+    deployment-model: aspect life cycle, defaults to perJVM
+    bind-to: pointcut expression (only class(..) makes sense)
 ******************************************************************************************************************************-->
-<!ELEMENT introduction (
+<!ELEMENT introduce (
     bind-to*
 )>
-<!ATTLIST introduction
-class CDATA #IMPLIED
-interface CDATA #IMPLIED
+<!ATTLIST introduce
+class CDATA #REQUIRED
 name CDATA #IMPLIED
 deployment-model (perJVM | perClass | perInstance | perThread) #IMPLIED
 bind-to CDATA #IMPLIED

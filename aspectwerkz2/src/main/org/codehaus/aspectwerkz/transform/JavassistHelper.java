@@ -108,6 +108,23 @@ public class JavassistHelper {
     }
 
     /**
+     * Checks if the given Class as already a method methodName
+     * Does not take into account the signature
+     *
+     * @param klass
+     * @param methodName
+     * @return true if klass has methodName
+     */
+    public static boolean hasMethod(CtClass klass, String methodName, CtClass[] args) {
+        try {
+            klass.getDeclaredMethod(methodName, args);
+            return true;
+        } catch (NotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
      * Swapp bodies of the two given methods of the same declaring class
      *
      * @param methodA

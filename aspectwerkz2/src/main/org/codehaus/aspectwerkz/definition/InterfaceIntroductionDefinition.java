@@ -17,6 +17,7 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
  * <p/>It is extended in IntroductionDefinition for interface+implementation introductions
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class InterfaceIntroductionDefinition {
 
@@ -26,9 +27,9 @@ public class InterfaceIntroductionDefinition {
     protected final String m_name;
 
     /**
-     * The introduction expression.
+     * The introduction expressions.
      */
-    protected final Expression m_expression;
+    protected Expression[] m_expressions;
 
     /**
      * The attribute for the introduction.
@@ -63,7 +64,8 @@ public class InterfaceIntroductionDefinition {
 
         m_name = name;
         m_interfaceClassNames.add(interfaceClassName);
-        m_expression = expression;
+        m_expressions = new Expression[1];
+        m_expressions[0] = expression;
     }
 
     /**
@@ -76,12 +78,12 @@ public class InterfaceIntroductionDefinition {
     }
 
     /**
-     * Returns the expression.
+     * Returns the expressions.
      *
-     * @return the expression
+     * @return the expressions array
      */
-    public Expression getExpression() {
-        return m_expression;
+    public Expression[] getExpressions() {
+        return m_expressions;
     }
 
     /**
@@ -118,5 +120,21 @@ public class InterfaceIntroductionDefinition {
      */
     public void setAttribute(final String attribute) {
         m_attribute = attribute;
+    }
+
+    public void addExpression(Expression expression) {
+        final Expression[] tmpExpressions = new Expression[m_expressions.length + 1];
+        java.lang.System.arraycopy(m_expressions, 0, tmpExpressions, 0, m_expressions.length);
+        tmpExpressions[m_expressions.length] = expression;
+        m_expressions = new Expression[m_expressions.length + 1];
+        java.lang.System.arraycopy(tmpExpressions, 0, m_expressions, 0, tmpExpressions.length);
+    }
+
+    public void addExpressions(Expression[] expressions) {
+        final Expression[] tmpExpressions = new Expression[m_expressions.length + expressions.length];
+        java.lang.System.arraycopy(m_expressions, 0, tmpExpressions, 0, m_expressions.length);
+        java.lang.System.arraycopy(expressions, 0, tmpExpressions, m_expressions.length, expressions.length);
+        m_expressions = new Expression[m_expressions.length + expressions.length];
+        java.lang.System.arraycopy(tmpExpressions, 0, m_expressions, 0, tmpExpressions.length);
     }
 }

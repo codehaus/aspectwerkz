@@ -94,6 +94,10 @@ public class AddImplementationTransformer implements Transformer {
                 return; // introductions can't be static (not for the moment at least)
             }
 
+            if (JavassistHelper.hasMethod(ctClass, methodName, bcelParameterTypes)) {
+                return;
+            }
+
             addAspectManagerField(ctClass, definition);
 
             StringBuffer body = new StringBuffer("{");

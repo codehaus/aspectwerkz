@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.definition;
 
 import java.lang.reflect.Method;
+import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
@@ -139,7 +140,19 @@ public class DefinitionParserHelper {
                 introductionName, expression, introducedInterfaceNames,
                 introducedMethods, deploymentModel, aspectDef
         );
-        aspectDef.addIntroduction(introDef);
+        // check doublons - TODO change ArrayList to HashMap since NAME is a key
+        IntroductionDefinition doublon = null;
+        for (Iterator intros = aspectDef.getIntroductions().iterator(); intros.hasNext();) {
+            IntroductionDefinition intro = (IntroductionDefinition)intros.next();
+            if (intro.getName().equals(introDef.getName())) {
+                doublon = intro;
+                intro.addExpressions(introDef.getExpressions());
+                break;
+            }
+        }
+        if (doublon == null) {
+            aspectDef.addIntroduction(introDef);
+        }
     }
 
     /**
