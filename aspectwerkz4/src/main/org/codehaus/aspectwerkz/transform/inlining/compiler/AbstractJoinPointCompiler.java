@@ -879,7 +879,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         // custom logic overrides for handler jp
         if (m_joinPointType == JoinPointType.HANDLER) {
             calleeIndex = 0;
-            callerIndex = 1;
+            callerIndex = 2;
             argStartIndex = 1;
         }
 

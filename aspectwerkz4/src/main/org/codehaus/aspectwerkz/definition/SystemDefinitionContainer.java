@@ -89,6 +89,8 @@ public class SystemDefinitionContainer {
         }
         // skip boot classloader and ext classloader
         if (loader == null) {
+            s_classLoaderSystemDefinitions.put(loader, new HashSet());
+            s_classLoaderDefinitionLocations.put(loader, new ArrayList());
             return;
         }
 
@@ -206,7 +208,8 @@ public class SystemDefinitionContainer {
     public static SystemDefinition getVirtualDefinitionFor(final ClassLoader loader) {
         final SystemDefinition virtualSystemDef;
         if (!s_virtualSystems.containsKey(loader)) {
-            virtualSystemDef = new SystemDefinition(new Integer(loader.hashCode()).toString());
+            int hash = loader==null?0:loader.hashCode();// handle bootclassloader with care
+            virtualSystemDef = new SystemDefinition("virtual_"+new Integer(hash).toString());
             s_virtualSystems.put(loader, virtualSystemDef);
         } else {
             virtualSystemDef = (SystemDefinition) s_virtualSystems.get(loader);

@@ -160,6 +160,8 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
         int joinPointHash = AsmHelper.calculateConstructorHash(desc);
         String joinPointClassName = TransformationUtil.getJoinPointClassName(
                 m_declaringTypeName,
+                INIT_METHOD_NAME,
+                desc,
                 m_declaringTypeName,
                 JoinPointType.CONSTRUCTOR_EXECUTION,
                 joinPointHash

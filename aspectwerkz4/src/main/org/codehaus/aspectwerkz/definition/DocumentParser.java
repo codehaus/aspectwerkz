@@ -836,6 +836,8 @@ public class DocumentParser {
                 );
 
                 aspectDef.addAfterAdviceDefinition(adviceDef);
+            } else {
+                throw new DefinitionException("Unkonw type for advice : " + type);
             }
         } catch (DefinitionException e) {
             System.err.println(

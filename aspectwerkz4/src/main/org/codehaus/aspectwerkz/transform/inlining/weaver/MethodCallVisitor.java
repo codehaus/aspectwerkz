@@ -236,6 +236,8 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
 
                 String joinPointClassName = TransformationUtil.getJoinPointClassName(
                         m_callerClassName,
+                        m_callerMethodName,
+                        m_callerMethodDesc,
                         calleeClassName,
                         JoinPointType.METHOD_CALL,
                         joinPointHash

@@ -336,6 +336,8 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
 
                 String joinPointClassName = TransformationUtil.getJoinPointClassName(
                         m_callerClassName,
+                        m_callerMethodName,
+                        m_callerMethodDesc,
                         calleeClassName,
                         JoinPointType.CONSTRUCTOR_CALL,
                         struct.joinPointHash
