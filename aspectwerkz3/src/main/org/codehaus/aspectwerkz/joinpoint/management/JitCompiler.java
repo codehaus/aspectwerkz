@@ -369,7 +369,7 @@ public class JitCompiler {
             Class joinPointClass = AsmHelper.loadClass(loader, className);
 
             if (joinPointClass == null) {
-                final ClassWriter cw = new ClassWriter(true);
+                final ClassWriter cw = AsmHelper.newClassWriter(true);
                 createMemberFields(joinPointType, cw, className);
                 if (createInitMethod(joinPointType, cw, className, aroundAdvice, beforeAdvice, afterAdvice)) {
                     return null; // bail out, one of the advice has deployment model that is not
