@@ -7,7 +7,6 @@
  **************************************************************************************/
 package examples.proxy;
 
-import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.annotation.Before;
 import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
@@ -18,7 +17,7 @@ import org.codehaus.aspectwerkz.intercept.BeforeAdvice;
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class Proxy5 extends TestCase {
+public class Proxy5 {
 
     static @interface AspectMarker {}
 
