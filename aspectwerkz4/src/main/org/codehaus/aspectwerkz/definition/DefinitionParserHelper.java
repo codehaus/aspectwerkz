@@ -25,7 +25,7 @@ import java.util.Iterator;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class DefinitionParserHelper {
-    public static final String EXPR_PREFIX = "AW_";
+    public static final String EXPRESSION_PREFIX = "AW_";
 
     /**
      * Creates and adds pointcut definition to aspect definition.
@@ -264,15 +264,18 @@ public class DefinitionParserHelper {
                                                         final String expression,
                                                         final String deploymentModel,
                                                         final SystemDefinition systemDef) {
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, systemDef.getUuid());
+        final MixinDefinition mixinDef = new MixinDefinition(mixinClassInfo, deploymentModel, systemDef);
+        if (expression != null) {
+            ExpressionInfo expressionInfo = new ExpressionInfo(expression, systemDef.getUuid());
 
-        // auto-name the pointcut which is anonymous for introduction
-        ExpressionNamespace.getNamespace(systemDef.getUuid()).addExpressionInfo(
-                EXPR_PREFIX + expression.hashCode(),
-                expressionInfo
-        );
-        final MixinDefinition introDef = new MixinDefinition(mixinClassInfo, expressionInfo, deploymentModel);
-        return introDef;
+            // auto-name the pointcut which is anonymous for introduction
+            ExpressionNamespace.getNamespace(systemDef.getUuid()).addExpressionInfo(
+                    EXPRESSION_PREFIX + expression.hashCode(),
+                    expressionInfo
+            );
+            mixinDef.addExpressionInfo(expressionInfo);
+        }
+        return mixinDef;
     }
 
     /**
@@ -288,18 +291,19 @@ public class DefinitionParserHelper {
                                                                                         final String expression,
                                                                                         final String interfaceClassName,
                                                                                         final AspectDefinition aspectDef) {
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getQualifiedName());
-
-        // auto-name the pointcut which is anonymous for introduction
-        ExpressionNamespace.getNamespace(aspectDef.getQualifiedName()).addExpressionInfo(
-                EXPR_PREFIX + expression.hashCode(),
-                expressionInfo
-        );
         final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(
-                introductionName,
-                expressionInfo,
-                interfaceClassName
+                introductionName, interfaceClassName
         );
+        if (expression != null) {
+            ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getQualifiedName());
+
+            // auto-name the pointcut which is anonymous for introduction
+            ExpressionNamespace.getNamespace(aspectDef.getQualifiedName()).addExpressionInfo(
+                    EXPRESSION_PREFIX + expression.hashCode(),
+                    expressionInfo
+            );
+            introDef.addExpressionInfo(expressionInfo);
+        }
         return introDef;
     }
 

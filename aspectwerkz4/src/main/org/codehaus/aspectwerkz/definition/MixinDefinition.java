@@ -45,7 +45,7 @@ public class MixinDefinition {
     /**
      * The mixin expressions.
      */
-    private ExpressionInfo[] m_expressionInfos;
+    private ExpressionInfo[] m_expressionInfos = new ExpressionInfo[]{};
 
     /**
      * The attribute for the mixin.
@@ -58,19 +58,23 @@ public class MixinDefinition {
     private String m_factoryClassName;
 
     /**
+     * The system definition.
+     */
+    private SystemDefinition m_systemDefinition;
+
+    /**
      * Construct a new Definition for mixin.
      *
      * @param mixinClass      the mixin class
-     * @param expressionInfo  the expression info
      * @param deploymentModel mixin deployment model
+     * @param systemDef the system definition
      */
     public MixinDefinition(final ClassInfo mixinClass,
-                           final ExpressionInfo expressionInfo,
-                           final String deploymentModel) {
+                           final String deploymentModel,
+                           final SystemDefinition systemDef) {
         m_mixinImpl = mixinClass;
-        m_expressionInfos = new ExpressionInfo[]{
-            expressionInfo
-        };
+        m_systemDefinition = systemDef;
+        m_expressionInfos = new ExpressionInfo[]{};
         List interfaceDeclaredMethods = collectMethodsFromInterfaces(mixinClass);
         List sortedMethodList = ClassInfoHelper.createInterfaceDefinedSortedMethodList(
                 mixinClass, interfaceDeclaredMethods
@@ -168,6 +172,15 @@ public class MixinDefinition {
      */
     public void setAttribute(final String attribute) {
         m_attribute = attribute;
+    }
+
+    /**
+     * Returns the system definition.
+     *
+     * @return the system definition
+     */
+    public SystemDefinition getSystemDefinition() {
+        return m_systemDefinition;
     }
 
     /**
