@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.AspectSystem;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
@@ -163,6 +164,7 @@ public class JoinPointManager {
             final Object[] parameters,
             final Object targetInstance,
             final int joinPointType) throws Throwable {
+        System.out.println("this = " + this + " for " + m_targetClass.getName());
 
         ThreadLocal threadLocal = null;
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
@@ -952,10 +954,23 @@ public class JoinPointManager {
         public boolean isJitCompiled = false;
     }
 
-    public synchronized void reset() {
-        System.out.println("JoinPointManager.reset " + m_targetClass.getName());
-        m_joinPoints = null;
-        m_joinPoints = new ThreadLocal[0];
+    public static synchronized void reset(Class klass) {
+        System.out.println("JoinPointManager.reset " + klass.getName());
+        JoinPointManager oldJoinPointManager = getJoinPointManager(klass, "N/A/runtime");
+        System.out.println("oldJoinPointManager = " + oldJoinPointManager);
+        JoinPointManager joinPointManager = new JoinPointManager(klass, "N/A/runtime");
+        System.out.println("joinPointManager = " + joinPointManager);
+        oldJoinPointManager = joinPointManager;
+        s_managers.put(klass, joinPointManager);
+        try {
+            Field jpMan = klass.getDeclaredField(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+            jpMan.setAccessible(true);
+            jpMan.set(null, joinPointManager);
+        } catch (Exception e) {
+            System.err.println("Unable to propagate JPManager");
+            e.printStackTrace();
+        }
+
     }
 }
 

@@ -59,7 +59,8 @@ public class HotSwapClient {
      * @param klazz
      */
     public static void hotswap(Class klazz) {
-        if (ClassPreProcessorHelper.class.getClassLoader() != ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader()) {
+        if ((ClassPreProcessorHelper.class.getClassLoader() != ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader())
+            && (ClassPreProcessorHelper.class.getClassLoader() != null)) {
             throw new RuntimeException("AspectWerkz is misconfigured for HotSwap cache to work: "
                 + ClassPreProcessorHelper.class.getClassLoader() + " incompatible with "
                 + ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader());
@@ -70,8 +71,9 @@ public class HotSwapClient {
 
             hotswap(klazz, newBytes);
             // trash the join points
-            JoinPointManager joinPointManager = JoinPointManager.getJoinPointManager(klazz, "N/A/notneeded");
-            joinPointManager.reset();
+            //JoinPointManager joinPointManager = JoinPointManager.getJoinPointManager(klazz, "N/A/notneeded");
+            //joinPointManager.reset();
+            JoinPointManager.reset(klazz);
 
 
 

@@ -101,7 +101,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
                     TransformationUtil.JOIN_POINT_MANAGER_FIELD,
                     ctClass
             );
-            field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
+            field.setModifiers(Modifier.STATIC | Modifier.PRIVATE /*| Modifier.FINAL*/);
             StringBuffer body = new StringBuffer();
             body.append(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
             body.append('#');

@@ -116,7 +116,9 @@ public class BcelAttributeExtractor implements AttributeExtractor {
                                 attributes.add(attribute);
                             }
                             catch (Exception e) {
-                                throw new WrappedRuntimeException(e);
+                                //SKIP unrecognized attr
+                                //TODO we may need a better way to handle version incompatibility in our AW attrs.
+                                //throw new WrappedRuntimeException(e);
                             }
                         }
                     }
@@ -147,7 +149,9 @@ public class BcelAttributeExtractor implements AttributeExtractor {
                             al.add(attribute);
                         }
                         catch (Exception e) {
-                            throw new WrappedRuntimeException(e);
+                            //SKIP unrecognized attr
+                            //TODO we may need a better way to handle version incompatibility in our AW attrs.
+                            //throw new WrappedRuntimeException(e);
                         }
                     }
                 }

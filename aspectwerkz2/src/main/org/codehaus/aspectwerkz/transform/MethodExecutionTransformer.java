@@ -62,13 +62,13 @@ public class MethodExecutionTransformer implements Transformer {
         List definitions = SystemDefinitionContainer.getDefinitionsContext();
         m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); // TODO not thread safe
 
-        for (Iterator it = definitions.iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition)it.next();
+        //for (Iterator it = definitions.iterator(); it.hasNext();) {
+        //    SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = context.getMetaDataMaker().createClassMetaData(ctClass);
-            if (classFilter(definition, classMetaData, ctClass)) {
-                continue;
+            if (classFilter(definitions, classMetaData, ctClass)) {
+                return;
             }
 
             final CtMethod[] methods = ctClass.getDeclaredMethods();
@@ -95,7 +95,7 @@ public class MethodExecutionTransformer implements Transformer {
                 methodSequences.put(method.getName(), sequence);
 
                 MethodSequenceTuple tuple = new MethodSequenceTuple(method, sequence);
-                tuple.setStatus(methodFilter(definition, classMetaData, methodMetaData, method));
+                tuple.setStatus(methodFilter(definitions, classMetaData, methodMetaData, method));
                 // todo filter out "skip" status
                 sorteMethodTuples.add(tuple);
             }
@@ -104,6 +104,7 @@ public class MethodExecutionTransformer implements Transformer {
             boolean isClassAdvised = false;
             for (Iterator i = sorteMethodTuples.iterator(); i.hasNext();) {
                 MethodSequenceTuple tuple = (MethodSequenceTuple)i.next();
+                //System.out.println("tuple = " + tuple);
                 if (tuple.getStatus() != STATUS_HASPOINTCUT) {
                     continue;
                 }
@@ -179,7 +180,7 @@ public class MethodExecutionTransformer implements Transformer {
                 }
             }
 
-        }
+        //}//end of def loop
         TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
 
@@ -310,9 +311,9 @@ public class MethodExecutionTransformer implements Transformer {
             final SystemDefinition definition,
             final ClassMetaData classMetaData,
             final CtClass cg) {
-        if (cg.isInterface()) {
-            return true;
-        }
+//        if (cg.isInterface()) {
+//            return true;
+//        }
         String className = cg.getName().replace('/', '.');
         if (definition.inExcludePackage(className)) {
             return true;
@@ -325,6 +326,23 @@ public class MethodExecutionTransformer implements Transformer {
         }
         if (definition.inPreparePackage(className)) {
             return false;//no early filtering for prepared Class to allow RuW
+        }
+        return true;
+    }
+
+    private boolean classFilter(
+            final List definitions,
+            final ClassMetaData classMetaData,
+            final CtClass cg) {
+        if (cg.isInterface()) {
+            return true;
+        }
+        for (Iterator defs = definitions.iterator(); defs.hasNext();) {
+            if (classFilter((SystemDefinition)defs.next(), classMetaData, cg)) {
+                continue;
+            } else {
+                return false;
+            }
         }
         return true;
     }
@@ -342,6 +360,31 @@ public class MethodExecutionTransformer implements Transformer {
             final ClassMetaData classMetaData,
             final MethodMetaData methodMetaData,
             final CtMethod method) {
+//        if (Modifier.isAbstract(method.getModifiers()) ||
+//            Modifier.isNative(method.getModifiers()) ||
+//            method.getName().equals("<init>") ||
+//            method.getName().equals("<clinit>") ||
+//            method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
+//            method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
+//            method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
+//            method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
+//            method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+//            return STATUS_SKIP;
+//        }
+//        else
+        if (definition.hasExecutionPointcut(classMetaData, methodMetaData)) {
+            return STATUS_HASPOINTCUT;
+        }
+        else {
+            return STATUS_HASNOPOINTCUT;
+        }
+    }
+
+    private int methodFilter(
+            final List definitions,
+            final ClassMetaData classMetaData,
+            final MethodMetaData methodMetaData,
+            final CtMethod method) {
         if (Modifier.isAbstract(method.getModifiers()) ||
             Modifier.isNative(method.getModifiers()) ||
             method.getName().equals("<init>") ||
@@ -353,13 +396,18 @@ public class MethodExecutionTransformer implements Transformer {
             method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return STATUS_SKIP;
         }
-        else if (definition.hasExecutionPointcut(classMetaData, methodMetaData)) {
-            return STATUS_HASPOINTCUT;
+        for (Iterator defs = definitions.iterator(); defs.hasNext();) {
+            if (STATUS_HASPOINTCUT == methodFilter((SystemDefinition)defs.next(), classMetaData, methodMetaData, method)) {
+                return STATUS_HASPOINTCUT;
+            } else {
+                continue;
+            }
         }
-        else {
-            return STATUS_HASNOPOINTCUT;
-        }
+        return STATUS_HASNOPOINTCUT;
     }
+
+
+
 
     /**
      * Filters the methods that have no more execution pointcut and that could have some
