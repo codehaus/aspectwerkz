@@ -97,18 +97,19 @@ public class TransactionAttributeAwareTransactionProtocol {
         final Method method = sig.getMethod();
         final TransactionAttributeType txType = getTransactionAttributeTypeFor(declaringType, method);
 
+        final TransactionManager tm = getTransactionManager();
+
         switch(txType) {
             case REQUIRED:
                 logInfo("Starts TX with attribute REQUIRED at [" + declaringType.getName() + '.' + method.getName() + "(..)]");
-                if (!hasExistingTransaction()) {
-                    getTransactionManager().begin();
+                if (!isExistingTransaction(tm)) {
+                    tm.begin();
                 }
                 break;
 
             case REQUIRESNEW:
                 logInfo("Starts TX with attribute REQUIRESNEW at [" + declaringType.getName() + '.' + method.getName() + "(..)]");
-                final TransactionManager tm = getTransactionManager();
-                if (hasExistingTransaction()) {
+                if (isExistingTransaction(tm)) {
                     Transaction suspendedTx = tm.suspend();
                     jp.addMetaData(SUSPENDED_TRANSACTION, suspendedTx);
                 }
@@ -122,22 +123,22 @@ public class TransactionAttributeAwareTransactionProtocol {
 
             case MANDATORY:
                 logInfo("Entering method with TX attribute MANDATORY [" + declaringType.getName() + '.' + method.getName() + ']');
-                if (!hasExistingTransaction()) {
+                if (!isExistingTransaction(tm)) {
                     throw new TransactionRequiredException("No active TX at method with TX type set to MANDATORY [" + declaringType.getName() + '.' + method.getName() + "(..)]");
                 }
                 break;
 
             case NEVER:
                 logInfo("Entering method with TX attribute NEVER [" + declaringType.getName() + '.' + method.getName() + ']');
-                if (hasExistingTransaction()) {
+                if (isExistingTransaction(tm)) {
                     throw new RemoteException("Detected active TX at method with TX type set to NEVER [" + declaringType.getName() + '.' + method.getName() + "(..)]");
                 }
                 break;
 
             case NOTSUPPORTED:
                 logInfo("Entering method with TX attribute NOTSUPPORTED [" + declaringType.getName() + '.' + method.getName() + ']');
-                if (hasExistingTransaction()) {
-                    Transaction suspendedTx = getTransactionManager().suspend();
+                if (isExistingTransaction(tm)) {
+                    Transaction suspendedTx = tm.suspend();
                     jp.addMetaData(SUSPENDED_TRANSACTION, suspendedTx);
                 }
                 break;
@@ -155,9 +156,9 @@ public class TransactionAttributeAwareTransactionProtocol {
             expression = TRANSACTED_METHODS_POINTCUT
     )
     void exitTransactedMethodWithException() throws Throwable {
-        TransactionManager tm = getTransactionManager();
-        if (hasExistingTransaction()) {
-            logInfo("Setting TX to rollback only");
+        final TransactionManager tm = getTransactionManager();
+        if (isExistingTransaction(tm)) {
+            logInfo("Setting TX to ROLLBACK_ONLY");
             tm.setRollbackOnly();
         }
     }
@@ -171,10 +172,10 @@ public class TransactionAttributeAwareTransactionProtocol {
      */
     @AfterFinally(TRANSACTED_METHODS_POINTCUT)
     void exitTransactedMethod(final StaticJoinPoint jp) throws Throwable {
-        TransactionManager tm = getTransactionManager();
-        if (hasExistingTransaction()) {
-            if (tm.getStatus() == Status.STATUS_MARKED_ROLLBACK) {
-                logInfo("Rolling back TX marked as ROLLBACK");
+        final TransactionManager tm = getTransactionManager();
+        if (isExistingTransaction(tm)) {
+            if (isRollbackOnly(tm)) {
+                logInfo("Rolling back TX marked as ROLLBACK_ONLY");
                 tm.rollback();
             } else {
                 logInfo("Committing TX");
@@ -250,12 +251,28 @@ public class TransactionAttributeAwareTransactionProtocol {
     /**
      * Checks if a transaction is an existing transaction.
      *
+     * @param tm the transaction manager
      * @return boolean
      */
-    protected static boolean hasExistingTransaction() {
-        return getTransactionStatus() != Status.STATUS_NO_TRANSACTION;
+    protected static boolean isExistingTransaction(final TransactionManager tm) throws SystemException {
+        return tm.getStatus() != Status.STATUS_NO_TRANSACTION;
     }
 
+    /**
+     * Checks if current transaction is set to rollback only.
+     *
+     * @param tm the transaction manager
+     * @return boolean
+     */
+    protected static boolean isRollbackOnly(final TransactionManager tm) throws SystemException {
+        return tm.getStatus() == Status.STATUS_MARKED_ROLLBACK;
+    }
+
+    /**
+     * Prints log messages to standard out.
+     *
+     * @param message the message
+     */
     public static void logInfo(final String message) {
         System.out.println("[TransactionProtocol:INFO] " + message);
     }
