@@ -162,7 +162,6 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     /**
      * Inserts an attribute on constructor level.
      * 
-     * @TODO needs to be tested
      * @param constructor the QDox java method
      * @param attribute the attribute
      */
@@ -280,6 +279,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
     private class AttributeClassAdapter extends ClassAdapter {
+        private static final String INIT_METHOD_NAME = "<init>";
 
         public AttributeClassAdapter(final ClassVisitor cv) {
             super(cv);
@@ -311,15 +311,15 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             if (attrs != null) {
                 first = attrs;
             }
+            current = first;
             for (Iterator it = m_fieldAttributes.iterator(); it.hasNext();) {
                 FieldAttributeInfo struct = (FieldAttributeInfo) it.next();
                 if (name.equals(struct.field.getName())) {
                     if (first == null) {
-                        first = new CustomAttribute(((byte[]) struct.attribute));
+                        first = new CustomAttribute(struct.attribute);
                         current = first;
                     } else {
-                        current.next = new CustomAttribute(((byte[]) struct.attribute));
-                        ;
+                        current.next = new CustomAttribute(struct.attribute);
                         current = current.next;
                     }
                 }
@@ -343,17 +343,16 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             for (Iterator it = m_methodAttributes.iterator(); it.hasNext();) {
                 MethodAttributeInfo struct = (MethodAttributeInfo) it.next();
                 JavaMethod method = struct.method;
-                if (name.equals("<init>")) {
+                if (name.equals(INIT_METHOD_NAME)) {
                     continue;
                 }
                 String[] parameters = QDoxParser.getJavaMethodParametersAsStringArray(method);
                 if (name.equals(method.getName()) && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
                     if (first == null) {
-                        first = new CustomAttribute(((byte[]) struct.attribute));
+                        first = new CustomAttribute(struct.attribute);
                         current = first;
                     } else {
-                        current.next = new CustomAttribute(((byte[]) struct.attribute));
-                        ;
+                        current.next = new CustomAttribute(struct.attribute);
                         current = current.next;
                     }
                 }
@@ -362,13 +361,12 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
                 MethodAttributeInfo struct = (MethodAttributeInfo) it.next();
                 JavaMethod method = struct.method;
                 String[] parameters = QDoxParser.getJavaMethodParametersAsStringArray(method);
-                if (name.equals("<init>") && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
+                if (name.equals(INIT_METHOD_NAME) && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
                     if (first == null) {
-                        first = new CustomAttribute(((byte[]) struct.attribute));
+                        first = new CustomAttribute(struct.attribute);
                         current = first;
                     } else {
-                        current.next = new CustomAttribute(((byte[]) struct.attribute));
-                        ;
+                        current.next = new CustomAttribute(struct.attribute);
                         current = current.next;
                     }
                 }
@@ -382,7 +380,6 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
      */
     private static class FieldAttributeInfo {
         public final byte[] attribute;
-
         public final JavaField field;
 
         public FieldAttributeInfo(final JavaField field, final byte[] attribute) {
@@ -396,7 +393,6 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
      */
     private static class MethodAttributeInfo {
         public final byte[] attribute;
-
         public final JavaMethod method;
 
         public MethodAttributeInfo(final JavaMethod method, final byte[] attribute) {
