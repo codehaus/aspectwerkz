@@ -3,7 +3,7 @@
     <system id="mixin-test">
         <mixin class="test.mixin.perinstance.MyImpl"
             deployment-model="perInstance"
-            bind-to="within(test.mixin.perinstance.ToBeIntroduced) or hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique)"/>
+            bind-to="within(test.mixin.perinstance.ToBeIntroduced) or hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique_perinstance)"/>
         <aspect class="test.mixin.perinstance.IntroductionTestAspect"/>
     </system>
 </aspectwerkz>

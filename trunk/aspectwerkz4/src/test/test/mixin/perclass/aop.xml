@@ -1,9 +1,9 @@
 <!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
 <aspectwerkz>
     <system id="mixin-test">
-        <mixin class="test.mixin.perinstance.MyImpl"
-            deployment-model="perInstance"
-            bind-to="within(test.mixin.perinstance.ToBeIntroduced) or hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique)"/>
-        <aspect class="test.mixin.perinstance.IntroductionTestAspect"/>
+        <mixin class="test.mixin.perclass.MyImpl"
+            deployment-model="perclass"
+            bind-to="within(test.mixin.perclass.ToBeIntroduced) or hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique_perclass)"/>
+        <aspect class="test.mixin.perclass.IntroductionTestAspect"/>
     </system>
 </aspectwerkz>
