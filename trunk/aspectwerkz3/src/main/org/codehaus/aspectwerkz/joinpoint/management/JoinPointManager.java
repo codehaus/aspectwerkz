@@ -183,10 +183,10 @@ public class JoinPointManager {
         if (joinPointIndex < 0) {
             throw new RuntimeException();
         }
-        if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
-            s_registry.registerJoinPoint(joinPointType, methodHash, null, m_classHash, m_targetClass, null, m_system);
-            threadLocal = new ThreadLocal();
-            synchronized (m_joinPoints) {
+        synchronized (m_joinPoints) {
+            if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
+                s_registry.registerJoinPoint(joinPointType, methodHash, null, m_classHash, m_targetClass, null, m_system);
+                threadLocal = new ThreadLocal();
                 if (m_joinPoints.length <= joinPointIndex) {
                     ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(m_joinPoints, 0, tmp, 0, m_joinPoints.length);
@@ -194,9 +194,9 @@ public class JoinPointManager {
                     java.lang.System.arraycopy(tmp, 0, m_joinPoints, 0, tmp.length);
                 }
                 m_joinPoints[joinPointIndex] = threadLocal;
+            } else {
+                threadLocal = m_joinPoints[joinPointIndex];
             }
-        } else {
-            threadLocal = m_joinPoints[joinPointIndex];
         }
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
         if (joinPointInfo == null) {
@@ -276,14 +276,14 @@ public class JoinPointManager {
                                                  final String withinMethodSignature, final int joinPointType)
                                           throws Throwable {
         ThreadLocal threadLocal;
-        if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
-            MemberInfo withinMemberInfo = TransformationUtil.createMemberInfo(targetClass, withinMethodName,
-                                                                              withinMethodSignature);
+        synchronized (m_joinPoints) {
+            if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
+                MemberInfo withinMemberInfo = TransformationUtil.createMemberInfo(targetClass, withinMethodName,
+                                                                                  withinMethodSignature);
 
-            s_registry.registerJoinPoint(joinPointType, methodHash, null, m_classHash, thisClass, withinMemberInfo,
-                                         m_system);
-            threadLocal = new ThreadLocal();
-            synchronized (m_joinPoints) {
+                s_registry.registerJoinPoint(joinPointType, methodHash, null, m_classHash, thisClass, withinMemberInfo,
+                                             m_system);
+                threadLocal = new ThreadLocal();
                 if (m_joinPoints.length <= joinPointIndex) {
                     ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(m_joinPoints, 0, tmp, 0, m_joinPoints.length);
@@ -291,9 +291,9 @@ public class JoinPointManager {
                     java.lang.System.arraycopy(tmp, 0, m_joinPoints, 0, tmp.length);
                 }
                 m_joinPoints[joinPointIndex] = threadLocal;
+            } else {
+                threadLocal = m_joinPoints[joinPointIndex];
             }
-        } else {
-            threadLocal = m_joinPoints[joinPointIndex];
         }
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
         if (joinPointInfo == null) {
@@ -369,11 +369,11 @@ public class JoinPointManager {
                                               final Object targetInstance, final Class declaringClass,
                                               final String fieldSignature) throws Throwable {
         ThreadLocal threadLocal;
-        if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
-            s_registry.registerJoinPoint(JoinPointType.FIELD_SET, fieldHash, fieldSignature, m_classHash,
-                                         declaringClass, null, m_system);
-            threadLocal = new ThreadLocal();
-            synchronized (m_joinPoints) {
+        synchronized (m_joinPoints) {
+            if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
+                s_registry.registerJoinPoint(JoinPointType.FIELD_SET, fieldHash, fieldSignature, m_classHash,
+                                             declaringClass, null, m_system);
+                threadLocal = new ThreadLocal();
                 if (m_joinPoints.length <= joinPointIndex) {
                     ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(m_joinPoints, 0, tmp, 0, m_joinPoints.length);
@@ -381,9 +381,9 @@ public class JoinPointManager {
                     java.lang.System.arraycopy(tmp, 0, m_joinPoints, 0, tmp.length);
                 }
                 m_joinPoints[joinPointIndex] = threadLocal;
+            } else {
+                threadLocal = m_joinPoints[joinPointIndex];
             }
-        } else {
-            threadLocal = m_joinPoints[joinPointIndex];
         }
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
         if (joinPointInfo == null) {
@@ -443,11 +443,11 @@ public class JoinPointManager {
                                                 final Object targetInstance, final Class declaringClass,
                                                 final String fieldSignature) throws Throwable {
         ThreadLocal threadLocal;
-        if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
-            s_registry.registerJoinPoint(JoinPointType.FIELD_GET, fieldHash, fieldSignature, m_classHash,
-                                         declaringClass, null, m_system);
-            threadLocal = new ThreadLocal();
-            synchronized (m_joinPoints) {
+        synchronized (m_joinPoints) {
+            if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
+                s_registry.registerJoinPoint(JoinPointType.FIELD_GET, fieldHash, fieldSignature, m_classHash,
+                                             declaringClass, null, m_system);
+                threadLocal = new ThreadLocal();
                 if (m_joinPoints.length <= joinPointIndex) {
                     ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(m_joinPoints, 0, tmp, 0, m_joinPoints.length);
@@ -455,9 +455,9 @@ public class JoinPointManager {
                     java.lang.System.arraycopy(tmp, 0, m_joinPoints, 0, tmp.length);
                 }
                 m_joinPoints[joinPointIndex] = threadLocal;
+            } else {
+                threadLocal = m_joinPoints[joinPointIndex];
             }
-        } else {
-            threadLocal = m_joinPoints[joinPointIndex];
         }
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
         if (joinPointInfo == null) {
@@ -515,12 +515,12 @@ public class JoinPointManager {
                                                   final Object exceptionInstance, final Object targetInstance,
                                                   final String handlerSignature) throws Throwable {
         ThreadLocal threadLocal;
-        if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
-            ClassInfo withinClassInfo = createClassInfo(m_targetClass);
-            s_registry.registerJoinPoint(JoinPointType.HANDLER, handlerHash, handlerSignature, m_classHash,
-                                         exceptionInstance.getClass(), withinClassInfo, m_system);
-            threadLocal = new ThreadLocal();
-            synchronized (m_joinPoints) {
+        synchronized (m_joinPoints) {
+            if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
+                ClassInfo withinClassInfo = createClassInfo(m_targetClass);
+                s_registry.registerJoinPoint(JoinPointType.HANDLER, handlerHash, handlerSignature, m_classHash,
+                                             exceptionInstance.getClass(), withinClassInfo, m_system);
+                threadLocal = new ThreadLocal();
                 if (m_joinPoints.length <= joinPointIndex) {
                     ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(m_joinPoints, 0, tmp, 0, m_joinPoints.length);
@@ -528,9 +528,9 @@ public class JoinPointManager {
                     java.lang.System.arraycopy(tmp, 0, m_joinPoints, 0, tmp.length);
                 }
                 m_joinPoints[joinPointIndex] = threadLocal;
+            } else {
+                threadLocal = m_joinPoints[joinPointIndex];
             }
-        } else {
-            threadLocal = m_joinPoints[joinPointIndex];
         }
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
         if (joinPointInfo == null) {
