@@ -404,7 +404,7 @@ public class JoinPointManager {
                                 expressionContext
                         );
 
-                        setMethodArgumentIndexes(expressionInfo, expressionContext, adviceInfo, loader);
+                        setMethodArgumentIndexes(expressionInfo, expressionContext, adviceInfo);
 
                         if (AdviceType.BEFORE.equals(adviceDefinition.getType())) {
                             beforeAdvices.add(adviceInfo);
@@ -474,12 +474,10 @@ public class JoinPointManager {
      * @param expressionInfo
      * @param ctx
      * @param adviceInfo
-     * @param loader
      */
     private static void setMethodArgumentIndexes(final ExpressionInfo expressionInfo,
                                                  final ExpressionContext ctx,
-                                                 final AdviceInfo adviceInfo,
-                                                 final ClassLoader loader) {
+                                                 final AdviceInfo adviceInfo) {
 
         // grab the parameters names
         String[] adviceArgNames = getParameterNames(adviceInfo.getName());
@@ -503,8 +501,6 @@ public class JoinPointManager {
                     adviceToTargetArgs[k] = AdviceInfo.TARGET_ARG;
                 } else if (isThis(adviceArgName, ctx)) {
                     adviceToTargetArgs[k] = AdviceInfo.THIS_ARG;
-                } else if (isRtti(adviceInfo.getMethodParameterTypes()[k], loader)) {
-                    adviceToTargetArgs[k] = AdviceInfo.RTTI_ARG;
                 } else {
                     throw new Error(
                             "Unbound advice parameter at index " + k +
@@ -553,8 +549,4 @@ public class JoinPointManager {
         return adviceArgName.equals(ctx.m_thisBoundedName);
     }
 
-    private static boolean isRtti(Type type, final ClassLoader loader) {
-        //TODO support subclassing ? impacts some in ExpressionInfo which is not classloader aware
-        return Type.getType(Rtti.class).getDescriptor().equals(type.getDescriptor());
-    }
 }

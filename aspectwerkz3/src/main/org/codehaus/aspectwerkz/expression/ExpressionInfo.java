@@ -13,7 +13,6 @@ import org.codehaus.aspectwerkz.expression.ast.ExpressionParser;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.Rtti;
 
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +33,6 @@ public class ExpressionInfo {
 
     private final static String JOINPOINT_CLASS = JoinPoint.class.getName();
     private final static String STATIC_JOINPOINT_CLASS = StaticJoinPoint.class.getName();
-    private final static String RTTI_CLASS = Rtti.class.getName();
     private final static String JOINPOINT = "JoinPoint";
     private final static String STATIC_JOINPOINT = "StaticJoinPoint";
     private final static String RTTI = "Rtti";
@@ -294,9 +292,6 @@ public class ExpressionInfo {
      * Check if the given className is one of the know argument: JoinPoint, StaticJoinPoint, Rtti
      * <p/>
      * className can be not qualified (for XML def simplification)
-     * <p/>
-     * TODO should we support subclassing of Rtti in advice signature ? (advice(MethodRtti))
-     * For such a need we would have to use some classloader awareness and go thru ClassInfo
      *
      * @param className
      * @return true if so
@@ -304,7 +299,6 @@ public class ExpressionInfo {
     private boolean isJoinPointOrStaticJoinPointOrRtti(String className) {
         return JOINPOINT_CLASS.equals(className)
                || STATIC_JOINPOINT_CLASS.equals(className)
-               || RTTI_CLASS.equals(className)
                || JOINPOINT.equals(className)
                || STATIC_JOINPOINT.equals(className)
                || RTTI.equals(className);
