@@ -27,14 +27,14 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.definition.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 
 /**
  * Holds the constants and utility method used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: TransformationUtil.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: TransformationUtil.java,v 1.5 2003-06-17 15:00:00 jboner Exp $
  */
 public final class TransformationUtil {
 

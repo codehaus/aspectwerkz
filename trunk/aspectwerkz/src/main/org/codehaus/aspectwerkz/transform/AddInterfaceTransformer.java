@@ -21,8 +21,7 @@ package org.codehaus.aspectwerkz.transform;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.List;
-
-import gnu.trove.THashSet;
+import java.util.HashSet;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ClassGen;
@@ -33,35 +32,35 @@ import org.cs3.jmangler.bceltransformer.AbstractInterfaceTransformer;
 import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
 import org.cs3.jmangler.bceltransformer.ExtensionSet;
 
-import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
+import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * Adds an interfaces to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddInterfaceTransformer.java,v 1.7 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: AddInterfaceTransformer.java,v 1.8 2003-06-17 15:00:00 jboner Exp $
  */
 public final class AddInterfaceTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
     /**
      * Holds references to the classes that have already been transformed.
      */
-    private final Set m_transformed = new THashSet();
+    private final Set m_transformed = new HashSet();
 
     /**
-     * Holds the weave model.
+     * The createWeaveModel model.
      */
     private final WeaveModel m_weaveModel;
 
     /**
-     * Retrieves the weave model.
+     * Retrieves the createWeaveModel model.
      */
     public AddInterfaceTransformer() {
         super();
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified");
+            throw new RuntimeException("more than one createWeaveModel model is specified");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -76,32 +75,31 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
      */
     public void transformInterface(final ExtensionSet es,
                                    final UnextendableClassSet cs) {
-        final Iterator it = cs.getIteratorForTransformableClasses();
+        Iterator it = cs.getIteratorForTransformableClasses();
         while (it.hasNext()) {
 
-            final ClassGen cg = (ClassGen)it.next();
+            ClassGen cg = (ClassGen)it.next();
             if (classFilter(cg)) continue;
 
             if (m_transformed.contains(cg.getClassName())) continue;
             m_transformed.add(cg.getClassName());
 
-            final ConstantPoolGen cpg = cg.getConstantPool();
-            final int[] interfaces = cg.getInterfaces();
+            ConstantPoolGen cpg = cg.getConstantPool();
+            int[] interfaces = cg.getInterfaces();
 
-            final List introductionNames = m_weaveModel.
-                    getIntroductionNames(cg.getClassName());
+            for (Iterator it2 = m_weaveModel.getIntroductionNames(
+                    cg.getClassName()).iterator(); it2.hasNext();) {
 
-            for (Iterator it2 = introductionNames.iterator(); it2.hasNext();) {
                 String introductionName = (String)it2.next();
-                final String interfaceName = m_weaveModel.
+                String interfaceName = m_weaveModel.
                         getIntroductionInterfaceName(introductionName);
 
                 boolean addInterface = true;
 
                 for (int l = 0; l < interfaces.length; l++) {
-                    final ConstantClass cc = (ConstantClass)cpg.
+                    ConstantClass cc = (ConstantClass)cpg.
                             getConstant(interfaces[l]);
-                    final ConstantUtf8 cu = (ConstantUtf8)cpg.
+                    ConstantUtf8 cu = (ConstantUtf8)cpg.
                             getConstant(cc.getNameIndex());
 
                     if (implementsInterface(cu, interfaceName)) {
@@ -111,7 +109,7 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
                 }
                 if (addInterface) {
                     if (interfaceName == null || interfaceName.equals("")) {
-                        throw new DefinitionException("trying to weave null interface to " + cg.getClassName() + ": definition file is not consistentadd");
+                        throw new DefinitionException("trying to createWeaveModel null interface to " + cg.getClassName() + ": definition file is not consistentadd");
                     }
                     es.addInterfaceToClass(cg.getClassName(), interfaceName);
                 }
@@ -140,7 +138,7 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.hasAspect(cg.getClassName()) &&
+        if (m_weaveModel.isAdvised(cg.getClassName()) &&
                 m_weaveModel.hasIntroductions(cg.getClassName())) {
             return false;
         }

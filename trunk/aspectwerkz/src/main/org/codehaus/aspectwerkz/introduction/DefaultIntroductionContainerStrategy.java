@@ -18,28 +18,27 @@
  */
 package org.codehaus.aspectwerkz.introduction;
 
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.WeakHashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
 
-import gnu.trove.THashMap;
-
-import org.codehaus.aspectwerkz.MethodComparator;
-import org.codehaus.aspectwerkz.MemoryType;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.ContainerType;
+import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
- * Base class for the different memory strategies.
+ * Implements the default introduction container strategy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: IntroductionMemoryStrategy.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: DefaultIntroductionContainerStrategy.java,v 1.1 2003-06-17 15:02:15 jboner Exp $
  */
-public abstract class IntroductionMemoryStrategy {
+public class DefaultIntroductionContainerStrategy implements IntroductionContainer {
 
     /**
      * Holds a reference to the sole per JVM advice.
@@ -49,7 +48,7 @@ public abstract class IntroductionMemoryStrategy {
     /**
      * Holds references to the per class advices.
      */
-    protected Map m_perClass = new THashMap();
+    protected Map m_perClass = new HashMap();
 
     /**
      * Holds references to the per instance advices.
@@ -72,22 +71,23 @@ public abstract class IntroductionMemoryStrategy {
     protected Method[] m_methods = new Method[0];
 
     /**
-     * Creates a new distribution strategy.
+     * Creates a new transient container strategy.
      *
      * @param implClass the implementation class
      */
-    public IntroductionMemoryStrategy(final Class implClass) {
+    public DefaultIntroductionContainerStrategy(final Class implClass) {
         if (implClass == null) return; // we have an interface only introduction
+
         m_implClass = implClass;
         synchronized (m_methods) {
-            final Method[] declaredMethods = m_implClass.getDeclaredMethods();
+            Method[] declaredMethods = m_implClass.getDeclaredMethods();
 
             // sort the list so that we can enshure that the indexes are in synch
             // see AddImplementationTransformer#addIntroductions
-            final List toSort = new ArrayList();
+            List toSort = new ArrayList();
             for (int i = 0; i < declaredMethods.length; i++) {
 
-                // remove the getUuidString, ___hidden$getMetaData, setMetaData
+                // remove the getUuid, ___hidden$getMetaData, ___hidden$addMetaData methods
                 // and the added proxy methods before sorting the method list
                 if (!declaredMethods[i].getName().equals(
                         TransformationUtil.GET_UUID_METHOD) &&
@@ -117,36 +117,84 @@ public abstract class IntroductionMemoryStrategy {
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    public abstract Object invokePerJvm(final int methodIndex,
-                                        final Object[] parameters);
+    public Object invokePerJvm(final int methodIndex,
+                               final Object[] parameters) {
+        Object result = null;
+        try {
+            if (m_perJvm == null) {
+                m_perJvm = m_implClass.newInstance();
+            }
+            result = m_methods[methodIndex].invoke(m_perJvm, parameters);
+        }
+        catch (InvocationTargetException e) {
+            throw new WrappedRuntimeException(e.getCause());
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+        return result;
+    }
 
     /**
      * Invokes the method on a per class basis.
      *
      * @param callingObject a reference to the calling object
-     * @param callingObjectUuid the UUID for the calling object
      * @param methodIndex the method index
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    public abstract Object invokePerClass(final Object callingObject,
-                                          final Object callingObjectUuid,
-                                          final int methodIndex,
-                                          final Object[] parameters);
+    public Object invokePerClass(final Object callingObject,
+                                 final int methodIndex,
+                                 final Object[] parameters) {
+        final Class callingClass = callingObject.getClass();
+        Object result = null;
+        try {
+            if (!m_perClass.containsKey(callingClass)) {
+                synchronized (m_perClass) {
+                    m_perClass.put(callingClass, m_implClass.newInstance());
+                }
+            }
+            result = m_methods[methodIndex].
+                    invoke(m_perClass.get(callingClass), parameters);
+        }
+        catch (InvocationTargetException e) {
+            throw new WrappedRuntimeException(e.getCause());
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+        return result;
+    }
 
     /**
      * Invokes the method on a per instance basis.
      *
      * @param callingObject a reference to the calling object
-     * @param callingObjectUuid the UUID for the calling object
      * @param methodIndex the method index
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    public abstract Object invokePerInstance(final Object callingObject,
-                                             final Object callingObjectUuid,
-                                             final int methodIndex,
-                                             final Object[] parameters);
+    public Object invokePerInstance(final Object callingObject,
+                                    final int methodIndex,
+                                    final Object[] parameters) {
+        Object result = null;
+        try {
+            if (!m_perInstance.containsKey(callingObject)) {
+                synchronized (m_perInstance) {
+                    m_perInstance.put(callingObject, m_implClass.newInstance());
+                }
+            }
+            result = m_methods[methodIndex].
+                    invoke(m_perInstance.get(callingObject), parameters);
+        }
+        catch (InvocationTargetException e) {
+            throw new WrappedRuntimeException(e.getCause());
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+        return result;
+    }
 
     /**
      * Invokes the method on a per thread basis.
@@ -180,6 +228,38 @@ public abstract class IntroductionMemoryStrategy {
     }
 
     /**
+     * Swaps the current introduction implementation.
+     *
+     * @param implClass the class of the new implementation to use
+     */
+    public void swapImplementation(final Class implClass) {
+        if (implClass == null) throw new IllegalArgumentException("implementation class can not be null");
+        synchronized (this) {
+            try {
+                m_implClass = implClass;
+                m_methods = m_implClass.getDeclaredMethods();
+
+                m_perJvm = null;
+                m_perClass = new HashMap(m_perClass.size());
+                m_perInstance = new WeakHashMap(m_perClass.size());
+                m_perThread = new WeakHashMap(m_perClass.size());
+            }
+            catch (Exception e) {
+                new WrappedRuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Returns the container type.
+     *
+     * @return the container type
+     */
+    public ContainerType getContainerType() {
+        return ContainerType.TRANSIENT;
+    }
+
+    /**
      * Returns a specific method by the method index.
      *
      * @param index the method index
@@ -198,20 +278,4 @@ public abstract class IntroductionMemoryStrategy {
     public Method[] getMethods() {
         return m_methods;
     }
-
-    /**
-     * Swaps the current introduction implementation.
-     *
-     * @param implClass the class of the new implementation to use
-     */
-    public abstract void swapImplementation(final Class implClass);
-
-    /**
-     * Returns the memory type.
-     *
-     * @return the memory type
-     */
-    public abstract MemoryType getMemoryType();
 }
-
-

@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -39,20 +40,18 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.ConstantClass;
 
-import gnu.trove.THashSet;
-
 import org.cs3.jmangler.bceltransformer.AbstractInterfaceTransformer;
 import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
 import org.cs3.jmangler.bceltransformer.ExtensionSet;
 import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
 
-import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
+import org.codehaus.aspectwerkz.metadata.WeaveModel;
 
 /**
  * Adds meta-data storage for the target classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddMetaDataTransformer.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: AddMetaDataTransformer.java,v 1.4 2003-06-17 15:00:00 jboner Exp $
  */
 public final class AddMetaDataTransformer extends AbstractInterfaceTransformer
         implements CodeTransformerComponent {
@@ -61,35 +60,25 @@ public final class AddMetaDataTransformer extends AbstractInterfaceTransformer
      * Holds references to the classes that have already been transformed by this
      * transformer.
      */
-    private final Set m_hasBeenTransformed = new THashSet();
+    private final Set m_hasBeenTransformed = new HashSet();
 
     /**
-     * Holds references to the class that have already been transformed.
-     */
-    private final List m_classesToTransform = new ArrayList();
-
-    /**
-     * Holds the weave model.
+     * Holds the createWeaveModel model.
      */
     private final WeaveModel m_weaveModel;
 
     /**
-     * Retrieves the weave model.
+     * Retrieves the createWeaveModel model.
      */
     public AddMetaDataTransformer() {
         super();
 
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified");
+            throw new RuntimeException("more than one createWeaveModel model is specified");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
-        }
-
-        List advisedClasses = m_weaveModel.getAspectPatterns();
-        for (Iterator it2 = advisedClasses.iterator(); it2.hasNext();) {
-            m_classesToTransform.add(it2.next());
         }
     }
 
@@ -386,7 +375,7 @@ public final class AddMetaDataTransformer extends AbstractInterfaceTransformer
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.hasAspect(cg.getClassName())) {
+        if (m_weaveModel.isAdvised(cg.getClassName())) {
             return false;
         }
         return true;

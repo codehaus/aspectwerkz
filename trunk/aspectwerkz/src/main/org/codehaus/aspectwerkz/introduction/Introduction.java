@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.Identifiable;
-import org.codehaus.aspectwerkz.MemoryType;
+import org.codehaus.aspectwerkz.ContainerType;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
@@ -43,7 +43,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * @see aspectwerkz.DeploymentModel
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Introduction.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: Introduction.java,v 1.3 2003-06-17 15:02:15 jboner Exp $
  */
 public class Introduction implements Serializable {
 
@@ -80,7 +80,7 @@ public class Introduction implements Serializable {
     /**
      * The memory strategy for this introduction.
      */
-    protected transient IntroductionMemoryStrategy m_memoryStrategy;
+    protected transient IntroductionContainer m_container;
 
     /**
      * Creates an introduction with an interface.<br/>
@@ -115,7 +115,6 @@ public class Introduction implements Serializable {
 
         if (implClass != null) {
             m_implementation = implClass.getName();
-
             checkIfInterfaceImplementationMatches();
         }
     }
@@ -146,7 +145,6 @@ public class Introduction implements Serializable {
                          final Object[] parameters,
                          final Object callingObject) {
         try {
-            final String callingObjectUuid = ((Identifiable)callingObject).getUuid();
             Object result = null;
             switch (m_deploymentModel) {
 
@@ -157,7 +155,6 @@ public class Introduction implements Serializable {
                 case DeploymentModel.PER_CLASS:
                     result = invokePerClass(
                             callingObject,
-                            callingObjectUuid,
                             methodIndex,
                             parameters);
                     break;
@@ -165,7 +162,6 @@ public class Introduction implements Serializable {
                 case DeploymentModel.PER_INSTANCE:
                     result = invokePerInstance(
                             callingObject,
-                            callingObjectUuid,
                             methodIndex,
                             parameters);
                     break;
@@ -210,7 +206,7 @@ public class Introduction implements Serializable {
             }
         }
 
-        m_memoryStrategy.swapImplementation(m_implClass);
+        m_container.swapImplementation(m_implClass);
     }
 
     /**
@@ -256,7 +252,7 @@ public class Introduction implements Serializable {
      * @return the method
      */
     public Method getMethod(final int index) {
-        return m_memoryStrategy.getMethod(index);
+        return m_container.getMethod(index);
     }
 
     /**
@@ -265,7 +261,7 @@ public class Introduction implements Serializable {
      * @return the methods
      */
     public Method[] getMethods() {
-        return m_memoryStrategy.getMethods();
+        return m_container.getMethods();
     }
 
     /**
@@ -279,22 +275,21 @@ public class Introduction implements Serializable {
 
 
     /**
-     * Sets the memory strategy.
+     * Sets the container.
      *
-     * @param memoryStrategy the memory strategy
+     * @param container the container
      */
-    public void setMemoryStrategy(
-            final IntroductionMemoryStrategy memoryStrategy) {
-        m_memoryStrategy = memoryStrategy;
+    public void setContainer(final IntroductionContainer container) {
+        m_container = container;
     }
 
     /**
-     * Returns the memory strategy.
+     * Returns the container.
      *
-     * @return the memory strategy
+     * @return the container
      */
-    public IntroductionMemoryStrategy getMemoryStrategy() {
-        return m_memoryStrategy;
+    public IntroductionContainer getContainer() {
+        return m_container;
     }
 
     /**
@@ -302,8 +297,8 @@ public class Introduction implements Serializable {
      *
      * @return the memory type
      */
-    public MemoryType getMemoryType() {
-        return m_memoryStrategy.getMemoryType();
+    public ContainerType getMemoryType() {
+        return m_container.getContainerType();
     }
 
     /**
@@ -315,41 +310,37 @@ public class Introduction implements Serializable {
      */
     private Object invokePerJvm(final int methodIndex,
                                 final Object[] parameters) {
-        return m_memoryStrategy.invokePerJvm(methodIndex, parameters);
+        return m_container.invokePerJvm(methodIndex, parameters);
     }
 
     /**
      * Invokes the method on a per class basis.
      *
      * @param callingObject a reference to the calling object
-     * @param callingObjectUuid the UUID for the calling object
      * @param methodIndex the method index
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
     private Object invokePerClass(final Object callingObject,
-                                  final Object callingObjectUuid,
                                   final int methodIndex,
                                   final Object[] parameters) {
-        return m_memoryStrategy.invokePerClass(
-                callingObject, callingObjectUuid, methodIndex, parameters);
+        return m_container.invokePerClass(
+                callingObject, methodIndex, parameters);
     }
 
     /**
      * Invokes the method on a per instance basis.
      *
      * @param callingObject a reference to the calling object
-     * @param callingObjectUuid the UUID for the calling object
      * @param methodIndex the method index
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
     private Object invokePerInstance(final Object callingObject,
-                                     final Object callingObjectUuid,
                                      final int methodIndex,
                                      final Object[] parameters) {
-        return m_memoryStrategy.invokePerInstance(
-                callingObject, callingObjectUuid, methodIndex, parameters);
+        return m_container.invokePerInstance(
+                callingObject, methodIndex, parameters);
     }
 
     /**
@@ -361,7 +352,7 @@ public class Introduction implements Serializable {
      */
     private Object invokePerThread(final int methodIndex,
                                    final Object[] parameters) {
-        return m_memoryStrategy.invokePerThread(methodIndex, parameters);
+        return m_container.invokePerThread(methodIndex, parameters);
     }
 
     /**
@@ -392,7 +383,7 @@ public class Introduction implements Serializable {
 //        return areEqualsOrBothNull(obj.m_interface, this.m_interface) &&
 //                areEqualsOrBothNull(obj.m_implementation, this.m_implementation) &&
 //                areEqualsOrBothNull(obj.m_methods, this.m_methods) &&
-//                areEqualsOrBothNull(obj.m_pattern, this.m_pattern) &&
+//                areEqualsOrBothNull(obj.m_expression, this.m_expression) &&
 //                areEqualsOrBothNull(obj.m_perClass, this.m_perClass) &&
 //                areEqualsOrBothNull(obj.m_perInstance, this.m_perInstance) &&
 //                areEqualsOrBothNull(obj.m_perClass, this.m_perClass) &&
@@ -411,7 +402,7 @@ public class Introduction implements Serializable {
 //                + m_interface
 //                + "," + m_implementation
 //                + "," + m_methods
-//                + "," + m_pattern
+//                + "," + m_expression
 //                + "," + m_perClass
 //                + "," + m_perInstance
 //                + "," + m_perClass
@@ -424,7 +415,7 @@ public class Introduction implements Serializable {
 //        result = 37 * result + hashCodeOrZeroIfNull(m_interface);
 //        result = 37 * result + hashCodeOrZeroIfNull(m_implementation);
 //        result = 37 * result + hashCodeOrZeroIfNull(m_methods);
-//        result = 37 * result + hashCodeOrZeroIfNull(m_pattern);
+//        result = 37 * result + hashCodeOrZeroIfNull(m_expression);
 //        result = 37 * result + hashCodeOrZeroIfNull(m_perClass);
 //        result = 37 * result + hashCodeOrZeroIfNull(m_perInstance);
 //        result = 37 * result + hashCodeOrZeroIfNull(m_perClass);

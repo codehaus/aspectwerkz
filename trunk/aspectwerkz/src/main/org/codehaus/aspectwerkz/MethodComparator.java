@@ -24,14 +24,14 @@ import java.lang.reflect.Method;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
  * Compares Methods. To be used when sorting methods.
  * Based on code by Bob Lee (crazybob@crazybob.org)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodComparator.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: MethodComparator.java,v 1.3 2003-06-17 15:02:15 jboner Exp $
  */
 public final class MethodComparator implements java.util.Comparator {
 

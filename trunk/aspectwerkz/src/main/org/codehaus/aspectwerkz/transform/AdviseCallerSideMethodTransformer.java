@@ -49,20 +49,20 @@ import org.apache.bcel.classfile.Field;
 import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
 import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
 
-import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
-import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.WeaveModel;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
  * Advises caller side method invocations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.5 2003-06-17 15:00:00 jboner Exp $
  */
 public class AdviseCallerSideMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
-     * Holds the weave model.
+     * Holds the createWeaveModel model.
      */
     private final WeaveModel m_weaveModel;
 
@@ -73,7 +73,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
         super();
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified");
+            throw new RuntimeException("more than one createWeaveModel model is specified");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -420,7 +420,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
      * @param calleeMethodSignature the signature for the callee method
      * @param factory the objectfactory
      * @param joinPointType the type of the joinpoint
-     * @param uuid the UUID for the weave model
+     * @param uuid the UUID for the createWeaveModel model
      * @return the new method
      */
     private Method createClInitMethodWithStaticJoinPointField(
@@ -511,7 +511,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
      * @param calleeMethodSignature the signature for the callee method
      * @param factory the objectfactory
      * @param joinPointType the type of the joinpoint
-     * @param uuid the UUID for the weave model
+     * @param uuid the UUID for the createWeaveModel model
      * @return the modified clinit method
      */
     private Method createStaticJoinPointField(

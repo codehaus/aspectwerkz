@@ -19,28 +19,95 @@
 package org.codehaus.aspectwerkz.introduction;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.WeakHashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.MemoryType;
+import org.codehaus.aspectwerkz.ContainerType;
+import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
- * Implements a transient version of the introduction memory strategy.
+ * Implements the default introduction container strategy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: TransientIntroductionMemoryStrategy.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: DefaultIntroductionContainerStrategy.java,v 1.1 2003-06-17 15:02:15 jboner Exp $
  */
-public class TransientIntroductionMemoryStrategy
-        extends IntroductionMemoryStrategy {
+public class DefaultIntroductionContainerStrategy implements IntroductionContainer {
 
     /**
-     * Creates a new transient distribution strategy.
+     * Holds a reference to the sole per JVM advice.
+     */
+    protected Object m_perJvm;
+
+    /**
+     * Holds references to the per class advices.
+     */
+    protected Map m_perClass = new HashMap();
+
+    /**
+     * Holds references to the per instance advices.
+     */
+    protected Map m_perInstance = new WeakHashMap();
+
+    /**
+     * Holds references to the per thread advices.
+     */
+    protected Map m_perThread = new WeakHashMap();
+
+    /**
+     * Holds the <code>Class</code> for the implementation.
+     */
+    protected Class m_implClass;
+
+    /**
+     * Stores the methods for the introduction.
+     */
+    protected Method[] m_methods = new Method[0];
+
+    /**
+     * Creates a new transient container strategy.
      *
      * @param implClass the implementation class
      */
-    public TransientIntroductionMemoryStrategy(final Class implClass) {
-        super(implClass);
+    public DefaultIntroductionContainerStrategy(final Class implClass) {
+        if (implClass == null) return; // we have an interface only introduction
+
+        m_implClass = implClass;
+        synchronized (m_methods) {
+            Method[] declaredMethods = m_implClass.getDeclaredMethods();
+
+            // sort the list so that we can enshure that the indexes are in synch
+            // see AddImplementationTransformer#addIntroductions
+            List toSort = new ArrayList();
+            for (int i = 0; i < declaredMethods.length; i++) {
+
+                // remove the getUuid, ___hidden$getMetaData, ___hidden$addMetaData methods
+                // and the added proxy methods before sorting the method list
+                if (!declaredMethods[i].getName().equals(
+                        TransformationUtil.GET_UUID_METHOD) &&
+                        !declaredMethods[i].getName().equals(
+                                TransformationUtil.GET_META_DATA_METHOD) &&
+                        !declaredMethods[i].getName().equals(
+                                TransformationUtil.SET_META_DATA_METHOD) &&
+                        !declaredMethods[i].getName().startsWith(
+                                TransformationUtil.ORIGINAL_METHOD_PREFIX) ) {
+                    toSort.add(declaredMethods[i]);
+                }
+            }
+            Collections.sort(toSort, MethodComparator.
+                    getInstance(MethodComparator.NORMAL_METHOD));
+
+            m_methods = new Method[toSort.size()];
+            for (int i = 0; i < m_methods.length; i++) {
+                m_methods[i] = (Method)toSort.get(i);
+            }
+        }
     }
 
     /**
@@ -72,13 +139,11 @@ public class TransientIntroductionMemoryStrategy
      * Invokes the method on a per class basis.
      *
      * @param callingObject a reference to the calling object
-     * @param callingObjectUuid the UUID for the calling object
      * @param methodIndex the method index
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
     public Object invokePerClass(final Object callingObject,
-                                 final Object callingObjectUuid,
                                  final int methodIndex,
                                  final Object[] parameters) {
         final Class callingClass = callingObject.getClass();
@@ -105,13 +170,11 @@ public class TransientIntroductionMemoryStrategy
      * Invokes the method on a per instance basis.
      *
      * @param callingObject a reference to the calling object
-     * @param callingObjectUuid the UUID for the calling object
      * @param methodIndex the method index
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
     public Object invokePerInstance(final Object callingObject,
-                                    final Object callingObjectUuid,
                                     final int methodIndex,
                                     final Object[] parameters) {
         Object result = null;
@@ -123,6 +186,37 @@ public class TransientIntroductionMemoryStrategy
             }
             result = m_methods[methodIndex].
                     invoke(m_perInstance.get(callingObject), parameters);
+        }
+        catch (InvocationTargetException e) {
+            throw new WrappedRuntimeException(e.getCause());
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+        return result;
+    }
+
+    /**
+     * Invokes the method on a per thread basis.
+     *
+     * @param methodIndex the method index
+     * @param parameters the parameters for the invocation
+     * @return the result from the method invocation
+     */
+    public Object invokePerThread(final int methodIndex,
+                                  final Object[] parameters) {
+        Object result;
+        try {
+            final Thread currentThread = Thread.currentThread();
+            if (!m_perThread.containsKey(currentThread)) {
+                synchronized (m_perThread) {
+                    m_perThread.put(
+                            currentThread,
+                            m_implClass.newInstance());
+                }
+            }
+            result = m_methods[methodIndex].invoke(
+                    m_perThread.get(currentThread), parameters);
         }
         catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getCause());
@@ -157,11 +251,31 @@ public class TransientIntroductionMemoryStrategy
     }
 
     /**
-     * Returns the memory type.
+     * Returns the container type.
      *
-     * @return the memory type
+     * @return the container type
      */
-    public MemoryType getMemoryType() {
-        return MemoryType.TRANSIENT;
+    public ContainerType getContainerType() {
+        return ContainerType.TRANSIENT;
+    }
+
+    /**
+     * Returns a specific method by the method index.
+     *
+     * @param index the method index
+     * @return the method
+     */
+    public Method getMethod(final int index) {
+        if (index < 0) throw new IllegalArgumentException("method index can not be less than 0");
+        return m_methods[index];
+    }
+
+    /**
+     * Returns all the methods for this introduction.
+     *
+     * @return the methods
+     */
+    public Method[] getMethods() {
+        return m_methods;
     }
 }
