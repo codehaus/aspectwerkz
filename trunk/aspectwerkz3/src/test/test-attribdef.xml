@@ -34,6 +34,7 @@
         <aspect class="test.pointcutexpression.TestAspect"/>
         <aspect class="test.annotation.TestAspect"/>
         <aspect class="test.modifier.TestAspect"/>
+        <aspect class="test.interfacesubtypebug.TestAspect"/>
         <aspect class="test.implementsbug.TestModelObserver"/>
         <aspect class="test.inheritedmixinbug.Baspect">
             <introduce class="test.inheritedmixinbug.Baspect$Bimpl" bind-to="within(test.inheritedmixinbug.Target)" deployment-model="perInstance"/>
