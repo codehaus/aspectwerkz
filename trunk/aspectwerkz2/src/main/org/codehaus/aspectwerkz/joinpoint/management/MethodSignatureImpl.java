@@ -13,9 +13,11 @@ import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 
 /**
+ * Implementation for the method signature.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-class MethodSignatureImpl implements MethodSignature {
+public class MethodSignatureImpl implements MethodSignature {
 
     private final Class m_declaringType;
     private final MethodTuple m_methodTuple;

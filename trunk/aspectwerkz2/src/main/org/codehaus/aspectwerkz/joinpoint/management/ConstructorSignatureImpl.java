@@ -13,9 +13,11 @@ import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
 
 /**
+ * Implementation for the constructor signature.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-class ConstructorSignatureImpl implements ConstructorSignature {
+public class ConstructorSignatureImpl implements ConstructorSignature {
 
     private final Class m_declaringType;
     private final ConstructorTuple m_constructorTuple;

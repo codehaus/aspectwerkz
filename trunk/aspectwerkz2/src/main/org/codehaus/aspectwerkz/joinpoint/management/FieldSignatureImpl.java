@@ -12,9 +12,11 @@ import java.lang.reflect.Field;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 
 /**
+ * Implementation for the field signature.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-class FieldSignatureImpl implements FieldSignature {
+public class FieldSignatureImpl implements FieldSignature {
 
     private final Class m_declaringType;
     private final Field m_field;
