@@ -45,6 +45,9 @@ public class ASTMethodPattern extends SimpleNode {
         if (classPattern.endsWith("+")) {
             hierarchical = true;
             classPattern = classPattern.substring(0, classPattern.length() - 1);
+        } else if (classPattern.endsWith("#")) {
+            hierarchical = true;
+            classPattern = classPattern.substring(0, classPattern.length() - 1);
         }
         m_declaringTypePattern = Pattern.compileTypePattern(classPattern, hierarchical);
         String methodNamePattern = pattern.substring(index + 1, pattern.length());

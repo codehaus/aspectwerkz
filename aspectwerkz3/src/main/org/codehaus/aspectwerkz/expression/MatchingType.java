@@ -1,0 +1,39 @@
+/**************************************************************************************
+ * Copyright (c) Jonas Bon?r, Alexandre Vasseur. All rights reserved.                 *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the QPL license       *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
+package org.codehaus.aspectwerkz.expression;
+
+
+/**
+ * Type safe enum for the different matching types.
+ *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ */
+public class MatchingType {
+    public static final MatchingType NOT_HIERARCHICAL = new MatchingType("NOT_HIERARCHICAL");
+    public static final MatchingType MATCH_ON_ALL_METHODS = new MatchingType("MATCH_ON_ALL_METHODS");
+    public static final MatchingType MATCH_ON_BASE_TYPE_METHODS = new MatchingType("MATCH_ON_BASE_TYPE_METHODS");
+    private final String myName;
+
+    /**
+     * Creates a new instance
+     *
+     * @param name
+     */
+    private MatchingType(String name) {
+        myName = name;
+    }
+
+    /**
+     * Returns the string representation.
+     *
+     * @return the string representation
+     */
+    public String toString() {
+        return myName;
+    }
+}

@@ -11,6 +11,8 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
+import java.io.*;
+
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -27,7 +29,7 @@ public abstract class AbstractLoggingAspect {
     /**
      * @Around methodsToLog
      */
-    public Object logMethod(final JoinPoint joinPoint) throws Throwable {
+    public Object logMethod(JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature)joinPoint.getSignature();
         indent();
         System.out.println("--> " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
