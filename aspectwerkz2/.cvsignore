@@ -1,4 +1,5 @@
-aspectwerkz*.jar
+lib/aspectwerkz*
+aspectwerkz.dll
 build
 dist
 target
@@ -9,6 +10,7 @@ _dump
 _attributes
 _jisp
 _txLogs
+_boot
 _metaData
 .classpath
 .project
