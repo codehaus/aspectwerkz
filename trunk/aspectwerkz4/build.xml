@@ -329,7 +329,7 @@
         <copy tofile="${lib.dir}/aspectwerkz-jdk5-${version}.jar" file="${build.dir}/aspectwerkz-jdk5-${version}.jar" overwrite="true"/>
 
         <!-- nodeps -->
-        <jar destfile="${build.dir}/aspectwerkz-nodeps-jdk5-${version}.jar">
+        <jar destfile="${build.dir}/aspectwerkz-nodeps-jdk5-${version}.jar" manifest="${lib.dir}/manifest-core.mf">
             <zipfileset src="${build.dir}/aspectwerkz-nodeps-${version}.jar"/>
             <zipfileset src="${build.dir}/aspectwerkz-jdk5-${version}.jar"/>
         </jar>
