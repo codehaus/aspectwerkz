@@ -17,23 +17,19 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
  * Handles the bind-advice rule definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class BindAdviceRule implements BindRule {
-
-    public Expression getCflow() {
-        return m_cflow;
-    }
-
-    public void setCflow(Expression m_cflow) {
-        this.m_cflow = m_cflow;
-    }
-
-    private Expression m_cflow;
 
     /**
      * The pointcut expression.
      */
     private Expression m_expression;
+
+    /**
+     * The cflow pointcut expression - if any
+     */
+    private Expression m_cflow;
 
     /**
      * The advices references.
@@ -61,6 +57,24 @@ public class BindAdviceRule implements BindRule {
      */
     public void setExpression(final Expression expression) {
         m_expression = expression;
+    }
+
+    /**
+     * Returns the cflow expression - if any
+     *
+     * @return the cflow expression or null
+     */
+    public Expression getCflowExpression() {
+        return m_cflow;
+    }
+
+    /**
+     * Sets the cflow expression - if any
+     *
+     * @param expression the expression
+     */
+    public void setCflowExpression(Expression expression) {
+        this.m_cflow = expression;
     }
 
     /**

@@ -148,6 +148,13 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                             attribute.getExpression(),
                             aspectDef
                     );
+                    // ALEX CFLOW
+                    createAndAddPointcutDefToAspectDef(
+                            field.getName()+"-System",
+                            PointcutType.CALL,
+                            attribute.getExpression(),
+                            aspectDef
+                    );
                     break;
                 }
                 else if (fieldAttr instanceof ImplementsAttribute) {

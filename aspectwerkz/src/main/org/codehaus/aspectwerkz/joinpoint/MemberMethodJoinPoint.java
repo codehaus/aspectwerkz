@@ -25,6 +25,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class MemberMethodJoinPoint extends MethodJoinPoint {
 
@@ -99,9 +100,8 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
             handleThrowsPointcut();
         }
 
-        // get the cflow pointcuts that affects this join point
-        //m_cflowPointcuts = m_system.getCFlowPointcuts(m_targetClass.getName(), m_methodMetaData);
-        m_cflowPointcuts = m_system.getCFlowExpressions(m_classMetaData, m_methodMetaData);
+        // get the cflow expressions that affects this join point
+        m_cflowExpressions = m_system.getCFlowExpressions(m_classMetaData, m_methodMetaData);
 
         // check if the one of the pointcuts is marked as non-reentrant
         for (int j = 0; j < m_pointcuts.length; j++) {

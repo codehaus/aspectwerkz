@@ -25,6 +25,7 @@ import java.util.Iterator;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:stefan.finkenzeller@gmx.net">Stefan Finkenzeller</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class DefaultJoinPointController extends AbstractJoinPointController {
 
@@ -47,17 +48,10 @@ public class DefaultJoinPointController extends AbstractJoinPointController {
         }
 
         // check for cflow pointcut dependencies
-        if (joinPoint.getCFlowPointcuts().size() != 0) {
+        if (joinPoint.getCFlowExpressions().size() != 0) {
             // we must check if we are in the correct control flow
             boolean isInCFlow = false;
-//            for (Iterator it = joinPoint.getCFlowPointcuts().iterator(); it.hasNext();) {
-//                CompiledPatternTuple patternTuple = (CompiledPatternTuple)it.next();
-//                if (joinPoint.getSystem().isInControlFlowOf(patternTuple)) {
-//                    isInCFlow = true;
-//                    break;
-//                }
-//            }
-            for (Iterator it = joinPoint.getCFlowPointcuts().iterator(); it.hasNext();) {
+            for (Iterator it = joinPoint.getCFlowExpressions().iterator(); it.hasNext();) {
                 Expression cflowExpression = (Expression)it.next();
                 if (joinPoint.getSystem().isInControlFlowOf(cflowExpression)) {
                     isInCFlow = true;

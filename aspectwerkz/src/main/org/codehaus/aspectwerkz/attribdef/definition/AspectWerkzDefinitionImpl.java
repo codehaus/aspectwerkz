@@ -27,9 +27,11 @@ import org.codehaus.aspectwerkz.attribdef.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.DefaultAspectAttributeParser;
+import org.codehaus.aspectwerkz.attribdef.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
 /**
  * Implementation of the AspectWerkz interface for the attribdef definition model.
@@ -109,11 +111,10 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      * Creates a new instance, creates and sets the system aspect.
      */
     public AspectWerkzDefinitionImpl() {
-//        AspectDefinition systemAspect = new AspectDefinition();
-//        systemAspect.setName(SYSTEM_ASPECT);
-//        synchronized (m_aspectMap) {
-//            m_aspectMap.put(SYSTEM_ASPECT, systemAspect);
-//        }
+        AspectDefinition systemAspect = new AspectDefinition(SYSTEM_ASPECT, CFlowSystemAspect.CLASS_NAME, CFlowSystemAspect.DEPLOYMENT_MODEL);
+        synchronized (m_aspectMap) {
+            m_aspectMap.put(SYSTEM_ASPECT, systemAspect);
+        }
     }
 
     /**
@@ -735,6 +736,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      * @return boolean
      */
     public boolean hasCallPointcut(final ClassMetaData classMetaData) {
+        //TODO CFLOW match
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
@@ -762,6 +764,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      */
     public boolean isPickedOutByCallPointcut(final ClassMetaData classMetaData,
                                              final MethodMetaData methodMetaData) {
+        //TODO cflow
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
@@ -776,6 +779,11 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
                     return true;
                 }
             }
+//            for (Iterator it3 = aspectDef.getPointcuts().iterator(); it3.hasNext();) {
+//                PointcutDefinition pcDef = (PointcutDefinition) it3.next();
+//                if (pcDef.getType().equals(PointcutType.CFLOW)
+//                    && Expression.getExpressionTemplate(aspectDef.getName(), pcDef.getName()))
+//            }
         }
         return false;
     }
