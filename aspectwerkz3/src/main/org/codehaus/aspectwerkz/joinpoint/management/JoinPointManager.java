@@ -860,7 +860,7 @@ public class JoinPointManager {
      *
      * @param joinPointInfo
      */
-    private void enterCflow(final JoinPointInfo joinPointInfo) {
+    private void enterCflow(final JoinPointInfo joinPointInfo) throws Throwable {
         IndexTuple enter = joinPointInfo.exitCflow;
         if (enter != null) {
             enter.getAspectManager().getAspectContainer(enter.getAspectIndex()).invokeAdvice(enter.getMethodIndex(),
@@ -873,7 +873,7 @@ public class JoinPointManager {
      *
      * @param joinPointInfo
      */
-    private void exitCflow(final JoinPointInfo joinPointInfo) {
+    private void exitCflow(final JoinPointInfo joinPointInfo) throws Throwable {
         IndexTuple exit = joinPointInfo.enterCflow;
         if (exit != null) {
             exit.getAspectManager().getAspectContainer(exit.getAspectIndex()).invokeAdvice(exit.getMethodIndex(),
