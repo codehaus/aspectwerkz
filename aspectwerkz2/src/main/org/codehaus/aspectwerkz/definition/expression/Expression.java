@@ -210,6 +210,19 @@ public abstract class Expression implements Serializable {
     public abstract boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData);
 
     /**
+     * Checks if the expression matches a cflow stack.
+     * This assumes the expression is a cflow extracted expression (like "true AND cflow")
+     *
+     * Note: we need to evaluate each cflow given the stack
+     * and not evaluate each stack element separately
+     * to support complex cflow composition
+     *
+     * @param classNameMethodMetaDataTuples the meta-data for the cflow stack
+     * @return boolean
+     */
+    public abstract boolean matchCflow(Set classNameMethodMetaDataTuples);
+
+    /**
      * Checks if the expression matches a certain join point as regards IN / NOT IN parts Each IN / NOT IN part is
      * evaluated independantly from the boolean algebra (TF time)
      *

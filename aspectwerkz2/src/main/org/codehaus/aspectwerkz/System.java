@@ -155,12 +155,12 @@ public final class System {
             return false;
         }
         else {
-            for (Iterator it = cflowSet.iterator(); it.hasNext();) {
-                ClassNameMethodMetaDataTuple tuple = (ClassNameMethodMetaDataTuple)it.next();
-                if (cflowExpression.match(tuple.getClassMetaData(), tuple.getMethodMetaData())) {
+//            for (Iterator it = cflowSet.iterator(); it.hasNext();) {
+//                ClassNameMethodMetaDataTuple tuple = (ClassNameMethodMetaDataTuple)it.next();
+                if (cflowExpression.matchCflow(cflowSet)) {//tuple.getClassMetaData(), tuple.getMethodMetaData())) {
                     return true;
                 }
-            }
+            //}
         }
         return false;
     }

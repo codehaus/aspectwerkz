@@ -12,7 +12,10 @@ import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
+ * test "pc AND (cf OR cf2)"
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class CFlowTest extends WeavedTestCase implements Loggable {
 
@@ -20,8 +23,21 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
 
     public void testCallWithinCFlow() {
         m_logString = "";
-        step1();
+        step1();//will have cflow and will call step2()
         assertEquals("step1 advice-before step2 advice-after ", m_logString);
+    }
+
+    public void testCallWithinCFlow_B() {
+        m_logString = "";
+        step1_B();//will have cflow and will call step2_B() but is NOT in step1_A cflow
+        System.out.println(m_logString);
+        assertEquals("step1_B step2_B ", m_logString);
+    }
+
+    public void testCallWithinCFlowWithinCflow() {
+        m_logString = "";
+        step1_A();//will have cflow and will call step1_B that will call step2_B()
+        assertEquals("step1_A step1_B advice-before2 step2_B advice-after2 ", m_logString);
     }
 
     public void testCallOutsideCFlow() {
@@ -54,7 +70,21 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
         step2();
     }
 
+    public void step1_B() {
+        log("step1_B ");
+        step2_B();
+    }
+
+    public void step1_A() {
+        log("step1_A ");
+        step1_B();
+    }
+
     public void step2() {
         log("step2 ");
+    }
+
+    public void step2_B() {
+        log("step2_B ");
     }
 }
