@@ -151,7 +151,7 @@ public class AspectRegistry {
                         synchronized (m_pointcutManagerMap) {
                             try {
                                 CrossCuttingInfo crossCuttingInfo = container.getCrossCuttingInfo();
-                                m_pointcutManagerMap.put(crossCuttingInfo.getName(), pointcutManager); //AVAOPC what is this name as a key here
+                                m_pointcutManagerMap.put(crossCuttingInfo.getName(), pointcutManager);
                                 final int indexAspect = m_aspectContainers.length + 1;
                                 m_aspectIndexes.put(crossCuttingInfo.getName(), indexAspect);
                                 final Object[] tmpAspects = new Object[m_aspectContainers.length + 1];
@@ -166,7 +166,8 @@ public class AspectRegistry {
                                 for (Iterator it = advices.iterator(); it.hasNext();) {
                                     final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
                                     IndexTuple tuple = new IndexTuple(indexAspect, adviceDef.getMethodIndex(),
-                                                                      m_aspectManager.getUuid(), m_aspectManager);
+                                                                      m_aspectManager.getUuid());
+
                                     //prefix AdviceName with AspectName to allow AspectReuse
                                     m_adviceIndexes.put(crossCuttingInfo.getName() + "/" + adviceDef.getName(), tuple);
                                 }
@@ -175,11 +176,13 @@ public class AspectRegistry {
                                 List introductions = crossCuttingInfo.getAspectDefinition().getIntroductions();
                                 for (Iterator it = introductions.iterator(); it.hasNext();) {
                                     IntroductionDefinition introDef = (IntroductionDefinition)it.next();
+
                                     // load default mixin impl from the aspect which defines it
                                     Class defaultImplClass = crossCuttingInfo.getAspectClass().getClassLoader()
                                                                              .loadClass(introDef.getName());
                                     Introduction mixin = new Introduction(introDef.getName(), defaultImplClass,
                                                                           crossCuttingInfo, introDef);
+
                                     // prepare the container
                                     mixin.setContainer(new IntroductionContainer(mixin, container));
                                     final Mixin[] tmpMixins = new Mixin[m_mixins.length + 1];
@@ -212,19 +215,16 @@ public class AspectRegistry {
      */
     public AspectContainer getAspectContainer(final int index) {
         AspectContainer aspect;
-
         try {
             aspect = m_aspectContainers[index - 1];
         } catch (Throwable e) {
             initialize();
-
             try {
                 aspect = m_aspectContainers[index - 1];
             } catch (ArrayIndexOutOfBoundsException e1) {
                 throw new DefinitionException("no aspect with index " + index);
             }
         }
-
         return aspect;
     }
 
@@ -235,13 +235,11 @@ public class AspectRegistry {
      * @return the the aspect container
      */
     public AspectContainer getAspectContainer(final String name) {
-        AspectContainer container = null;
-
+        AspectContainer container;
         try {
             container = m_aspectContainers[m_aspectIndexes.get(name) - 1];
         } catch (Throwable e1) {
             initialize();
-
             try {
                 container = m_aspectContainers[m_aspectIndexes.get(name) - 1];
             } catch (ArrayIndexOutOfBoundsException e2) {
@@ -249,7 +247,6 @@ public class AspectRegistry {
                                               + "] is not properly defined");
             }
         }
-
         return container;
     }
 
@@ -271,19 +268,16 @@ public class AspectRegistry {
      */
     public Mixin getMixin(final int index) {
         Mixin mixin;
-
         try {
             mixin = m_mixins[index - 1];
         } catch (Throwable e1) {
             initialize();
-
             try {
                 mixin = m_mixins[index - 1];
             } catch (ArrayIndexOutOfBoundsException e2) {
                 throw new DefinitionException("no mixin with index " + index);
             }
         }
-
         return mixin;
     }
 
@@ -297,21 +291,17 @@ public class AspectRegistry {
         if (name == null) {
             throw new IllegalArgumentException("introduction name can not be null");
         }
-
         Mixin introduction;
-
         try {
             introduction = m_mixins[m_definition.getMixinIndexByName(name) - 1];
         } catch (Throwable e1) {
             initialize();
-
             try {
                 introduction = m_mixins[m_definition.getMixinIndexByName(name) - 1];
             } catch (ArrayIndexOutOfBoundsException e2) {
                 throw new DefinitionException("no introduction with name " + name);
             }
         }
-
         return introduction;
     }
 
@@ -325,13 +315,10 @@ public class AspectRegistry {
         if (name == null) {
             throw new IllegalArgumentException("aspect name can not be null");
         }
-
         final int index = m_aspectIndexes.get(name);
-
         if (index == 0) {
             throw new DefinitionException("aspect " + name + " is not properly defined");
         }
-
         return index;
     }
 
@@ -345,13 +332,10 @@ public class AspectRegistry {
         if (name == null) {
             throw new IllegalArgumentException("advice name can not be null");
         }
-
         final IndexTuple index = (IndexTuple)m_adviceIndexes.get(name);
-
         if (index == null) {
             throw new DefinitionException("advice " + name + " is not properly defined");
         }
-
         return index;
     }
 
@@ -365,12 +349,10 @@ public class AspectRegistry {
         if (name == null) {
             throw new IllegalArgumentException("aspect name can not be null");
         }
-
         if (m_pointcutManagerMap.containsKey(name)) {
             return (PointcutManager)m_pointcutManagerMap.get(name);
         } else {
             initialize();
-
             if (m_pointcutManagerMap.containsKey(name)) {
                 return (PointcutManager)m_pointcutManagerMap.get(name);
             } else {
@@ -386,7 +368,6 @@ public class AspectRegistry {
      */
     public Collection getPointcutManagers() {
         initialize();
-
         return m_pointcutManagerMap.values();
     }
 
@@ -397,7 +378,6 @@ public class AspectRegistry {
      */
     public AspectContainer[] getAspectContainers() {
         initialize();
-
         return m_aspectContainers;
     }
 
@@ -409,12 +389,10 @@ public class AspectRegistry {
      */
     public List getPointcuts(final ExpressionContext ctx) {
         List pointcuts = new ArrayList();
-
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager pointcutManager = (PointcutManager)it.next();
             pointcuts.addAll(pointcutManager.getPointcuts(ctx));
         }
-
         return pointcuts;
     }
 
@@ -426,12 +404,10 @@ public class AspectRegistry {
     */
     public List getCflowPointcuts(final ExpressionContext ctx) {
         List pointcuts = new ArrayList();
-
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager pointcutManager = (PointcutManager)it.next();
             pointcuts.addAll(pointcutManager.getCflowPointcuts(ctx));
         }
-
         return pointcuts;
     }
 
@@ -445,9 +421,7 @@ public class AspectRegistry {
         if (name == null) {
             throw new IllegalArgumentException("aspect name can not be null");
         }
-
         initialize();
-
         if (m_pointcutManagerMap.containsKey(name)) {
             return true;
         } else {
@@ -594,8 +568,10 @@ public class AspectRegistry {
                         break;
                     }
                 }
+
                 // create a method tuple with 'wrapped method' and 'prefixed method'
                 MethodTuple methodTuple = new MethodTuple(wrapperMethod, prefixedMethod);
+
                 // map the tuple to the hash for the 'wrapper method'
                 int methodHash = TransformationUtil.calculateHash(wrapperMethod);
                 methodMap.put(methodHash, methodTuple);
@@ -671,8 +647,10 @@ public class AspectRegistry {
                     break;
                 }
             }
+
             // create a constructor tuple with 'wrapper constructor' and 'prefixed constructor'
             ConstructorTuple constructorTuple = new ConstructorTuple(wrapperConstructor, prefixedConstructor);
+
             // map the tuple to the hash for the 'wrapper constructor'
             int constructorHash = TransformationUtil.calculateHash(wrapperConstructor);
             constructorMap.put(constructorHash, constructorTuple);

@@ -17,6 +17,8 @@ import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -25,8 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.io.Serializable;
-import java.io.ObjectInputStream;
 
 /**
  * Base class for the join point implementations.
@@ -70,6 +70,15 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         m_beforeAdviceExecutor = beforeAdviceExecutor;
         m_afterAdviceExecutor = afterAdviceExecutor;
         m_system = SystemLoader.getSystem(targetClass.getClassLoader());
+    }
+
+    /**
+     * Resets the join point.
+     * <p/>
+     * Will restart the execution chain of advice. 
+     */
+    public void reset() {
+        m_aroundAdviceExecutor.reset();
     }
 
     /**
@@ -341,9 +350,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         if (m_checkCflow) {
             boolean isInCFlow = false;
             for (Iterator it = m_cflowExpressions.iterator(); it.hasNext();) {
-                Object o = it.next();
-                System.out.println("o = " + o);
-                CflowExpressionVisitor cflowExpression = (CflowExpressionVisitor)o;
+                CflowExpressionVisitor cflowExpression = (CflowExpressionVisitor)it.next();
                 if (m_system.isInControlFlowOf(cflowExpression)) {
                     isInCFlow = true;
                     break;

@@ -48,12 +48,10 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
      */
     public static JavaFieldInfo getFieldInfo(final Field field) {
         JavaFieldInfo fieldInfo = (JavaFieldInfo)s_cache.get(field);
-
         if (fieldInfo == null) { //  declaring class is not loaded yet; load it and retry
             new JavaClassInfo(field.getDeclaringClass());
             fieldInfo = (JavaFieldInfo)s_cache.get(field);
         }
-
         return fieldInfo;
     }
 
@@ -75,7 +73,6 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
     public ClassInfo getType() {
         if (m_type == null) {
             Class type = ((Field)m_member).getType();
-
             if (m_classInfoRepository.hasClassInfo(type.getName())) {
                 m_type = m_classInfoRepository.getClassInfo(type.getName());
             } else {
@@ -83,7 +80,6 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
                 m_classInfoRepository.addClassInfo(m_type);
             }
         }
-
         return m_type;
     }
 
@@ -91,36 +87,28 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
         if (this == o) {
             return true;
         }
-
         if (!(o instanceof JavaFieldInfo)) {
             return false;
         }
-
         final JavaFieldInfo javaFieldInfo = (JavaFieldInfo)o;
-
         if ((m_attributes != null) ? (!m_attributes.equals(javaFieldInfo.m_attributes))
                                    : (javaFieldInfo.m_attributes != null)) {
             return false;
         }
-
         if ((m_classInfoRepository != null) ? (!m_classInfoRepository.equals(javaFieldInfo.m_classInfoRepository))
                                             : (javaFieldInfo.m_classInfoRepository != null)) {
             return false;
         }
-
         if ((m_declaringType != null) ? (!m_declaringType.equals(javaFieldInfo.m_declaringType))
                                       : (javaFieldInfo.m_declaringType != null)) {
             return false;
         }
-
         if ((m_member != null) ? (!m_member.equals(javaFieldInfo.m_member)) : (javaFieldInfo.m_member != null)) {
             return false;
         }
-
         if ((m_type != null) ? (!m_type.equals(javaFieldInfo.m_type)) : (javaFieldInfo.m_type != null)) {
             return false;
         }
-
         return true;
     }
 

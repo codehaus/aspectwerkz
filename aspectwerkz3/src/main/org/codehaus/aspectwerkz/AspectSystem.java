@@ -158,7 +158,7 @@ public final class AspectSystem {
      * @return AspectManager
      * @throws DefinitionException (runtime exception) if not found
      */
-    public AspectManager getAspectManager(String uuid) {
+    public AspectManager getAspectManager(final String uuid) {
         // Note: uuid is assumed to be unique within an AspectSystem
         for (int i = 0; i < m_aspectManagers.length; i++) {
             AspectManager aspectManager = m_aspectManagers[i];
