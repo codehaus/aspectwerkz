@@ -799,6 +799,19 @@ SystemLoader.getSystem("system name")
 
         <section name="Custom attribute compilation and retrieval">
             <p>
+                Custom attributes starts with
+                <a href="attribute_definition.html#Attribute reference">
+                    <code>@@</code>
+                </a>.
+            </p>
+            <p>
+                The
+                <code>AspectC</code> utility can be used to compile custom metadata to the class bytecode.
+                See the
+                <a href="attribute_definition.html#Attribute compilation">Attribute compilation</a> section
+                for information on how to compile the attributes.
+            </p>
+            <p>
                 In custom attribute compilation the JavaDocs tags on the format
                 <code>@@&lt;name&gt; [&lt;value&gt;]</code> will be retrieved and
                 inserted as attributes into the bytecode of the <code>.class</code> file.
@@ -845,18 +858,6 @@ for (int i = 0; i < attributes.length; i++) {
     }
 }
                 ]]></source>
-            </p>
-
-            <p>
-                The
-                <code>AspectC</code> utility can be used to compile custom metadata to the class bytecode.
-                Custom metadata is marked with
-                <a href="attribute_definition.html#Attribute reference">
-                    <code>@Attribute.</code>
-                </a>.
-                See
-                <code>AspectC</code>
-                <a href="attribute_definition.html#Attribute compilation">usage notes</a>.
             </p>
         </section>
 
