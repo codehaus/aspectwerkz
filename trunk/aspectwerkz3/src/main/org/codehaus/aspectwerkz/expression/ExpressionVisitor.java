@@ -49,12 +49,13 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
 import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
 
 /**
  * The expression visitor.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
  * @author Michael Nascimento
@@ -73,11 +74,11 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     /**
      * Creates a new expression.
-     * 
+     *
      * @param expressionInfo the expressionInfo this visitor is built on for expression with signature
-     * @param expression the expression as a string
-     * @param namespace the namespace
-     * @param root the AST root
+     * @param expression     the expression as a string
+     * @param namespace      the namespace
+     * @param root           the AST root
      */
     public ExpressionVisitor(final ExpressionInfo expressionInfo,
                              final String expression,
@@ -91,7 +92,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     /**
      * Matches the expression context.
-     * 
+     *
      * @param context
      * @return
      */
@@ -241,7 +242,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         // for execution() pointcut, this is equals to CALLEE info
         ReflectionInfo info = context.getWithinReflectionInfo();
         ClassInfo classInfo = (info instanceof MemberInfo) ?
-            ((MemberInfo)info).getDeclaringType() : (ClassInfo)info;
+                              ((MemberInfo) info).getDeclaringType() : (ClassInfo) info;
 
         Node childNode = node.jjtGetChild(0);
         MethodInfo[] methodInfos = classInfo.getMethods();
@@ -268,7 +269,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         // for execution() pointcut, this is equals to CALLEE info
         ReflectionInfo info = context.getWithinReflectionInfo();
         ClassInfo classInfo = (info instanceof MemberInfo) ?
-            ((MemberInfo)info).getDeclaringType() : (ClassInfo)info;
+                              ((MemberInfo) info).getDeclaringType() : (ClassInfo) info;
 
         Node childNode = node.jjtGetChild(0);
         FieldInfo[] fieldInfos = classInfo.getFields();
@@ -390,11 +391,11 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                     }
                     ctx.setCurrentTargetArgsIndex(ictx);
                     // do we have an eager wildcard in the middle ?
-                    boolean isEager = ((ASTArgParameter) node.jjtGetChild(iexp+1)).getTypePattern().isEagerWildCard();
+                    boolean isEager = ((ASTArgParameter) node.jjtGetChild(iexp + 1)).getTypePattern().isEagerWildCard();
                     if (isEager) {
                         // TODO - ignore for now, but not really supported - eager in the middle will match one
                     }
-                    if (Boolean.TRUE.equals((Boolean) node.jjtGetChild(iexp+1).jjtAccept(this, ctx))) {
+                    if (Boolean.TRUE.equals((Boolean) node.jjtGetChild(iexp + 1).jjtAccept(this, ctx))) {
                         matchCount += 1;
                         ictx++;
                     } else {
@@ -415,9 +416,12 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                     // do a match from last to first, break when args() nodes are exhausted
                     for (int i = 0; (i < contextParametersCount) && (expressionParameterCount - i >= 0); i++) {
                         ctx.setCurrentTargetArgsIndex(contextParametersCount - 1 - i);
-                        if (Boolean.TRUE.equals((Boolean) node.jjtGetChild(expressionParameterCount - i).jjtAccept(
-                            this,
-                            ctx))) {
+                        if (Boolean.TRUE.equals(
+                                (Boolean) node.jjtGetChild(expressionParameterCount - i).jjtAccept(
+                                        this,
+                                        ctx
+                                )
+                        )) {
                             ;//go on with "next" arg
                         } else {
                             return Boolean.FALSE;
@@ -677,7 +681,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     protected boolean visitParameters(SimpleNode node, ClassInfo[] parameterTypes) {
         int nrChildren = node.jjtGetNumChildren();
         if (nrChildren <= 0) {
-            return (parameterTypes.length==0);
+            return (parameterTypes.length == 0);
         }
 
         // collect the parameter nodes
@@ -690,7 +694,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         }
 
         if (parameterNodes.size() <= 0) {
-            return (parameterTypes.length==0);
+            return (parameterTypes.length == 0);
         }
 
         //TODO duplicate code with args() match
@@ -699,7 +703,8 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         // look for eager pattern at the beginning and end
         int expressionParameterCount = parameterNodes.size();
         boolean isFirstArgEager = ((ASTParameter) parameterNodes.get(0)).getDeclaringClassPattern().isEagerWildCard();
-        boolean isLastArgEager = ((ASTParameter) parameterNodes.get(expressionParameterCount-1)).getDeclaringClassPattern().isEagerWildCard();
+        boolean isLastArgEager = ((ASTParameter) parameterNodes.get(expressionParameterCount - 1)).getDeclaringClassPattern()
+                .isEagerWildCard();
         // foo(..)
         if (isFirstArgEager && expressionParameterCount == 1) {
             return true;
@@ -724,7 +729,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                     break;
                 }
                 // do we have an eager wildcard in the middle ?
-                ASTParameter parameterNode = (ASTParameter) parameterNodes.get(iexp+1);
+                ASTParameter parameterNode = (ASTParameter) parameterNodes.get(iexp + 1);
                 boolean isEager = parameterNode.getDeclaringClassPattern().isEagerWildCard();
                 if (isEager) {
                     // TODO - ignore for now, but not really supported - eager in the middle will match one
@@ -750,9 +755,12 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 // do a match from last to first, break when foo() nodes are exhausted
                 for (int i = 0; (i < contextParametersCount) && (expressionParameterCount - i >= 0); i++) {
                     ASTParameter parameterNode = (ASTParameter) parameterNodes.get(expressionParameterCount - i);
-                    if (Boolean.TRUE.equals((Boolean) parameterNode.jjtAccept(
-                            this,
-                            parameterTypes[contextParametersCount -1 -i]))) {
+                    if (Boolean.TRUE.equals(
+                            (Boolean) parameterNode.jjtAccept(
+                                    this,
+                                    parameterTypes[contextParametersCount - 1 - i]
+                            )
+                    )) {
                         ;//go on with "next" param
                     } else {
                         return false;
@@ -800,7 +808,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     /**
      * Returns the string representation of the expression.
-     * 
+     *
      * @return
      */
     public String toString() {

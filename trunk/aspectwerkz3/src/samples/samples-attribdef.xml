@@ -3,7 +3,7 @@
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
 <aspectwerkz>
     <system id="samples">
-        <!--        <prepare package="examples.logging."/>-->
+        <!--                <prepare package="examples.logging."/>-->
         <package name="examples">
             <aspect class="caching.Fibonacci$FibonacciCacheAspect" deployment-model="perInstance"/>
             <aspect class="caching.CachingAspect">
@@ -14,9 +14,8 @@
             <aspect class="cflow.CFlowAspect"/>
             <aspect class="exception.ExceptionHandlingAspect"/>
 
-            <!--            <aspect class="logging.ArgAspect"/>-->
-
-            <aspect class="annotation.Target$AnnotationMatchAspect"/>
+            <aspect class="logging.ArgAspect"/>
+            <!--            <aspect class="annotation.Target$AnnotationMatchAspect"/>-->
         </package>
     </system>
 </aspectwerkz>

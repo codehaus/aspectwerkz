@@ -58,7 +58,7 @@ public interface TransformationConstants {
     public static final String LOAD_JOIN_POINT_METHOD_NAME = "loadJoinPoint";
     public static final String GET_JOIN_POINT_MANAGER = "getJoinPointManager";
     public static final String GET_ASPECT_MANAGER_METHOD = "getAspectManager";
-    public static final String GET_SYSTEM_METHOD = "getSystem";
+    public static final String GET_SYSTEM_METHOD = "getCflowStack";
     public static final String GET_MIXIN_METHOD = "getMixin";
     public static final String INVOKE_MIXIN_METHOD = "invokeMixin";
     public static final String SERIAL_VERSION_UID_FIELD = "serialVersionUID";

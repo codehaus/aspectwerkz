@@ -14,13 +14,10 @@ import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
-import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
-import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +34,7 @@ import java.util.List;
 public class AspectAnnotationParser {
 
     /**
-     * Singleton is enough
+     * Singleton is enough.
      */
     private final static AspectAnnotationParser s_singleton = new AspectAnnotationParser();
 
@@ -133,30 +130,6 @@ public class AspectAnnotationParser {
                     );
                 }
             }
-
-//            List expressionAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_EXPRESSION, field);
-//            for (Iterator iterator = expressionAnnotations.iterator(); iterator.hasNext();) {
-//                ExpressionAnnotationProxy annotation = (ExpressionAnnotationProxy) iterator.next();
-//                if (annotation != null) {
-//                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-//                            field.getName(),
-//                            annotation.expression(),
-//                            aspectDef
-//                    );
-//                }
-//            }
-//            List implementsAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_IMPLEMENTS, field);
-//            for (Iterator iterator = implementsAnnotations.iterator(); iterator.hasNext();) {
-//                ImplementsAnnotationProxy annotation = (ImplementsAnnotationProxy) iterator.next();
-//                if (annotation != null) {
-//                    DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
-//                            annotation.expression(),
-//                            field.getName(),
-//                            field.getType().getName(),
-//                            aspectDef
-//                    );
-//                }
-//            }
         }
 
         // recursive call, next iteration based on super class

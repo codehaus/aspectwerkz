@@ -34,12 +34,11 @@ public class AdviceInfoStruct {
      * @param afterReturningAdvices
      * @param afterThrowingAdvices
      */
-    public AdviceInfoStruct(
-            final List aroundAdvices,
-            final List beforeAdvices,
-            final List afterFinallyAdvices,
-            final List afterReturningAdvices,
-            final List afterThrowingAdvices) {
+    public AdviceInfoStruct(final List aroundAdvices,
+                            final List beforeAdvices,
+                            final List afterFinallyAdvices,
+                            final List afterReturningAdvices,
+                            final List afterThrowingAdvices) {
         m_aroundAdvices = aroundAdvices;
         m_beforeAdvices = beforeAdvices;
         m_afterFinallyAdvices = afterFinallyAdvices;
@@ -77,12 +76,12 @@ public class AdviceInfoStruct {
         int i;
         List aroundAdviceList = new ArrayList();
         for (i = 0; i < adviceInfoStructs.length; i++) {
-            aroundAdviceList.add(adviceInfoStructs[i].getAroundAdvices());
+            aroundAdviceList.addAll(adviceInfoStructs[i].getAroundAdvices());
         }
         AdviceInfo[] aroundAdvices = new AdviceInfo[aroundAdviceList.size()];
         i = 0;
         for (Iterator it = aroundAdviceList.iterator(); it.hasNext(); i++) {
-            aroundAdvices[i] = (AdviceInfo)it.next();
+            aroundAdvices[i] = (AdviceInfo) it.next();
         }
         return aroundAdvices;
     }
@@ -97,12 +96,12 @@ public class AdviceInfoStruct {
         int i;
         List beforeAdviceList = new ArrayList();
         for (i = 0; i < adviceInfoStructs.length; i++) {
-            beforeAdviceList.add(adviceInfoStructs[i].getBeforeAdvices());
+            beforeAdviceList.addAll(adviceInfoStructs[i].getBeforeAdvices());
         }
         AdviceInfo[] beforeAdvices = new AdviceInfo[beforeAdviceList.size()];
         i = 0;
         for (Iterator it = beforeAdviceList.iterator(); it.hasNext(); i++) {
-            beforeAdvices[i] = (AdviceInfo)it.next();
+            beforeAdvices[i] = (AdviceInfo) it.next();
         }
         return beforeAdvices;
     }
@@ -117,12 +116,12 @@ public class AdviceInfoStruct {
         int i;
         List afterAdviceList = new ArrayList();
         for (i = 0; i < adviceInfoStructs.length; i++) {
-            afterAdviceList.add(adviceInfoStructs[i].getAfterFinallyAdvices());
+            afterAdviceList.addAll(adviceInfoStructs[i].getAfterFinallyAdvices());
         }
         AdviceInfo[] afterAdvices = new AdviceInfo[afterAdviceList.size()];
         i = 0;
         for (Iterator it = afterAdviceList.iterator(); it.hasNext(); i++) {
-            afterAdvices[i] = (AdviceInfo)it.next();
+            afterAdvices[i] = (AdviceInfo) it.next();
         }
         return afterAdvices;
     }
@@ -137,12 +136,12 @@ public class AdviceInfoStruct {
         int i;
         List afterAdviceList = new ArrayList();
         for (i = 0; i < adviceInfoStructs.length; i++) {
-            afterAdviceList.add(adviceInfoStructs[i].getAfterReturningAdvices());
+            afterAdviceList.addAll(adviceInfoStructs[i].getAfterReturningAdvices());
         }
         AdviceInfo[] afterAdvices = new AdviceInfo[afterAdviceList.size()];
         i = 0;
         for (Iterator it = afterAdviceList.iterator(); it.hasNext(); i++) {
-            afterAdvices[i] = (AdviceInfo)it.next();
+            afterAdvices[i] = (AdviceInfo) it.next();
         }
         return afterAdvices;
     }
@@ -157,12 +156,12 @@ public class AdviceInfoStruct {
         int i;
         List afterAdviceList = new ArrayList();
         for (i = 0; i < adviceInfoStructs.length; i++) {
-            afterAdviceList.add(adviceInfoStructs[i].getAfterThrowingAdvices());
+            afterAdviceList.addAll(adviceInfoStructs[i].getAfterThrowingAdvices());
         }
         AdviceInfo[] afterAdvices = new AdviceInfo[afterAdviceList.size()];
         i = 0;
         for (Iterator it = afterAdviceList.iterator(); it.hasNext(); i++) {
-            afterAdvices[i] = (AdviceInfo)it.next();
+            afterAdvices[i] = (AdviceInfo) it.next();
         }
         return afterAdvices;
     }

@@ -12,7 +12,6 @@ import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.util.Strings;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 import java.util.Iterator;
 
@@ -23,7 +22,7 @@ import gnu.trove.TIntIntHashMap;
  * extends the ExpressionVisitor. We should allow for optimization (all=TRUE) by assuming that args(..) does not depends
  * of the matching context. The "(String a, String b):methodX && args(a,b) -OR- methodY && args(b,a)" expression should
  * not be allowed then. TODO check support for anonymous pc
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class ArgsIndexVisitor extends ExpressionVisitor {
@@ -42,10 +41,6 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         ArgsIndexVisitor expression = namespace.getExpressionInfo(node.getName()).getArgsIndexMapper();
-        if (expression == null) {
-            throw new DefinitionException("Could not find pointcut reference " + node.getName() +
-                    " in namespace " + m_namespace);
-        }
         Boolean match = new Boolean(expression.match(context));
 
         // update the context mapping from this last visit
@@ -63,13 +58,11 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
                 }
                 int adviceArgIndex = m_expressionInfo.getArgumentIndex(adviceParamName);
                 int targetArgIndex = context.m_exprIndexToTargetIndex.get(exprArgIndex);
-                //                System.out.println(" transitive arg" + adviceArgIndex + " " + adviceParamName + " -> " + exprArgIndex
-                // + " -> " + targetArgIndex);
                 sourceToTargetArgIndexes.put(adviceArgIndex, targetArgIndex);
             }
             context.m_exprIndexToTargetIndex = sourceToTargetArgIndexes;
 
-            //debug:
+            // debug:
             //            if (m_expressionInfo.m_isAdviceBindingWithArgs) {
             //                System.out.println("XXXARGS transitive map for an advice is @ " +
             //                        m_expression + " for " + context.getReflectionInfo().getName());
@@ -100,9 +93,6 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         // if match and we are visiting a parameter binding (not a type matching)
         if (pointcutArgIndex >= 0 && Boolean.TRUE.equals(match)) {
             ExpressionContext ctx = (ExpressionContext) data;
-//                        System.out.println("XXXARGS targetArg at match: " + ctx.getCurrentTargetArgsIndex() + " is pc expr arg "
-//             + pointcutArgIndex
-//                            + " @ " + m_expressionInfo.getExpressionAsString());
             ctx.m_exprIndexToTargetIndex.put(pointcutArgIndex, ctx.getCurrentTargetArgsIndex());
         }
         return match;
@@ -110,7 +100,7 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
 
     /**
      * Get the parameter index from a "call side" like signature like pc(a, b) => index(a) = 0, or -1 if not found
-     * 
+     *
      * @param expression
      * @param adviceParamName
      * @return
@@ -135,5 +125,4 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         }
         return -1;
     }
-
 }

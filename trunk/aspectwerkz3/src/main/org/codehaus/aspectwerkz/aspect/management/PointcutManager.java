@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Manages pointcuts and introductions defined by a specfic aspect.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -49,7 +49,7 @@ public class PointcutManager {
 
     /**
      * Creates a new aspect.
-     * 
+     *
      * @param name the name of the aspect
      */
     public PointcutManager(final String name) {
@@ -58,8 +58,8 @@ public class PointcutManager {
 
     /**
      * Creates a new aspect.
-     * 
-     * @param name the name of the aspect
+     *
+     * @param name            the name of the aspect
      * @param deploymentModel the deployment model for the aspect
      */
     public PointcutManager(final String name, final int deploymentModel) {
@@ -75,7 +75,7 @@ public class PointcutManager {
 
     /**
      * Returns the name of the aspect.
-     * 
+     *
      * @return the aspect name
      */
     public String getName() {
@@ -84,7 +84,7 @@ public class PointcutManager {
 
     /**
      * Returns the deployment model for the aspect.
-     * 
+     *
      * @return the deployment model
      */
     public int getDeploymentModel() {
@@ -93,7 +93,7 @@ public class PointcutManager {
 
     /**
      * Returns the deployment model for the aspect.
-     * 
+     *
      * @return the deployment model
      */
     public String getDeploymentModelAsString() {
@@ -102,7 +102,7 @@ public class PointcutManager {
 
     /**
      * Adds an introduction to the open class.
-     * 
+     *
      * @param introduction the name of the introduction to add
      */
     public final void addIntroduction(final String introduction) {
@@ -117,7 +117,7 @@ public class PointcutManager {
 
     /**
      * Adds an array with introductions to the open class. <br/>
-     * 
+     *
      * @param introductions the introductions to add
      */
     public final void addIntroductions(final String[] introductions) {
@@ -139,7 +139,7 @@ public class PointcutManager {
 
     /**
      * Adds a new pointcut.
-     * 
+     *
      * @param pointcut the pointcut to add
      */
     public void addPointcut(final Pointcut pointcut) {
@@ -155,7 +155,7 @@ public class PointcutManager {
 
     /**
      * Returns the introductions for the open class.
-     * 
+     *
      * @return an array with the introductions for the class
      */
     public String[] getIntroductions() {
@@ -164,7 +164,7 @@ public class PointcutManager {
 
     /**
      * Returns the pointcut for a specific expression.
-     * 
+     *
      * @param expression the expression
      * @return the pointcut, or null
      */
@@ -180,7 +180,7 @@ public class PointcutManager {
 
     /**
      * Returns the cflow pointcut for a specific expression.
-     * 
+     *
      * @param expression the expression
      * @return the pointcut, or null
      */
@@ -196,7 +196,7 @@ public class PointcutManager {
 
     /**
      * Returns all the pointcuts defined by a specific aspect.
-     * 
+     *
      * @return the pointcuts
      */
     public List getPointcuts() {
@@ -205,7 +205,7 @@ public class PointcutManager {
 
     /**
      * Returns all the pointcuts defined by a specific aspect that has a cflow pointcut referenced.
-     * 
+     *
      * @return the pointcuts
      */
     public List getCflowPointcuts() {
@@ -214,7 +214,7 @@ public class PointcutManager {
 
     /**
      * Returns all the pointcuts for the join point specified.
-     * 
+     *
      * @param ctx the expression context
      * @return the pointcuts that parse
      */
@@ -234,7 +234,7 @@ public class PointcutManager {
 
     /**
      * Returns all the cflow pointcuts for the join point specified.
-     * 
+     *
      * @param ctx the expression context
      * @return the pointcuts that parse
      */

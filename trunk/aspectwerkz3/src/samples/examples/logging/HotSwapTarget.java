@@ -8,7 +8,6 @@
 package examples.logging;
 
 import org.codehaus.aspectwerkz.extension.hotswap.HotSwapClient;
-import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.*;
 
 import java.io.File;
@@ -18,7 +17,7 @@ import java.io.File;
  * with the WeavingClassLoader it is mandatory to use the -Daspectwerkz.transform.forceWCL=true
  * option so that AspectWerkz gets loaded in the WeavingClassLoader and not in the (parallel) system
  * class loader.
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class HotSwapTarget {
@@ -106,8 +105,9 @@ public class HotSwapTarget {
         //addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog3(int)",
         // "runtimePCToLog3b");
         JavaLoggingAspect.addPointcutForLoggingAdvice(
-            "execution(* examples.logging.HotSwapTarget.toLog2(..))",
-            "runtimePCToLog2");
+                "execution(* examples.logging.HotSwapTarget.toLog2(..))",
+                "runtimePCToLog2"
+        );
         // call HotSwap for runtime weaving
         HotSwapClient.hotswap(HotSwapTarget.class);
 
@@ -154,14 +154,17 @@ public class HotSwapTarget {
         for (int i = 0; i < loop; i++) {
             HotSwapClient.hotswap(HotSwapTarget.class);
         }
-        System.out.println("perSwap without def change = "
-            + (System.currentTimeMillis() - ts)
-            / loop);
+        System.out.println(
+                "perSwap without def change = "
+                + (System.currentTimeMillis() - ts)
+                  / loop
+        );
         ts = System.currentTimeMillis();
         for (int i = 0; i < loop; i++) {
             JavaLoggingAspect.addPointcutForLoggingAdvice(
-                "execution(* examples.logging.HotSwapTarget.toLog1())",
-                "runtimePCToLog1");
+                    "execution(* examples.logging.HotSwapTarget.toLog1())",
+                    "runtimePCToLog1"
+            );
             HotSwapClient.hotswap(HotSwapTarget.class);
             JavaLoggingAspect.removePointcutForLoggingAdvice("", "runtimePCToLog1");
         }

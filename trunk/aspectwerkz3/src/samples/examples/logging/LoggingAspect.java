@@ -8,41 +8,18 @@
 package examples.logging;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.AspectContext;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class LoggingAspect extends AbstractLoggingAspect {
 
-    public LoggingAspect(AspectContext info) {
-        super(info);
-        //        System.out.println("\t\tLoggingAspect UUID: " + info.getUuid());
-        //        System.out.println("I AM PROTO " + info.isPrototype());
-    }
-
     // ============ Pointcuts ============
 
-    // AW-152: see XML - TODO move in a TestCase
-    // AV - eW - temp restored
     /**
-     * Expression execution(@log * examples.logging.*.*(..))
-     *
-     * @Expression execution(* examples.logging.Target.toLog1(..))
+     * @Expression execution(* examples.logging.Target.toLog*(..))
      */
-    Pointcut methodsToLog;
-
-    /**
-     * Expression get(@log * examples.logging.*.*)
-     *
-     * @Expression get(* examples.logging.Target.*)
-     */
-    Pointcut logGet;
-
-    /**
-     * Expression set(@log * examples.logging.*.*)
-     *
-     * @Expression set(* examples.logging.Target.*)
-     */
-    Pointcut logSet;
+    Pointcut methodsToLog() {
+        return null;
+    };
 }

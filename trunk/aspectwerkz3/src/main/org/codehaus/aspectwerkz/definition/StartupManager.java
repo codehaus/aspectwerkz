@@ -27,17 +27,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @TODO consider moving all these methods to the AspectRegistry and delete the class
- *
+ * <p/>
  * Manages the startup procedure, walks through the definition and instantiates the
  * aspects/advices/introduction/pointcuts. <p/>Reads the definition, either as a class of as an XML file. <p/>To use
  * your XML definition file pass <code>-Daspectwerkz.definition.file=PathToFile</code> as parameter to the JVM. <p/>If
  * the above given parameter is not specified, the <code>StartupManager</code> tries locate a file called
  * <code>aspectwerkz.xml</code> in the classpath and if this fails the last attempt is to use the
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class StartupManager {
     /**
@@ -76,8 +75,8 @@ public class StartupManager {
 //            PointcutManager pointcutManager = aspectManager.getPointcutManager(aspectDef.getName());
 //            List cflowPointcuts = pointcutManager.getCflowPointcuts();
 //            for (Iterator it2 = cflowPointcuts.iterator(); it2.hasNext();) {
-//                Pointcut cflowPointcut = (Pointcut)it2.next();
-//                ExpressionInfo expressionInfo = cflowPointcut.getExpressionInfo();
+//                Pointcut m_cflowPointcut = (Pointcut)it2.next();
+//                ExpressionInfo expressionInfo = m_cflowPointcut.getExpressionInfo();
 //
 //                // register the cflow advices in the system and create the cflow system
 //                // pointcutManager
@@ -130,8 +129,8 @@ public class StartupManager {
 //                    definition.addAspect(cflowAspectDef);
 //                    registerAspect(aspectManager, cflowAspectDef, new HashMap());
 //                }
-//                cflowPointcut.addBeforeAdvice(CFlowSystemAspect.NAME + '/' + CFlowSystemAspect.PRE_ADVICE);
-//                cflowPointcut.addAfterFinallyAdvices(CFlowSystemAspect.NAME + '/' + CFlowSystemAspect.POST_ADVICE);
+//                m_cflowPointcut.addBeforeAdvice(CFlowSystemAspect.NAME + '/' + CFlowSystemAspect.PRE_ADVICE);
+//                m_cflowPointcut.addAfterFinallyAdvices(CFlowSystemAspect.NAME + '/' + CFlowSystemAspect.POST_ADVICE);
 //            }
 //        }
 //    }

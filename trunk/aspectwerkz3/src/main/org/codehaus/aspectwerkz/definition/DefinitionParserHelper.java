@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.util.Strings;
@@ -15,8 +14,6 @@ import org.codehaus.aspectwerkz.aspect.AdviceType;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Helper class for the attribute and the XML definition parsers.
@@ -55,7 +52,7 @@ public class DefinitionParserHelper {
         // <pointcut name="pc" ...> [will be registered as pc]
         // <advice bind-to="pc" ...> [will be registered as pc and should not override previous one !]
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName());
-        ExpressionInfo info = namespace.getExpressionInfo(pointcutName);
+        ExpressionInfo info = namespace.getExpressionInfoOrNull(pointcutName);
         if (info == null) {
             info = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
             // extract the pointcut signature map

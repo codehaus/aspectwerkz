@@ -33,20 +33,24 @@ public class JavaLoggingAspect {
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         indent();
-        System.out.println(joinPoint.getType()
-            + "--> "
-            + joinPoint.getTargetClass().getName()
-            + "::"
-            + signature.getName());
+        System.out.println(
+                joinPoint.getType()
+                + "--> "
+                + joinPoint.getTargetClass().getName()
+                + "::"
+                + signature.getName()
+        );
         m_level++;
         final Object result = joinPoint.proceed();
         m_level--;
         indent();
-        System.out.println(joinPoint.getType()
-            + "<-- "
-            + joinPoint.getTargetClass().getName()
-            + "::"
-            + signature.getName());
+        System.out.println(
+                joinPoint.getType()
+                + "<-- "
+                + joinPoint.getTargetClass().getName()
+                + "::"
+                + signature.getName()
+        );
         return result;
     }
 
@@ -54,20 +58,24 @@ public class JavaLoggingAspect {
      */
     public void logEntry(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
-        System.out.println("ENTER: "
-            + joinPoint.getTargetClass().getName()
-            + "::"
-            + signature.getName());
+        System.out.println(
+                "ENTER: "
+                + joinPoint.getTargetClass().getName()
+                + "::"
+                + signature.getName()
+        );
     }
 
     /**
      */
     public void logExit(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
-        System.out.println("EXIT: "
-            + joinPoint.getTargetClass().getName()
-            + "::"
-            + signature.getName());
+        System.out.println(
+                "EXIT: "
+                + joinPoint.getTargetClass().getName()
+                + "::"
+                + signature.getName()
+        );
     }
 
     private void indent() {
@@ -80,7 +88,7 @@ public class JavaLoggingAspect {
      * A damned complicated API to - alter the def so that new weaving can be done - alter the
      * internal aspect repr. so that runtime management can occur <p/>Note: seems to have a
      * redundancy on the pointcut somewhere. CRAP
-     * 
+     *
      * @param pointcut
      * @param pointcutName
      */
@@ -88,13 +96,19 @@ public class JavaLoggingAspect {
         //if (true) return;
 
         final String aspectName = "examples.logging.JavaLoggingAspect";
-        SystemDefinition sysDef = DefinitionLoader.getDefinition(HotSwapTarget.class
-                .getClassLoader(), "hotdeployed");
+        SystemDefinition sysDef = DefinitionLoader.getDefinition(
+                HotSwapTarget.class
+                .getClassLoader(), "hotdeployed"
+        );
         AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
-        ExpressionNamespace namespace = ExpressionNamespace.getNamespace(aspectDef
-                .getFullQualifiedName());
-        ExpressionInfo expressionInfo = new ExpressionInfo(pointcut, aspectDef
-                .getFullQualifiedName());
+        ExpressionNamespace namespace = ExpressionNamespace.getNamespace(
+                aspectDef
+                .getFullQualifiedName()
+        );
+        ExpressionInfo expressionInfo = new ExpressionInfo(
+                pointcut, aspectDef
+                          .getFullQualifiedName()
+        );
         namespace.addExpressionInfo(pointcutName, expressionInfo);
         AdviceDefinition newDef = null;
         for (Iterator arounds = aspectDef.getAroundAdviceDefinitions().iterator(); arounds.hasNext();) {
@@ -115,7 +129,7 @@ public class JavaLoggingAspect {
         /*
          * ExecutionPointcut pointcutInstance = new ExecutionPointcut("samples",
          * newDef.getExpression()); PointcutManager pointcutManager =
-         * SystemLoader.getSystem("samples"). getAspectManager().getPointcutManager(aspectName);
+         * SystemLoader.getCflowStack("samples"). getAspectManager().getPointcutManager(aspectName);
          * //pointcutManager.addExecutionPointcut(pointcutInstance);//needed only after
          * initialization pointcutInstance.addAroundAdvice(aspectName+".logMethod");
          */
@@ -124,7 +138,7 @@ public class JavaLoggingAspect {
     /**
      * A damned complicated API to - alter the def so that pc is removed - alter the internal aspect
      * repr. so that pointcut struct is released (TODO)
-     * 
+     *
      * @param pointcut
      * @param pointcutName
      */
@@ -132,8 +146,10 @@ public class JavaLoggingAspect {
         //if (true) return;
 
         final String aspectName = "examples.logging.JavaLoggingAspect";
-        SystemDefinition sysDef = DefinitionLoader.getDefinition(HotSwapTarget.class
-                .getClassLoader(), "hotdeployed");
+        SystemDefinition sysDef = DefinitionLoader.getDefinition(
+                HotSwapTarget.class
+                .getClassLoader(), "hotdeployed"
+        );
         AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
         List removedAdviceDefs = new ArrayList();
         for (Iterator arounds = aspectDef.getAroundAdviceDefinitions().iterator(); arounds.hasNext();) {

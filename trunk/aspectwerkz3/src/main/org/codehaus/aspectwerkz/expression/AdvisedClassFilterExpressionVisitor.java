@@ -52,7 +52,7 @@ import java.util.Iterator;
 
 /**
  * The advised class filter visitor.
- *
+ * <p/>
  * Visit() methods are returning Boolean.TRUE/FALSE or null when decision cannot be taken.
  * Using null allow composition of OR/AND with NOT in the best way.
  *
@@ -69,10 +69,10 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     /**
      * Creates a new expression.
-     * 
+     *
      * @param expression the expression as a string
-     * @param namespace the namespace
-     * @param root the AST root
+     * @param namespace  the namespace
+     * @param root       the AST root
      */
     public AdvisedClassFilterExpressionVisitor(final String expression, final String namespace, final ASTRoot root) {
         m_root = root;
@@ -82,7 +82,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     /**
      * Matches the expression context.
-     * 
+     *
      * @param context
      * @return
      */
@@ -91,7 +91,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         // undeterministic is assumed to be "true" at this stage
         // since it won't be composed anymore with a NOT (unless
         // thru pointcut reference ie a new visitor)
-        return (match != null)?match.booleanValue():true;
+        return (match != null) ? match.booleanValue() : true;
     }
 
     // ============ Boot strap =============
@@ -199,7 +199,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 //        }
 //
         Boolean match = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
-        if (match !=null) {
+        if (match != null) {
             // regular NOT
             if (match.equals(Boolean.TRUE)) {
                 return Boolean.FALSE;
@@ -320,12 +320,12 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         ExpressionContext context = (ExpressionContext) data;
         return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
     }
-    
+
     public Object visit(ASTHasField node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
         return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
     }
- 
+
     // ============ Patterns =============
     public Object visit(ASTClassPattern node, Object data) {
         ClassInfo classInfo = (ClassInfo) data;
@@ -422,7 +422,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     /**
      * Returns the string representation of the AST.
-     * 
+     *
      * @return
      */
     public String toString() {
@@ -448,7 +448,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     private static Boolean matchUnderterministicAnd(Boolean lhs, Boolean rhs) {
-        if (lhs != null && rhs !=null) {
+        if (lhs != null && rhs != null) {
             // regular AND
             if (lhs.equals(Boolean.TRUE) && rhs.equals(Boolean.TRUE)) {
                 return Boolean.TRUE;
@@ -468,7 +468,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     private static Boolean matchUndeterministicOr(Boolean lhs, Boolean rhs) {
-        if (lhs != null && rhs !=null) {
+        if (lhs != null && rhs != null) {
             // regular OR
             if (lhs.equals(Boolean.TRUE) || rhs.equals(Boolean.TRUE)) {
                 return Boolean.TRUE;

@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.transform.inlining.JoinPointCompiler;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
-import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
@@ -49,19 +48,18 @@ public class JoinPointManager {
      * @param joinPointHash
      * @param joinPointClassName
      */
-    public static void loadJoinPoint(
-            final int joinPointType,
-            final Class callerClass,
-            final String callerMethodName,
-            final String callerMethodDesc,
-            final int callerMethodModifiers,
-            final String calleeClassName,
-            final String calleeMemberName,
-            final String calleeMemberDesc,
-            final int calleeMemberModifiers,
-            final int joinPointSequence,
-            final int joinPointHash,
-            final String joinPointClassName) {
+    public static void loadJoinPoint(final int joinPointType,
+                                     final Class callerClass,
+                                     final String callerMethodName,
+                                     final String callerMethodDesc,
+                                     final int callerMethodModifiers,
+                                     final String calleeClassName,
+                                     final String calleeMemberName,
+                                     final String calleeMemberDesc,
+                                     final int calleeMemberModifiers,
+                                     final int joinPointSequence,
+                                     final int joinPointHash,
+                                     final String joinPointClassName) {
 
         Class calleeClass = null;
         try {
@@ -78,12 +76,13 @@ public class JoinPointManager {
 
         // check if the JP is already loaded
         // this can occurs if user packaged its JIT classes, or if we are using multiweaving
+        final ClassLoader calleeClassLoader = calleeClass.getClassLoader();
         boolean generateJoinPoint = false;
         try {
             if (calleeClass == null) {
                 throw new RuntimeException("callee class [" + calleeClassName + "] is NULL");
             }
-            calleeClass.getClassLoader().loadClass(joinPointClassName.replace('/', '.'));
+            calleeClassLoader.loadClass(joinPointClassName.replace('/', '.'));
         } catch (ClassNotFoundException e) {
             generateJoinPoint = true;
         }
@@ -91,10 +90,7 @@ public class JoinPointManager {
             return;
         }
 
-
-        // FIXME XXX use one 
-        Aspects.initialize();
-        SystemLoader.getSystem(calleeClass.getClassLoader()).initialize();
+        Aspects.initialize(calleeClassLoader);
 
         ClassInfo calleeClassInfo = JavaClassInfo.getClassInfo(calleeClass);
         ReflectionInfo reflectionInfo = null;
@@ -273,22 +269,21 @@ public class JoinPointManager {
      * @param reflectionInfo
      * @param thisClassInfo
      */
-    private static void doLoadJoinPoint(
-            final String joinPointClassName,
-            final int joinPointType,
-            final PointcutType pointcutType,
-            final Class callerClass,
-            final String callerMethodName,
-            final String callerMethodDesc,
-            final int callerMethodModifiers,
-            final Class calleeClass,
-            final String calleeMemberName,
-            final String calleeMemberDesc,
-            final int calleeMemberModifiers,
-            final int joinPointSequence,
-            final int joinPointHash,
-            final ReflectionInfo reflectionInfo,
-            final ClassInfo thisClassInfo) {
+    private static void doLoadJoinPoint(final String joinPointClassName,
+                                        final int joinPointType,
+                                        final PointcutType pointcutType,
+                                        final Class callerClass,
+                                        final String callerMethodName,
+                                        final String callerMethodDesc,
+                                        final int callerMethodModifiers,
+                                        final Class calleeClass,
+                                        final String calleeMemberName,
+                                        final String calleeMemberDesc,
+                                        final int calleeMemberModifiers,
+                                        final int joinPointSequence,
+                                        final int joinPointHash,
+                                        final ReflectionInfo reflectionInfo,
+                                        final ClassInfo thisClassInfo) {
 
         ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(callerClass);
         ReflectionInfo withinInfo = null;
@@ -334,14 +329,13 @@ public class JoinPointManager {
      * @param reflectInfo
      * @param withinInfo
      */
-    public static AdviceInfoStruct[] getAdviceInfosForJoinPoint(
-            final PointcutType type,
-            final ReflectionInfo reflectInfo,
-            final ReflectionInfo withinInfo) {
+    public static AdviceInfoStruct[] getAdviceInfosForJoinPoint(final PointcutType type,
+                                                                final ReflectionInfo reflectInfo,
+                                                                final ReflectionInfo withinInfo) {
 
         List adviceIndexInfoList = new ArrayList();
         List cflowExpressionList = new ArrayList();
-        Pointcut cflowPointcut = null;
+        Pointcut m_cflowPointcut = null;
 
         // FIXME XXX handle cflow
 
@@ -351,7 +345,7 @@ public class JoinPointManager {
 
         // get all matching pointcuts from all managers
         for (Iterator it = pointcuts.iterator(); it.hasNext();) {
-            Pointcut pointcut = (Pointcut)it.next();
+            Pointcut pointcut = (Pointcut) it.next();
 
             List aroundAdviceInfos = pointcut.getAroundAdviceInfos();
             List beforeAdviceInfos = pointcut.getBeforeAdviceInfos();
@@ -376,20 +370,19 @@ public class JoinPointManager {
             //TODO skip map when no args()
 
             for (Iterator adviceInfos = aroundAdviceInfos.iterator(); adviceInfos.hasNext();) {
-                AdviceInfo adviceInfo = (AdviceInfo)adviceInfos.next();
-                setMethodArgumentIndexes(pointcut, exprCtx, adviceInfo);
+                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo) adviceInfos.next());
             }
             for (Iterator adviceInfos = beforeAdviceInfos.iterator(); adviceInfos.hasNext();) {
-                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo)adviceInfos.next());
+                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo) adviceInfos.next());
             }
             for (Iterator adviceInfos = afterFinallyAdviceInfos.iterator(); adviceInfos.hasNext();) {
-                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo)adviceInfos.next());
+                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo) adviceInfos.next());
             }
             for (Iterator adviceInfos = afterReturningAdviceInfos.iterator(); adviceInfos.hasNext();) {
-                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo)adviceInfos.next());
+                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo) adviceInfos.next());
             }
             for (Iterator adviceInfos = afterThrowingAdviceInfos.iterator(); adviceInfos.hasNext();) {
-                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo)adviceInfos.next());
+                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo) adviceInfos.next());
             }
 
             adviceIndexInfoList.add(adviceInfoStruct);
@@ -404,7 +397,7 @@ public class JoinPointManager {
         AdviceInfoStruct[] adviceIndexInfo = new AdviceInfoStruct[adviceIndexInfoList.size()];
         int i = 0;
         for (Iterator iterator = adviceIndexInfoList.iterator(); iterator.hasNext(); i++) {
-            adviceIndexInfo[i] = (AdviceInfoStruct)iterator.next();
+            adviceIndexInfo[i] = (AdviceInfoStruct) iterator.next();
         }
         return adviceIndexInfo;
     }
@@ -412,14 +405,14 @@ public class JoinPointManager {
     /**
      * Get the parameter names from a "method declaration" signature like pc(type a, type2 b) => 0:a, 1:b
      *
-     * @param expression
+     * @param adviceName
      * @return the parameter names
      */
-    public static String[] getParameterNames(final String expression) {
-        int paren = expression.indexOf('(');
+    public static String[] getParameterNames(final String adviceName) {
+        int paren = adviceName.indexOf('(');
         List paramNames = new ArrayList();
         if (paren > 0) {
-            String params = expression.substring(paren + 1, expression.lastIndexOf(')')).trim();
+            String params = adviceName.substring(paren + 1, adviceName.lastIndexOf(')')).trim();
             String[] javaParameters = Strings.splitString(params, ",");
             for (int i = 0; i < javaParameters.length; i++) {
                 String javaParameter = Strings.replaceSubString(javaParameters[i], "  ", " ").trim();
@@ -430,7 +423,7 @@ public class JoinPointManager {
         String[] paramNamesArray = new String[paramNames.size()];
         int index = 0;
         for (Iterator it = paramNames.iterator(); it.hasNext(); index++) {
-            paramNamesArray[index] = (String)it.next();
+            paramNamesArray[index] = (String) it.next();
         }
         return paramNamesArray;
     }
@@ -442,10 +435,9 @@ public class JoinPointManager {
      * @param ctx
      * @param adviceInfo
      */
-    private static void setMethodArgumentIndexes(
-            final Pointcut pointcut,
-            final ExpressionContext ctx,
-            final AdviceInfo adviceInfo) {
+    private static void setMethodArgumentIndexes(final Pointcut pointcut,
+                                                 final ExpressionContext ctx,
+                                                 final AdviceInfo adviceInfo) {
 
         // grab the parameters names
         String[] adviceArgNames = getParameterNames(adviceInfo.getName());
