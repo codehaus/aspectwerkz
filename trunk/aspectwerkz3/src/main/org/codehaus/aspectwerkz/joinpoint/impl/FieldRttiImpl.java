@@ -40,6 +40,13 @@ public class FieldRttiImpl implements FieldRtti {
         m_targetRef = new WeakReference(targetInstance);
     }
 
+    /**
+     * Clones the RTTI instance.
+     *
+     * @param thisInstance
+     * @param targetInstance
+     * @return
+     */
     public Rtti cloneFor(final Object thisInstance, final Object targetInstance) {
         return new FieldRttiImpl(m_signature, thisInstance, targetInstance);
     }

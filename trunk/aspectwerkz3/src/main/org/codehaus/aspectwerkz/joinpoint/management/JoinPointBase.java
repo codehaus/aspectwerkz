@@ -128,7 +128,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
                          final int type,
                          final Class targetClass,
                          final List cflow,
-                         ExpressionContext ctx,
+                         final ExpressionContext ctx,
                          final AroundAdviceExecutor aroundAdviceExecutor,
                          final BeforeAdviceExecutor beforeAdviceExecutor,
                          final AfterAdviceExecutor afterAdviceExecutor) {

@@ -34,17 +34,17 @@ public class AllTestsInlined extends TestCase {
         suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
         suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
         suite.addTestSuite(test.args.ArgsAdviceTest.class);
-        //suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal
         suite.addTestSuite(test.afterxxx.Test.class);
         suite.addTestSuite(FieldAdviceTest.class);
-        // NOT YET COMPLETED
-
         suite.addTestSuite(ClassPatternTest.class);
         suite.addTestSuite(ExceptionTest.class);
         suite.addTestSuite(MethodComparatorTest.class);
         suite.addTestSuite(StringsTest.class);
         suite.addTestSuite(test.SerialVerUidTest.class);
         suite.addTestSuite(test.expression.ExpressionTest.class);
+
+        // NOT YET COMPLETED
+        //suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal
 //        suite.addTestSuite(test.advisetostringbug.Test.class);//mixin
 //        suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
 //        suite.addTestSuite(test.handler.HandlerTest.class);
