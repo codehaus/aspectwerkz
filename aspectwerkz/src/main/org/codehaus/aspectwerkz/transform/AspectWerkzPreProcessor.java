@@ -61,12 +61,12 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     private final static String AW_TRANSFORM_FILTER = "aspectwerkz.transform.filter";
-    private final static boolean NOFILTER;
+    private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
     private final static String AW_TRANSFORM_DUMP = "aspectwerkz.transform.dump";
+    private final static ClassPattern DUMP_PATTERN;
+    private final static boolean NOFILTER;
     private final static boolean DUMP_BEFORE;
     private final static boolean DUMP_AFTER;
-    private final static ClassPattern DUMP_PATTERN;
-    private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
     private final static boolean VERBOSE;
 
     static {
@@ -121,7 +121,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         m_metaDataRepository = new WeakHashMap();
         m_definitionRepository = new WeakHashMap();
         m_stack = new ArrayList();
-//        m_stack.add(new AddSerialVersionUidTransformer());
+        m_stack.add(new AddSerialVersionUidTransformer());
         m_stack.add(new AddInterfaceTransformer());
         m_stack.add(new AddImplementationTransformer());
         m_stack.add(new AdviseMemberFieldTransformer());
