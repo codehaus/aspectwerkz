@@ -239,7 +239,7 @@
     <goal name="aspectwerkz:samples:logging">
         <attainGoal name="aspectwerkz:samples:annotationc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.logging.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.weaving.strategy=inlining -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.logging.Target"/>
         </exec>
     </goal>
 

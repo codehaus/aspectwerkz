@@ -24,7 +24,7 @@ public class JavassistClassInfoRepository {
     /**
      * Map with all the class info repositories mapped to their class loader.
      */
-    private static final TIntObjectHashMap s_repositories = new TIntObjectHashMap();
+    private static final TIntObjectHashMap REPOSITORIES = new TIntObjectHashMap();
 
     /**
      * Map with all the class info mapped to their class names.
@@ -58,7 +58,7 @@ public class JavassistClassInfoRepository {
         } else {
             hash = loader.hashCode();
         }
-        WeakReference repositoryRef = (WeakReference) s_repositories.get(hash);
+        WeakReference repositoryRef = (WeakReference) REPOSITORIES.get(hash);
         JavassistClassInfoRepository repository = ((repositoryRef == null)
             ? null
             : (JavassistClassInfoRepository) repositoryRef.get());
@@ -66,7 +66,7 @@ public class JavassistClassInfoRepository {
             return repository;
         } else {
             JavassistClassInfoRepository repo = new JavassistClassInfoRepository(loader);
-            s_repositories.put(hash, new WeakReference(repo));
+            REPOSITORIES.put(hash, new WeakReference(repo));
             return repo;
         }
     }
@@ -77,7 +77,7 @@ public class JavassistClassInfoRepository {
      * @param className the name of the class
      */
     public static void removeClassInfoFromAllClassLoaders(final String className) {
-        //TODO - fix algorithm
+        //FIXME - fix algorithm
         throw new UnsupportedOperationException("fix algorithm");
     }
 
@@ -105,7 +105,7 @@ public class JavassistClassInfoRepository {
         if (checkParentClassRepository(classInfo.getName(), (ClassLoader) m_loaderRef.get()) == null) {
             m_repository.put(new String(classInfo.getName()), classInfo);
         } else {
-            // TODO: remove class in child class repository and add it for the current (parent) CL
+            // FIXME remove class in child class repository and add it for the current (parent) CL
         }
     }
 
