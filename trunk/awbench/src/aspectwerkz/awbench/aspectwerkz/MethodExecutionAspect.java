@@ -62,7 +62,7 @@ public class MethodExecutionAspect {
     /**
      * @AfterReturning(
      *      type = "returnValue",
-     *      expression = "execution(* awbench.method.Execution.afterReturningString())"
+     *      pointcut = "execution(* awbench.method.Execution.afterReturningString())"
      * )
      */
     public void afterReturning(String returnValue) {
@@ -73,7 +73,7 @@ public class MethodExecutionAspect {
      /**
       * @AfterThrowing(
       *      type = "rte",
-      *      expression = "execution(* awbench.method.Execution.afterThrowingRTE())"
+      *      pointcut = "execution(* awbench.method.Execution.afterThrowingRTE())"
       * )
      */
     public void afterThrowing(RuntimeException rte) {

@@ -1,4 +1,4 @@
-<!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+<!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz2.dtd">
 <aspectwerkz>
     <system id="awbench">
         <aspect name="around1" class="awbench.extension.aopalliance.MethodExecutionGetTargetAndArgsAroundAdvice">
