@@ -149,12 +149,12 @@ public class AsmClassInfo implements ClassInfo {
     private List m_annotations = null;
 
     /**
-     * The component type name if array type.
+     * The component type name if array type. Can be an array itself.
      */
     private String m_componentTypeName = null;
 
     /**
-     * The component type if array type.
+     * The component type if array type. Can be an array itself.
      */
     private ClassInfo m_componentType = null;
 
@@ -215,12 +215,10 @@ public class AsmClassInfo implements ClassInfo {
      * @param className
      * @param loader
      * @param componentInfo
-     * @param dimension
      */
     AsmClassInfo(final String className,
                  final ClassLoader loader,
-                 final ClassInfo componentInfo,
-                 final int dimension) { // TODO dimension param is not used
+                 final ClassInfo componentInfo) {
         m_loaderRef = new WeakReference(loader);
         m_name = className.replace('/', '.');
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
@@ -695,29 +693,24 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
-     * Create a ClassInfo based on a component type and a given dimension
+     * Create a ClassInfo based on a component type which can be himself an array
      *
      * @param className
      * @param loader
      * @param componentClassInfo
-     * @param dimension
      * @return
      */
     public static ClassInfo getArrayClassInfo(final String className,
                                               final ClassLoader loader,
-                                              final ClassInfo componentClassInfo,
-                                              final int dimension) {
-        if (dimension <= 1) {
-            return componentClassInfo;
-        }
-        return new AsmClassInfo(className, loader, componentClassInfo, dimension);
+                                              final ClassInfo componentClassInfo) {
+        return new AsmClassInfo(className, loader, componentClassInfo);
     }
 
     /**
      * Creates a ClassInfo based on the stream retrieved from the class loader through
      * <code>getResourceAsStream</code>.
      *
-     * @param name
+     * @param name java name as in source code
      * @param loader
      * @param lazyAttributes
      */
@@ -726,63 +719,82 @@ public class AsmClassInfo implements ClassInfo {
                                                        boolean lazyAttributes) {
         final String className = name.replace('.', '/');
 
-        // compute array type dimension if any
-        int componentTypeIndex = className.indexOf('[');
-
-        String componentName = className;
-        int dimension = 1;
-        if (componentTypeIndex > 0) {
-            componentName = className.substring(0, componentTypeIndex);
-            dimension = 1 + (className.length() - componentTypeIndex) / 2;
-        }
-
-        // primitive type
-        if (componentName.indexOf('/') < 0) {
+        // to handle primitive type we need to know the array dimension
+        if (name.indexOf('/') < 0) {
             // it might be one
-            Class primitiveClass = AsmClassInfo.getPrimitiveClass(componentName);
-            if (primitiveClass != null) {
-                if (dimension <= 1) {
+            // gets its non array component type and the dimension
+            int dimension = 0;
+            for (int i = className.indexOf('['); i > 0; i = className.indexOf('[', i+1)) {
+                dimension++;
+            }
+            String unidimComponentName = className;
+            if (dimension > 0) {
+                int unidimComponentTypeIndex = className.indexOf('[');
+                unidimComponentName = className.substring(0, unidimComponentTypeIndex);
+            }
+            Class primitiveClass = AsmClassInfo.getPrimitiveClass(unidimComponentName);
+            if (primitiveClass != null && primitiveClass.isPrimitive()) {
+                if (dimension == 0) {
                     return JavaClassInfo.getClassInfo(primitiveClass);
                 } else {
-                    Class arrayClass = Array.newInstance(primitiveClass, dimension).getClass();
+                    Class arrayClass = Array.newInstance(primitiveClass, new int[dimension]).getClass();
                     return JavaClassInfo.getClassInfo(arrayClass);
                 }
             }
         }
 
-        // non primitive type
-        InputStream componentClassAsStream = null;
-        if (loader != null) {
-            componentClassAsStream = loader.getResourceAsStream(componentName + ".class");
-        } else {
-            // boot class loader, fall back to system classloader that will see it anyway
-            componentClassAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream(componentName + ".class");
+        // for non primitive, we need to chain component type ala java.lang.reflect
+        // to support multi. dim. arrays
+        int componentTypeIndex = className.lastIndexOf('[');
+        String componentName = className;
+        boolean isArray = false;
+        if (componentTypeIndex > 0) {
+            componentName = className.substring(0, componentTypeIndex);
+            isArray = true;
         }
-        if (componentClassAsStream == null) {
-            System.out.println(
-                    "AW::WARNING - could not load class ["
-                    + componentName
-                    + "] as a resource in loader ["
-                    + loader
-                    + "]"
-            );
-            return new ClassInfo.NullClassInfo();
-        }
+
         ClassInfo componentInfo = null;
-        try {
-            componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader, lazyAttributes);
-        } finally {
+
+        // is component yet another array ie this name is a multi dim array ?
+        if (componentName.indexOf('[') > 0) {
+            componentInfo = getClassInfo(componentName, loader);
+        } else {
+            InputStream componentClassAsStream = null;
+            if (loader != null) {
+                componentClassAsStream = loader.getResourceAsStream(componentName + ".class");
+            } else {
+                // boot class loader, fall back to system classloader that will see it anyway
+                componentClassAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream(componentName + ".class");
+            }
+            if (componentClassAsStream == null) {
+                // might be more than one dimension
+                if (componentName.indexOf('[') > 0) {
+                    return getClassInfo(componentName, loader);
+                }
+                System.out.println(
+                        "AW::WARNING - could not load class ["
+                        + componentName
+                        + "] as a resource in loader ["
+                        + loader
+                        + "]"
+                );
+                componentInfo = new ClassInfo.NullClassInfo();
+            }
             try {
-                componentClassAsStream.close();
-            } catch (Exception e) {
-                ;
+                componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader, lazyAttributes);
+            } finally {
+                try {
+                    componentClassAsStream.close();
+                } catch (Exception e) {
+                    ;
+                }
             }
         }
 
-        if (dimension <= 1) {
+        if (!isArray) {
             return componentInfo;
         } else {
-            return AsmClassInfo.getArrayClassInfo(className, loader, componentInfo, dimension);
+            return AsmClassInfo.getArrayClassInfo(className, loader, componentInfo);
         }
     }
 
@@ -1013,7 +1025,7 @@ public class AsmClassInfo implements ClassInfo {
                     if (!m_isStatic) {
                         ;//skip this
                     } else {
-                        m_methodInfo.pushParameterNameFromRegister(index, name);                        
+                        m_methodInfo.pushParameterNameFromRegister(index, name);
                     }
                 } else {
                     m_methodInfo.pushParameterNameFromRegister(index, name);
