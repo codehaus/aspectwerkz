@@ -228,7 +228,10 @@ public class FieldSetGetTransformer implements Transformer {
         if (definition.inExcludePackage(className)) {
             return true;
         }
-        if (definition.inIncludePackage(className) || definition.isAdvised(ctx)) {
+        if (!definition.inIncludePackage(className)) {
+            return true;
+        }
+        if (definition.isAdvised(ctx)) {
             return false;
         }
         return true;
