@@ -7,9 +7,6 @@
  **************************************************************************************/
 package examples.connectivity;
 
-import examples.introduction.Target;
-import examples.introduction.Mixin;
-
 /**
  * Starts up the aspectwerkz system (which starts up the remote proxy server).
  *
@@ -18,6 +15,6 @@ import examples.introduction.Mixin;
 public class Server {
     public static void main(String[] args) {
         Target target = new Target();
-        ((Mixin)target).sayHello(); // to start up the AspectWerkz system, just a trigger
+        ((Test1)target).test1(); // to start up the AspectWerkz system, just a trigger
     }
 }

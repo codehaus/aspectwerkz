@@ -192,22 +192,34 @@ public class RemoteProxy implements InvocationHandler, Serializable {
      * @param port the port to connect to.
      * @return the new remote proxy instance
      */
-    public static RemoteProxy createServerProxy(final Object implInstance,
+    public static RemoteProxy createServerProxy(final Object targetlInstance,
                                                 final String address,
                                                 final int port) {
-        return new RemoteProxy(implInstance, address, port);
+        return new RemoteProxy(targetlInstance, address, port);
     }
 
     /**
      * Look up and retrives a proxy to an object from the server.
      *
      * @param loader the classloader to use
-     * @param ctx the context carrying the users principal and credentials
-     * @return the object
+     * @return the proxy instance
+     */
+    public Object getInstance(final ClassLoader loader) {
+        m_loader = loader;
+        return getInstance();
+    }
+
+    /**
+     * Look up and retrives a proxy to an object from the server.
+     *
+     * @return the proxy instance
      */
     public Object getInstance() {
         if (m_proxy != null) {
             return m_proxy;
+        }
+        if (m_loader == null) {
+            m_loader = Thread.currentThread().getContextClassLoader();
         }
 
         try {
@@ -255,26 +267,10 @@ public class RemoteProxy implements InvocationHandler, Serializable {
      *
      * @param proxy the proxy instance that the method was invoked on
      * @param method the Method instance corresponding to the interface method
-     * 	invoked on the proxy instance. The declaring class of the Method
-     *	object will be the interface that the method was declared in, which
-     *	may be a superinterface of the proxy interface that the proxy class
-     *	inherits the method through.
+     * 	invoked on the proxy instance.
      * @param args an array of objects containing the values of the arguments passed
-     *	in the method invocation on the proxy instance, or null if interface
-     *	method takes no arguments. Arguments of primitive types are wrapped in
-     *	instances of the appropriate primitive wrapper class, such as
-     *	java.lang.Integer or java.lang.Boolean.
+     *	in the method invocation on the proxy instance.
      * @return the value to return from the method invocation on the proxy instance.
-     *	If the declared return type of the interface method is a primitive type,
-     *	then the value returned by this method must be an instance of the
-     *	corresponding primitive wrapper class; otherwise, it must be a type
-     *	assignable to the declared return type. If the value returned by this
-     *	method is null and the interface method's return type is primitive, then
-     *	a NullPointerException will be thrown by the method invocation on the
-     *	proxy instance. If the value returned by this method is otherwise not
-     *	compatible with the interface method's declared return type as described
-     *	above, a ClassCastException will be thrown by the method invocation on
-     *	the proxy instance.
      */
     public Object invoke(final Object proxy, final Method method, final Object[] args) {
         try {
@@ -337,7 +333,7 @@ public class RemoteProxy implements InvocationHandler, Serializable {
 
     /**
      * Creates a new proxy based on the interface and class names passes to it.
-     * For client-side use.
+     * For client-side use. This method is never called directly.
      *
      * @param interfaces the class name of the interface for the object to create the proxy for
      * @param impl the class name of the the object to create the proxy for
@@ -367,8 +363,7 @@ public class RemoteProxy implements InvocationHandler, Serializable {
 
     /**
      * Creates a new proxy based on the instance passed to it.
-     * For server-side use.
-     *
+     * For server-side use. This method is never called directly.
      *
      * @param the target instance to create the proxy for
      * @param address the address to connect to.
