@@ -44,8 +44,7 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
         // CAUTION: ORDER IS IMPORTANT!
         m_stack = new ArrayList();
         m_stack.add(new PrepareAdvisedClassTransformer());
-
-        //                m_stack.add(new MethodCallUnTransformer());
+        m_stack.add(new AddInterfaceTransformer());
         m_stack.add(new FieldSetGetTransformer());
         m_stack.add(new MethodCallTransformer());
         m_stack.add(new ConstructorCallTransformer());
@@ -53,7 +52,6 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
         m_stack.add(new ConstructorExecutionTransformer());
         m_stack.add(new HandlerTransformer());
         m_stack.add(new AddImplementationTransformer());
-        m_stack.add(new AddInterfaceTransformer());
     }
 
     /**
@@ -64,26 +62,6 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
      * @param context
      */
     public void transform(final String className, final Context context) {
-        //        ClassInfo classInfo = AsmClassInfo.getClassInfo(
-        //            context.getInitialBytecode(),
-        //            context.getLoader());
-        //        System.out.println("transforming class: " + classInfo.getName());
-        //        System.out.println("nr of annotations " + classInfo.getAnnotations().size());
-        //                MethodInfo[] methods = classInfo.getMethods();
-        //                for (int i = 0; i < methods.length; i++) {
-        //                    MethodInfo info = methods[i];
-        //                    System.out.println("-------- method name: " + info.getName());
-        //// System.out.println("-------- return type: " +
-        // info.getReturnType().getName());
-        //                    System.out.println("-------- nr annotations " +
-        // info.getAnnotations().size());
-        //// ClassInfo[] params = info.getParameterTypes();
-        //// for (int j = 0; j < params.length; j++) {
-        //// ClassInfo info2 = params[j];
-        //// System.out.println("----------------> param: " + info2.getName());
-        //// }
-        //                }
-
         boolean advisedAtLeastOnce = false;
         Klass klass = (Klass) context.getClassAbstraction();
         for (Iterator it = m_stack.iterator(); it.hasNext();) {
