@@ -26,6 +26,8 @@ import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
+import org.codehaus.aspectwerkz.regexp.ClassPattern;
+import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.dom4j.Document;
 
 /**
@@ -38,13 +40,17 @@ import org.dom4j.Document;
  * <ul>
  *      <li><code>-Daspectwerkz.transform.verbose=yes</code> turns on verbose mode:
  *      print on stdout all non filtered class names and which transformation are applied</li>
- *      <li><code>-Daspectwerkz.transform.dump=org.myapp.</code> dumps transformed class whose
- *      name starts with <i>org.myapp.</i>(even unmodified ones)
+ *      <li><code>-Daspectwerkz.transform.dump=org.myapp.*</code> dumps transformed class matching
+ *      pattern <i>org.myapp.*</i>(even unmodified ones)
  *      in <i>./_dump</i> directory (relative to where applications starts). The syntax
- *      <code>-Daspectwerkz.transform.dump=*</code> matchs all classes</li>
- *      <li>else <code>-Daspectwerkz.transform.dump=org.myapp.,before</code> dumps class before and after the
+ *      <code>-Daspectwerkz.transform.dump=*</code> matchs all classes. The pattern language is the
+ *      same as pointcut pattern language.</li>
+ *      <li>else <code>-Daspectwerkz.transform.dump=org.myapp.*,before</code> dumps class before and after the
  *      transformation whose name starts with <i>org.myapp.</i>(even unmodified ones)
  *      in <i>./_dump/before</i> and <i>./_dump/after</i> directories (relative to where application starts)</li>
+ *      <li><code>-Daspectwerkz.transform.filter=no</code> (or false) disables filtering of org.codehaus.aspectwerkz
+ *      and related classes (jexl, trove, dom4j...). This should only be used in offline mode where weaving
+ *      of those classes is needed. Setting this option in online mode will lead to ClassCircularityError.</li>
  * </ul>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -52,22 +58,38 @@ import org.dom4j.Document;
  */
 public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
+    private final static String AW_TRANSFORM_FILTER = "aspectwerkz.transform.filter";
+    private final static boolean NOFILTER;
+    private final static String AW_TRANSFORM_DUMP = "aspectwerkz.transform.dump";
     private final static boolean DUMP_BEFORE;
-    private final static String AW_TRANSFORM_DUMP;
+    private final static boolean DUMP_AFTER;
+    private final static ClassPattern DUMP_PATTERN;
     private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
     private final static boolean VERBOSE;
 
     static {
+        // check for verbose mode
         String verbose = System.getProperty(AW_TRANSFORM_VERBOSE, null);
         VERBOSE = "yes".equalsIgnoreCase(verbose) || "true".equalsIgnoreCase(verbose);
 
+        // check for filter disabled
+        String filter = System.getProperty(AW_TRANSFORM_FILTER, null);
+        NOFILTER = "no".equalsIgnoreCase(filter) || "false".equalsIgnoreCase(filter);
+
         // check for dump configuration
-        String dumpPattern = System.getProperty("aspectwerkz.transform.dump", "");
-        DUMP_BEFORE =  dumpPattern.indexOf(",before")>0;
-        if (DUMP_BEFORE) {
-            AW_TRANSFORM_DUMP = dumpPattern.substring(0, dumpPattern.indexOf(','));
+        String dumpPattern = System.getProperty(AW_TRANSFORM_DUMP, null);
+        if (dumpPattern == null) {
+            DUMP_BEFORE = false;
+            DUMP_AFTER = false;
+            DUMP_PATTERN = null;
         } else {
-            AW_TRANSFORM_DUMP = dumpPattern;
+            DUMP_AFTER = true;
+            DUMP_BEFORE =  dumpPattern.indexOf(",before")>0;
+            if (DUMP_BEFORE) {
+                DUMP_PATTERN = Pattern.compileClassPattern(dumpPattern.substring(0, dumpPattern.indexOf(',')));
+            } else {
+                DUMP_PATTERN = Pattern.compileClassPattern(dumpPattern);
+            }
         }
     }
 
@@ -116,7 +138,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * @return modified (or not) bytecode
      */
     public byte[] preProcess(final String className, final byte[] bytecode, final ClassLoader loader) {
-        if (filter(className)) {
+        if (filter(className) && !NOFILTER) {
             return bytecode;
         }
 
@@ -140,7 +162,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         // dump before (not compliant with multiple CL weaving same class differently,
         // since based on class FQN name)
         if (DUMP_BEFORE) {
-            if (className.startsWith(AW_TRANSFORM_DUMP) || "*".equals(AW_TRANSFORM_DUMP)) {
+            if (DUMP_PATTERN.matches(className)) {
                 try {
                     klass.getClassGen().getJavaClass().
                             dump("_dump/before/" + className.replace('.', '/') + ".class");
@@ -196,8 +218,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
         // dump after (not compliant with multiple CL weaving same class differently,
         // since based on class FQN name)
-        if (AW_TRANSFORM_DUMP.length() > 0) {
-            if (className.startsWith(AW_TRANSFORM_DUMP) || "*".equals(AW_TRANSFORM_DUMP)) {
+        if (DUMP_AFTER) {
+            if (DUMP_PATTERN.matches(className)) {
                 try {
                     klass.getClassGen().getJavaClass().
                             dump("_dump/" + (DUMP_BEFORE?"after/":"") + className.replace('.', '/') + ".class");
@@ -320,10 +342,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * @param klass the AspectWerkz class
      */
     private static boolean filter(final String klass) {
-        return     klass.startsWith("org.codehaus.aspectwerkz.transform.")
-                || klass.startsWith("org.codehaus.aspectwerkz.metadata.")
-                || klass.startsWith("org.codehaus.aspectwerkz.")
+        return     klass.startsWith("org.codehaus.aspectwerkz.")
                 || klass.startsWith("org.apache.commons.jexl.")
+                || klass.startsWith("gnu.trove.")
                 || klass.startsWith("org.dom4j.")
                 || klass.startsWith("org.xml.sax.")
                 || klass.startsWith("javax.xml.parsers.");

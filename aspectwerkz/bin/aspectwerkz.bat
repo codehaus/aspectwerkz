@@ -26,7 +26,7 @@ IF "%1"=="-offline" set OFFLINE="true"
 
 IF "%OFFLINE%"==""false"" (
     @rem -Daspectwerkz.transform.verbose=yes to turn on verbose mode
-    @rem -Daspectwerkz.transform.dump=package.foo. to turn on dump in ./_dump of package.foo.* class
+    @rem -Daspectwerkz.transform.dump=package.foo.* to turn on dump in ./_dump of package.foo.* class
     @rem -Daspectwerkz.classloader.wait=10 to delay connection (launching VM)
     "%JAVA_COMMAND%" -cp "%JAVA_HOME%\lib\tools.jar;%ASPECTWERKZ_HOME%\lib\bcel-patch.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar" org.codehaus.aspectwerkz.hook.ProcessStarter -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\lib\bcel-patch.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar" -cp "%CP%" -cp "%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
     @exit /B %ERRORLEVEL%
@@ -34,7 +34,7 @@ IF "%OFFLINE%"==""false"" (
     IF "%1"=="" goto error
     IF "%2"=="" goto error
     IF "%3"=="" goto error
-    "%JAVA_COMMAND%" -Daspectwerkz.definition.file="%2" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -cp "%ASPECTWERKZ_HOME%\lib\ant-1.5.2.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\bcel-patch.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar" org.codehaus.aspectwerkz.compiler.AspectWerkzC %3 %4 %5 %6 %7 %8 %9
+    "%JAVA_COMMAND%" -Daspectwerkz.transform.filter=no -Daspectwerkz.definition.file="%2" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -cp "%ASPECTWERKZ_HOME%\lib\ant-1.5.2.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\bcel-patch.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar" org.codehaus.aspectwerkz.compiler.AspectWerkzC %3 %4 %5 %6 %7 %8 %9
     @exit /B %ERRORLEVEL%
 )
 
