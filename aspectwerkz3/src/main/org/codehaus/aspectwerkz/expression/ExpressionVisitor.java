@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression;
 
+import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 import org.codehaus.aspectwerkz.expression.ast.ASTAnd;
 import org.codehaus.aspectwerkz.expression.ast.ASTAttribute;
 import org.codehaus.aspectwerkz.expression.ast.ASTCall;
@@ -284,8 +285,8 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     public Object visit(ASTAttribute node, Object data) {
         List attributes = (List)data;
         for (Iterator it = attributes.iterator(); it.hasNext();) {
-            String attribute = (String)it.next();
-            if (attribute.equals(node.getName())) {
+            CustomAttribute attribute = (CustomAttribute)it.next();
+            if (attribute.getName().equals(node.getName())) {
                 return Boolean.TRUE;
             }
         }
@@ -293,8 +294,8 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTModifier node, Object data) {
-        ReflectionInfo metaData = (ReflectionInfo)data;
-        int modifiersToMatch = metaData.getModifiers();
+        ReflectionInfo refInfo = (ReflectionInfo)data;
+        int modifiersToMatch = refInfo.getModifiers();
         int modifierPattern = node.getModifier();
         if (((modifierPattern & Modifier.PUBLIC) != 0) && ((modifiersToMatch & Modifier.PUBLIC) == 0)) {
             return Boolean.FALSE;
@@ -326,13 +327,13 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         return Boolean.TRUE;
     }
 
-    protected boolean visitAttributes(SimpleNode node, ReflectionInfo metaData) {
+    protected boolean visitAttributes(SimpleNode node, ReflectionInfo refInfo) {
         int nrChildren = node.jjtGetNumChildren();
         if (nrChildren != 0) {
             for (int i = 0; i < nrChildren; i++) {
                 Node child = node.jjtGetChild(i);
                 if (child instanceof ASTAttribute) {
-                    if (Boolean.TRUE.equals(child.jjtAccept(this, metaData.getAttributes()))) {
+                    if (Boolean.TRUE.equals(child.jjtAccept(this, refInfo.getAnnotations()))) {
                         continue;
                     } else {
                         return false;
@@ -343,13 +344,13 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         return true;
     }
 
-    protected boolean visitModifiers(SimpleNode node, ReflectionInfo metaData) {
+    protected boolean visitModifiers(SimpleNode node, ReflectionInfo refInfo) {
         int nrChildren = node.jjtGetNumChildren();
         if (nrChildren != 0) {
             for (int i = 0; i < nrChildren; i++) {
                 Node child = node.jjtGetChild(i);
                 if (child instanceof ASTModifier) {
-                    if (Boolean.TRUE.equals(child.jjtAccept(this, metaData))) {
+                    if (Boolean.TRUE.equals(child.jjtAccept(this, refInfo))) {
                         continue;
                     } else {
                         return false;

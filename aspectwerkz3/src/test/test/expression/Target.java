@@ -9,6 +9,8 @@ package test.expression;
 
 
 /**
+ * @@Serializable
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public final class Target {
@@ -28,6 +30,10 @@ public final class Target {
     int __field$Name1;
 
     // ============ field attribute test =============
+
+    /**
+     * @@ReadOnly
+     */
     int attribute1;
 
     // ============ method modifiers test =============
@@ -80,6 +86,10 @@ public final class Target {
     }
 
     // ============ method attribute test =============
-    void attributes1() {
+
+    /**
+     * @@Requires
+     */
+    public void attributes1() {
     }
 }

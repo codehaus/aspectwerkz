@@ -14,7 +14,7 @@ import java.net.URLClassLoader;
 /**
  * Note: does not work behing WeavingCL. Use a real online mode
  * <p/>
- * java -Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib\aspectwerkz-core-0.10.RC1.jar;lib\javassist-2.6.jar ...
+ * java -Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib\aspectwerkz-core-0.10.jar;lib\javassist-3.0beta.jar ...
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */

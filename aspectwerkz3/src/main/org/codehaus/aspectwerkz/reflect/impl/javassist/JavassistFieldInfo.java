@@ -7,8 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
+import org.codehaus.aspectwerkz.definition.attribute.AttributeExtractor;
+import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import javassist.CtClass;
@@ -37,9 +42,11 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      * @param field
      * @param declaringType
      * @param loader
+     * @param attributeExtractor
      */
-    public JavassistFieldInfo(final CtField field, final JavassistClassInfo declaringType, final ClassLoader loader) {
-        super(field, declaringType, loader);
+    JavassistFieldInfo(final CtField field, final JavassistClassInfo declaringType, final ClassLoader loader,
+                       final AttributeExtractor attributeExtractor) {
+        super(field, declaringType, loader, attributeExtractor);
         JavassistFieldInfo.addFieldInfo(field, this);
     }
 
@@ -70,6 +77,28 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
     }
 
     /**
+     * Returns the attributes.
+     *
+     * @return the attributes
+     */
+    public List getAnnotations() {
+        if (m_annotations == null) {
+            m_annotations = new ArrayList();
+            addAnnotations();
+        }
+        return m_annotations;
+    }
+
+    /**
+     * Adds an attribute.
+     *
+     * @param attribute the attribute
+     */
+    public void addAnnotation(final Object attribute) {
+        m_annotations.add(attribute);
+    }
+
+    /**
      * Returns the field type.
      *
      * @return the field type
@@ -89,5 +118,54 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
             }
         }
         return m_type;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof FieldInfo)) {
+            return false;
+        }
+        FieldInfo fieldInfo = (FieldInfo)o;
+        if (!m_member.getName().equals(fieldInfo.getName())) {
+            return false;
+        }
+        ClassInfo fieldType = fieldInfo.getType();
+        if (!m_type.getName().toString().equals(fieldType.getName().toString())) {
+            return false;
+        }
+        return true;
+    }
+
+    public int hashCode() {
+        int result = 29;
+        if (m_type == null) {
+            getType();
+        }
+        result = (29 * result) + m_member.getName().toString().hashCode();
+        result = (29 * result) + m_type.getName().toString().hashCode();
+        return result;
+    }
+
+    /**
+     * Adds annotations to the field info.
+     */
+    private void addAnnotations() {
+        if (m_attributeExtractor == null) {
+            return;
+        }
+        Object[] attributes = m_attributeExtractor.getFieldAttributes(getName());
+        for (int i = 0; i < attributes.length; i++) {
+            Object attribute = attributes[i];
+            if (attribute instanceof CustomAttribute) {
+                CustomAttribute custom = (CustomAttribute)attribute;
+                if (custom.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+                    // skip 'system' annotations
+                    continue;
+                }
+                addAnnotation(custom);
+            }
+        }
     }
 }

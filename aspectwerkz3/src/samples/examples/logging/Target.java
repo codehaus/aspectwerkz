@@ -12,7 +12,14 @@ package examples.logging;
  */
 public class Target {
 
+    /**
+     * @@log
+     */
     private int m_counter1;
+
+    /**
+     * @@log
+     */
     private int m_counter2;
 
     public int getCounter() {
@@ -33,7 +40,7 @@ public class Target {
     /**
      * @@log
      */
-    private void toLog2(java.lang.String arg) {
+    protected void toLog2(java.lang.String arg) {
         new Target().toLog3();
     }
 

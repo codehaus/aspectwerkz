@@ -6,8 +6,9 @@
     </properties>
     <body>
         <links>
-            <item name="Wiki" href="http://docs.codehaus.org/display/AW/Home"/>
             <item name="News" href="http://blogs.codehaus.org/projects/aspectwerkz/index.html"/>
+            <item name="Lists" href="/lists.html"/>
+            <item name="Wiki" href="http://docs.codehaus.org/display/AW/Home"/>
             <item name="IRC" href="irc://irc.codehaus.org/aspectwerkz"/>
             <item name="Codehaus" href="http://codehaus.org"/>
             <item name="Create an Issue" href="http://jira.codehaus.org/secure/CreateIssue.jspa"/>
@@ -31,13 +32,12 @@
             <item name="FAQ" href="/faq.html"/>
         </menu>
         <menu name="Misc.">
-            <!--            <item name="Testimonials" href="/testimonials.html"/>-->
             <item name="Releases &amp; Release notes" href="/releases.html"/>
             <item name="Build &amp; Install" href="/build.html"/>
             <item name="CVS Access" href="/cvs.html"/>
+            <item name="Mailing lists" href="/lists.html"/>
             <item name="Tasks" href="/tasks.html"/>
             <item name="Papers &amp; Talks" href="/papers_talks.html"/>
-            <!--            <item name="Clover report" href="/clover/index.html"/>-->
         </menu>
     </body>
 </project>

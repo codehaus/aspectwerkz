@@ -17,7 +17,8 @@ public class ASTAttribute extends SimpleNode {
     }
 
     public void setName(String name) {
-        m_name = name;
+        // remove the first '@'
+        m_name = name.substring(1, name.length());
     }
 
     public String getName() {

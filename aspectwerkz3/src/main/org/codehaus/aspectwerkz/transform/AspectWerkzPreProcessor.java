@@ -286,7 +286,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (DUMP_BEFORE) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
-                    klass.getCtClass().getClassPool().writeFile(className, "_dump/before/");
+                    klass.getCtClass().writeFile("_dump/before/");
                     klass.getCtClass().defrost();
                 } catch (Exception e) {
                     log("failed to dump " + className);
@@ -306,7 +306,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (DUMP_AFTER) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
-                    klass.getCtClass().getClassPool().writeFile(className, "_dump/" + (DUMP_BEFORE ? "after/" : ""));
+                    klass.getCtClass().writeFile("_dump/" + (DUMP_BEFORE ? "after/" : ""));
                 } catch (Exception e) {
                     log("failed to dump " + className);
                     e.printStackTrace();
@@ -317,7 +317,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     public static void dumpForce(final String className, final Klass klass) {
         try {
-            klass.getCtClass().getClassPool().writeFile(className, "_dump/force/");
+            klass.getCtClass().writeFile("_dump/force/");
         } catch (Exception e) {
             log("failed to dump " + className);
             e.printStackTrace();

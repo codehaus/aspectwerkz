@@ -7,9 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
+import org.codehaus.aspectwerkz.definition.attribute.AttributeExtractor;
+import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import java.util.Arrays;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import javassist.CtClass;
@@ -38,9 +42,11 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
      * @param method
      * @param declaringType
      * @param loader
+     * @param attributeExtractor
      */
-    public JavassistMethodInfo(final CtMethod method, final JavassistClassInfo declaringType, final ClassLoader loader) {
-        super(method, declaringType, loader);
+    JavassistMethodInfo(final CtMethod method, final JavassistClassInfo declaringType, final ClassLoader loader,
+                        final AttributeExtractor attributeExtractor) {
+        super(method, declaringType, loader, attributeExtractor);
         JavassistMethodInfo.addMethodInfo(method, this);
     }
 
@@ -71,6 +77,28 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
     }
 
     /**
+     * Returns the attributes.
+     *
+     * @return the attributes
+     */
+    public List getAnnotations() {
+        if (m_annotations == null) {
+            m_annotations = new ArrayList();
+            addAnnotations();
+        }
+        return m_annotations;
+    }
+
+    /**
+     * Adds an attribute.
+     *
+     * @param attribute the attribute
+     */
+    public void addAnnotation(final Object attribute) {
+        m_annotations.add(attribute);
+    }
+
+    /**
      * Returns the return type.
      *
      * @return the return type
@@ -96,49 +124,62 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
         if (this == o) {
             return true;
         }
-        if (!(o instanceof JavassistMethodInfo)) {
+        if (!(o instanceof MethodInfo)) {
             return false;
         }
-        final JavassistMethodInfo javassistMethodInfo = (JavassistMethodInfo)o;
-        if ((m_attributes != null) ? (!m_attributes.equals(javassistMethodInfo.m_attributes))
-                                   : (javassistMethodInfo.m_attributes != null)) {
+        MethodInfo methodInfo = (MethodInfo)o;
+        if (!m_member.getName().toString().equals(methodInfo.getName().toString())) {
             return false;
         }
-        if ((m_classInfoRepository != null) ? (!m_classInfoRepository.equals(javassistMethodInfo.m_classInfoRepository))
-                                            : (javassistMethodInfo.m_classInfoRepository != null)) {
+        ClassInfo[] parameterTypes = methodInfo.getParameterTypes();
+        if (m_parameterTypes.length != parameterTypes.length) {
             return false;
         }
-        if ((m_declaringType != null) ? (!m_declaringType.equals(javassistMethodInfo.m_declaringType))
-                                      : (javassistMethodInfo.m_declaringType != null)) {
-            return false;
-        }
-        if (!Arrays.equals(m_exceptionTypes, javassistMethodInfo.m_exceptionTypes)) {
-            return false;
-        }
-        if ((m_loader != null) ? (!m_loader.equals(javassistMethodInfo.m_loader)) : (javassistMethodInfo.m_loader != null)) {
-            return false;
-        }
-        if ((m_member != null) ? (!m_member.equals(javassistMethodInfo.m_member)) : (javassistMethodInfo.m_member != null)) {
-            return false;
-        }
-        if (!Arrays.equals(m_parameterTypes, javassistMethodInfo.m_parameterTypes)) {
-            return false;
-        }
-        if ((m_returnType != null) ? (!m_returnType.equals(javassistMethodInfo.m_returnType))
-                                   : (javassistMethodInfo.m_returnType != null)) {
-            return false;
+        for (int i = 0; i < m_parameterTypes.length; i++) {
+            if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
+                return false;
+            }
         }
         return true;
     }
 
     public int hashCode() {
-        int result;
-        result = ((m_member != null) ? m_member.hashCode() : 0);
-        result = (29 * result) + ((m_returnType != null) ? m_returnType.hashCode() : 0);
-        result = (29 * result) + ((m_declaringType != null) ? m_declaringType.hashCode() : 0);
-        result = (29 * result) + ((m_attributes != null) ? m_attributes.hashCode() : 0);
-        result = (29 * result) + ((m_classInfoRepository != null) ? m_classInfoRepository.hashCode() : 0);
-        result = (29 * result) + ((m_loader != null) ? m_loader.hashCode() : 0);
+        int result = 29;
+        result = (29 * result) + m_member.getName().toString().hashCode();
+        if (m_parameterTypes == null) {
+            getParameterTypes();
+        }
+        for (int i = 0; i < m_parameterTypes.length; i++) {
+            result = (29 * result) + m_parameterTypes[i].getName().toString().hashCode();
+        }
         return result;
+    }
+
+    /**
+     * Adds annotations to the method info.
+     */
+    private void addAnnotations() {
+        if (m_attributeExtractor == null) {
+            return;
+        }
+        if (m_parameterTypes == null) {
+            getParameterTypes();
+        }
+        String[] parameterNames = new String[m_parameterTypes.length];
+        for (int i = 0; i < m_parameterTypes.length; i++) {
+            parameterNames[i] = m_parameterTypes[i].getName();
+        }
+        Object[] attributes = m_attributeExtractor.getMethodAttributes(getName(), parameterNames);
+        for (int i = 0; i < attributes.length; i++) {
+            Object attribute = attributes[i];
+            if (attribute instanceof CustomAttribute) {
+                CustomAttribute custom = (CustomAttribute)attribute;
+                if (custom.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+                    // skip 'system' annotations
+                    continue;
+                }
+                addAnnotation(custom);
+            }
+        }
     }
 }
