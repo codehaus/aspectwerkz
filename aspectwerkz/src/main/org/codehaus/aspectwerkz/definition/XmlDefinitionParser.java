@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Parses the XML definition file using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParser.java,v 1.10 2003-07-14 15:02:48 jboner Exp $
+ * @version $Id: XmlDefinitionParser.java,v 1.11 2003-07-14 19:09:08 jboner Exp $
  */
 public class XmlDefinitionParser {
 
@@ -153,21 +153,45 @@ public class XmlDefinitionParser {
      * Parses the definition DOM document.
      *
      * @param document the defintion as a document
-     * @return the definition object
+     * @return the definition
      */
     private static AspectWerkzDefinition parseDocument(final Document document) {
         final AspectWerkzDefinition definition = new AspectWerkzDefinition();
         final Element root = document.getRootElement();
+        final String basePackage = getBasePackage(root);
 
-        parseIntroductionElements(root, definition);
-        parseAdviceElements(root, definition);
-        parseAdviceStackElements(root, definition);
-        parseAspectElements(root, definition);
+        // parse without packages
+        parseIntroductionElements(root, definition, basePackage);
+        parseAdviceElements(root, definition, basePackage);
+        parseAdviceStackElements(root, definition, basePackage);
+        parseAspectElements(root, definition, basePackage);
 
-        // TODO: consider removal
-        // definition.addHasMetaDataMixinForAllIntroductions();
+        // parse with packages
+        parsePackageElements(root, definition, basePackage);
 
         return definition;
+    }
+
+    /**
+     * Parses the definition DOM document.
+     *
+     * @param root the root element
+     * @param definition the definition
+     * @param basePackage the base package
+     */
+    private static void parsePackageElements(final Element root,
+                                             final AspectWerkzDefinition definition,
+                                             final String basePackage) {
+
+        for (Iterator it1 = root.elementIterator("package"); it1.hasNext();) {
+            final Element packageElement = ((Element)it1.next());
+            final String packageName = basePackage + getPackage(packageElement);
+
+            parseIntroductionElements(packageElement, definition, packageName);
+            parseAdviceElements(packageElement, definition, packageName);
+            parseAdviceStackElements(packageElement, definition, packageName);
+            parseAspectElements(packageElement, definition, packageName);
+        }
     }
 
     /**
@@ -175,26 +199,28 @@ public class XmlDefinitionParser {
      *
      * @param root the root element
      * @param definition the definition object
+     * @param packageName the package name
      */
     private static void parseIntroductionElements(final Element root,
-                                                  final AspectWerkzDefinition definition) {
+                                                  final AspectWerkzDefinition definition,
+                                                  final String packageName) {
         for (Iterator it1 = root.elementIterator("introduction-def"); it1.hasNext();) {
-            IntroductionDefinition introDef = new IntroductionDefinition();
+            final IntroductionDefinition introDef = new IntroductionDefinition();
 
             Element introduction = (Element)it1.next();
             for (Iterator it2 = introduction.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute)it2.next();
 
-                String name = attribute.getName().trim();
-                String value = attribute.getValue().trim();
+                final String name = attribute.getName().trim();
+                final String value = attribute.getValue().trim();
                 if (name.equals("name")) {
                     introDef.setName(value);
                 }
                 else if (name.equals("interface")) {
-                    introDef.setInterface(value);
+                    introDef.setInterface(packageName + value);
                 }
                 else if (name.equals("implementation")) {
-                    introDef.setImplementation(value);
+                    introDef.setImplementation(packageName + value);
                 }
                 else if (name.equals("deploymentModel") ||
                         name.equals("deployment-model")) {
@@ -217,22 +243,25 @@ public class XmlDefinitionParser {
      *
      * @param root the root element
      * @param definition the definition object
+     * @param packageName the package name
      */
     private static void parseAdviceElements(final Element root,
-                                            final AspectWerkzDefinition definition) {
+                                            final AspectWerkzDefinition definition,
+                                            final String packageName) {
         for (Iterator it1 = root.elementIterator("advice-def"); it1.hasNext();) {
-            AdviceDefinition adviceDef = new AdviceDefinition();
+            final AdviceDefinition adviceDef = new AdviceDefinition();
 
             Element advice = (Element)it1.next();
             for (Iterator it2 = advice.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute)it2.next();
-                String name = attribute.getName().trim();
-                String value = attribute.getValue().trim();
+                final String name = attribute.getName().trim();
+                final String value = attribute.getValue().trim();
+
                 if (name.equals("name")) {
                     adviceDef.setName(value);
                 }
                 else if (name.equals("advice") || (name.equals("class"))) {
-                    adviceDef.setAdviceClassName(value);
+                    adviceDef.setAdviceClassName(packageName + value);
                 }
                 else if (name.equals("deployment-model") ||
                         name.equals("deploymentModel")) {
@@ -263,9 +292,11 @@ public class XmlDefinitionParser {
      *
      * @param root the root element
      * @param definition the definition object
+     * @param packageName the package name
      */
     private static void parseAspectElements(final Element root,
-                                            final AspectWerkzDefinition definition) {
+                                            final AspectWerkzDefinition definition,
+                                            final String packageName) {
         for (Iterator it1 = root.elementIterator("abstract-aspect"); it1.hasNext();) {
             final AspectDefinition aspectDef = new AspectDefinition();
             aspectDef.setAbstract(true);
@@ -273,14 +304,15 @@ public class XmlDefinitionParser {
             final Element aspect = (Element)it1.next();
             for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute)it2.next();
-                String name = attribute.getName().trim();
-                String value = attribute.getValue().trim();
+                final String name = attribute.getName().trim();
+                final String value = attribute.getValue().trim();
                 if (name.equals("name")) {
                     aspectDef.setName(value);
                 }
             }
-            parsePointcutElements(aspect, aspectDef);
-            parseIntroduceElements(aspect, aspectDef);
+            parsePointcutElements(aspect, aspectDef, packageName);
+            parseControllerElements(aspect, aspectDef);
+            parseIntroduceElements(aspect, aspectDef, packageName);
             parseAdviseElements(aspect, aspectDef);
 
             definition.addAbstractAspect(aspectDef);
@@ -290,8 +322,8 @@ public class XmlDefinitionParser {
             final Element aspect = (Element)it1.next();
             for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute)it2.next();
-                String name = attribute.getName().trim();
-                String value = attribute.getValue().trim();
+                final String name = attribute.getName().trim();
+                final String value = attribute.getValue().trim();
                 if (name.equals("name")) {
                     aspectDef.setName(value);
                 }
@@ -301,9 +333,9 @@ public class XmlDefinitionParser {
                 }
             }
 
-            parsePointcutElements(aspect, aspectDef);
+            parsePointcutElements(aspect, aspectDef, packageName);
             parseControllerElements(aspect, aspectDef);
-            parseIntroduceElements(aspect, aspectDef);
+            parseIntroduceElements(aspect, aspectDef, packageName);
             parseAdviseElements(aspect, aspectDef);
 
             handleAbstractAspectDependencies(aspectDef, definition);
@@ -322,23 +354,23 @@ public class XmlDefinitionParser {
                                                          final AspectWerkzDefinition definition) {
         String extendsRef = aspectDef.getExtends();
         if (extendsRef != null) {
-            AspectDefinition abstractAspect = definition.getAbstractAspectDefinition(extendsRef);
+            final AspectDefinition abstractAspect = definition.getAbstractAspectDefinition(extendsRef);
             if (abstractAspect == null) {
                 throw new DefinitionException("abstract aspect <" + aspectDef.getExtends() + "> is not defined");
             }
             for (Iterator it = abstractAspect.getPointcutDefs().iterator(); it.hasNext();) {
-                PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
+                final PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
                 aspectDef.addPointcutDef(pointcutDef);
             }
             for (Iterator it = abstractAspect.getAdviceWeavingRules().iterator(); it.hasNext();) {
-                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it.next();
+                final AdviceWeavingRule weavingRule = (AdviceWeavingRule)it.next();
                 for (Iterator it2 = aspectDef.getPointcutDefs().iterator(); it2.hasNext();) {
                     addPointcutPattern((PointcutDefinition)it2.next(), weavingRule);
                 }
                 aspectDef.addAdviceWeavingRule(weavingRule);
             }
             for (Iterator it = abstractAspect.getIntroductionWeavingRules().iterator(); it.hasNext();) {
-                IntroductionWeavingRule weavingRule = (IntroductionWeavingRule)it.next();
+                final IntroductionWeavingRule weavingRule = (IntroductionWeavingRule)it.next();
                 aspectDef.addIntroductionWeavingRule(weavingRule);
             }
         }
@@ -349,9 +381,11 @@ public class XmlDefinitionParser {
      *
      * @param aspect the aspect element
      * @param aspectDef the aspect definition
+     * @param packageName the name of the package
      */
     private static void parsePointcutElements(final Element aspect,
-                                              final AspectDefinition aspectDef) {
+                                              final AspectDefinition aspectDef,
+                                              final String packageName) {
         for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
             final Element nestedAdviceElement = (Element)it2.next();
             if (nestedAdviceElement.getName().trim().equals("pointcut-def") ||
@@ -361,8 +395,8 @@ public class XmlDefinitionParser {
 
                     for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
                         Attribute attribute = (Attribute)it3.next();
-                        String name = attribute.getName().trim();
-                        String value = attribute.getValue().trim();
+                        final String name = attribute.getName().trim();
+                        final String value = attribute.getValue().trim();
                         if (name.equals("name")) {
                             pointcutDef.setName(value);
                         }
@@ -373,21 +407,21 @@ public class XmlDefinitionParser {
 
                     // handle the pointcut pattern, split the pattern in a class A
                     // a method/field/throws/callerside pattern
-                    String pattern = nestedAdviceElement.attributeValue("pattern");
+                    final String pattern = nestedAdviceElement.attributeValue("pattern");
                     try {
                         if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.METHOD) ||
                                 pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) {
-                            createMethodPattern(pattern, pointcutDef);
+                            createMethodPattern(pattern, pointcutDef, packageName);
                         }
                         else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.GET_FIELD) ||
                                 pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
-                            createFieldPattern(pattern, pointcutDef);
+                            createFieldPattern(pattern, pointcutDef, packageName);
                         }
                         else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.THROWS)) {
-                            createThrowsPattern(pattern, pointcutDef);
+                            createThrowsPattern(pattern, pointcutDef, packageName);
                         }
                         else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
-                            createCallerSidePattern(pattern, pointcutDef);
+                            createCallerSidePattern(pattern, pointcutDef, packageName);
                         }
                     }
                     catch (Exception e) {
@@ -407,6 +441,7 @@ public class XmlDefinitionParser {
      *
      * @param aspect the aspect element
      * @param aspectDef the aspect definition
+     * @param packageName the package name
      */
     private static void parseControllerElements(final Element aspect,
                                                 final AspectDefinition aspectDef) {
@@ -419,8 +454,8 @@ public class XmlDefinitionParser {
 
                     for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
                         Attribute attribute = (Attribute)it3.next();
-                        String name = attribute.getName().trim();
-                        String value = attribute.getValue().trim();
+                        final String name = attribute.getName().trim();
+                        final String value = attribute.getValue().trim();
                         if (name.equals("pointcut") || name.equals("expression")) {
                             controllerDef.setExpression(value);
                         }
@@ -431,7 +466,7 @@ public class XmlDefinitionParser {
                     // add the pointcut patterns to simplify the matching
                     if (!aspectDef.isAbstract()) {
                         for (Iterator it = aspectDef.getPointcutDefs().iterator(); it.hasNext();) {
-                            PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
+                            final PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
                             if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.METHOD)) {
                                 controllerDef.addMethodPointcutPattern(pointcutDef);
                             }
@@ -451,9 +486,11 @@ public class XmlDefinitionParser {
      *
      * @param aspect the aspect element
      * @param aspectDef the aspect definition
+     * @param packageName the name of the package
      */
     private static void parseIntroduceElements(final Element aspect,
-                                               final AspectDefinition aspectDef) {
+                                               final AspectDefinition aspectDef,
+                                               final String packageName) {
         for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
             final Element nestedAdviceElement = (Element)it2.next();
             if (nestedAdviceElement.getName().trim().equals("introduce") ||
@@ -463,10 +500,10 @@ public class XmlDefinitionParser {
 
                     for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
                         Attribute attribute = (Attribute)it3.next();
-                        String name = attribute.getName().trim();
-                        String value = attribute.getValue().trim();
+                        final String name = attribute.getName().trim();
+                        final String value = attribute.getValue().trim();
                         if (name.equals("class")) {
-                            introWeavingRule.setClassPattern(value);
+                            introWeavingRule.setClassPattern(packageName + value);
                         }
                         else if (name.equals("introduction-ref")) {
                             introWeavingRule.addIntroductionRef(value);
@@ -500,8 +537,8 @@ public class XmlDefinitionParser {
 
                     for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
                         Attribute attribute = (Attribute)it3.next();
-                        String name = attribute.getName().trim();
-                        String value = attribute.getValue().trim();
+                        final String name = attribute.getName().trim();
+                        final String value = attribute.getValue().trim();
                         if (name.equals("cflow")) {
                             adviceWeavingRule.setCFlowExpression(value);
                         }
@@ -600,17 +637,19 @@ public class XmlDefinitionParser {
      *
      * @param root the root element
      * @param definition the definition object
+     * @param packageName the package name
      */
     private static void parseAdviceStackElements(final Element root,
-                                                 final AspectWerkzDefinition definition) {
+                                                 final AspectWerkzDefinition definition,
+                                                 final String packageName) {
         for (Iterator it1 = root.elementIterator("advices-def"); it1.hasNext();) {
-            AdviceStackDefinition adviceStackDef = new AdviceStackDefinition();
+            final AdviceStackDefinition adviceStackDef = new AdviceStackDefinition();
 
             Element adviceStack = (Element)it1.next();
             for (Iterator it2 = adviceStack.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute)it2.next();
-                String name = attribute.getName().trim();
-                String value = attribute.getValue().trim();
+                final String name = attribute.getName().trim();
+                final String value = attribute.getValue().trim();
                 if (name.equals("name")) {
                     adviceStackDef.setName(value);
                 }
@@ -630,9 +669,11 @@ public class XmlDefinitionParser {
      *
      * @param pattern the pattern
      * @param pointcutDef the pointcut definition
+     * @param packageName the name of the package
      */
     private static void createMethodPattern(final String pattern,
-                                            final PointcutDefinition pointcutDef) {
+                                            final PointcutDefinition pointcutDef,
+                                            final String packageName) {
         int indexFirstSpace = pattern.indexOf(' ');
         String returnType = pattern.substring(0, indexFirstSpace + 1);
         String classNameWithMethodName = pattern.substring(
@@ -640,9 +681,11 @@ public class XmlDefinitionParser {
         String parameterTypes = pattern.substring(
                 pattern.indexOf('('), pattern.length()).trim();
         int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-        String methodPattern = classNameWithMethodName.substring(
+
+        final String methodPattern = classNameWithMethodName.substring(
                 indexLastDot + 1, classNameWithMethodName.length()).trim();
-        String classPattern = classNameWithMethodName.substring(0, indexLastDot);
+        final String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
+
         StringBuffer buf = new StringBuffer();
         buf.append(returnType);
         buf.append(methodPattern);
@@ -656,17 +699,21 @@ public class XmlDefinitionParser {
      *
      * @param pattern the pattern
      * @param pointcutDef the pointcut definition
+     * @param packageName the name of the package
      */
     private static void createFieldPattern(final String pattern,
-                                           final PointcutDefinition pointcutDef) {
+                                           final PointcutDefinition pointcutDef,
+                                           final String packageName) {
         int indexFirstSpace = pattern.indexOf(' ');
         String fieldType = pattern.substring(0, indexFirstSpace + 1);
         String classNameWithFieldName = pattern.substring(
                 indexFirstSpace, pattern.length()).trim();
         int indexLastDot = classNameWithFieldName.lastIndexOf('.');
-        String fieldPattern = classNameWithFieldName.substring(
+
+        final String fieldPattern = classNameWithFieldName.substring(
                 indexLastDot + 1, classNameWithFieldName.length()).trim();
-        String classPattern = classNameWithFieldName.substring(0, indexLastDot).trim();
+        final String classPattern = packageName + classNameWithFieldName.substring(0, indexLastDot).trim();
+
         StringBuffer buf = new StringBuffer();
         buf.append(fieldType);
         buf.append(fieldPattern);
@@ -679,21 +726,24 @@ public class XmlDefinitionParser {
      *
      * @param pattern the pattern
      * @param pointcutDef the pointcut definition
+     * @param packageName the name of the package
      */
     private static void createThrowsPattern(final String pattern,
-                                            final PointcutDefinition pointcutDef) {
+                                            final PointcutDefinition pointcutDef,
+                                            final String packageName) {
         String classAndMethodName = pattern.substring(0, pattern.indexOf('#')).trim();
-        String exceptionName = pattern.substring(pattern.indexOf('#') + 1).trim();
+        final String exceptionName = pattern.substring(pattern.indexOf('#') + 1).trim();
         int indexFirstSpace = classAndMethodName.indexOf(' ');
-        String returnType = classAndMethodName.substring(0, indexFirstSpace + 1);
+        final String returnType = classAndMethodName.substring(0, indexFirstSpace + 1);
         String classNameWithMethodName = classAndMethodName.substring(
                 indexFirstSpace, classAndMethodName.indexOf('(')).trim();
-        String parameterTypes = classAndMethodName.substring(
+        final String parameterTypes = classAndMethodName.substring(
                 classAndMethodName.indexOf('('), classAndMethodName.length()).trim();
         int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-        String methodPattern = classNameWithMethodName.substring(
+        final String methodPattern = classNameWithMethodName.substring(
                 indexLastDot + 1, classNameWithMethodName.length()).trim();
-        String classPattern = classNameWithMethodName.substring(0, indexLastDot);
+        final String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
+
         StringBuffer buf = new StringBuffer();
         buf.append(returnType);
         buf.append(methodPattern);
@@ -709,10 +759,12 @@ public class XmlDefinitionParser {
      *
      * @param pattern the pattern
      * @param pointcutDef the pointcut definition
+     * @param packageName the name of the package
      */
     private static void createCallerSidePattern(final String pattern,
-                                                final PointcutDefinition pointcutDef) {
-        String callerClassPattern = pattern.substring(0, pattern.indexOf('-')).trim();
+                                                final PointcutDefinition pointcutDef,
+                                                final String packageName) {
+        String callerClassPattern = packageName + pattern.substring(0, pattern.indexOf('-')).trim();
         String calleePattern = pattern.substring(pattern.indexOf('>') + 1).trim();
         int indexFirstSpace = calleePattern.indexOf(' ');
         String returnType = calleePattern.substring(0, indexFirstSpace + 1);
@@ -723,7 +775,7 @@ public class XmlDefinitionParser {
         int indexLastDot = classNameWithMethodName.lastIndexOf('.');
         String calleeMethodPattern = classNameWithMethodName.substring(
                 indexLastDot + 1, classNameWithMethodName.length()).trim();
-        String calleeClassPattern = classNameWithMethodName.substring(0, indexLastDot);
+        String calleeClassPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
         calleeMethodPattern = returnType + calleeMethodPattern + parameterTypes;
         StringBuffer buf = new StringBuffer();
         buf.append(calleeClassPattern);
@@ -731,5 +783,63 @@ public class XmlDefinitionParser {
         buf.append(calleeMethodPattern);
         pointcutDef.setPattern(buf.toString());
         pointcutDef.setClassPattern(callerClassPattern);
+    }
+
+    /**
+     * Retrieves and returns the base package.
+     *
+     * @param root the root element
+     * @return the base package
+     */
+    private static String getBasePackage(final Element root) {
+        String basePackage = "";
+        for (Iterator it2 = root.attributeIterator(); it2.hasNext();) {
+            Attribute attribute = (Attribute)it2.next();
+            if (attribute.getName().trim().equals("base-package")) {
+                basePackage = attribute.getValue().trim();
+                if (basePackage.endsWith(".*")) {
+                    basePackage = basePackage.substring(0, basePackage.length() - 1);
+                }
+                else if (basePackage.endsWith(".")) {
+                    // skip
+                }
+                else {
+                    basePackage += ".";
+                }
+            }
+            else {
+                continue;
+            }
+        }
+        return basePackage;
+    }
+
+    /**
+     * Retrieves and returns the package.
+     *
+     * @param packageElement the package element
+     * @return the package
+     */
+    private static String getPackage(final Element packageElement) {
+        String packageName = "";
+        for (Iterator it2 = packageElement.attributeIterator(); it2.hasNext();) {
+            Attribute attribute = (Attribute)it2.next();
+            if (attribute.getName().trim().equals("name")) {
+                packageName = attribute.getValue().trim();
+                if (packageName.endsWith(".*")) {
+                    packageName = packageName.substring(0, packageName.length() - 1);
+                }
+                else if (packageName.endsWith(".")) {
+                    // skip
+                }
+                else {
+                    packageName += ".";
+                }
+            }
+            else {
+                continue;
+            }
+        }
+        return packageName;
     }
 }
