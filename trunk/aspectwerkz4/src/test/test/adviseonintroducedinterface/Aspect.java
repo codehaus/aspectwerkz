@@ -15,11 +15,12 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 public class Aspect {
 
     /**
-     * @Before (execution(void test.adviseonintroducedinterface.Intf1+.m1())
+     * @Before(" (execution(void test.adviseonintroducedinterface.Intf1+.m1())
      * ||
      * execution(void test.adviseonintroducedinterface.Intf2+.m2()))
      * &&
      * !within(test.adviseonintroducedinterface.Aspect$Mixin)
+     * ")
      */
     public void before(JoinPoint jp) {
         Test.log("before ");
@@ -27,7 +28,7 @@ public class Aspect {
 
 
     /**
-     * @Implements within(test.adviseonintroducedinterface.Target)
+     * @Introduce within(test.adviseonintroducedinterface.Target)
      */
     Intf1 marker;
 

@@ -54,8 +54,8 @@ public abstract class AOPAnnotationConstants {
         return "org.codehaus.aspectwerkz.annotation.Expression";
     }
 
-    public static String ANNOTATION_IMPLEMENTS() {
-        return "org.codehaus.aspectwerkz.annotation.Implements";
+    public static String ANNOTATION_INTRODUCE() {
+        return "org.codehaus.aspectwerkz.annotation.Introduce";
     }
 
     public static String ANNOTATION_MIXIN() {

@@ -131,7 +131,7 @@
 @Aspect("perInstance")
 public class MyAspect {
 
-    @Implements("com.mypackage.*")
+    @Introduce("com.mypackage.*")
     MarkerInterface anIntroduction;
 
     @Expression("execution(* com.mypackage.Target.*(..))")
@@ -169,7 +169,7 @@ public class MyAspect {
 public class MyAspect {
 
     /**
-     * @Implements("com.mypackage.*")
+     * @Introduce("com.mypackage.*")
      */
     MarkerInterface anIntroduction;
 
@@ -217,7 +217,7 @@ public class MyAspect {
                 <p>
                     Interface introduction are added by adding a field to the aspect. The field type has to be the
                     interface that you want to introduce. The
-                    <code>@Implements</code> annotation is then used to specify
+                    <code>@Introduce</code> annotation is then used to specify
                     the pattern matching the classes you want to apply the interface to.
                     For details see the
                     <a href="#Introductions">Introductions</a> section.
@@ -466,7 +466,7 @@ public class MyAspect {
                         Use if the interface does not require any implementation (marker interface).
                         <br/>
                         Fields are marked with the annotation
-                        <code>@Implements &lt;pointcut&gt;</code>, where pointcut is composed
+                        <code>@Introduce &lt;pointcut&gt;</code>, where pointcut is composed
                         with within, hasField, hasMethod.
                     </li>
                     <br/>
@@ -485,7 +485,7 @@ public class MyAspect {
                     The type of the field is the interface to introduce.
                     <br/>
                     The field is marked with the annotation
-                    <code>@Implements &lt;pointcut&gt;</code> to specify to which
+                    <code>@Introduce &lt;pointcut&gt;</code> to specify to which
                     classes the introduction applies.
                     <br/>
                     The introduction type is the field type.
@@ -493,7 +493,7 @@ public class MyAspect {
                 <p>
                     When using abstract aspects or aspect inheritance, the aspect's super class can define interface
                     introductions without specifying a
-                    <code>@Implements &lt;pointcut&gt;</code> metadata.
+                    <code>@Introduce &lt;pointcut&gt;</code> metadata.
                     The concrete aspect should thus override the fields and specify the metadata defining to which
                     classes the introduction applies.
                 </p>
@@ -501,10 +501,10 @@ public class MyAspect {
                 <p>
                     <b>Java 5 annotations</b>
                     <source><![CDATA[
-    @Implements("within(com.package.*)")
+    @Introduce("within(com.package.*)")
     protected Serializable introduction1;
 
-    @Implements("within(com.package.*)")
+    @Introduce("within(com.package.*)")
     public OtherMarkerInterface introduction2;
                     ]]></source>
                 </p>
@@ -512,12 +512,12 @@ public class MyAspect {
                     <b>JavaDoc annotations</b>
                     <source><![CDATA[
     /**
-     * @Implements("within(com.package.*)")
+     * @Introduce("within(com.package.*)")
      */
     protected Serializable introduction1;
 
     /**
-     * @Implements("within(com.package.*)")
+     * @Introduce("within(com.package.*)")
      */
     public OtherMarkerInterface introduction2;
                     ]]></source>
@@ -561,7 +561,7 @@ public class MyAspect {
                         <td></td>
                     </tr>
                     <tr>
-                        <td>@Implements</td>
+                        <td>@Introduce</td>
                         <td>field</td>
                         <td>Interface Introduction</td>
                         <td>&lt;within/hasxxx pointcut&gt;</td>

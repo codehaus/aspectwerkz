@@ -189,7 +189,6 @@ public class AnnotationManager {
     private Annotation instantiateAnnotation(final RawAnnotation rawAnnotation) {
         final Class proxyClass = (Class) m_registeredAnnotations.get(rawAnnotation.name);
 
-        // FIXME migrate those old styled as well
         if (!proxyClass.isInterface()) {
             throw new RuntimeException("Annotation class is not defined as an interface for " + rawAnnotation.name
                 + ". Use of AspectWerkz 1.x Annotation proxies is not anymore supported.");
@@ -205,8 +204,8 @@ public class AnnotationManager {
             return (Annotation) annotationProxy;
         } catch (Throwable e) {
             throw new DefinitionException(
-                    "Unable to parse annotation @" + rawAnnotation.name +
-                    " " + rawAnnotation.value, e
+                    "Unable to parse annotation @" + rawAnnotation.name + '(' +
+                    " " + rawAnnotation.value + ')', e
             );
         }
     }
@@ -242,7 +241,15 @@ public class AnnotationManager {
             // untyped
             value = asIs.substring(asIs.indexOf(' ') + 1, asIs.length());
             if (!value.startsWith("\"") && !value.endsWith("\"")) {
+                //value = "\""+Strings.replaceSubString(value, "\"", "\\" + "\"")+"\"";
                 //value = "\""+value+"\"";
+            }
+            if (value.startsWith("(") && value.endsWith(")")) {
+                if (value.length() > 2) {
+                    value = value.substring(1, value.length()-1);
+                } else {
+                    value = "";
+                }
             }
         } else {
             // try typed split
@@ -255,9 +262,9 @@ public class AnnotationManager {
                     if (value.length() > 1) {
                         value = value.substring(0, value.length() - 1);
                         if (value.startsWith("\"") && value.endsWith("\"")) {
-                            if (value.length() > 2) {
-                                value = value.substring(1, value.length() - 1);
-                            }
+//                            if (value.length() > 2) {
+//                                value = value.substring(1, value.length() - 1);
+//                            }
                         }
                     } else {
                         value = "";

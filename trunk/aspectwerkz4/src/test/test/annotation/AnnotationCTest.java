@@ -31,10 +31,9 @@ import java.lang.reflect.Method;
  * @packaged.DefaultString("hello")
  * @Complex(i=3, ls={1l,2l,6L},  klass=java.lang.String.class)
  * @Untyped
- * @Untyped hello
  * @Untyped "hello"
- * @Untyped ("hello") - see the space here !
- * @Untyped (hello) - see the space here !
+ * @Untyped ("hello2")
+ * @Untyped "(hello) - see the space here !"
  * @Untyped("preserved hello")
  */
 public class AnnotationCTest extends TestCase {
@@ -47,6 +46,7 @@ public class AnnotationCTest extends TestCase {
 
         List simples = Annotations.getAnnotations("Simple", me);
         assertEquals(2, simples.size());
+
         StringBuffer all = new StringBuffer();
         for (int i = 0; i < simples.size(); i++) {
             all.append("[").append(((AnnotationParserTest.Simple) simples.get(i)).s()).append("]");
@@ -70,8 +70,8 @@ public class AnnotationCTest extends TestCase {
         }
         lookFor = new String[]{
             "[some untype that starts with Before]",
-            "[(other untyped)]",
-            "[yet another untyped]",
+            "[other untyped]",
+            "[\"yet another untyped\"]",
 
         };
         for (int i = 0; i < lookFor.length; i++) {
@@ -91,17 +91,16 @@ public class AnnotationCTest extends TestCase {
         );
 
         List untypeds = Annotations.getAnnotations("Untyped", me);
-        assertEquals(6, untypeds.size());
+        assertEquals(5, untypeds.size());
         all = new StringBuffer();
         for (int i = 0; i < untypeds.size(); i++) {
             all.append("[").append(((AnnotationParserTest.Untyped) untypeds.get(i)).value()).append("]");
         }
         lookFor = new String[]{
-            "[]",
+            "[null]",
             "hello",
-            "\"hello\"",
-            "(\"hello\") - see the space here !",
-            "(hello)",
+            "(hello) - see the space here !",
+            "hello2",
             "preserved hello"
         };
         for (int i = 0; i < lookFor.length; i++) {
@@ -120,10 +119,9 @@ public class AnnotationCTest extends TestCase {
      * @DefaultString("hello")
      * @Complex(i=3, ls={1l,2l,6L},  klass=java.lang.String.class)
      * @Untyped
-     * @Untyped hello
      * @Untyped "hello"
-     * @Untyped ("hello") - see the space here !
-     * @Untyped (hello) - see the space here !
+     * @Untyped "hello"
+     * @Untyped "(hello) - see the space here !"
      */
     public void testMethodAnnotation() throws Throwable {
         Class me = test.annotation.AnnotationCTest.class;
@@ -158,18 +156,17 @@ public class AnnotationCTest extends TestCase {
                 String.class, ((AnnotationParserTest.Complex) Annotations.getAnnotation("Complex", me)).klass()
         );
 
-        List untypeds = Annotations.getAnnotations("Untyped", me);
-        assertEquals(6, untypeds.size());
+        List untypeds = Annotations.getAnnotations("Untyped", m);
+        assertEquals(4, untypeds.size());
         all = new StringBuffer();
         for (int i = 0; i < untypeds.size(); i++) {
             all.append("[").append(((AnnotationParserTest.Untyped) untypeds.get(i)).value()).append("]");
         }
         lookFor = new String[]{
-            "[]",
+            "[null]",
             "hello",
-            "\"hello\"",
-            "(\"hello\") - see the space here !",
-            "(hello)"
+            "hello",
+            "(hello) - see the space here !"
         };
         for (int i = 0; i < lookFor.length; i++) {
             String s = lookFor[i];

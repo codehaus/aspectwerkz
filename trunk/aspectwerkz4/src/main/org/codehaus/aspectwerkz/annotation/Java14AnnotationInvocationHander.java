@@ -40,27 +40,31 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
         m_rawAnnotationName = rawAnnotationName;
         m_rawAnnotationValue = rawAnnotationValue;
 
-        // untyped only if value() is the SOLE method
-        Method[] methods = annotationInterface.getDeclaredMethods();
-        if (methods.length == 1 && methods[0].getName().equals("value")) {
+        // untyped
+        if (annotationInterface.getName().equals(UntypedAnnotation.class.getName())) {
             m_isUntyped = true;
         } else {
             m_isUntyped = false;
         }
 
-        // for @AfterReturning and @AfterThrowing, we allow untyped style as well but this
-        // is not easy to determine
+        // for @AfterReturning etc, we allow anonymous style but are using typed annotation
+        // hence the @Around pc is a non supported syntax (should be @Around "pc")
+        // but for compatibility purpose we fake it here.
         if (m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.AfterReturning")
             || m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.AfterThrowing")
-            || m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.Mixin")
-            || m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.Aspect")) {
+            || m_annotationTypeName.startsWith("org.codehaus.aspectwerkz.annotation.")
+            && ! m_annotationTypeName.equals("org.codehaus.aspectwerkz.annotation.UntypedAnnotation")) {
             String trimed = m_rawAnnotationValue.trim();
             if (trimed.startsWith("type")
                 || trimed.startsWith("pointcut")
                 || trimed.startsWith("deploymentModel")) {
                 ;// not using untyped syntax
             } else {
-                m_rawAnnotationValue = "\"" + m_rawAnnotationValue + "\"";
+                if (m_rawAnnotationValue.startsWith("\"") && m_rawAnnotationValue.endsWith("\"")) {
+                    ;
+                } else {
+                    m_rawAnnotationValue = "\"" + m_rawAnnotationValue + "\"";
+                }
             }
         }
 
@@ -107,17 +111,21 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
         } else if (m_isUntyped) {
             if ("value".equals(methodName)) {
                 returned = m_rawAnnotationValue;
+            } else if ("name".equals(methodName)) {
+                returned = m_rawAnnotationName;
+            } else if ("annotationType".equals(methodName)) {
+                returned = proxy.getClass();//TODO test me
             } else {
                 throw new RuntimeException("No such annotation element [" + method.getName() + "] on @" + m_annotationTypeName);
             }
         } else if (m_elements.containsKey(methodName)) {
             returned = m_elements.get(methodName);
-        } else if (/*isExtended AND*/methodName.startsWith("set")) {
-            char[] elementName = new char[methodName.length() - 3];
-            methodName.getChars(3, methodName.length(), elementName, 0);
-            elementName[0] = new String(elementName, 0, 1).toLowerCase().charAt(0);
-            m_elements.put(new String(elementName), args[0]);
-            returned = null;
+//        } else if (/*isExtended AND*/methodName.startsWith("set")) {
+//            char[] elementName = new char[methodName.length() - 3];
+//            methodName.getChars(3, methodName.length(), elementName, 0);
+//            elementName[0] = new String(elementName, 0, 1).toLowerCase().charAt(0);
+//            m_elements.put(new String(elementName), args[0]);
+//            returned = null;
         } else {
             returned = null;
         }

@@ -3,7 +3,7 @@
 
 PARSER_BEGIN(AnnotationParser)
 /**************************************************************************************
- * Copyright (c) Jonas Bon\u00e9r, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas Bon\u017dr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -18,7 +18,7 @@ import java.io.StringReader;
 /**
  * The annotation parser.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bon\u00e9r</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bon\u017dr</a>
  */
 public class AnnotationParser/*@bgen(jjtree)*/implements AnnotationParserTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
   protected static JJTAnnotationParserState jjtree = new JJTAnnotationParserState();
