@@ -15,6 +15,8 @@ import junit.framework.TestCase;
  * Child is overriding a method defined in Super but still does call it.
  * Child is used with a dual pointcut, defined both in super method and overrided method.
  * Child2 is used in the case of a single pointcut defined in super method.
+ *
+ * For AW-90 same tests are done for static methods
  */
 public class ReflectionTest extends TestCase {
 
@@ -28,9 +30,21 @@ public class ReflectionTest extends TestCase {
         // advice bounded
     }
 
+    public void testStaticSinglePointcutOnSuperClassWithOverridedMethodNonDelegating() {
+        assertEquals(2, OtherChild2.incrStatic(1));
+        // advice non applied since method is overrided and poincut is NOT hierarchical
+
+        assertEquals(-2, Super2.incrStatic(1));
+        // advice bounded
+    }
+
     public void testSinglePointcutOnSuperClassWithOverridedMethodDelegating() {
         Child2 c = new Child2();
         assertEquals(-3, c.incr(1));
+    }
+
+    public void testStaticSinglePointcutOnSuperClassWithOverridedMethodDelegating() {
+        assertEquals(-3, Child2.incrStatic(1));
     }
 
     public void testDualPointcutWithOverridedMethodNonDelegating() {
@@ -38,9 +52,17 @@ public class ReflectionTest extends TestCase {
         assertEquals(-2, c.incr(1));
     }
 
+    public void testStaticDualPointcutWithOverridedMethodNonDelegating() {
+        assertEquals(-2, OtherChild.incrStatic(1));
+    }
+
     public void testDualPointcutWithOverridedMethodDelegating() {
         Child c = new Child();
         assertEquals(+3, c.incr(1));
+    }
+
+    public void testStaticDualPointcutWithOverridedMethodDelegating() {
+        assertEquals(+3, Child.incrStatic(1));
     }
 
     public void testDollar() {
