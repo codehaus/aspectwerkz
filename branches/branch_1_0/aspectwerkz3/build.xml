@@ -12,22 +12,37 @@
 <!-- Ant build file for the AspectWerkz project -->
 <!-- ============================================================== -->
 <project name="AspectWerkz" default="dist" basedir=".">
-	
-	<path id="project.class.path">
-		<pathelement path="${java.class.path}" />
-		<pathelement path="${build.core.dir}" />
-		<fileset dir="${basedir}/lib">
-			<include name="*.jar" />
-		</fileset>
-		<pathelement location="${basedir}/src/samples" />
-	</path>
-	<path id="aspectwerkz.classpath">
-		<fileset dir="${basedir}/lib">
-			<include name="${basedir}/target/classes" />
-			<include name="*.jar" />
-		</fileset>
-	</path>
-	<property name="aspectwerkz.classpath" refid="aspectwerkz.classpath" />
+
+    <!--    define the AspectWerkz classpath used to compile the project -->
+    <!--    we exclude jarjar and alike, used only for build purpose -->
+    <path id="project.class.path">
+        <pathelement path="${java.home}/../lib/tools.jar" />
+        <fileset dir="${basedir}/lib">
+            <exclude name="jarjar*"/>
+            <include name="*.jar"/>
+        </fileset>
+        <!-- external classpath -->
+        <pathelement path="${java.class.path}" />
+    </path>
+
+<!--	<path id="project.class.path">-->
+<!--		<pathelement path="${java.class.path}" />-->
+<!--		<pathelement path="${build.core.dir}" />-->
+<!--		<fileset dir="${basedir}/lib">-->
+<!--			<include name="*.jar" />-->
+<!--		</fileset>-->
+<!--		<pathelement location="${basedir}/src/samples" />-->
+<!--	</path>-->
+<!--	<path id="aspectwerkz.classpath">-->
+<!--		<fileset dir="${basedir}/lib">-->
+<!--			<include name="${basedir}/target/classes" />-->
+<!--			<include name="*.jar" />-->
+<!--		</fileset>-->
+<!--	</path>-->
+<!--    <property name="aspectwerkz.classpath" refid="aspectwerkz.classpath" />-->
+
+    <!--    define the jarjar task we use to remap ASM -->
+    <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="${basedir}/lib/jarjar-0.2.jar"/>
 
 	<!-- =================================================== -->
 	<!--  initializes parameters  -->
@@ -89,6 +104,7 @@
 		<delete dir="${build.test.dir}" />
 		<delete dir="${samples.classes}" />
 		<delete dir="${extensions.classes}" />
+        <delete dir="${build.dir}"/>
 		<mkdir dir="${build.dir}" />
 		<mkdir dir="${build.core.dir}" />
 		<mkdir dir="${build.test.dir}" />
@@ -105,10 +121,7 @@
 		<javac destdir="${build.core.dir}" debug="on">
 			<src path="${src.dir}/main" />
 			<classpath>
-				<pathelement path="${java.class.path}" />
-				<fileset dir="${lib.dir}">
-					<include name="*.jar" />
-				</fileset>
+                <path refid="project.class.path"/>
 			</classpath>
 		</javac>
 	</target>
@@ -122,11 +135,8 @@
 		<javac destdir="${build.test.dir}" debug="on">
 			<src path="${test.src.dir}" />
 			<classpath>
-				<pathelement path="${java.class.path}" />
 				<pathelement path="${build.core.dir}" />
-				<fileset dir="${lib.dir}">
-					<include name="*.jar" />
-				</fileset>
+                <path refid="project.class.path"/>
 			</classpath>
 		</javac>
 	</target>
@@ -143,10 +153,7 @@
             </src>
             <classpath>
                 <pathelement path="${main.classes}" />
-                <fileset dir="${lib.dir}">
-                    <include name="*.jar">
-                    </include>
-                </fileset>
+                <path refid="project.class.path"/>
             </classpath>
         </javac>
         <javac destdir="${samples.classes}" deprecation="true" debug="true" optimize="false">
@@ -156,10 +163,7 @@
             </src>
             <classpath>
                 <pathelement path="${main.classes}" />
-                <fileset dir="${lib.dir}">
-                    <include name="*.jar">
-                    </include>
-                </fileset>
+                <path refid="project.class.path"/>
             </classpath>
         </javac>
 	</target>
@@ -177,10 +181,7 @@
 			<classpath>
 				<pathelement path="${main.classes}" />
 				<pathelement path="${extensions.classes}" />
-				<fileset dir="${lib.dir}">
-					<include name="*.jar">
-					</include>
-				</fileset>
+				<path refid="project.class.path"/>
 			</classpath>
 		</javac>
 	</target>
@@ -197,10 +198,7 @@
 			</src>
 			<classpath>
 				<pathelement path="${main.classes}" />
-				<fileset dir="${lib.dir}">
-					<include name="*.jar">
-					</include>
-				</fileset>
+                <path refid="project.class.path"/>
 			</classpath>
 		</javac>
 	</target>
@@ -222,19 +220,27 @@
 	<target name="dist" depends="compile, compile:jdk15">
 		<copy file="${src.dir}/main/aspectwerkz.dtd" todir="${build.core.dir}" />
 	
-		<jar destfile="${build.dir}/aspectwerkz-${version}.jar" manifest="${lib.dir}/manifest.mf">
+        <!-- we embed jarjar version of ASM in it as well in case the aspectwerkz-core jar is not used -->
+		<jarjar destfile="${build.dir}/aspectwerkz-${version}.jar" manifest="${lib.dir}/manifest.mf">
 			<fileset dir="${build.core.dir}">
 				<exclude name="**/aspectwerkz/hook/**/*" />
 			</fileset>
-		</jar>
+            <zipfileset src="${basedir}/lib/asm-1.5.1.jar"/>
+            <zipfileset src="${basedir}/lib/asm-attrs-1.5.1.jar"/>
+            <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
+		</jarjar>
 		<copy tofile="${lib.dir}/aspectwerkz-${version}.jar" file="${build.dir}/aspectwerkz-${version}.jar" overwrite="true" />
 
         <!-- core contains the hook part, including JVMTT agent if J2SE 5 build -->
-		<jar destfile="${build.dir}/aspectwerkz-core-${version}.jar" manifest="${lib.dir}/manifest-core.mf">
+        <!-- we embed jarjar version of ASM in it as well so that it will be in the bootclasspath for the asm hook -->
+		<jarjar destfile="${build.dir}/aspectwerkz-core-${version}.jar" manifest="${lib.dir}/manifest-core.mf">
 			<fileset dir="${build.core.dir}">
 				<include name="**/aspectwerkz/hook/**/*" />
 			</fileset>
-		</jar>
+            <zipfileset src="${basedir}/lib/asm-1.5.1.jar"/>
+            <zipfileset src="${basedir}/lib/asm-attrs-1.5.1.jar"/>
+            <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
+		</jarjar>
 		<copy tofile="${lib.dir}/aspectwerkz-core-${version}.jar" file="${build.dir}/aspectwerkz-core-${version}.jar" overwrite="true" />
 	
 	</target>
@@ -245,11 +251,15 @@
 	<target name="jars" depends="compile:all">
         <antcall target="dist"/>
 
-		<jar jarfile="${target.dir}/aspectwerkz-extensions-${version}.jar" basedir="${extensions.classes}" />
+		<jarjar jarfile="${target.dir}/aspectwerkz-extensions-${version}.jar" basedir="${extensions.classes}">
+            <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
+        </jarjar>
 		<copy tofile="${lib.dir}/aspectwerkz-extensions-${version}.jar" file="${target.dir}/aspectwerkz-extensions-${version}.jar" overwrite="true" />
 		
-		<antcall target="samples:annotationc" />
-         <jar jarfile="${target.dir}/aspectwerkz-samples-${version}.jar" basedir="${samples.classes}" />
+		<antcall target="samples:annotationc"/>
+        <jarjar jarfile="${target.dir}/aspectwerkz-samples-${version}.jar" basedir="${samples.classes}">
+            <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
+        </jarjar>
 		<copy tofile="${lib.dir}/aspectwerkz-samples-${version}.jar" file="${target.dir}/aspectwerkz-samples-${version}.jar" overwrite="true" />
 	</target>
 
@@ -299,18 +309,32 @@
 	<!--  compiles aspects for the tests -->
 	<!-- =================================================== -->
 	<target name="test:annotationc">
-		<exec executable="java">
-			<arg line="-cp ${java.home}/../lib/tools.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/asm-attrs-1.5.1.jar org.codehaus.aspectwerkz.annotation.AnnotationC -verbose -src ${basedir}/src/test -classes ${basedir}/target/test-classes -custom ${basedir}/src/test/annotation.properties" />
-		</exec>
+        <java fork="true" classname="org.codehaus.aspectwerkz.annotation.AnnotationC">
+            <classpath>
+                <path refid="project.class.path"/>
+                <pathelement path="${test.classes}"/>
+            </classpath>
+            <arg line="-verbose -src ${basedir}/src/test -classes ${basedir}/target/test-classes -custom ${basedir}/src/test/annotation.properties"/>
+        </java>
+<!--		<exec executable="java">-->
+<!--			<arg line="-cp ${java.home}/../lib/tools.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/asm-attrs-1.5.1.jar org.codehaus.aspectwerkz.annotation.AnnotationC -verbose -src ${basedir}/src/test -classes ${basedir}/target/test-classes -custom ${basedir}/src/test/annotation.properties" />-->
+<!--		</exec>-->
 	</target>
 
 	<!-- =================================================== -->
 	<!--  compiles aspects for the samples -->
 	<!-- =================================================== -->
 	<target name="samples:annotationc">
-		<exec executable="java">
-			<arg line="-cp ${java.home}/../lib/tools.jar${pathseparator}${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/asm-attrs-1.5.1.jar org.codehaus.aspectwerkz.annotation.AnnotationC -verbose -src ${basedir}/src/samples -classes ${basedir}/target/samples-classes -custom ${basedir}/src/samples/annotation.properties" />
-		</exec>
+        <java fork="true" classname="org.codehaus.aspectwerkz.annotation.AnnotationC">
+            <classpath>
+                <path refid="project.class.path"/>
+                <pathelement path="${samples.classes}"/>
+            </classpath>
+            <arg line="-verbose -src ${basedir}/src/samples -classes ${basedir}/target/samples-classes -custom ${basedir}/src/samples/annotation.properties"/>
+        </java>
+<!--		<exec executable="java">-->
+<!--			<arg line="-cp ${java.home}/../lib/tools.jar${pathseparator}${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/asm-attrs-1.5.1.jar org.codehaus.aspectwerkz.annotation.AnnotationC -verbose -src ${basedir}/src/samples -classes ${basedir}/target/samples-classes -custom ${basedir}/src/samples/annotation.properties" />-->
+<!--		</exec>-->
 	</target>
 
 	<!-- =================================================== -->
@@ -378,9 +402,7 @@
 			<classpath>
 				<pathelement path="${main.classes}" />
 				<pathelement path="${java.home}/../lib/tools.jar" />
-				<fileset dir="${lib.dir}">
-					<include name="*.jar" />
-				</fileset>
+                <path refid="project.class.path"/>
 			</classpath>
 			<arg line="${input.args}" />
 		</java>
@@ -398,6 +420,15 @@
     <target name="samples:logging:inlining" depends="clean, jars, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.weaving.strategy=inlining examples.logging.Target" />
+        </exec>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the annotation sample -->
+    <!-- =================================================== -->
+    <target name="samples:annotation" depends="clean, jars, samples:annotationc">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.verbose=true -Daspectwerkz.weaving.strategy=delegation examples.annotation.Target" />
         </exec>
     </target>
 
@@ -441,9 +472,15 @@
 	<!--  runs the remote sample - client side -->
 	<!-- =================================================== -->
 	<target name="samples:remote:client" depends="clean, jars, samples:annotationc">
-		<exec executable="java">
-			<arg line="-cp ${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${samples.classes} examples.connectivity.Client" />
-		</exec>
+        <java fork="true" classname="examples.connectivity.Client">
+            <classpath>
+                <path refid="project.class.path"/>
+                <pathelement path="${samples.classes}" />
+            </classpath>
+        </java>
+<!--		<exec executable="java">-->
+<!--			<arg line="-cp ${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${samples.classes} examples.connectivity.Client" />-->
+<!--		</exec>-->
 	</target>
 
 	<!-- =================================================== -->
@@ -464,11 +501,26 @@
                 <pathelement path="${samples.classes}" />
                 <pathelement path="${main.classes}" />
 				<pathelement path="${java.home}/../lib/tools.jar" />
-				<fileset dir="${lib.dir}" includes="*.jar" />
+				<path refid="project.class.path"/>
 			</classpath>
 			<jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml" />
 		</java>
 	</target>
+
+    <!-- =================================================== -->
+    <!--  runs the annotation sample in offline mode -->
+    <!-- =================================================== -->
+    <target name="samples:offline:annotation" depends="clean, jars, offline:samples">
+        <java classname="examples.annotation.Target" fork="true">
+            <classpath>
+                <pathelement path="${samples.classes}" />
+                <pathelement path="${main.classes}" />
+                <pathelement path="${java.home}/../lib/tools.jar" />
+                <path refid="project.class.path"/>
+            </classpath>
+            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml" />
+        </java>
+    </target>
 
 	<!-- =================================================== -->
 	<!--  runs the introduction sample in offline mode -->
@@ -479,7 +531,7 @@
                 <pathelement path="${samples.classes}" />
                 <pathelement path="${main.classes}" />
 				<pathelement path="${java.home}/../lib/tools.jar" />
-				<fileset dir="${lib.dir}" includes="*.jar" />
+				<path refid="project.class.path"/>
 			</classpath>
 			<jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml" />
 		</java>
