@@ -83,11 +83,9 @@
     <!--  offline transformation of the samples -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:transform">
-        <attainGoal name="clean"/>
-        <attainGoal name="aspectwerkz:init"/>
-        <attainGoal name="aspectwerkz:compile"/>
+	<attainGoal name="aspectwerkz:samples:aspectc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-offline ${src.dir}/samples/aspectwerkz.xml -verify -cp ${extensions.classes} ${samples.classes}"/>
+            <arg line="-offline ${basedir}/src/samples/samples-attribdef.xml -verbose -verify -cp ${extensions.classes} ${samples.classes}"/>
         </exec>
     </goal>
 
@@ -112,8 +110,12 @@
                 </fileset>
             </classpath>
         </javac>
-        <jar jarfile="${target.dir}/samples.jar" basedir="${samples.classes}"/>
-        <copy tofile="${dist.dir}/samples.jar" file="${target.dir}/samples.jar" overwrite="true"/>
+        <!-- run AspectC on the samples Aspects -->
+        <exec executable="java">
+            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.3.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.definition.AspectC ${basedir}/src/samples -verbose ${samples.classes}"/>
+        </exec>
+        <jar jarfile="${target.dir}/aspectwerkz-samples.jar" basedir="${samples.classes}"/>
+        <copy tofile="${dist.dir}/aspectwerkz-samples.jar" file="${target.dir}/aspectwerkz-samples.jar" overwrite="true"/>
     </goal>
 
     <!-- =================================================== -->
@@ -234,11 +236,37 @@
             <arg line="-Daspectwerkz.transform.verbose=false -Daspectwerkz.jit.off=true -cp ${samples.classes} -cp ${lib.dir}/aspectwerkz-extensions-${pom.currentVersion}.jar -Daspectwerkz.definition.file=${src.dir}/samples/samples-hotswap.xml -Daspectwerkz.transform.dump=* examples.logging.HotSwapTarget"/>
         </exec>
     </goal>
-    <goal name="aa">
-        <attainGoal name="aspectwerkz:compile"/>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-Daspectwerkz.transform.verbose=false -Daspectwerkz.jit.off=true -cp ${samples.classes} -cp ${lib.dir}/aspectwerkz-extensions-${pom.currentVersion}.jar -Daspectwerkz.definition.file=${src.dir}/samples/samples-hotswap.xml -Daspectwerkz.transform.dump=* examples.logging.HotSwapTarget"/>
-        </exec>
+
+    <!-- =================================================== -->
+    <!--  runs the logging sample in offline mode -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:samples:offlinelogging">
+        <attainGoal name="aspectwerkz:transform"/>
+        <java classname="examples.logging.Target" fork="true">
+            <classpath>
+                <pathelement path="${java.home}/../lib/tools.jar"/>
+                <fileset dir="${lib.dir}" includes="*.jar"/>
+                <pathelement path="${main.classes}"/>
+                <pathelement path="${samples.classes}"/>
+            </classpath>
+            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml"/>
+        </java>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  runs the logging sample in offline mode -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:samples:offlineintroduction">
+        <attainGoal name="aspectwerkz:transform"/>
+        <java classname="examples.introduction.Target" fork="true">
+            <classpath>
+                <pathelement path="${java.home}/../lib/tools.jar"/>
+                <fileset dir="${lib.dir}" includes="*.jar"/>
+                <pathelement path="${main.classes}"/>
+                <pathelement path="${samples.classes}"/>
+            </classpath>
+            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml"/>
+        </java>
     </goal>
 
     <!-- =================================================== -->

@@ -7,6 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.compiler;
 
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 
 import java.io.ByteArrayInputStream;
@@ -139,7 +141,7 @@ public class AspectWerkzC
     /*public void log(String msg) {
         utility.log(msg);
     }
-
+    
     public void log(String msg, Throwable t) {
         utility.log(msg);
         t.printStackTrace();
@@ -743,6 +745,12 @@ public class AspectWerkzC
         paths.addAll(files);
         compiler.setCompilationPath((File[]) (paths.toArray(new File[0])));
         Thread.currentThread().setContextClassLoader(compiler.compilationLoader);
+
+        // AOPC special fix
+        // turn off -Daspectwerkz.definition.file registration and register it at the compilationLoader level instead
+        SystemDefinitionContainer.disableSystemWideDefinition();
+        SystemDefinitionContainer.deploySystemDefinitions(compiler.compilationLoader,
+            DefinitionLoader.getDefaultDefinition(compiler.compilationLoader));
 
         // set preprocessor
         try
