@@ -35,9 +35,9 @@ public final class TransformationUtil {
 
     public static final String METHOD_WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "methodWrapper" + DELIMITER;
 
-    public static final String FIELD_SET_WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "fieldSetWrapper" + DELIMITER;
+    public static final String PUTFIELD_WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "fieldSetWrapper" + DELIMITER;
 
-    public static final String FIELD_GET_WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "fieldGetWrapper" + DELIMITER;
+    public static final String GETFIELD_WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "fieldGetWrapper" + DELIMITER;
 
     public static final String JOIN_POINTS_INIT_METHOD = ORIGINAL_METHOD_PREFIX + "initJoinPoints";
 
