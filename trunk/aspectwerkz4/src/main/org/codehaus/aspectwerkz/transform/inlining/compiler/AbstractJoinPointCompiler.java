@@ -135,8 +135,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
     private synchronized void initialize(final AdviceInfoContainer advices) {
 
         // create the aspect fields
-        List aspectQualifiedNames = new ArrayList();// in fact a Set but we need indexOf
-        Set aspectInfos = new HashSet();
+        final List aspectQualifiedNames = new ArrayList();// in fact a Set but we need indexOf
+        final Set aspectInfos = new HashSet();
         m_beforeAdviceMethodInfos = getAdviceMethodInfos(
                 aspectQualifiedNames, aspectInfos, advices.getBeforeAdviceInfos()
         );
@@ -241,7 +241,6 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * @return
      */
     private String getJoinPointInterface() {
-        //FIXME for Hotswap JP we need one single interface
         String joinPointInterface;
         if (m_hasAroundAdvices || m_requiresJoinPoint) {
             joinPointInterface = JOIN_POINT_CLASS_NAME;
@@ -262,9 +261,17 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
     protected AdviceMethodInfo[] getAdviceMethodInfos(final List aspectQualifiedNames,
                                                       final Set aspectInfos,
                                                       final AdviceInfo[] adviceInfos) {
-        final AdviceMethodInfo[] adviceMethodInfos = new AdviceMethodInfo[adviceInfos.length];
+        List adviceMethodInfosSet = new ArrayList();
         for (int i = 0; i < adviceInfos.length; i++) {
             AdviceInfo adviceInfo = adviceInfos[i];
+
+            // if we have a perinstance deployed aspect and a static member target -> skip and go on
+            String deploymentModel = adviceInfo.getAdviceDefinition().getAspectDefinition().getDeploymentModel();
+            if (DeploymentModel.getDeploymentModelAsInt(deploymentModel) == DeploymentModel.PER_INSTANCE &&
+                Modifier.isStatic(m_calleeMemberModifiers)) {
+                continue;
+            }
+
             final String aspectClassName = adviceInfo.getAspectClassName().replace('.', '/');
 
             if (!aspectQualifiedNames.contains(adviceInfo.getAspectQualifiedName())) {
@@ -281,10 +288,10 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                     m_joinPointClassName,
                     m_calleeMemberDesc
             );
-            adviceMethodInfos[i] = adviceMethodInfo;
+            adviceMethodInfosSet.add(adviceMethodInfo);
             aspectInfos.add(adviceMethodInfo.getAspectInfo());
         }
-        return adviceMethodInfos;
+        return (AdviceMethodInfo[]) adviceMethodInfosSet.toArray(new AdviceMethodInfo[adviceMethodInfosSet.size()]);
     }
 
     /**
@@ -731,14 +738,12 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         for (int i = 0; i < m_aspectInfos.length; i++) {
             AspectInfo aspectInfo = m_aspectInfos[i];
             if (aspectInfo.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
-                //aspectField = (<TYPE>)((HasInstanceLocalAspect)target).class$getAspect(className, qualifiedName)
+                //aspectField = (<TYPE>)((HasInstanceLocalAspect)target).aw$getAspect(className, qualifiedName)
                 loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
                 if (calleeIndex >= 0) {
                     cv.visitVarInsn(ALOAD, calleeIndex);
                 } else {
-                    throw new RuntimeException(
-                            "could not retreive instance local aspect for target class: target instance is not avaliable"
-                    );
+                    // target instance not available - skipping
                 }
                 cv.visitLdcInsn(aspectInfo.getAspectClassName().replace('/', '.'));
                 cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
