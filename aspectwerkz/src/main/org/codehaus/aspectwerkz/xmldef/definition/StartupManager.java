@@ -30,6 +30,8 @@ import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
 import org.codehaus.aspectwerkz.xmldef.introduction.IntroductionContainer;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
@@ -56,14 +58,13 @@ public class StartupManager {
     /**
      * The path to the aspectwerkz home directory.
      */
-    public static final String ASPECTWERKZ_HOME =
-            System.getProperty("aspectwerkz.home", ".");
+    public static final String ASPECTWERKZ_HOME = System.getProperty("aspectwerkz.home", ".");
 
     /**
      * The path to the definition file.
      */
-    public static final String DEFINITION_FILE = System
-            .getProperty("aspectwerkz.definition.file", null);
+    public static final String DEFINITION_FILE =
+            System.getProperty("aspectwerkz.definition.file", null);
 
     /**
      * The definition class name.
@@ -116,7 +117,7 @@ public class StartupManager {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (s_initialized) return;
         s_initialized = true;
-        final AspectWerkzDefinition definition = AspectWerkzDefinition.getDefinition(uuid);
+        final AspectWerkzDefinition definition = AbstractAspectWerkzDefinition.getDefinition(uuid);
         createAspects(uuid, definition);
         registerIntroductions(uuid, definition);
         registerAdvices(uuid, definition);
