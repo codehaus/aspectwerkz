@@ -350,7 +350,7 @@ void PointcutReference() #PointcutReference :
  */
 void Execution() #Execution : {}
 {
-    <EXECUTION> (LOOKAHEAD(2) MethodPattern() | ConstructorPattern()) ")"
+    <EXECUTION> (LOOKAHEAD(4) MethodPattern() | ConstructorPattern()) ")"
 }
 
 /**
@@ -358,7 +358,7 @@ void Execution() #Execution : {}
  */
 void Call() #Call : {}
 {
-    <CALL> (LOOKAHEAD(2) MethodPattern() | ConstructorPattern()) ")"
+    <CALL> (LOOKAHEAD(4) MethodPattern() | ConstructorPattern()) ")"
 }
 
 /**
