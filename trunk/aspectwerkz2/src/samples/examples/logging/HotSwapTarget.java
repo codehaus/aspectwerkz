@@ -21,6 +21,7 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.definition.StartupManager;
 
 import java.util.Iterator;
 import java.util.List;
@@ -148,12 +149,16 @@ public class HotSwapTarget {
         }
         aspectDef.addAroundAdvice(newDef);
 
-        // TODO : needed but has side effect for toLog3 - review API
+        //TODO: experimental API
+        StartupManager.reinitializeSystem("samples", sysDef);
+
+        /*
         ExecutionPointcut pointcutInstance = new ExecutionPointcut("samples", newDef.getExpression());
         PointcutManager pointcutManager = SystemLoader.getSystem("samples").
                 getAspectManager().getPointcutManager(aspectName);
-        pointcutManager.addExecutionPointcut(pointcutInstance);
+        //pointcutManager.addExecutionPointcut(pointcutInstance);//needed only after initialization
         pointcutInstance.addAroundAdvice(aspectName+".logMethod");
+        */
     }
 
     /**
