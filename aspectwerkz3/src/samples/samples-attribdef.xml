@@ -25,7 +25,7 @@
 
             <aspect class="logging.ArgAspect"/>
 
-            <aspect class="annotation.Target$AnnotationMatchAspect"/>
+<!--            <aspect class="annotation.Target$AnnotationMatchAspect"/>-->
         </package>
     </system>
 </aspectwerkz>
