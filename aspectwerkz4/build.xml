@@ -148,6 +148,7 @@
         <javac destdir="${test.classes}" debug="on">
             <src path="${test.src.dir}"/>
             <classpath>
+                <path path="${jdk14.classes}"/>
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
@@ -240,8 +241,8 @@
     <!-- ============================================================== -->
     <target name="compile:all" depends="init">
         <antcall target="compile"/>
-        <antcall target="compile:test"/>
         <antcall target="compile:jdk15"/>
+        <antcall target="compile:test"/>
         <antcall target="compile:extensions"/>
         <antcall target="compile:samples"/>
     </target>
@@ -249,7 +250,7 @@
     <!-- ============================================================== -->
     <!-- create distribution -->
     <!-- ============================================================== -->
-    <target name="dist" depends="compile, compile:test, compile:jdk15, compile:extensions"><!-- not samples since Java 1.4 -->
+    <target name="dist" depends="compile, compile:jdk15, compile:test, compile:extensions"><!-- not samples since Java 1.4 -->
         <copy file="${src.dir}/main/aspectwerkz2.dtd" todir="${main.classes}"/>
 
         <!-- we embed jarjar version of ASM in it as well in case the aspectwerkz-core jar is not used -->
@@ -467,9 +468,18 @@
     </target>
 
     <!-- =================================================== -->
+    <!--  runs the Spring compiler extension tests -->
+    <!-- =================================================== -->
+    <target name="comp:ext:spring:test" depends="dist">
+        <subant antfile="build.xml" failonerror="true" inheritall="false" inheritrefs="false"
+            buildpath="${comp.ext.dir}/spring" target="test">
+        </subant>
+    </target>
+
+    <!-- =================================================== -->
     <!--  runs the all compiler extension tests -->
     <!-- =================================================== -->
-    <target name="comp:ext:test" depends="comp:ext:aopalliance:test, comp:ext:aspectj:test"/>
+    <target name="comp:ext:test" depends="comp:ext:aopalliance:test, comp:ext:aspectj:test, comp:ext:spring:test"/>
 
     <!-- =================================================== -->
     <!--  JDWP interactive Plug -->
