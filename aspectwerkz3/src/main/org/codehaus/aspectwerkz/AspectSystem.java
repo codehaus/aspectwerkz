@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
+import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.connectivity.Invoker;
 import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
@@ -21,11 +22,8 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * Represents the aspect runtime system.<br/> Manages the different parts of the runtime system and provides and API to
@@ -199,20 +197,20 @@ public final class AspectSystem {
      */
     public void enteringControlFlow(final PointcutType pointcutType, final MethodInfo methodInfo,
                                     final ClassInfo withinInfo) {
+        System.out.println("AspectSystem.enteringControlFlow");
         if (pointcutType == null) {
             throw new IllegalArgumentException("pointcut type can not be null");
         }
         if (methodInfo == null) {
             throw new IllegalArgumentException("method info can not be null");
         }
-        Set cflowSet = (Set)m_cflowStack.get();
-        if (cflowSet == null) {
-            cflowSet = new HashSet();
+        TIntObjectHashMap cflows = (TIntObjectHashMap)m_cflowStack.get();
+        if (cflows == null) {
+            cflows = new TIntObjectHashMap();
         }
         ExpressionContext expressionContext = new ExpressionContext(pointcutType, methodInfo, withinInfo);
-        System.out.println("expressionContext.hashCode() = " + expressionContext.hashCode());
-        cflowSet.add(expressionContext);
-        m_cflowStack.set(cflowSet);
+        cflows.put(expressionContext.hashCode(), expressionContext);
+        m_cflowStack.set(cflows);
     }
 
     /**
@@ -224,19 +222,20 @@ public final class AspectSystem {
      */
     public void exitingControlFlow(final PointcutType pointcutType, final MethodInfo methodInfo,
                                    final ClassInfo withinInfo) {
+        System.out.println("AspectSystem.exitingControlFlow");
         if (pointcutType == null) {
             throw new IllegalArgumentException("pointcut type can not be null");
         }
         if (methodInfo == null) {
             throw new IllegalArgumentException("method info can not be null");
         }
-        Set cflowSet = (Set)m_cflowStack.get();
-        if (cflowSet == null) {
+        TIntObjectHashMap cflows = (TIntObjectHashMap)m_cflowStack.get();
+        if (cflows == null) {
             return;
         }
         ExpressionContext expressionContext = new ExpressionContext(pointcutType, methodInfo, withinInfo);
-        cflowSet.remove(expressionContext);
-        m_cflowStack.set(cflowSet);
+        cflows.remove(expressionContext.hashCode());
+        m_cflowStack.set(cflows);
     }
 
     /**
@@ -246,19 +245,21 @@ public final class AspectSystem {
      * @return boolean
      */
     public boolean isInControlFlowOf(final CflowExpressionVisitor expression) {
+        System.out.println("AspectSystem.isInControlFlowOf");
         if (expression == null) {
             throw new IllegalArgumentException("expression can not be null");
         }
         if (!expression.hasCflowPointcut()) {
             return false;
         }
-        Set cflowSet = (Set)m_cflowStack.get();
-        if (cflowSet == null) {
-            cflowSet = new HashSet();
+        TIntObjectHashMap cflows = (TIntObjectHashMap)m_cflowStack.get();
+        if (cflows == null) {
+            cflows = new TIntObjectHashMap();
+            return false;
         }
-        for (Iterator it = cflowSet.iterator(); it.hasNext();) {
-            ExpressionContext ctx = (ExpressionContext)it.next();
-            if (expression.match(ctx)) {
+        Object[] contexts = cflows.getValues();
+        for (int i = 0; i < contexts.length; i++) {
+            if (expression.match((ExpressionContext)contexts[i])) {
                 return true;
             }
         }

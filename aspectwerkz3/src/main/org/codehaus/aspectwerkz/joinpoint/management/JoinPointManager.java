@@ -222,7 +222,10 @@ public class JoinPointManager {
             Map pointcutTypeToCflowPointcutsMap = s_registry.getCflowPointcutsForJoinPoint(m_classHash, methodHash);
 
             AdviceContainer[] adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.EXECUTION);
-            List cflowPointcuts = (List)pointcutTypeToCflowPointcutsMap.get(PointcutType.CALL);
+
+            // should NOT return zero elements 
+            List cflowPointcuts = (List)pointcutTypeToCflowPointcutsMap.get(PointcutType.EXECUTION);
+
             initCflowManagement(cflowPointcuts, joinPointInfo);
 
             switch (joinPointType) {
@@ -415,7 +418,7 @@ public class JoinPointManager {
             Map pointcutTypeToCflowPointcutsMap = s_registry.getCflowPointcutsForJoinPoint(m_classHash, fieldHash);
 
             AdviceContainer[] adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.SET);
-            List cflowPointcuts = (List)pointcutTypeToCflowPointcutsMap.get(PointcutType.CALL);
+            List cflowPointcuts = (List)pointcutTypeToCflowPointcutsMap.get(PointcutType.SET);
             initCflowManagement(cflowPointcuts, joinPointInfo);
 
             joinPoint = createFieldJoinPoint(fieldHash, fieldSignature, JoinPointType.FIELD_SET, m_targetClass,
@@ -495,7 +498,7 @@ public class JoinPointManager {
             Map pointcutTypeToCflowPointcutsMap = s_registry.getCflowPointcutsForJoinPoint(m_classHash, fieldHash);
             AdviceContainer[] adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.GET);
 
-            List cflowPointcuts = (List)pointcutTypeToCflowPointcutsMap.get(PointcutType.CALL);
+            List cflowPointcuts = (List)pointcutTypeToCflowPointcutsMap.get(PointcutType.GET);
             initCflowManagement(cflowPointcuts, joinPointInfo);
 
             joinPoint = createFieldJoinPoint(fieldHash, fieldSignature, JoinPointType.FIELD_GET, m_targetClass,
@@ -572,7 +575,7 @@ public class JoinPointManager {
             Map pointcutTypeToCflowPointcutsMap = s_registry.getCflowPointcutsForJoinPoint(m_classHash, handlerHash);
 
             AdviceContainer[] adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.HANDLER);
-            List cflowPointcuts = (List)pointcutTypeToCflowPointcutsMap.get(PointcutType.CALL);
+            List cflowPointcuts = (List)pointcutTypeToCflowPointcutsMap.get(PointcutType.HANDLER);
             initCflowManagement(cflowPointcuts, joinPointInfo);
 
             joinPoint = createCatchClauseJoinPoint(exceptionInstance.getClass(), m_targetClass, handlerSignature,

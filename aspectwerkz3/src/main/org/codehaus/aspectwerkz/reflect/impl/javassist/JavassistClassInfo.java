@@ -104,6 +104,12 @@ public class JavassistClassInfo implements ClassInfo {
      * @param loader
      */
     public JavassistClassInfo(final CtClass klass, final ClassLoader loader) {
+        if (klass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
+        if (loader == null) {
+            throw new IllegalArgumentException("class loader can not be null");
+        }
         m_class = klass;
         m_loader = loader;
         m_classInfoRepository = ClassInfoRepository.getRepository(m_loader);

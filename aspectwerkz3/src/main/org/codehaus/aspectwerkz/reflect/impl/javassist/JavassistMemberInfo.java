@@ -51,6 +51,15 @@ public class JavassistMemberInfo implements MemberInfo {
      * @param loader
      */
     public JavassistMemberInfo(final CtMember member, final JavassistClassInfo declaringType, final ClassLoader loader) {
+        if (member == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
+        if (declaringType == null) {
+            throw new IllegalArgumentException("declaring type can not be null");
+        }
+        if (loader == null) {
+            throw new IllegalArgumentException("class loader can not be null");
+        }
         m_member = member;
         m_declaringType = declaringType;
         m_loader = loader;
