@@ -23,7 +23,7 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
 /**
  * Factory for the join point controllers.
  *
- * @author <a href="mailto:"">Stefan Finkenzeller</a>
+ * @author <a href="mailto:stefan.finkenzeller@gmx.net">Stefan Finkenzeller</a>
  */
 public class ControllerFactory {
 

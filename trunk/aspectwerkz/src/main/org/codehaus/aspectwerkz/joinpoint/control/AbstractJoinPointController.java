@@ -26,7 +26,7 @@ import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
 /**
  * Abstract join point controller with convenience methods for managing advices.
  *
- * @author <a href="mailto:"">Stefan Finkenzeller</a>
+ * @author <a href="mailto:stefan.finkenzeller@gmx.net">Stefan Finkenzeller</a>
  */
 public abstract class AbstractJoinPointController implements JoinPointController {
 

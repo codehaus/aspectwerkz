@@ -30,7 +30,7 @@ import java.util.Iterator;
  * object gets invoked.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:"">Stefan Finkenzeller</a>
+ * @author <a href="mailto:stefan.finkenzeller@gmx.net">Stefan Finkenzeller</a>
  */
 public class DefaultJoinPointController extends AbstractJoinPointController {
 

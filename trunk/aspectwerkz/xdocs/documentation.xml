@@ -2091,6 +2091,12 @@ String uuid = ((Identifiable)targetObject).___AW_getUuid();
                     It might be useful to take a look at the implementation for the default
                     <code>JoinPointController</code> before implementing your own.
                 </p>
+                <p>
+                    If you let your controller implementation extend the
+                    <code>org.codehaus.aspectwerkz.joinpoint.control.AbstractJoinPointController</code>
+                    class then you have a bunch of convenience methods for managing advices at runtime.
+                </p>
+
             </subsection>
 
             <subsection name="Definition">
