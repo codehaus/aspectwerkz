@@ -28,6 +28,9 @@
                         <a href="#BEA JRockit">BEA JRockit</a>
                     </li>
                     <li>
+                        <a href="#Java 1.5">Java 1.5</a>
+                    </li>
+                    <li>
                         <a href="#HotSwap">HotSwap</a>
                     </li>
                     <li>
@@ -65,7 +68,7 @@
                 on classes loaded by all the preceeding class loaders, making it compatible with J2EE environments with
                 complex class loader hierarchy between system, ear, ejb-jar and war deployments.
                 <br/>
-                This feature will be standardized in Java 1.5 thru JSR-163.
+                This feature is standardized in Java 1.5 thru JSR-163 and <a href="#Java 1.5">supported as well</a>.
             </p>
             <p>
                 All options are described in term of architecture and impact, and a sample is given on how
@@ -74,7 +77,7 @@
                 Choosing the best option depends of your needs. Refer to the
                 <a href="#How to choose the right option">comparison matrix</a> for a quick view.
                 <br/>
-                For a more schematic view about this architecture, refer to
+                For a more schematic view (does not apply for Java 1.5) about this architecture, refer to
                 <a href="http://aspectwerkz.codehaus.org/downloads/">official slides</a>.
             </p>
         </section>
@@ -98,6 +101,9 @@
                 efforts made to provide several lightweight, cross platform, efficient and tight to the needs options
                 to integrate
                 <code>AspectWerkz</code> online mode in the most seamless way.
+            </p>
+            <p>
+                <code>JSR-163 JVMTI</code> for Java 1.5 is supported since the 1.0 release.
             </p>
         </section>
         <section name="Overview">
@@ -125,11 +131,21 @@
                             <b>BEA JRockit</b>
                         </a>
                         <br/>
-                        BEA JRockit JVM (version 7 and 8.1) do not allow HotSwap nor bootclasspath. A specific extension has to be used instead.
+                        A specific extension for BEA JRockit JVM (version 7 ie Java 1.3 and 8.1 ie Java 1.4) is available.
                         This extension is based on official BEA
                         <i>Java Management API (JMAPI)</i>. It allows to run
                         <code>AspectWerkz</code> online mode in
                         a JRockit VM in a well designed way (no change at the java.lang.ClassLoader level).
+                        <br/>
+                    </li>
+                    <li>
+                        <a href="#Java 1.5">
+                            <b>Java 1.5</b>
+                        </a>
+                        <br/>
+                        Java 1.5 <code>JSR-163 JVMTI</code> (<a href="http://www.jcp.org/en/jsr/detail?id=163">read JSR</a>)
+                        allows to integrate AspectWerkz with just a single <code>-javaagent:org.codehaus.aspectwerkz.hook.Agent</code>
+                        JVM option. This is supported since release 1.0.
                         <br/>
                     </li>
                     <li>
@@ -209,6 +225,30 @@
                         </tr>
                         <tr>
                             <td>
+                                <a href="#BEA JRockit">BEA JRockit</a>
+                            </td>
+                            <td>Java 1.3 (JRockit 7), Java 1.4 (JRockit 8.1)</td>
+                            <td>1</td>
+                            <td>
+                                <code>-Xmanagement</code> JVM option
+                                <br/>
+                                <b>Recommended for BEA JRockit</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="#Java 1.5">Java 1.5</a>
+                            </td>
+                            <td>Java 1.5</td>
+                            <td>1</td>
+                            <td>
+                                <code>-javaagent:</code> JVM option
+                                <br/>
+                                <b>Recommended for Java 1.5</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                                 <a href="#HotSwap">HotSwap</a>
                             </td>
                             <td>1.4 + HotSwap</td>
@@ -238,7 +278,6 @@
                             <td>
                                 <code>-Xrunaspectwerkz</code> JVM native extension
                                 <br/>
-                                <b>Recommended for Java 1.4 advanced usage</b>
                             </td>
                         </tr>
                         <tr>
@@ -255,16 +294,9 @@
                             </td>
                             <td>1.3 and later</td>
                             <td>1</td>
-                            <td>Two step process for the first use</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="#BEA JRockit">BEA JRockit</a>
-                            </td>
-                            <td>Java 1.3 (JRockit 7), Java 1.4 (JRockit 8.1)</td>
-                            <td>1</td>
-                            <td>
-                                <code>-Xmanagement</code> JVM option
+                            <td>Two step process for the first use
+                                <br/>
+                                <b>Recommended for complete integration on Java 1.3 and HotSpot 1.4</b>
                             </td>
                         </tr>
                     </table>
@@ -412,7 +444,7 @@
                 This option is the only available and most elegant way to integrate
                     <code>AspectWerkz</code> in a JRockit environment:
                     <ul>
-                        <li>HotSwap is not yet supported in JRockit JVM (version 7 and 8.1).</li>
+                        <li>HotSwap is not supported in JRockit JVM (version 7 and 8.1 unless latest 1.4.2 versions).</li>
                         <li>-Xbootclasspath/p option does not allow to override java.lang.ClassLoader class in JRockit JVM</li>
                         <li>The provided extension is based on official BEA APIs</li>
                     </ul>
@@ -472,6 +504,73 @@ java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPrePro
                         <li>JVM does not requires
                             <code>-Xdebug</code> flag as in HotSwap modes
                         </li>
+                    </ul>
+                </p>
+            </subsection>
+        </section>
+        <section name="Java 1.5">
+            <subsection name="Description">
+                <p>
+                This options is based on <code>JSR-163 JVMTI</code>, part of Java 1.5 Tiger release.
+                The <code>AspectWerkz</code> weaver is embedded as a Java standardized <code>preMain</code> agent in the
+                JVM and thus activated before any call to the <code>main</code> method in a transparent way.
+                </p>
+                <p>
+                This option is the only available and most elegant way to integrate
+                    <code>AspectWerkz</code> in a Java 1.5 environment:
+                    <ul>
+                        <li>It is simply the Java standard.</li>
+                    </ul>
+                </p>
+            </subsection>
+            <subsection name="Usage">
+                <p>
+                    Due to some distributions issues and Java 1.3 / 1.4 support requirement, the module for Java 1.5 might not be compiled
+                    in the release you obtained. It is advised to recompile your release using your own Java 1.5 environment since at the time
+                    of this release, Java 1.5 is not in its final version neither.
+                    <br/>
+                    Set <code>ASPECTWERZ_HOME</code> environment variable and type:
+                    <br/>
+                    <code>java -version</code>
+                    <br/>
+                    to be sure you are running Java 1.5 as a default and then type
+                    <br/>
+                    <code>ant clean aspectwerkz:jar</code>
+                    <br/>or<br/>
+                    <code>maven clean aspectwerkz:jar</code>
+                </p>
+                <p>
+                You then have a need to adapt
+                    <code>bin/aspectwerkz</code> script (if you are using it) to uncomment the line allowing Java 1.5 support.
+                On your own applications make sure of the following:
+                    <ul>
+                        <li>The JVM is started with
+                            <code>-javaagent:org.codehaus.aspectwerkz.hook.Agent</code> VM option
+                        </li>
+                        <li>All
+                            <code>AspectWerkz</code> jars and dependancies are in the JVM regular classpath using
+                            <code>-cp ...</code> or <code>CLASSPATH</code> environment variable.
+                        </li>
+                    </ul>
+                    <source>
+# set AspectWerkz version and libs dependancies
+set VERSION=1.0-beta1
+set DEPS=...
+
+# all AspectWerzk jar, and dependancies
+set AW_PATH=javassist-*.jar:aspectwerkz-core-$VERSION.jar:aspectwwerkz-$VERSION.jar:$DEPS
+
+# -javaagent option
+java -javaagent:org.codehaus.aspectwerkz.hook.Agent -cp $AW_PATH... ..
+     .. -Daspectwerkz.definition.file=... my.MyApp
+                    </source>
+                </p>
+            </subsection>
+            <subsection name="Key advantages">
+                <p>
+                Key advantages using this mode are:
+                    <ul>
+                        <li>based on an official standardized API of Java 1.5</li>
                     </ul>
                 </p>
             </subsection>

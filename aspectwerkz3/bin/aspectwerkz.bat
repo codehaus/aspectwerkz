@@ -32,7 +32,7 @@ IF "%OFFLINE%"==""false"" (
     @REM -Djavax.xml.parsers.SAXParserFactory=com.bluecast.xml.JAXPSAXParserFactory for java 1.3 [see FAQ, after ProcessStarter]
 
     @REM -- Use for Sun HotSpot and IBM JRE --
-    "%JAVA_COMMAND%" -Daspectwerkz.classloader.clbootclasspath=_boot -cp "%JAVA_HOME%\lib\tools.jar;%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar" org.codehaus.aspectwerkz.hook.ProcessStarter -Xbootclasspath/p:"\"%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar\"" -cp "\"%CP%\"" -cp "\"%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%\"" -Daspectwerkz.home="\"%ASPECTWERKZ_HOME%\"" %*
+    "%JAVA_COMMAND%" -cp "%JAVA_HOME%\lib\tools.jar;%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar" org.codehaus.aspectwerkz.hook.ProcessStarter -Xbootclasspath/p:"\"%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar\"" -cp "\"%CP%\"" -cp "\"%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%\"" -Daspectwerkz.home="\"%ASPECTWERKZ_HOME%\"" %*
     
     @REM -- Use for BEA JRockit --
     @REM "%JAVA_COMMAND%" -Dmanagement -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\target\extensions.jar;%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\junit-3.8.1.jar;%ASPECTWERKZ_HOME%\lib\managementserver.jar" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
@@ -40,7 +40,7 @@ IF "%OFFLINE%"==""false"" (
     @REM -- Use for Java 1.5 --
     @REM Note: all jars could be in regular classpath but this command line tool needs to support extra -cp arguments.
     @REM This is bad practice on 1.5 and can make CflowAspect fails.
-    @REM "%JAVA_COMMAND%" -Daspectwerkz.transform.verbose=yes -javaagent:org.codehaus.aspectwerkz.hook.Agent -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
+    @REM "%JAVA_COMMAND%" -javaagent:org.codehaus.aspectwerkz.hook.Agent -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
 
     @exit /B %ERRORLEVEL%
 ) ELSE (
