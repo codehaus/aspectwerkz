@@ -15,6 +15,8 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 
 /**
  * TODO add more tests, tests that can make things break, evil tests
+ * <p/>
+ * TODO tests for all pointcut types
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */

@@ -343,7 +343,9 @@ public class JoinPointManager {
         );
         final CompilationInfo.Model compilationModel = new CompilationInfo.Model(emittedJoinPoint, adviceContainer);
 
-        final Class clazz = JoinPointFactory.newJoinPoint(compilationModel, calleeClass.getClassLoader());
+        final Class clazz = JoinPointFactory.compileJoinPointAndAttachToClassLoader(
+                compilationModel, calleeClass.getClassLoader()
+        );
 
         JoinPointFactory.addCompilationInfo(clazz, new CompilationInfo(compilationModel));
     }
