@@ -136,7 +136,7 @@ public abstract class TransactionAttributeAwareTransactionProtocol {
      * @throws Throwable
      */
     @Before(TRANSACTED_METHODS_POINTCUT)
-    void enterTransactedMethod(final StaticJoinPoint jp) throws Throwable {
+    public void enterTransactedMethod(final StaticJoinPoint jp) throws Throwable {
 
         final MethodSignature sig = (MethodSignature)jp.getSignature();
         final Class declaringType = sig.getDeclaringType();        final Method method = sig.getMethod();
@@ -204,7 +204,7 @@ public abstract class TransactionAttributeAwareTransactionProtocol {
             type = "java.lang.RuntimeException",
             pointcut = TRANSACTED_METHODS_POINTCUT
     )
-    void exitTransactedMethodWithException(StaticJoinPoint jp) throws Throwable {
+    public void exitTransactedMethodWithException(StaticJoinPoint jp) throws Throwable {
         final TransactionManager tm = getTransactionManager();
         if (isExistingTransaction(tm)) {
             logInfo("Setting TX to ROLLBACK_ONLY");
@@ -220,7 +220,7 @@ public abstract class TransactionAttributeAwareTransactionProtocol {
      * @throws Throwable
      */
     @AfterFinally(TRANSACTED_METHODS_POINTCUT)
-    void exitTransactedMethod(final StaticJoinPoint jp) throws Throwable {
+    public void exitTransactedMethod(final StaticJoinPoint jp) throws Throwable {
         final TransactionManager tm = getTransactionManager();
         if (isExistingTransaction(tm)) {
             if (isRollbackOnly(tm)) {

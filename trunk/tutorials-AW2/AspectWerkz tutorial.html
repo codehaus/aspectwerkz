@@ -1,0 +1,682 @@
+<html><body>
+
+<h1>AspectWerkz tutorial:
+Plain Java AOP, Java 5 Annotations, and EJB 3 Transactions.
+</h1>
+
+<h2>Abstract</h2>
+
+<p>
+In this article, Alexandre Vasseur explains how to make use of the rich semantics of the new <i>AspectWerkz 2.x</i> AOP framework and its annotation driven approach to implement a subset of the EJB 3 specification with Java 5: annotation driven Container Managed Transaction (CMT).
+</p>
+
+<p>
+There has been a lot of hype around using AOP to implement declarative transaction management "à la" EJB 3, based on annotations, but there are still interesting things to explain and for those familiar with it but not with <i>AspectWerkz</i>, this is a good background to have.
+</p>
+
+<p>
+This tutorial first explains the way that is most intuitive for users familiar with proxy based frameworks and explains why this approach is not sufficient from an AOP design perspective. It then goes step by step into more AOP semantics details with <i>AspectWerkz Java 5 annotation defined aspects</i>, aspect abstraction and <i>annotation driven AOP</i>.
+The end result is a completely reusable implementation for the EJB 3 Container Managed Transaction specification with support for the <code>@javax.ejb.TransactionAttribute</code> to define transaction boundaries and <code>@javax.ejb.Inject</code> instance variable injection that simplifies JNDI based lookups. The implementation is not tied to any EJB container and will run without extra compilation phase than just a JVM option introduced by Java 5.
+</p>
+
+
+<h2>Tutorial objectives and requirements</h2>
+
+
+<p>
+Our objective in this tutorial is to guide you in <i>AspectWerkz</i> Java 5 support to:
+<ul>
+<li>write a plain Java aspect</li>
+<li>annotate it to define its pointcuts and advice</li>
+<li>write pointcuts that will match annotations in the target classes</li>
+<li>make use of <i>before advice</i>, <i>after finally</i>, and <i>after throwing advice</i> to clearly define the behaviour we want</li>
+<li>make use of field read access pointcut to implement EJB 3 instance variable dependency injection driven by annotation</li>
+</ul>
+</p>
+
+<p>
+The tutorial is based on Java 5 and Java 5 annotations (<a href="http://www.jcp.org/en/jsr/detail?id=175">JSR-175</a>). The complete source code and third parties libraries are part of the project. An Ant based build script is provided.
+For it to run you will thus need:
+<ul>
+<li>a <a href="http://java.sun.com/j2se/1.5.0/download.jsp">Java 5</a> installation, with your <code>PATH</code> and <code>JAVA_HOME</code> set accordingly</li>
+<li>an <a href="http://ant.apache.org/">Ant 1.5 or later</a> version</li>
+</ul>
+<p>
+
+<p>
+Since the goal is not to deal with JTA related details, we will use the <a href="http://jotm.objectweb.org/">ObjectWeb JOTM</a> JTA <code>javax.transaction.TransactionManager</code> implementation but we will ensure that our design is not in any way tied to this implementation.
+</p>
+
+<h2>EJB 3 and CMT with Annotations</h2>
+
+<p>
+To fully understand the concepts implemented in this tutorial it is worth explaining what is in the EJB 3 specification and what we aim at implementing using AOP.
+</p>
+
+<p>
+EJB 3 includes <i>Container Managed Transaction (CMT)</i> just as EJB 2.x but enables us to declare transaction boundaries using annotations directly into the EJB business methods through the <code>@javax.ejb.TransactionAttribute</code> that will define which transaction level is required when running the business method. The well known EJB 2.x transaction levels are unchanged and the concepts of CMT as defined in EJB 2.x specification still apply.
+</p>
+
+<p>
+EJB 3 provide a way to avoid using JNDI lookup and use various <i>annotation driven dependency injection</i> mechanism to access EJB environment such as <code>javax.transaction.UserTransaction</code> as regular instance variables for example.
+</p>
+
+<p>
+EJB 3 source code for transaction management will thus looks like this (some parts are omitted).
+<pre>
+// EJB bean annotations omitted
+public class BusinessBean {
+    // the EJB container will handle this field
+    @Inject private UserTransaction m_userTransaction;
+
+    // the EJB container has to handle the transaction level we define
+    @TransactionAttribute(REQUIRED)
+    public void methodRequiredTX() throws BusinessException {
+        // do something
+        // may throw a runtime exception (unchecked)
+        // may throw a business exception (checked)
+    }
+}
+</pre>
+</p>
+
+<p>
+The transaction levels are among the <code>enum javax.ejb.TransactionAttributeType</code>: MANDATORY, REQUIRED (defaults), REQUIRESNEW, SUPPORTS, NOTSUPPORTED and NEVER. A correct implementation should for example reuse the transaction context in the executing thread if a method is defined with a REQUIRED level and is in the flow of a REQUIRESNEW defined method.
+</p>
+
+<p>
+Further on, if the business method fails with an exception, proper transaction handling must happen. In this tutorial, we will assume that the container has to rollback upon unchecked exceptions (subclass of <code>java.lang.RuntimeException</code>) and not rollback upon checked exception.
+</p>
+
+
+<h2>Tutorial materials</h2>
+
+<p>
+Download the tutorial zip <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-tutorial-TSS.zip?download">here</a>.
+</p>
+<p>
+When you extract it you will get the following structure:
+<pre>
+[tutorial root]
+    build.xml                   Ant script
+    lib                         dependencies
+    src
+        main
+            aspectwerkz         Aspects implementation in the aspectwerkz.* package
+            javax               javax.ejb.* EJB 3 annotations (an incomplete subset suitable for this tutorial only)
+        samples
+            aspectwerkz         Sample standalone application
+            META-INF/aop.xml    AspectWerkz AOP deployment descriptor
+</pre>
+</p>
+
+<p>
+The dependencies are <i>AspectWerkz</i> 2.0.RC1 with Java 5 support, JTA javax.transaction APIs and ObjectWeb JOTM TransactionManager.
+</p>
+
+<p>
+In this tutorial we also include source code for a <i>limited subset</i> of the EJB 3 annotations (package names are subject to change since the specification is not final):
+<ul>
+<li><code>@javax.ejb.Inject</code> for instance variable dependency injection</li>
+<li><code>@javax.ejb.TransactionAttribute</code> for transaction demarcation</li>
+<li><code>javax.ejb.TransactionAttributeType</code> (enum) to use with <code>@javax.ejb.TransactionAttribute</code></li>
+</ul>
+</p>
+
+<p>
+The complete source code can also be checked out from our CVS anonymously from the <code>tutorials-AW2</code> module:
+<pre>
+cvs -d :pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm login
+cvs -z3 -d :pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm co tutorials-AW2
+</pre>
+</p>
+
+
+<h2>Writing the TransactionAttributeAwareTransactionProtocol aspect</h2>
+
+<p>
+In this section, you will learn how to write the aspect using <i>AspectWerkz</i> annotation based AOP. Our goal is to advise the methods annotated with the <code>@javax.ejb.TransactionAttribute</code> so that we handle the transaction management.
+</p>
+
+<p>
+The dependency injection driven by <code>@javax.ejb.Inject</code> will be explained in a separate section.
+</p>
+
+<h3>Aspect: the unit of modularity</h3>
+
+<p>
+In <i>AspectWerkz</i> an aspect is a regular class with optional class level annotations. The aspect is the unit of modularity, so we will write one aspect to contain the full CMT logic.
+</p>
+
+<p>
+In this tutorial, the aspect aims at being generic, so it will only be dependant upon JTA interface APIs. We will subclass the aspect to provide a <i>JOTM</i> based implementation later. Our aspect will thus be an <code>abstract</code> class, that you can then easily extend to provide an alternative implementation for the application server you are using.
+</p>
+
+<p>
+The concrete subclass aspect will be further on instantiated by the <i>AspectWerkz</i> runtime. We decide to have a <i>singleton aspect</i> (one per JVM) and leave the thread safety management (attach a transaction to a thread, get the current transaction context for the executing thread etc) to the actual JTA implementation.
+Though <code>perJVM</code> deployment model is the default in <i>AspectWerkz</i> (and we thus don't have to specify it) we can also
+write it explicitly.</p>
+<pre>
+// this annotation could be remove since we are using the default deployment-model
+@Aspect("perJVM")
+public abstract class TransactionAttributeAwareTransactionProtocol {
+    ...
+}
+</pre>
+</p>
+
+<h3>Pointcuts: Where to apply the aspect behaviour ?</h3>
+
+<p>
+We aim at applying transaction management on methods annotated with EJB 3 <code>@javax.ejb.TransactionAttribute</code> annotation. For such, we will make use of <i>AspectWerkz</i> capabilities to match on Java 5 annotations. The following <i>pointcut</i> will match any method in any class that is annotated with the <code>@javax.ejb.TransactionAttribute</code> annotation. Note that we don't narrow the pointcut to a specific class since we aim at using our transaction protocol without any EJB.
+<pre>
+execution(@javax.ejb.TransactionAttribute * *.*(..))
+</pre>
+</p>
+
+<p>
+The <code>execution(...)</code> syntax means that we want to advise on the <i>callee</i> side of the method invocation (and not on the caller side, which would be different for example if we had some remote calls).The generic syntax for a method pointcut is as follows:
+<pre>
+[&lt;annotation&gt;]* &lt;returnedType&gt; &lt;classPattern&gt;.&lt;methodPattern&gt;(&lt;signature pattern&gt;)
+</pre>
+You can refer to the <a href="http://aspectwerkz.codehaus.org"><i>AspectWerkz</i> documentation</a> for more details on the wildcards.
+</p>
+
+<p>
+The pointcut construct in <i>AspectWerkz</i> is defined as an <i>annotated field</i> in the aspect class. The field type is <code>org.codehaus.aspectwerkz.definition.Pointcut</code>, and the <i>field name</i> will be used when we will bind advice to it.
+<pre>
+@Aspect(“perJVM”)
+public abstract class TransactionAttributeAwareTransactionProtocol {
+
+    /**
+     * The pointcut that picks out all transacted methods.
+     */
+    @Expression("execution(@javax.ejb.TransactionAttribute * *.*(..))")
+    Pointcut transactedMethods;
+
+    ...
+}
+</pre>
+</p>
+
+<p>
+Note: EJB 3 specification also defines a class level annotation that will be the default for business methods without annotation. The pointcut for such a more correct implementation would thus require to match on class annotation as well by using
+the <code>within(...)</code> syntax that will match on types:
+<pre>
+         execution(@javax.ejb.TransactionAttribute * *.*(..))
+         ||
+         (execution(* *.*(..)) && within(@javax.ejb.TransactionAttribute *))
+</pre>
+</p>
+
+
+<h3>Advice: How to implement behaviour and bind it to pointcuts</h3>
+
+<p>
+For each well defined point in the target application (<i>join point</i>) that will match the previously defined pointcut, we need to add transaction management behaviour. This will be realized through the concept of <i>advice</i>.
+</p>
+
+<p>
+<u>Using an <i>Around advice</i></u><br/>
+A first approach that has been somehow implemented in several proxy based frameworks would be to use an <i>Around advice</i> that will intercept the annotated methods execution. Such an advice body would look like this (pseudo code):
+<pre>
+Intercept @javax.ejb.TransactionAttribute annotated methods (Method interceptedMethod) {
+    txLevel = get the interceptedMethod TransactionAttribute annotation value (f.e. REQUIRED)
+    try {
+        1 - do transaction management [open / reuse / suspend / go on]
+
+        2 - proceed with the actual method execution
+
+    } catch ( RuntimeException ) {
+
+        3 – mark as rollback only
+
+    } finally {
+
+        4 – end transaction management [commit / rollback / go on / resume]
+    }
+}
+</pre>
+</p>
+
+<p>
+If simple, such an approach as a drawback. Indeed, the transaction management logic is cleanly isolated in the aspect, but unfortunately resumed within one single advice with a <code>try / catch / finally</code> block that <i>interferes on the transaction semantics</i>. It does not make it clear that an unchecked exception will enforce a rollback. This design requirement is lost in one single line of code in the middle of this method.
+</p>
+
+<p>
+<u>Using <i>Before</i> and <i>After throwing / finally advice</i></u><br/>
+By making use of richer semantics that have been first introduced by <i>AspectJ</i>, we will write it slightly differently using:
+<ul>
+<li>a <i>before advice</i> that will always executes before the advised method</li>
+<li>an <i>after throwing advice</i> on a given exception type that will only executes if the advised method ends with the given exception type (or a subclass of it)</li>.
+We will thus use an <i>after throwing advice</i> on runtime exceptions.
+<li>an <i>after finally advice</i> that will always executes after the advised method</li>
+</ul>
+</p>
+
+<p>
+<i>AspectWerkz</i> advice in Java 5 can be defined using annotations. Here are the <i>method level annotations</i> that we will use for such an aspect (in the <code>org.codehaus.aspectwerkz.annotation</code> package):
+<ul>
+<li><code>@Before(&lt;pointcut&gt;)</code> for a before advice</li>
+<li><code>@AfterFinally(&lt;pointcut&gt;)</code> for an after finally advice</li>
+<li><code>@AfterThrowing(type = &lt;exception class&gt;, pointcut = &lt;pointcut&gt;)</code> for an after throwing advice on a specific exception (and its subtypes)</li>
+</ul>
+<pre>
+@Aspect("perJVM")
+public abstract class TransactionAttributeAwareTransactionProtocol {
+
+    @Expression("execution(@javax.ejb.TransactionAttribute * *.*(..))")
+    Pointcut transactedMethods;
+
+    /**
+     * Before advice that will initiate transaction management is bounded to the transactedMethods pointcut
+     */
+    @Before("transactedMethods")
+    public void enterTransactedMethod(...) throws Throwable {
+        ...
+    }
+}
+</pre>
+</p>
+
+<h3>Accessing static information about the join point</h3>
+
+<p>
+In the advice body we will have to get the annotation on the advised method. This information is static, and thus we will make use of <i>AspectWerkz</i> <a href="http://aspectwerkz.codehaus.org/apidocs/org/codehaus/aspectwerkz/joinpoint/StaticJoinPoint.html"><code>StaticJoinPoint</code></a> instead of <a href="http://aspectwerkz.codehaus.org/apidocs/org/codehaus/aspectwerkz/joinpoint/JoinPoint.html"><code>JoinPoint</code></a>. The <code>StaticJoinPoint</code> provides better performance since it does not expose runtime information (method arguments values etc.). To make use of it, all we have to do is to <i>declare it in our advice signature</i>.
+<pre>
+    @Before(&lt;pointcut&gt;)
+    public void enterTransactedMethod(final StaticJoinPoint jp) throws Throwable {
+        ...
+    }
+</pre>
+</p>
+
+<h3>Implementing RequiresNew and transaction suspending</h3>
+
+<p>
+To support the <code>REQUIRESNEW</code> transaction level, we need to suspend the current transaction – if a transaction already exists –, create the new transaction, and after the method invocation has ended, resume the suspended transaction.
+When using an <i>around advice</i> approach, this would be straightforward. We would just store the suspended transaction in a local variable and then proceed to the next invocation, and restore it in the finally block.
+</p>
+
+<p>
+Using the before and after advice approach brings one drawback to solve this issue. It may seem that we need to add an aspect instance variable so that we can share context between the before and the after finally advice. But since we have decided to use a <code>perJVM</code> aspect, this field would not be thread safe. We will thus use a <code>ThreadLocal</code> field to ensure thread safety.
+This is a <i>pay as you go</i> model. The <code>ThreadLocal</code> field will only be used on a specific condition on the transaction boundary, while changing the aspect deployment model to a hypothetical <code>perThread</code> or better a <code>perCflow</code> would affect every single transaction.
+<pre>
+@Aspect("perJVM")
+public abstract class TransactionAttributeAwareTransactionProtocol {
+
+    private ThreadLocal suspendedTxTL;
+
+    @Before(...)
+    public beforeAdvice(StaticJoinPoint jp) {
+        ...
+        // if we have to suspend the current transaction to build a new one for requiresNew support
+        getTransactionManager().suspend(currentTx);
+        storeInThreadLocal(currentTx);
+        ...
+    }
+
+    @AfterFinally(...)
+    public afterFinallyAdvice(StaticJoinPoint jp) {
+        ...
+        // if we had to suspend a current transaction to build a new one for requiresNew support
+        // we need to resume it
+        Transaction suspendedTx  = (Transaction) fetchFromThreadLocal();
+        getTransactionManager().resume(suspendedTx);
+        ...
+    }
+}
+</pre>
+</p>      
+
+<h3>The reusable TransactionAttributeAwareTransactionProtocol aspect</h3>
+
+<p>
+The complete skeleton of our aspect is thus:
+<pre>
+@Aspect("perJVM")
+abstract class TransactionAttributeAwareTransactionProtocol {
+
+    @Expression("execution(@javax.ejb.TransactionAttribute * *.*(..))")
+    Pointcut transactedMethods;
+
+    private ThreadLocal suspendedTxTL;
+
+    /**
+     * Before advice to start a TX if needed
+     * Makes use of StaticJoinPoint
+     */
+    @Before("transactedMethods")
+    public void enterTransactedMethod(final StaticJoinPoint jp) throws Throwable {
+        // get the transaction annotation value from the method or the class as per EJB 3 specification
+        MethodSignature sig = (MethodSignature)jp.getSignature();
+        Class declaringType = sig.getDeclaringType();
+        Method method = sig.getMethod();
+        TransactionAttributeType txType = getTransactionAttributeTypeFor(declaringType, method);
+
+        // the getTransactionManager() is abstract
+        final TransactionManager tm = getTransactionManager();
+
+        // handles transaction management depending on the current transaction context
+        // and the wished transaction level for the method we advise
+        ...
+    }
+
+    /**
+     * Invoked when an unchecked exception is thrown out of a transacted method.
+     * Marks the current transaction as ROLLBACK_ONLY.
+     */
+    @AfterThrowing(
+        type = "java.lang.RuntimeException",
+        pointcut = "transactedMethods"
+    )
+    public void exitTransactedMethodWithException() throws Throwable {
+        final TransactionManager tm = getTransactionManager();
+        if (isExistingTransaction(tm)) {
+            logInfo("Setting TX to ROLLBACK_ONLY");
+            tm.setRollbackOnly();
+        }
+    }
+
+    /**
+     * Invoked when exiting a transacted method. Performs the actual commit or rollback depending on the
+     * status of the transaction. Resumes suspended transactions.
+     */
+    @AfterFinally("transactedMethods")
+    public void exitTransactedMethod(final StaticJoinPoint jp) throws Throwable {
+        final TransactionManager tm = getTransactionManager();
+        // handle transaction logic
+        ...
+    }
+}
+</pre>
+</p>
+
+<h2>Implementing a concrete implementation with JOTM</h2>
+
+<p>
+So far, our abstract class is not tied to any JTA Transaction Manager and relies on the JTA APIs only. Two abstract methods are left to be implemented in a subclass for a specific implementation:
+<pre>
+
+	// returns the transaction manager
+	protected abstract TransactionManager getTransactionManager()
+
+	// returns the transaction associated with the current thread
+	protected abstract UserTransaction getUserTransaction()
+</pre>
+</p>
+
+<p>
+In this tutorial we have decided to use <i>ObjectWeb JOTM</i> so that we can easily run a sample outside of a container. The concrete implementation is quite straightforward. We are using a <i>public no-argument constructor</i> that will be called once by the underlying runtime upon singleton aspect instantiation. To implement a <i>BEA WebLogic</i> specific implementation you would have to do a JNDI lookup or use <i>WebLogic</i> specific APIs instead of instantiating the <code>Jotm</code> class.
+<pre>
+@Aspect("perJVM")
+public class JOTMTransactionProtocol extends TransactionAttributeAwareTransactionProtocol { 
+
+    private final TransactionManager m_transactionManager;
+    private final Jotm m_jotm;
+
+    public JOTMTransactionProtocol() {
+        try {
+            m_jotm = new Jotm(true, false);
+            m_transactionManager = m_jotm.getTransactionManager();
+        } catch (NamingException e) {
+            throw new TransactionException("Could not create a new JOTM Transaction Manager", e);
+        }
+    }
+
+    protected TransactionManager getTransactionManager() {
+        return m_transactionManager;
+    }
+
+    protected UserTransaction getUserTransaction() {
+        return m_jotm.getUserTransaction();
+    }
+}
+</pre>
+</p>
+
+<h2>Running the project with Java 5</h2>
+
+<p>
+A simple standalone application annotated with <code>@javax.ejb.TransactionAttribute</code> is part of the project.
+</p>
+
+<h3>Compiling the application</h3>
+
+<p>
+Since we are using Java 5, no extra compilation step is needed. Regular <code>javac</code> compilation will take care of the annotations and our plain java aspects.
+</p>
+
+<p>
+You can simply run the following in the root folder of the tutorial:
+<pre>
+java –version
+// make sure you are running with Java 5
+
+ant compile
+</pre>
+</p>
+
+<p>
+Before running it we need to <i>weave</i> our target application so that the transaction management is inserted at all the methods
+with the <code>TransactionAttribute</code> annotation. AspectWerkz provides an easy way to go through this step with Java 5 JVMTI (JSR-163) support. <i>We will simply compile and run the application as usual</i> with just a single JVM option (<code>-javaagent</code>) and a specific XML file in our path to declare which aspects to use.
+</p>
+
+<h3>Writing the aop.xml deployment descriptor</h3>
+
+<p>
+To declare to the runtime system which aspect to use, we write a simple <code>aop.xml</code> file that we will put in a <code>META-INF/aop.xml</code> entry in the classpath. Some more advanced deployment unit to be deployed in an application server could be constituted using one or more <code>aop.xml</code> but that is out of the scope of this tutorial.
+</p>
+
+<p> 
+This file simply list the aspect(s) we want to use by their class name:
+<pre>
+&lt;!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz2.dtd"&gt;
+&lt;aop&gt;
+    &lt;system id="aop.ejb3.cmt"&gt;
+        &lt;aspect class="aspectwerkz.tutorial.tx.JOTMTransactionProtocol"/&gt;
+    &lt;/system&gt;
+&lt;/aop&gt;
+</pre>
+For more detail and advanced usage of the XML deployment descriptor in <i>AspectWerkz</i>, refer to the documentation.
+
+</p>
+
+<h3>Running with Java 5</h3>
+
+<p>
+To run the application, we will use the new Java 5 <i>JVMTI</i> (JSR-163) <code>–javaagent</code> option that will transparently hook in <i>AspectWerkz</i> in the JVM.
+Running it through command line would look like the following:
+<pre>
+java –javaagent:lib/aspectwerkz-jdk5-2.0.RC1.jar –classpath ... MyMain
+</pre>
+Here we have the <code>classpath</code> containing the current tutorial root folder <code>"."</code> so that the <code>META-INF/aop.xml</code> can be found in the classpath, and containing all required jars and build path.
+</p>
+
+<p>
+For convenience, we can run the sample with the Ant script
+<pre>
+    ant samples:tx
+</pre>
+</p>
+
+<p>
+Some information should appear on the standard output. The last part of the output comes from a sample where a method with the <code>REQUIRED</code> transaction semantic calls another method with the <code>REQUIRED</code> semantic as well. Only one transaction should cover the two methods. Since we added some simple log to our transaction protocol we can see the expected behaviour.
+<pre>
+[TransactionProtocol:INFO] Starts TX with attribute REQUIRED at [aspectwerkz.tutorial.tx.Main.startTxRequired_InvokeTxRequired(..)]
+[TransactionProtocol:INFO]   TX begin
+[Main:INFO]     startTxRequired_InvokeTxRequired
+[TransactionProtocol:INFO] Starts TX with attribute REQUIRED at [aspectwerkz.tutorial.tx.Main.txRequired(..)]
+[Main:INFO]         txRequired
+[Main:INFO]         noOp
+[Main:INFO] TX status: STATUS_ACTIVE
+[TransactionProtocol:INFO] Committing TX
+</pre>
+</p>
+
+<h3>Note on IDE integration</h3>
+
+<p>
+If you want to compile and run the project from within your IDE and without using the Ant script, you have to make sure that the <code>aspectwerkz-jdk5-&lt;version&gt;.jar</code> file is <i>first</i> in the project classpath. This file contains the <i>AspectWerkz</i> Java 5 annotations implementation and is overriding defaults Java 1.4 version that are in the <code>aspectwerkz-&lt;version&gt;.jar</code> file.
+</p>
+
+<h2>Adding support for EJB 3 instance variable dependency injection</h2>
+
+<p>
+Our objective in this last section is to add support for instance variable dependency injection as described in the EJB 3 specification.
+Our business bean instance will then be able to access the <code>javax.transaction.UserTransaction</code> instance of the current thread by simply using an instance variable annotated with <code>@javax.ejb.Inject</code> without any JNDI lookup.
+<pre>
+public class BusinessBean {
+
+     // the EJB container will handle this field
+     @Inject private UserTransaction m_userTransaction;
+
+     void someMethod() {
+           // direct access to container injected dependencies
+           System.out.println(m_userTransaction.getStatus())
+     }
+}
+</pre>
+</p>
+
+<p>
+To implement this field value injection we will use a <code>get(...)</code> pointcut that will match <i>read access</i> on any field annotated with <code>@javax.ejb.Inject</code> and whose type is <code>javax.transaction.UserTransaction</code>.
+The pointcut is thus :
+<pre>
+get(@javax.ejb.Inject javax.transaction.UserTransaction *)
+</pre>
+</p>
+
+<p>
+Note that the EJB 3 specification is wider than this and specifies setter injection and some more advanced scenarios. Moreover it would make sense to narrow down this pointcut to the EJB 3 annotated classes only using a <code>within(...)</code> pointcut
+for a specific EJB 3 implementation.
+</p>
+
+<p>
+To inject the value when the field is accessed, we will use an <i>Around advice</i>  that returns the <code>UserTransaction</code> instance for the current thread.
+The resulting code is thus:
+<pre>
+@Aspect("perJVM")
+abstract class TransactionAttributeAwareTransactionProtocol {
+
+    @Expression("get(@javax.ejb.Inject javax.transaction.UserTransaction *)")
+    Pointcut injectedUserTransaction;
+
+    @Around("injectedUserTransaction")
+    public Object resolveUserTransactionInjection() throws Throwable {
+        return getUserTransaction();
+    }
+
+    ...
+}
+</pre>
+</p>	
+
+<p>
+The provided sample makes use of this instance variable injection mechanism driven by annotation. It is interesting to note that this field access pointcut is not a feature available in any of the proxy based framework like <i>Spring AOP</i>, <i>DynAOP</i> etc but is available in AOP frameworks like <i>AspectWerkz</i>, <i>AspectJ</i> and <i>JBoss AOP</i> which are using bytecode instrumentation.
+</p>
+
+<h2>Conclusion</h2>
+
+<p>
+In this tutorial, we went through a reusable implementation of the EJB 3 CMT specification. Using rich semantics of AOP like <i>before, after throwing</i> and <i>after finally advice</i> enables us to clearly implement the logic for the transaction boundaries.
+</p>
+
+<p>
+<i>AspectWerkz</i> supports matching on Java 5 annotations which enables us to add behaviour to the static metadata contained in the Annotation driven nature of the EJB 3 components.
+</p>
+
+<p>
+<i>Plain Java AOP</i>, where aspects are annotated Java classes and advanced integration with latest Java 5 innovations reduce the complexity of AOP integration without narrowing its scope like proxy based implementations do.
+</p>
+
+<p>
+By using one standardized JVM option introduced by Java 5 we are able to run an <i>ObjectWeb JOTM</i> based EJB 3 transaction implementation without any actual EJBs or J2EE container.
+</p>
+
+<p>
+Step by step design decision regarding <i>access to join point information</i> and <i>aspect inheritance</i> as well as some <i>performance considerations</i> brings a modular component that supports EJB 3 container managed transaction and transaction resource injection driven by annotation, while keeping it generic and open for any underlying JTA implementation.
+</p>
+
+<p>
+AOP enables us to implement a small but interesting subset of the upcoming EJB 3 specification in just a few hours, while not using any source processing techniques.
+</p>
+
+<h2>Appendices: What about Java 1.4  ?</h2>
+
+<p>
+<i>AspectWerkz</i> is compatible with Java 1.4 as well, and provides a doclet based (JavaDoc) <i>strongly typed annotation</i> mechanism.
+A similar aspect could be used to match on whether EJB 3 like JavaDoc styled annotations or some custom ones that would be implemented with regular interfaces and JavaDoc doclets.
+Most of the changes would be implied by the <code>enum</code> use and the reflective access to annotations using Java 5 reflection API.
+Moreover, an <i>extra step to compile</i> the JavaDoc based annotations would be necessary, and the JVM integration would be a bit more effort than just a JVM option unless you are using the BEA JRockit JVM which provides a single JVM option integration feature just as it has been standardized in Java 5.
+</p>
+
+<p>
+A Java 1.4 annotation would thus be defined like this:
+<pre>
+package javax14.ejb3;
+
+// notice that we are using a regular interface
+// instead of the Java 5 "@interface" keyword to define Annotations
+public interface Java14TransactionAttribute {
+    Java14TransactionAttributeType value() ;
+}
+
+public class Java14TransactionAttributeType {
+    // emulates an enum
+    public static final REQUIRED = new Java14TransactionAttributeType(“REQUIRED”);
+    ...
+}
+</pre>
+</p>
+
+<p>
+And Java 1.4 annotated source code will looks like this
+<pre>
+public class Java 14Main {
+
+    /**
+     * @javax14.ejb3.Java14TransactionAttribute(javax14.ejb3.Java14TransactionAttributeType.REQUIRED)
+     */
+    public void businessMethodTxRequired() {
+        ...
+    }
+
+    ...
+}
+</pre>
+</p>
+
+<p>
+Thanks to the annotation interface class, the annotation is strongly typed and we can access it reflectively using the <i>AspectWerkz</i> Annotations API (that can read Java 5 annotation as well)
+<pre>
+String annotationName = "javax14.ejb3.Java14TransactionAttribute";
+Method businessMethod = ...;
+Java14TransactionAttribute txLevel = (Java14TransactionAttribute )
+        org.codehaus.aspectwerkz.Annotations.getAnnotation(annotationName, businessMethod);
+</pre>
+</p>
+
+<p>
+For more information about Annotation implementation for Java 1.3/1.4 in <i>AspectWerkz</i>, refer to the online documentation.
+</p>
+
+<h2>Links</h2>
+<p>
+<a href="http://aspectwerkz.codehaus.org">AspectWerkz</a><br/>
+<a href="http://java.sun.com/products/jta/">JTA specification</a><br/>
+<a href="http://jotm.objectweb.org/">ObjectWeb JOTM</a><br/>
+<a href="http://www.jcp.org/en/jsr/detail?id=220">EJB 3 JSR 220 specification</a><br/>
+<a href="http://www.jcp.org/en/jsr/detail?id=175">Java 5 Annotations JSR 175 specification</a><br/>
+<a href="http://www.jcp.org/en/jsr/detail?id=163">Java 5 JVMTI specification</a><br/>
+</p>
+
+<h2>Biography</h2>
+<p>
+Alexandre Vasseur is Software Engineer at the Java Runtime Products Group, BEA Systems.
+He is the co-founder of the AspectWerkz AOP framework.
+</p>
+
+</body>
+</html>
+
