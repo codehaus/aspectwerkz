@@ -998,7 +998,7 @@ public class MyOtherMixin { ... }
 
             <subsection name="Custom Mixin factory">
                 <p>
-                    If you need to be in control of how hte aspects are instantiated and/or need to pass in
+                    If you need to be in control of how the aspects are instantiated and/or need to pass in
                     additional dependencies or configuration using an IoC (dependency injection) framework or similar.
                     Then you can create custom mixin factory.
                 </p>
