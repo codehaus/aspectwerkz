@@ -584,11 +584,11 @@ public class AspectRegistry {
                             method2.getName(),
                             TransformationUtil.DELIMITER);
                         String methodName = tokens[1];
-                        Class[] parameterTypes1 = wrapperMethod.getParameterTypes();
-                        Class[] parameterTypes2 = method2.getParameterTypes();
                         if (!methodName.equals(wrapperMethod.getName())) {
                             continue;
                         }
+                        Class[] parameterTypes1 = wrapperMethod.getParameterTypes();
+                        Class[] parameterTypes2 = method2.getParameterTypes();
                         if (parameterTypes2.length != parameterTypes1.length) {
                             continue;
                         }
