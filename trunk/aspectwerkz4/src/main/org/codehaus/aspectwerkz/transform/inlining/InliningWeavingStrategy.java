@@ -35,7 +35,7 @@ import org.codehaus.aspectwerkz.transform.inlining.weaver.JoinPointInitVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.LabelToLineNumberVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodCallVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodExecutionVisitor;
-//import org.codehaus.aspectwerkz.transform.inlining.weaver.StaticInitializationVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.StaticInitializationVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.SerialVersionUidVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.AddWrapperVisitor;
 import org.objectweb.asm.ClassReader;
@@ -113,11 +113,13 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                     }
             );//FIXME - within make match all
 
-//            final boolean filterForStaticinitialization = classFilterFor(
-//            		definitions, new ExpressionContext[] {
-//            				new ExpressionContext(PointcutType.STATIC_INITIALIZATION, classInfo, classInfo)
-//            		}
-//            );
+            final boolean filterForStaticinitialization = !classInfo.hasStaticInitializer()
+            	||  classFilterFor(definitions, new ExpressionContext[] {
+    					new ExpressionContext(PointcutType.STATIC_INITIALIZATION, 
+    					                      classInfo.staticInitializer(), 
+    					                      classInfo.staticInitializer())
+    			  		}
+            		);
 
             // prepare ctor call jp
             final ClassReader crLookahead = new ClassReader(bytecode);
@@ -170,10 +172,10 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             reversedChainPhase2 = new InstanceLevelAspectVisitor(reversedChainPhase2, classInfo, context);
             reversedChainPhase2 = new MethodExecutionVisitor(reversedChainPhase2, classInfo, context, addedMethods);
             reversedChainPhase2 = new ConstructorBodyVisitor(reversedChainPhase2, classInfo, context, addedMethods);
-//            if(!filterForStaticinitialization) {
-//            	reversedChainPhase2 = new StaticInitializationVisitor(reversedChainPhase2, classInfo, context);
-//            }
-            reversedChainPhase2 = new HandlerVisitor(reversedChainPhase2, loader, classInfo, context, catchLabels);
+            if(!filterForStaticinitialization) {
+            	reversedChainPhase2 = new StaticInitializationVisitor(reversedChainPhase2, classInfo, context);
+            }
+            reversedChainPhase2 = new HandlerVisitor(reversedChainPhase2, context, catchLabels);
             if (!filterForCall) {
                 reversedChainPhase2 = new MethodCallVisitor(reversedChainPhase2, loader, classInfo, context);
                 reversedChainPhase2 = new ConstructorCallVisitor(

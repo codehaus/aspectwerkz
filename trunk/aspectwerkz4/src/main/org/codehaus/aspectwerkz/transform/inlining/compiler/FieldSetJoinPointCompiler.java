@@ -218,8 +218,10 @@ public class FieldSetJoinPointCompiler extends AbstractJoinPointCompiler {
             cv.visitFieldInsn(GETFIELD, m_joinPointClassName, RETURN_VALUE_FIELD_NAME, m_returnType.getDescriptor());
         }
         cv.visitMethodInsn(
-                INVOKEVIRTUAL, FIELD_RTTI_IMPL_CLASS_NAME, SET_RETURN_VALUE_METHOD_NAME,
-                SET_RETURN_VALUE_METHOD_SIGNATURE
+                INVOKEVIRTUAL, 
+                FIELD_RTTI_IMPL_CLASS_NAME, 
+                SET_FIELD_VALUE_METHOD_NAME,
+                SET_FIELD_VALUE_METHOD_SIGNATURE
         );
 
         cv.visitInsn(ARETURN);

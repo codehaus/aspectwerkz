@@ -83,6 +83,8 @@ public class JoinPointFactory {
                 return new FieldGetJoinPointCompiler(model).compile();
             case JoinPointType.HANDLER_INT:
                 return new HandlerJoinPointCompiler(model).compile();
+            case JoinPointType.STATIC_INITIALIZATION_INT:
+                return new StaticInitializationJoinPointCompiler(model).compile();
             default:
                 throw new UnsupportedOperationException(
                         "join point type is not supported: " + model.getEmittedJoinPoint().getJoinPointType()
@@ -195,8 +197,12 @@ public class JoinPointFactory {
                             callerMethodInfo
                     );
                     break;
-                case JoinPointType.STATIC_INITALIZATION_INT:
-                    throw new UnsupportedOperationException("static initialization is not implemented");
+                case JoinPointType.STATIC_INITIALIZATION_INT:
+                	ctx = new ExpressionContext(
+                	        PointcutType.STATIC_INITIALIZATION,
+                	        calleeClassInfo.staticInitializer(),
+                	        calleeClassInfo.staticInitializer()
+                	);
             }
             if (expression.getExpression().match(ctx)) {
                 matchingJoinPointInfos.add(new MatchingJoinPointInfo(clazz, compilationInfo, ctx));

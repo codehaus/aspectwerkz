@@ -13,6 +13,7 @@
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
  */
 
 options {
@@ -51,6 +52,7 @@ import java.io.StringReader;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
  */
 public class ExpressionParser {
 
@@ -78,7 +80,7 @@ PARSER_END(ExpressionParser)
 {
     < COMMA: "," >
 |
-    < #DOT: "." >
+    < DOT: "." >
 |
     < #WILDCARD: "*" >
 |
@@ -182,10 +184,12 @@ TOKEN : /* POINTCUTS */
 |
     < METHOD_SYNCHRONIZED: "synchronized" >
 |
+	< TYPE_STATICINITIALIZATION: "staticinitialization" >
+|
     < METHOD_NOT : "!" >
 |
     < METHOD_ANNOTATION : "@" <METHOD_ATTRIBUTE_EXACT_IDENTIFIER> (<DOT> <METHOD_ATTRIBUTE_EXACT_IDENTIFIER>)* >
-|
+| 
     < #METHOD_IDENTIFIER: (<METHOD_JAVA_NAME_LETTER> | <EAGER_WILDCARD> | <WILDCARD>)+ >
 |
     < METHOD_CLASS_PATTERN: <METHOD_IDENTIFIER> (<DOT> <METHOD_IDENTIFIER>)* >
@@ -475,23 +479,48 @@ void Within() #Within : {}
 /**
  * WithinCode.
  */
-void WithinCode() #WithinCode : {}
+void WithinCode() #WithinCode : {
+	Token tkn = null;
+}
 {
 	<WITHIN_CODE>
-    (LOOKAHEAD(2) MethodAttribute())*
-    
-    (
-    	<METHOD_PARAMETER_END>
-    |
-    	(	
-    		LOOKAHEAD(4) ConstructorPattern()
-    	|
-    		MethodPattern()
-		)?
-		
+	(
+		StaticInitializationPattern() 
 		")"
-    )
-   
+		{
+			jjtThis.setStaticInitializer(true);
+		}
+	|
+		(LOOKAHEAD(2) MethodAttribute())*
+		    
+		    (
+		    	<METHOD_PARAMETER_END>
+		    |
+		    	(	
+		    		LOOKAHEAD(4) ConstructorPattern()
+		    	|
+		    		MethodPattern()
+				)?
+				
+				")"
+		    )
+	)
+}
+
+void StaticInitializationPattern() #ClassPattern : 
+{
+	Token tkn = null;
+}
+{
+		<TYPE_STATICINITIALIZATION> 
+		<METHOD_PARAMETER_START> 
+
+		tkn = <METHOD_CLASS_PATTERN>
+		{
+			jjtThis.setTypePattern(tkn.image);
+		}
+		
+		<METHOD_PARAMETER_END>
 }
 
 /**
@@ -630,16 +659,16 @@ void MethodPattern() #MethodPattern :
     Token returnType, name;
 }
 {
-    (MethodModifier())*
-    (returnType=<METHOD_CLASS_PATTERN> | returnType=<METHOD_ARRAY_CLASS_PATTERN>)
-    {
-        jjtThis.setReturnTypePattern(returnType.image);
-    }
-    name=<METHOD_CLASS_PATTERN>
-    {
-        jjtThis.setFullNamePattern(name.image);
-    }
-    Parameters()
+	    (MethodModifier())*
+	    (returnType=<METHOD_CLASS_PATTERN> | returnType=<METHOD_ARRAY_CLASS_PATTERN>)
+	    {
+	        jjtThis.setReturnTypePattern(returnType.image);
+	    }
+	    name=<METHOD_CLASS_PATTERN>
+	    {
+	        jjtThis.setFullNamePattern(name.image);
+	    }
+	    Parameters()
 }
 
 /**
@@ -960,4 +989,3 @@ void FieldModifier() #Modifier : {}
     }
     )
 }
-

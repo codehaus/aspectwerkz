@@ -3,6 +3,8 @@
 package org.codehaus.aspectwerkz.expression.ast;
 
 public class ASTWithinCode extends SimpleNode {
+    private boolean m_staticInitializer = false;
+    
     public ASTWithinCode(int id) {
         super(id);
     }
@@ -17,4 +19,18 @@ public class ASTWithinCode extends SimpleNode {
     public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
+    
+	/**
+	 * @return Returns the staticinitializer.
+	 */
+	public boolean isStaticInitializer() {
+		return m_staticInitializer;
+	}
+	
+	/**
+	 * @param staticinitializer The staticinitializer to set.
+	 */
+	public void setStaticInitializer(boolean staticinitializer) {
+		m_staticInitializer = staticinitializer;
+	}
 }

@@ -21,7 +21,7 @@ public final class JoinPointType {
     public static final int FIELD_SET_INT = 5;
     public static final int FIELD_GET_INT = 6;
     public static final int HANDLER_INT = 7;
-    public static final int STATIC_INITALIZATION_INT = 8;
+    public static final int STATIC_INITIALIZATION_INT = 8;
 
 
     public static final JoinPointType METHOD_EXECUTION = new JoinPointType(METHOD_EXECUTION_INT);
@@ -38,7 +38,7 @@ public final class JoinPointType {
 
     public static final JoinPointType HANDLER = new JoinPointType(HANDLER_INT);
 
-    public static final JoinPointType STATIC_INITALIZATION = new JoinPointType(STATIC_INITALIZATION_INT);
+    public static final JoinPointType STATIC_INITIALIZATION = new JoinPointType(STATIC_INITIALIZATION_INT);
 
     private int m_int;
 
@@ -62,7 +62,7 @@ public final class JoinPointType {
                 return "FieldSet";
             case HANDLER_INT:
                 return "Handler";
-            case STATIC_INITALIZATION_INT:
+            case STATIC_INITIALIZATION_INT:
                 return "StaticInitialization";
             default:
                 throw new Error("not supported join point type");

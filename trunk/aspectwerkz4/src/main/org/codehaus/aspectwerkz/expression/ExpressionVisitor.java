@@ -44,6 +44,7 @@ import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
+import org.codehaus.aspectwerkz.reflect.StaticInitializationInfo;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -217,8 +218,17 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTStaticInitialization node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        if (context.hasStaticInitializationPointcut() && context.hasClassInfo()) {
-            return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        if (context.hasStaticInitializationPointcut()) {
+        	ReflectionInfo reflectInfo = context.getReflectionInfo();
+        	
+        	if(null == reflectInfo) {
+        		return Boolean.FALSE;
+        	}
+        	if(reflectInfo instanceof StaticInitializationInfo) {
+        		return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        	} else {
+        		return Boolean.FALSE;
+        	}
         } else {
             return Boolean.FALSE;
         }
@@ -248,10 +258,18 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTWithinCode node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        if (context.hasWithinReflectionInfo()) {
+        ReflectionInfo reflectInfo = context.getWithinReflectionInfo();
+        
+        if(node.isStaticInitializer()) {
+        	if(null != reflectInfo) {
+	            return node.jjtGetChild(0).jjtAccept(this, reflectInfo);
+        	} else {
+        	    return null;
+        	}
+        } else if (null != reflectInfo) {
 	        return visitAnnotatedNode(
 	        		node,
-					context.getWithinReflectionInfo()
+					reflectInfo
 					);
         } else {
             return null;
@@ -282,11 +300,11 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
      		if(presentPattern) {
      			if(Boolean.TRUE.equals(patternNode.jjtAccept(this, methodInfos[i]))) {
-                return Boolean.TRUE;
-            }
+     				return Boolean.TRUE;
+     			}
      		} else {
      			return Boolean.TRUE;
-        }
+     		}
 		}
         
 
@@ -300,12 +318,11 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
      		if(presentPattern) {
      			if(Boolean.TRUE.equals(patternNode.jjtAccept(this, constructorInfos[i]))) {
-                return Boolean.TRUE;
-            }
+     				return Boolean.TRUE;
+     			}
      		} else {
      			return Boolean.TRUE;
      		}
-
         }
 
         return Boolean.FALSE;
@@ -416,14 +433,29 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     // ============ Patterns =============
     public Object visit(ASTClassPattern node, Object data) {
-        ClassInfo classInfo = (ClassInfo) data;
-        TypePattern typePattern = node.getTypePattern();
-        if (typePattern.matchType(classInfo)
-            && visitModifiers(node, classInfo)) {
-            return Boolean.TRUE;
-        } else {
-            return Boolean.FALSE;
+        if (data instanceof ClassInfo) {
+	        ClassInfo classInfo = (ClassInfo) data;
+	        TypePattern typePattern = node.getTypePattern();
+
+	        if (typePattern.matchType(classInfo)
+	        	&& visitModifiers(node, classInfo)) {
+	            return Boolean.TRUE;
+	        } else {
+	            return Boolean.FALSE;
+	        }
+        } else if (data instanceof StaticInitializationInfo) {
+        	ClassInfo classInfo = ((StaticInitializationInfo) data).getDeclaringType();
+        	
+        	if(node.getTypePattern().matchType(classInfo)) {
+        		return Boolean.TRUE;
+        	} else {
+        		return Boolean.FALSE;
+        	}
+        	
+//        	return new Boolean(node.getTypePattern().matchType(classInfo));
         }
+        
+        return Boolean.FALSE;
     }
 
     public Object visit(ASTMethodPattern node, Object data) {

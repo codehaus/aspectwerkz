@@ -104,10 +104,9 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                                    final String[] exceptions,
                                    final Attribute attrs) {
 
-        if (CLINIT_METHOD_NAME.equals(name) || //TODO - support withincode <clinit>
-                name.startsWith(WRAPPER_METHOD_PREFIX) ||
-                Modifier.isNative(access) ||
-                Modifier.isAbstract(access)) {
+        if (name.startsWith(WRAPPER_METHOD_PREFIX) ||
+            Modifier.isNative(access) ||
+            Modifier.isAbstract(access)) {
             return super.visitMethod(access, name, desc, exceptions, attrs);
         }
 
@@ -191,7 +190,9 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
             m_callerMethodDesc = callerMethodDesc;
             m_newInvocations = (newInvocations != null) ? newInvocations : EMPTY_INTHASHMAP;
 
-            if (INIT_METHOD_NAME.equals(m_callerMethodName)) {
+            if (CLINIT_METHOD_NAME.equals(m_callerMethodName)) {
+                m_callerMemberInfo = m_callerClassInfo.staticInitializer();
+            } else if (INIT_METHOD_NAME.equals(m_callerMethodName)) {
                 final int hash = AsmHelper.calculateConstructorHash(m_callerMethodDesc);
                 m_callerMemberInfo = m_callerClassInfo.getConstructor(hash);
             } else {
@@ -437,10 +438,9 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                                        final String desc,
                                        final String[] exceptions,
                                        final Attribute attrs) {
-            if (CLINIT_METHOD_NAME.equals(name) || //TODO - support withincode <clinit>
-                    name.startsWith(WRAPPER_METHOD_PREFIX) ||
-                    Modifier.isNative(access) ||
-                    Modifier.isAbstract(access)) {
+            if (name.startsWith(WRAPPER_METHOD_PREFIX) ||
+                Modifier.isNative(access) ||
+                Modifier.isAbstract(access)) {
                 ;//ignore
             }
 

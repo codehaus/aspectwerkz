@@ -7,34 +7,20 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.joinpoint.impl.MethodTuple;
-import org.codehaus.aspectwerkz.util.Strings;
-import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
-import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.reflect.ReflectHelper;
-import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
-import org.codehaus.aspectwerkz.transform.TransformationConstants;
-import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import org.codehaus.aspectwerkz.joinpoint.EnclosingStaticJoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.EnclosingStaticJoinPointImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
-import org.codehaus.aspectwerkz.joinpoint.impl.MethodTuple;
-import org.codehaus.aspectwerkz.joinpoint.impl.EnclosingStaticJoinPointImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.StaticInitializerSignatureImpl;
-import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
-import org.codehaus.aspectwerkz.joinpoint.Signature;
-import org.codehaus.aspectwerkz.joinpoint.EnclosingStaticJoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.WeakHashMap;
-
-import gnu.trove.TIntObjectHashMap;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 
 /**
  * Factory class for the signature hierarchy.
@@ -43,6 +29,7 @@ import gnu.trove.TIntObjectHashMap;
  * TODO may be worth having a cache
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
  */
 public final class SignatureFactory {
 
@@ -149,7 +136,7 @@ public final class SignatureFactory {
         if (TransformationConstants.CLINIT_METHOD_NAME.equals(name)) {
             return new EnclosingStaticJoinPointImpl(
                     new StaticInitializerSignatureImpl(declaringClass),
-                    JoinPointType.STATIC_INITALIZATION
+                    JoinPointType.STATIC_INITIALIZATION
             );
         } else if (TransformationConstants.INIT_METHOD_NAME.equals(name)) {
             return new EnclosingStaticJoinPointImpl(
@@ -165,6 +152,10 @@ public final class SignatureFactory {
         }
     }
 
+    public static StaticInitializerSignatureImpl newStaticInitializationSignature(final Class declaringClass) {
+        return new StaticInitializerSignatureImpl(declaringClass);
+    }
+    
 //    /**
 //     * Creates a new method repository for the class specified.
 //     *

@@ -18,15 +18,15 @@ public interface ExpressionParserTreeConstants
   public int JJTHANDLER = 11;
   public int JJTWITHIN = 12;
   public int JJTWITHINCODE = 13;
-  public int JJTSTATICINITIALIZATION = 14;
-  public int JJTCFLOW = 15;
-  public int JJTCFLOWBELOW = 16;
-  public int JJTARGS = 17;
-  public int JJTHASMETHOD = 18;
-  public int JJTHASFIELD = 19;
-  public int JJTTARGET = 20;
-  public int JJTTHIS = 21;
-  public int JJTCLASSPATTERN = 22;
+  public int JJTCLASSPATTERN = 14;
+  public int JJTSTATICINITIALIZATION = 15;
+  public int JJTCFLOW = 16;
+  public int JJTCFLOWBELOW = 17;
+  public int JJTARGS = 18;
+  public int JJTHASMETHOD = 19;
+  public int JJTHASFIELD = 20;
+  public int JJTTARGET = 21;
+  public int JJTTHIS = 22;
   public int JJTMETHODPATTERN = 23;
   public int JJTCONSTRUCTORPATTERN = 24;
   public int JJTFIELDPATTERN = 25;
@@ -51,6 +51,7 @@ public interface ExpressionParserTreeConstants
     "Handler",
     "Within",
     "WithinCode",
+    "ClassPattern",
     "StaticInitialization",
     "Cflow",
     "CflowBelow",
@@ -59,7 +60,6 @@ public interface ExpressionParserTreeConstants
     "HasField",
     "Target",
     "This",
-    "ClassPattern",
     "MethodPattern",
     "ConstructorPattern",
     "FieldPattern",
