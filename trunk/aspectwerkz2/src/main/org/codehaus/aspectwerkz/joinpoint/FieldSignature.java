@@ -27,18 +27,4 @@ public interface FieldSignature extends MemberSignature {
      * @return the field type
      */
     Class getFieldType();
-
-    /**
-     * Returns the value of the field.
-     *
-     * @return the value of the field
-     */
-    Object getFieldValue();
-
-    /**
-     * Sets the value of the field.
-     *
-     * @param fieldValue the value of the field
-     */
-    void setFieldValue(final Object fieldValue);
 }

@@ -9,6 +9,8 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ import java.util.List;
 class FieldJoinPoint extends JoinPointBase {
 
     private final FieldSignature m_signature;
+    private final FieldRtti m_rtti;
 
     /**
      * Creates a new join point.
@@ -28,6 +31,7 @@ class FieldJoinPoint extends JoinPointBase {
      * @param type
      * @param targetClass
      * @param signature
+     * @param rtti
      * @param cflowExpressions
      * @param aroundAdviceExecutor
      * @param beforeAdviceExecutor
@@ -38,12 +42,14 @@ class FieldJoinPoint extends JoinPointBase {
             final int type,
             final Class targetClass,
             final Signature signature,
+            final Rtti rtti,
             final List cflowExpressions,
             final AroundAdviceExecutor aroundAdviceExecutor,
             final BeforeAdviceExecutor beforeAdviceExecutor,
             final AfterAdviceExecutor afterAdviceExecutor) {
         super(uuid, type, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
         m_signature = (FieldSignature)signature;
+        m_rtti = (FieldRtti)rtti;
     }
 
     /**
@@ -55,7 +61,7 @@ class FieldJoinPoint extends JoinPointBase {
      */
     public Object proceed() throws Throwable {
         final Object result = m_aroundAdviceExecutor.proceed(this);
-        m_signature.setFieldValue(result);
+        m_rtti.setFieldValue(result);
         return result;
     }
 
@@ -66,6 +72,15 @@ class FieldJoinPoint extends JoinPointBase {
      */
     public Signature getSignature() {
         return m_signature;
+    }
+
+    /**
+     * Returns the RTTI for the join point.
+     *
+     * @return the RTTI
+     */
+    public Rtti getRtti() {
+        return m_rtti;
     }
 
     /**

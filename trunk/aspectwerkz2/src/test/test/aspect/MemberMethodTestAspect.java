@@ -10,6 +10,7 @@ package test.aspect;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
+import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import test.Loggable;
 
 /**
@@ -131,15 +132,15 @@ public class MemberMethodTestAspect {
      */
     public Object advice4(final JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
-        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
         String metadata =
                 joinPoint.getTargetClass().getName() +
-                signature.getMethod().getName() +
+                rtti.getMethod().getName() +
                 joinPoint.getTargetInstance().hashCode() +
-                signature.getParameterValues()[0] +
-                signature.getParameterTypes()[0].getName() +
-                signature.getReturnType().getName() +
-                signature.getReturnValue();
+                rtti.getParameterValues()[0] +
+                rtti.getParameterTypes()[0].getName() +
+                rtti.getReturnType().getName() +
+                rtti.getReturnValue();
         return metadata;
     }
 

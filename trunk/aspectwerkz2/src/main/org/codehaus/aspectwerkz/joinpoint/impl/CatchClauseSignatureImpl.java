@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.joinpoint.management;
+package org.codehaus.aspectwerkz.joinpoint.impl;
 
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
@@ -22,7 +22,6 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
     private final String m_name;
     private Class m_parameterType;
 
-    private Object m_parameterValue;
     private String m_joinPointSignature;
 
     /**
@@ -83,24 +82,6 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
      */
     public Class getParameterType() {
         return m_parameterType;
-    }
-
-    /**
-     * Returns the value of the parameter.
-     *
-     * @return the value of the parameter
-     */
-    public Object getParameterValue() {
-        return m_parameterValue;
-    }
-
-    /**
-     * Sets the value of the parameter.
-     *
-     * @param parameterValue the value of the parameter
-     */
-    public void setParameterValue(final Object parameterValue) {
-        m_parameterValue = parameterValue;
     }
 
     /**

@@ -5,32 +5,59 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.joinpoint.management;
+package org.codehaus.aspectwerkz.joinpoint.impl;
 
 import java.lang.reflect.Field;
 
-import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
+import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
 
 /**
  * Implementation for the field signature.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class FieldSignatureImpl implements FieldSignature {
+public class FieldRttiImpl implements FieldRtti {
 
-    private final Class m_declaringType;
-    private final Field m_field;
+    private final FieldSignatureImpl m_signature;
+    private final Object m_this;
+    private final Object m_target;
 
     private Object m_fieldValue;
 
+
     /**
-     * @param field
-     * @param declaringType
+     * Creates a new field RTTI.
+     *
+     * @param signature
+     * @param thisInstance
+     * @param targetInstance
      */
-    public FieldSignatureImpl(final Class declaringType, final Field field) {
-        m_declaringType = declaringType;
-        m_field = field;
-        m_field.setAccessible(true);
+    public FieldRttiImpl(
+            final FieldSignatureImpl signature,
+            final Object thisInstance,
+            final Object targetInstance) {
+        m_signature = signature;
+        m_this = thisInstance;
+        m_target = targetInstance;
+    }
+
+
+      /**
+     * Returns the target instance.
+     *
+     * @return the target instance
+     */
+    public Object getTarget() {
+        return m_target;
+    }
+
+    /**
+     * Returns the instance currently executing.
+     *
+     * @return the instance currently executing
+     */
+    public Object getThis() {
+        return m_this;
     }
 
     /**
@@ -39,7 +66,7 @@ public class FieldSignatureImpl implements FieldSignature {
      * @return the declaring class
      */
     public Class getDeclaringType() {
-        return m_declaringType;
+        return m_signature.getDeclaringType();
     }
 
     /**
@@ -53,7 +80,7 @@ public class FieldSignatureImpl implements FieldSignature {
      * @return the mofifiers
      */
     public int getModifiers() {
-        return m_field.getModifiers();
+        return m_signature.getModifiers();
     }
 
     /**
@@ -62,7 +89,7 @@ public class FieldSignatureImpl implements FieldSignature {
      * @return the name
      */
     public String getName() {
-        return m_field.getName();
+        return m_signature.getName();
     }
 
     /**
@@ -71,7 +98,7 @@ public class FieldSignatureImpl implements FieldSignature {
      * @return the field
      */
     public Field getField() {
-        return m_field;
+        return m_signature.getField();
     }
 
     /**
@@ -80,7 +107,7 @@ public class FieldSignatureImpl implements FieldSignature {
      * @return the field type
      */
     public Class getFieldType() {
-        return m_field.getType();
+        return m_signature.getFieldType();
     }
 
     /**

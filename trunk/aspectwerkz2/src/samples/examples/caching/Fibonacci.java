@@ -13,6 +13,7 @@ import java.util.Map;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
+import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 
 /**
  * Sample that calculates fibonacci number naively, uses an inner aspect to cache redundant calculations.
@@ -46,16 +47,11 @@ public class Fibonacci {
         private Map m_cache = new HashMap();
 
         /**
-         * @Expression execution(int *..Fibonacci.fib(int))
-         */
-        Pointcut fibs;
-
-        /**
-         * @Around fibs
+         * @Around execution(int *..Fibonacci.fib(int))
          */
         public Object cache(final JoinPoint joinPoint) throws Throwable {
-            MethodSignature signature = (MethodSignature)joinPoint.getSignature();
-            Integer parameter = (Integer)signature.getParameterValues()[0];
+            MethodRtti rtti = (MethodRtti)joinPoint.getSignature();
+            Integer parameter = (Integer)rtti.getParameterValues()[0];
             Integer cachedValue = (Integer)m_cache.get(parameter);
             if (cachedValue == null) {
                 Object newValue = joinPoint.proceed(); // not found => calculate

@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.joinpoint.management;
+package org.codehaus.aspectwerkz.joinpoint.impl;
 
 import java.lang.reflect.Method;
 
@@ -19,13 +19,8 @@ import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
  */
 public class MethodSignatureImpl implements MethodSignature {
 
-    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
-
     private final Class m_declaringType;
     private final MethodTuple m_methodTuple;
-
-    private Object[] m_parameterValues = EMPTY_OBJECT_ARRAY;
-    private Object m_returnValue;
 
     /**
      * @param declaringType
@@ -105,48 +100,12 @@ public class MethodSignatureImpl implements MethodSignature {
     }
 
     /**
-     * Sets the values of the parameters.
-     *
-     * @param parameterValues
-     */
-    public void setParameterValues(final Object[] parameterValues) {
-        m_parameterValues = parameterValues;
-    }
-
-    /**
-     * Returns the values of the parameters.
-     *
-     * @return the values of the parameters
-     */
-    public Object[] getParameterValues() {
-        return m_parameterValues;
-    }
-
-    /**
      * Returns the return type.
      *
      * @return the return type
      */
     public Class getReturnType() {
         return m_methodTuple.getOriginalMethod().getReturnType();
-    }
-
-    /**
-     * Sets the return value.
-     *
-     * @param returnValue the return value
-     */
-    public void setReturnValue(final Object returnValue) {
-        m_returnValue = returnValue;
-    }
-
-    /**
-     * Returns the value of the return type.
-     *
-     * @return the value of the return type
-     */
-    public Object getReturnValue() {
-        return m_returnValue;
     }
 
     /**

@@ -10,6 +10,7 @@ package test.aspect;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
+import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
 import test.FieldAdviceTest;
 
 /**
@@ -188,8 +189,8 @@ public class FieldTestAspect {
      */
     public Object aroundAdviceAltering(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
-        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
-        signature.setFieldValue(new String("byAdvice"));
+        FieldRtti rtti = (FieldRtti)joinPoint.getRtti();
+        rtti.setFieldValue(new String("byAdvice"));
         joinPoint.proceed();
         FieldAdviceTest.log("after ");
         return null;
@@ -200,8 +201,8 @@ public class FieldTestAspect {
      */
     public Object aroundAdviceAlteringPrimitive(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
-        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
-        signature.setFieldValue(new Integer(3));
+        FieldRtti rtti = (FieldRtti)joinPoint.getRtti();
+        rtti.setFieldValue(new Integer(3));
         joinPoint.proceed();
         FieldAdviceTest.log("after ");
         return null;

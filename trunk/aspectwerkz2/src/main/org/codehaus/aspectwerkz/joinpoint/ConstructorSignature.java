@@ -20,18 +20,4 @@ public interface ConstructorSignature extends CodeSignature {
      * @return the constructor
      */
     public Constructor getConstructor();
-
-    /**
-     * Returns the new instance created by the constructor.
-     *
-     * @return the new instance
-     */
-    Object getNewInstance();
-
-    /**
-     * Sets the new instance created by the constructor.
-     *
-     * @param newInstance
-     */
-//    void setNewInstance(Object newInstance);
 }                                             

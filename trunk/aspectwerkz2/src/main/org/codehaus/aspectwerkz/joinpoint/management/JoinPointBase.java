@@ -12,6 +12,11 @@ import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.FieldRttiImpl;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
@@ -81,8 +86,9 @@ public abstract class JoinPointBase implements JoinPoint {
      */
     public static Object invokeTargetMethodExecution(final JoinPoint joinPoint) throws Throwable {
         MethodSignatureImpl signature = (MethodSignatureImpl)joinPoint.getSignature();
+        MethodRttiImpl rtti = (MethodRttiImpl)joinPoint.getRtti();
         Method targetMethod = signature.getMethodTuple().getOriginalMethod();
-        Object[] parameterValues = signature.getParameterValues();
+        Object[] parameterValues = rtti.getParameterValues();
         Object targetInstance = joinPoint.getTargetInstance();
         try {
             return targetMethod.invoke(targetInstance, parameterValues);
@@ -101,8 +107,9 @@ public abstract class JoinPointBase implements JoinPoint {
      */
     public static Object invokeTargetMethodCall(final JoinPoint joinPoint) throws Throwable {
         MethodSignatureImpl signature = (MethodSignatureImpl)joinPoint.getSignature();
+        MethodRttiImpl rtti = (MethodRttiImpl)joinPoint.getRtti();
         Method targetMethod = signature.getMethodTuple().getWrapperMethod();
-        Object[] parameterValues = signature.getParameterValues();
+        Object[] parameterValues = rtti.getParameterValues();
         Object targetInstance = joinPoint.getTargetInstance();
         try {
             return targetMethod.invoke(targetInstance, parameterValues);
@@ -121,8 +128,9 @@ public abstract class JoinPointBase implements JoinPoint {
      */
     public static Object invokeTargetConstructorExecution(final JoinPoint joinPoint) throws Throwable {
         ConstructorSignatureImpl signature = (ConstructorSignatureImpl)joinPoint.getSignature();
+        ConstructorRttiImpl rtti = (ConstructorRttiImpl)joinPoint.getRtti();
         Constructor targetConstructor = signature.getConstructorTuple().getOriginalConstructor();
-        Object[] parameterValues = signature.getParameterValues();
+        Object[] parameterValues = rtti.getParameterValues();
         int length = parameterValues.length;
         Object[] fakeParameterValues = new Object[length + 1];
         java.lang.System.arraycopy(parameterValues, 0, fakeParameterValues, 0, length);
@@ -146,6 +154,7 @@ public abstract class JoinPointBase implements JoinPoint {
      */
     public static Object invokeTargetConstructorCall(final JoinPoint joinPoint) throws Throwable {
         ConstructorSignatureImpl signature = (ConstructorSignatureImpl)joinPoint.getSignature();
+        ConstructorRttiImpl rtti = (ConstructorRttiImpl)joinPoint.getRtti();
 
 //        Constructor targetConstructor = signature.getConstructorTuple().getWrapperConstructor();
 //        Object[] parameterValues = signature.getParameterValues();
@@ -156,7 +165,7 @@ public abstract class JoinPointBase implements JoinPoint {
 //            throw e.getTargetException();
 //        }
 
-        Object[] parameterValues = signature.getParameterValues();
+        Object[] parameterValues = rtti.getParameterValues();
         Constructor wrapperConstructor = signature.getConstructorTuple().getWrapperConstructor();
         Constructor originalConstructor = signature.getConstructorTuple().getOriginalConstructor();
         if (originalConstructor.equals(wrapperConstructor)) {
@@ -192,8 +201,9 @@ public abstract class JoinPointBase implements JoinPoint {
      */
     public static void setTargetField(final JoinPoint joinPoint) throws Throwable {
         FieldSignature signature = (FieldSignature)joinPoint.getSignature();
+        FieldRttiImpl rtti = (FieldRttiImpl)joinPoint.getRtti();
         Field targetField = signature.getField();
-        Object fieldValue = signature.getFieldValue();
+        Object fieldValue = rtti.getFieldValue();
         Object targetInstance = joinPoint.getTargetInstance();
         targetField.set(targetInstance, fieldValue);
     }

@@ -27,18 +27,4 @@ public interface MethodSignature extends CodeSignature {
      * @return the return type
      */
     Class getReturnType();
-
-    /**
-     * Returns the value of the return type.
-     *
-     * @return the value of the return type
-     */
-    Object getReturnValue();
-
-    /**
-     * Sets return value.
-     *
-     * @param returnValue the return value
-     */
-//    void setReturnValue(Object returnValue);
 }

@@ -8,27 +8,13 @@
 
 package test.handler;
 
-import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @Aspect perJVM
  */
 public class HandlerTestAspect {
 
-    // ============ Pointcuts ============
-
-    /**
-     * Handler
-     */
-    Pointcut handler;
-
-    // ============ Advices ============
-
-    /**
-     * Before handler
-     */
     public void before(final JoinPoint joinPoint) throws Throwable {
         HandlerTest.log("pre ");
     }

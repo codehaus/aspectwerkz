@@ -18,6 +18,7 @@ import org.objectweb.asm.Constants;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.ClassWriter;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 
 /**
  * Utility methods for the ASM library.
@@ -201,9 +202,7 @@ public class AsmHelper {
      */
     public static Class loadClass(final String name) {
         try {
-//            ClassLoader loader = ClassLoader.getSystemClassLoader();
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            return loader.loadClass(name);
+            return ContextClassLoader.loadClass(name);
         }
         catch (Exception e) {
             return null;

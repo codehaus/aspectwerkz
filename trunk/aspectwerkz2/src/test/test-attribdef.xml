@@ -31,6 +31,7 @@
         <aspect class="test.staticfield.TestAspect"/>
         <aspect class="test.superclassconstructor.TestAspect"/>
         <aspect class="test.constructor.ConstructorTestAspect"/>
+<!--        <aspect class="test.afterexception.TestAspect"/>-->
         <aspect class="test.handler.HandlerTestAspect">
             <pointcut name="handler" expression="handler(test.handler.HandlerTestBeforeException)"/>
             <advice bind-to="handler" type="before" name="before"/>

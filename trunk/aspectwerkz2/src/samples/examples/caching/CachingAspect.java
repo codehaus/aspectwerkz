@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
+import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.CrossCutting;
 
 /**
@@ -35,14 +36,14 @@ public class CachingAspect {
      * @Around execution(int examples.caching.Pi.getPiDecimal(int))
      */
     public Object cache(final JoinPoint joinPoint) throws Throwable {
-        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
 
-        final Long hash = new Long(calculateHash(signature));
+        final Long hash = new Long(calculateHash(rtti));
         final Object cachedResult = m_cache.get(hash);
 
         if (cachedResult != null) {
             System.out.println("using cache");
-            CacheStatistics.addCacheInvocation(signature.getName(), signature.getParameterTypes());
+            CacheStatistics.addCacheInvocation(rtti.getName(), rtti.getParameterTypes());
             System.out.println("parameter: timeout = " + ((CrossCutting)this).getCrossCuttingInfo().getParameter("timeout"));
             return cachedResult;
         }
@@ -54,10 +55,10 @@ public class CachingAspect {
 
     // ============ Utility methods ============
 
-    private long calculateHash(final MethodSignature signature) {
+    private long calculateHash(final MethodRtti rtti) {
         int result = 17;
-        result = 37 * result + signature.getName().hashCode();
-        Object[] parameters = signature.getParameterValues();
+        result = 37 * result + rtti.getName().hashCode();
+        Object[] parameters = rtti.getParameterValues();
         for (int i = 0, j = parameters.length; i < j; i++) {
             result = 37 * result + parameters[i].hashCode();
         }

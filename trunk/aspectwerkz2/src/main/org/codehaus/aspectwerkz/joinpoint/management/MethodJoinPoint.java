@@ -8,6 +8,9 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
 
 import java.util.List;
 
@@ -16,9 +19,10 @@ import java.util.List;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-class MethodJoinPoint extends JoinPointBase {
+public class MethodJoinPoint extends JoinPointBase {
 
-    private final MethodSignatureImpl m_signature;
+    private final MethodSignature m_signature;
+    private final MethodRttiImpl m_rtti;
 
     /**
      * Creates a new join point.
@@ -27,6 +31,7 @@ class MethodJoinPoint extends JoinPointBase {
      * @param type
      * @param targetClass
      * @param signature
+     * @param rtti
      * @param cflowExpressions
      * @param aroundAdviceExecutor
      * @param beforeAdviceExecutor
@@ -37,6 +42,7 @@ class MethodJoinPoint extends JoinPointBase {
             final int type,
             final Class targetClass,
             final Signature signature,
+            final Rtti rtti,
             final List cflowExpressions,
             final AroundAdviceExecutor aroundAdviceExecutor,
             final BeforeAdviceExecutor beforeAdviceExecutor,
@@ -45,7 +51,8 @@ class MethodJoinPoint extends JoinPointBase {
                 uuid, type, targetClass, cflowExpressions,
                 aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor
         );
-        m_signature = (MethodSignatureImpl)signature;
+        m_signature = (MethodSignature)signature;
+        m_rtti = (MethodRttiImpl)rtti;
     }
 
     /**
@@ -57,7 +64,7 @@ class MethodJoinPoint extends JoinPointBase {
      */
     public Object proceed() throws Throwable {
         Object result = m_aroundAdviceExecutor.proceed(this);
-        m_signature.setReturnValue(result);
+        m_rtti.setReturnValue(result);
         return result;
     }
 
@@ -68,6 +75,15 @@ class MethodJoinPoint extends JoinPointBase {
      */
     public Signature getSignature() {
         return m_signature;
+    }
+
+    /**
+     * Returns the RTTI for the join point.
+     *
+     * @return the RTTI
+     */
+    public Rtti getRtti() {
+        return m_rtti;
     }
 
     /**
