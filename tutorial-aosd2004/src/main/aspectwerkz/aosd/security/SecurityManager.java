@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 import java.security.Principal;
 
 import aspectwerkz.aosd.Service;
-import aspectwerkz.aosd.Context;
+import aspectwerkz.aosd.context.Context;
 
 /**
  * Handles the access control in the system.

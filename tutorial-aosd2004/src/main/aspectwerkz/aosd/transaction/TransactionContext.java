@@ -7,7 +7,7 @@
  **************************************************************************************/
 package aspectwerkz.aosd.transaction;
 
-import aspectwerkz.aosd.AbstractContext;
+import aspectwerkz.aosd.context.AbstractContext;
 
 /**
  * The transaction context holds the transaction instance along with some

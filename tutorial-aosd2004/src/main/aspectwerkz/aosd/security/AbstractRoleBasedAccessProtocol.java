@@ -18,7 +18,7 @@ import org.codehaus.aspectwerkz.attribdef.Pointcut;
 import org.codehaus.aspectwerkz.attribdef.aspect.Aspect;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
-import aspectwerkz.aosd.Context;
+import aspectwerkz.aosd.context.Context;
 import aspectwerkz.aosd.security.principal.PrincipalStore;
 
 /**
