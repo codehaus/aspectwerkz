@@ -19,12 +19,10 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 /**
- * Very basic classloader that do online weaving. <p/>This classloader can be used thru several
- * means
+ * Very basic classloader that do online weaving. <p/>This classloader can be used thru several means
  * <ul>
  * <li>as a URLClassLoader in a custom development</li>
- * <li>as a <i>MainClass </i> to allow on the fly weaving (without support for classloader
- * hierarchy)</li>
+ * <li>as a <i>MainClass </i> to allow on the fly weaving (without support for classloader hierarchy)</li>
  * </ul>
  * It can also be used for debugging step by step in any IDE
  * 
@@ -43,13 +41,7 @@ public class WeavingClassLoader extends URLClassLoader {
             //definePackage(name.substring(0, name.lastIndexOf(".")), null, null);
             try {
                 byte[] b = res.getBytes();
-                byte[] transformed = ClassPreProcessorHelper.defineClass0Pre(
-                    this,
-                    name,
-                    b,
-                    0,
-                    b.length,
-                    null);
+                byte[] transformed = ClassPreProcessorHelper.defineClass0Pre(this, name, b, 0, b.length, null);
                 return defineClass(name, transformed, 0, transformed.length);
             } catch (IOException e) {
                 throw new ClassNotFoundException(e.getMessage());
@@ -71,8 +63,8 @@ public class WeavingClassLoader extends URLClassLoader {
         //System.setProperty("aspectwerkz.transform.dump", "*");
         //System.setProperty("aspectwerkz.definition.file", "...");
         //@todo check child of extension classloader instead of boot classloader
-        ClassLoader cl = new WeavingClassLoader((URL[]) paths.toArray(new URL[] {}), ClassLoader
-                .getSystemClassLoader().getParent());
+        ClassLoader cl = new WeavingClassLoader((URL[]) paths.toArray(new URL[] {}), ClassLoader.getSystemClassLoader()
+                .getParent());
         Thread.currentThread().setContextClassLoader(cl);
         String s = args[0];
         String[] args1 = new String[args.length - 1];

@@ -22,9 +22,9 @@ import org.codehaus.aspectwerkz.expression.ast.ASTWithin;
 import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
 
 /**
- * The Cflow expression visitor used at runtime. <p/>This visitor does a parse on a compsosite
- * context, based on the gathered cflow related context AND the joinpoint context. <p/>This allow to
- * parse complex cflow expression like "(pc1 AND cf1 AND cf3) OR (pc2 AND cf2)".
+ * The Cflow expression visitor used at runtime. <p/>This visitor does a parse on a compsosite context, based on the
+ * gathered cflow related context AND the joinpoint context. <p/>This allow to parse complex cflow expression like "(pc1
+ * AND cf1 AND cf3) OR (pc2 AND cf2)".
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -73,8 +73,7 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
     public Object visit(ASTPointcutReference node, Object data) {
         CompositeContext context = (CompositeContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
-        CflowExpressionVisitorRuntime expression = namespace.getCflowExpressionRuntime(node
-                .getName());
+        CflowExpressionVisitorRuntime expression = namespace.getCflowExpressionRuntime(node.getName());
         return new Boolean(expression.matchCflowStack(context));
     }
 
@@ -168,9 +167,8 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
         public ExpressionContext localContext;
 
         /**
-         * The actual local context is the dependent on where we are in the tree. <p/>Local context
-         * is the join point context - when outside of cflow subtree. - else it is one of the cflow
-         * contexts that we iterate over.
+         * The actual local context is the dependent on where we are in the tree. <p/>Local context is the join point
+         * context - when outside of cflow subtree. - else it is one of the cflow contexts that we iterate over.
          * 
          * @return the expression
          */

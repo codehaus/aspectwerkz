@@ -90,9 +90,7 @@ public class AdviceDefinition {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
         }
-        if (!type.equals(AROUND_ADVICE)
-            && !type.equals(BEFORE_ADVICE)
-            && !type.equals(AFTER_ADVICE)) {
+        if (!type.equals(AROUND_ADVICE) && !type.equals(BEFORE_ADVICE) && !type.equals(AFTER_ADVICE)) {
             throw new IllegalArgumentException("illegal advice type");
         }
         if (aspectName == null) {
@@ -232,8 +230,8 @@ public class AdviceDefinition {
     }
 
     /**
-     * Returns the advice type, one of: AdviceDefinition.AROUND_ADVICE,
-     * AdviceDefinition.BEFORE_ADVICE or AdviceDefinition.AFTER_ADVICE
+     * Returns the advice type, one of: AdviceDefinition.AROUND_ADVICE, AdviceDefinition.BEFORE_ADVICE or
+     * AdviceDefinition.AFTER_ADVICE
      * 
      * @return the advice type
      */

@@ -14,30 +14,27 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 
 /**
- * ProcessStarter uses JPDA JDI api to start a VM with a runtime modified java.lang.ClassLoader, or
- * transparently use a Xbootclasspath style (java 1.3 detected or forced) <p/>
+ * ProcessStarter uses JPDA JDI api to start a VM with a runtime modified java.lang.ClassLoader, or transparently use a
+ * Xbootclasspath style (java 1.3 detected or forced) <p/>
  * <p>
  * <h2>Important note</h2>
- * Due to a JPDA issue in LauchingConnector, this implementation is based on Process forking. If
- * Xbootclasspath is not used the target VM is started with JDWP options
- * <i>transport=dt_socket,address=9300 </i> unless other specified. <br/>It is possible after the
- * short startup sequence to attach a debugger or any other JPDA attaching connector. It has been
- * validated against a WebLogic 7 startup and is the <i>must use </i> implementation.
+ * Due to a JPDA issue in LauchingConnector, this implementation is based on Process forking. If Xbootclasspath is not
+ * used the target VM is started with JDWP options <i>transport=dt_socket,address=9300 </i> unless other specified.
+ * <br/>It is possible after the short startup sequence to attach a debugger or any other JPDA attaching connector. It
+ * has been validated against a WebLogic 7 startup and is the <i>must use </i> implementation.
  * </p>
  * <p/>
  * <p>
  * <h2>Implementation Note</h2>
- * See http://java.sun.com/products/jpda/ <br/>See
- * http://java.sun.com/j2se/1.4.1/docs/guide/jpda/jdi/index.html <br/>
+ * See http://java.sun.com/products/jpda/ <br/>See http://java.sun.com/j2se/1.4.1/docs/guide/jpda/jdi/index.html <br/>
  * </p>
- * <p/><p/>For java 1.3, it launch the target VM using a modified java.lang.ClassLoader by
- * generating it and putting it in the bootstrap classpath of the target VM. The java 1.3 version
- * should only be run for experimentation since it breaks the Java 2 Runtime Environment binary code
- * license by overriding a class of rt.jar
+ * <p/><p/>For java 1.3, it launch the target VM using a modified java.lang.ClassLoader by generating it and putting it
+ * in the bootstrap classpath of the target VM. The java 1.3 version should only be run for experimentation since it
+ * breaks the Java 2 Runtime Environment binary code license by overriding a class of rt.jar
  * </p>
- * <p/><p/>For java 1.4, it hotswaps java.lang.ClassLoader with a runtime patched version, wich is
- * compatible with the Java 2 Runtime Environment binary code license. For JVM not supporting the
- * class hotswapping, the same mechanism as for java 1.3 is used.
+ * <p/><p/>For java 1.4, it hotswaps java.lang.ClassLoader with a runtime patched version, wich is compatible with the
+ * Java 2 Runtime Environment binary code license. For JVM not supporting the class hotswapping, the same mechanism as
+ * for java 1.3 is used.
  * </p>
  * <p/>
  * <p>
@@ -47,43 +44,40 @@ import java.util.StringTokenizer;
  * <br/>should be called like: <br/><code>java [jvm option] [classpath]
  * org.codehaus.aspectwerkz.hook.ProcessStarter [target jvm option] [target classpath] targetMainClass [targetMainClass
  * args]</code>
- * <br/><b>[classpath] must contain %JAVA_HOME%/tools.jar for HotSwap support </b> <br/>[target jvm
- * option] can contain JDWP options, transport and address are preserved if specified.
+ * <br/><b>[classpath] must contain %JAVA_HOME%/tools.jar for HotSwap support </b> <br/>[target jvm option] can contain
+ * JDWP options, transport and address are preserved if specified.
  * </p>
  * <p/>
  * <p>
  * <h2>Options</h2>
- * [classpath] must contain %JAVA_HOME%/tools.jar and the jar you want for bytecode modification
- * (bcel, javassist...) <br/>The java.lang.ClassLoader is patched using the
- * <code>-Daspectwerkz.classloader.clpreprocessor=...</code> in [jvm option]. Specify the FQN of
- * your implementation of hook.ClassLoaderPreProcessor. See {@link
- * org.codehaus.aspectwerkz.hook.ClassLoaderPreProcessor} If not given, the default AspectWerkz
- * layer 1 Javassist implementation hook.impl.* is used, which is equivalent to
+ * [classpath] must contain %JAVA_HOME%/tools.jar and the jar you want for bytecode modification (bcel, javassist...)
+ * <br/>The java.lang.ClassLoader is patched using the <code>-Daspectwerkz.classloader.clpreprocessor=...</code> in
+ * [jvm option]. Specify the FQN of your implementation of hook.ClassLoaderPreProcessor. See {@link
+ * org.codehaus.aspectwerkz.hook.ClassLoaderPreProcessor} If not given, the default AspectWerkz layer 1 Javassist
+ * implementation hook.impl.* is used, which is equivalent to
  * <code>-Daspectwerkz.classloader.clpreprocessor=org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl</code>
- * <br/>Use -Daspectwerkz.classloader.wait=2 in [jvm option] to force a pause of 2 seconds between
- * process fork and JPDA connection for HotSwap. Defaults to no wait.
+ * <br/>Use -Daspectwerkz.classloader.wait=2 in [jvm option] to force a pause of 2 seconds between process fork and JPDA
+ * connection for HotSwap. Defaults to no wait.
  * </p>
  * <p/>
  * <p>
  * <h2>Disabling HotSwap</h2>
- * You disable HotSwap and thus force the use of -Xbootclasspath (like in java 1.3 mode) and specify
- * the directory where the modified class loader bytecode will be stored using in [jvm option]
- * <code>-Daspectwerkz.classloader.clbootclasspath=...</code>. Specify the directory where you
- * want the patched java.lang.ClassLoader to be stored. Default is "./_boot". The directory is
- * created if needed (with the subdirectories corresponding to package names). <br/>The directory is
- * <b>automatically </b> incorporated in the -Xbootclasspath option of [target jvm option]. <br/>You
- * shoud use this option mainly for debuging purpose, or if you need to start different jvm with
- * different classloader preprocessor implementations.
+ * You disable HotSwap and thus force the use of -Xbootclasspath (like in java 1.3 mode) and specify the directory where
+ * the modified class loader bytecode will be stored using in [jvm option]
+ * <code>-Daspectwerkz.classloader.clbootclasspath=...</code>. Specify the directory where you want the patched
+ * java.lang.ClassLoader to be stored. Default is "./_boot". The directory is created if needed (with the subdirectories
+ * corresponding to package names). <br/>The directory is <b>automatically </b> incorporated in the -Xbootclasspath
+ * option of [target jvm option]. <br/>You shoud use this option mainly for debuging purpose, or if you need to start
+ * different jvm with different classloader preprocessor implementations.
  * </p>
  * <p/>
  * <p>
  * <h2>Option for AspectWerkz layer 1 Javassist implementation</h2>
  * When using the default AspectWerkz layer 1 Javassist implementation
- * <code>org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl</code>,
- * java.lang.ClassLoader is modified to call a class preprocessor at each class load (except for
- * class loaded by the bootstrap classloader). <br/>The effective class preprocessor is defined with
- * <code>-Daspectwerkz.classloader.preprocessor=...</code> in [target jvm option]. Specify the FQN
- * of your implementation of org.codehaus.aspectwerkz.hook.ClassPreProcessor interface. <br/>If
+ * <code>org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl</code>, java.lang.ClassLoader is modified to
+ * call a class preprocessor at each class load (except for class loaded by the bootstrap classloader). <br/>The
+ * effective class preprocessor is defined with <code>-Daspectwerkz.classloader.preprocessor=...</code> in [target jvm
+ * option]. Specify the FQN of your implementation of org.codehaus.aspectwerkz.hook.ClassPreProcessor interface. <br/>If
  * this parameter is not given, the default AspectWerkz layer 2
  * org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor is used. <br/>
  * </p>
@@ -163,15 +157,11 @@ public class ProcessStarter {
         // if java version does not support method "VirtualMachine.canRedefineClass"
         // or if bootclasspath is forced, transform optionsArg
         if (!hasCanRedefineClass() || (System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY) != null)) {
-            String bootDir = System.getProperty(
-                CL_BOOTCLASSPATH_FORCE_PROPERTY,
-                CL_BOOTCLASSPATH_FORCE_DEFAULT);
+            String bootDir = System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY, CL_BOOTCLASSPATH_FORCE_DEFAULT);
             if (System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY) != null) {
                 System.out.println("HotSwap deactivated, using bootclasspath: " + bootDir);
             } else {
-                System.out
-                        .println("HotSwap not supported by this java version, using bootclasspath: "
-                            + bootDir);
+                System.out.println("HotSwap not supported by this java version, using bootclasspath: " + bootDir);
             }
             ClassLoaderPatcher.patchClassLoader(clp, bootDir);
             BootClasspathStarter starter = new BootClasspathStarter(options, mainArgs, bootDir);
@@ -319,8 +309,7 @@ public class ProcessStarter {
      * Analyse the args[] as a java command line
      * 
      * @param args
-     * @return String[] [0]:jvm options except -cp|-classpath, [1]:classpath without -cp, [2]:
-     *         mainClass + mainOptions
+     * @return String[] [0]:jvm options except -cp|-classpath, [1]:classpath without -cp, [2]: mainClass + mainOptions
      */
     public String[] parseJavaCommandLine(String[] args) {
         StringBuffer optionsArgB = new StringBuffer();
@@ -336,8 +325,9 @@ public class ProcessStarter {
                 }
             } else if (!foundMain && ("-cp".equals(previous) || "-classpath".equals(previous))) {
                 if (cpOptionsArgB.length() > 0) {
-                    cpOptionsArgB.append((System.getProperty("os.name", "").toLowerCase().indexOf(
-                        "windows") >= 0) ? ";" : ":");
+                    cpOptionsArgB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0)
+                        ? ";"
+                        : ":");
                 }
                 cpOptionsArgB.append(removeEmbracingQuotes(args[i]));
             } else {

@@ -13,9 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Holds the meta-data for the interface introductions. <p/>This definition holds only pure
- * interface introduction. <p/>It is extended in IntroductionDefinition for interface+implementation
- * introductions
+ * Holds the meta-data for the interface introductions. <p/>This definition holds only pure interface introduction.
+ * <p/>It is extended in IntroductionDefinition for interface+implementation introductions
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
@@ -127,12 +126,7 @@ public class InterfaceIntroductionDefinition {
      */
     public void addExpressionInfo(final ExpressionInfo expression) {
         final ExpressionInfo[] tmpExpressions = new ExpressionInfo[m_expressionInfos.length + 1];
-        java.lang.System.arraycopy(
-            m_expressionInfos,
-            0,
-            tmpExpressions,
-            0,
-            m_expressionInfos.length);
+        java.lang.System.arraycopy(m_expressionInfos, 0, tmpExpressions, 0, m_expressionInfos.length);
         tmpExpressions[m_expressionInfos.length] = expression;
         m_expressionInfos = new ExpressionInfo[m_expressionInfos.length + 1];
         java.lang.System.arraycopy(tmpExpressions, 0, m_expressionInfos, 0, tmpExpressions.length);
@@ -144,20 +138,9 @@ public class InterfaceIntroductionDefinition {
      * @param expressions an array with new expression infos
      */
     public void addExpressionInfos(final ExpressionInfo[] expressions) {
-        final ExpressionInfo[] tmpExpressions = new ExpressionInfo[m_expressionInfos.length
-            + expressions.length];
-        java.lang.System.arraycopy(
-            m_expressionInfos,
-            0,
-            tmpExpressions,
-            0,
-            m_expressionInfos.length);
-        java.lang.System.arraycopy(
-            expressions,
-            0,
-            tmpExpressions,
-            m_expressionInfos.length,
-            expressions.length);
+        final ExpressionInfo[] tmpExpressions = new ExpressionInfo[m_expressionInfos.length + expressions.length];
+        java.lang.System.arraycopy(m_expressionInfos, 0, tmpExpressions, 0, m_expressionInfos.length);
+        java.lang.System.arraycopy(expressions, 0, tmpExpressions, m_expressionInfos.length, expressions.length);
         m_expressionInfos = new ExpressionInfo[m_expressionInfos.length + expressions.length];
         java.lang.System.arraycopy(tmpExpressions, 0, m_expressionInfos, 0, tmpExpressions.length);
     }

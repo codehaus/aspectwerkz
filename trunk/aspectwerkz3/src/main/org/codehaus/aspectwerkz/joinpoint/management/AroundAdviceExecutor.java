@@ -51,8 +51,7 @@ public class AroundAdviceExecutor implements Serializable {
     }
 
     /**
-     * Executes its advices one by one. After the last advice has been executed, the original method
-     * is invoked.
+     * Executes its advices one by one. After the last advice has been executed, the original method is invoked.
      * 
      * @param joinPoint the current join point
      * @return the result from the next advice in the chain or the invocation of the target method
@@ -81,8 +80,7 @@ public class AroundAdviceExecutor implements Serializable {
                 m_currentAdviceIndex++;
                 try {
                     IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
-                    AspectContainer container = index.getAspectManager().getAspectContainer(
-                        index.getAspectIndex());
+                    AspectContainer container = index.getAspectManager().getAspectContainer(index.getAspectIndex());
                     result = container.invokeAdvice(index.getMethodIndex(), joinPoint);
                 } finally {
                     m_currentAdviceIndex--;

@@ -17,10 +17,10 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
- * The SystemDefintionContainer maintains all the definition and is aware of the classloader
- * hierarchy. <p/>A ThreadLocal structure is used during weaving to store current classloader
- * defintion hierarchy. <p/>Due to getResources() API, we maintain a perClassLoader loaded resource
- * list so that it contains only resource defined within the classloader and not its parent.
+ * The SystemDefintionContainer maintains all the definition and is aware of the classloader hierarchy. <p/>A
+ * ThreadLocal structure is used during weaving to store current classloader defintion hierarchy. <p/>Due to
+ * getResources() API, we maintain a perClassLoader loaded resource list so that it contains only resource defined
+ * within the classloader and not its parent.
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -29,20 +29,23 @@ public class SystemDefinitionContainer {
      * Map of SystemDefinition[List] per ClassLoader
      */
     public static Map s_classLoaderSystemDefinitions = new WeakHashMap(); //note: null key is
-                                                                          // supported
+
+    // supported
 
     /**
      * Map of SystemDefinition[List] per ClassLoader, with the hierarchy structure
      */
     public static Map s_classLoaderHierarchicalSystemDefinitions = new WeakHashMap(); //note: null
-                                                                                      // key is
-                                                                                      // supported
+
+    // key is
+    // supported
 
     /**
      * Map of SystemDefinition location (as String[List]) per ClassLoader
      */
     public static Map s_classLoaderDefinitionLocations = new WeakHashMap(); //note: null key is
-                                                                            // supported
+
+    // supported
 
     /**
      * Default location for default AspectWerkz definition file, JVM wide
@@ -52,8 +55,7 @@ public class SystemDefinitionContainer {
         "no -Daspectwerkz.definition.file");
 
     /**
-     * The AOP deployment descriptor for any deployed unit Note: Tomcat 5 does not handles
-     * war/META-INF
+     * The AOP deployment descriptor for any deployed unit Note: Tomcat 5 does not handles war/META-INF
      */
     public static final String AOP_META_INF_XML_FILE = "META-INF/aop.xml";
 
@@ -65,15 +67,14 @@ public class SystemDefinitionContainer {
     public static final String WEB_WEB_INF_XML_FILE = "../web.xml";
 
     /**
-     * An internal flag to disable registration of the -Daspectwerkz.definition.file definition in
-     * the System class loader. This is used only in offline mode, where these definitions are
-     * registered programmatically at the compilation class loader level.
+     * An internal flag to disable registration of the -Daspectwerkz.definition.file definition in the System class
+     * loader. This is used only in offline mode, where these definitions are registered programmatically at the
+     * compilation class loader level.
      */
     private static boolean s_disableSystemWideDefinition = false;
 
     /**
-     * Register a new ClassLoader in the system and gather all its definition and parents
-     * definitions.
+     * Register a new ClassLoader in the system and gather all its definition and parents definitions.
      * 
      * @param loader the class loader to register
      */
@@ -100,8 +101,7 @@ public class SystemDefinitionContainer {
                 s_classLoaderDefinitionLocations.put(loader, defsLocation);
 
                 // is this system classloader ?
-                if ((loader == ClassLoader.getSystemClassLoader())
-                    && !s_disableSystemWideDefinition) {
+                if ((loader == ClassLoader.getSystemClassLoader()) && !s_disableSystemWideDefinition) {
                     // -D..file=... sysdef
                     defs.addAll(DefinitionLoader.getDefaultDefinition(loader));
                     defsLocation.add(URL_JVM_OPTION_SYSTEM);
@@ -136,8 +136,7 @@ public class SystemDefinitionContainer {
     }
 
     /**
-     * Check if a given resource has already been registered to a classloader and its parent
-     * hierachy
+     * Check if a given resource has already been registered to a classloader and its parent hierachy
      * 
      * @param loader the classloader which might define the resource
      * @param def the resource
@@ -166,8 +165,7 @@ public class SystemDefinitionContainer {
      * @param loader
      */
     public static void dump(ClassLoader loader) {
-        StringBuffer dump = new StringBuffer(
-            "******************************************************************");
+        StringBuffer dump = new StringBuffer("******************************************************************");
         dump.append("\n* ClassLoader = ");
 
         //Note: Tomcat classLoader.toString is too verbose so we allow 120 chars.
@@ -192,10 +190,9 @@ public class SystemDefinitionContainer {
     }
 
     /**
-     * Returns the gathered SystemDefinition visible from a classloader. <p/>This method is using a
-     * cache. Caution when modifying this method since when an aop.xml is loaded, the aspect classes
-     * gets loaded as well, which triggers this cache, while the system is in fact not yet
-     * initialized properly.
+     * Returns the gathered SystemDefinition visible from a classloader. <p/>This method is using a cache. Caution when
+     * modifying this method since when an aop.xml is loaded, the aspect classes gets loaded as well, which triggers
+     * this cache, while the system is in fact not yet initialized properly.
      * </p>
      * 
      * @param loader
@@ -227,9 +224,8 @@ public class SystemDefinitionContainer {
     }
 
     /**
-     * Hotdeploy a list of SystemDefintions as defined at the level of the given ClassLoader
-     * <p/>Note: this is used for Offline mode TODO: sync StartupManager TODO: flush sub systems
-     * defs or allow different organization if wished so ?
+     * Hotdeploy a list of SystemDefintions as defined at the level of the given ClassLoader <p/>Note: this is used for
+     * Offline mode TODO: sync StartupManager TODO: flush sub systems defs or allow different organization if wished so ?
      * 
      * @param loader ClassLoader
      * @param definitions SystemDefinitions list
@@ -242,8 +238,8 @@ public class SystemDefinitionContainer {
     }
 
     /**
-     * Return the list of SystemDefinitions defined at the given ClassLoader level. Does not handles
-     * the ClassLoader hierarchy.
+     * Return the list of SystemDefinitions defined at the given ClassLoader level. Does not handles the ClassLoader
+     * hierarchy.
      * 
      * @param loader
      * @return SystemDefinitions list
@@ -254,8 +250,8 @@ public class SystemDefinitionContainer {
     }
 
     /**
-     * Lookup for a given SystemDefinition by uuid within a given ClassLoader The lookup does not go
-     * thru the ClassLoader hierarchy
+     * Lookup for a given SystemDefinition by uuid within a given ClassLoader The lookup does not go thru the
+     * ClassLoader hierarchy
      * 
      * @param loader ClassLoader
      * @param uuid system uuid
@@ -273,8 +269,8 @@ public class SystemDefinitionContainer {
     }
 
     /**
-     * Returns the list of all ClassLoaders registered so far Note: when a child ClassLoader is
-     * registered, all its parent hierarchy is registered
+     * Returns the list of all ClassLoaders registered so far Note: when a child ClassLoader is registered, all its
+     * parent hierarchy is registered
      * 
      * @return ClassLoader Set
      */

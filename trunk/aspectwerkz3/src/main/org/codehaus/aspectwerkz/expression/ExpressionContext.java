@@ -186,9 +186,8 @@ public class ExpressionContext {
         if (!m_pointcutType.equals(expressionContext.m_pointcutType)) {
             return false;
         }
-        if ((m_withinReflectionInfo != null)
-            ? (!m_withinReflectionInfo.equals(expressionContext.m_withinReflectionInfo))
-            : (expressionContext.m_withinReflectionInfo != null)) {
+        if ((m_withinReflectionInfo != null) ? (!m_withinReflectionInfo
+                .equals(expressionContext.m_withinReflectionInfo)) : (expressionContext.m_withinReflectionInfo != null)) {
             return false;
         }
         return true;
@@ -198,8 +197,7 @@ public class ExpressionContext {
         int result;
         result = m_pointcutType.hashCode();
         result = (29 * result) + m_matchingReflectionInfo.hashCode();
-        result = (29 * result)
-            + ((m_withinReflectionInfo != null) ? m_withinReflectionInfo.hashCode() : 0);
+        result = (29 * result) + ((m_withinReflectionInfo != null) ? m_withinReflectionInfo.hashCode() : 0);
         result = (29 * result) + m_reflectionInfoType;
         return result;
     }

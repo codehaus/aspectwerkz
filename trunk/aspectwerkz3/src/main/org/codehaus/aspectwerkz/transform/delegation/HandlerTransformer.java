@@ -49,8 +49,7 @@ public class HandlerTransformer implements Transformer {
      * @param context the transformation context
      * @param klass the class set.
      */
-    public void transform(final Context context, final Klass klass) throws NotFoundException,
-            CannotCompileException {
+    public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
 
         //AXm_joinPointIndex =
@@ -60,10 +59,7 @@ public class HandlerTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
-            if (classFilter(definition, new ExpressionContext(
-                PointcutType.HANDLER,
-                classInfo,
-                classInfo), ctClass)) {
+            if (classFilter(definition, new ExpressionContext(PointcutType.HANDLER, classInfo, classInfo), ctClass)) {
                 continue;
             }
             ctClass.instrument(new ExprEditor() {
@@ -84,17 +80,14 @@ public class HandlerTransformer implements Transformer {
                         }
                         MemberInfo withinMethodInfo = null;
                         if (where instanceof CtMethod) {
-                            withinMethodInfo = JavassistMethodInfo.getMethodInfo(
-                                (CtMethod) where,
-                                context.getLoader());
+                            withinMethodInfo = JavassistMethodInfo.getMethodInfo((CtMethod) where, context.getLoader());
                         } else if (where instanceof CtConstructor) {
                             withinMethodInfo = JavassistConstructorInfo.getConstructorInfo(
                                 (CtConstructor) where,
                                 context.getLoader());
                         }
-                        ClassInfo exceptionClassInfo = JavassistClassInfo.getClassInfo(
-                            exceptionClass,
-                            context.getLoader());
+                        ClassInfo exceptionClassInfo = JavassistClassInfo.getClassInfo(exceptionClass, context
+                                .getLoader());
                         ExpressionContext ctx = new ExpressionContext(
                             PointcutType.HANDLER,
                             exceptionClassInfo,
@@ -147,10 +140,7 @@ public class HandlerTransformer implements Transformer {
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(
-        final SystemDefinition definition,
-        final ExpressionContext ctx,
-        final CtClass cg) {
+    public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }

@@ -46,8 +46,8 @@ import java.util.Map;
 //import EDU.oswego.cs.dl.util.concurrent.ReaderPreferenceReadWriteLock;
 
 /**
- * Manages the join points, invokes the correct advice chains, handles redeployment, JIT compilation
- * etc. Each advised class' instance holds one instance of this class.
+ * Manages the join points, invokes the correct advice chains, handles redeployment, JIT compilation etc. Each advised
+ * class' instance holds one instance of this class.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
@@ -136,9 +136,7 @@ public class JoinPointManager {
      * @return the join point manager instance for this class
      * @TODO: UUID is not use or needed anymore, remove it from the TFs
      */
-    public final static JoinPointManager getJoinPointManager(
-        final Class targetClass,
-        final String uuid) {
+    public final static JoinPointManager getJoinPointManager(final Class targetClass, final String uuid) {
         if (s_managers.containsKey(targetClass)) { //TODO AVAOPC should be Weak ?
             return (JoinPointManager) s_managers.get(targetClass);
         } else {
@@ -158,9 +156,8 @@ public class JoinPointManager {
     }
 
     /**
-     * Checks if a join point is advised, this does not mean that it has any advices attached to it.
-     * <p/>This method should be used by inserting a check in the wrapper/proxy method similar to
-     * this:
+     * Checks if a join point is advised, this does not mean that it has any advices attached to it. <p/>This method
+     * should be used by inserting a check in the wrapper/proxy method similar to this:
      * 
      * <pre>
      * if (___AW_joinPointManager.hasAdvices(joinPointHash)) {
@@ -182,8 +179,8 @@ public class JoinPointManager {
     }
 
     /**
-     * Proceeds with the invocation of the join point, passing on the method hash, the parameter
-     * values and the target instance.
+     * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the target
+     * instance.
      * 
      * @param methodHash
      * @param joinPointIndex
@@ -217,8 +214,7 @@ public class JoinPointManager {
                     m_system);
                 threadLocal = new ThreadLocal();
                 if (m_joinPoints.length <= joinPointIndex) {
-                    ThreadLocal[] tmp = new ThreadLocal[joinPointIndex
-                        + JOIN_POINT_INDEX_GROW_BLOCK];
+                    ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(m_joinPoints, 0, tmp, 0, m_joinPoints.length);
                     m_joinPoints = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(tmp, 0, m_joinPoints, 0, tmp.length);
@@ -254,8 +250,7 @@ public class JoinPointManager {
         // if null or redefined -> create a new join point and cache it
         if (joinPoint == null) {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, methodHash);
-            JoinPointMetaData joinPointMetaData = (JoinPointMetaData) joinPointMetaDataMap
-                    .get(PointcutType.EXECUTION);
+            JoinPointMetaData joinPointMetaData = (JoinPointMetaData) joinPointMetaDataMap.get(PointcutType.EXECUTION);
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
             List cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
@@ -310,8 +305,8 @@ public class JoinPointManager {
     }
 
     /**
-     * Proceeds with the invocation of the join point, passing on the method hash, the parameter
-     * values and the target instance.
+     * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the target
+     * instance.
      * 
      * @param methodHash
      * @param joinPointIndex
@@ -354,8 +349,7 @@ public class JoinPointManager {
                     m_system);
                 threadLocal = new ThreadLocal();
                 if (m_joinPoints.length <= joinPointIndex) {
-                    ThreadLocal[] tmp = new ThreadLocal[joinPointIndex
-                        + JOIN_POINT_INDEX_GROW_BLOCK];
+                    ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(m_joinPoints, 0, tmp, 0, m_joinPoints.length);
                     m_joinPoints = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(tmp, 0, m_joinPoints, 0, tmp.length);
@@ -388,8 +382,7 @@ public class JoinPointManager {
         // if null or redefined -> create a new join point and cache it
         if (joinPoint == null) {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, methodHash);
-            JoinPointMetaData joinPointMetaData = (JoinPointMetaData) joinPointMetaDataMap
-                    .get(PointcutType.CALL);
+            JoinPointMetaData joinPointMetaData = (JoinPointMetaData) joinPointMetaDataMap.get(PointcutType.CALL);
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
             List cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
@@ -446,8 +439,8 @@ public class JoinPointManager {
     }
 
     /**
-     * Proceeds with the invocation of the join point, passing on the method hash, the parameter
-     * values and the target instance.
+     * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the target
+     * instance.
      * 
      * @param fieldHash
      * @param joinPointIndex
@@ -477,8 +470,7 @@ public class JoinPointManager {
                     m_system);
                 threadLocal = new ThreadLocal();
                 if (m_joinPoints.length <= joinPointIndex) {
-                    ThreadLocal[] tmp = new ThreadLocal[joinPointIndex
-                        + JOIN_POINT_INDEX_GROW_BLOCK];
+                    ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(m_joinPoints, 0, tmp, 0, m_joinPoints.length);
                     m_joinPoints = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(tmp, 0, m_joinPoints, 0, tmp.length);
@@ -509,8 +501,7 @@ public class JoinPointManager {
         // if null or redefined -> create a new join point and cache it
         if (joinPoint == null) {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, fieldHash);
-            JoinPointMetaData joinPointMetaData = (JoinPointMetaData) joinPointMetaDataMap
-                    .get(PointcutType.SET);
+            JoinPointMetaData joinPointMetaData = (JoinPointMetaData) joinPointMetaDataMap.get(PointcutType.SET);
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
             List cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
@@ -539,7 +530,7 @@ public class JoinPointManager {
         joinPoint.setTarget(targetInstance);
         if (fieldValue[0] != null) {
             ((FieldRtti) joinPoint.getRtti()).setFieldValue(fieldValue[0]); // array due to sucky
-                                                                            // javassist field
+            // javassist field
             // handling
         }
         enterCflow(joinPointInfo);
@@ -551,8 +542,8 @@ public class JoinPointManager {
     }
 
     /**
-     * Proceeds with the invocation of the join point, passing on the method hash, the parameter
-     * values and the target instance.
+     * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the target
+     * instance.
      * 
      * @param fieldHash
      * @param joinPointIndex
@@ -580,8 +571,7 @@ public class JoinPointManager {
                     m_system);
                 threadLocal = new ThreadLocal();
                 if (m_joinPoints.length <= joinPointIndex) {
-                    ThreadLocal[] tmp = new ThreadLocal[joinPointIndex
-                        + JOIN_POINT_INDEX_GROW_BLOCK];
+                    ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(m_joinPoints, 0, tmp, 0, m_joinPoints.length);
                     m_joinPoints = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(tmp, 0, m_joinPoints, 0, tmp.length);
@@ -612,8 +602,7 @@ public class JoinPointManager {
         // if null or redefined -> create a new join point and cache it
         if (joinPoint == null) {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, fieldHash);
-            JoinPointMetaData joinPointMetaData = (JoinPointMetaData) joinPointMetaDataMap
-                    .get(PointcutType.GET);
+            JoinPointMetaData joinPointMetaData = (JoinPointMetaData) joinPointMetaDataMap.get(PointcutType.GET);
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
             List cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
@@ -649,8 +638,8 @@ public class JoinPointManager {
     }
 
     /**
-     * Proceeds with the invocation of the join point, passing on the method hash, the parameter
-     * values and the target instance.
+     * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the target
+     * instance.
      * 
      * @param handlerHash
      * @param joinPointIndex
@@ -679,8 +668,7 @@ public class JoinPointManager {
                     m_system);
                 threadLocal = new ThreadLocal();
                 if (m_joinPoints.length <= joinPointIndex) {
-                    ThreadLocal[] tmp = new ThreadLocal[joinPointIndex
-                        + JOIN_POINT_INDEX_GROW_BLOCK];
+                    ThreadLocal[] tmp = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(m_joinPoints, 0, tmp, 0, m_joinPoints.length);
                     m_joinPoints = new ThreadLocal[joinPointIndex + JOIN_POINT_INDEX_GROW_BLOCK];
                     java.lang.System.arraycopy(tmp, 0, m_joinPoints, 0, tmp.length);
@@ -711,8 +699,7 @@ public class JoinPointManager {
         // if null or redefined -> create a new join point and cache it
         if (joinPoint == null) {
             Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, handlerHash);
-            JoinPointMetaData joinPointMetaData = (JoinPointMetaData) joinPointMetaDataMap
-                    .get(PointcutType.HANDLER);
+            JoinPointMetaData joinPointMetaData = (JoinPointMetaData) joinPointMetaDataMap.get(PointcutType.HANDLER);
             AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
             List cflowExpressions = joinPointMetaData.cflowExpressions;
             Pointcut cflowPointcut = joinPointMetaData.cflowPointcut;
@@ -788,12 +775,9 @@ public class JoinPointManager {
             if (joinPointInfo.state == JoinPointState.REDEFINED) {
                 joinPointInfo.invocations = 0L;
             } else if (joinPointInfo.invocations == JIT_COMPILATION_BOUNDRY) {
-                Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(
-                    m_classHash,
-                    joinPointHash);
+                Map joinPointMetaDataMap = s_registry.getJoinPointMetaData(m_classHash, joinPointHash);
                 if (joinPointMetaDataMap.containsKey(pointcutType)) {
-                    JoinPointMetaData joinPointMetaData = (JoinPointMetaData) joinPointMetaDataMap
-                            .get(pointcutType);
+                    JoinPointMetaData joinPointMetaData = (JoinPointMetaData) joinPointMetaDataMap.get(pointcutType);
                     AdviceIndexInfo[] adviceIndexes = joinPointMetaData.adviceIndexes;
                     joinPointInfo.joinPoint = JitCompiler.compileJoinPoint(
                         joinPointHash,
@@ -867,13 +851,9 @@ public class JoinPointManager {
         final JoinPointMetaData joinPointMetaData,
         final Object thisInstance,
         final Object targetInstance) {
-        ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(
-            declaringClass,
-            constructorHash);
+        ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, constructorHash);
         Class declaringType = constructorTuple.getDeclaringClass();
-        ConstructorSignatureImpl signature = new ConstructorSignatureImpl(
-            declaringType,
-            constructorTuple);
+        ConstructorSignatureImpl signature = new ConstructorSignatureImpl(declaringType, constructorTuple);
         Rtti rtti = new ConstructorRttiImpl(signature, thisInstance, targetInstance);
         return new ConstructorJoinPoint(
             joinPointType,
@@ -945,14 +925,9 @@ public class JoinPointManager {
             declaringClass,
             catchClauseSignature);
         Rtti rtti = new CatchClauseRttiImpl(signature, thisInstance, targetInstance);
-        return new CatchClauseJoinPoint(
-            m_targetClass,
-            signature,
-            rtti,
-            joinPointMetaData,
-            createAroundAdviceExecutor(adviceIndexes, JoinPointType.HANDLER),
-            createBeforeAdviceExecutor(adviceIndexes),
-            createAfterAdviceExecutor(adviceIndexes));
+        return new CatchClauseJoinPoint(m_targetClass, signature, rtti, joinPointMetaData, createAroundAdviceExecutor(
+            adviceIndexes,
+            JoinPointType.HANDLER), createBeforeAdviceExecutor(adviceIndexes), createAfterAdviceExecutor(adviceIndexes));
     }
 
     /**
@@ -974,8 +949,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return the advice executor
      */
-    private final BeforeAdviceExecutor createBeforeAdviceExecutor(
-        final AdviceIndexInfo[] adviceIndexes) {
+    private final BeforeAdviceExecutor createBeforeAdviceExecutor(final AdviceIndexInfo[] adviceIndexes) {
         return new BeforeAdviceExecutor(extractBeforeAdvice(adviceIndexes));
     }
 
@@ -985,8 +959,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return the advice executor
      */
-    private final AfterAdviceExecutor createAfterAdviceExecutor(
-        final AdviceIndexInfo[] adviceIndexes) {
+    private final AfterAdviceExecutor createAfterAdviceExecutor(final AdviceIndexInfo[] adviceIndexes) {
         return new AfterAdviceExecutor(extractAfterAdvice(adviceIndexes));
     }
 
@@ -1075,9 +1048,7 @@ public class JoinPointManager {
 
         // flush JP Registry
         s_registry.reset(klass.hashCode());
-        JoinPointManager joinPointManager = new JoinPointManager(
-            klass,
-            oldJoinPointManager.m_hotswapCount + 1);
+        JoinPointManager joinPointManager = new JoinPointManager(klass, oldJoinPointManager.m_hotswapCount + 1);
         s_managers.put(klass, joinPointManager);
         try {
             Field jpMan = klass.getDeclaredField(TransformationUtil.JOIN_POINT_MANAGER_FIELD);

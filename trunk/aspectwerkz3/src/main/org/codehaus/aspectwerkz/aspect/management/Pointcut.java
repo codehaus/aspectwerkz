@@ -18,9 +18,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Implementation of the pointcut concept. I.e. an abstraction of a well defined point of execution
- * in the program. <p/>Could matches one or many as long at it is well defined. <br/>Stores the
- * advices for the specific pointcut. <p/>
+ * Implementation of the pointcut concept. I.e. an abstraction of a well defined point of execution in the program.
+ * <p/>Could matches one or many as long at it is well defined. <br/>Stores the advices for the specific pointcut. <p/>
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
@@ -91,8 +90,7 @@ public class Pointcut implements Serializable {
      */
     public void addAroundAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
-            throw new IllegalArgumentException(
-                "name of advice to add can not be null or an empty string");
+            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         }
 
         // system reinitialization can lead to redundancy
@@ -113,8 +111,7 @@ public class Pointcut implements Serializable {
                 // update the indexes
                 m_aroundAdviceIndexes = new IndexTuple[m_aroundAdviceNames.length];
                 for (int i = 0, j = m_aroundAdviceNames.length; i < j; i++) {
-                    m_aroundAdviceIndexes[i] = m_aspectManager
-                            .getAdviceIndexFor(m_aroundAdviceNames[i]);
+                    m_aroundAdviceIndexes[i] = m_aspectManager.getAdviceIndexFor(m_aroundAdviceNames[i]);
                 }
             }
         }
@@ -127,8 +124,7 @@ public class Pointcut implements Serializable {
      */
     public void addBeforeAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
-            throw new IllegalArgumentException(
-                "name of advice to add can not be null or an empty string");
+            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         }
         synchronized (m_beforeAdviceNames) {
             synchronized (m_beforeAdviceIndexes) {
@@ -141,8 +137,7 @@ public class Pointcut implements Serializable {
                 // update the indexes
                 m_beforeAdviceIndexes = new IndexTuple[m_beforeAdviceNames.length];
                 for (int i = 0, j = m_beforeAdviceNames.length; i < j; i++) {
-                    m_beforeAdviceIndexes[i] = m_aspectManager
-                            .getAdviceIndexFor(m_beforeAdviceNames[i]);
+                    m_beforeAdviceIndexes[i] = m_aspectManager.getAdviceIndexFor(m_beforeAdviceNames[i]);
                 }
             }
         }
@@ -155,8 +150,7 @@ public class Pointcut implements Serializable {
      */
     public void addAfterAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
-            throw new IllegalArgumentException(
-                "name of advice to add can not be null or an empty string");
+            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         }
         synchronized (m_afterAdviceNames) {
             synchronized (m_afterAdviceIndexes) {
@@ -169,8 +163,7 @@ public class Pointcut implements Serializable {
                 // update the indexes
                 m_afterAdviceIndexes = new IndexTuple[m_afterAdviceNames.length];
                 for (int i = 0, j = m_afterAdviceNames.length; i < j; i++) {
-                    m_afterAdviceIndexes[i] = m_aspectManager
-                            .getAdviceIndexFor(m_afterAdviceNames[i]);
+                    m_afterAdviceIndexes[i] = m_aspectManager.getAdviceIndexFor(m_afterAdviceNames[i]);
                 }
             }
         }
@@ -183,8 +176,7 @@ public class Pointcut implements Serializable {
      */
     public void removeAroundAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
-            throw new IllegalArgumentException(
-                "name of advice to remove can not be null or an empty string");
+            throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
         }
         synchronized (m_aroundAdviceNames) {
             synchronized (m_aroundAdviceIndexes) {
@@ -196,9 +188,7 @@ public class Pointcut implements Serializable {
                     }
                 }
                 if (index == -1) {
-                    throw new RuntimeException("can not remove advice with the name "
-                        + advice
-                        + ": no such advice");
+                    throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
                 }
                 final String[] names = new String[m_aroundAdviceNames.length - 1];
                 int j;
@@ -233,8 +223,7 @@ public class Pointcut implements Serializable {
      */
     public void removeBeforeAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
-            throw new IllegalArgumentException(
-                "name of advice to remove can not be null or an empty string");
+            throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
         }
         synchronized (m_beforeAdviceNames) {
             synchronized (m_beforeAdviceIndexes) {
@@ -246,9 +235,7 @@ public class Pointcut implements Serializable {
                     }
                 }
                 if (index == -1) {
-                    throw new RuntimeException("can not remove advice with the name "
-                        + advice
-                        + ": no such advice");
+                    throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
                 }
                 final String[] names = new String[m_beforeAdviceNames.length - 1];
                 int j;
@@ -283,8 +270,7 @@ public class Pointcut implements Serializable {
      */
     public void removeAfterAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
-            throw new IllegalArgumentException(
-                "name of advice to remove can not be null or an empty string");
+            throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
         }
         synchronized (m_afterAdviceNames) {
             synchronized (m_afterAdviceIndexes) {
@@ -296,9 +282,7 @@ public class Pointcut implements Serializable {
                     }
                 }
                 if (index == -1) {
-                    throw new RuntimeException("can not remove advice with the name "
-                        + advice
-                        + ": no such advice");
+                    throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
                 }
                 final String[] names = new String[m_afterAdviceNames.length - 1];
                 int j;
@@ -372,10 +356,9 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Returns the advices in the form of an array with advice/index tuples. To be used when a
-     * reordering of the advices is necessary. <br/>For addition of an advice see
-     * <code>addAdviceTestMethod(..)</code>. <br/>For removal of an advice see
-     * <code>removeAdviceTestMethod(..)</code>.
+     * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
+     * is necessary. <br/>For addition of an advice see <code>addAdviceTestMethod(..)</code>. <br/>For removal of an
+     * advice see <code>removeAdviceTestMethod(..)</code>.
      * 
      * @return the current advice/index tuples as a list
      */
@@ -384,10 +367,7 @@ public class Pointcut implements Serializable {
             synchronized (m_aroundAdviceNames) {
                 final List advices = new ArrayList(m_aroundAdviceNames.length);
                 for (int i = 0; i < m_aroundAdviceNames.length; i++) {
-                    advices
-                            .add(new NameIndexTuple(
-                                m_aroundAdviceNames[i],
-                                m_aroundAdviceIndexes[i]));
+                    advices.add(new NameIndexTuple(m_aroundAdviceNames[i], m_aroundAdviceIndexes[i]));
                 }
                 return advices;
             }
@@ -395,10 +375,9 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Returns the advices in the form of an array with advice/index tuples. To be used when a
-     * reordering of the advices is necessary. <br/>For addition of an advice see
-     * <code>addAdviceTestMethod(..)</code>. <br/>For removal of an advice see
-     * <code>removeAdviceTestMethod(..)</code>.
+     * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
+     * is necessary. <br/>For addition of an advice see <code>addAdviceTestMethod(..)</code>. <br/>For removal of an
+     * advice see <code>removeAdviceTestMethod(..)</code>.
      * 
      * @return the current advice/index tuples as a list
      */
@@ -407,10 +386,7 @@ public class Pointcut implements Serializable {
             synchronized (m_beforeAdviceNames) {
                 final List advices = new ArrayList(m_beforeAdviceNames.length);
                 for (int i = 0; i < m_beforeAdviceNames.length; i++) {
-                    advices
-                            .add(new NameIndexTuple(
-                                m_beforeAdviceNames[i],
-                                m_beforeAdviceIndexes[i]));
+                    advices.add(new NameIndexTuple(m_beforeAdviceNames[i], m_beforeAdviceIndexes[i]));
                 }
                 return advices;
             }
@@ -418,10 +394,9 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Returns the advices in the form of an array with advice/index tuples. To be used when a
-     * reordering of the advices is necessary. <br/>For addition of an advice see
-     * <code>addAdviceTestMethod(..)</code>. <br/>For removal of an advice see
-     * <code>removeAdviceTestMethod(..)</code>.
+     * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
+     * is necessary. <br/>For addition of an advice see <code>addAdviceTestMethod(..)</code>. <br/>For removal of an
+     * advice see <code>removeAdviceTestMethod(..)</code>.
      * 
      * @return the current advice/index tuples as a list
      */
@@ -438,8 +413,8 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Sets the advices. To be used when a reordering of the advices is necessary. <br/>For addition
-     * of an advice see <code>addAdviceTestMethod(..)</code>. <br/>For removal of an advice see
+     * Sets the advices. To be used when a reordering of the advices is necessary. <br/>For addition of an advice see
+     * <code>addAdviceTestMethod(..)</code>. <br/>For removal of an advice see
      * <code>removeAdviceTestMethod(..)</code>.
      * 
      * @param advices the new advice/index tuple array
@@ -456,8 +431,7 @@ public class Pointcut implements Serializable {
                         m_aroundAdviceNames[i] = tuple.getName();
                         m_aroundAdviceIndexes[i] = tuple.getIndex();
                     } catch (ClassCastException e) {
-                        throw new RuntimeException(
-                            "advice list must only contain AdviceIndexTuples");
+                        throw new RuntimeException("advice list must only contain AdviceIndexTuples");
                     }
                 }
             }
@@ -465,8 +439,8 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Sets the advices. To be used when a reordering of the advices is necessary. <br/>For addition
-     * of an advice see <code>addAdviceTestMethod(..)</code>. <br/>For removal of an advice see
+     * Sets the advices. To be used when a reordering of the advices is necessary. <br/>For addition of an advice see
+     * <code>addAdviceTestMethod(..)</code>. <br/>For removal of an advice see
      * <code>removeAdviceTestMethod(..)</code>.
      * 
      * @param advices the new advice/index tuple array
@@ -483,8 +457,7 @@ public class Pointcut implements Serializable {
                         m_beforeAdviceNames[i] = tuple.getName();
                         m_beforeAdviceIndexes[i] = tuple.getIndex();
                     } catch (ClassCastException e) {
-                        throw new RuntimeException(
-                            "advice list must only contain AdviceIndexTuples");
+                        throw new RuntimeException("advice list must only contain AdviceIndexTuples");
                     }
                 }
             }
@@ -492,8 +465,8 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Sets the advices. To be used when a reordering of the advices is necessary. <br/>For addition
-     * of an advice see <code>addAdviceTestMethod(..)</code>. <br/>For removal of an advice see
+     * Sets the advices. To be used when a reordering of the advices is necessary. <br/>For addition of an advice see
+     * <code>addAdviceTestMethod(..)</code>. <br/>For removal of an advice see
      * <code>removeAdviceTestMethod(..)</code>.
      * 
      * @param advices the new advice/index tuple array
@@ -510,8 +483,7 @@ public class Pointcut implements Serializable {
                         m_afterAdviceNames[i] = tuple.getName();
                         m_afterAdviceIndexes[i] = tuple.getIndex();
                     } catch (ClassCastException e) {
-                        throw new RuntimeException(
-                            "advice list must only contain AdviceIndexTuples");
+                        throw new RuntimeException("advice list must only contain AdviceIndexTuples");
                     }
                 }
             }
@@ -564,13 +536,13 @@ public class Pointcut implements Serializable {
     }
 
     /**
-      * Returns the before advice name at the given index
-      *
-      * @return the advice name
-      */
-     public String getBeforeAdviceName(int index) {
-         return m_beforeAdviceNames[index];
-     }
+     * Returns the before advice name at the given index
+     * 
+     * @return the advice name
+     */
+    public String getBeforeAdviceName(int index) {
+        return m_beforeAdviceNames[index];
+    }
 
     /**
      * Returns a list with the indexes for the after advices for the pointcut.
@@ -583,12 +555,12 @@ public class Pointcut implements Serializable {
 
     /**
      * Returns the after advice name at the given index
-     *
+     * 
      * @return the advice name
      */
-     public String getAfterAdviceName(int index) {
-         return m_afterAdviceNames[index];
-     }
+    public String getAfterAdviceName(int index) {
+        return m_afterAdviceNames[index];
+    }
 
     /**
      * Returns a list with the names for the advices for the pointcut.

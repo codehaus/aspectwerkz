@@ -42,20 +42,14 @@ class ConstructorJoinPoint extends JoinPointBase {
                                 final AroundAdviceExecutor aroundAdviceExecutor,
                                 final BeforeAdviceExecutor beforeAdviceExecutor,
                                 final AfterAdviceExecutor afterAdviceExecutor) {
-        super(
-            type,
-            targetClass,
-            joinPointMetaData,
-            aroundAdviceExecutor,
-            beforeAdviceExecutor,
-            afterAdviceExecutor);
+        super(type, targetClass, joinPointMetaData, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
         m_signature = (ConstructorSignature) signature;
         m_rtti = (ConstructorRttiImpl) rtti;
     }
 
     /**
-     * Walks through the pointcuts and invokes all its advices. When the last advice of the last
-     * pointcut has been invoked, the original method is invoked. Is called recursively.
+     * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
+     * invoked, the original method is invoked. Is called recursively.
      * 
      * @return the result from the next invocation
      * @throws Throwable

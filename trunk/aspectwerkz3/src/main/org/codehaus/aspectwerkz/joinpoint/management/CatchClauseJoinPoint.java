@@ -52,14 +52,13 @@ class CatchClauseJoinPoint extends JoinPointBase {
     }
 
     /**
-     * Walks through the pointcuts and invokes all its advices. When the last advice of the last
-     * pointcut has been invoked, the original method is invoked. Is called recursively.
+     * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
+     * invoked, the original method is invoked. Is called recursively.
      * 
      * @return the result from the next invocation
      * @throws Throwable
-     * @TODO: which advices should we support for catch handlers? AspectJ only supports before, due
-     *        to bytecode problems (not possible to detect the end of a catch clause with 100%
-     *        accuracy).
+     * @TODO: which advices should we support for catch handlers? AspectJ only supports before, due to bytecode problems
+     *        (not possible to detect the end of a catch clause with 100% accuracy).
      */
     public Object proceed() throws Throwable {
         if (m_beforeAdviceExecutor.hasAdvices()) {

@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * The expression namespace as well as a repository for the namespaces. <p/>A namespace is usually
- * defined by the name of the class defining the expression.
+ * The expression namespace as well as a repository for the namespaces. <p/>A namespace is usually defined by the name
+ * of the class defining the expression.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -62,9 +62,9 @@ public final class ExpressionNamespace {
      * @param expressionInfo the expression info to add
      */
     public void addExpressionInfo(final String name, final ExpressionInfo expressionInfo) {
-//                System.out.println("name map to in " + name + " = " +
-//         expressionInfo.getExpressionAsString() + " : " +
-//         m_namespace );
+        //                System.out.println("name map to in " + name + " = " +
+        //         expressionInfo.getExpressionAsString() + " : " +
+        //         m_namespace );
         //        if (name == expressionInfo.getExpressionAsString()) {
         //            if (m_expressions.get(name)!=null) {
         //                System.out.println("skip " + m_expressions.get(name));
@@ -93,8 +93,7 @@ public final class ExpressionNamespace {
         if (index != -1) {
             // stay in the same AspectSystem
             //TODO: allow for lookup in other AspectSystem providing they are in the same hierarchy
-            return getNamespace(name.substring(0, index)).getExpressionInfo(
-                name.substring(index + 1, name.length()));
+            return getNamespace(name.substring(0, index)).getExpressionInfo(name.substring(index + 1, name.length()));
         } else {
             return ((ExpressionInfo) m_expressions.get(name));
         }

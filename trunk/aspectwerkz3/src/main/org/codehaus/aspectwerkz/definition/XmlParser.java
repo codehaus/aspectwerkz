@@ -56,9 +56,7 @@ public class XmlParser {
             throw new IllegalArgumentException("definition file can not be null");
         }
         if (!definitionFile.exists()) {
-            throw new DefinitionException("definition file "
-                + definitionFile.toString()
-                + " does not exist");
+            throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
         }
         try {
             return getAspectClassNames(definitionFile.toURL());
@@ -75,10 +73,7 @@ public class XmlParser {
             Document document = createDocument(definitionURL);
             return DocumentParser.parseAspectClassNames(document);
         } catch (DocumentException e) {
-            throw new DefinitionException("XML definition file <"
-                + definitionURL
-                + "> has errors: "
-                + e.toString());
+            throw new DefinitionException("XML definition file <" + definitionURL + "> has errors: " + e.toString());
         }
     }
 
@@ -91,14 +86,12 @@ public class XmlParser {
             Document document = createDocument(stream);
             return DocumentParser.parseAspectClassNames(document);
         } catch (DocumentException e) {
-            throw new DefinitionException("XML definition file on classpath has errors: "
-                + e.toString());
+            throw new DefinitionException("XML definition file on classpath has errors: " + e.toString());
         }
     }
 
     /**
-     * Parses the XML definition file, only if it has been updated. Uses a timestamp to check for
-     * modifications.
+     * Parses the XML definition file, only if it has been updated. Uses a timestamp to check for modifications.
      * 
      * @param loader the current class loader
      * @param definitionFile the definition file
@@ -110,9 +103,7 @@ public class XmlParser {
             throw new IllegalArgumentException("definition file can not be null");
         }
         if (!definitionFile.exists()) {
-            throw new DefinitionException("definition file "
-                + definitionFile.toString()
-                + " does not exist");
+            throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
         }
 
         // if definition is not updated; don't parse but return it right away
@@ -131,10 +122,7 @@ public class XmlParser {
         } catch (MalformedURLException e) {
             throw new DefinitionException(definitionFile + " does not exist");
         } catch (DocumentException e) {
-            throw new DefinitionException("XML definition file <"
-                + definitionFile
-                + "> has errors: "
-                + e.toString());
+            throw new DefinitionException("XML definition file <" + definitionFile + "> has errors: " + e.toString());
         }
     }
 
@@ -151,8 +139,7 @@ public class XmlParser {
             s_definitions = DocumentParser.parse(loader, document);
             return s_definitions;
         } catch (DocumentException e) {
-            throw new DefinitionException("XML definition file on classpath has errors: "
-                + e.getMessage());
+            throw new DefinitionException("XML definition file on classpath has errors: " + e.getMessage());
         }
     }
 
@@ -233,8 +220,7 @@ public class XmlParser {
     }
 
     /**
-     * Sets the entity resolver which is created based on the DTD from in the root dir of the
-     * AspectWerkz distribution.
+     * Sets the entity resolver which is created based on the DTD from in the root dir of the AspectWerkz distribution.
      * 
      * @param reader the reader to set the resolver in
      */
@@ -291,8 +277,7 @@ public class XmlParser {
             try {
                 s_timestamp.createNewFile();
             } catch (IOException e) {
-                throw new RuntimeException("could not create timestamp file: "
-                    + s_timestamp.getAbsolutePath());
+                throw new RuntimeException("could not create timestamp file: " + s_timestamp.getAbsolutePath());
             }
         }
         return modifiedTime;

@@ -54,9 +54,7 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
      * @param namespace the namespace
      * @param root the AST root
      */
-    public CflowPointcutFinderVisitor(final String expression,
-                                      final String namespace,
-                                      final ASTRoot root) {
+    public CflowPointcutFinderVisitor(final String expression, final String namespace, final ASTRoot root) {
         m_root = root;
         m_expression = expression;
         m_namespace = namespace;

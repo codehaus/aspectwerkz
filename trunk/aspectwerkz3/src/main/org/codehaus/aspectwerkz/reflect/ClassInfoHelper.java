@@ -44,8 +44,8 @@ public class ClassInfoHelper {
     }
 
     /**
-     * Tries to finds a parse at some superclass in the hierarchy. <p/>Only checks for a class parse
-     * to allow early filtering. <p/>Recursive.
+     * Tries to finds a parse at some superclass in the hierarchy. <p/>Only checks for a class parse to allow early
+     * filtering. <p/>Recursive.
      * 
      * @param classInfo the class info
      * @param pattern the type pattern
@@ -71,8 +71,8 @@ public class ClassInfoHelper {
     }
 
     /**
-     * Tries to finds a parse at some interface in the hierarchy. <p/>Only checks for a class parse
-     * to allow early filtering. <p/>Recursive.
+     * Tries to finds a parse at some interface in the hierarchy. <p/>Only checks for a class parse to allow early
+     * filtering. <p/>Recursive.
      * 
      * @param interfaces the interfaces
      * @param classInfo the class info

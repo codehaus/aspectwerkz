@@ -3,17 +3,16 @@
 package org.codehaus.aspectwerkz.expression.ast;
 
 public class ASTArgs extends SimpleNode {
-  public ASTArgs(int id) {
-    super(id);
-  }
+    public ASTArgs(int id) {
+        super(id);
+    }
 
-  public ASTArgs(ExpressionParser p, int id) {
-    super(p, id);
-  }
+    public ASTArgs(ExpressionParser p, int id) {
+        super(p, id);
+    }
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+    /** Accept the visitor. * */
+    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

@@ -35,9 +35,7 @@ public class DefinitionLoader {
     /**
      * The path to the definition file.
      */
-    public static final String DEFINITION_FILE = System.getProperty(
-        "aspectwerkz.definition.file",
-        null);
+    public static final String DEFINITION_FILE = System.getProperty("aspectwerkz.definition.file", null);
 
     /**
      * The default name for the definition file.
@@ -50,9 +48,9 @@ public class DefinitionLoader {
     private static Map s_definitions = new SequencedHashMap();
 
     /**
-     * Loads the aspectwerkz definition from disk based on a specific UUID. <p/>Only loads from the
-     * disk if the timestamp for the latest parsing is older than the timestamp for the weave model.
-     * <p/>Used in the runtime (not transformation) process only.
+     * Loads the aspectwerkz definition from disk based on a specific UUID. <p/>Only loads from the disk if the
+     * timestamp for the latest parsing is older than the timestamp for the weave model. <p/>Used in the runtime (not
+     * transformation) process only.
      * 
      * @param loader the current class loader
      * @param uuid the uuid for the weave model to load
@@ -93,8 +91,7 @@ public class DefinitionLoader {
      * @return the definitions
      */
     private static List loadDefinitionsAsResource(final ClassLoader loader) {
-        final InputStream stream = ContextClassLoader
-                .getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
+        final InputStream stream = ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
         if (stream == null) {
             throw new DefinitionException(
                 "either you have to specify an XML definition file using the -Daspectwerkz.definition.file=... option or you have to have the XML definition file <aspectwerkz.xml> somewhere on the classpath");
@@ -130,8 +127,7 @@ public class DefinitionLoader {
      * @return the definitions
      */
     private static List loadAspectClassNamesAsResource() {
-        final InputStream stream = ContextClassLoader
-                .getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
+        final InputStream stream = ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
         if (stream == null) {
             throw new DefinitionException(
                 "either you have to specify an XML definition file using the -Daspectwerkz.definition.file=... option or you have to have the XML definition file <aspectwerkz.xml> somewhere on the classpath");

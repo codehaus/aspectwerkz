@@ -36,8 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of the ClassInfo interface utilizing the ASM bytecode library for the info
- * retriaval.
+ * Implementation of the ClassInfo interface utilizing the ASM bytecode library for the info retriaval.
  * 
  * @TODO: the name switching between "/" and "." seems fragile (especially at lookup). Do a review.
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -168,9 +167,9 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
-     * Create a ClassInfo based on a component type and a given dimension Due to java.lang.reflect.
-     * behavior, the ClassInfo is almost empty. It is not an interface, only subclass of
-     * java.lang.Object, no methods, fields, or constructor, no annotation.
+     * Create a ClassInfo based on a component type and a given dimension Due to java.lang.reflect. behavior, the
+     * ClassInfo is almost empty. It is not an interface, only subclass of java.lang.Object, no methods, fields, or
+     * constructor, no annotation.
      * 
      * @TODO: not sure it has to be abstract final but it looks like all reflect based are.
      * @param className
@@ -178,10 +177,7 @@ public class AsmClassInfo implements ClassInfo {
      * @param componentInfo
      * @param dimension
      */
-    AsmClassInfo(final String className,
-                 final ClassLoader loader,
-                 final ClassInfo componentInfo,
-                 final int dimension) {
+    AsmClassInfo(final String className, final ClassLoader loader, final ClassInfo componentInfo, final int dimension) {
         m_loaderRef = new WeakReference(loader);
         m_name = className.replace('/', '.');
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
@@ -254,8 +250,7 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
-     * Creates a ClassInfo based on the stream retrieved from the class loader through
-     * <code>getResourceAsStream</code>.
+     * Creates a ClassInfo based on the stream retrieved from the class loader through <code>getResourceAsStream</code>.
      * 
      * @param className
      * @param loader
@@ -304,8 +299,7 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
-     * Checks if the class is a of a primitive type, if so create and return the class for the type
-     * else return null.
+     * Checks if the class is a of a primitive type, if so create and return the class for the type else return null.
      * 
      * @param className
      * @return the class for the primitive type or null
@@ -466,9 +460,7 @@ public class AsmClassInfo implements ClassInfo {
      */
     public ClassInfo getSuperClass() {
         if (m_superClass == null) {
-            m_superClass = AsmClassInfo.createClassInfoFromStream(
-                m_superClassName,
-                (ClassLoader) m_loaderRef.get());
+            m_superClass = AsmClassInfo.createClassInfoFromStream(m_superClassName, (ClassLoader) m_loaderRef.get());
         }
         return m_superClass;
     }
@@ -480,9 +472,8 @@ public class AsmClassInfo implements ClassInfo {
      */
     public ClassInfo getComponentType() {
         if (isArray() && (m_componentTypeName == null)) {
-            m_componentType = AsmClassInfo.createClassInfoFromStream(
-                m_componentTypeName,
-                (ClassLoader) m_loaderRef.get());
+            m_componentType = AsmClassInfo.createClassInfoFromStream(m_componentTypeName, (ClassLoader) m_loaderRef
+                    .get());
         }
         return m_componentType;
     }
@@ -644,8 +635,7 @@ public class AsmClassInfo implements ClassInfo {
             struct.desc = desc;
             struct.value = value;
             struct.attrs = attrs;
-            AsmFieldInfo fieldInfo = new AsmFieldInfo(struct, m_name, (ClassLoader) m_loaderRef
-                    .get());
+            AsmFieldInfo fieldInfo = new AsmFieldInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
             m_fields.put(AsmHelper.calculateFieldHash(name, desc), fieldInfo);
             super.visitField(access, name, desc, value, attrs);
         }
@@ -669,16 +659,10 @@ public class AsmClassInfo implements ClassInfo {
             if (name.equals("<clinit>")) {
                 // skip <clinit>
             } else if (name.equals("<init>")) {
-                AsmConstructorInfo methodInfo = new AsmConstructorInfo(
-                    struct,
-                    m_name,
-                    (ClassLoader) m_loaderRef.get());
+                AsmConstructorInfo methodInfo = new AsmConstructorInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
                 m_constructors.put(hash, methodInfo);
             } else {
-                AsmMethodInfo methodInfo = new AsmMethodInfo(
-                    struct,
-                    m_name,
-                    (ClassLoader) m_loaderRef.get());
+                AsmMethodInfo methodInfo = new AsmMethodInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
                 m_methods.put(hash, methodInfo);
             }
             return cv.visitMethod(access, name, desc, exceptions, attrs);
@@ -691,11 +675,9 @@ public class AsmClassInfo implements ClassInfo {
                     CustomAttribute customAttribute = (CustomAttribute) attributes;
                     byte[] bytes = customAttribute.getBytes();
                     try {
-                        m_annotations.add(new ObjectInputStream(new ByteArrayInputStream(bytes))
-                                .readObject());
+                        m_annotations.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
                     } catch (Exception e) {
-                        System.err.println("WARNING: could not deserialize annotation due to: "
-                            + e.toString());
+                        System.err.println("WARNING: could not deserialize annotation due to: " + e.toString());
                     }
                 }
                 attributes = attributes.next;

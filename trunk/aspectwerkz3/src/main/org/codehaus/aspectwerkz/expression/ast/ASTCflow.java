@@ -3,17 +3,16 @@
 package org.codehaus.aspectwerkz.expression.ast;
 
 public class ASTCflow extends SimpleNode {
-  public ASTCflow(int id) {
-    super(id);
-  }
+    public ASTCflow(int id) {
+        super(id);
+    }
 
-  public ASTCflow(ExpressionParser p, int id) {
-    super(p, id);
-  }
+    public ASTCflow(ExpressionParser p, int id) {
+        super(p, id);
+    }
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+    /** Accept the visitor. * */
+    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

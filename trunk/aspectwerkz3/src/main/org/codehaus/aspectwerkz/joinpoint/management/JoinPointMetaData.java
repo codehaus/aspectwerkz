@@ -24,8 +24,8 @@ import gnu.trove.TIntIterator;
 
 /**
  * Holds and creates meta data about a specific join point.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class JoinPointMetaData {
@@ -65,12 +65,12 @@ public class JoinPointMetaData {
         List adviceIndexInfoList = new ArrayList();
         List cflowExpressionList = new ArrayList();
         Pointcut cflowPointcut = null;
-        
+
         ExpressionContext ctx = new ExpressionContext(type, reflectInfo, withinInfo);
         AspectManager[] aspectManagers = system.getAspectManagers();
         for (int i = 0; i < aspectManagers.length; i++) {
             AspectManager aspectManager = aspectManagers[i];
-    
+
             /// grab the first one found, one single cflow pointcut is enough per join point
             if (cflowPointcut == null) {
                 List cflowPointcuts = aspectManager.getCflowPointcuts(ctx);
@@ -78,15 +78,13 @@ public class JoinPointMetaData {
                     cflowPointcut = (Pointcut) cflowPointcuts.get(0);
                 }
             }
-    
+
             // get all matching pointcuts from all managers
             for (Iterator it = aspectManager.getPointcuts(ctx).iterator(); it.hasNext();) {
                 Pointcut pointcut = (Pointcut) it.next();
 
-
-                AdviceIndexInfo adviceIndexInfo = new AdviceIndexInfo(pointcut
-                        .getAroundAdviceIndexes(), pointcut.getBeforeAdviceIndexes(), pointcut
-                        .getAfterAdviceIndexes());
+                AdviceIndexInfo adviceIndexInfo = new AdviceIndexInfo(pointcut.getAroundAdviceIndexes(), pointcut
+                        .getBeforeAdviceIndexes(), pointcut.getAfterAdviceIndexes());
                 // compute target args to advice args mapping, it is a property of each *advice*
 
                 // refresh the arg index map
@@ -110,11 +108,11 @@ public class JoinPointMetaData {
                             adviceToTargetArgs[k] = -1;
                         }
                     }
-//                    //debug:
-//                    for (int k = 0; k < adviceToTargetArgs.length; k++) {
-//                        int adviceToTargetArg = adviceToTargetArgs[k];
-//                        System.out.println("      " + k + " -> " + adviceToTargetArg);
-//                    }
+                    //                    //debug:
+                    //                    for (int k = 0; k < adviceToTargetArgs.length; k++) {
+                    //                        int adviceToTargetArg = adviceToTargetArgs[k];
+                    //                        System.out.println(" " + k + " -> " + adviceToTargetArg);
+                    //                    }
                     indexTuple.setMethodToArgIndexes(adviceToTargetArgs);
                 }
                 for (int j = 0; j < pointcut.getAfterAdviceIndexes().length; j++) {
@@ -133,26 +131,25 @@ public class JoinPointMetaData {
                             adviceToTargetArgs[k] = -1;
                         }
                     }
-//                    //debug:
-//                    for (int k = 0; k < adviceToTargetArgs.length; k++) {
-//                        int adviceToTargetArg = adviceToTargetArgs[k];
-//                        System.out.println("      " + k + " -> " + adviceToTargetArg);
-//                    }
+                    //                    //debug:
+                    //                    for (int k = 0; k < adviceToTargetArgs.length; k++) {
+                    //                        int adviceToTargetArg = adviceToTargetArgs[k];
+                    //                        System.out.println(" " + k + " -> " + adviceToTargetArg);
+                    //                    }
                     indexTuple.setMethodToArgIndexes(adviceToTargetArgs);
                 }
 
                 //FIXME: do the same for around !
 
                 adviceIndexInfoList.add(adviceIndexInfo);
-    
+
                 // collect the cflow expressions for the matching pointcuts (if they have one)
                 if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                    cflowExpressionList.add(pointcut.getExpressionInfo()
-                            .getCflowExpressionRuntime());
+                    cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpressionRuntime());
                 }
             }
         }
-    
+
         // turn the lists into arrays for performance reasons
         AdviceIndexInfo[] adviceIndexInfo = new AdviceIndexInfo[adviceIndexInfoList.size()];
         int i = 0;
@@ -169,7 +166,7 @@ public class JoinPointMetaData {
 
     /**
      * Get the parameter names from a "method declaration" signature like pc(type a, type2 b) => 0:a, 1:b
-     *
+     * 
      * @param expression
      * @return
      */
@@ -178,7 +175,7 @@ public class JoinPointMetaData {
         int paren = expression.indexOf('(');
         List paramNames = new ArrayList();
         if (paren > 0) {
-            String params = expression.substring(paren+1, expression.lastIndexOf(')')).trim();
+            String params = expression.substring(paren + 1, expression.lastIndexOf(')')).trim();
             String[] javaParameters = Strings.splitString(params, ",");
             for (int i = 0; i < javaParameters.length; i++) {
                 String javaParameter = Strings.replaceSubString(javaParameters[i], "  ", " ").trim();
@@ -189,7 +186,7 @@ public class JoinPointMetaData {
         String[] paramNamesArray = new String[paramNames.size()];
         int index = 0;
         for (Iterator it = paramNames.iterator(); it.hasNext(); index++) {
-            paramNamesArray[index] = (String)it.next();
+            paramNamesArray[index] = (String) it.next();
         }
         return paramNamesArray;
     }

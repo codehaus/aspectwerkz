@@ -5,10 +5,9 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
- * The signature of a method that is available from the BCEL library uses descriptors as defined in
- * Section 4.3 of the Java Virtual Machine specificaiton. Javadoc and Java do not use signatures in
- * this same format. This class converts the Javadoc/Java signature format to that used by the JVM
- * spec. To summarize the descriptors <code> A method
+ * The signature of a method that is available from the BCEL library uses descriptors as defined in Section 4.3 of the
+ * Java Virtual Machine specificaiton. Javadoc and Java do not use signatures in this same format. This class converts
+ * the Javadoc/Java signature format to that used by the JVM spec. To summarize the descriptors <code> A method
  * descriptor represents the parameters that the method takes and the value that it returns:
  * <p/>
  * MethodDescriptor: ( ParameterDescriptor* ) ReturnDescriptor
@@ -142,8 +141,8 @@ public class DescriptorUtil {
     }
 
     /**
-     * The utility method that does the real work of parsing through the JVM formatted string and
-     * adding an converted method parameter description to the StringBuffer.
+     * The utility method that does the real work of parsing through the JVM formatted string and adding an converted
+     * method parameter description to the StringBuffer.
      * 
      * @param jvmFormat The JVM formatted string that is being parsed.
      * @param i The offset into the string being parsed.

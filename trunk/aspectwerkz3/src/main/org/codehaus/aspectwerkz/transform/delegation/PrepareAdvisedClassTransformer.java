@@ -39,10 +39,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
             SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classMetaData = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
-            if (classFilter(
-                definition,
-                new ExpressionContext(PointcutType.ANY, classMetaData, null),
-                ctClass)) {
+            if (classFilter(definition, new ExpressionContext(PointcutType.ANY, classMetaData, null), ctClass)) {
                 continue;
             }
             JavassistHelper.addStaticClassField(ctClass, context);
@@ -58,10 +55,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(
-        final SystemDefinition definition,
-        final ExpressionContext ctx,
-        final CtClass cg) {
+    public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }

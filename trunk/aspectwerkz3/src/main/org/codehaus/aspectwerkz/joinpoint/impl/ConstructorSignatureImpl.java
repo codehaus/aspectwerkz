@@ -26,8 +26,7 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * @param declaringType
      * @param constructorTuple
      */
-    public ConstructorSignatureImpl(final Class declaringType,
-                                    final ConstructorTuple constructorTuple) {
+    public ConstructorSignatureImpl(final Class declaringType, final ConstructorTuple constructorTuple) {
         m_declaringType = declaringType;
         m_constructorTuple = constructorTuple;
     }

@@ -19,20 +19,19 @@ import java.util.Iterator;
 import gnu.trove.TIntIntHashMap;
 
 /**
- * A visitor to compute the args index of the target (matching) method/constructor which
- * match the advice args.
- *
- * Note: extends the ExpressionVisitor. We should allow for optimization (all=TRUE) by assuming
- * that args(..) does not depends of the matching context.
- * The "(String a, String b):methodX && args(a,b) -OR- methodY && args(b,a)" expression should not be allowed then.
- *
- * TODO check support for anonymous pc
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * A visitor to compute the args index of the target (matching) method/constructor which match the advice args. Note:
+ * extends the ExpressionVisitor. We should allow for optimization (all=TRUE) by assuming that args(..) does not depends
+ * of the matching context. The "(String a, String b):methodX && args(a,b) -OR- methodY && args(b,a)" expression should
+ * not be allowed then. TODO check support for anonymous pc
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class ArgsIndexVisitor extends ExpressionVisitor {
 
-    public ArgsIndexVisitor(final ExpressionInfo expressionInfo, final String expression, final String namespace, final ASTRoot root) {
+    public ArgsIndexVisitor(final ExpressionInfo expressionInfo,
+                            final String expression,
+                            final String namespace,
+                            final ASTRoot root) {
         super(expressionInfo, expression, namespace, root);
     }
 
@@ -43,15 +42,15 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         ArgsIndexVisitor expression = namespace.getExpressionInfo(node.getName()).getArgsIndexMapper();
-        Boolean match =  new Boolean(expression.match(context));
+        Boolean match = new Boolean(expression.match(context));
 
         // update the context mapping from this last visit
         // did we visit some args(<name>) nodes ?
-        if ( ! context.m_exprIndexToTargetIndex.isEmpty()) {
+        if (!context.m_exprIndexToTargetIndex.isEmpty()) {
             TIntIntHashMap sourceToTargetArgIndexes = new TIntIntHashMap();
             int index = 0;
             for (Iterator it = m_expressionInfo.getArgumentNames().iterator(); it.hasNext(); index++) {
-                String adviceParamName = (String)it.next();
+                String adviceParamName = (String) it.next();
                 //look for adviceParamName in the expression name and get its index
                 int exprArgIndex = ArgsIndexVisitor.getExprArgIndex(m_expression, adviceParamName);
                 if (exprArgIndex < 0) {
@@ -60,21 +59,22 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
                 }
                 int adviceArgIndex = m_expressionInfo.getArgumentIndex(adviceParamName);
                 int targetArgIndex = context.m_exprIndexToTargetIndex.get(exprArgIndex);
-//                System.out.println(" transitive arg" + adviceArgIndex + " " + adviceParamName + " -> " + exprArgIndex + " -> " + targetArgIndex);
+                //                System.out.println(" transitive arg" + adviceArgIndex + " " + adviceParamName + " -> " + exprArgIndex
+                // + " -> " + targetArgIndex);
                 sourceToTargetArgIndexes.put(adviceArgIndex, targetArgIndex);
             }
             context.m_exprIndexToTargetIndex = sourceToTargetArgIndexes;
 
             //debug:
-//            if (m_expressionInfo.m_isAdviceBindingWithArgs) {
-//                System.out.println("XXXARGS transitive map for an advice is @ " +
-//                        m_expression + " for " + context.getReflectionInfo().getName());
-//                for (int i = 0; i < sourceToTargetArgIndexes.keys().length; i++) {
-//                    int adviceArgIndex = sourceToTargetArgIndexes.keys()[i];
-//                    int targetMethodIndex = sourceToTargetArgIndexes.get(adviceArgIndex);
-//                    System.out.println("   " + adviceArgIndex + " - " + targetMethodIndex);
-//                }
-//            }
+            //            if (m_expressionInfo.m_isAdviceBindingWithArgs) {
+            //                System.out.println("XXXARGS transitive map for an advice is @ " +
+            //                        m_expression + " for " + context.getReflectionInfo().getName());
+            //                for (int i = 0; i < sourceToTargetArgIndexes.keys().length; i++) {
+            //                    int adviceArgIndex = sourceToTargetArgIndexes.keys()[i];
+            //                    int targetMethodIndex = sourceToTargetArgIndexes.get(adviceArgIndex);
+            //                    System.out.println(" " + adviceArgIndex + " - " + targetMethodIndex);
+            //                }
+            //            }
         }
         return match;
     }
@@ -85,7 +85,7 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
 
     public Object visit(ASTArgParameter node, Object data) {
         // do the visit
-        Boolean match = (Boolean)super.visit(node, data);
+        Boolean match = (Boolean) super.visit(node, data);
 
         // get the pointcut signature arg index of the arg we are visiting
         int pointcutArgIndex = -1;
@@ -95,9 +95,10 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
 
         // if match and we are visiting a parameter binding (not a type matching)
         if (pointcutArgIndex >= 0 && Boolean.TRUE.equals(match)) {
-            ExpressionContext ctx = (ExpressionContext)data;
-//            System.out.println("XXXARGS targetArg at match: " + ctx.getCurrentTargetArgsIndex() + " is pc expr arg " + pointcutArgIndex
-//                + " @ " + m_expressionInfo.getExpressionAsString());
+            ExpressionContext ctx = (ExpressionContext) data;
+            //            System.out.println("XXXARGS targetArg at match: " + ctx.getCurrentTargetArgsIndex() + " is pc expr arg "
+            // + pointcutArgIndex
+            //                + " @ " + m_expressionInfo.getExpressionAsString());
             ctx.m_exprIndexToTargetIndex.put(pointcutArgIndex, ctx.getCurrentTargetArgsIndex());
         }
         return match;
@@ -105,16 +106,16 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
 
     /**
      * Get the parameter index from a "call side" like signature like pc(a, b) => index(a) = 0, or -1 if not found
-     *
+     * 
      * @param expression
      * @param adviceParamName
      * @return
      */
-    private static int getExprArgIndex(String expression,  String adviceParamName) {
+    private static int getExprArgIndex(String expression, String adviceParamName) {
         //TODO - support for anonymous pointcut with args
         int paren = expression.indexOf('(');
         if (paren > 0) {
-            String params = expression.substring(paren+1, expression.lastIndexOf(')')).trim();
+            String params = expression.substring(paren + 1, expression.lastIndexOf(')')).trim();
             String[] parameters = Strings.splitString(params, ",");
             int paramIndex = 0;
             for (int i = 0; i < parameters.length; i++) {

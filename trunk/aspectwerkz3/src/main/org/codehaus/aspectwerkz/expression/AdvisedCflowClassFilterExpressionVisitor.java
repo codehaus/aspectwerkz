@@ -34,9 +34,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
      * @param namespace the namespace
      * @param root the AST root
      */
-    public AdvisedCflowClassFilterExpressionVisitor(final String expression,
-                                                    final String namespace,
-                                                    final ASTRoot root) {
+    public AdvisedCflowClassFilterExpressionVisitor(final String expression, final String namespace, final ASTRoot root) {
         super(expression, namespace, root);
     }
 

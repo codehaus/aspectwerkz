@@ -17,8 +17,7 @@ import java.io.StringReader;
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class AnnotationParser/* @bgen(jjtree) */implements AnnotationParserTreeConstants,
-        AnnotationParserConstants {/* @bgen(jjtree) */
+public class AnnotationParser/* @bgen(jjtree) */implements AnnotationParserTreeConstants, AnnotationParserConstants {/* @bgen(jjtree) */
     protected static JJTAnnotationParserState jjtree = new JJTAnnotationParserState();
 
     public ASTRoot parse(String annotation) throws ParseException {
@@ -745,8 +744,7 @@ public class AnnotationParser/* @bgen(jjtree) */implements AnnotationParserTreeC
     public AnnotationParser(java.io.InputStream stream) {
         if (jj_initialized_once) {
             System.out.println("ERROR: Second call to constructor of static parser.  You must");
-            System.out
-                    .println("       either use ReInit() or set the JavaCC option STATIC to false");
+            System.out.println("       either use ReInit() or set the JavaCC option STATIC to false");
             System.out.println("       during parser generation.");
             throw new Error();
         }
@@ -778,8 +776,7 @@ public class AnnotationParser/* @bgen(jjtree) */implements AnnotationParserTreeC
     public AnnotationParser(java.io.Reader stream) {
         if (jj_initialized_once) {
             System.out.println("ERROR: Second call to constructor of static parser.  You must");
-            System.out
-                    .println("       either use ReInit() or set the JavaCC option STATIC to false");
+            System.out.println("       either use ReInit() or set the JavaCC option STATIC to false");
             System.out.println("       during parser generation.");
             throw new Error();
         }
@@ -811,8 +808,7 @@ public class AnnotationParser/* @bgen(jjtree) */implements AnnotationParserTreeC
     public AnnotationParser(AnnotationParserTokenManager tm) {
         if (jj_initialized_once) {
             System.out.println("ERROR: Second call to constructor of static parser.  You must");
-            System.out
-                    .println("       either use ReInit() or set the JavaCC option STATIC to false");
+            System.out.println("       either use ReInit() or set the JavaCC option STATIC to false");
             System.out.println("       during parser generation.");
             throw new Error();
         }

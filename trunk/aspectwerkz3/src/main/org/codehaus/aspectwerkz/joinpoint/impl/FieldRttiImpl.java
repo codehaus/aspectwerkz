@@ -33,9 +33,7 @@ public class FieldRttiImpl implements FieldRtti {
      * @param thisInstance
      * @param targetInstance
      */
-    public FieldRttiImpl(final FieldSignatureImpl signature,
-                         final Object thisInstance,
-                         final Object targetInstance) {
+    public FieldRttiImpl(final FieldSignatureImpl signature, final Object thisInstance, final Object targetInstance) {
         m_signature = signature;
         m_thisRef = new WeakReference(thisInstance);
         m_targetRef = new WeakReference(targetInstance);

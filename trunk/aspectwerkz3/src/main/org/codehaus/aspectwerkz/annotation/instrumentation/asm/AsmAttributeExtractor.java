@@ -73,19 +73,18 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                 //TODO - waiting ASM feedback on that instead of several call to visitAtribute from ASM
                 //Attribute current = attribute;
                 //while (current != null) {
-                    if (attribute instanceof CustomAttribute) {
-                        CustomAttribute customAttribute = (CustomAttribute) attribute;
-                        byte[] bytes = customAttribute.getBytes();
-                        try {
-                            classAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes))
-                                    .readObject());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            //TODO AVAOSD jp index offlined deployed make it breaks
-                            // since Unkonw attr not wrapped in Attr
-                            // SKIP throw new WrappedRuntimeException(e);
-                        }
+                if (attribute instanceof CustomAttribute) {
+                    CustomAttribute customAttribute = (CustomAttribute) attribute;
+                    byte[] bytes = customAttribute.getBytes();
+                    try {
+                        classAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        //TODO AVAOSD jp index offlined deployed make it breaks
+                        // since Unkonw attr not wrapped in Attr
+                        // SKIP throw new WrappedRuntimeException(e);
                     }
+                }
                 //    current = current.next;
                 //}
             }
@@ -114,16 +113,15 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                 final String desc,
                 final String[] exceptions,
                 final Attribute attribute) {
-                if (name.equals(methodName)
-                    && Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
+                if (name.equals(methodName) && Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
                     Attribute current = attribute;
                     while (current != null) {
                         if (current instanceof CustomAttribute) {
                             CustomAttribute customAttribute = (CustomAttribute) current;
                             byte[] bytes = customAttribute.getBytes();
                             try {
-                                methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(
-                                    bytes)).readObject());
+                                methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes))
+                                        .readObject());
                             } catch (Exception e) {
                                 throw new WrappedRuntimeException(e);
                             }
@@ -141,8 +139,7 @@ public class AsmAttributeExtractor implements AttributeExtractor {
     }
 
     /**
-     * Return all the attributes associated with a constructor that have a particular method
-     * signature.
+     * Return all the attributes associated with a constructor that have a particular method signature.
      * 
      * @param constructorParamTypes An array of parameter types as given by the reflection api.
      * @return the constructor attributes.
@@ -159,16 +156,15 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                 final String desc,
                 final String[] exceptions,
                 final Attribute attribute) {
-                if (name.equals("<init>")
-                    && Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(desc))) {
+                if (name.equals("<init>") && Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(desc))) {
                     Attribute current = attribute;
                     while (current != null) {
                         if (attribute instanceof CustomAttribute) {
                             CustomAttribute customAttribute = (CustomAttribute) attribute;
                             byte[] bytes = customAttribute.getBytes();
                             try {
-                                methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(
-                                    bytes)).readObject());
+                                methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes))
+                                        .readObject());
                             } catch (Exception e) {
                                 throw new WrappedRuntimeException(e);
                             }
@@ -209,8 +205,8 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                             CustomAttribute customAttribute = (CustomAttribute) attribute;
                             byte[] bytes = customAttribute.getBytes();
                             try {
-                                fieldAttributes.add(new ObjectInputStream(new ByteArrayInputStream(
-                                    bytes)).readObject());
+                                fieldAttributes
+                                        .add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
                             } catch (Exception e) {
                                 throw new WrappedRuntimeException(e);
                             }

@@ -43,8 +43,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
      */
     public static FieldInfo getFieldInfo(final Field field) {
         Class declaringClass = field.getDeclaringClass();
-        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass
-                .getClassLoader());
+        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass.getClassLoader());
         ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
@@ -100,8 +99,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
             return false;
         }
         FieldInfo fieldInfo = (FieldInfo) o;
-        if (!m_declaringType.getName().toString().equals(
-            fieldInfo.getDeclaringType().getName().toString())) {
+        if (!m_declaringType.getName().toString().equals(fieldInfo.getDeclaringType().getName().toString())) {
             return false;
         }
         if (!m_member.getName().toString().equals(fieldInfo.getName().toString())) {

@@ -124,8 +124,7 @@ public final class MethodComparator implements java.util.Comparator {
     }
 
     /**
-     * Compares two prefixed methods. Assumes the the prefixed methods looks like this: "somePrefix
-     * SEP methodName SEP"
+     * Compares two prefixed methods. Assumes the the prefixed methods looks like this: "somePrefix SEP methodName SEP"
      * 
      * @param m1
      * @param m2
@@ -138,12 +137,8 @@ public final class MethodComparator implements java.util.Comparator {
             }
 
             // compare only the original method names, i.e. remove the prefix and suffix
-            final String[] m1Tokens = Strings.splitString(
-                m1.getName(),
-                TransformationUtil.DELIMITER);
-            final String[] m2Tokens = Strings.splitString(
-                m2.getName(),
-                TransformationUtil.DELIMITER);
+            final String[] m1Tokens = Strings.splitString(m1.getName(), TransformationUtil.DELIMITER);
+            final String[] m2Tokens = Strings.splitString(m2.getName(), TransformationUtil.DELIMITER);
             final String m1Name = m1Tokens[1];
             final String m2Name = m2Tokens[1];
             if (!m1Name.equals(m2Name)) {

@@ -43,17 +43,13 @@ public class MethodCallUnTransformer implements Transformer {
      * @param context the transformation context
      * @param klass the class set.
      */
-    public void transform(final Context context, final Klass klass) throws NotFoundException,
-            CannotCompileException {
+    public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
-            if (classFilter(definition, new ExpressionContext(
-                PointcutType.CALL,
-                classInfo,
-                classInfo), ctClass)) {
+            if (classFilter(definition, new ExpressionContext(PointcutType.CALL, classInfo, classInfo), ctClass)) {
                 return;
             }
             ctClass.instrument(new ExprEditor() {
@@ -255,10 +251,7 @@ public class MethodCallUnTransformer implements Transformer {
             }
         }
         if (!hasField) {
-            CtField field = new CtField(
-                ctClass.getClassPool().get("java.lang.Class"),
-                fieldName,
-                ctClass);
+            CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"), fieldName, ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class#forName(\""
                 + ctMethod.getDeclaringClass().getName().replace('/', '.')
@@ -275,10 +268,7 @@ public class MethodCallUnTransformer implements Transformer {
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(
-        final SystemDefinition definition,
-        final ExpressionContext ctx,
-        final CtClass cg) {
+    public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }

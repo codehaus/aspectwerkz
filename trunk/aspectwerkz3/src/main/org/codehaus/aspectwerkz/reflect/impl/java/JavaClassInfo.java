@@ -115,16 +115,14 @@ public class JavaClassInfo implements ClassInfo {
             Method[] methods = m_class.getDeclaredMethods();
             for (int i = 0; i < methods.length; i++) {
                 Method method = methods[i];
-                m_methods.put(
-                    JavaMethodInfo.calculateHash(method),
-                    new JavaMethodInfo(method, this));
+                m_methods.put(JavaMethodInfo.calculateHash(method), new JavaMethodInfo(method, this));
             }
             Constructor[] constructors = m_class.getDeclaredConstructors();
             for (int i = 0; i < constructors.length; i++) {
                 Constructor constructor = constructors[i];
-                m_constructors.put(
-                    JavaConstructorInfo.calculateHash(constructor),
-                    new JavaConstructorInfo(constructor, this));
+                m_constructors.put(JavaConstructorInfo.calculateHash(constructor), new JavaConstructorInfo(
+                    constructor,
+                    this));
             }
             Field[] fields = m_class.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
@@ -144,8 +142,7 @@ public class JavaClassInfo implements ClassInfo {
      * @return the class info
      */
     public static ClassInfo getClassInfo(final Class clazz) {
-        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(clazz
-                .getClassLoader());
+        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(clazz.getClassLoader());
         ClassInfo classInfo = repository.getClassInfo(clazz.getName());
         if (classInfo == null) {
             classInfo = new JavaClassInfo(clazz);
@@ -342,8 +339,8 @@ public class JavaClassInfo implements ClassInfo {
     }
 
     /**
-     * Converts an internal Java array type name ([Lblabla) to the a the format used by the
-     * expression matcher (blabla[])
+     * Converts an internal Java array type name ([Lblabla) to the a the format used by the expression matcher
+     * (blabla[])
      * 
      * @param typeName is type name
      * @return

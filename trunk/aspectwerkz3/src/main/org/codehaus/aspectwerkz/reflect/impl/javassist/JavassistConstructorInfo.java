@@ -49,12 +49,9 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
      * @param constructor the constructor
      * @return the constructor info
      */
-    public static ConstructorInfo getConstructorInfo(
-        final CtConstructor constructor,
-        final ClassLoader loader) {
+    public static ConstructorInfo getConstructorInfo(final CtConstructor constructor, final ClassLoader loader) {
         CtClass declaringClass = constructor.getDeclaringClass();
-        JavassistClassInfoRepository repository = JavassistClassInfoRepository
-                .getRepository(loader);
+        JavassistClassInfoRepository repository = JavassistClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
         if (classInfo == null) {
             classInfo = JavassistClassInfo.getClassInfo(declaringClass, loader);
@@ -98,8 +95,7 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
             return false;
         }
         ConstructorInfo constructorInfo = (ConstructorInfo) o;
-        if (!m_declaringType.getName().toString().equals(
-            constructorInfo.getDeclaringType().getName().toString())) {
+        if (!m_declaringType.getName().toString().equals(constructorInfo.getDeclaringType().getName().toString())) {
             return false;
         }
         if (!m_member.getName().toString().equals(constructorInfo.getName().toString())) {
@@ -110,8 +106,7 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
             return false;
         }
         for (int i = 0; i < m_parameterTypes.length; i++) {
-            if (!m_parameterTypes[i].getName().toString().equals(
-                parameterTypes[i].getName().toString())) {
+            if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
                 return false;
             }
         }

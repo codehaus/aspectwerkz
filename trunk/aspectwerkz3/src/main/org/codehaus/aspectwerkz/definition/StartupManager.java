@@ -31,10 +31,9 @@ import java.util.Map;
 
 /**
  * Manages the startup procedure, walks through the definition and instantiates the
- * aspects/advices/introduction/pointcuts. <p/>Reads the definition, either as a class of as an XML
- * file. <p/>To use your XML definition file pass
- * <code>-Daspectwerkz.definition.file=PathToFile</code> as parameter to the JVM. <p/>If the above
- * given parameter is not specified, the <code>StartupManager</code> tries locate a file called
+ * aspects/advices/introduction/pointcuts. <p/>Reads the definition, either as a class of as an XML file. <p/>To use
+ * your XML definition file pass <code>-Daspectwerkz.definition.file=PathToFile</code> as parameter to the JVM. <p/>If
+ * the above given parameter is not specified, the <code>StartupManager</code> tries locate a file called
  * <code>aspectwerkz.xml</code> in the classpath and if this fails the last attempt is to use the
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  * 
@@ -59,9 +58,7 @@ public class StartupManager {
      * @param aspectManager the aspectManager for the system
      * @param definition the definition for the system
      */
-    public static void initializeSystem(
-        final AspectManager aspectManager,
-        final SystemDefinition definition) {
+    public static void initializeSystem(final AspectManager aspectManager, final SystemDefinition definition) {
         // note: initialization check is maintained by AspectRegistry due to a lazy policy
         registerAspects(aspectManager, definition);
         registerPointcuts(aspectManager, definition);
@@ -74,9 +71,7 @@ public class StartupManager {
      * @param loader the class loader
      * @param definition the definition for the system
      */
-    public static void reinitializeSystem(
-        final ClassLoader loader,
-        final SystemDefinition definition) {
+    public static void reinitializeSystem(final ClassLoader loader, final SystemDefinition definition) {
         AspectSystem aspectSystem = SystemLoader.getSystem(loader);
         AspectManager aspectManager = aspectSystem.getAspectManager(definition.getUuid());
 
@@ -133,14 +128,11 @@ public class StartupManager {
      * @param aspectManager the aspectManager for the system
      * @param definition the definition
      */
-    private static void registerAspects(
-        final AspectManager aspectManager,
-        final SystemDefinition definition) {
+    private static void registerAspects(final AspectManager aspectManager, final SystemDefinition definition) {
         try {
             for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
                 AspectDefinition aspectDef = (AspectDefinition) it.next();
-                registerAspect(aspectManager, aspectDef, definition.getParameters(aspectDef
-                        .getName()));
+                registerAspect(aspectManager, aspectDef, definition.getParameters(aspectDef.getName()));
             }
         } catch (NullPointerException e) {
             throw new DefinitionException("aspects not properly defined");
@@ -165,20 +157,15 @@ public class StartupManager {
             // load the aspect class
             final Class aspectClass;
             try {
-                aspectClass = aspectManager.m_system.getDefiningClassLoader().loadClass(
-                    aspectClassName);
+                aspectClass = aspectManager.m_system.getDefiningClassLoader().loadClass(aspectClassName);
             } catch (ClassNotFoundException e) {
-                throw new RuntimeException(aspectClassName
-                    + " could not be found on classpath: "
-                    + e.toString());
+                throw new RuntimeException(aspectClassName + " could not be found on classpath: " + e.toString());
             }
             int deploymentModel;
-            if ((aspectDef.getDeploymentModel() == null)
-                || aspectDef.getDeploymentModel().equals("")) {
+            if ((aspectDef.getDeploymentModel() == null) || aspectDef.getDeploymentModel().equals("")) {
                 deploymentModel = DeploymentModel.PER_JVM;
             } else {
-                deploymentModel = DeploymentModel.getDeploymentModelAsInt(aspectDef
-                        .getDeploymentModel());
+                deploymentModel = DeploymentModel.getDeploymentModelAsInt(aspectDef.getDeploymentModel());
             }
 
             //TODO: we could set the WHOLE AspectManager that defines the Aspect instead
@@ -191,9 +178,7 @@ public class StartupManager {
                 parameters);
             final AspectContainer container = createAspectContainer(crossCuttingInfoPrototype);
             crossCuttingInfoPrototype.setContainer(container);
-            PointcutManager pointcutManager = new PointcutManager(
-                aspectDef.getName(),
-                deploymentModel);
+            PointcutManager pointcutManager = new PointcutManager(aspectDef.getName(), deploymentModel);
             aspectManager.register(container, pointcutManager);
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -206,9 +191,7 @@ public class StartupManager {
      * @param aspectManager the aspectManager for the system
      * @param definition the AspectWerkz definition
      */
-    private static void registerPointcuts(
-        final AspectManager aspectManager,
-        final SystemDefinition definition) {
+    private static void registerPointcuts(final AspectManager aspectManager, final SystemDefinition definition) {
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition) it.next();
             if (aspectDef.getName().equals(CFlowSystemAspect.CLASS_NAME)) {
@@ -217,8 +200,7 @@ public class StartupManager {
             PointcutManager pointcutManager = aspectManager.getPointcutManager(aspectDef.getName());
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
-                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo()
-                        .getExpressionAsString());
+                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().getExpressionAsString());
                 if (pointcut == null) {
                     pointcut = new Pointcut(aspectManager, adviceDef.getExpressionInfo());
                     pointcutManager.addPointcut(pointcut);
@@ -227,8 +209,7 @@ public class StartupManager {
             }
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
-                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo()
-                        .getExpressionAsString());
+                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().getExpressionAsString());
                 if (pointcut == null) {
                     pointcut = new Pointcut(aspectManager, adviceDef.getExpressionInfo());
                     pointcutManager.addPointcut(pointcut);
@@ -237,8 +218,7 @@ public class StartupManager {
             }
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
-                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo()
-                        .getExpressionAsString());
+                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().getExpressionAsString());
                 if (pointcut == null) {
                     pointcut = new Pointcut(aspectManager, adviceDef.getExpressionInfo());
                     pointcutManager.addPointcut(pointcut);
@@ -254,9 +234,7 @@ public class StartupManager {
      * @param aspectManager the aspectManager for the system
      * @param definition the AspectWerkz definition
      */
-    private static void registerCflowPointcuts(
-        final AspectManager aspectManager,
-        final SystemDefinition definition) {
+    private static void registerCflowPointcuts(final AspectManager aspectManager, final SystemDefinition definition) {
         // get all aspects to be able to get all poincuts defined
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition) it1.next();
@@ -274,8 +252,7 @@ public class StartupManager {
                         CFlowSystemAspect.NAME,
                         CFlowSystemAspect.CLASS_NAME,
                         aspectManager.getUuid());
-                    PointcutDefinition pointcutDef = new PointcutDefinition(expressionInfo
-                            .getExpressionAsString());
+                    PointcutDefinition pointcutDef = new PointcutDefinition(expressionInfo.getExpressionAsString());
                     cflowAspectDef.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
                     cflowAspectDef.addPointcut(pointcutDef);
                     try {
@@ -285,11 +262,9 @@ public class StartupManager {
                             cflowAspectDef.getName(),
                             cflowAspectDef.getClassName(),
                             expressionInfo,
-                            CFlowSystemAspect.class.getDeclaredMethod(
-                                CFlowSystemAspect.PRE_ADVICE,
-                                new Class[] {
-                                    JoinPoint.class
-                                }),
+                            CFlowSystemAspect.class.getDeclaredMethod(CFlowSystemAspect.PRE_ADVICE, new Class[] {
+                                JoinPoint.class
+                            }),
                             CFlowSystemAspect.PRE_ADVICE_INDEX,
                             cflowAspectDef);
                         cflowAspectDef.addBeforeAdvice(beforeAdviceDefinition);
@@ -299,11 +274,9 @@ public class StartupManager {
                             cflowAspectDef.getName(),
                             cflowAspectDef.getClassName(),
                             expressionInfo,
-                            CFlowSystemAspect.class.getDeclaredMethod(
-                                CFlowSystemAspect.POST_ADVICE,
-                                new Class[] {
-                                    JoinPoint.class
-                                }),
+                            CFlowSystemAspect.class.getDeclaredMethod(CFlowSystemAspect.POST_ADVICE, new Class[] {
+                                JoinPoint.class
+                            }),
                             CFlowSystemAspect.POST_ADVICE_INDEX,
                             cflowAspectDef);
                         cflowAspectDef.addAfterAdvice(afterAdviceDefinition);
@@ -313,12 +286,8 @@ public class StartupManager {
                     definition.addAspect(cflowAspectDef);
                     registerAspect(aspectManager, cflowAspectDef, new HashMap());
                 }
-                cflowPointcut.addBeforeAdvice(CFlowSystemAspect.NAME
-                    + '/'
-                    + CFlowSystemAspect.PRE_ADVICE);
-                cflowPointcut.addAfterAdvice(CFlowSystemAspect.NAME
-                    + '/'
-                    + CFlowSystemAspect.POST_ADVICE);
+                cflowPointcut.addBeforeAdvice(CFlowSystemAspect.NAME + '/' + CFlowSystemAspect.PRE_ADVICE);
+                cflowPointcut.addAfterAdvice(CFlowSystemAspect.NAME + '/' + CFlowSystemAspect.POST_ADVICE);
             }
         }
     }

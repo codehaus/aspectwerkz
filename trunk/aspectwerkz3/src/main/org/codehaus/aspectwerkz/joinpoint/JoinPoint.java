@@ -30,8 +30,8 @@ public interface JoinPoint {
     static final String STATIC_INITIALIZATION = "STATIC_INITIALIZATION";
 
     /**
-     * Walks through the pointcuts and invokes all its advices. When the last advice of the last
-     * pointcut has been invoked, the original method is invoked. Is called recursively.
+     * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
+     * invoked, the original method is invoked. Is called recursively.
      * 
      * @return the result from the next invocation
      * @throws Throwable
@@ -69,8 +69,7 @@ public interface JoinPoint {
     Rtti getRtti();
 
     /**
-     * Returns the target instance. If the join point is executing in a static context it
-     * returns null.
+     * Returns the target instance. If the join point is executing in a static context it returns null.
      * 
      * @return the target instance
      */

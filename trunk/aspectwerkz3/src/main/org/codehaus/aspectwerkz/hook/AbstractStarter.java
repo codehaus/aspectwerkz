@@ -11,8 +11,8 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Base class for JVM Process based starter. <p/>Base implementation to lauch a JVM given java
- * options, main class and args in a separate process.
+ * Base class for JVM Process based starter. <p/>Base implementation to lauch a JVM given java options, main class and
+ * args in a separate process.
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */

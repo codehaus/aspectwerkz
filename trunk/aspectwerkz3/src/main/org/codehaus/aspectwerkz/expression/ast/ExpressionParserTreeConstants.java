@@ -2,62 +2,85 @@
 
 package org.codehaus.aspectwerkz.expression.ast;
 
-public interface ExpressionParserTreeConstants
-{
-  public int JJTROOT = 0;
-  public int JJTEXPRESSION = 1;
-  public int JJTVOID = 2;
-  public int JJTAND = 3;
-  public int JJTOR = 4;
-  public int JJTNOT = 5;
-  public int JJTPOINTCUTREFERENCE = 6;
-  public int JJTEXECUTION = 7;
-  public int JJTCALL = 8;
-  public int JJTSET = 9;
-  public int JJTGET = 10;
-  public int JJTHANDLER = 11;
-  public int JJTWITHIN = 12;
-  public int JJTWITHINCODE = 13;
-  public int JJTSTATICINITIALIZATION = 14;
-  public int JJTCFLOW = 15;
-  public int JJTCFLOWBELOW = 16;
-  public int JJTARGS = 17;
-  public int JJTCLASSPATTERN = 18;
-  public int JJTMETHODPATTERN = 19;
-  public int JJTCONSTRUCTORPATTERN = 20;
-  public int JJTFIELDPATTERN = 21;
-  public int JJTPARAMETER = 22;
-  public int JJTARGPARAMETER = 23;
-  public int JJTATTRIBUTE = 24;
-  public int JJTMODIFIER = 25;
+public interface ExpressionParserTreeConstants {
+    public int JJTROOT = 0;
 
+    public int JJTEXPRESSION = 1;
 
-  public String[] jjtNodeName = {
-    "Root",
-    "Expression",
-    "void",
-    "And",
-    "Or",
-    "Not",
-    "PointcutReference",
-    "Execution",
-    "Call",
-    "Set",
-    "Get",
-    "Handler",
-    "Within",
-    "WithinCode",
-    "StaticInitialization",
-    "Cflow",
-    "CflowBelow",
-    "Args",
-    "ClassPattern",
-    "MethodPattern",
-    "ConstructorPattern",
-    "FieldPattern",
-    "Parameter",
-    "ArgParameter",
-    "Attribute",
-    "Modifier",
-  };
+    public int JJTVOID = 2;
+
+    public int JJTAND = 3;
+
+    public int JJTOR = 4;
+
+    public int JJTNOT = 5;
+
+    public int JJTPOINTCUTREFERENCE = 6;
+
+    public int JJTEXECUTION = 7;
+
+    public int JJTCALL = 8;
+
+    public int JJTSET = 9;
+
+    public int JJTGET = 10;
+
+    public int JJTHANDLER = 11;
+
+    public int JJTWITHIN = 12;
+
+    public int JJTWITHINCODE = 13;
+
+    public int JJTSTATICINITIALIZATION = 14;
+
+    public int JJTCFLOW = 15;
+
+    public int JJTCFLOWBELOW = 16;
+
+    public int JJTARGS = 17;
+
+    public int JJTCLASSPATTERN = 18;
+
+    public int JJTMETHODPATTERN = 19;
+
+    public int JJTCONSTRUCTORPATTERN = 20;
+
+    public int JJTFIELDPATTERN = 21;
+
+    public int JJTPARAMETER = 22;
+
+    public int JJTARGPARAMETER = 23;
+
+    public int JJTATTRIBUTE = 24;
+
+    public int JJTMODIFIER = 25;
+
+    public String[] jjtNodeName = {
+        "Root",
+        "Expression",
+        "void",
+        "And",
+        "Or",
+        "Not",
+        "PointcutReference",
+        "Execution",
+        "Call",
+        "Set",
+        "Get",
+        "Handler",
+        "Within",
+        "WithinCode",
+        "StaticInitialization",
+        "Cflow",
+        "CflowBelow",
+        "Args",
+        "ClassPattern",
+        "MethodPattern",
+        "ConstructorPattern",
+        "FieldPattern",
+        "Parameter",
+        "ArgParameter",
+        "Attribute",
+        "Modifier",
+    };
 }

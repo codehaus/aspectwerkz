@@ -77,8 +77,7 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
             if (parameterTypes.length == 0) {
                 m_constructionType = ASPECT_CONSTRUCTION_TYPE_DEFAULT;
                 aspectConstructor = constructor;
-            } else if ((parameterTypes.length == 1)
-                && parameterTypes[0].equals(CrossCuttingInfo.class)) {
+            } else if ((parameterTypes.length == 1) && parameterTypes[0].equals(CrossCuttingInfo.class)) {
                 m_constructionType = ASPECT_CONSTRUCTION_TYPE_CROSS_CUTTING_INFO;
                 aspectConstructor = constructor;
                 break;

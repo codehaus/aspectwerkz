@@ -53,8 +53,7 @@ public class MethodCallTransformer implements Transformer {
      * @param context the transformation context
      * @param klass the class set.
      */
-    public void transform(final Context context, final Klass klass) throws NotFoundException,
-            CannotCompileException {
+    public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
 
         //AXm_joinPointIndex =
@@ -64,10 +63,7 @@ public class MethodCallTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
-            if (classFilter(definition, new ExpressionContext(
-                PointcutType.CALL,
-                classInfo,
-                classInfo), ctClass)) {
+            if (classFilter(definition, new ExpressionContext(PointcutType.CALL, classInfo, classInfo), ctClass)) {
                 continue;
             }
             ctClass.instrument(new ExprEditor() {
@@ -104,20 +100,17 @@ public class MethodCallTransformer implements Transformer {
 
                         // TODO: callee side class info is NOT used, make use of
                         // it
-                        ClassInfo calleeSideClassInfo = classInfoRepository
-                                .getClassInfo(calleeClassName);
+                        ClassInfo calleeSideClassInfo = classInfoRepository.getClassInfo(calleeClassName);
                         if (calleeSideClassInfo == null) {
-                            calleeSideClassInfo = JavassistClassInfo.getClassInfo(ctClass
-                                    .getClassPool().get(calleeClassName), context.getLoader());
+                            calleeSideClassInfo = JavassistClassInfo.getClassInfo(ctClass.getClassPool().get(
+                                calleeClassName), context.getLoader());
                         }
 
                         // create the caller method info, used for 'within' and
                         // 'withincode'
                         MemberInfo withinMemberInfo = null;
                         if (where instanceof CtMethod) {
-                            withinMemberInfo = JavassistMethodInfo.getMethodInfo(
-                                (CtMethod) where,
-                                context.getLoader());
+                            withinMemberInfo = JavassistMethodInfo.getMethodInfo((CtMethod) where, context.getLoader());
                         } else if (where instanceof CtConstructor) {
                             withinMemberInfo = JavassistConstructorInfo.getConstructorInfo(
                                 (CtConstructor) where,
@@ -142,9 +135,7 @@ public class MethodCallTransformer implements Transformer {
                             CtClass declaringClass = method.getDeclaringClass();
                             if (!declaringClass.getName().replace('/', '.').equals(
                                 where.getDeclaringClass().getName().replace('/', '.'))) {
-                                declaringClassMethodName = addCalleeMethodDeclaringClassField(
-                                    ctClass,
-                                    method);
+                                declaringClassMethodName = addCalleeMethodDeclaringClassField(ctClass, method);
                             }
 
                             // call the wrapper method instead of the callee
@@ -197,8 +188,8 @@ public class MethodCallTransformer implements Transformer {
                                 body.append("if (").append(localResult).append(" != null)");
                                 body.append("$_ = ($r) ").append(localResult).append("; else ");
                                 body.append("$_ = ");
-                                body.append(JavassistHelper.getDefaultPrimitiveValue(methodCall
-                                        .getMethod().getReturnType()));
+                                body.append(JavassistHelper.getDefaultPrimitiveValue(methodCall.getMethod()
+                                        .getReturnType()));
                                 body.append("; }");
                             }
                             methodCall.replace(body.toString());
@@ -243,10 +234,7 @@ public class MethodCallTransformer implements Transformer {
             }
         }
         if (!hasField) {
-            CtField field = new CtField(
-                ctClass.getClassPool().get("java.lang.Class"),
-                fieldName,
-                ctClass);
+            CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"), fieldName, ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class#forName(\""
                 + ctMethod.getDeclaringClass().getName().replace('/', '.')
@@ -263,10 +251,7 @@ public class MethodCallTransformer implements Transformer {
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(
-        final SystemDefinition definition,
-        final ExpressionContext ctx,
-        final CtClass cg) {
+    public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }

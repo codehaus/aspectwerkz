@@ -9,29 +9,25 @@ import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 public class ASTArgParameter extends SimpleNode {
     private TypePattern m_typePattern;
 
-  public ASTArgParameter(int id) {
-    super(id);
-  }
+    public ASTArgParameter(int id) {
+        super(id);
+    }
 
-  public ASTArgParameter(ExpressionParser p, int id) {
-    super(p, id);
-  }
+    public ASTArgParameter(ExpressionParser p, int id) {
+        super(p, id);
+    }
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+    /** Accept the visitor. * */
+    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 
     public void setTypePattern(String pattern) {
         if (pattern.endsWith("+")) {
             pattern = pattern.substring(0, pattern.length() - 1);
-            m_typePattern = Pattern.compileTypePattern(
-                pattern,
-                SubtypePatternType.MATCH_ON_ALL_METHODS);
+            m_typePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.MATCH_ON_ALL_METHODS);
         } else {
-            m_typePattern = Pattern
-                    .compileTypePattern(pattern, SubtypePatternType.NOT_HIERARCHICAL);
+            m_typePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.NOT_HIERARCHICAL);
         }
     }
 

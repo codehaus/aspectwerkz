@@ -14,8 +14,7 @@ import java.io.ObjectStreamClass;
 import java.net.URL;
 
 /**
- * Utility methods dealing with the context class loader. Fail-over is provided to the default class
- * loader.
+ * Utility methods dealing with the context class loader. Fail-over is provided to the default class loader.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -38,8 +37,7 @@ public final class ContextClassLoader {
     }
 
     /**
-     * Loads a resource from the context class loader or, if that fails, from the default class
-     * loader.
+     * Loads a resource from the context class loader or, if that fails, from the default class loader.
      * 
      * @param name is the name of the resource to load.
      * @return a <code>URL</code> object.
@@ -53,8 +51,7 @@ public final class ContextClassLoader {
     }
 
     /**
-     * Loads a resource from the context class loader or, if that fails, from the default class
-     * loader, as stream
+     * Loads a resource from the context class loader or, if that fails, from the default class loader, as stream
      * 
      * @param name is the name of the resource to load.
      * @return a <code>InputStream</code> object.
@@ -101,8 +98,7 @@ public final class ContextClassLoader {
             super(in);
         }
 
-        protected Class resolveClass(ObjectStreamClass desc) throws IOException,
-                ClassNotFoundException {
+        protected Class resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
             try {
                 return Thread.currentThread().getContextClassLoader().loadClass(desc.getName());
             } catch (ClassNotFoundException ex) {

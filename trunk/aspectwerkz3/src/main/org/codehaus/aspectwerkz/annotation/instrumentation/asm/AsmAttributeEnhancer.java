@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * Enhances classes with custom attributes using the ASM library.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AsmAttributeEnhancer implements AttributeEnhancer {
@@ -157,8 +157,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
         }
         final String[] methodParamTypes = new String[method.getParameters().length];
         for (int i = 0; i < methodParamTypes.length; i++) {
-            methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i]
-                    .getType());
+            methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i].getType());
         }
         final byte[] serializedAttribute = serialize(attribute);
         m_methodAttributes.add(new MethodAttributeInfo(method, serializedAttribute));
@@ -177,8 +176,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
         }
         final String[] methodParamTypes = new String[constructor.getParameters().length];
         for (int i = 0; i < methodParamTypes.length; i++) {
-            methodParamTypes[i] = TypeConverter.convertTypeToJava(constructor.getParameters()[i]
-                    .getType());
+            methodParamTypes[i] = TypeConverter.convertTypeToJava(constructor.getParameters()[i].getType());
         }
         final byte[] serializedAttribute = serialize(attribute);
         m_constructorAttributes.add(new MethodAttributeInfo(constructor, serializedAttribute));
@@ -205,8 +203,9 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             if (!parentFile.exists()) {
                 // directory does not exist create all directories in the path
                 if (!parentFile.mkdirs()) {
-                    throw new RuntimeException(
-                        "could not create dir structure needed to write file " + path + " to disk");
+                    throw new RuntimeException("could not create dir structure needed to write file "
+                        + path
+                        + " to disk");
                 }
             }
             FileOutputStream os = new FileOutputStream(destDir + File.separator + m_classFileName);
@@ -247,8 +246,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             Class innerClass = Class.forName(innerClassName, false, m_loader);
             return getNearestInterfacesInHierarchy(innerClass);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("could not load mixin for mixin implicit interface: "
-                + e.toString());
+            throw new RuntimeException("could not load mixin for mixin implicit interface: " + e.toString());
         } catch (NoClassDefFoundError er) {
             // raised if extends / implements dependancies not found
             throw new RuntimeException("could not find dependency for mixin implicit interface: "
@@ -323,7 +321,8 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
                         first = new CustomAttribute(((byte[]) struct.attribute));
                         current = first;
                     } else {
-                        current.next = new CustomAttribute(((byte[]) struct.attribute));;
+                        current.next = new CustomAttribute(((byte[]) struct.attribute));
+                        ;
                         current = current.next;
                     }
                 }
@@ -351,13 +350,13 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
                     continue;
                 }
                 String[] parameters = QDoxParser.getJavaMethodParametersAsStringArray(method);
-                if (name.equals(method.getName())
-                    && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
+                if (name.equals(method.getName()) && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
                     if (first == null) {
                         first = new CustomAttribute(((byte[]) struct.attribute));
                         current = first;
                     } else {
-                        current.next = new CustomAttribute(((byte[]) struct.attribute));;
+                        current.next = new CustomAttribute(((byte[]) struct.attribute));
+                        ;
                         current = current.next;
                     }
                 }
@@ -366,13 +365,13 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
                 MethodAttributeInfo struct = (MethodAttributeInfo) it.next();
                 JavaMethod method = struct.method;
                 String[] parameters = QDoxParser.getJavaMethodParametersAsStringArray(method);
-                if (name.equals("<init>")
-                    && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
+                if (name.equals("<init>") && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
                     if (first == null) {
                         first = new CustomAttribute(((byte[]) struct.attribute));
                         current = first;
                     } else {
-                        current.next = new CustomAttribute(((byte[]) struct.attribute));;
+                        current.next = new CustomAttribute(((byte[]) struct.attribute));
+                        ;
                         current = current.next;
                     }
                 }

@@ -235,10 +235,7 @@ public class DocumentParser {
             }
 
             // create the aspect definition
-            AspectDefinition aspectDef = new AspectDefinition(
-                aspectName,
-                aspectClassName,
-                definition.getUuid());
+            AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName, definition.getUuid());
             Class aspectClass;
             try {
                 aspectClass = loadAspectClass(loader, aspectClassName);
@@ -279,11 +276,8 @@ public class DocumentParser {
             parseIntroductionElements(aspect, aspectDef, aspectClass, packageName);
 
             // register introduction of aspect into the system
-            for (Iterator mixins = aspectDef.getInterfaceIntroductions().iterator(); mixins
-                    .hasNext();) {
-                definition
-                        .addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition) mixins
-                                .next());
+            for (Iterator mixins = aspectDef.getInterfaceIntroductions().iterator(); mixins.hasNext();) {
+                definition.addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition) mixins.next());
             }
             for (Iterator mixins = aspectDef.getIntroductions().iterator(); mixins.hasNext();) {
                 definition.addIntroductionDefinition((IntroductionDefinition) mixins.next());
@@ -311,8 +305,8 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the aspectElement parameters. <p/>TODO: should perhaps move the parameters to the
-     * aspect def instead of the system def
+     * Parses the aspectElement parameters. <p/>TODO: should perhaps move the parameters to the aspect def instead of
+     * the system def
      * 
      * @param aspectElement the aspect element
      * @param def the system definition
@@ -325,10 +319,8 @@ public class DocumentParser {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element parameterElement = (Element) it2.next();
             if (parameterElement.getName().trim().equals("param")) {
-                def.addParameter(
-                    aspectDef.getName(),
-                    parameterElement.attributeValue("name"),
-                    parameterElement.attributeValue("value"));
+                def.addParameter(aspectDef.getName(), parameterElement.attributeValue("name"), parameterElement
+                        .attributeValue("value"));
             }
         }
     }
@@ -339,18 +331,13 @@ public class DocumentParser {
      * @param aspectElement the aspect element
      * @param aspectDef the system definition
      */
-    private static void parsePointcutElements(
-        final Element aspectElement,
-        final AspectDefinition aspectDef) {
+    private static void parsePointcutElements(final Element aspectElement, final AspectDefinition aspectDef) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element pointcutElement = (Element) it2.next();
             if (pointcutElement.getName().trim().equals("pointcut")) {
                 String name = pointcutElement.attributeValue("name");
                 String expression = pointcutElement.attributeValue("expression");
-                DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                    name,
-                    expression,
-                    aspectDef);
+                DefinitionParserHelper.createAndAddPointcutDefToAspectDef(name, expression, aspectDef);
             }
         }
     }
@@ -382,23 +369,11 @@ public class DocumentParser {
                         break;
                     }
                 }
-                createAndAddAdviceDefsToAspectDef(
-                    type,
-                    bindTo,
-                    adviceName,
-                    method,
-                    methodIndex,
-                    aspectDef);
+                createAndAddAdviceDefsToAspectDef(type, bindTo, adviceName, method, methodIndex, aspectDef);
                 for (Iterator it1 = adviceElement.elementIterator("bind-to"); it1.hasNext();) {
                     Element bindToElement = (Element) it1.next();
                     String pointcut = bindToElement.attributeValue("pointcut");
-                    createAndAddAdviceDefsToAspectDef(
-                        type,
-                        pointcut,
-                        adviceName,
-                        method,
-                        methodIndex,
-                        aspectDef);
+                    createAndAddAdviceDefsToAspectDef(type, pointcut, adviceName, method, methodIndex, aspectDef);
                 }
             }
         }
@@ -427,8 +402,7 @@ public class DocumentParser {
 
                 // deployment-model defaults to perJVM
                 if ((deploymentModel == null) || (deploymentModel.length() <= 0)) {
-                    deploymentModel = DeploymentModel
-                            .getDeploymentModelAsString(DeploymentModel.PER_JVM);
+                    deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_JVM);
                 }
 
                 // default name = FQN
@@ -450,11 +424,8 @@ public class DocumentParser {
 
                 // pure interface introduction
                 if (mixin.isInterface()) {
-                    DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
-                        bindTo,
-                        name,
-                        packageName + klass,
-                        aspectDef);
+                    DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(bindTo, name, packageName
+                        + klass, aspectDef);
 
                     // handles nested "bind-to" elements
                     for (Iterator it1 = introduceElement.elementIterator("bind-to"); it1.hasNext();) {
@@ -512,14 +483,14 @@ public class DocumentParser {
         final int methodIndex,
         final AspectDefinition aspectDef) {
         if (type.equalsIgnoreCase("around")) {
-            DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(bindTo, name, aspectDef
-                    .getName(), aspectDef.getClassName(), method, methodIndex, aspectDef);
+            DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(bindTo, name, aspectDef.getName(), aspectDef
+                    .getClassName(), method, methodIndex, aspectDef);
         } else if (type.equalsIgnoreCase("before")) {
-            DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(bindTo, name, aspectDef
-                    .getName(), aspectDef.getClassName(), method, methodIndex, aspectDef);
+            DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(bindTo, name, aspectDef.getName(), aspectDef
+                    .getClassName(), method, methodIndex, aspectDef);
         } else if (type.equalsIgnoreCase("after")) {
-            DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(bindTo, name, aspectDef
-                    .getName(), aspectDef.getClassName(), method, methodIndex, aspectDef);
+            DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(bindTo, name, aspectDef.getName(), aspectDef
+                    .getClassName(), method, methodIndex, aspectDef);
         } else if (type.equalsIgnoreCase("afterFinally")) {
             // TODO: impl. afterFinally
         } else if (type.equalsIgnoreCase("afterReturning")) {

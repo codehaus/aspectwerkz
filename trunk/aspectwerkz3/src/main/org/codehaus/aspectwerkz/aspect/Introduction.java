@@ -18,8 +18,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Interface+Implementation Introduction <p/>This represents the inner class mixin based
- * implementation in the system
+ * Interface+Implementation Introduction <p/>This represents the inner class mixin based implementation in the system
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -44,14 +43,12 @@ public class Introduction implements Mixin {
     private String m_name;
 
     /**
-     * Mixin implementation as aspect inner class Note: when swapped the impl can be an autonomous
-     * class
+     * Mixin implementation as aspect inner class Note: when swapped the impl can be an autonomous class
      */
     private Class m_mixinImplClass;
 
     /**
-     * Mixin implementation as aspect inner class Note: when swapped the impl can be an autonomous
-     * class
+     * Mixin implementation as aspect inner class Note: when swapped the impl can be an autonomous class
      */
     private Object m_mixinImpl;
 
@@ -76,8 +73,8 @@ public class Introduction implements Mixin {
     private IntroductionDefinition m_definition;
 
     /**
-     * Holds the deployment model. The deployment model of an introduction is tight to the aspect
-     * deployment model that defines it
+     * Holds the deployment model. The deployment model of an introduction is tight to the aspect deployment model that
+     * defines it
      */
     protected int m_deploymentModel;
 
@@ -121,16 +118,13 @@ public class Introduction implements Mixin {
             m_deploymentModel = m_crossCuttingInfo.getDeploymentModel();
         } else {
             int model = DeploymentModel.getDeploymentModelAsInt(definition.getDeploymentModel());
-            if (DeploymentModel.isMixinDeploymentModelCompatible(model, m_crossCuttingInfo
-                    .getDeploymentModel())) {
+            if (DeploymentModel.isMixinDeploymentModelCompatible(model, m_crossCuttingInfo.getDeploymentModel())) {
                 m_deploymentModel = model;
             } else {
-                throw new RuntimeException(
-                    "could no create mixin from aspect: incompatible deployment models : mixin "
-                        + DeploymentModel.getDeploymentModelAsString(model)
-                        + " with aspect "
-                        + DeploymentModel.getDeploymentModelAsString(m_crossCuttingInfo
-                                .getDeploymentModel()));
+                throw new RuntimeException("could no create mixin from aspect: incompatible deployment models : mixin "
+                    + DeploymentModel.getDeploymentModelAsString(model)
+                    + " with aspect "
+                    + DeploymentModel.getDeploymentModelAsString(m_crossCuttingInfo.getDeploymentModel()));
             }
         }
     }
@@ -142,9 +136,7 @@ public class Introduction implements Mixin {
      * @param crossCuttingInfo the cross-cutting info
      * @return new introduction instance
      */
-    public static Introduction newInstance(
-        final Introduction prototype,
-        final CrossCuttingInfo crossCuttingInfo) {
+    public static Introduction newInstance(final Introduction prototype, final CrossCuttingInfo crossCuttingInfo) {
         Introduction introduction = new Introduction(
             prototype.m_name,
             prototype.m_mixinImplClass,
@@ -237,8 +229,8 @@ public class Introduction implements Mixin {
     }
 
     /**
-     * Invokes the method with the index specified. Invoked by methods without any parameters
-     * (slight performance gain since we are saving us one array creation).
+     * Invokes the method with the index specified. Invoked by methods without any parameters (slight performance gain
+     * since we are saving us one array creation).
      * 
      * @param methodIndex the method index
      * @param callingObject a reference to the calling object
@@ -256,33 +248,23 @@ public class Introduction implements Mixin {
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
-    public Object invokeMixin(
-        final int methodIndex,
-        final Object[] parameters,
-        final Object callingObject) throws Throwable {
+    public Object invokeMixin(final int methodIndex, final Object[] parameters, final Object callingObject) throws Throwable {
         Object result = null;
         switch (m_deploymentModel) {
             case DeploymentModel.PER_JVM:
                 result = m_container.invokeIntroductionPerJvm(methodIndex, parameters);
                 break;
             case DeploymentModel.PER_CLASS:
-                result = m_container.invokeIntroductionPerClass(
-                    callingObject,
-                    methodIndex,
-                    parameters);
+                result = m_container.invokeIntroductionPerClass(callingObject, methodIndex, parameters);
                 break;
             case DeploymentModel.PER_INSTANCE:
-                result = m_container.invokeIntroductionPerInstance(
-                    callingObject,
-                    methodIndex,
-                    parameters);
+                result = m_container.invokeIntroductionPerInstance(callingObject, methodIndex, parameters);
                 break;
             case DeploymentModel.PER_THREAD:
                 result = m_container.invokeIntroductionPerThread(methodIndex, parameters);
                 break;
             default:
-                throw new RuntimeException("invalid deployment model: "
-                    + m_crossCuttingInfo.getDeploymentModel());
+                throw new RuntimeException("invalid deployment model: " + m_crossCuttingInfo.getDeploymentModel());
         }
         return result;
     }
@@ -325,8 +307,8 @@ public class Introduction implements Mixin {
         }
         try {
             Class newImplClass = ContextClassLoader.loadClass(className); //todo pbly old
-                                                                          // impl.getClassLoader()
-                                                                          // would
+            // impl.getClassLoader()
+            // would
             // be safer
             m_container.swapImplementation(newImplClass);
         } catch (Exception e) {

@@ -67,8 +67,7 @@ public class PointcutManager {
             throw new IllegalArgumentException("name can not be null");
         }
         if (deploymentModel < 0) {
-            throw new IllegalArgumentException(deploymentModel
-                + " is not a valid deployement model type");
+            throw new IllegalArgumentException(deploymentModel + " is not a valid deployement model type");
         }
         m_name = name;
         m_deploymentModel = deploymentModel;
@@ -148,8 +147,7 @@ public class PointcutManager {
             synchronized (m_cflowPointcuts) {
                 m_pointcuts.add(pointcut);
                 if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                    m_cflowPointcuts.add(new Pointcut(pointcut.getAspectManager(), pointcut
-                            .getExpressionInfo()));
+                    m_cflowPointcuts.add(new Pointcut(pointcut.getAspectManager(), pointcut.getExpressionInfo()));
                 }
             }
         }

@@ -27,35 +27,36 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Represents the aspect runtime system. <br/>Manages the different parts of the runtime system and
- * provides and API to access and manage the system. <br/><p/>There is an AspectSystem per
- * ClassLoader. An AspectSystem is aware of the classloader hierarchy and reflects it by gathering
- * the AspectManager, which represents a single &lt;system ..&gt; entry. <p/>When an instance of an
- * AspectSystem is created (perClassLoader), it checks for existence of previous AspectManager
- * defined in parent ClassLoader. AspectManager are shared among AspectSystem as shown below: <br/>
+ * Represents the aspect runtime system. <br/>Manages the different parts of the runtime system and provides and API to
+ * access and manage the system. <br/><p/>There is an AspectSystem per ClassLoader. An AspectSystem is aware of the
+ * classloader hierarchy and reflects it by gathering the AspectManager, which represents a single &lt;system ..&gt;
+ * entry. <p/>When an instance of an AspectSystem is created (perClassLoader), it checks for existence of previous
+ * AspectManager defined in parent ClassLoader. AspectManager are shared among AspectSystem as shown below: <br/>
  * </p>
  * 
  * <pre>
  * 
  *  
  *   
- *             [0d, 1d, 2d]  (3 SystemDefs, all defined in this classloader)
- *                     /   \
- *    [0r, 1r, 2r, 3d]      \  (3 reused, one more defined)
- *                        [0r, 1r, 2r, 3d]  (one more defined, not the same)
+ *    
+ *              [0d, 1d, 2d]  (3 SystemDefs, all defined in this classloader)
+ *                      /   \
+ *     [0r, 1r, 2r, 3d]      \  (3 reused, one more defined)
+ *                         [0r, 1r, 2r, 3d]  (one more defined, not the same)
+ *     
  *    
  *   
  *  
  * </pre>
  * 
  * </p>
- * This composition strategy allow to avoid global static repository, but is tight to following
- * ClassLoader parent hierarchy.
+ * This composition strategy allow to avoid global static repository, but is tight to following ClassLoader parent
+ * hierarchy.
  * </p>
  * If an AspectManager is added at runtime, it should be added in the whole child hierarchy. TODO
  * </p>
- * <p/>TODO: caution when addding a new SystemDefinition in between. TODO: move the remote proxy
- * elsewhere unless defining classloader is needed.
+ * <p/>TODO: caution when addding a new SystemDefinition in between. TODO: move the remote proxy elsewhere unless
+ * defining classloader is needed.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
@@ -64,8 +65,9 @@ public final class AspectSystem {
     /**
      * The path to the remote proxy server config file.
      */
-    private static final boolean START_REMOTE_PROXY_SERVER = "true".equals(java.lang.System
-            .getProperty("aspectwerkz.remote.server.run", "false"));
+    private static final boolean START_REMOTE_PROXY_SERVER = "true".equals(java.lang.System.getProperty(
+        "aspectwerkz.remote.server.run",
+        "false"));
 
     /**
      * ClassLoader defining this AspectSystem
@@ -90,8 +92,8 @@ public final class AspectSystem {
     private RemoteProxyServer m_remoteProxyServer = null;
 
     /**
-     * Should NEVER be invoked by the user. Use <code>SystemLoader.getSystem(uuid)</code> to
-     * retrieve the system. <p/>Creates a new AspectWerkz AOPC system instance. <p/>
+     * Should NEVER be invoked by the user. Use <code>SystemLoader.getSystem(uuid)</code> to retrieve the system.
+     * <p/>Creates a new AspectWerkz AOPC system instance. <p/>
      * 
      * @param loader the classloader defining the system
      * @param definitions the ordered SystemDefinitions for the system (whole hierarchy)
@@ -105,14 +107,8 @@ public final class AspectSystem {
 
         // copy the AspectManagers from the parent ClassLoader AspectSystem
         if ((loader != null) && (loader.getParent() != null)) {
-            AspectManager[] parentAspectManagers = SystemLoader.getSystem(loader.getParent())
-                    .getAspectManagers();
-            System.arraycopy(
-                parentAspectManagers,
-                0,
-                m_aspectManagers,
-                0,
-                parentAspectManagers.length);
+            AspectManager[] parentAspectManagers = SystemLoader.getSystem(loader.getParent()).getAspectManagers();
+            System.arraycopy(parentAspectManagers, 0, m_aspectManagers, 0, parentAspectManagers.length);
         }
 
         // note: we should be able to go directly to the correct index instead of this loop and
@@ -154,8 +150,8 @@ public final class AspectSystem {
     }
 
     /**
-     * Returns an AspectManager by its index. The index are stable when the ClassLoader hierarchy is
-     * crossed from top to bottom
+     * Returns an AspectManager by its index. The index are stable when the ClassLoader hierarchy is crossed from top to
+     * bottom
      * 
      * @param aspectManagerIndex
      * @return AspectManager, or throw an IndexOutOfBoundException
@@ -181,15 +177,12 @@ public final class AspectSystem {
                 return aspectManager;
             }
         }
-        throw new DefinitionException("no AspectManager with system id "
-            + uuid
-            + " in "
-            + m_classLoader);
+        throw new DefinitionException("no AspectManager with system id " + uuid + " in " + m_classLoader);
     }
 
     /**
-     * Initializes the system. The initialization needs to be separated from the construction of the
-     * manager, and is triggered by the runtime system
+     * Initializes the system. The initialization needs to be separated from the construction of the manager, and is
+     * triggered by the runtime system
      */
     public void initialize() {
         for (int i = 0; i < m_aspectManagers.length; i++) {
@@ -227,10 +220,7 @@ public final class AspectSystem {
         if (cflows == null) {
             cflows = new TIntObjectHashMap();
         }
-        ExpressionContext expressionContext = new ExpressionContext(
-            pointcutType,
-            methodInfo,
-            withinInfo);
+        ExpressionContext expressionContext = new ExpressionContext(pointcutType, methodInfo, withinInfo);
         cflows.put(expressionContext.hashCode(), expressionContext);
         m_cflowStack.set(cflows);
     }
@@ -262,17 +252,13 @@ public final class AspectSystem {
     }
 
     /**
-     * Checks if we are in the control flow of a join point picked out by a specific pointcut
-     * expression.
+     * Checks if we are in the control flow of a join point picked out by a specific pointcut expression.
      * 
      * @param expression the cflow expression runtime visitor
-     * @param expressionContext the join point expression context whose pointcut contains cflows sub
-     *            expression(s)
+     * @param expressionContext the join point expression context whose pointcut contains cflows sub expression(s)
      * @return boolean
      */
-    public boolean isInControlFlowOf(
-        final CflowExpressionVisitorRuntime expression,
-        ExpressionContext expressionContext) {
+    public boolean isInControlFlowOf(final CflowExpressionVisitorRuntime expression, ExpressionContext expressionContext) {
         if (expression == null) {
             throw new IllegalArgumentException("expression can not be null");
         }
@@ -306,8 +292,7 @@ public final class AspectSystem {
         Invoker invoker;
         try {
             Properties properties = new Properties();
-            properties.load(new FileInputStream(java.lang.System
-                    .getProperty("aspectwerkz.resource.bundle")));
+            properties.load(new FileInputStream(java.lang.System.getProperty("aspectwerkz.resource.bundle")));
             String className = properties.getProperty("remote.server.invoker.classname");
             invoker = (Invoker) ContextClassLoader.getLoader().loadClass(className).newInstance();
         } catch (Exception e) {
@@ -346,8 +331,7 @@ public final class AspectSystem {
      * Checks uuid unicity within the list. Throw a DefinitionException on failure.
      * 
      * @param definitions
-     * @TODO AVAOPC algo is crapped, check earlier and avoid exception but do a WARN (in
-     *       SysDefContainer)
+     * @TODO AVAOPC algo is crapped, check earlier and avoid exception but do a WARN (in SysDefContainer)
      */
     private static void assertUuidUniqueWithinHierarchy(final List definitions) {
         for (int i = 0; i < definitions.size(); i++) {
@@ -358,8 +342,7 @@ public final class AspectSystem {
                 }
                 SystemDefinition systemDefinition2 = (SystemDefinition) definitions.get(j);
                 if (systemDefinition2.getUuid().equals(systemDefinition.getUuid())) {
-                    throw new DefinitionException("UUID is not unique within hierarchy: "
-                        + systemDefinition.getUuid());
+                    throw new DefinitionException("UUID is not unique within hierarchy: " + systemDefinition.getUuid());
                 }
             }
         }

@@ -63,9 +63,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
      * @param namespace the namespace
      * @param root the AST root
      */
-    public AdvisedClassFilterExpressionVisitor(final String expression,
-                                               final String namespace,
-                                               final ASTRoot root) {
+    public AdvisedClassFilterExpressionVisitor(final String expression, final String namespace, final ASTRoot root) {
         m_root = root;
         m_expression = expression;
         m_namespace = namespace;
@@ -180,8 +178,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     public Object visit(ASTPointcutReference node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
-        AdvisedClassFilterExpressionVisitor expression = namespace.getAdvisedClassExpression(node
-                .getName());
+        AdvisedClassFilterExpressionVisitor expression = namespace.getAdvisedClassExpression(node.getName());
         return new Boolean(expression.match(context));
     }
 
@@ -233,9 +230,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         ExpressionContext context = (ExpressionContext) data;
         ReflectionInfo reflectionInfo = context.getReflectionInfo();
         if (reflectionInfo instanceof MemberInfo) {
-            return node.jjtGetChild(0).jjtAccept(
-                this,
-                ((MemberInfo) reflectionInfo).getDeclaringType());
+            return node.jjtGetChild(0).jjtAccept(this, ((MemberInfo) reflectionInfo).getDeclaringType());
         } else if (reflectionInfo instanceof ClassInfo) {
             return node.jjtGetChild(0).jjtAccept(this, reflectionInfo);
         } else {
@@ -264,8 +259,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     public Object visit(ASTClassPattern node, Object data) {
         ClassInfo classInfo = (ClassInfo) data;
         TypePattern typePattern = node.getTypePattern();
-        if (ClassInfoHelper.matchType(typePattern, classInfo)
-            && visitAttributes(node, classInfo)) {
+        if (ClassInfoHelper.matchType(typePattern, classInfo) && visitAttributes(node, classInfo)) {
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;

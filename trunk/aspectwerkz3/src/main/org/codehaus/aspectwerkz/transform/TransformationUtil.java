@@ -29,8 +29,7 @@ public final class TransformationUtil {
 
     public static final String ORIGINAL_METHOD_PREFIX = ASPECTWERKZ_PREFIX + DELIMITER;
 
-    public static final String CROSS_CUTTING_INFO_CLASS_FIELD = ASPECTWERKZ_PREFIX
-        + "crossCuttingInfo";
+    public static final String CROSS_CUTTING_INFO_CLASS_FIELD = ASPECTWERKZ_PREFIX + "crossCuttingInfo";
 
     public static final String WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "wrapper";
 
@@ -199,8 +198,7 @@ public final class TransformationUtil {
 
     public static final String JOIN_POINT_INDEX_ATTRIBUTE = ASPECTWERKZ_PREFIX + "JoinPointIndex";
 
-    public static final String SYSTEM_ATTRIBUTE_CLASS_USE = ASPECTWERKZ_PREFIX
-        + "ClassUseAttribute";
+    public static final String SYSTEM_ATTRIBUTE_CLASS_USE = ASPECTWERKZ_PREFIX + "ClassUseAttribute";
 
     /**
      * Returns the prefixed method name.
@@ -210,10 +208,7 @@ public final class TransformationUtil {
      * @param className the class name
      * @return the name of the join point
      */
-    public static String getPrefixedMethodName(
-        final String methodName,
-        final int methodSequence,
-        final String className) {
+    public static String getPrefixedMethodName(final String methodName, final int methodSequence, final String className) {
         final StringBuffer buf = new StringBuffer();
         buf.append(ORIGINAL_METHOD_PREFIX);
         buf.append(methodName);

@@ -38,9 +38,7 @@ public class MethodRttiImpl implements MethodRtti {
      * @param thisInstance
      * @param targetInstance
      */
-    public MethodRttiImpl(final MethodSignatureImpl signature,
-                          final Object thisInstance,
-                          final Object targetInstance) {
+    public MethodRttiImpl(final MethodSignatureImpl signature, final Object thisInstance, final Object targetInstance) {
         m_signature = signature;
         m_thisRef = new WeakReference(thisInstance);
         m_targetRef = new WeakReference(targetInstance);

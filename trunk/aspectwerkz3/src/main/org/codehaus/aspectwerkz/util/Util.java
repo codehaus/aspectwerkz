@@ -60,8 +60,8 @@ public final class Util {
     }
 
     /**
-     * Removes the AspectWerkz specific elements from the stack trace. <p/>TODO: how to mess w/ the
-     * stacktrace in JDK 1.3.x?
+     * Removes the AspectWerkz specific elements from the stack trace. <p/>TODO: how to mess w/ the stacktrace in JDK
+     * 1.3.x?
      * 
      * @param exception the Throwable to modify the stack trace on
      * @param className the name of the fake origin class of the exception
@@ -95,8 +95,8 @@ public final class Util {
     }
 
     /**
-     * Returns a String representation of a classloader Avoid to do a toString() if the resulting
-     * string is too long (occurs on Tomcat)
+     * Returns a String representation of a classloader Avoid to do a toString() if the resulting string is too long
+     * (occurs on Tomcat)
      * 
      * @param loader
      * @return String representation (toString or FQN@hashcode)

@@ -15,8 +15,8 @@ import java.io.File;
 import java.io.InputStreamReader;
 
 /**
- * <code>OfflineTransformationTask</code> is an Ant Task that transforms the a class directory
- * structure recursivly using the AspectWerkz -offline mode.
+ * <code>OfflineTransformationTask</code> is an Ant Task that transforms the a class directory structure recursivly
+ * using the AspectWerkz -offline mode.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -102,8 +102,7 @@ public class OfflineTransformationTask extends Task {
         command.append("bin");
         command.append(File.separator);
         command.append("aspectwerkz");
-        if (System.getProperty("os.name").startsWith("Win")
-            || System.getProperty("os.name").startsWith("win")) {
+        if (System.getProperty("os.name").startsWith("Win") || System.getProperty("os.name").startsWith("win")) {
             command.append(".bat");
         }
         command.append(" -offline ");

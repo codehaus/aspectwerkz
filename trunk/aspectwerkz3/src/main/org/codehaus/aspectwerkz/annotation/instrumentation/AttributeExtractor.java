@@ -8,9 +8,9 @@
 package org.codehaus.aspectwerkz.annotation.instrumentation;
 
 /**
- * Methods that should be implemented in order to extract attributes associate with a class. <p/>An
- * implementation this class needs to be provided for each bytecode manipulation library or other
- * meta-data storage mechanism that is supported.
+ * Methods that should be implemented in order to extract attributes associate with a class. <p/>An implementation this
+ * class needs to be provided for each bytecode manipulation library or other meta-data storage mechanism that is
+ * supported.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -20,8 +20,8 @@ public interface AttributeExtractor {
     /**
      * Retreives attributes associated with the class.
      * 
-     * @return An array of attributes that satisfy the instanceof comparison with the filter class.
-     *         Null if there are no attributes associated with the class.
+     * @return An array of attributes that satisfy the instanceof comparison with the filter class. Null if there are no
+     *         attributes associated with the class.
      */
     Object[] getClassAttributes();
 
@@ -35,8 +35,7 @@ public interface AttributeExtractor {
     Object[] getMethodAttributes(String methodName, String[] methodParamTypes);
 
     /**
-     * Return all the attributes associated with a constructor that have a particular method
-     * signature.
+     * Return all the attributes associated with a constructor that have a particular method signature.
      * 
      * @param constructorParamTypes An array of parameter types as given by the reflection api.
      * @return the constructor attributes.

@@ -27,8 +27,7 @@ public class PointcutType {
 
     public static final PointcutType WITHIN_CODE = new PointcutType("withincode");
 
-    public static final PointcutType STATIC_INITIALIZATION = new PointcutType(
-        "staticinitialization");
+    public static final PointcutType STATIC_INITIALIZATION = new PointcutType("staticinitialization");
 
     public static final PointcutType ATTRIBUTE = new PointcutType("attribute");
 
@@ -52,9 +51,7 @@ public class PointcutType {
             return false;
         }
         final PointcutType pointcutType = (PointcutType) o;
-        if ((m_name != null)
-            ? (!m_name.equals(pointcutType.m_name))
-            : (pointcutType.m_name != null)) {
+        if ((m_name != null) ? (!m_name.equals(pointcutType.m_name)) : (pointcutType.m_name != null)) {
             return false;
         }
         return true;
