@@ -706,7 +706,7 @@ public class AnnotationC {
      * Prints the usage.
      */
     private static void printUsage() {
-        System.out.println("AspectWerkz (c) 2002-2004 Jonas Bonér, Alexandre Vasseur");
+        System.out.println("AspectWerkz (c) 2002-2005 Jonas Bonér, Alexandre Vasseur");
         System.out
                 .println(
                         "usage: java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC [-verbose] -src <path to src dir> | -srcfiles <list of files> | -srcincludes <path to file> -classes <path to classes dir> [-dest <path to destination dir>] [-custom <property file for custom annotations>]"
