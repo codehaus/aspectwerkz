@@ -21,12 +21,12 @@ import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @TODO: refactor to only use ONE single pointcut but with a type field???
- * <p/>
  * Abstract implementation of the pointcut concept. I.e. an abstraction of a well defined point of execution in the
  * program.<br/> Could matches one or many as long at it is well defined.<br/> Stores the advices for the specific
  * pointcut.
+ *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public abstract class AbstractPointcut implements Serializable {
 

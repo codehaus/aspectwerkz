@@ -18,14 +18,12 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionExpression;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
-import org.codehaus.aspectwerkz.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
 import org.codehaus.aspectwerkz.pointcut.GetPointcut;
 import org.codehaus.aspectwerkz.pointcut.CallPointcut;
@@ -36,7 +34,6 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 /**
  * Manages the startup procedure, walks through the definition and instantiates the
  * aspects/advices/introduction/pointcuts.
- * <p/>
  * <p/>
  * Reads the definition, either as a class of as an XML file.
  * <p/>
@@ -238,7 +235,7 @@ public class StartupManager {
     }
 
     /**
-     * Registers the method pointcuts.
+     * Registers the execution pointcuts.
      *
      * @param uuid       the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
@@ -254,41 +251,44 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(adviceDef.getExpression().getExpression());
-                if (pointcut == null) {
-                    pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
-                    pointcutManager.addExecutionPointcut(pointcut);
+                if (adviceDef.getExpression().getType().equals(PointcutType.EXECUTION)) {
+                    ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(adviceDef.getExpression().getExpression());
+                    if (pointcut == null) {
+                        pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
+                        pointcutManager.addExecutionPointcut(pointcut);
+                    }
+                    pointcut.addAroundAdvice(adviceDef.getName());
                 }
-                pointcut.addAroundAdvice(adviceDef.getName());
             }
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(adviceDef.getExpression().getExpression());
-                if (pointcut == null) {
-                    pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
-                    pointcutManager.addExecutionPointcut(pointcut);
+                if (adviceDef.getExpression().getType().equals(PointcutType.EXECUTION)) {
+                    ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(adviceDef.getExpression().getExpression());
+                    if (pointcut == null) {
+                        pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
+                        pointcutManager.addExecutionPointcut(pointcut);
+                    }
+                    pointcut.addBeforeAdvice(adviceDef.getName());
                 }
-                pointcut.addBeforeAdvice(adviceDef.getName());
             }
 
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(adviceDef.getExpression().getExpression());
-                if (pointcut == null) {
-                    pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
-                    pointcutManager.addExecutionPointcut(pointcut);
+                if (adviceDef.getExpression().getType().equals(PointcutType.EXECUTION)) {
+                    ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(adviceDef.getExpression().getExpression());
+                    if (pointcut == null) {
+                        pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
+                        pointcutManager.addExecutionPointcut(pointcut);
+                    }
+                    pointcut.addAfterAdvice(adviceDef.getName());
                 }
-                pointcut.addAfterAdvice(adviceDef.getName());
             }
         }
     }
 
     /**
-     * Registers the caller side pointcuts.
+     * Registers the call pointcuts.
      *
      * @param uuid       the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
@@ -303,41 +303,44 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                CallPointcut pointcut = pointcutManager.getCallPointcut(adviceDef.getExpression().getExpression());
-                if (pointcut == null) {
-                    pointcut = new CallPointcut(uuid, adviceDef.getExpression());
-                    pointcutManager.addCallPointcut(pointcut);
+                if (adviceDef.getExpression().getType().equals(PointcutType.CALL)) {
+                    CallPointcut pointcut = pointcutManager.getCallPointcut(adviceDef.getExpression().getExpression());
+                    if (pointcut == null) {
+                        pointcut = new CallPointcut(uuid, adviceDef.getExpression());
+                        pointcutManager.addCallPointcut(pointcut);
+                    }
+                    pointcut.addAroundAdvice(adviceDef.getName());
                 }
-                pointcut.addAroundAdvice(adviceDef.getName());
             }
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                CallPointcut pointcut = pointcutManager.getCallPointcut(adviceDef.getExpression().getExpression());
-                if (pointcut == null) {
-                    pointcut = new CallPointcut(uuid, adviceDef.getExpression());
-                    pointcutManager.addCallPointcut(pointcut);
+                if (adviceDef.getExpression().getType().equals(PointcutType.CALL)) {
+                    CallPointcut pointcut = pointcutManager.getCallPointcut(adviceDef.getExpression().getExpression());
+                    if (pointcut == null) {
+                        pointcut = new CallPointcut(uuid, adviceDef.getExpression());
+                        pointcutManager.addCallPointcut(pointcut);
+                    }
+                    pointcut.addBeforeAdvice(adviceDef.getName());
                 }
-                pointcut.addBeforeAdvice(adviceDef.getName());
             }
 
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                CallPointcut pointcut = pointcutManager.getCallPointcut(adviceDef.getExpression().getExpression());
-                if (pointcut == null) {
-                    pointcut = new CallPointcut(uuid, adviceDef.getExpression());
-                    pointcutManager.addCallPointcut(pointcut);
+                if (adviceDef.getExpression().getType().equals(PointcutType.CALL)) {
+                    CallPointcut pointcut = pointcutManager.getCallPointcut(adviceDef.getExpression().getExpression());
+                    if (pointcut == null) {
+                        pointcut = new CallPointcut(uuid, adviceDef.getExpression());
+                        pointcutManager.addCallPointcut(pointcut);
+                    }
+                    pointcut.addAfterAdvice(adviceDef.getName());
                 }
-                pointcut.addAfterAdvice(adviceDef.getName());
             }
         }
     }
 
     /**
-     * Registers the set field pointcuts.
+     * Registers the set pointcuts.
      *
      * @param uuid       the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
@@ -352,41 +355,44 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                SetPointcut pointcut = pointcutManager.getSetPointcut(adviceDef.getExpression().getExpression());
-                if (pointcut == null) {
-                    pointcut = new SetPointcut(uuid, adviceDef.getExpression());
-                    pointcutManager.addSetPointcut(pointcut);
+                if (adviceDef.getExpression().getType().equals(PointcutType.SET)) {
+                    SetPointcut pointcut = pointcutManager.getSetPointcut(adviceDef.getExpression().getExpression());
+                    if (pointcut == null) {
+                        pointcut = new SetPointcut(uuid, adviceDef.getExpression());
+                        pointcutManager.addSetPointcut(pointcut);
+                    }
+                    pointcut.addAroundAdvice(adviceDef.getName());
                 }
-                pointcut.addAroundAdvice(adviceDef.getName());
             }
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                SetPointcut pointcut = pointcutManager.getSetPointcut(adviceDef.getExpression().getExpression());
-                if (pointcut == null) {
-                    pointcut = new SetPointcut(uuid, adviceDef.getExpression());
-                    pointcutManager.addSetPointcut(pointcut);
+                if (adviceDef.getExpression().getType().equals(PointcutType.SET)) {
+                    SetPointcut pointcut = pointcutManager.getSetPointcut(adviceDef.getExpression().getExpression());
+                    if (pointcut == null) {
+                        pointcut = new SetPointcut(uuid, adviceDef.getExpression());
+                        pointcutManager.addSetPointcut(pointcut);
+                    }
+                    pointcut.addBeforeAdvice(adviceDef.getName());
                 }
-                pointcut.addBeforeAdvice(adviceDef.getName());
             }
 
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                SetPointcut pointcut = pointcutManager.getSetPointcut(adviceDef.getExpression().getExpression());
-                if (pointcut == null) {
-                    pointcut = new SetPointcut(uuid, adviceDef.getExpression());
-                    pointcutManager.addSetPointcut(pointcut);
+                if (adviceDef.getExpression().getType().equals(PointcutType.SET)) {
+                    SetPointcut pointcut = pointcutManager.getSetPointcut(adviceDef.getExpression().getExpression());
+                    if (pointcut == null) {
+                        pointcut = new SetPointcut(uuid, adviceDef.getExpression());
+                        pointcutManager.addSetPointcut(pointcut);
+                    }
+                    pointcut.addAfterAdvice(adviceDef.getName());
                 }
-                pointcut.addAfterAdvice(adviceDef.getName());
             }
         }
     }
 
     /**
-     * Registers the get field pointcuts.
+     * Registers the get pointcuts.
      *
      * @param uuid       the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
@@ -401,33 +407,38 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                GetPointcut pointcut = pointcutManager.getGetPointcut(adviceDef.getExpression().getExpression());
-                if (pointcut == null) {
-                    pointcut = new GetPointcut(uuid, adviceDef.getExpression());
-                    pointcutManager.addGetPointcut(pointcut);
+                if (adviceDef.getExpression().getType().equals(PointcutType.GET)) {
+                    GetPointcut pointcut = pointcutManager.getGetPointcut(adviceDef.getExpression().getExpression());
+                    if (pointcut == null) {
+                        pointcut = new GetPointcut(uuid, adviceDef.getExpression());
+                        pointcutManager.addGetPointcut(pointcut);
+                    }
+                    pointcut.addAroundAdvice(adviceDef.getName());
                 }
-                pointcut.addAroundAdvice(adviceDef.getName());
             }
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                GetPointcut pointcut = pointcutManager.getGetPointcut(adviceDef.getExpression().getExpression());
-                if (pointcut == null) {
-                    pointcut = new GetPointcut(uuid, adviceDef.getExpression());
-                    pointcutManager.addGetPointcut(pointcut);
+                if (adviceDef.getExpression().getType().equals(PointcutType.GET)) {
+                    GetPointcut pointcut = pointcutManager.getGetPointcut(adviceDef.getExpression().getExpression());
+                    if (pointcut == null) {
+                        pointcut = new GetPointcut(uuid, adviceDef.getExpression());
+                        pointcutManager.addGetPointcut(pointcut);
+                    }
+                    pointcut.addBeforeAdvice(adviceDef.getName());
                 }
-                pointcut.addBeforeAdvice(adviceDef.getName());
             }
 
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                GetPointcut pointcut = pointcutManager.getGetPointcut(adviceDef.getExpression().getExpression());
-                if (pointcut == null) {
-                    pointcut = new GetPointcut(uuid, adviceDef.getExpression());
-                    pointcutManager.addGetPointcut(pointcut);
+                if (adviceDef.getExpression().getType().equals(PointcutType.GET)) {
+                    GetPointcut pointcut = pointcutManager.getGetPointcut(adviceDef.getExpression().getExpression());
+                    if (pointcut == null) {
+                        pointcut = new GetPointcut(uuid, adviceDef.getExpression());
+                        pointcutManager.addGetPointcut(pointcut);
+                    }
+                    pointcut.addAfterAdvice(adviceDef.getName());
                 }
-                pointcut.addAfterAdvice(adviceDef.getName());
             }
         }
     }
@@ -528,8 +539,8 @@ public class StartupManager {
                         aspect.addMethodToCflowExpressionMap(expression, value);
                     }
                 }
-                //
-//
+                //TODO ALEX - is this commented code needed?
+
 //                    // add a mapping between the cflow pattern and the method patterns affected
 //                    for (Iterator it3 = weavingRule.getPointcutRefs().iterator(); it3.hasNext();) {
 //                        PointcutDefinition pointcutDef = aspectDef.getPointcutDef((String)it3.next());

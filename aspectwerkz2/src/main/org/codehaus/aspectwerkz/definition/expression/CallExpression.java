@@ -17,9 +17,10 @@ import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 
 /**
+ * @todo document
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @todo document
  */
 public class CallExpression extends LeafExpression {
 

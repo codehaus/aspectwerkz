@@ -17,9 +17,10 @@ import org.codehaus.aspectwerkz.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.regexp.ConstructorPattern;
 
 /**
+ * @todo document
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @todo document
  */
 public class ExecutionExpression extends LeafExpression {
 
@@ -34,10 +35,10 @@ public class ExecutionExpression extends LeafExpression {
         if (!match(classMetaData)) {
             return false;
         }
-        if (memberMetaData instanceof MethodMetaData) {
+        if (memberMetaData instanceof MethodMetaData && m_memberPattern instanceof MethodPattern) {
             return ((MethodPattern)m_memberPattern).matches((MethodMetaData)memberMetaData);
         }
-        else if (memberMetaData instanceof ConstructorMetaData) {
+        else if (memberMetaData instanceof ConstructorMetaData && m_memberPattern instanceof ConstructorPattern) {
             return ((ConstructorPattern)m_memberPattern).matches((ConstructorMetaData)memberMetaData);
         }
         else {

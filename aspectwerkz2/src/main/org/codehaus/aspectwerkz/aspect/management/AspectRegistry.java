@@ -370,7 +370,8 @@ public class AspectRegistry {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
-            pointcuts.addAll(aspect.getExecutionPointcuts(classMetaData, memberMetaData));
+            List executionPointcuts = aspect.getExecutionPointcuts(classMetaData, memberMetaData);
+            pointcuts.addAll(executionPointcuts);
         }
         return pointcuts;
     }

@@ -120,9 +120,9 @@ public class ExpressionExpression extends Expression {
      * Identifier lookup
      */
     private void initializeLeafExpressionMapFromAST() {
-        //TODO do we really need name->expr mapping ?
+        //TODO ALEX do we really need name->expr mapping ?
         // ..and not only name list
-        //TODO: NOTE: "false AND subNodeMap" NODES should be ignored
+        //TODO ALEX: NOTE: "false AND subNodeMap" NODES should be ignored
         // ..but can be complex due to (NOT true) AND subNodeMap syntax style
 
         List leafNames = new ArrayList();
@@ -138,9 +138,9 @@ public class ExpressionExpression extends Expression {
      * Cflow identifier lookup
      */
     private void initializeCflowExpressionMapFromAST() {
-        //TODO do we really need name->expr mapping ?
+        //TODO ALEX do we really need name->expr mapping ?
         // ..and not only name list
-        //TODO: NOTE: "false AND subNodeMap" NODES should be ignored
+        //TODO ALEX: NOTE: "false AND subNodeMap" NODES should be ignored
         // ..but can be complex due to (NOT true) AND subNodeMap syntax style
 
         List cflowNames = new ArrayList();
@@ -154,6 +154,12 @@ public class ExpressionExpression extends Expression {
             throw new RuntimeException("complex cflow expression not supported yet");
     }
 
+    /**
+     * @TODO document
+     * 
+     * @param classMetaData
+     * @return
+     */
     public boolean match(final ClassMetaData classMetaData) {
         for (Iterator it = m_expressionRefs.values().iterator(); it.hasNext();) {
             Expression expression = (Expression)it.next();

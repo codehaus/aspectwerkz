@@ -69,7 +69,6 @@ public class ConstructorTestAspect extends Aspect {
      */
     Pointcut execution5;
 
-
     // ============ Advices ============
 
     /**
