@@ -100,7 +100,7 @@ public class PerformanceTest extends TestCase {
         time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
         double overhead = timePerInvocation - timePerInvocationNormalMethod;
-        if (m_printInfo) System.out.println("\nOverhead, advised method PER_THREAD: " + overhead);
+        if (m_printInfo) System.out.println("\nOverhead, advised method PER_THREAD advice: " + overhead);
     }
 
     public void testIntroductionPerJVMPerformance() {

@@ -30,13 +30,7 @@ public class ReflectionTest extends TestCase {
 
     public void testSinglePointcutOnSuperClassWithOverridedMethodDelegating() {
         Child2 c = new Child2();
-        try {
-            //@todo uncomment when fixed
-            //assertEquals(-3, c.incr(1));
-        } catch (Throwable t) {
-            //@todo remove try catch when fixed
-            fail(t.toString());
-        }
+        assertEquals(-3, c.incr(1));
     }
 
     public void testDualPointcutWithOverridedMethodNonDelegating() {
@@ -46,16 +40,8 @@ public class ReflectionTest extends TestCase {
 
     public void testDualPointcutWithOverridedMethodDelegating() {
         Child c = new Child();
-        try {
-            //@todo uncomment when fixed
-            //assertEquals(-3, c.incr(1));
-            // Note: special use case - advice of overrided method not executed
-            // Thus result is -3 and not +3 as we could think
-        } catch (Throwable t) {
-            //@todo remove try catch when fixed
-            fail(t.toString());
-        }
+        assertEquals(-3, c.incr(1));
+        // Note: special use case - advice of overrided method not executed
+        // Thus result is -3 and not +3 as we could think
     }
-
-
 }

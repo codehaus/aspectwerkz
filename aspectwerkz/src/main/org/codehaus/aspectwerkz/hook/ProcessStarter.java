@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.hook;
 
 import com.sun.jdi.VirtualMachine;
 
-import java.lang.reflect.Method;
 import java.io.File;
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -109,11 +108,11 @@ public class ProcessStarter {
      */
     private static boolean hasCanRedefineClass() {
         try {
-            Method canM = VirtualMachine.class.getMethod("canRedefineClasses", new Class[]{});
-            return true;
+            VirtualMachine.class.getMethod("canRedefineClasses", new Class[]{});
         } catch (NoSuchMethodException e) {
             return false;
         }
+        return true;
     }
 
     private int run(String args[]) {

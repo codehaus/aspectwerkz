@@ -15,7 +15,6 @@ import java.io.ObjectOutputStream;
 import java.lang.ref.SoftReference;
 
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
-import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
 
 /**
  * Matches well defined point of execution in the program where a field is
@@ -34,7 +33,6 @@ public class MemberFieldGetJoinPoint extends FieldJoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
     private static final long serialVersionUID = 446929646654050997L;
 

@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.util.Set;
 import java.util.Iterator;
-import java.util.List;
 import java.util.HashSet;
 
 import org.apache.bcel.generic.ConstantPoolGen;

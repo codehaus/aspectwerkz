@@ -7,9 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.advice;
 
-import java.util.Map;
-import java.util.WeakHashMap;
-
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
@@ -34,11 +31,6 @@ public class CFlowPreAdvice extends PreAdvice {
      * The deployment model for the advice.
      */
     public static final String DEPLOYMENT_MODEL = AspectWerkzDefinition.PER_THREAD;
-
-    /**
-     * Caches the meta-data A maps it to the method instance.
-     */
-    private final Map m_metaDataCache = new WeakHashMap();
 
     /**
      * Creates a new cflow advice.
@@ -84,7 +76,7 @@ public class CFlowPreAdvice extends PreAdvice {
     }
 
     /**
-     * Creates A returns the meta-data for the join point. Uses a cache.
+     * Creates and returns the meta-data for the join point. Uses a cache.
      *
      * @todo should use a cache (used to cache on the Method instance but at caller side pointcuts no Method instance is available)
      *
@@ -93,17 +85,6 @@ public class CFlowPreAdvice extends PreAdvice {
      */
     private ClassNameMethodMetaDataTuple getMetaData(final JoinPoint joinPoint) {
         CallerSideJoinPoint jp = ((CallerSideJoinPoint)joinPoint);
-        ClassNameMethodMetaDataTuple metaData;
-
-//        Method method = jp.getMethod();
-//        Object cachedMetaData = m_metaDataCache.get(method);
-//        if (cachedMetaData == null) {
-            metaData = new ClassNameMethodMetaDataTuple(jp.getCalleeClassName(), createMetaData(jp));
-//            m_metaDataCache.put(method, metaData);
-//        }
-//        else {
-//            metaData = (ClassNameMethodMetaDataTuple)cachedMetaData;
-//        }
-        return metaData;
+        return new ClassNameMethodMetaDataTuple(jp.getCalleeClassName(), createMetaData(jp));
     }
 }

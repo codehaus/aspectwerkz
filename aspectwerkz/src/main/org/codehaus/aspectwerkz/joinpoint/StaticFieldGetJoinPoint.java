@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
-import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
 
 /**
  * Matches well defined point of execution in the program where a field is
@@ -32,7 +31,6 @@ public class StaticFieldGetJoinPoint extends FieldJoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
     private static final long serialVersionUID = 1790390896888275229L;
 

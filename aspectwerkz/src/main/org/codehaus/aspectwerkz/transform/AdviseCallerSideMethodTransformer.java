@@ -173,8 +173,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                         // take care of identification of overloaded methods
                         // by inserting a sequence number
                         if (methodSequences.containsKey(calleeMethodName)) {
-                            int sequence =
-                                    ((Integer)methodSequences.
+                            int sequence = ((Integer)methodSequences.
                                     get(calleeMethodName)).intValue();
 
                             methodSequences.remove(calleeMethodName);
@@ -190,12 +189,20 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                         isClassAdvised = true;
 
                         insertPreAdvice(
-                                il, ih, cg, calleeMethodName,
-                                methodSequence, factory, joinPointType);
+                                il, ih, cg,
+                                calleeMethodName,
+                                methodSequence,
+                                factory,
+                                joinPointType
+                        );
 
                         insertPostAdvice(
-                                il, ih.getNext(), cg, calleeMethodName,
-                                methodSequence, factory, joinPointType);
+                                il, ih.getNext(), cg,
+                                calleeMethodName,
+                                methodSequence,
+                                factory,
+                                joinPointType
+                        );
 
                         StringBuffer key = new StringBuffer();
                         key.append(className);
@@ -210,7 +217,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
 
                             addStaticJoinPointField(
                                     cpg, cg, calleeMethodName,
-                                    methodSequence, joinPointType);
+                                    methodSequence, joinPointType
+                            );
 
                             if (hasClInitMethod) {
                                 methods[clinitIndex] = createStaticJoinPointField(
@@ -224,7 +232,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                                         calleeMethodSignature,
                                         factory,
                                         joinPointType,
-                                        m_definition.getUuid());
+                                        m_definition.getUuid()
+                                );
                             }
                             else if (clInitMethod == null) {
                                 clInitMethod = createClInitMethodWithStaticJoinPointField(
@@ -237,7 +246,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                                         calleeMethodSignature,
                                         factory,
                                         joinPointType,
-                                        m_definition.getUuid());
+                                        m_definition.getUuid()
+                                );
                             }
                             else {
                                 clInitMethod = createStaticJoinPointField(
@@ -251,7 +261,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                                         calleeMethodSignature,
                                         factory,
                                         joinPointType,
-                                        m_definition.getUuid());
+                                        m_definition.getUuid()
+                                );
                             }
                         }
                     }
@@ -270,7 +281,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 clInitMethod = createStaticClassField(
                         cpg, cg,
                         clInitMethod,
-                        factory);
+                        factory
+                );
 
                 newMethods.add(clInitMethod);
             }
@@ -279,7 +291,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 methods[clinitIndex] = createStaticClassField(
                         cpg, cg,
                         methods[clinitIndex],
-                        factory);
+                        factory
+                );
             }
         }
         // update the old methods
@@ -312,7 +325,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 Constants.ACC_PRIVATE | Constants.ACC_FINAL | Constants.ACC_STATIC,
                 new ObjectType("java.lang.Class"),
                 TransformationUtil.STATIC_CLASS_FIELD,
-                cp);
+                cp
+        );
 
         cg.addField(field.getField());
     }
@@ -343,7 +357,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 Constants.ACC_PRIVATE | Constants.ACC_FINAL | Constants.ACC_STATIC,
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_TYPE,
                 joinPoint.toString(),
-                cp);
+                cp
+        );
 
         cg.addField(field.getField());
     }
@@ -376,14 +391,16 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 "forName",
                 new ObjectType("java.lang.Class"),
                 new Type[]{Type.STRING},
-                Constants.INVOKESTATIC));
+                Constants.INVOKESTATIC
+        ));
 
         // set the result to the static class field
         il.insert(ih, factory.createFieldAccess(
                 className,
                 TransformationUtil.STATIC_CLASS_FIELD,
                 new ObjectType("java.lang.Class"),
-                Constants.PUTSTATIC));
+                Constants.PUTSTATIC
+        ));
 
         mg.setMaxStack();
         mg.setMaxLocals();
@@ -439,10 +456,10 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 new String[]{},
                 "<clinit>",
                 className,
-                il, cp);
+                il, cp
+        );
 
-        il.append(factory.createNew(
-                TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS));
+        il.append(factory.createNew(TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS));
         il.append(InstructionConstants.DUP);
 
         il.append(new PUSH(cp, uuid));
@@ -450,7 +467,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 cg.getClassName(),
                 TransformationUtil.STATIC_CLASS_FIELD,
                 new ObjectType("java.lang.Class"),
-                Constants.GETSTATIC));
+                Constants.GETSTATIC
+        ));
         il.append(new PUSH(cp, callerMethodName));
         il.append(new PUSH(cp, callerMethodSignature));
         il.append(new PUSH(cp, fullCalleeMethodName.toString()));
@@ -460,17 +478,19 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS,
                 "<init>",
                 Type.VOID,
-                new Type[]{Type.STRING,
-                           new ObjectType("java.lang.Class"),
-                           Type.STRING, Type.STRING,
-                           Type.STRING, Type.STRING},
-                Constants.INVOKESPECIAL));
+                new Type[]{
+                    Type.STRING, new ObjectType("java.lang.Class"), Type.STRING,
+                    Type.STRING, Type.STRING, Type.STRING
+                },
+                Constants.INVOKESPECIAL
+        ));
 
         il.append(factory.createFieldAccess(
                 cg.getClassName(),
                 joinPoint.toString(),
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_TYPE,
-                Constants.PUTSTATIC));
+                Constants.PUTSTATIC
+        ));
 
         il.append(factory.createReturn(Type.VOID));
 
@@ -512,13 +532,12 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
             final String uuid) {
 
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
-        final StringBuffer joinPoint =
-                getJoinPointName(joinPointPrefix, calleeMethodName, methodSequence);
+        final StringBuffer joinPoint = getJoinPointName(
+                joinPointPrefix, calleeMethodName, methodSequence);
 
         StringBuffer fullCalleeMethodName = new StringBuffer();
         fullCalleeMethodName.append(calleeClassName);
-        fullCalleeMethodName.append(TransformationUtil.
-                CALL_SIDE_DELIMITER);
+        fullCalleeMethodName.append(TransformationUtil.CALL_SIDE_DELIMITER);
         fullCalleeMethodName.append(calleeMethodName);
 
         final MethodGen mg = new MethodGen(clInit, cg.getClassName(), cp);
@@ -526,8 +545,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
 
         final InstructionHandle ih = il.getStart();
 
-        il.insert(ih, factory.createNew(
-                TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS));
+        il.insert(ih, factory.createNew(TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS));
         il.insert(ih, InstructionConstants.DUP);
 
         il.insert(ih, new PUSH(cp, uuid));
@@ -535,7 +553,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 cg.getClassName(),
                 TransformationUtil.STATIC_CLASS_FIELD,
                 new ObjectType("java.lang.Class"),
-                Constants.GETSTATIC));
+                Constants.GETSTATIC
+        ));
         il.insert(ih, new PUSH(cp, callerMethodName));
         il.insert(ih, new PUSH(cp, callerMethodSignature));
         il.insert(ih, new PUSH(cp, fullCalleeMethodName.toString()));
@@ -545,17 +564,18 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS,
                 "<init>",
                 Type.VOID,
-                new Type[]{Type.STRING,
-                           new ObjectType("java.lang.Class"),
-                           Type.STRING, Type.STRING,
-                           Type.STRING, Type.STRING},
+                new Type[]{
+                    Type.STRING, new ObjectType("java.lang.Class"), Type.STRING,
+                    Type.STRING, Type.STRING, Type.STRING
+                },
                 Constants.INVOKESPECIAL));
 
         il.insert(ih, factory.createFieldAccess(
                 cg.getClassName(),
                 joinPoint.toString(),
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_TYPE,
-                Constants.PUTSTATIC));
+                Constants.PUTSTATIC
+        ));
 
         mg.setMaxStack();
         mg.setMaxLocals();
@@ -584,20 +604,22 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
         final String joinPointClass = getJoinPointClass(joinPointType);
 
-        final StringBuffer joinPoint =
-                getJoinPointName(joinPointPrefix, fieldName, methodSequence);
+        final StringBuffer joinPoint = getJoinPointName(
+                joinPointPrefix, fieldName, methodSequence);
 
         il.insert(before, factory.createFieldAccess(
                 cg.getClassName(),
                 joinPoint.toString(),
                 joinPointType,
-                Constants.GETSTATIC));
+                Constants.GETSTATIC
+        ));
 
         il.insert(before, factory.createInvoke(joinPointClass,
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_PRE_EXECUTION_METHOD,
                 Type.VOID,
                 Type.NO_ARGS,
-                Constants.INVOKEVIRTUAL));
+                Constants.INVOKEVIRTUAL
+        ));
     }
 
     /**
@@ -622,21 +644,23 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
         final String joinPointClass = getJoinPointClass(joinPointType);
 
-        final StringBuffer joinPoint =
-                getJoinPointName(joinPointPrefix, fieldName, methodSequence);
+        final StringBuffer joinPoint = getJoinPointName(
+                joinPointPrefix, fieldName, methodSequence);
 
         il.insert(before, factory.createFieldAccess(
                 cg.getClassName(),
                 joinPoint.toString(),
                 joinPointType,
-                Constants.GETSTATIC));
+                Constants.GETSTATIC
+        ));
 
         il.insert(before, factory.createInvoke(
                 joinPointClass,
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_POST_EXECUTION_METHOD,
                 Type.VOID,
                 Type.NO_ARGS,
-                Constants.INVOKEVIRTUAL));
+                Constants.INVOKEVIRTUAL
+        ));
     }
 
     /**

@@ -209,7 +209,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${src.dir}/samples${pathseparator}${dist.dir}/samples.jar examples.logging.Target"/>
+            <arg line="-cp ${src.dir}/samples${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=examples examples.logging.Target"/>
         </exec>
     </goal>
 
@@ -427,6 +427,6 @@
     <!--            </exec>-->
     <!--        </goal>-->
 
-</project>
+   </project>
 
 

@@ -487,7 +487,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                             Constants.INVOKEVIRTUAL));
                 }
                 else if (bcelReturnType.equals(Type.VOID)) {
-                    // skip
+                    ;// skip
                 }
                 else {
                     throw new Error("unknown return type: " + bcelReturnType);

@@ -245,7 +245,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
                     repository.add(metaData);
                 }
                 catch (ClassNotFoundException e) {
-                    // ignore
+                    ;// ignore
                 }
             }
         }
@@ -310,7 +310,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             AspectWerkzDefinition.createDefinition(document);
         }
         catch (Exception e) {
-            // ignore
+            ;// ignore
         }
     }
 

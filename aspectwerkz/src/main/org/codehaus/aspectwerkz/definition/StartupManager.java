@@ -410,7 +410,9 @@ public class StartupManager {
 
                     // create method pointcut
                     MethodPointcut methodPointcut = new MethodPointcut(
-                            uuid, weavingRule.getExpression());
+                            uuid,
+                            weavingRule.getExpression()
+                    );
 
                     // add all referenced method poincuts definitions
                     boolean hasMethodPointcut = false;

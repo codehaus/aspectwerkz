@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.ObjectInputStream;
 
-import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
 
 /**
@@ -31,7 +30,6 @@ public class StaticFieldSetJoinPoint extends FieldJoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
     private static final long serialVersionUID = -5478570438032624169L;
 

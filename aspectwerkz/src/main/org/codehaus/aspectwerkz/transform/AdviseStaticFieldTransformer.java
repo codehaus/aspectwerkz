@@ -63,8 +63,6 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
     /**
      * Transforms the fields.
      *
-     * @todo remove all thread-safe stuff
-     *
      * @param context the transformation context
      * @param klass the class set.
      */

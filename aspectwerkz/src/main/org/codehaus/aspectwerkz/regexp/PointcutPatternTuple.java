@@ -9,9 +9,6 @@ package org.codehaus.aspectwerkz.regexp;
 
 import java.io.Serializable;
 
-import org.codehaus.aspectwerkz.regexp.Pattern;
-import org.codehaus.aspectwerkz.regexp.ClassPattern;
-
 /**
  * Holds a pre-compiled tuple that consists of the class pattern A the
  * pattern for a specific pointcut.

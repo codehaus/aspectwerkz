@@ -41,6 +41,9 @@
                     <li>
                         <a href="#Join point controller">Join point controller</a>
                     </li>
+                    <li>
+                        <a href="#Non-reentrancy">Non-reentrancy</a>
+                    </li>
                 </ol>
             </p>
 
@@ -465,7 +468,8 @@ String timeOut = getParameter("timeout");
 <source><![CDATA[
 <aspectwerkz>
 
-    <!-- Transformations will only take place within the 'org.codehaus.package' and subpackages -->
+    <!-- Transformations will only take place within the 'org.codehaus.package' package
+         and its subpackages -->
     <transformation-scope package="org.codehaus"/>
     ...
 
@@ -890,7 +894,12 @@ public Object someMethod(..) {..}
 
         <section name="Join point controller">
             <p>
-                The <code>JoinPointController</code> allows you to control:
+                The <code>JoinPointController</code> allows you to control the execution
+                flow of your advices based on custom defined constraints and rules, rules
+                that can be changed at runtime.
+            </p>
+            <p>
+                It allows you to (for example) control:
                 <ul>
                     <li>
                         inter-aspect compatibility
@@ -902,10 +911,6 @@ public Object someMethod(..) {..}
                         aspect redundancy
                     </li>
                 </ul>
-            </p>
-            <p>
-                I.e. it allows you to control the execution flow based on custom defined constraints
-                and rules.
             </p>
 
             <p>
@@ -994,6 +999,59 @@ public void someMethod() {
 
             </subsection>
         </section>
+
+        <section name="Non-reentrancy">
+            <p>
+                By default <code>AspectWerkz</code> allows reentrancy for advices
+                at the join points. This could lead to infinite recursion, which
+                will end your application abruptly with a <code>StackOverflowException</code>.
+            </p>
+            <p>
+                To prevent this you have the option of defining some of your pointcuts as
+                <code>non-reentrant</code>, which means that the programs execution flow is
+                not allowed to enter the same join point more that once.
+            </p>
+            <subsection name="Definition">
+                <p>
+                </p>
+                <p>
+                    <b>Attributes</b>
+                </p>
+                <p>
+                    You can define the non-reentrancy in the <code>@aspectwerkz.advice.method</code>
+                    attribute tag. Simply add an attribute called <code>non-reentrant</code>
+                    and set it to <code>true</code>.
+                </p>
+                <p>
+<source><![CDATA[
+/**
+ * @aspectwerkz.advice.method log non-reentrant=true
+ */
+public void someMethod() {
+    ...
+}
+]]></source>
+                </p>
+                <p>
+                    <b>XML definition</b>
+                </p>
+                <p>
+                    To define a pointcut as <code>non-reentrant</code> in the XML definition
+                    you have to add the attribute <code>non-reentrant</code> to the
+                    <code>pointcut-def</code> element and set it to <code>true</code>.
+                </p>
+                <p>
+<source><![CDATA[
+<aspect name="MyAspect">
+    <pointcut-def ... non-reentrant="true"/>
+    ...
+</aspect>
+]]></source>
+                </p>
+
+            </subsection>
+        </section>
+
     </body>
 
 </document>

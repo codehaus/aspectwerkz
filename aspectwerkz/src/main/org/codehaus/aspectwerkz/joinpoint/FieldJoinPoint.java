@@ -33,9 +33,8 @@ public abstract class FieldJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
-    private static final long serialVersionUID = -8388074970260062323L;
+    private static final long serialVersionUID = 3860645288055327581L;
 
     /**
      * The signature for the field.

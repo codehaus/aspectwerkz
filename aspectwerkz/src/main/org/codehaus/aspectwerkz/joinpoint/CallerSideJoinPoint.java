@@ -40,9 +40,8 @@ public class CallerSideJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
-    private static final long serialVersionUID = 172716696980471700L;
+    private static final long serialVersionUID = -8831127199517513612L;;
 
     /**
      * A reference to the caller class.

@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.transform;
 
 import java.util.Set;
-import java.util.List;
 import java.util.HashSet;
 
 import org.apache.bcel.generic.ClassGen;

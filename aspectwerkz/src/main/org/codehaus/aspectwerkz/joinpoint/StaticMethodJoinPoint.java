@@ -25,7 +25,6 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
     private static final long serialVersionUID = 1361833094714874172L;
 
@@ -70,6 +69,15 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
 
         // get the cflow pointcuts that affects this join point
         m_cflowPointcuts = m_system.getCFlowPointcuts(m_targetClass.getName(), m_methodMetaData);
+
+        // check if the one of the pointcuts is marked as non-reentrant
+        for (int j = 0; j < m_pointcuts.length; j++) {
+            if (m_pointcuts[j].isNonReentrant()) {
+                System.out.println("is non-reentrant");
+                m_isNonReentrant = true;
+                break;
+            }
+        }
     }
 
     /**
@@ -98,6 +106,15 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
         clone.m_methodMetaData = m_methodMetaData;
         clone.m_controller = m_controller.deepCopy();
         return clone;
+    }
+
+    /**
+     * Overrides hashCode.
+     *
+     * @return the hash code
+     */
+    public int hashCode() {
+        return super.hashCode();
     }
 
     /**
