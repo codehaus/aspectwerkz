@@ -22,9 +22,8 @@ public abstract class AbstractIntroductionAspect extends Aspect {
 //     Mixin mixinInterface;
 
     /**
-     * TODO: is this a good abstraction ?
-     * Shall we allow for defining pointcuts thru @Implements ?
-     * What if the abstract aspect provide all the mixin impl ?
+     * The Introduce doclet is not necessary here.
+     * This aspect provides a half completed mixin impl (abstract one)
      *
      * @Introduce TO_BE_DEFINED
      */

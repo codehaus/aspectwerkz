@@ -62,6 +62,11 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     private ConstantPoolGen m_constantPoolGen = null;
 
     /**
+     * Compiled class class loader
+     */
+    private URLClassLoader m_loader = null;
+
+    /**
      * Initializes the attribute enhancer.
      * Must always be called before use.
      *
@@ -72,10 +77,10 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     public boolean initialize(final String className, final String classPath) {
         try {
             URL[] urls = new URL[]{new File(classPath).toURL()};
-            URLClassLoader loader = new URLClassLoader(urls);
+            m_loader = new URLClassLoader(urls);
 
             String classFileName = className.replace('.', '/') + ".class";
-            InputStream classAsStream = loader.getResourceAsStream(classFileName);
+            InputStream classAsStream = m_loader.getResourceAsStream(classFileName);
 
             if (classAsStream == null) return false;
             ClassParser classParser = new ClassParser(classAsStream, className);
@@ -225,5 +230,44 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
+    }
+
+    /**
+     * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
+     * @return nearest superclass (including itself) ' implemented interfaces
+     */
+    public String[] getNearestInterfacesInHierarchy(String innerClassName) {
+        if (m_loader == null) throw new IllegalStateException("attribute enhancer is not initialized");
+        try {
+            Class innerClass = Class.forName(innerClassName, false, m_loader);
+            return getNearestInterfacesInHierarchy(innerClass);
+        } catch (ClassNotFoundException e) {
+            // should not be raised
+            throw new RuntimeException("could not mixin for mixin implicit interface: ClassNotFoundException : " + e.getMessage());
+        } catch (NoClassDefFoundError er) {
+            // raised if extends / implements dependancies not found
+            throw new RuntimeException("could not dependancy for mixin implicit interface: " + innerClassName+ " ClassNotFoundException for " + er.getMessage());
+        }
+    }
+
+    /**
+     * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
+     * @return nearest superclass (including itself) ' implemented interfaces starting from root
+     */
+    private String[] getNearestInterfacesInHierarchy(Class root) {
+        if (root == null) {
+            return new String[]{};
+        }
+        Class[] implementedClasses = root.getInterfaces();
+        String[] interfaces = null;
+        if (implementedClasses.length == 0) {
+            interfaces = getNearestInterfacesInHierarchy(root.getSuperclass());
+        } else {
+            interfaces = new String[implementedClasses.length];
+            for (int i = 0; i < implementedClasses.length; i++) {
+                interfaces[i] = implementedClasses[i].getName();
+            }
+        }
+        return interfaces;
     }
 }

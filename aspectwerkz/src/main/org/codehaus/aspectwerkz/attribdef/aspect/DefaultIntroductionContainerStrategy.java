@@ -204,8 +204,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
         // check compatibility
         IntroductionDefinition def = m_prototype.getIntroductionDefinition();
         for (Iterator intfs = def.getInterfaceClassNames().iterator(); intfs.hasNext();) {
-            //todo findInterface does not work when A impl I and B extend A: B does not match I
-            if ( ! findInterface(newImplementationClass, (String) intfs.next()) ) {
+            if ( ! findInterfaceInHierarchy(newImplementationClass, (String) intfs.next()) ) {
                 throw new DefinitionException("new implementation class is not compatible");
             }
         }
@@ -229,30 +228,28 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
     }
 
     /**
-     * TODO double code from xmldef Introduction
      * Recursively traverse the interface hierarchy implemented by the given root class in
      * order to find one that matches the given name.
+     * Looks in the class hierarchy as well.
      *
      * @param root is the class or interface to start the search at.
      * @param requiredInterface that we are looking for.
      * @return <code>true</code> if we found the interface, <code>false</code> otherwise.
      */
-    private static boolean findInterface(final Class root, final String requiredInterface) {
+    private static boolean findInterfaceInHierarchy(final Class root, final String requiredInterface) {
+        if (root == null)
+            return false;
 
-        // The implementation uses a single loop over the directly
-        // implemented interfaces. In the loop, first we check if the
-        // current interface is the one we're looking for, A then if not
-        // we call this same method starting at that current interface.
+        // looks in directly implemented interface first
         Class[] interfaces = root.getInterfaces();
-
         for (int i = 0; i < interfaces.length; i++) {
             Class implemented = interfaces[i];
             if (implemented.getName().equals(requiredInterface)
-                    || findInterface(implemented, requiredInterface)) {
+                    || findInterfaceInHierarchy(implemented, requiredInterface)) {
                 return true;
             }
         }
-        return false;
+        return findInterfaceInHierarchy(root.getSuperclass(), requiredInterface);
     }
 
     /**
