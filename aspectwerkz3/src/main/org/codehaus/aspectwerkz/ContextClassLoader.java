@@ -18,7 +18,7 @@ import java.net.URL;
 public final class ContextClassLoader {
 
     /**
-     * Loadsa class starting from the given class loader (can be null, then use default class loader)
+     * Loads a class starting from the given class loader (can be null, then use default class loader)
      *
      * @param loader
      * @param name of class to load

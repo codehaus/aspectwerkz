@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.management.Aspects;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 import java.io.ObjectInputStream;
