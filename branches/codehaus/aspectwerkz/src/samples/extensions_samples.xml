@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<aspectwerkz>
+
+    <introduction name="persistable"
+        interface="org.codehaus.aspectwerkz.extension.persistence.Persistable"/>
+
+    <advice name="makePersistent"
+        class="org.codehaus.aspectwerkz.extension.persistence.DirtyFieldCheckAdvice"
+        deployment-model="perJVM"
+        attribute="persistent"/>
+
+    <aspect class="examples.transparentpersistence.Counter">
+        <introduction-ref name="persistable"/>
+    </aspect>
+
+
+
+</aspectwerkz>
