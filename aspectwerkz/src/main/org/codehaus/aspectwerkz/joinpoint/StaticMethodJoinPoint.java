@@ -10,14 +10,16 @@ package org.codehaus.aspectwerkz.joinpoint;
 import java.util.List;
 import java.util.Iterator;
 
-import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
- * Mathes well defined point of execution in the program where a static method
- * is executed.<br/>Stores meta data from the join point. I.e. a reference to
- * original object A method, the parameters to A the result from the
- * original method invocation etc.<br/>Handles the invocation of the advices
- * added to the join point.
+ * Mathes well defined point of execution in the program where a static method is executed.
+ * <p/>
+ * Stores meta data from the join point. I.e. a reference to original object and method,
+ * the parameters to and the result from the original method invocation etc.
+ * <p/>
+ * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -25,6 +27,8 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
 
     /**
      * The serial version uid for the class.
+     *
+     * @TODO recalculate
      */
     private static final long serialVersionUID = 1361833094714874172L;
 
@@ -48,16 +52,27 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
         m_originalMethod = m_system.getMethod(m_targetClass, methodId);
         m_originalMethod.setAccessible(true);
 
+        try {
+            m_proxyMethod = m_targetClass.getDeclaredMethod(
+                    getMethodName(),
+                    m_originalMethod.getParameterTypes()
+            );
+        }
+        catch (Exception e) {
+            // TODO: how to handle exception here?
+            throw new WrappedRuntimeException(e);
+        }
+
         createMetaData();
 
         // get all the pointcuts for this class
-        List pointcuts = m_system.getMethodPointcuts(m_classMetaData, m_methodMetaData);
+        List pointcuts = m_system.getExecutionPointcuts(m_classMetaData, m_methodMetaData);
 
         // put the pointcuts in the pointcut array
-        m_pointcuts = new MethodPointcut[pointcuts.size()];
+        m_pointcuts = new ExecutionPointcut[pointcuts.size()];
         int i = 0;
         for (Iterator it = pointcuts.iterator(); it.hasNext(); i++) {
-            m_pointcuts[i] = (MethodPointcut)it.next();
+            m_pointcuts[i] = (ExecutionPointcut)it.next();
         }
 
         if (m_pointcuts.length == 0) {

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.ObjectInputStream;
 
-import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
+import org.codehaus.aspectwerkz.pointcut.GetPointcut;
 import org.codehaus.aspectwerkz.IndexTuple;
 
 /**
@@ -78,10 +78,10 @@ public class StaticFieldGetJoinPoint extends FieldJoinPoint {
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
 
-                List pointcuts = m_system.getGetFieldPointcuts(m_classMetaData, m_fieldMetaData);
+                List pointcuts = m_system.getGetPointcuts(m_classMetaData, m_fieldMetaData);
 
                 for (Iterator it = pointcuts.iterator(); it.hasNext();) {
-                    FieldPointcut fieldPointcut = (FieldPointcut)it.next();
+                    GetPointcut fieldPointcut = (GetPointcut)it.next();
 
                     IndexTuple[] preAdviceIndexes = fieldPointcut.getPreAdviceIndexes();
                     for (int j = 0; j < preAdviceIndexes.length; j++) {

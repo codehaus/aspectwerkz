@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.ArrayList;
 
 import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
-import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
 import org.codehaus.aspectwerkz.xmldef.advice.Advice;
 import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
 import org.codehaus.aspectwerkz.System;
@@ -46,7 +46,7 @@ public abstract class AbstractJoinPointController implements JoinPointController
      */
     public void addAdvice(final String adviceName,
                           final MethodJoinPoint jp,
-                          MethodPointcut pc) {
+                          ExecutionPointcut pc) {
         if (adviceName == null) throw new IllegalArgumentException("advice can not be null");
         if (jp == null) throw new IllegalArgumentException("joinpoint can not be null");
 
@@ -65,7 +65,7 @@ public abstract class AbstractJoinPointController implements JoinPointController
      */
     public void removeAdvice(final String adviceName,
                              final MethodJoinPoint joinPoint,
-                             MethodPointcut pointcut) {
+                             ExecutionPointcut pointcut) {
 
         if (adviceName == null) throw new IllegalArgumentException("advice can not be null");
         if (joinPoint == null) throw new IllegalArgumentException("joinpoint can not be null");
@@ -132,7 +132,7 @@ public abstract class AbstractJoinPointController implements JoinPointController
         }
 
         // create array of non-empty pointcuts
-        MethodPointcut[] purgedPointcuts = new MethodPointcut[num];
+        ExecutionPointcut[] purgedPointcuts = new ExecutionPointcut[num];
         num = 0;
         for (i = 0; i < joinPoint.getPointcuts().length; i++) {
             if (joinPoint.getPointcuts()[i].getAdviceIndexes().length > 0) {

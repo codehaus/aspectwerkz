@@ -27,7 +27,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.MetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
@@ -40,7 +40,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class MethodJoinPoint implements JoinPoint {
+public abstract class MethodJoinPoint extends AbstractJoinPoint {
 
     /**
      * The AspectWerkz system for this join point.
@@ -50,7 +50,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
     /**
      * The method pointcut.
      */
-    protected MethodPointcut[] m_pointcuts;
+    protected ExecutionPointcut[] m_pointcuts;
 
     /**
      * Meta-data for the class.
@@ -76,6 +76,11 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * A reference to the original method.
      */
     protected Method m_originalMethod;
+
+    /**
+     * A reference to the proxy method.
+     */
+    protected Method m_proxyMethod;
 
     /**
      * The result from the method invocation.
@@ -152,7 +157,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
      *
      * @param pointcuts the method pointcuts
      */
-    public void setPointcuts(final MethodPointcut[] pointcuts) {
+    public void setPointcuts(final ExecutionPointcut[] pointcuts) {
         m_pointcuts = pointcuts;
     }
 
@@ -161,7 +166,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
      *
      * @return the method pointcuts
      */
-    public MethodPointcut[] getPointcuts() {
+    public ExecutionPointcut[] getPointcuts() {
         return m_pointcuts;
     }
 
@@ -241,6 +246,15 @@ public abstract class MethodJoinPoint implements JoinPoint {
      */
     public Method getMethod() {
         return m_originalMethod;
+    }
+
+    /**
+     * Returns the proxy method.
+     *
+     * @return the proxy method
+     */
+    public Method getProxyMethod() {
+        return m_proxyMethod;
     }
 
     /**
@@ -380,11 +394,11 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * already advised, create a new method pointcut for this method.
      */
     protected void handleThrowsPointcut() {
-        List pointcuts = m_system.getMethodPointcuts(m_classMetaData, m_methodMetaData);
-        m_pointcuts = new MethodPointcut[pointcuts.size()];
+        List pointcuts = m_system.getExecutionPointcuts(m_classMetaData, m_methodMetaData);
+        m_pointcuts = new ExecutionPointcut[pointcuts.size()];
         int i = 0;
         for (Iterator it = pointcuts.iterator(); it.hasNext(); i++) {
-            m_pointcuts[i] = (MethodPointcut)it.next();
+            m_pointcuts[i] = (ExecutionPointcut)it.next();
         }
     }
 
@@ -492,7 +506,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
         m_originalMethod = (Method)fields.get("m_originalMethod", null);
         m_result = fields.get("m_result", null);
         m_parameters = (Object[])fields.get("m_parameters", null);
-        m_pointcuts = (MethodPointcut[])fields.get("m_pointcuts", null);
+        m_pointcuts = (ExecutionPointcut[])fields.get("m_pointcuts", null);
         m_controller = (JoinPointController)fields.get("m_controller", null);
         m_classMetaData = (ClassMetaData)fields.get("m_classMetaData", null);
         m_methodMetaData = (MethodMetaData)fields.get("m_fieldMetaData", null);

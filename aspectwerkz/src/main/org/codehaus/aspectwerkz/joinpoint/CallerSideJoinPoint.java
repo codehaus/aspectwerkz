@@ -16,7 +16,7 @@ import java.io.ObjectInputStream;
 
 import org.apache.bcel.generic.Type;
 
-import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
+import org.codehaus.aspectwerkz.pointcut.CallPointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
@@ -35,7 +35,7 @@ import org.codehaus.aspectwerkz.attribdef.AttribDefSystem;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CallerSideJoinPoint implements JoinPoint {
+public class CallerSideJoinPoint extends AbstractJoinPoint {
 
     /**
      * The AspectWerkz system for this join point.
@@ -44,6 +44,8 @@ public class CallerSideJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
+     *
+     * @todo recalculate
      */
     private static final long serialVersionUID = -8831127199517513612L;;
 
@@ -494,13 +496,15 @@ public class CallerSideJoinPoint implements JoinPoint {
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
 
-                List pointcuts = m_system.getCallerSidePointcuts(
-                        getCalleeClassName(),
+                ClassMetaData classMetaData = new ClassMetaData();
+                classMetaData.setName(getCalleeClassName());
+                List pointcuts = m_system.getCallPointcuts(
+                        classMetaData,
                         m_methodMetaData
                 );
 
                 for (Iterator it = pointcuts.iterator(); it.hasNext();) {
-                    CallerSidePointcut callerSidePointcut = (CallerSidePointcut)it.next();
+                    CallPointcut callerSidePointcut = (CallPointcut)it.next();
 
                     IndexTuple[] preAdviceIndexes = callerSidePointcut.getPreAdviceIndexes();
                     for (int j = 0; j < preAdviceIndexes.length; j++) {
