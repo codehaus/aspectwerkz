@@ -21,7 +21,7 @@ import org.apache.bcel.classfile.ClassParser;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AW_Class {
+public class Klass {
 
     /**
      * The name of the class.
@@ -41,7 +41,7 @@ public class AW_Class {
      * @throws IOException
      * @throws ClassFormatException
      */
-    public AW_Class(final String name, final byte[] bytecode) throws IOException, ClassFormatException {
+    public Klass(final String name, final byte[] bytecode) throws IOException, ClassFormatException {
         m_name = name;
         m_classGen = fromByte(bytecode);
     }

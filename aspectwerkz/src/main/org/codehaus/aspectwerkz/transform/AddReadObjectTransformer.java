@@ -65,7 +65,7 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
      * @param context the transformation context
      * @param klass the class
      */
-    public void transformInterface(final Context context, final AW_Class klass) {
+    public void transformInterface(final Context context, final Klass klass) {
         final ClassGen cg = klass.getClassGen();
             final ConstantPoolGen cpg = cg.getConstantPool();
             final InstructionFactory factory = new InstructionFactory(cg);

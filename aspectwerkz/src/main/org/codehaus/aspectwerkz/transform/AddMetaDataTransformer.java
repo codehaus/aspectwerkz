@@ -78,7 +78,7 @@ public final class AddMetaDataTransformer
      * @param context the transformation context
      * @param klass the class
      */
-    public void transformInterface(final Context context, final AW_Class klass) {
+    public void transformInterface(final Context context, final Klass klass) {
         if (ADD_METADATA == null) return; // do not do any transformations
 
         final ClassGen cg = klass.getClassGen();
@@ -107,7 +107,7 @@ public final class AddMetaDataTransformer
      * @param context the transformation context
      * @param klass the class
      */
-    public void transformCode(final Context context, final AW_Class klass) {
+    public void transformCode(final Context context, final Klass klass) {
         if (ADD_METADATA == null) return; // do not do any transformations
 
         final ClassGen cg = klass.getClassGen();

@@ -21,7 +21,7 @@ public interface AspectWerkzCodeTransformerComponent {
      * @param context the transformation context
      * @param klass the class
      */
-    public void transformCode(final Context context, final AW_Class klass);
+    public void transformCode(final Context context, final Klass klass);
 
     /**
      * Callback method. Is being called before each transformation.

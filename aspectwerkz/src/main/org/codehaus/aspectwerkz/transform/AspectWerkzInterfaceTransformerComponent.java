@@ -21,7 +21,7 @@ public interface AspectWerkzInterfaceTransformerComponent {
      * @param context the transformation context
      * @param klass the class
      */
-    public abstract void transformInterface(final Context context, final AW_Class klass);
+    public abstract void transformInterface(final Context context, final Klass klass);
 
     /**
      * Callback method. Is being called before each transformation.

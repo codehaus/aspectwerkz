@@ -77,7 +77,7 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
      * @param context the transformation context
      * @param klass the class set.
      */
-    public void transformCode(final Context context, final AW_Class klass) {
+    public void transformCode(final Context context, final Klass klass) {
         final ClassGen cg = klass.getClassGen();
         if (classFilter(cg)) {
             return;

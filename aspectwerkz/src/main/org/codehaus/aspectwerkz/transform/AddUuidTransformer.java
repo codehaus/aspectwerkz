@@ -77,7 +77,7 @@ public final class AddUuidTransformer
      * @param context the transformation context
      * @param klass the unextendable class set
      */
-    public void transformInterface(final Context context, final AW_Class klass) {
+    public void transformInterface(final Context context, final Klass klass) {
         if (ADD_UUID == null) return; // do not do any transformations
 
         final ClassGen cg = klass.getClassGen();
@@ -105,7 +105,7 @@ public final class AddUuidTransformer
      * @param context the transformation context
      * @param klass the class.
      */
-    public void transformCode(final Context context, final AW_Class klass) {
+    public void transformCode(final Context context, final Klass klass) {
         if (ADD_UUID == null) return; // do not do any transformations
 
         final ClassGen cg = klass.getClassGen();

@@ -110,9 +110,9 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
         //log(loader + ":" + className);
 
         // prepare BCEL ClassGen
-        AW_Class klass = null;
+        Klass klass = null;
         try {
-            klass = new AW_Class(className, bytecode);
+            klass = new Klass(className, bytecode);
         }
         catch (Exception e) {
             log("failed " + className);
