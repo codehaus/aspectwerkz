@@ -7,7 +7,7 @@ import org.codehaus.aspectwerkz.introduction.Introduction;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: IntroductionTest.java,v 1.5 2003-06-20 06:14:27 jboner Exp $
+ * @version $Id: IntroductionTest.java,v 1.6 2003-07-03 21:59:54 jboner Exp $
  */
 public class IntroductionTest extends TestCase implements Identifiable {
 
@@ -193,7 +193,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
         AspectWerkz.getSystem("tests").initialize();
     }
 
-    public String getUuid() {
+    public String ___hidden$getUuid() {
         return "ZZZZZZZZZZZZZZZZZZZZZZZZZZ";
     }
 }
