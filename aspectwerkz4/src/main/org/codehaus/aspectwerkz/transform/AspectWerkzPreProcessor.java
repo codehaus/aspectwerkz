@@ -191,6 +191,12 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         output.bytecode = context.getCurrentBytecode();
         output.emittedJoinPoints =
         (EmittedJoinPoint[]) ((ContextImpl) context).getEmittedJoinPoints().toArray(new EmittedJoinPoint[0]);
+
+        // resolve line numbers
+        for (int i = 0; i < output.emittedJoinPoints.length; i++) {
+            EmittedJoinPoint emittedJoinPoint = output.emittedJoinPoints[i];
+            emittedJoinPoint.resolveLineNumber(context);
+        }
         return output;
     }
 

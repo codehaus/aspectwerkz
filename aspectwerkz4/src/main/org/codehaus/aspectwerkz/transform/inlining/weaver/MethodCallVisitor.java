@@ -54,7 +54,7 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
     private final ClassLoader m_loader;
     private final ClassInfo m_callerClassInfo;
 
-    private int m_lineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
+    private Label m_lastLabelForLineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
 
     /**
      * Creates a new instance.
@@ -156,14 +156,13 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
         }
 
         /**
-         * Line number
+         * Label
          *
-         * @param lineNumber
          * @param label
          */
-        public void visitLineNumber(int lineNumber, Label label) {
-            m_lineNumber = lineNumber;
-            super.visitLineNumber(lineNumber, label);
+        public void visitLabel(Label label) {
+            m_lastLabelForLineNumber = label;
+            super.visitLabel(label);
         }
 
         /**
@@ -286,7 +285,7 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
                                 modifiers,
                                 joinPointHash,
                                 joinPointClassName,
-                                m_lineNumber
+                                m_lastLabelForLineNumber
                         )
                 );
             }

@@ -7,6 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
+import org.objectweb.asm.Label;
+
 import java.util.List;
 import java.util.Set;
 
@@ -119,4 +121,13 @@ public interface Context {
      * @param dir
      */
     public abstract void dump(String dir);
+
+    /**
+     * Tries to resolve the line number from the given label
+     *
+     * @param label
+     * @return
+     */
+    abstract int resolveLineNumberInfo(Label label);
+
 }

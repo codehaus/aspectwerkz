@@ -66,7 +66,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
      */
     private final TLongObjectHashMap m_newInvocationsByCallerMemberHash;
 
-    private int m_lineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
+    private Label m_lastLabelForLineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
 
     /**
      * Creates a new instance.
@@ -209,14 +209,13 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
         }
 
         /**
-         * Line number
+         * Label
          *
-         * @param lineNumber
          * @param label
          */
-        public void visitLineNumber(int lineNumber, Label label) {
-            m_lineNumber = lineNumber;
-            super.visitLineNumber(lineNumber, label);
+        public void visitLabel(Label label) {
+            m_lastLabelForLineNumber = label;
+            super.visitLabel(label);
         }
 
         /**
@@ -376,7 +375,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                                 struct.constructorInfo.getModifiers(),
                                 struct.joinPointHash,
                                 joinPointClassName,
-                                m_lineNumber
+                                m_lastLabelForLineNumber
                         )
                 );
             }

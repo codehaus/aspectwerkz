@@ -37,10 +37,9 @@ import java.util.HashMap;
 import java.lang.reflect.Modifier;
 
 /**
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
- * @TODO clean up commented code and javadoc
- * <p/>
  * Advises catch clauses by inserting a call to the join point as the first thing in the catch block.
+ *
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class HandlerVisitor extends ClassAdapter implements TransformationConstants {
 
@@ -192,7 +191,7 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
      */
     private int m_labelIndex = -1;
 
-    private int m_lineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
+    private Label m_lastLabelForLineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
 
 
     /**
@@ -256,18 +255,8 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
             super(ca);
         }
 
-        /**
-         * Line number
-         *
-         * @param lineNumber
-         * @param label
-         */
-        public void visitLineNumber(int lineNumber, Label label) {
-            m_lineNumber = lineNumber;
-            super.visitLineNumber(lineNumber, label);
-        }
-
         public void visitLabel(Label label) {
+            m_lastLabelForLineNumber = label;
             super.visitLabel(label);
 
             // check if it is a catch label
@@ -330,7 +319,7 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
                             0, // a bit meaningless but must not be static
                             joinPointHash,
                             joinPointClassName,
-                            m_lineNumber
+                            m_lastLabelForLineNumber
                     )
             );
         }
