@@ -15,7 +15,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 public class Target {
 
     public static void main(String args[]) throws Throwable {
-        System.out.println("examples.annotation.Target.main");
+        System.out.println("examples.annotation.Target.main -");
         Target me = new Target();
         me.targetAB();
         me.targetA();
@@ -48,7 +48,8 @@ public class Target {
          * @param jp
          */
         public void beforeA(JoinPoint jp) {
-            System.out.println("Target$AnnotationMatchAspect.beforeA");
+            System.out.println("hehehe");
+            System.out.println("Target$AnnotationMatchAspect.beforeA : " + jp.toString());
 
         }
 
