@@ -7,66 +7,67 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.apache.xmlbeans.impl.jam.JAnnotationValue;
-import org.apache.xmlbeans.impl.jam.JClass;
-import org.apache.xmlbeans.impl.jam.annotation.AnnotationProxy;
-import org.apache.xmlbeans.impl.jam.internal.elements.AnnotationValueImpl;
-import org.apache.xmlbeans.impl.jam.internal.elements.ElementContext;
 import org.codehaus.aspectwerkz.annotation.expression.AnnotationVisitor;
 import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
+ * The base class for the typed annotation proxies.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class TypedAnnotationProxy extends AnnotationProxy implements Annotation, Serializable {
+public abstract class TypedAnnotationProxy implements Annotation, Serializable {
     /**
      * The one and only annotation parser.
      */
-    private static AnnotationParser s_parser = new AnnotationParser(System.in);
+    protected static AnnotationParser s_parser = new AnnotationParser(System.in);
 
     /**
-     * @TODO: do we need a readObject() method that builds up this list after unmarshalling?
+     * The name of the annotation.
      */
-    protected transient List m_values = null;
+    protected String m_name;
 
-    public JAnnotationValue[] getValues() {
-        if (m_values == null) {
-            return new JAnnotationValue[0];
-        }
-        JAnnotationValue[] out = new JAnnotationValue[m_values.size()];
-        m_values.toArray(out);
-        return out;
+    /**
+     * Returns the name.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return m_name;
     }
 
-    public void setValue(String name, Object value, JClass type) {
-        if (name == null) {
-            throw new IllegalArgumentException("name can not be null");
-        }
+    /**
+     * Sets the name of the annotation, the '@[name]'.
+     * @param name
+     */
+    public void setName(final String name) {
+        m_name = name;
+    }
+
+    /**
+     * Sets the full value of the annotation (including possible named parameters etc.).
+     *
+     * @param value
+     */
+    public void setValue(final String value) {
         if (value == null) {
             throw new IllegalArgumentException("value can not be null");
         }
-        String annotation = (String)value;
         try {
-            AnnotationVisitor.parse(this, s_parser.parse(annotation));
+            AnnotationVisitor.parse(this, s_parser.parse(value));
         } catch (ParseException e) {
-            System.err.println("could not parse annotation: " + annotation);
+            e.printStackTrace();
+            throw new RuntimeException("could not parse annotation [" + m_name + " " + value + "]");
         }
     }
 
     /**
-     * @TODO: needed to be called from visitor?
+     * Checks if the annotation is typed or not.
+     *
+     * @return boolean
      */
-    private void addTypedAnnotationValue(Class valueType, String name, Object value) {
-        // hang onto it in case they ask for it later with getValues
-        if (m_values == null) {
-            m_values = new ArrayList();
-        }
-        ElementContext elementContext = (ElementContext)mContext;
-        JClass jClassType = elementContext.getClassLoader().loadClass(valueType.getName());
-        m_values.add(new AnnotationValueImpl(elementContext, name, value, jClassType));
+    public boolean isTyped() {
+        return true;
     }
 }

@@ -40,7 +40,7 @@ public class AspectAnnotationParser {
         if (aspectAnnotation == null) {
             // fall back on using the class name as aspect name and let the deployment model be perJVM
             aspectAnnotation = new AspectAnnotationProxy();
-            aspectAnnotation.setname(klass.getName());
+            aspectAnnotation.setName(klass.getName());
         }
 
         // attribute settings override the xml settings

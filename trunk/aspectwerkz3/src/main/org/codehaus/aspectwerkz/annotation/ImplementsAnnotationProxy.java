@@ -7,8 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.codehaus.aspectwerkz.util.Strings;
-
 /**
  * The 'Implements' annotation proxy.
  *
@@ -21,7 +19,7 @@ public class ImplementsAnnotationProxy extends UntypedAnnotationProxy {
         return m_expression;
     }
 
-    public void setvalue(String value) {
-        m_expression = Strings.removeFormattingCharacters(value);
+    public void setValue(final String value) {
+        m_expression = value;
     }
 }

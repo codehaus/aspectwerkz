@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.annotation.instrumentation.javassist;
 
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
+import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
@@ -119,7 +120,7 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
      * @param listToPutAttributesIn
      */
     private void retrieveCustomAttributes(final AttributeInfo attributeInfo, final List listToPutAttributesIn) {
-        if (attributeInfo.getName().startsWith("Custom")) {
+        if (attributeInfo.getName().startsWith(AttributeEnhancer.CUSTOM_ATTRIBUTE)) {
             byte[] serializedAttribute = attributeInfo.get();
             try {
                 Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute)).readObject();

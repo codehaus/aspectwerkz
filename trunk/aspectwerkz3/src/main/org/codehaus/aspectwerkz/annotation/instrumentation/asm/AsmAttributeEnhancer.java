@@ -7,12 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation.asm;
 
-import org.apache.xmlbeans.impl.jam.JField;
-import org.apache.xmlbeans.impl.jam.JMethod;
-import org.apache.xmlbeans.impl.jam.JParameter;
-import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
+import com.thoughtworks.qdox.model.JavaField;
+import com.thoughtworks.qdox.model.JavaMethod;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.reflect.TypeConverter;
+import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
@@ -112,10 +112,10 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     /**
      * Inserts an attribute on field level.
      *
-     * @param field     the field
+     * @param field     the QDox java field
      * @param attribute the attribute
      */
-    public void insertFieldAttribute(final JField field, final Object attribute) {
+    public void insertFieldAttribute(final JavaField field, final Object attribute) {
         if (m_writer == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
         }
@@ -123,7 +123,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
         m_reader.accept(new AttributeClassAdapter(m_writer, serializedAttribute) {
                 public void visitField(final int access, final String name, final String desc, final Object value,
                                        final Attribute attrs) {
-                    if (name.equals(field.getSimpleName())) {
+                    if (name.equals(field.getName())) {
                         cv.visitField(access, name, desc, value, new CustomAttribute(serializedAttribute));
                     }
                     super.visitField(access, name, desc, value, attrs);
@@ -134,26 +134,22 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     /**
      * Inserts an attribute on method level.
      *
-     * @param method    the method
+     * @param method    the QDox java method
      * @param attribute the attribute
      */
-    public void insertMethodAttribute(final JMethod method, final Object attribute) {
+    public void insertMethodAttribute(final JavaMethod method, final Object attribute) {
         if (m_writer == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
         }
         final String[] methodParamTypes = new String[method.getParameters().length];
-        JParameter[] parameters = method.getParameters();
         for (int i = 0; i < methodParamTypes.length; i++) {
-            JParameter parameter = parameters[i];
-            methodParamTypes[i] = parameter.getType().getQualifiedName();
-
-            //            methodParamTypes[i] = TypeConverter.convertTypeToJava(parameter.getType());
+            methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i].getType());
         }
         final byte[] serializedAttribute = serialize(attribute);
         m_reader.accept(new AttributeClassAdapter(m_writer, serializedAttribute) {
                 public CodeVisitor visitMethod(final int access, final String name, final String desc,
                                                final String[] exceptions, final Attribute attrs) {
-                    if (name.equals(method.getSimpleName())
+                    if (name.equals(method.getName())
                         && Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
                         cv.visitMethod(access, name, desc, exceptions, new CustomAttribute(serializedAttribute));
                     }
@@ -283,6 +279,8 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
         public CodeVisitor visitMethod(int i, String s, String s1, String[] strings, Attribute attribute) {
             return super.visitMethod(i, s, s1, strings, attribute);
+
+            //            return new EmptyCodeVisitor();
         }
 
         public void visitAttribute(Attribute attribute) {
@@ -293,4 +291,61 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             super.visitEnd();
         }
     }
+
+    //    private static class EmptyCodeVisitor implements CodeVisitor {
+    //        public void visitInsn(final int opcode) {
+    //        }
+    //
+    //        public void visitIntInsn(final int opcode, final int operand) {
+    //        }
+    //
+    //        public void visitVarInsn(final int opcode, final int var) {
+    //        }
+    //
+    //        public void visitTypeInsn(final int opcode, final String desc) {
+    //        }
+    //
+    //        public void visitFieldInsn(final int opcode, final String owner, final String name, final String desc) {
+    //        }
+    //
+    //        public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc) {
+    //        }
+    //
+    //        public void visitJumpInsn(final int opcode, final Label label) {
+    //        }
+    //
+    //        public void visitLabel(final Label label) {
+    //        }
+    //
+    //        public void visitLdcInsn(final Object cst) {
+    //        }
+    //
+    //        public void visitIincInsn(final int var, final int increment) {
+    //        }
+    //
+    //        public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label labels[]) {
+    //        }
+    //
+    //        public void visitLookupSwitchInsn(final Label dflt, final int keys[], final Label labels[]) {
+    //        }
+    //
+    //        public void visitMultiANewArrayInsn(final String desc, final int dims) {
+    //        }
+    //
+    //        public void visitTryCatchBlock(final Label start, final Label end, final Label handler, final String type) {
+    //        }
+    //
+    //        public void visitMaxs(final int maxStack, final int maxLocals) {
+    //        }
+    //
+    //        public void visitLocalVariable(
+    //                final String name, final String desc, final Label start, final Label end, final int index) {
+    //        }
+    //
+    //        public void visitLineNumber(final int line, final Label start) {
+    //        }
+    //
+    //        public void visitAttribute(final Attribute attr) {
+    //        }
+    //    }
 }
