@@ -153,7 +153,7 @@ public class JoinPointManager {
      * @param joinPointClassName
      * @param calleeClass
      * @param loader the loader that hosts the definitions, and from where caller, callee and aspect are visible.
-     * At runtime it is exactly callerClass.getClassLoader() but in offline mode and keepjp, it can happen to be
+     * At runtime it is exactly callerClass.getClassLoader() but in offline mode and genjp, it can happen to be
      * different when weaved class also exists in the compilation classpath.
      * @return
      */

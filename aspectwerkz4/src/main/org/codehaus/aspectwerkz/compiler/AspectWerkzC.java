@@ -50,7 +50,7 @@ import java.util.zip.ZipOutputStream;
  * <p/>
  * <pre>
  *     java [-Daspectwerkz.classloader.preprocessor={ClassPreProcessorImpl}] -cp [...]
- *     org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify] [-keepjp] [-details] [-cp {additional cp i}]*  {target
+ *     org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify] [-genjp] [-details] [-cp {additional cp i}]*  {target
  *     1} .. {target n}
  *       {ClassPreProcessorImpl} : full qualified name of the ClassPreProcessor implementation (must be in classpath)
  *          defaults to org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor
@@ -88,7 +88,7 @@ public class AspectWerkzC {
     private static final String COMMAND_LINE_OPTION_DASH = "-";
     private static final String COMMAND_LINE_OPTION_VERBOSE = "-verbose";
     private static final String COMMAND_LINE_OPTION_DETAILS = "-details";
-    private static final String COMMAND_LINE_OPTION_KEEPJP = "-keepjp";
+    private static final String COMMAND_LINE_OPTION_GENJP = "-genjp";
     private static final String COMMAND_LINE_OPTION_HALT = "-haltOnError";
     private static final String COMMAND_LINE_OPTION_VERIFY = "-verify";
     private static final String COMMAND_LINE_OPTION_CLASSPATH = "-cp";
@@ -120,7 +120,7 @@ public class AspectWerkzC {
 
     private boolean verify = false;
 
-    private boolean keepJp = false;
+    private boolean genJp = false;
 
     private boolean haltOnError = false;
 
@@ -177,8 +177,8 @@ public class AspectWerkzC {
         utility.setVerbose(verbose);
     }
 
-    public void setKeepJp(boolean keepJp) {
-        this.keepJp = keepJp;
+    public void setGenJp(boolean genpJp) {
+        this.genJp = genpJp;
     }
 
     public void setHaltOnError(boolean haltOnError) {
@@ -336,8 +336,8 @@ public class AspectWerkzC {
             fos.write(out.bytecode);
             fos.close();
 
-            // if AW and keepjp
-            if (out.emittedJoinPoints != null && keepJp) {
+            // if AW and genjp
+            if (out.emittedJoinPoints != null && genJp) {
                 for (int i = 0; i < out.emittedJoinPoints.length; i++) {
                     EmittedJoinPoint emittedJoinPoint = out.emittedJoinPoints[i];
                     //TODO we assume same package here.. make more generic
@@ -346,7 +346,7 @@ public class AspectWerkzC {
                         jpClassNoPackage = jpClassNoPackage.substring(jpClassNoPackage.lastIndexOf('/'));
                     }
                     File jpFile = new File(file.getParent(), jpClassNoPackage+".class");
-                    utility.log(" [keepjp] " + jpFile.getCanonicalPath());
+                    utility.log(" [genjp] " + jpFile.getCanonicalPath());
                     FileOutputStream jpFos = new FileOutputStream(jpFile);
                     JoinPointManager.CompiledJoinPoint compiledJp = compileJoinPoint(emittedJoinPoint, compilationLoader);
                     jpFos.write(compiledJp.bytecode);
@@ -360,7 +360,7 @@ public class AspectWerkzC {
                             CflowCompiler.CompiledCflowAspect compiledCflowAspect = compiledCflowAspects[j];
                             File cflowFile = new File(baseDirAbsolutePath + File.separatorChar + compiledCflowAspect.className.replace('/', File.separatorChar) + ".class");
                             (new File(cflowFile.getParent())).mkdirs();
-                            utility.log(" [keepjp] (cflow) " + cflowFile.getCanonicalPath());
+                            utility.log(" [genjp] (cflow) " + cflowFile.getCanonicalPath());
                             FileOutputStream cflowFos = new FileOutputStream(cflowFile);
                             cflowFos.write(compiledCflowAspect.bytecode);
                             cflowFos.close();
@@ -477,12 +477,12 @@ public class AspectWerkzC {
                 zos.putNextEntry(transformedZe);
                 zos.write(transformed, 0, transformed.length);
 
-                // if AW and keepjp
-                if (keepJp && out != null && out.emittedJoinPoints!=null) {
+                // if AW and genjp
+                if (genJp && out != null && out.emittedJoinPoints!=null) {
                     for (int i = 0; i < out.emittedJoinPoints.length; i++) {
                         EmittedJoinPoint emittedJoinPoint = out.emittedJoinPoints[i];
                         JoinPointManager.CompiledJoinPoint compiledJp = compileJoinPoint(emittedJoinPoint, compilationLoader);
-                        utility.log(" [compilejar] (keepjp) " + file.getName() + ":" + emittedJoinPoint.getJoinPointClassName());
+                        utility.log(" [compilejar] (genjp) " + file.getName() + ":" + emittedJoinPoint.getJoinPointClassName());
                         ZipEntry jpZe = new ZipEntry(emittedJoinPoint.getJoinPointClassName()+".class");
                         jpZe.setSize(compiledJp.bytecode.length);
                         CRC32 jpCrc = new CRC32();
@@ -496,7 +496,7 @@ public class AspectWerkzC {
                         if (compiledCflowAspects.length > 0) {
                             for (int j = 0; j < compiledCflowAspects.length; j++) {
                                 CflowCompiler.CompiledCflowAspect compiledCflowAspect = compiledCflowAspects[j];
-                                utility.log(" [compilejar] (keepjp) (cflow) " + file.getName() + ":" + compiledCflowAspect.className);
+                                utility.log(" [compilejar] (genjp) (cflow) " + file.getName() + ":" + compiledCflowAspect.className);
                                 ZipEntry cflowZe = new ZipEntry(compiledCflowAspect.className+".class");
                                 cflowZe.setSize(compiledCflowAspect.bytecode.length);
                                 CRC32 cflowCrc = new CRC32();
@@ -623,8 +623,8 @@ public class AspectWerkzC {
                 compiler.setHaltOnError(Boolean.TRUE.equals(param.getValue()));
             } else if (COMMAND_LINE_OPTION_VERIFY.equals(param.getKey())) {
                 compiler.setVerify(Boolean.TRUE.equals(param.getValue()));
-            } else if (COMMAND_LINE_OPTION_KEEPJP.equals(param.getKey())) {
-                compiler.setKeepJp(Boolean.TRUE.equals(param.getValue()));
+            } else if (COMMAND_LINE_OPTION_GENJP.equals(param.getKey())) {
+                compiler.setGenJp(Boolean.TRUE.equals(param.getValue()));
             } else if (COMMAND_LINE_OPTION_DETAILS.equals(param.getKey())) {
                 compiler.setDetails(Boolean.TRUE.equals(param.getValue()));
             }
@@ -737,8 +737,8 @@ public class AspectWerkzC {
         for (int i = 0; i < args.length; i++) {
             if (COMMAND_LINE_OPTION_VERBOSE.equals(args[i])) {
                 options.put(COMMAND_LINE_OPTION_VERBOSE, Boolean.TRUE);
-            } else if (COMMAND_LINE_OPTION_KEEPJP.equals(args[i])) {
-                options.put(COMMAND_LINE_OPTION_KEEPJP, Boolean.TRUE);
+            } else if (COMMAND_LINE_OPTION_GENJP.equals(args[i])) {
+                options.put(COMMAND_LINE_OPTION_GENJP, Boolean.TRUE);
             } else if (COMMAND_LINE_OPTION_DETAILS.equals(args[i])) {
                 options.put(COMMAND_LINE_OPTION_DETAILS, Boolean.TRUE);
             } else if (COMMAND_LINE_OPTION_HALT.equals(args[i])) {

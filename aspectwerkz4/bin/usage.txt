@@ -11,7 +11,7 @@ Usage: aspectwerkz [-options] <main class> [args...]
 
    -offline                   offline transformation of classes (post-process)
    <definition file>          path to the definition file
-   <options>                  -verbose, -verify, -haltOnError, -keepjp, -details
+   <options>                  -verbose, -verify, -haltOnError, -genjp, -details
    <classpath>                classpath needed for compilation but not to be
                               transformed (eg -cp myAspects.jar;servletAPI.jar)
    <target to transform>      classes to transform, jar or zip file

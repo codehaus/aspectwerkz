@@ -1103,7 +1103,7 @@ java -Xbootclasspath/p:/path/to/enhanced.jar -Xbootclasspath/a:$BOOT_PATH ..
 
 # Add Ant-1.5 in the classpath
 
-java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-details] [-keepjp] [-haltOnError] [-verify] [-cp {additional cp i}]*  {target 1} [{target i}]*
+java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-details] [-genjp] [-haltOnError] [-verify] [-cp {additional cp i}]*  {target 1} [{target i}]*
 
 # Use -Daspectwerkz.definition.file=... option to specify the XML definition file to use
 # Or rely on the META-INF/aop.xml and WEB-INF/aop.xml path lookup
@@ -1116,7 +1116,7 @@ java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-details
                             <code>-details</code>: turns on detailed matching mode (optional)
                         </li>
                         <li>
-                            <code>-keepjp</code>: turns on keeping of join point classes (optional)
+                            <code>-genjp</code>: turns on keeping of join point classes (optional)
                         </li>
                         <li>
                             <code>-haltOnError</code>: stops the compilation at the first error (target2 will not be post-processed if it fails on target1) (optional)
@@ -1236,7 +1236,7 @@ depends="aspectwerkz:compile, aspectwerkz:war:aspectc">
                 <p>
                     <ul>
                         <li>verbose: [optional] flag marking the weaver verbosity [true / false]</li>
-                        <li>keepjp: [optional] flag marking the need to keep the generated join point classes [true / false]</li>
+                        <li>genjp: [optional] flag marking the need to keep the generated join point classes [true / false]</li>
                         <li>taskverbose: [optional] flag marking the task verbose [true / false]</li>
                         <li>definition: [optional] path to aspect definition xml file (optional, can be found on the path as META-INF/aop.xml - even several)</li>
                     </ul>
@@ -1295,7 +1295,7 @@ set ASPECTWERKZ_HOME=C:\aop\aspectwerkz\
                 <p>
                     To post-process all class files in a specific directory (recursively), jar or zip file:
                     <p/>
-                    <code>aspectwerkz -offline &lt;definition file&gt; [-verbose] [-details] [-keepjp] [-verify] [-haltOnError] [-cp &lt;classpath&gt;]* &lt;target classes to transform&gt;+</code>
+                    <code>aspectwerkz -offline &lt;definition file&gt; [-verbose] [-details] [-genjp] [-verify] [-haltOnError] [-cp &lt;classpath&gt;]* &lt;target classes to transform&gt;+</code>
                     <ul>
                         <li>The 'definition file' option is the path to the XML definition file (mandatory).</li>
                         <li>Turns on
@@ -1305,7 +1305,7 @@ set ASPECTWERKZ_HOME=C:\aop\aspectwerkz\
                             <code>-details</code> to follow the pointcut matching (optional).
                         </li>
                         <li>Turns on
-                            <code>-keepjp</code> to keep generated joinpoint strcutures (optional).
+                            <code>-genjp</code> to keep generated joinpoint strcutures (optional).
                         </li>
                         <li>Turns on
                             <code>-verify</code> to verify all weaved class according to the Java Class Format specification (optional, mainly usefull for AspectWerkz development team).

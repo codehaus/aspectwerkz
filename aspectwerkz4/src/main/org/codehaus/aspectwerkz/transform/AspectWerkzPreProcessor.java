@@ -50,7 +50,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     private final static String AW_TRANSFORM_DETAILS = "aspectwerkz.transform.details";
 
-    private final static String AW_TRANSFORM_KEEPJP = "aspectwerkz.transform.keepjp";
+    private final static String AW_TRANSFORM_GENJP = "aspectwerkz.transform.genjp";
 
     private final static String AW_TRANSFORM_DUMP = "aspectwerkz.transform.dump";
 
@@ -66,7 +66,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     public final static boolean DETAILS;
 
-    public final static boolean KEEPJP;
+    public final static boolean GENJP;
 
     static {
         // define the tracing and dump options
@@ -74,8 +74,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         VERBOSE = "yes".equalsIgnoreCase(verbose) || "true".equalsIgnoreCase(verbose);
         String details = System.getProperty(AW_TRANSFORM_DETAILS, null);
         DETAILS = "yes".equalsIgnoreCase(details) || "true".equalsIgnoreCase(details);
-        String keepjp = System.getProperty(AW_TRANSFORM_KEEPJP, null);
-        KEEPJP = "yes".equalsIgnoreCase(details) || "true".equalsIgnoreCase(details);
+        String genjp = System.getProperty(AW_TRANSFORM_GENJP, null);
+        GENJP = "yes".equalsIgnoreCase(genjp) || "true".equalsIgnoreCase(genjp);
         String filter = System.getProperty(AW_TRANSFORM_FILTER, null);
         NOFILTER = "no".equalsIgnoreCase(filter) || "false".equalsIgnoreCase(filter);
         String dumpPattern = System.getProperty(AW_TRANSFORM_DUMP, null);
