@@ -8,15 +8,23 @@
 package test.aopc;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class BaseAspect {
+    private CrossCuttingInfo m_cci;
+
+    public BaseAspect(CrossCuttingInfo cci) {
+        m_cci = cci;
+    }
+
     public Object logAround(JoinPoint jp) throws Throwable {
-        ((Callable) jp.getTarget()).log("beforeAround ");
+        String vfqn = m_cci.getUuid() + "/" + m_cci.getName();
+        ((Callable) jp.getTarget()).log(vfqn + ".beforeAround ");
         Object result = jp.proceed();
-        ((Callable) jp.getTarget()).log("afterAround ");
+        ((Callable) jp.getTarget()).log(vfqn + ".afterAround ");
         return result;
     }
 }

@@ -47,54 +47,21 @@ public class ClassCreator {
         }
     }
 
-    public static Object createInstance(String name, ClassLoader loader) {
+    public static Object createInstance(String name, Class classPrototype, ClassLoader loader) {
         try {
-            return createClass(name, loader).newInstance();
+            return createClass(name, classPrototype, loader).newInstance();
         } catch (Throwable t) {
             throw new WrappedRuntimeException(t);
         }
     }
 
-    public static Class createClass(String name, ClassLoader loader) {
+    public static Class createClass(String name, Class classPrototype, ClassLoader loader) {
         try {
             ClassPool cp = new ClassPool(null);
             cp.appendClassPath(new LoaderClassPath(loader));
-            CtClass prototype = cp.get(CallablePrototype.class.getName());
+            CtClass prototype = cp.get(classPrototype.getName());
             prototype.setName(name);
-            if (true) {
-                return define(prototype.toBytecode(), name, loader);
-            }
-            CtClass klass = cp.makeClass(name);
-            klass.setSuperclass(cp.get(BaseCallable.class.getName()));
-
-            // public void methodAround();
-            CtMethod m = new CtMethod(CtClass.voidType, "methodAround", new CtClass[] {}, klass);
-            m.setModifiers(m.getModifiers() | Modifier.PUBLIC);
-
-            //m.setBody("{java.lang.System.out.println(\"... "+name+ " @ \" +
-            // this.getClass().getClassLoader());}");
-            m.setBody("{ m_logString = \"methodAround \"; }");
-            klass.addMethod(m);
-
-            // public void methodPre();
-            m = new CtMethod(CtClass.voidType, "methodPre", new CtClass[] {}, klass);
-            m.setModifiers(m.getModifiers() | Modifier.PUBLIC);
-
-            //m.setBody("{java.lang.System.out.println(\"... "+name+ " @ \" +
-            // this.getClass().getClassLoader());}");
-            m.setBody("{ m_logString = \"methodPre \"; }");
-            klass.addMethod(m);
-
-            // public void methodPost();
-            m = new CtMethod(CtClass.voidType, "methodPost", new CtClass[] {}, klass);
-            m.setModifiers(m.getModifiers() | Modifier.PUBLIC);
-
-            //m.setBody("{java.lang.System.out.println(\"... "+name+ " @ \" +
-            // this.getClass().getClassLoader());}");
-            m.setBody("{ m_logString = \"methodPost \"; }");
-            klass.addMethod(m);
-            klass.addInterface(cp.get(Callable.class.getName()));
-            return define(klass.toBytecode(), name, loader);
+            return define(prototype.toBytecode(), name, loader);
         } catch (Throwable throwable) {
             throw new WrappedRuntimeException(throwable);
         }
@@ -107,17 +74,19 @@ public class ClassCreator {
         ClassLoader mySubCLA = new URLClassLoader(new URL[] {
             getPathFor(Callable.class.getResource("a/META-INF/aop.xml"))
         }, myCL);
-        Callable ca = (Callable) (createClass("test.aopc.a.Callee", mySubCLA)).newInstance();
+        Callable ca = (Callable) (createClass("test.aopc.a.Callee", CallablePrototype.class,  mySubCLA)).newInstance();
         ca.methodAround();
         ca.debug();
         ClassLoader mySubCLB = new URLClassLoader(new URL[] {}, myCL);
-        Callable cb = (Callable) (createClass("test.aopc.b.Callee", mySubCLB)).newInstance();
+        Callable cb = (Callable) (createClass("test.aopc.b.Callee", CallablePrototype.class, mySubCLB)).newInstance();
         cb.methodAround();
         cb.debug();
     }
 
     public static URL getPathFor(URL definition) {
         try {
+            System.out.println(definition);
+            System.out.println(definition.getFile());
             File f = new File(definition.getFile());
             if (!f.exists()) {
                 System.err.println("<WARN> could not find " + f);
