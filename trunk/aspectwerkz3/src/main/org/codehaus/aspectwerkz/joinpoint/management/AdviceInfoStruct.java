@@ -42,11 +42,11 @@ public class AdviceInfoStruct {
                             final List afterFinallyAdvices,
                             final List afterReturningAdvices,
                             final List afterThrowingAdvices) {
-        m_aroundAdvices = (AdviceInfo[])aroundAdvices.toArray(AdviceInfo.ADVICE_INFO_ARRAY);
-        m_beforeAdvices = (AdviceInfo[])beforeAdvices.toArray(AdviceInfo.ADVICE_INFO_ARRAY);
-        m_afterFinallyAdvices = (AdviceInfo[])afterFinallyAdvices.toArray(AdviceInfo.ADVICE_INFO_ARRAY);
-        m_afterReturningAdvices = (AdviceInfo[])afterReturningAdvices.toArray(AdviceInfo.ADVICE_INFO_ARRAY);
-        m_afterThrowingAdvices = (AdviceInfo[])afterThrowingAdvices.toArray(AdviceInfo.ADVICE_INFO_ARRAY);
+        m_aroundAdvices = (AdviceInfo[]) aroundAdvices.toArray(AdviceInfo.EMPTY_ADVICE_INFO_ARRAY);
+        m_beforeAdvices = (AdviceInfo[]) beforeAdvices.toArray(AdviceInfo.EMPTY_ADVICE_INFO_ARRAY);
+        m_afterFinallyAdvices = (AdviceInfo[]) afterFinallyAdvices.toArray(AdviceInfo.EMPTY_ADVICE_INFO_ARRAY);
+        m_afterReturningAdvices = (AdviceInfo[]) afterReturningAdvices.toArray(AdviceInfo.EMPTY_ADVICE_INFO_ARRAY);
+        m_afterThrowingAdvices = (AdviceInfo[]) afterThrowingAdvices.toArray(AdviceInfo.EMPTY_ADVICE_INFO_ARRAY);
     }
 
     public AdviceInfo[] getAroundAdvices() {

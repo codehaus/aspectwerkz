@@ -36,7 +36,7 @@ public class AspectAnnotationParser {
     /**
      * Singleton is enough.
      */
-    private final static AspectAnnotationParser s_singleton = new AspectAnnotationParser();
+    private final static AspectAnnotationParser SINGLETON = new AspectAnnotationParser();
 
     /**
      * Private constructor to enforce singleton
@@ -47,22 +47,20 @@ public class AspectAnnotationParser {
     /**
      * Parse the attributes and create and return a meta-data representation of them.
      *
-     * @param klass      the class to extract attributes from
-     * @param aspectDef  the aspect definition
-     * @param definition the aspectwerkz definition
+     * @param klass     the class to extract attributes from
+     * @param aspectDef the aspect definition
      */
-    public static void parse(final Class klass, final AspectDefinition aspectDef, final SystemDefinition definition) {
-        s_singleton.parse0(klass, aspectDef, definition);
+    public static void parse(final Class klass, final AspectDefinition aspectDef) {
+        SINGLETON.doParse(klass, aspectDef);
     }
 
     /**
      * Parse the attributes and create and return a meta-data representation of them.
      *
-     * @param klass      the class to extract attributes from
-     * @param aspectDef  the aspect definition
-     * @param definition the aspectwerkz definition
+     * @param klass     the class to extract attributes from
+     * @param aspectDef the aspect definition
      */
-    private void parse0(final Class klass, final AspectDefinition aspectDef, final SystemDefinition definition) {
+    private void doParse(final Class klass, final AspectDefinition aspectDef) {
         if (klass == null) {
             throw new IllegalArgumentException("class to parse can not be null");
         }

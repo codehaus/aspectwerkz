@@ -21,7 +21,7 @@ import java.io.Serializable;
  */
 public class AdviceInfo implements Serializable {
 
-    public final static AdviceInfo[] ADVICE_INFO_ARRAY = new AdviceInfo[0];
+    public final static AdviceInfo[] EMPTY_ADVICE_INFO_ARRAY = new AdviceInfo[0];
 
     /**
      * The method name.
