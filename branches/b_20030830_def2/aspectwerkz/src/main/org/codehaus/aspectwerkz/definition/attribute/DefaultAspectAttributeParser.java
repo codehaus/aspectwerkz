@@ -50,22 +50,22 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                 aspectAttr.getDeploymentModel()
         );
 
-        return parse(klass, aspectDef);
+        parseFieldAttributes(klass, aspectDef);
+        parseMethodAttributes(klass, aspectClassName, aspectName, aspectDef);
+
+        return aspectDef;
     }
 
     /**
-     * Parse the attributes and create and return a meta-data representation of them.
+     * Parses the field attributes and creates a meta-data representation of them.
      *
      * @param klass the class to extract attributes from
-     * @return the aspect meta-data
+     * @param aspectDef the aspect definition
      */
-    private AspectDefinition parse(final Class klass, AspectDefinition aspectDef) {
+    private void parseFieldAttributes(final Class klass, AspectDefinition aspectDef) {
         if (aspectDef == null) throw new IllegalArgumentException("aspect definition can not be null");
-        if (klass == null) return aspectDef;
-        if (klass.getName().equals("org.codehaus.aspectwerkz.aspect.AbstractAspect")) return aspectDef;
-
-        String aspectClassName = klass.getName();
-        String aspectName = aspectClassName; // TODO: allow customized name, spec. in the attributes, CAUTION: will affect f.e. 'm_definition.getAspectIndexByName' in AddImplementationTransformer
+        if (klass == null) return;
+        if (klass.getName().equals("org.codehaus.aspectwerkz.aspect.AbstractAspect")) return;
 
         Field[] fieldList = klass.getDeclaredFields();
 
@@ -160,6 +160,27 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
             }
         }
 
+        // recursive call, next iteration based on super class
+        parseFieldAttributes(klass.getSuperclass(), aspectDef);
+    }
+
+    /**
+     * Parses the method attributes and creates a meta-data representation of them.
+     *
+     * @param klass the class
+     * @param aspectClassName the aspect class name
+     * @param aspectName the aspect name
+     * @param aspectDef the aspect definition
+     */
+    private void parseMethodAttributes(final Class klass,
+                                       final String aspectClassName,
+                                       final String aspectName,
+                                       final AspectDefinition aspectDef) {
+        if (klass == null) throw new IllegalArgumentException("class can not be null");
+        if (aspectClassName == null) throw new IllegalArgumentException("aspect class name can not be null");
+        if (aspectName == null) throw new IllegalArgumentException("aspect name can not be null");
+        if (aspectDef == null) throw new IllegalArgumentException("aspect definition can not be null");
+
         List methodList = TransformationUtil.createSortedMethodList(klass);
 
         // parse the advices and introductions
@@ -170,6 +191,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
             Object[] methodAttributes = Attributes.getAttributes(method);
             for (int j = 0; j < methodAttributes.length; j++) {
                 Object methodAttr = methodAttributes[j];
+
                 if (methodAttr instanceof AroundAdviceAttribute) {
                     String expression = ((AroundAdviceAttribute)methodAttr).getExpression();
                     createAndAddAroundAdviceDefToAspectDef(
@@ -204,12 +226,6 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                 }
             }
         }
-        if (aspectDef == null) {
-            throw new DefinitionException("aspect [" + aspectName + "] is not properly defined (check the attributes)");
-        }
-
-        // recursive call, based on super class
-        return parse(klass.getSuperclass(), aspectDef);
     }
 
     /**

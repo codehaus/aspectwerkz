@@ -506,7 +506,7 @@ public final class TransformationUtil {
     }
 
     /**
-     * Creates a sorted method list.
+     * Creates a sorted method list of all the public methods in the class and super classes.
      *
      * @param klass the class with the methods
      * @return the sorted method list
