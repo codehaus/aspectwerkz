@@ -19,7 +19,6 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.ContextClassLoader;
 
 /**
  * Abstract base class that all Aspect implementations must extend.
@@ -481,7 +480,6 @@ public abstract class Aspect implements Serializable, Mixin {
                 throw new WrappedRuntimeException(e);
             }
         }
-
         m_container.swapImplementation(m_aspectClass);
     }
 

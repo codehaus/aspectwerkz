@@ -175,14 +175,11 @@ public class XmlParser {
      * @param url the URL to the file containing the XML
      * @return the DOM document
      * @throws DocumentException
-     * @throws MalformedURLException
+     * @throws DocumentException
      */
     public static Document createDocument(final URL url) throws DocumentException {
         SAXReader reader = new SAXReader();
-
-// TODO: fails on this method
-//        setEntityResolver(reader);
-
+        setEntityResolver(reader);
         return reader.read(url);
     }
 
@@ -192,14 +189,11 @@ public class XmlParser {
      * @param stream the stream containing the XML
      * @return the DOM document
      * @throws DocumentException
-     * @throws MalformedURLException
+     * @throws DocumentException
      */
     public static Document createDocument(final InputStream stream) throws DocumentException {
         SAXReader reader = new SAXReader();
-
-// TODO: fails on this method
-//        setEntityResolver(reader);
-
+        setEntityResolver(reader);
         return reader.read(stream);
     }
 
