@@ -39,7 +39,8 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
 
         // methods
         List methodList = new ArrayList();
-        Method[] methods = klass.getMethods();
+        // get the methods for the class only (not the super class' methods)
+        Method[] methods = klass.getDeclaredMethods();
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
             methodList.add(createMethodMetaData(method));
@@ -48,7 +49,8 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
 
         // fields
         List fieldList = new ArrayList();
-        Field[] fields = klass.getFields();
+        // get the fields for the class only (not the super class' fields)
+        Field[] fields = klass.getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
             fieldList.add(createFieldMetaData(field));

@@ -7,8 +7,6 @@
  **************************************************************************************/
 package examples.introduction;
 
-import org.codehaus.aspectwerkz.introduction.HasMetaData;
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

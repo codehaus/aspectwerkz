@@ -29,8 +29,6 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * The PER_JVM deployment model performance a bit better than the other models
  * since no synchronization A object creation is needed.
  *
- * @see aspectwerkz.DeploymentModel
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class Introduction implements Serializable {
@@ -273,11 +271,11 @@ public class Introduction implements Serializable {
     }
 
     /**
-     * Returns the memory type.
+     * Returns the container type.
      *
-     * @return the memory type
+     * @return the container type
      */
-    public ContainerType getMemoryType() {
+    public ContainerType getContainerType() {
         return m_container.getContainerType();
     }
 
@@ -288,8 +286,7 @@ public class Introduction implements Serializable {
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    private Object invokePerJvm(final int methodIndex,
-                                final Object[] parameters) {
+    private Object invokePerJvm(final int methodIndex, final Object[] parameters) {
         return m_container.invokePerJvm(methodIndex, parameters);
     }
 
@@ -304,8 +301,7 @@ public class Introduction implements Serializable {
     private Object invokePerClass(final Object callingObject,
                                   final int methodIndex,
                                   final Object[] parameters) {
-        return m_container.invokePerClass(
-                callingObject, methodIndex, parameters);
+        return m_container.invokePerClass(callingObject, methodIndex, parameters);
     }
 
     /**
@@ -319,8 +315,7 @@ public class Introduction implements Serializable {
     private Object invokePerInstance(final Object callingObject,
                                      final int methodIndex,
                                      final Object[] parameters) {
-        return m_container.invokePerInstance(
-                callingObject, methodIndex, parameters);
+        return m_container.invokePerInstance(callingObject, methodIndex, parameters);
     }
 
     /**
@@ -330,8 +325,7 @@ public class Introduction implements Serializable {
      * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    private Object invokePerThread(final int methodIndex,
-                                   final Object[] parameters) {
+    private Object invokePerThread(final int methodIndex, final Object[] parameters) {
         return m_container.invokePerThread(methodIndex, parameters);
     }
 
@@ -362,7 +356,6 @@ public class Introduction implements Serializable {
 
         for (int i = 0; i < interfaces.length; i++) {
             Class implemented = interfaces[i];
-
             if (implemented.getName().equals(requiredInterface)
                     || findInterface(implemented, requiredInterface)) {
                 return true;
