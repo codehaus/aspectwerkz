@@ -173,7 +173,7 @@ public class IntroductionDefinition {
     }
 
     /**
-     * Collects the interfaces from all the base class mixins.
+     * Collects the interfaces from all the base class mixins and the methods in the mixin interfaces
      * 
      * @param mixinClass
      * @return list of methods declared in given class interfaces
