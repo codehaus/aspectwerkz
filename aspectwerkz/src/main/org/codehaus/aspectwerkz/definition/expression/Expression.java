@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz.definition.expression;
 import java.util.Map;
 import java.io.Serializable;
 
-import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 
@@ -88,7 +87,7 @@ public abstract class Expression implements Serializable {
         if (expression == null) throw new IllegalArgumentException("expression can not be null");
 
         m_namespace = namespace;
-        m_expression = expression;//deEscapeExpression(expression);
+        m_expression = expression;
         m_name = name;
         m_type = type;
         if (packageNamespace == null) {
@@ -188,8 +187,8 @@ public abstract class Expression implements Serializable {
      * @return boolean
      */
     public abstract boolean match(final ClassMetaData classMetaData,
-                         final MemberMetaData memberMetaData,
-                         final String exceptionType);
+                                  final MemberMetaData memberMetaData,
+                                  final String exceptionType);
 
     /**
      * Return a Map(name->Expression) of expression involved in the

@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.joinpoint.control;
 
 import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
-import org.codehaus.aspectwerkz.regexp.CompiledPatternTuple;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
