@@ -12,8 +12,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * This tests can be run without online / offline or other post compilation mode. Used to test standalone component of
- * AspectWerkz.
+ * This tests can be run without online / offline or other post compilation mode.
+ * Used to test standalone component of AspectWerkz.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -50,15 +50,13 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);
         suite.addTestSuite(test.superclassconstructor.SuperClassConstructorTest.class);
         suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
+        suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
 
         // performance tests
         suite.addTestSuite(test.performance.PerformanceTest.class);
 
         // TODO: deprecated until a better hot deployment model has been implemented
 //        suite.addTestSuite(test.DynamicDeploymentTest.class);
-
-        // TODO: AlEX fix this test please, don't understand it
-        suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
 
         return suite;
     }
