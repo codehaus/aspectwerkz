@@ -80,5 +80,4 @@ public class ExpressionContext {
     public ExpressionNamespace getNamespace() {
         return m_namespace;
     }
-
 }

@@ -224,8 +224,7 @@ public class ExpressionExpression extends Expression {
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    public boolean match(final ClassMetaData classMetaData,
-                         final MemberMetaData memberMetaData) {
+    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         return match(classMetaData, memberMetaData, null);
     }
 
