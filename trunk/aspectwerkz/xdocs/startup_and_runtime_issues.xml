@@ -24,6 +24,9 @@
                         <a href="#Hot deployment and reconfiguration">Hot deployment and reconfiguration</a>
                     </li>
                     <li>
+                        <a href="#Remote Proxy Server - RPC mechanism">Remote Proxy Server - RPC mechanism</a>
+                    </li>
+                    <li>
                         <a href="#Thread safety">Thread safety</a>
                     </li>
 <!--                    <li>-->
@@ -309,6 +312,133 @@ for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
                     All these operations are fully thread-safe.
                 </p>
             </subsection>
+        </section>
+
+        <section name="Remote Proxy Server - RPC mechanism">
+            <p>
+                <code>AspectWerkz</code> provides an RPC mechanism that allows you to use the
+                instrumented objects (advices and mixins) seamlessly on a remote client site.
+            </p>
+
+            <subsection name="Client side">
+                <p>
+                    You can use the remote proxy on the client side in two ways:
+                    <ul>
+                        <li>
+                            create a client proxy that creates a matching instance on the server.
+                            The client now has seamless access this new specific instance on the server.
+                            <p>
+                                <b>Example:</b>
+<source><![CDATA[
+...
+// creates a new remote proxy for the MixinImpl class which
+// maps to an instance of this class on the server
+RemoteProxy remoteProxy = RemoteProxy.createClientProxy(
+        new String[]{"examples.connectivity.Mixin"},
+        "examples.connectivity.MixinImpl",
+        "localhost",
+        7777
+);
+
+// retrieves the proxy to the MixinImpl instance
+Mixin mixin = (Mixin)remoteProxy.getInstance();
+
+// invoke methods on the proxy (executed on the server)
+System.out.println("Mixin says: " + mixin.test1());
+
+// close the proxy (close() must always be called)
+remoteProxy.close();
+...
+]]></source>
+                            </p>
+                        </li><br/>
+                        <li>
+                            create an instance of some class on the server-side, wrap it with a
+                            <code>RemoteProxy</code> and send to the client over the wire.
+                            The client then have access to this specific instance on the server.
+                            <p>
+                                <b>Server side:</b>
+<source><![CDATA[
+    ...
+    // wrap an instance in a remote proxy on the server-side and send it to the client
+    RemoteProxy remoteProxy = RemoteProxy.createServerProxy(anotherMixinInstance, "localhost", 7777);
+    return remoteProxy;
+}
+]]></source>
+                            </p>
+                            <p>
+                                <b>Client side:</b>
+<source><![CDATA[
+...
+// retrieve the proxy to the specific instance created on the server
+RemoteProxy remoteProxy = mixin.getMixin();
+
+// retrieves the proxy to the instance on the server
+AnotherMixin anotherMixin = (AnotherMixin)remoteProxy.getInstance();
+...
+]]></source>
+                            </p>
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    A sample have been provided and can be found in the <code>src/samples/examples/connectiviy</code>
+                    directory. Start by taking a look at the <code>Client.java</code> class.
+                    You can run the sample by executing <code>maven aspectwerkz:samples:remote:server</code>
+                    to start up the server and then in another console execute
+                    <code>maven aspectwerkz:samples:remote:client</code> to start the client.
+                    (When you close down the server using <code>^C</code> then the server listener
+                    threads are still hanging so you need to close down them manually.)
+                </p>
+
+            </subsection>
+
+            <subsection name="Server side">
+                <p>
+                    The remote proxy server is a multi-threaded production-ready implementation that
+                    is ready to serve any number of incoming requests. To configure the server settings
+                    (number of listener threads, max/min/init size of the thread pool, backlog etc.)
+                    you have to change the settings in the in the <code>aspectwerkz.properties</code>
+                    resource bundle and put it on the classpath. If no bundle is found default
+                    values are used.
+                </p>
+                <p>
+                    The server resource bundle has the following format/options:
+<source><![CDATA[
+remote.server.hostname=localhost
+remote.server.port=7777
+remote.server.client.threads.timeout=60000
+remote.server.listener.threads.nr=10
+remote.server.listener.threads.backlog=200
+remote.server.listener.threads.run.as.daemon=false
+remote.server.thread.pool.type=bounded # possible types are bounded or dynamic
+remote.server.thread.pool.max.size=100
+remote.server.thread.pool.init.size=10
+remote.server.thread.pool.min.size=10
+remote.server.thread.pool.keep.alive.time=300000
+remote.server.thread.pool.wait.when.blocked=true
+remote.server.invoker.classname=
+]]></source>
+                </p>
+
+                <p>
+                    To enable support for RPC in the <code>AspectWerkz</code> system you have to feed
+                    the JVM with the <code>-Daspectwerkz.remote.server.run=true</code> option.
+                </p>
+
+                <p>
+                    If you have specific requirements. For example if you want to handle the user
+                    context that you (optionally) can set on the client <code>RemoteProxy</code>
+                    and have sent over or have other requirements on how you want to invoke you
+                    objects then you can create your own implementation of the
+                    <code>org.codehaus.aspectwerkz.connectivity.Inovoker</code> interface and
+                    specify the implementation in the aspectwerkz.properties resource bundle using
+                    the <code>remote.server.invoker.classname=..</code> option. For an example
+                    implementation see the
+                    <code>org.codehaus.aspectwerkz.AspectWerkz.getDefaultInvoker()</code> method.
+                </p>
+            </subsection>
+
         </section>
 
         <section name="Thread safety">
