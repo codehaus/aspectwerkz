@@ -346,26 +346,25 @@
     <!--        </exec>-->
     <!--    </goal>-->
     <!---->
-    <!--    <goal name="test-online">-->
-    <!--        <attainGoal name="aspectwerkz:init"/>-->
-    <!--        <mkdir dir="${basedir}/target/bug"/>-->
-    <!---->
-    <!--        <javac destdir="${basedir}/target/bug" deprecation="true"-->
-    <!--            debug="true" optimize="false" excludes="**/samples.xml">-->
-    <!--            <src>-->
-    <!--                <pathelement location="src/bug"></pathelement>-->
-    <!--            </src>-->
-    <!--            <classpath>-->
-    <!--                <pathelement path="${main.classes}"/>-->
-    <!--                <fileset dir="${lib.dir}">-->
-    <!--                    <include name="*.jar"></include>-->
-    <!--                </fileset>-->
-    <!--            </classpath>-->
-    <!--        </javac>-->
-    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
-    <!--            <arg line="-cp ${basedir}/target/bug${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${basedir}/src/bug/bank.xml project.Transfer"/>-->
-    <!--        </exec>-->
-    <!--    </goal>-->
+<!--        <goal name="test-online">-->
+<!--            <attainGoal name="aspectwerkz:init"/>-->
+<!--            <mkdir dir="${basedir}/target/bug"/>-->
+<!---->
+<!--            <javac destdir="${basedir}/target/bug" deprecation="true" debug="true" optimize="false">-->
+<!--                <src>-->
+<!--                    <pathelement location="src/bug"></pathelement>-->
+<!--                </src>-->
+<!--                <classpath>-->
+<!--                    <pathelement path="${main.classes}"/>-->
+<!--                    <fileset dir="${lib.dir}">-->
+<!--                        <include name="*.jar"></include>-->
+<!--                    </fileset>-->
+<!--                </classpath>-->
+<!--            </javac>-->
+<!--            <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
+<!--                <arg line="-cp ${basedir}/target/bug${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${basedir}/src/bug/bank.xml project.Transfer1"/>-->
+<!--            </exec>-->
+<!--        </goal>-->
 
 </project>
 
