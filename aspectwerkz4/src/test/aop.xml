@@ -10,13 +10,13 @@
         <mixin class="test.mixin.perinstance.MyImpl" deployment-model="perInstance"/>
         <aspect class="test.mixin.perinstance.IntroductionTestAspect"/>
         <mixin class="test.mixin.perclass.MyImpl"
-             deployment-model="perClass"
-             transient="true"
-             bind-to="within(test.mixin.perclass.ToBeIntroduced) OR hasfield(int test.mixin.perclass.*.thisFieldNameShouldHopefullyBeUnique_perclass) OR hasmethod(void test.mixin.perclass.*.thisMethodNameShouldHopefullyBeUnique_perclass(..))"/>
+            deployment-model="perClass"
+            transient="true"
+            bind-to="within(test.mixin.perclass.ToBeIntroduced) OR hasfield(int test.mixin.perclass.*.thisFieldNameShouldHopefullyBeUnique_perclass) OR hasmethod(void test.mixin.perclass.*.thisMethodNameShouldHopefullyBeUnique_perclass(..))"/>
         <aspect class="test.mixin.perclass.IntroductionTestAspect"/>
         <package name="test.aspect">
             <aspect class="MemberMethodTestAspect" deployment-model="perInstance"/>
-            <aspect class="StaticMethodTestAspect" deployment-model="perClass" />
+            <aspect class="StaticMethodTestAspect" deployment-model="perClass"/>
             <aspect class="FieldTestAspect"/>
             <aspect class="CallerSideTestAspect"/>
             <aspect class="DynamicDeploymentTestAspect"/>
