@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.io.File;
 
 import org.codehaus.aspectwerkz.transform.inlining.Deployer;
+import org.codehaus.aspectwerkz.transform.inlining.DeploymentHandle;
 
 /**
  * serializable
@@ -73,24 +74,47 @@ public class Target {
 
     public static void main(String[] args) {
 
-        run();
-        try {
-            // load the class in a brand new loader and try to deploy it
-            URLClassLoader loader = new URLClassLoader(
-                    new URL[]{new File("./target/samples-classes/").toURL()},
-                    null
-            );
-            Class clazz = loader.loadClass("examples.logging.LoggingAspect");
+        System.out.println("-----------------------------------------------------------------------------------");
+        System.out.println("---- deploy using XML def and undeploy using handle ----");
+        System.out.println("-----------------------------------------------------------------------------------");
 
-            for (int i = 0; i < 5; i++) {
-                Deployer.deploy(clazz);
-                run();
-                Deployer.undeploy(LoggingAspect.class);
-                run();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String aspectXmlDef = "<aspect class=\"logging.LoggingAspect\"><pointcut name=\"methodsToLog\" expression=\"execution(* examples.logging.Target.toLog*(..))\"/><advice name=\"logMethod\" type=\"around\" bind-to=\"methodsToLog\"/><advice name=\"logBefore\" type=\"before\" bind-to=\"methodsToLog\"/></aspect>";
+//        run();
+//        Deployer.deploy(LoggingAspect.class, aspectXmlDef);
+//        run();
+//        Deployer.undeploy(LoggingAspect.class);
+        run();
+
+        System.out.println("-----------------------------------------------------------------------------------");
+        System.out.println("---- deploy/undeploy using handle ----");
+        System.out.println("-----------------------------------------------------------------------------------");
+        run();
+        DeploymentHandle handle2 = Deployer.deploy(LoggingAspect.class);
+        run();
+        Deployer.undeploy(handle2);
+        run();
+
+//        System.out.println("-----------------------------------------------------------------------------------");
+//        System.out.println("---- load from indep URL CL, deploy in system CL, undeploy it (multiple times) ----");
+//        System.out.println("-----------------------------------------------------------------------------------");
+//
+//        try {
+//            // load the class in a brand new loader and try to deploy it
+//            URLClassLoader loader = new URLClassLoader(
+//                    new URL[]{new File("./target/samples-classes/").toURL()},
+//                    null
+//            );
+//            Class clazz = loader.loadClass("examples.logging.LoggingAspect");
+//
+//            for (int i = 0; i < 2; i++) {
+//                Deployer.deploy(clazz);
+//                run();
+//                Deployer.undeploy(LoggingAspect.class);
+//                run();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     private static void run() {

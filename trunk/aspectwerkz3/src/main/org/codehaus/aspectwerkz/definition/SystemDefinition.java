@@ -467,7 +467,6 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAdviceDefinitions().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 final ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
-                // TODO need NULL object pattern
                 if (expressionInfo == null) {
                     continue;
                 }
@@ -505,7 +504,6 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAdviceDefinitions().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
-                // TODO need NULL object pattern
                 if (expressionInfo == null) {
                     continue;
                 }
@@ -535,7 +533,6 @@ public class SystemDefinition {
                 for (int i = 0; i < ctxs.length; i++) {
                     ExpressionContext ctx = ctxs[i];
                     final ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
-                    // TODO need NULL object pattern
                     if (expressionInfo == null) {
                         continue;
                     }
@@ -576,7 +573,6 @@ public class SystemDefinition {
             for (Iterator it2 = advices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 final ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
-                // TODO need NULL object pattern
                 if (expressionInfo == null) {
                     continue;
                 }

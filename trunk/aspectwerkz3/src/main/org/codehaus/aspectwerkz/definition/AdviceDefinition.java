@@ -134,6 +134,15 @@ public class AdviceDefinition {
     }
 
     /**
+     * Returns the fully qualified name for the advice
+     *
+     * @return the fully qualified name
+     */
+    public String getQualifiedName() {
+        return m_aspectDefinition.getQualifiedName() + '.' + m_name;
+    }
+
+    /**
      * Sets the name of the advice.
      *
      * @param name the name
@@ -223,6 +232,15 @@ public class AdviceDefinition {
      */
     public void setAttribute(final String attribute) {
         m_attribute = attribute;
+    }
+
+    /**
+     * Returns the definition for the aspect that defines this advice.
+     *
+     * @return the aspect definition
+     */
+    public AspectDefinition getAspectDefinition() {
+        return m_aspectDefinition;
     }
 
     /**
