@@ -308,17 +308,21 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         if (node.jjtGetNumChildren() <= 0) {
             // args(EMPTY)
             return (ExpressionVisitor.getParametersCount(ctx) == 0) ? Boolean.TRUE : Boolean.FALSE;
+
         } else {
             // check for ".." as first node
             int expressionParameterCount = node.jjtGetNumChildren();// the number of node minus eager one.
+
             //TODO support several eager nodes
             boolean isFirstArgEager = ((ASTArgParameter) node.jjtGetChild(0)).getTypePattern().isEagerWildCard();
             boolean isLastArgEager = ((ASTArgParameter) node.jjtGetChild(node.jjtGetNumChildren() - 1))
                     .getTypePattern().isEagerWildCard();
+
             // args(..)
             if (isFirstArgEager && expressionParameterCount == 1) {
                 return Boolean.TRUE;
             }
+
             int contextParametersCount = ExpressionVisitor.getParametersCount(ctx);
             if (isFirstArgEager) {
                 expressionParameterCount--;
@@ -339,6 +343,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                     //args() as more args than context we try to match
                     return Boolean.FALSE;
                 }
+
             } else if (isLastArgEager) {
                 expressionParameterCount--;
                 if (contextParametersCount >= expressionParameterCount) {
@@ -355,6 +360,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 } else {
                     return Boolean.FALSE;
                 }
+
             } else {
                 // no eager wildcard in args()
                 // check that args length are equals
@@ -378,11 +384,13 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     public Object visit(ASTArgParameter node, Object data) {
         TypePattern typePattern = node.getTypePattern();
         TypePattern realPattern = typePattern;
+
         // check if the arg is in the pointcut signature. In such a case, use the declared type
         //TODO can we improve that with a lazy attach of the realTypePattern to the node
         // and a method that always return the real pattern
         // It must be lazy since args are not added at info ctor time [can be refactored..]
         // do some filtering first to avoid unnecessary map lookup
+        
         int pointcutArgIndex = -1;
         if (typePattern.getPattern().indexOf(".") < 0) {
             String boundedType = m_expressionInfo.getArgumentType(typePattern.getPattern());
@@ -391,6 +399,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 realPattern = TypePattern.compileTypePattern(boundedType, SubtypePatternType.NOT_HIERARCHICAL);
             }
         }
+
         // grab parameter from context
         ExpressionContext ctx = (ExpressionContext) data;
         ClassInfo argInfo = null;
@@ -405,15 +414,8 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             // ExpressionContext args are exhausted
             return Boolean.FALSE;
         }
-        // do the match
+
         if (ClassInfoHelper.matchType(realPattern, argInfo)) {
-            //            // remember the target arg index if the poincut has a signature
-            //            if (pointcutArgIndex >= 0) {
-            //                System.out.println("XXXARGS targetArg at match: " + ctx.getCurrentTargetArgsIndex() + " is pc expr arg "
-            // + pointcutArgIndex
-            //                    + " @ " + m_expressionInfo.getExpressionAsString());
-            //                ctx.m_exprIndexToTargetIndex.put(pointcutArgIndex, ctx.getCurrentTargetArgsIndex());
-            //            }
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;
@@ -642,7 +644,13 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         return m_expression;
     }
 
-    private static int getParametersCount(ExpressionContext ctx) {
+    /**
+     * Returns the number of parameters to the target method/constructor else -1.
+     *
+     * @param ctx
+     * @return
+     */
+    private static int getParametersCount(final ExpressionContext ctx) {
         ReflectionInfo reflectionInfo = ctx.getReflectionInfo();
         if (reflectionInfo instanceof MethodInfo) {
             return ((MethodInfo) reflectionInfo).getParameterTypes().length;

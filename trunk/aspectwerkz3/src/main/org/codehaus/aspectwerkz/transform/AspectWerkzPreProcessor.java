@@ -259,7 +259,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             || klass.startsWith("org.xml.sax.")
             || klass.startsWith("javax.xml.parsers.")
 
-        // TODO: why have we had junit classes filtered out, they are not part of AW core, can't be filtered out since
+        // TODO: why have we had jMunit classes filtered out, they are not part of AW core, can't be filtered out since
         // users want to advise on those
            // || klass.startsWith("junit.")
         ;
@@ -296,7 +296,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     /**
      * Always dumps class.
      * 
-     * @param className
      * @param context
      */
     public static void dumpForce(final Context context) {

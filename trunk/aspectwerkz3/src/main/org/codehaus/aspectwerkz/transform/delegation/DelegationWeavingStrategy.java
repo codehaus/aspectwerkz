@@ -19,7 +19,7 @@ import org.codehaus.aspectwerkz.transform.WeavingStrategy;
 
 /**
  * A weaving strategy implementing a weaving scheme based on delegation.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class DelegationWeavingStrategy implements WeavingStrategy {
@@ -35,7 +35,7 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
 
     /**
      * Initializes the transformer stack.
-     * 
+     *
      * @param params not used
      */
     public void initialize(final Hashtable params) {
@@ -56,9 +56,8 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
 
     /**
      * Transforms the class.
-     * 
+     *
      * @param className
-     * @param klass
      * @param context
      */
     public void transform(final String className, final Context context) {
@@ -87,7 +86,10 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
             try {
                 m_addSerialVerUidTransformer.transform(context, klass);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
+                System.err.println(
+                        "WARNING: could not add new serial version UID to class [" + klass.getName() +
+                        "] and this  might cause problems with serialization"
+                );
                 e.printStackTrace();
             }
             AspectWerkzPreProcessor.dumpForce(context);
@@ -96,7 +98,7 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
 
     /**
      * Creates a new transformation context.
-     * 
+     *
      * @param name
      * @param bytecode
      * @param loader
