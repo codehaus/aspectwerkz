@@ -53,10 +53,12 @@ import java.util.List;
  */
 public class CflowAspectExpressionVisitor implements ExpressionParserVisitor {
 
+    private ExpressionInfo m_expressionInfo;
     private Node m_root;
     private String m_namespace;
 
-    public CflowAspectExpressionVisitor(Node root, String namespace) {
+    public CflowAspectExpressionVisitor(ExpressionInfo expressionInfo, Node root, String namespace) {
+        m_expressionInfo = expressionInfo;
         m_root = root;
         m_namespace = namespace;
     }
@@ -165,6 +167,7 @@ public class CflowAspectExpressionVisitor implements ExpressionParserVisitor {
         int cflowID = node.hashCode();
         Node subNode = node.jjtGetChild(0);
         ExpressionInfo subExpression = new ExpressionInfo(subNode, m_namespace);
+        subExpression.inheritPossibleArgumentFrom(m_expressionInfo);
         ((List)data).add(new CflowBinding(cflowID, subExpression, false));
         return data;
     }
@@ -180,6 +183,7 @@ public class CflowAspectExpressionVisitor implements ExpressionParserVisitor {
         int cflowID = node.hashCode();
         Node subNode = node.jjtGetChild(0);
         ExpressionInfo subExpression = new ExpressionInfo(subNode, m_namespace);
+        subExpression.inheritPossibleArgumentFrom(m_expressionInfo);
         ((List)data).add(new CflowBinding(cflowID, subExpression, true));
         return data;
     }

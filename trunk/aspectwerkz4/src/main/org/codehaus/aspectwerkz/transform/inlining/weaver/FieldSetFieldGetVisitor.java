@@ -104,6 +104,8 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
      */
     public class ReplacePutFieldAndGetFieldInstructionCodeAdapter extends CodeAdapter {
 
+//        private final ClassVisitor m_cv;
+//        private final Set m_addedMethod;
         private final ClassLoader m_loader;
         private final ClassInfo m_callerClassInfo;
         private final String m_callerClassName;
@@ -122,7 +124,9 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
          * @param callerMethodName
          * @param callerMethodDesc
          */
-        public ReplacePutFieldAndGetFieldInstructionCodeAdapter(final CodeVisitor ca,
+        public ReplacePutFieldAndGetFieldInstructionCodeAdapter(/*final ClassVisitor cv,
+                                                                final Set addedMethods,*/
+                                                                final CodeVisitor ca,
                                                                 final ClassLoader loader,
                                                                 final ClassInfo callerClassInfo,
                                                                 final String callerClassName,
@@ -130,6 +134,8 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                                                                 final String callerMethodDesc) {
             super(ca);
 
+//            m_cv = cv;
+//            m_addedMethod = addedMethods;
             m_loader = loader;
             m_callerClassInfo = callerClassInfo;
             m_callerClassName = callerClassName;
@@ -242,7 +248,7 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
 
                 // if static context pop the 'this' instance and load NULL
                 if (Modifier.isStatic(m_callerMemberInfo.getModifiers())) {
-                    visitInsn(ACONST_NULL);
+                    //visitInsn(ACONST_NULL);
                 }
 
                 // no param to field, so pass a default value to the invoke method
@@ -282,8 +288,16 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                                 m_lineNumber
                         )
                 );
+
+//                // create a wrapper
+//                //TODO optimize for public field
+//                createFieldAccessWrapper(fieldInfo);
             }
         }
+
+//        private void createFieldAccessWrapper(FieldInfo fieldInfo) {
+//
+//        }
 
         /**
          * Handles field modification.

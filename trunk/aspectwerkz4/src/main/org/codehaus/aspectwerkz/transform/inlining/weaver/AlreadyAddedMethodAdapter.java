@@ -55,7 +55,6 @@ public class AlreadyAddedMethodAdapter extends AsmAnnotationHelper.NullClassAdap
                                    final Attribute attrs) {
         if (name.startsWith(WRAPPER_METHOD_PREFIX)
             || name.startsWith(ORIGINAL_METHOD_PREFIX)) {
-            //FIXME do it for ctor exe wrapper
             m_addedMethods.add(getMethodKey(name, desc));
         }
         return super.visitMethod(access, name, desc, exceptions, attrs);

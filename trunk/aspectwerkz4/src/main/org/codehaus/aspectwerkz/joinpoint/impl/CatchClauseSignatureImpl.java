@@ -87,10 +87,9 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
      * Returns a string representation of the signature.
      *
      * @return a string representation
-     * @TODO: implement toString to something meaningful
      */
     public String toString() {
-        return super.toString();
+        return getName();
     }
 
     /**

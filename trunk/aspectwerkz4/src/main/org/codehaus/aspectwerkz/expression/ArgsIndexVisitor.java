@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.expression.ast.ASTThis;
 import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
 import org.codehaus.aspectwerkz.expression.ast.Node;
+import org.codehaus.aspectwerkz.expression.ast.ASTCflow;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
@@ -30,7 +31,7 @@ import gnu.trove.TObjectIntHashMap;
  * A visitor to compute the args index of the target (matching) method/constructor which match the advice args. Note:
  * extends the ExpressionVisitor. We should allow for optimization (all=TRUE) by assuming that args(..) does not depends
  * of the matching context. The "(String a, String b):methodX && args(a,b) -OR- methodY && args(b,a)" expression should
- * not be allowed then. TODO check support for anonymous pc
+ * not be allowed then.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -163,6 +164,61 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
             }
         }
         context.m_exprIndexToTargetIndex = exprToTargetArgIndexes;
+        return match;
+    }
+
+    public Object visit(ASTCflow node, Object data) {
+        // do the sub expression visit
+        ExpressionContext context = (ExpressionContext) data;
+        //ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
+        //ExpressionInfo expressionInfo = namespace.getExpressionInfo(node.getName());
+
+        ExpressionInfo expressionInfo = new ExpressionInfo(
+                node.jjtGetChild(0), m_namespace
+        );
+        expressionInfo.inheritPossibleArgumentFrom(m_expressionInfo);
+
+        ArgsIndexVisitor referenced = new ArgsIndexVisitor(
+                expressionInfo, "N/A",
+                m_namespace,
+                node.jjtGetChild(0),
+                m_classLoader
+        );
+
+        // keep track of the state we already had
+        String targetSoFar = context.m_targetBoundedName;
+        String thisSoFar = context.m_thisBoundedName;
+        boolean targetWithRuntimeCheckSoFar = context.m_targetWithRuntimeCheck;
+        TObjectIntHashMap exprIndexToTargetIndexSoFar = (TObjectIntHashMap) context.m_exprIndexToTargetIndex.clone();
+
+        context.resetRuntimeState();
+        Boolean match = referenced.matchUndeterministic(context);
+
+        // TODO FIX ME merge the state
+        if (context.m_targetBoundedName == null) {
+            context.m_targetBoundedName = targetSoFar;
+        } else if (targetSoFar != null) {
+            // cflow target
+        }
+        if (context.m_thisBoundedName == null) {
+            context.m_thisBoundedName = thisSoFar;
+        } else if (thisSoFar != null) {
+            // cflow this
+        }
+        if (!context.m_targetWithRuntimeCheck) {
+            // restore
+            context.m_targetWithRuntimeCheck = targetWithRuntimeCheckSoFar;
+        }
+        if (context.m_exprIndexToTargetIndex.isEmpty()) {
+            // restore
+            context.m_exprIndexToTargetIndex = exprIndexToTargetIndexSoFar;
+        } else if (!exprIndexToTargetIndexSoFar.isEmpty()) {
+            //should merge ?
+            for (int i = 0; i < exprIndexToTargetIndexSoFar.keys().length; i++) {
+                Object o = exprIndexToTargetIndexSoFar.keys()[i];
+                context.m_exprIndexToTargetIndex.put(o, exprIndexToTargetIndexSoFar.get(o));
+            }
+        }
         return match;
     }
 

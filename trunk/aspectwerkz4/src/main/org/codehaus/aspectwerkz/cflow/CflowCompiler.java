@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.cflow;
 import org.objectweb.asm.Constants;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.Label;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
@@ -100,8 +101,14 @@ public class CflowCompiler implements Constants, TransformationConstants {
                 EMPTY_STRING_ARRAY,
                 null
         );
+        Label isNull = new Label();
+        cv.visitFieldInsn(GETSTATIC, m_className, INSTANCE_CFLOW_FIELD_NAME, ABSTRACT_CFLOW_SIGNATURE);
+        cv.visitJumpInsn(IFNULL, isNull);
         cv.visitFieldInsn(GETSTATIC, m_className, INSTANCE_CFLOW_FIELD_NAME, ABSTRACT_CFLOW_SIGNATURE);
         cv.visitMethodInsn(INVOKEVIRTUAL, ABSTRACT_CFLOW_CLASS, IN_CFLOW_METOD_NAME, IN_CFLOW_METOD_SIGNATURE);
+        cv.visitInsn(IRETURN);
+        cv.visitLabel(isNull);
+        cv.visitInsn(ICONST_0);
         cv.visitInsn(IRETURN);
         cv.visitMaxs(0, 0);
 
@@ -113,10 +120,18 @@ public class CflowCompiler implements Constants, TransformationConstants {
                 EMPTY_STRING_ARRAY,
                 null
         );
+        Label isNull2 = new Label();
+        cv.visitFieldInsn(GETSTATIC, m_className, INSTANCE_CFLOW_FIELD_NAME, ABSTRACT_CFLOW_SIGNATURE);
+        cv.visitJumpInsn(IFNULL, isNull2);
         cv.visitFieldInsn(GETSTATIC, m_className, INSTANCE_CFLOW_FIELD_NAME, ABSTRACT_CFLOW_SIGNATURE);
         cv.visitMethodInsn(INVOKEVIRTUAL, ABSTRACT_CFLOW_CLASS, IN_CFLOWBELOW_METOD_NAME, IN_CFLOWBELOW_METOD_SIGNATURE);
         cv.visitInsn(IRETURN);
+        cv.visitLabel(isNull2);
+        cv.visitInsn(ICONST_0);
+        cv.visitInsn(IRETURN);
         cv.visitMaxs(0, 0);
+
+        m_cw.visitEnd();
 
         return m_cw.toByteArray();
     }
@@ -140,6 +155,11 @@ public class CflowCompiler implements Constants, TransformationConstants {
     public static Class compileCflowAspectAndAttachToClassLoader(ClassLoader loader, int cflowID) {
         //TODO do we need a Class.forName check first to avoid unecessary compilation ?
         CflowCompiler compiler = new CflowCompiler(cflowID);
+
+        try {
+            AsmHelper.dumpClass("_dump", getCflowAspectClassName(cflowID), compiler.m_cw);
+        } catch (Throwable t) {;}
+
         byte[] cflowAspectBytes = compiler.compile();
         Class cflowAspect = AsmHelper.loadClass(
                 loader,

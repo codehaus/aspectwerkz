@@ -45,7 +45,17 @@ public class CflowCompilerTest extends TestCase {
                 4
         );
 
+        // check NPE
+        Method staticMethod = cflowAspect.getDeclaredMethod("isInCflow", new Class[0]);
+        Boolean b = (Boolean) staticMethod.invoke(null, new Object[0]);
+        assertFalse(b.booleanValue());
+        staticMethod = cflowAspect.getDeclaredMethod("isInCflowBelow", new Class[0]);
+        b = (Boolean) staticMethod.invoke(null, new Object[0]);
+        assertFalse(b.booleanValue());
+
+
         final AbstractCflowSystemAspect cflow = (AbstractCflowSystemAspect)cflowAspect.newInstance();
+
         assertFalse(cflow.inCflow());
         assertFalse(cflow.inCflowBelow());
         Thread t = new Thread() {
@@ -53,10 +63,10 @@ public class CflowCompilerTest extends TestCase {
                 System.out.println(Thread.currentThread());
                 cflow.enter();
                 assertTrue(cflow.inCflow());
-                assertTrue(cflow.inCflowBelow());//TODO is cflowbelow that or the opposite ??
+                assertTrue( ! cflow.inCflowBelow());
                 cflow.enter();
                 assertTrue(cflow.inCflow());
-                assertFalse(cflow.inCflowBelow());
+                assertFalse( ! cflow.inCflowBelow());
                 cflow.exit();
                 // leave the cflow in "inCflow" state is in this thread
             }

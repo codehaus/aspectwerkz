@@ -124,7 +124,7 @@ public class CflowBinding {
         ClassInfo cflowAspectInfo = JavaClassInfo.getClassInfo(aspectClass);
 
         AspectDefinition aspectDef = new AspectDefinition(
-                aspectName,
+                aspectName.replace('/', '.'),
                 cflowAspectInfo,
                 systemDefinition
         );

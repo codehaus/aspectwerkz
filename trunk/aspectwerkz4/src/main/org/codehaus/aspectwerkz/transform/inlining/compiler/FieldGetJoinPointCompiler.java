@@ -91,20 +91,30 @@ public class FieldGetJoinPointCompiler extends AbstractJoinPointCompiler {
             cv.visitVarInsn(ALOAD, 0);
         }
 
-        String joinPointName = TransformationUtil.getWrapperMethodName(
-                m_calleeMemberName,
-                m_calleeMemberDesc,
-                m_calleeClassName,
-                GETFIELD_WRAPPER_METHOD_PREFIX
-        );
-        StringBuffer getFieldWrapperDesc = new StringBuffer();
-        getFieldWrapperDesc.append('(');
-        getFieldWrapperDesc.append(')');
-        getFieldWrapperDesc.append(m_calleeMemberDesc);
-        if (Modifier.isStatic(m_calleeMemberModifiers)) {
-            cv.visitMethodInsn(INVOKESTATIC, m_calleeClassName, joinPointName, getFieldWrapperDesc.toString());
+        // do we have a public field ? If so don't use the wrappers
+        if (Modifier.isPublic(m_calleeMemberModifiers)) {
+            if (Modifier.isStatic(m_calleeMemberModifiers)) {
+                cv.visitFieldInsn(GETSTATIC, m_calleeClassName, m_calleeMemberName, m_calleeMemberDesc);
+            } else {
+                cv.visitFieldInsn(GETFIELD, m_calleeClassName, m_calleeMemberName, m_calleeMemberDesc);
+            }
         } else {
-            cv.visitMethodInsn(INVOKEVIRTUAL, m_calleeClassName, joinPointName, getFieldWrapperDesc.toString());
+            // use the wrapper
+            String joinPointName = TransformationUtil.getWrapperMethodName(
+                    m_calleeMemberName,
+                    m_calleeMemberDesc,
+                    m_calleeClassName,
+                    GETFIELD_WRAPPER_METHOD_PREFIX
+            );
+            StringBuffer getFieldWrapperDesc = new StringBuffer();
+            getFieldWrapperDesc.append('(');
+            getFieldWrapperDesc.append(')');
+            getFieldWrapperDesc.append(m_calleeMemberDesc);
+            if (Modifier.isStatic(m_calleeMemberModifiers)) {
+                cv.visitMethodInsn(INVOKESTATIC, m_calleeClassName, joinPointName, getFieldWrapperDesc.toString());
+            } else {
+                cv.visitMethodInsn(INVOKEVIRTUAL, m_calleeClassName, joinPointName, getFieldWrapperDesc.toString());
+            }
         }
     }
 

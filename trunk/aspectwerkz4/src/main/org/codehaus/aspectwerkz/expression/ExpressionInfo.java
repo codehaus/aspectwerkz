@@ -61,7 +61,7 @@ public class ExpressionInfo {
     /**
      * Ordered map of the pointcut arguments type, indexed by their name.
      */
-    private final Map m_argsTypeByName = new SequencedHashMap();
+    private Map m_argsTypeByName = new SequencedHashMap();
 
     /**
      * List<String> of possible arguments names/references that appear in the expression.
@@ -91,7 +91,7 @@ public class ExpressionInfo {
             m_expression = new ExpressionVisitor(this, expression, namespace, root);
             m_advisedClassFilterExpression =
                 new AdvisedClassFilterExpressionVisitor(this, expression, namespace, root);
-            m_cflowAspectExpression = new CflowAspectExpressionVisitor(root, namespace);
+            m_cflowAspectExpression = new CflowAspectExpressionVisitor(this, root, namespace);
         } catch (Throwable e) {
             throw new DefinitionException("expression is not well-formed [" + expression + "]: " + e.getMessage(), e);
         }
@@ -112,7 +112,7 @@ public class ExpressionInfo {
             m_expression = new ExpressionVisitor(this, "N/A", namespace, subExpression);
             m_advisedClassFilterExpression =
                 new AdvisedClassFilterExpressionVisitor(this, "N/A", namespace, subExpression);
-            m_cflowAspectExpression = new CflowAspectExpressionVisitor(subExpression, namespace);
+            m_cflowAspectExpression = new CflowAspectExpressionVisitor(this, subExpression, namespace);
         } catch (Throwable e) {
             throw new DefinitionException("sub expression is not well-formed from [" + subExpression+ "]: " + e.getMessage(), e);
         }
@@ -333,6 +333,12 @@ public class ExpressionInfo {
             throw new WrappedRuntimeException(e);
         }
         return false;
+    }
+
+    public void inheritPossibleArgumentFrom(ExpressionInfo expressionInfo) {
+        m_specialArgumentName = expressionInfo.m_specialArgumentName;
+        m_possibleArguments = expressionInfo.m_possibleArguments;
+        m_argsTypeByName = expressionInfo.m_argsTypeByName;
     }
 }
 

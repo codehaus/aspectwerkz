@@ -184,10 +184,18 @@ public class ExpressionValidateVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTCflow node, Object data) {
+        // visit the sub expression
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            node.jjtGetChild(i).jjtAccept(this, data);
+        }
         return data;
     }
 
     public Object visit(ASTCflowBelow node, Object data) {
+        // visit the sub expression
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            node.jjtGetChild(i).jjtAccept(this, data);
+        }
         return data;
     }
 
