@@ -21,52 +21,52 @@ public class ConstructorTestAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     * @Call test.constructor.TestAroundAdvice.new(..)
+     * @Expression call(test.constructor.TestAroundAdvice.new(..))
      */
     Pointcut call1;
 
     /**
-     * @Call test.constructor.TestBeforeAdvice.new()
+     * @Expression call(test.constructor.TestBeforeAdvice.new())
      */
     Pointcut call2;
 
     /**
-     * @Call test.constructor.TestAfterAdvice.new(String)
+     * @Expression call(test.constructor.TestAfterAdvice.new(String))
      */
     Pointcut call3;
 
     /**
-     * @Call test.constructor.TestBeforeAfterAdvice.new(String[])
+     * @Expression call(test.constructor.TestBeforeAfterAdvice.new(String[]))
      */
     Pointcut call4;
 
     /**
-     * @Call test.constructor.TestReturnFalseType.new()
+     * @Expression call(test.constructor.TestReturnFalseType.new())
      */
     Pointcut call5;
 
     /**
-     * @Execution test.constructor.TestAroundAdvice.new(..)
+     * @Expression execution(test.constructor.TestAroundAdvice.new(..))
      */
     Pointcut execution1;
 
     /**
-     * @Execution test.constructor.TestBeforeAdvice.new()
+     * @Expression execution(test.constructor.TestBeforeAdvice.new())
      */
     Pointcut execution2;
 
     /**
-     * @Execution test.constructor.TestAfterAdvice.new(String)
+     * @Expression execution(test.constructor.TestAfterAdvice.new(String))
      */
     Pointcut execution3;
 
     /**
-     * @Execution test.constructor.TestBeforeAfterAdvice.new(String[])
+     * @Expression execution(test.constructor.TestBeforeAfterAdvice.new(String[]))
      */
     Pointcut execution4;
 
     /**
-     * @Execution test.constructor.TestReturnFalseType.new()
+     * @Expression execution(test.constructor.TestReturnFalseType.new())
      */
     Pointcut execution5;
 

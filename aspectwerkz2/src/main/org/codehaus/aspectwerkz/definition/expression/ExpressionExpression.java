@@ -140,7 +140,7 @@ public class ExpressionExpression extends Expression {
         );
 
         StringBuffer extracted = (StringBuffer) root.jjtAccept(CFLOWEXTRACT_VISITOR, ctx);
-        Expression expression = m_namespace.createExpression(extracted.toString(), assumedType);
+        Expression expression = m_namespace.createExpression(extracted.toString());
         return expression;
     }
 
@@ -159,6 +159,8 @@ public class ExpressionExpression extends Expression {
         for (Iterator i = context.getAnonymous().iterator(); i.hasNext();) {
             CflowExpression anonymousCflow = (CflowExpression)i.next();
             m_cflowExpressionRefs.put(anonymousCflow.getName(), anonymousCflow);
+            // referenced it for further inflated referencing
+            m_namespace.registerExpression(anonymousCflow);
             // TODO name is used in StartupManager, see getCflowExpressions
             // and will not accept anonymous expr or autonamed ones
             //throw new RuntimeException("anonymous cflow cannot be registered");

@@ -22,51 +22,51 @@ public class StaticMethodTestAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     * @Execution * test.StaticMethodAdviceTest.get*(..)
+     * @Expression execution(* test.StaticMethodAdviceTest.get*(..))
      */
     Pointcut pc1;
     /**
-     * @Execution * test.StaticMethodAdviceTest.*Param*(..)
+     * @Expression execution(* test.StaticMethodAdviceTest.*Param*(..))
      */
     Pointcut pc2;
     /**
-     * @Execution void test.StaticMethodAdviceTest.methodAdvicedMethod(..)
+     * @Expression execution(void test.StaticMethodAdviceTest.methodAdvicedMethod(..))
      */
     Pointcut pc4;
     /**
-     * @Execution * test.StaticMethodAdviceTest.methodAdvicedMethod(..)
+     * @Expression execution(* test.StaticMethodAdviceTest.methodAdvicedMethod(..))
      */
     Pointcut pc5;
     /**
-     * @Execution * test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..)
+     * @Expression execution(* test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..))
      */
     Pointcut pc6;
     /**
-     * @Execution * test.StaticMethodAdviceTest.multipleMethodAdvicedMethod(..)
+     * @Expression execution(* test.StaticMethodAdviceTest.multipleMethodAdvicedMethod(..))
      */
     Pointcut pc7;
     /**
-     * @Execution * test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..)
+     * @Expression execution(* test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..))
      */
     Pointcut pc8;
     /**
-     * @Execution * test.StaticMethodAdviceTest.joinPointMetaData(..)
+     * @Expression execution(* test.StaticMethodAdviceTest.joinPointMetaData(..))
      */
     Pointcut pc9;
     /**
-     * @Execution void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)
+     * @Expression execution(void test.StaticMethodAdviceTest.multiplePointcutsMethod(..))
      */
     Pointcut pc10;
     /**
-     * @Execution void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)
+     * @Expression execution(void test.StaticMethodAdviceTest.multiplePointcutsMethod(..))
      */
     Pointcut pc11;
     /**
-     * @Execution * test.StaticMethodAdviceTest.takesArrayAsArgument(String[])
+     * @Expression execution(* test.StaticMethodAdviceTest.takesArrayAsArgument(String[]))
      */
     Pointcut pc12;
     /**
-     * @Execution long test.StaticMethodAdviceTest.getPrimitiveAndNullFromAdvice()
+     * @Expression execution(long test.StaticMethodAdviceTest.getPrimitiveAndNullFromAdvice())
      */
     Pointcut pc13;
 

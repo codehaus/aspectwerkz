@@ -67,7 +67,7 @@ public class ExpressionNamespace {
     }
 
     /**
-     * Creates an new expression.
+     * Creates an new strongly typed leaf expression.
      *
      * @param expression
      * @param type
@@ -99,7 +99,7 @@ public class ExpressionNamespace {
     }
 
     /**
-     * Creates and expression.
+     * Creates an expression of a given type (for explicit Leaf Expression creation)
      *
      * @param expression
      * @param name
@@ -124,36 +124,39 @@ public class ExpressionNamespace {
             final String packageNamespace,
             final String name,
             final PointcutType type) {
-        Expression expr = null;
-        if (!looksLikeLeaf(expression)) {
-            //System.err.println("not leaf ? " + expression);
-            expr = new ExpressionExpression(this, expression, name);
+        if (type.equals(PointcutType.CALL)) {
+            return createCallExpression(expression, packageNamespace, name);
+        } else if (type.equals(PointcutType.CFLOW)) {
+            return createCflowExpression(expression, packageNamespace, name);
+        } else if (type.equals(PointcutType.CLASS)) {
+            return createClassExpression(expression, packageNamespace, name);
+        } else if (type.equals(PointcutType.EXECUTION)) {
+            return createExecutionExpression(expression, packageNamespace, name);
+        } else if (type.equals(PointcutType.GET)) {
+            return createGetExpression(expression, packageNamespace, name);
+        } else if (type.equals(PointcutType.HANDLER)) {
+            return createHandlerExpression(expression, packageNamespace, name);
+        } else if (type.equals(PointcutType.SET)) {
+            return createSetExpression(expression, packageNamespace, name);
+        } else {
+            throw new RuntimeException("no such expression type: " + type);
         }
-        else if (type.equals(PointcutType.EXECUTION)) {
-            expr = createExecutionExpression(expression, packageNamespace, name);
-        }
-        else if (type.equals(PointcutType.CALL)) {
-            expr = createCallExpression(expression, packageNamespace, name);
-        }
-        else if (type.equals(PointcutType.SET)) {
-            expr = createSetExpression(expression, packageNamespace, name);
-        }
-        else if (type.equals(PointcutType.GET)) {
-            expr = createGetExpression(expression, packageNamespace, name);
-        }
-        else if (type.equals(PointcutType.CFLOW)) {
-            expr = createCflowExpression(expression, packageNamespace, name);
-        }
-        else if (type.equals(PointcutType.HANDLER)) {
-            expr = createHandlerExpression(expression, packageNamespace, name);
-        }
-        else if (type.equals(PointcutType.CLASS)) {
-            expr = createClassExpression(expression, packageNamespace, name);
-        }
-        else {
-            throw new ExpressionException("poincut type is not supported: " + type);
-        }
-        return expr;
+    }
+
+
+    /**
+     * Create new expression based on the type Note that we check for an ExpressionExpression here as well
+     *
+     * @param expression       the expression string
+     * @param packageNamespace the package namespace that the expression is living in
+     * @param name             the name of the pointcut
+     * @return the expression (needs to be casted)
+     */
+    public Expression createExpression(
+            final String expression,
+            final String packageNamespace,
+            final String name) {
+        return new ExpressionExpression(this, expression, name);
     }
 
     /**
@@ -275,6 +278,21 @@ public class ExpressionNamespace {
         expression.m_namespace = this;//namespace swapping
         //}
         return expression;
+    }
+
+    /**
+     * Registers an expression.
+     *
+     * @param expression
+     * @param packageNamespace
+     * @param name
+     * @return the expression
+     */
+    public Expression registerExpression(
+            final String expression,
+            final String packageNamespace,
+            final String name) {
+        return registerExpression(createExpression(expression, packageNamespace, name));
     }
 
     /**

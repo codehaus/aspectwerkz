@@ -24,19 +24,19 @@ public class DynamicDeploymentTestAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     * @Execution void test.DynamicDeploymentTest.reorderAdvicesTestMethod()
+     * @Expression execution(void test.DynamicDeploymentTest.reorderAdvicesTestMethod())
      */
     Pointcut pc1;
     /**
-     * @Execution void test.DynamicDeploymentTest.removeAdviceTestMethod()
+     * @Expression execution(void test.DynamicDeploymentTest.removeAdviceTestMethod())
      */
     Pointcut pc2;
     /**
-     * @Execution void test.DynamicDeploymentTest.addAdviceTestMethod()
+     * @Expression execution(void test.DynamicDeploymentTest.addAdviceTestMethod())
      */
     Pointcut pc3;
     /**
-     * @Execution void test.DynamicDeploymentTest.createAspectTestMethod()
+     * @Expression execution(void test.DynamicDeploymentTest.createAspectTestMethod())
      */
     Pointcut pc4;
 

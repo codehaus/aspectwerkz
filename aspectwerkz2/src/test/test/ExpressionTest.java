@@ -73,8 +73,7 @@ public class ExpressionTest extends TestCase {
                     space.createExpression("* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION)
             );
             space.registerExpression(
-                    space.createExpression("* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL)
-            );
+                    space.createExpression("call(* test.ExpressionTest.get(..))", "", "pc2"));//implicit type
             Expression root = ExpressionNamespace.getExpressionNamespace().createExpression("pc1 && NOT pc2");
             fail("expected exception");
         }
@@ -109,6 +108,7 @@ public class ExpressionTest extends TestCase {
             Expression root = space.createExpression("* test.ExpressionTest.set(..)", PointcutType.EXECUTION);
 
             Expression rootAnonymous = space.createExpression("execution(* test.ExpressionTest.set(..))");//type autodetection
+            Expression rootAnonymous2 = space.createExpression("execution(* test.hierarchicalpattern.DummyInterface1+.testMethod1(..))");//type autodetection
 
             ClassMetaData classMetaDataTrue = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
             ClassMetaData classMetaDataFalse = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);

@@ -18,7 +18,7 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class TestAspect extends Aspect {
 
     /**
-     * @Execution * test.abstractclass.AbstractTarget.*(..)
+     * @Expression execution(* test.abstractclass.AbstractTarget.*(..))
      */
     Pointcut pc;
 

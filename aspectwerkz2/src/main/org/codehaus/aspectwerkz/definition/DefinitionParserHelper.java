@@ -24,23 +24,20 @@ public class DefinitionParserHelper {
      * Creates and add pointcut definition to aspect definition.
      *
      * @param name
-     * @param type
      * @param expression
      * @param aspectDef
      */
     public static void createAndAddPointcutDefToAspectDef(
             final String name,
-            final PointcutType type,
             final String expression,
             final AspectDefinition aspectDef) {
         PointcutDefinition pointcutDef = new PointcutDefinition();
         pointcutDef.setName(name);
-        pointcutDef.setType(type);
         pointcutDef.setExpression(expression);
         aspectDef.addPointcut(pointcutDef);
 
         // create and add a new expression template
-        ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).registerExpression(expression, "", name, type);
+        ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).registerExpression(expression, "", name);
     }
 
     /**
@@ -236,7 +233,7 @@ public class DefinitionParserHelper {
             final String interfaceClassName,
             final AspectDefinition aspectDef) {
         Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).
-                createExpression(expression, PointcutType.CLASS);
+                createExpression(expression);
 
         final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(
                 introductionName, expr, interfaceClassName

@@ -22,15 +22,15 @@ public class OrthogonalTestAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     * @Execution * test.orthogonal.OrthogonalTest.method*(..)
+     * @Expression execution(* test.orthogonal.OrthogonalTest.method*(..))
      */
     Pointcut pcMethod;
     /**
-     * @Get * test.orthogonal.OrthogonalTest.m_getFieldAroundAdviced
+     * @Expression get(* test.orthogonal.OrthogonalTest.m_getFieldAroundAdviced)
      */
     Pointcut pcGet;
     /**
-     * @Set * test.orthogonal.OrthogonalTest.m_setFieldAroundAdviced
+     * @Expression set(* test.orthogonal.OrthogonalTest.m_setFieldAroundAdviced)
      */
     Pointcut pcSet;
 

@@ -23,12 +23,12 @@ public class IntroductionTestAspect extends Aspect {
     // ============ Introductions ============
 
     /**
-     * @Implements test.ToBeIntroduced
+     * @Implements class(test.ToBeIntroduced)
      */
     Serializable serializable;
 
     /**
-     * @Class test.ToBeIntroduced
+     * @Expression class(test.ToBeIntroduced)
      */
     Pointcut pc;
 

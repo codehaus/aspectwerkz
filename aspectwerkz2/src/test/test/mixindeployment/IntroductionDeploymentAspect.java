@@ -19,12 +19,12 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class IntroductionDeploymentAspect extends Aspect {
 
     /**
-     * @Class test.mixindeployment.IntroductionDeploymentTest$TargetA
+     * @Expression class(test.mixindeployment.IntroductionDeploymentTest$TargetA)
      */
     Pointcut a;
 
     /**
-     * @Class test.mixindeployment.IntroductionDeploymentTest$TargetB
+     * @Expression class(test.mixindeployment.IntroductionDeploymentTest$TargetB)
      */
     Pointcut b;
 

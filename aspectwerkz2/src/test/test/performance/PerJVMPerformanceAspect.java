@@ -18,12 +18,12 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class PerJVMPerformanceAspect extends Aspect {
 
     /**
-     * @Class test.performance.PerformanceTest
+     * @Expression class(test.performance.PerformanceTest)
      */
     Pointcut mixin;
 
     /**
-     * @Call void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()
+     * @Expression call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM())
      */
     Pointcut pc;
 

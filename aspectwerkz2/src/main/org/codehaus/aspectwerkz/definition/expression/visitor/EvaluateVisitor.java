@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
+import org.codehaus.aspectwerkz.definition.expression.CflowExpression;
 import org.codehaus.aspectwerkz.definition.expression.ast.AndNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.BooleanLiteral;
 import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisitor;
@@ -52,14 +53,6 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
         return rhs;
     }
 
-//    public Object visit(InNode node, Object data) {
-//        return node.jjtGetChild(0).jjtAccept(this, data);
-//    }
-//
-//    public Object visit(NotInNode node, Object data) {
-//        return node.jjtGetChild(0).jjtAccept(this, data);
-//    }
-
     public Object visit(AndNode node, Object data) {
         Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
         if (!lhs.booleanValue()) {
@@ -70,6 +63,7 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(NotNode node, Object data) {
+        ExpressionContext ctx = (ExpressionContext)data;
         Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
         if (lhs.booleanValue()) {
             return Boolean.FALSE;
@@ -111,12 +105,13 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(Anonymous node, Object data) {
+        ExpressionContext ctx = (ExpressionContext)data;
         String expr = node.name;
+
         if (expr.startsWith("cflow(")) {
             return Boolean.TRUE;
         } else {
             Expression expression = null;
-            ExpressionContext ctx = (ExpressionContext)data;
             ExpressionNamespace ns = ctx.getNamespace();
             if (expr.startsWith("execution(")) {
                 expression = ns.createExecutionExpression(

@@ -19,22 +19,22 @@ public class TestAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     * @Call *..*->void test.callAndExecution.CallExecutionTest.privateMethod()
+     * @Expression call(*..*->void test.callAndExecution.CallExecutionTest.privateMethod())
      */
     Pointcut call1;
 
     /**
-     * @Call *..*->void test.callAndExecution.CallExecutionTest.publicMethod()
+     * @Expression call(*..*->void test.callAndExecution.CallExecutionTest.publicMethod())
      */
     Pointcut call2;
 
     /**
-     * @Execution void test.callAndExecution.CallExecutionTest.privateMethod()
+     * @Expression execution(void test.callAndExecution.CallExecutionTest.privateMethod())
      */
     Pointcut execution1;
 
     /**
-     * @Execution void test.callAndExecution.CallExecutionTest.publicMethod()
+     * @Expression execution(void test.callAndExecution.CallExecutionTest.publicMethod())
      */
     Pointcut execution2;
 

@@ -732,6 +732,10 @@ public class SystemDefinition {
                     && expression.match(classMetaData, PointcutType.CALL)) {
                     return true;
                 }
+//                if (expression.isOfType(PointcutType.CFLOW)
+//                    && expression.match(classMetaData, PointcutType.CFLOW)) {
+//                    return true;
+//                }
                 if (expression.matchInOrNotIn(classMetaData)) {
                     return true;
                 }
@@ -767,6 +771,11 @@ public class SystemDefinition {
                     && expression.match(classMetaData, memberMetaData, PointcutType.CALL)) {
                     return true;
                 }
+//                if (expression.isOfType(PointcutType.CFLOW)) {
+//                    if (expression.match(classMetaData, memberMetaData, PointcutType.CFLOW)) {
+//                    return true;
+//                    }
+//                }
                 if (expression.matchInOrNotIn(classMetaData, memberMetaData)) {
                     return true;
                 }
