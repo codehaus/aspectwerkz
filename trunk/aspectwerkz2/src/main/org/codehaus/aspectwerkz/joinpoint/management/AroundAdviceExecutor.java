@@ -15,7 +15,6 @@ import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.impl.JoinPointBase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
