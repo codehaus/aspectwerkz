@@ -19,6 +19,7 @@ import java.util.Stack;
  */
 public abstract class AbstractCflowSystemAspect {
 
+    //TODO wrap in ThreadLocal
     public Stack m_cflowStack = new Stack();
 
     public void enter() {
@@ -29,11 +30,11 @@ public abstract class AbstractCflowSystemAspect {
         m_cflowStack.pop();
     }
 
-    public boolean isInCflow() {
+    public boolean inCflow() {
         return m_cflowStack.size() > 0;
     }
 
-    public boolean isInCflowBelow() {
+    public boolean inCflowBelow() {
         return m_cflowStack.size() == 1;
     }
 
@@ -43,6 +44,29 @@ public abstract class AbstractCflowSystemAspect {
             return Integer.parseInt(getClass().getName().substring(indexOf+1));
         } else {
             return 0;
+        }
+    }
+
+    /**
+     * Sample jit cflow aspect that will gets generated
+     *
+     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+     */
+    private static class Cflow_sample extends AbstractCflowSystemAspect {
+
+        private static AbstractCflowSystemAspect INSTANCE;
+
+        public Cflow_sample() {
+            super();
+            INSTANCE = this;
+        }
+
+        public static boolean isInCflow() {
+            return INSTANCE.inCflow();
+        }
+
+        public static boolean isInCflowBelow() {
+            return INSTANCE.inCflowBelow();
         }
     }
 }

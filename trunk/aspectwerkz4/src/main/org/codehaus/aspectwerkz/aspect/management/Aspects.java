@@ -200,6 +200,7 @@ public class Aspects {
         String containerClassName = aspectDefinition.getContainerClassName();
         try {
             Class containerClass;
+            //TODO remove cflow things here
             if (containerClassName == null ||
                 aspectClass.getName().equals(CFlowSystemAspect.CLASS_NAME)) {
                 containerClass = ContextClassLoader.loadClass(aspectClass.getClassLoader(), DEFAULT_ASPECT_CONTAINER);

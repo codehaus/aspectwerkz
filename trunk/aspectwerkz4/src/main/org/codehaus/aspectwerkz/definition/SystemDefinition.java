@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
+import org.codehaus.aspectwerkz.cflow.CflowBinding;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -100,13 +101,14 @@ public class SystemDefinition {
      */
     public SystemDefinition(final String uuid) {
         setUuid(uuid);
-        AspectDefinition systemAspect = new AspectDefinition(
-                CFlowSystemAspect.class.getName(),
-                JavaClassInfo.getClassInfo(CFlowSystemAspect.class),
-                this
-        );
-        systemAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
-        m_aspectMap.put(CFlowSystemAspect.CLASS_NAME, systemAspect);
+        //TODO REMOVE below
+//        AspectDefinition systemAspect = new AspectDefinition(
+//                CFlowSystemAspect.class.getName(),
+//                JavaClassInfo.getClassInfo(CFlowSystemAspect.class),
+//                this
+//        );
+//        systemAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
+//        m_aspectMap.put(CFlowSystemAspect.CLASS_NAME, systemAspect);
     }
 
     /**
@@ -254,11 +256,21 @@ public class SystemDefinition {
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
+
         synchronized (m_aspectMap) {
             if (m_aspectMap.containsKey(aspectDef.getName())) {
                 return;
             }
+
             m_aspectMap.put(aspectDef.getName(), aspectDef);
+
+            // hook for the registration of cflow aspects
+            //TODO should we check for cflow(xx && cflow(..)) ?
+            List cflowBindings = CflowBinding.getCflowAspectDefinitionForCflowOf(aspectDef);
+            for (Iterator iterator = cflowBindings.iterator(); iterator.hasNext();) {
+                CflowBinding cflowBinding = (CflowBinding) iterator.next();
+                addAspect(cflowBinding.getAspectDefinition(this, aspectDef.getClassInfo().getClassLoader()));
+            }
         }
     }
 
@@ -482,8 +494,8 @@ public class SystemDefinition {
                     if (expressionInfo == null) {
                         continue;
                     }
-                    if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) ||
-                        expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx)) {
+                    if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) /*||
+                        expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx) ALEX XXX CFLOW*/) {
                         if (AspectWerkzPreProcessor.DETAILS) {
                             System.out.println(
                                     "[TRACE - earlymatch: " + expressionInfo + " @ "
@@ -521,8 +533,8 @@ public class SystemDefinition {
                 if (expressionInfo == null) {
                     continue;
                 }
-                if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) ||
-                    expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx)) {
+                if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) /*||
+                    expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx) ALEX XXX CFLOW*/ ) {
                     return true;
                 }
             }
@@ -658,6 +670,8 @@ public class SystemDefinition {
      */
     public void addDeploymentScope(final DeploymentScope deploymentScope) {
         m_deploymentScopes.put(deploymentScope.getName(), deploymentScope);
+
+        //TODO do we need to take care of cflow aspects
     }
 
     public boolean equals(Object o) {

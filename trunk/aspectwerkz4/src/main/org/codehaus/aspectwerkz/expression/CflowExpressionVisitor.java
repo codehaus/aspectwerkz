@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTNot;
 import org.codehaus.aspectwerkz.expression.ast.ASTOr;
 import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
 import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
+import org.codehaus.aspectwerkz.expression.ast.Node;
 
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -40,7 +41,7 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
     public CflowExpressionVisitor(final ExpressionInfo expressionInfo,
                                   final String expression,
                                   final String namespace,
-                                  final ASTRoot root) {
+                                  final Node root) {
         super(expressionInfo, expression, namespace, root);
     }
 

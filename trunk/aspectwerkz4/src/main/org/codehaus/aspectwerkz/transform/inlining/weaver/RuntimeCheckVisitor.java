@@ -34,6 +34,8 @@ import org.codehaus.aspectwerkz.expression.ast.ASTCflowBelow;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCompiler;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.cflow.CflowCompiler;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Constants;
 
@@ -158,21 +160,28 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
     }
 
     public Object visit(ASTCflow node, Object data) {
-        if (true) {
-            throw new UnsupportedOperationException("runtime check needed");
-        }
-        Boolean match = (Boolean) super.visit(node, data);
-        push(match);
-        return match;
+        // runtime check
+        String cflowClassName = CflowCompiler.getCflowAspectClassName(node.hashCode());
+        cv.visitMethodInsn(
+                INVOKESTATIC,
+                cflowClassName,
+                TransformationConstants.IS_IN_CFLOW_METOD_NAME,
+                TransformationConstants.IS_IN_CFLOW_METOD_SIGNATURE
+        );
+        return (Boolean) super.visit(node, data);
     }
 
     public Object visit(ASTCflowBelow node, Object data) {
-        if (true) {
-            throw new UnsupportedOperationException("runtime check needed");
-        }
-        Boolean match = (Boolean) super.visit(node, data);
-        push(match);
-        return match;
+        // runtime check
+        //TODO: cflowbelow ID will differ from cflow one.. => not optimized
+        String cflowClassName = CflowCompiler.getCflowAspectClassName(node.hashCode());
+        cv.visitMethodInsn(
+                INVOKESTATIC,
+                cflowClassName,
+                TransformationConstants.IS_IN_CFLOWBELOW_METOD_NAME,
+                TransformationConstants.IS_IN_CFLOWBELOW_METOD_SIGNATURE
+        );
+        return (Boolean) super.visit(node, data);
     }
 
     public Object visit(ASTArgs node, Object data) {

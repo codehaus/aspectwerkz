@@ -191,6 +191,8 @@ public interface TransformationConstants extends Constants {
     public static final String RUNTIME_EXCEPTION_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;)V";
     public static final String IS_IN_CFLOW_METOD_NAME = "isInCflow";
     public static final String IS_IN_CFLOW_METOD_SIGNATURE = "()Z";
+    public static final String IS_IN_CFLOWBELOW_METOD_NAME = "isInCflowBelow";
+    public static final String IS_IN_CFLOWBELOW_METOD_SIGNATURE = "()Z";
     public static final String STATIC_JOIN_POINT_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/StaticJoinPoint";
     public static final String STATIC_JOIN_POINT_JAVA_CLASS_NAME = "org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint";
     public static final String JOIN_POINT_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/JoinPoint";
