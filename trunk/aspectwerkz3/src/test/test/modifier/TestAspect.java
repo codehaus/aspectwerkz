@@ -60,8 +60,8 @@ public class TestAspect {
     // ============ Advices ============
 
     /**
-     * @Around call_privateMethod || call_publicMethod || call_protectedMethod || call_staticFinalMethod
-     */
+    * @Around call_privateMethod || call_publicMethod || call_protectedMethod || call_staticFinalMethod
+    */
     public Object advice_CALL(final JoinPoint joinPoint) throws Throwable {
         ModifierTest.log("call ");
         Object result = joinPoint.proceed();
@@ -70,8 +70,8 @@ public class TestAspect {
     }
 
     /**
-     * @Around execution_privateMethod || execution_protectedMethod || execution_publicMethod
-     */
+    * @Around execution_privateMethod || execution_protectedMethod || execution_publicMethod
+    */
     public Object advice_EXECUTION(final JoinPoint joinPoint) throws Throwable {
         ModifierTest.log("execution ");
         Object result = joinPoint.proceed();
@@ -80,8 +80,8 @@ public class TestAspect {
     }
 
     /**
-     * @Around set_privateField || set_protectedField || set_publicField
-     */
+    * @Around set_privateField || set_protectedField || set_publicField
+    */
     public Object advice_SET(final JoinPoint joinPoint) throws Throwable {
         ModifierTest.log("set ");
         Object result = joinPoint.proceed();
@@ -90,8 +90,8 @@ public class TestAspect {
     }
 
     /**
-     * @Around get_privateField || get_protectedField || get_publicField
-     */
+    * @Around get_privateField || get_protectedField || get_publicField
+    */
     public Object advice_GET(final JoinPoint joinPoint) throws Throwable {
         ModifierTest.log("get ");
         Object result = joinPoint.proceed();

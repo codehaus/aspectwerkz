@@ -19,60 +19,60 @@ public class ConstructorTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression call(test.constructor.TestAroundAdvice.new(..)) && withincode(* test.constructor.*.*(..))
-     */
+    * @Expression call(test.constructor.TestAroundAdvice.new(..)) && withincode(* test.constructor.*.*(..))
+    */
     Pointcut call1;
 
     /**
-     * @Expression call(test.constructor.TestBeforeAdvice.new()) && within(test.constructor.*)
-     */
+    * @Expression call(test.constructor.TestBeforeAdvice.new()) && within(test.constructor.*)
+    */
     Pointcut call2;
 
     /**
-     * @Expression call(test.constructor.TestAfterAdvice.new(String)) && within(test.constructor.*)
-     */
+    * @Expression call(test.constructor.TestAfterAdvice.new(String)) && within(test.constructor.*)
+    */
     Pointcut call3;
 
     /**
-     * @Expression call(test.constructor.TestBeforeAfterAdvice.new(String[])) && withincode(* test.constructor.*.*(..))
-     */
+    * @Expression call(test.constructor.TestBeforeAfterAdvice.new(String[])) && withincode(* test.constructor.*.*(..))
+    */
     Pointcut call4;
 
     /**
-     * @Expression call(test.constructor.TestReturnFalseType.new()) && withincode(* test.constructor.*.*(..))
-     */
+    * @Expression call(test.constructor.TestReturnFalseType.new()) && withincode(* test.constructor.*.*(..))
+    */
     Pointcut call5;
 
     /**
-     * @Expression execution(test.constructor.TestAroundAdvice.new(..))
-     */
+    * @Expression execution(test.constructor.TestAroundAdvice.new(..))
+    */
     Pointcut execution1;
 
     /**
-     * @Expression execution(test.constructor.TestBeforeAdvice.new())
-     */
+    * @Expression execution(test.constructor.TestBeforeAdvice.new())
+    */
     Pointcut execution2;
 
     /**
-     * @Expression execution(test.constructor.TestAfterAdvice.new(String))
-     */
+    * @Expression execution(test.constructor.TestAfterAdvice.new(String))
+    */
     Pointcut execution3;
 
     /**
-     * @Expression execution(test.constructor.TestBeforeAfterAdvice.new(String[]))
-     */
+    * @Expression execution(test.constructor.TestBeforeAfterAdvice.new(String[]))
+    */
     Pointcut execution4;
 
     /**
-     * @Expression execution(test.constructor.TestReturnFalseType.new())
-     */
+    * @Expression execution(test.constructor.TestReturnFalseType.new())
+    */
     Pointcut execution5;
 
     // ============ Advices ============
 
     /**
-     * @Around call1
-     */
+    * @Around call1
+    */
     public Object aroundCall(final JoinPoint joinPoint) throws Throwable {
         ConstructorAdviceTest.logCall("beforeCall ");
         final Object result = joinPoint.proceed();
@@ -81,30 +81,30 @@ public class ConstructorTestAspect {
     }
 
     /**
-     * @Before call2 || call4
-     */
+    * @Before call2 || call4
+    */
     public void beforeCall(final JoinPoint joinPoint) throws Throwable {
         ConstructorAdviceTest.logCall("preCall ");
     }
 
     /**
-     * @After call3 ||call4
-     */
+    * @After call3 ||call4
+    */
     public void afterCall(final JoinPoint joinPoint) throws Throwable {
         ConstructorAdviceTest.logCall("postCall ");
         ConstructorSignature sig = (ConstructorSignature)joinPoint.getSignature();
     }
 
     /**
-     * @Around call5
-     */
+    * @Around call5
+    */
     public Object aroundCall2(final JoinPoint joinPoint) throws Throwable {
         return new Integer(0);
     }
 
     /**
-     * @Around execution1
-     */
+    * @Around execution1
+    */
     public Object aroundExecution(final JoinPoint joinPoint) throws Throwable {
         ConstructorAdviceTest.logExecution("beforeExecution ");
         final Object result = joinPoint.proceed();
@@ -113,22 +113,22 @@ public class ConstructorTestAspect {
     }
 
     /**
-     * @Before execution2 || execution4
-     */
+    * @Before execution2 || execution4
+    */
     public void beforeExecution(final JoinPoint joinPoint) throws Throwable {
         ConstructorAdviceTest.logExecution("preExecution ");
     }
 
     /**
-     * @After execution3 || execution4
-     */
+    * @After execution3 || execution4
+    */
     public void afterExecution(final JoinPoint joinPoint) throws Throwable {
         ConstructorAdviceTest.logExecution("postExecution ");
     }
 
     /**
-     * @Around execution5
-     */
+    * @Around execution5
+    */
     public Object aroundExecution2(final JoinPoint joinPoint) throws Throwable {
         return new Integer(0);
     }

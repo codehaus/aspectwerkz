@@ -19,15 +19,15 @@ public class IntroductionTestAspect {
     // ============ Introductions ============
 
     /**
-     * @Implements within(test.ToBeIntroduced)
-     */
+    * @Implements within(test.ToBeIntroduced)
+    */
     Serializable serializable;
 
     /**
-     * Here we use an expression
-     *
-     * @Introduce within(test.ToBeIntroduced)
-     */
+    * Here we use an expression
+    *
+    * @Introduce within(test.ToBeIntroduced)
+    */
     public static class MyImpl implements Introductions {
         //TODO: allow naming of mixin instead of innerClass FQN
         public void noArgs() throws RuntimeException {
@@ -127,8 +127,8 @@ public class IntroductionTestAspect {
     }
 
     /**
-     * Other implementation For now explicit implements is needed (extends is not enough - bug in swapping)
-     */
+    * Other implementation For now explicit implements is needed (extends is not enough - bug in swapping)
+    */
     public static class MyOtherImpl extends MyImpl implements Introductions, Serializable {
         public void noArgs() throws RuntimeException {
         }
@@ -138,8 +138,8 @@ public class IntroductionTestAspect {
         }
 
         /**
-         * used by test case
-         */
+        * used by test case
+        */
         public int intArg(int arg) {
             return -1 * arg;
         }

@@ -6,12 +6,12 @@ package test.implementsbug;
  */
 public class TestModelObserver {
     /**
-     * @Implements within(test.implementsbug.TestView)
-     */
+    * @Implements within(test.implementsbug.TestView)
+    */
     Observer observer;
 
     /**
-     * @Implements within(test.implementsbug.TestModel)
-     */
+    * @Implements within(test.implementsbug.TestModel)
+    */
     Subject subject;
 }

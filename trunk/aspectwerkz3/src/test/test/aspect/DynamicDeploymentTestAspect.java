@@ -22,30 +22,30 @@ public class DynamicDeploymentTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression execution(void test.DynamicDeploymentTest.reorderAdvicesTestMethod())
-     */
+    * @Expression execution(void test.DynamicDeploymentTest.reorderAdvicesTestMethod())
+    */
     Pointcut pc1;
 
     /**
-     * @Expression execution(void test.DynamicDeploymentTest.removeAdviceTestMethod())
-     */
+    * @Expression execution(void test.DynamicDeploymentTest.removeAdviceTestMethod())
+    */
     Pointcut pc2;
 
     /**
-     * @Expression execution(void test.DynamicDeploymentTest.addAdviceTestMethod())
-     */
+    * @Expression execution(void test.DynamicDeploymentTest.addAdviceTestMethod())
+    */
     Pointcut pc3;
 
     /**
-     * @Expression execution(void test.DynamicDeploymentTest.createAspectTestMethod())
-     */
+    * @Expression execution(void test.DynamicDeploymentTest.createAspectTestMethod())
+    */
     Pointcut pc4;
 
     // ============ Advices ============
 
     /**
-     * @Around pc1 || pc2 || pc3
-     */
+    * @Around pc1 || pc2 || pc3
+    */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
@@ -54,8 +54,8 @@ public class DynamicDeploymentTestAspect {
     }
 
     /**
-     * @Around pc1 || pc2 || pc4
-     */
+    * @Around pc1 || pc2 || pc4
+    */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before2 ");
         final Object result = joinPoint.proceed();

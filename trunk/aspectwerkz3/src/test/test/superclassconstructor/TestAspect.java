@@ -16,13 +16,13 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  */
 public class TestAspect {
     /**
-     * @Expression execution(void test.superclassconstructor.C+.set())
-     */
+    * @Expression execution(void test.superclassconstructor.C+.set())
+    */
     Pointcut pc;
 
     /**
-     * @Before pc
-     */
+    * @Before pc
+    */
     public void advice(final JoinPoint joinPoint) throws Throwable {
     }
 }

@@ -32,8 +32,8 @@ public final class Target {
     // ============ field attribute test =============
 
     /**
-     * @ReadOnly
-     */
+    * @ReadOnly
+    */
     int attribute1;
 
     // ============ method modifiers test =============
@@ -91,8 +91,8 @@ public final class Target {
     // ============ method attribute test =============
 
     /**
-     * @Requires
-     */
+    * @Requires
+    */
     public void attributes1() {
     }
 }

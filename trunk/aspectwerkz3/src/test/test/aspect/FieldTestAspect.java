@@ -20,163 +20,163 @@ public class FieldTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression set(* test.FieldAdviceTest.m_setFieldPreAdvice*)
-     */
+    * @Expression set(* test.FieldAdviceTest.m_setFieldPreAdvice*)
+    */
     Pointcut pc1;
 
     /**
-     * @Expression set(int test.FieldAdviceTest.m_setFieldPreAdvi*)
-     */
+    * @Expression set(int test.FieldAdviceTest.m_setFieldPreAdvi*)
+    */
     Pointcut pc2;
 
     /**
-     * @Expression set(* test.FieldAdviceTest.m_setFie*dPostAdviced)
-     */
+    * @Expression set(* test.FieldAdviceTest.m_setFie*dPostAdviced)
+    */
     Pointcut pc3;
 
     /**
-     * @Expression set(* test.FieldAdviceTest.m_se*FieldPostAdviced)
-     */
+    * @Expression set(* test.FieldAdviceTest.m_se*FieldPostAdviced)
+    */
     Pointcut pc4;
 
     /**
-     * @Expression set(* test.FieldAdviceTest.m_setFieldPrePostAdviced)
-     */
+    * @Expression set(* test.FieldAdviceTest.m_setFieldPrePostAdviced)
+    */
     Pointcut pc5;
 
     /**
-     * @Expression get(* test.FieldAdviceTest.m_getFieldPreAdvic*)
-     */
+    * @Expression get(* test.FieldAdviceTest.m_getFieldPreAdvic*)
+    */
     Pointcut pc6;
 
     /**
-     * @Expression get(* test.FieldAdviceTest.m_getFieldPreAdvice*)
-     */
+    * @Expression get(* test.FieldAdviceTest.m_getFieldPreAdvice*)
+    */
     Pointcut pc7;
 
     /**
-     * @Expression get(* test.FieldAdviceTest.m_getFieldPostAdviced)
-     */
+    * @Expression get(* test.FieldAdviceTest.m_getFieldPostAdviced)
+    */
     Pointcut pc8;
 
     /**
-     * @Expression get(* test.FieldAdviceTest.m_getFieldPrePostAdviced)
-     */
+    * @Expression get(* test.FieldAdviceTest.m_getFieldPrePostAdviced)
+    */
     Pointcut pc9;
 
     /**
-     * @Expression set(* test.FieldAdviceTest.s_setStaticFieldPreAdvic*)
-     */
+    * @Expression set(* test.FieldAdviceTest.s_setStaticFieldPreAdvic*)
+    */
     Pointcut pc10;
 
     /**
-     * @Expression set(* test.FieldAdviceTest.s_setStaticFieldPreAdvice*)
-     */
+    * @Expression set(* test.FieldAdviceTest.s_setStaticFieldPreAdvice*)
+    */
     Pointcut pc11;
 
     /**
-     * @Expression set(* test.FieldAdviceTest.s_setStaticFieldPostAdviced)
-     */
+    * @Expression set(* test.FieldAdviceTest.s_setStaticFieldPostAdviced)
+    */
     Pointcut pc12;
 
     /**
-     * @Expression set(* test.FieldAdviceTest.s_setStaticFieldPrePostAdviced)
-     */
+    * @Expression set(* test.FieldAdviceTest.s_setStaticFieldPrePostAdviced)
+    */
     Pointcut pc13;
 
     /**
-     * @Expression get(* test.FieldAdviceTest.s_getStaticFieldPreAdvice*)
-     */
+    * @Expression get(* test.FieldAdviceTest.s_getStaticFieldPreAdvice*)
+    */
     Pointcut pc14;
 
     /**
-     * @Expression get(* test.FieldAdviceTest.s_getStaticFieldPreAdvic*)
-     */
+    * @Expression get(* test.FieldAdviceTest.s_getStaticFieldPreAdvic*)
+    */
     Pointcut pc15;
 
     /**
-     * @Expression get(* test.FieldAdviceTest.s_getStaticFieldPostAdviced)
-     */
+    * @Expression get(* test.FieldAdviceTest.s_getStaticFieldPostAdviced)
+    */
     Pointcut pc16;
 
     /**
-     * @Expression get(* test.FieldAdviceTest.s_getStaticFieldPrePostAdviced)
-     */
+    * @Expression get(* test.FieldAdviceTest.s_getStaticFieldPrePostAdviced)
+    */
     Pointcut pc17;
 
     /**
-     * @Expression set(* test.FieldAdviceTest.m_setFieldAroundAdviced)
-     */
+    * @Expression set(* test.FieldAdviceTest.m_setFieldAroundAdviced)
+    */
     Pointcut pc18;
 
     /**
-     * @Expression set(* test.FieldAdviceTest.s_setStaticFieldAroundAdviced)
-     */
+    * @Expression set(* test.FieldAdviceTest.s_setStaticFieldAroundAdviced)
+    */
     Pointcut pc19;
 
     /**
-     * @Expression get(* test.FieldAdviceTest.m_getFieldAroundAdviced)
-     */
+    * @Expression get(* test.FieldAdviceTest.m_getFieldAroundAdviced)
+    */
     Pointcut pc20;
 
     /**
-     * @Expression get(* test.FieldAdviceTest.s_getStaticFieldAroundAdviced)
-     */
+    * @Expression get(* test.FieldAdviceTest.s_getStaticFieldAroundAdviced)
+    */
     Pointcut pc21;
 
     /**
-     * @Expression set(* test.FieldAdviceTest.m_setFieldAroundAdviced*WithNullAdvice)
-     */
+    * @Expression set(* test.FieldAdviceTest.m_setFieldAroundAdviced*WithNullAdvice)
+    */
     Pointcut pc22;
 
     /**
-     * @Expression get(* test.FieldAdviceTest.m_getFieldAroundAdvicedWithNullAdvice)
-     */
+    * @Expression get(* test.FieldAdviceTest.m_getFieldAroundAdvicedWithNullAdvice)
+    */
     Pointcut pc23;
 
     /**
-     * @Expression set(* test.FieldAdviceTest.m_setFieldAroundAdvicedObjectWithAPI)
-     */
+    * @Expression set(* test.FieldAdviceTest.m_setFieldAroundAdvicedObjectWithAPI)
+    */
     Pointcut pc24;
 
     /**
-     * @Expression set(* test.FieldAdviceTest.m_setFieldAroundAdvicedWithAPI)
-     */
+    * @Expression set(* test.FieldAdviceTest.m_setFieldAroundAdvicedWithAPI)
+    */
     Pointcut pc25;
 
     // ============ Advices ============
 
     /**
-     * @Before pc2 || pc5 || pc10 || pc13 || pc6 || pc9 || pc14 || pc17
-     */
+    * @Before pc2 || pc5 || pc10 || pc13 || pc6 || pc9 || pc14 || pc17
+    */
     public void preAdvice1(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("pre1 ");
     }
 
     /**
-     * @Before pc1 || pc5 || pc11 || pc13 || pc7 || pc9 || pc15 || pc17
-     */
+    * @Before pc1 || pc5 || pc11 || pc13 || pc7 || pc9 || pc15 || pc17
+    */
     public void preAdvice2(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("pre2 ");
     }
 
     /**
-     * @After pc4 || pc5 || pc12 || pc13 || pc8 || pc9 || pc16 || pc17
-     */
+    * @After pc4 || pc5 || pc12 || pc13 || pc8 || pc9 || pc16 || pc17
+    */
     public void postAdvice1(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("post1 ");
     }
 
     /**
-     * @After pc3 || pc5 || pc12 || pc13 || pc8 || pc9 || pc16 || pc17
-     */
+    * @After pc3 || pc5 || pc12 || pc13 || pc8 || pc9 || pc16 || pc17
+    */
     public void postAdvice2(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("post2 ");
     }
 
     /**
-     * @Around pc18 || pc19 || pc20 || pc21
-     */
+    * @Around pc18 || pc19 || pc20 || pc21
+    */
     public Object around(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
         final Object result = joinPoint.proceed();
@@ -185,8 +185,8 @@ public class FieldTestAspect {
     }
 
     /**
-     * @Around pc22 || pc23
-     */
+    * @Around pc22 || pc23
+    */
     public Object aroundNullAdvice(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
         final Object result = joinPoint.proceed();
@@ -195,8 +195,8 @@ public class FieldTestAspect {
     }
 
     /**
-     * @Around pc24
-     */
+    * @Around pc24
+    */
     public Object aroundAdviceAltering(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
         FieldRtti rtti = (FieldRtti)joinPoint.getRtti();
@@ -207,8 +207,8 @@ public class FieldTestAspect {
     }
 
     /**
-     * @Around pc25
-     */
+    * @Around pc25
+    */
     public Object aroundAdviceAlteringPrimitive(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
         FieldRtti rtti = (FieldRtti)joinPoint.getRtti();

@@ -17,24 +17,24 @@ import org.codehaus.aspectwerkz.CrossCuttingInfo;
  */
 public class IntroductionDeploymentAspect {
     /**
-     * Set to parse
-     *
-     * @Introduce within(test.mixindeployment.IntroductionDeploymentTest$TargetA) ||
-     *            within(test.mixindeployment.IntroductionDeploymentTest$TargetB)
-     *            deploymentModel=perInstance
-     */
+    * Set to parse
+    *
+    * @Introduce within(test.mixindeployment.IntroductionDeploymentTest$TargetA) ||
+    *            within(test.mixindeployment.IntroductionDeploymentTest$TargetB)
+    *            deploymentModel=perInstance
+    */
     public static class MarkerImpl implements Marker {
         /**
-         * The cross-cutting info.
-         */
+        * The cross-cutting info.
+        */
         private final CrossCuttingInfo m_info;
 
         /**
-         * We are interested in cross-cutting info, therefore we have added a constructor that takes a cross-cutting
-         * infor instance as its only parameter.
-         *
-         * @param info the cross-cutting info
-         */
+        * We are interested in cross-cutting info, therefore we have added a constructor that takes a cross-cutting
+        * infor instance as its only parameter.
+        *
+        * @param info the cross-cutting info
+        */
         public MarkerImpl(final CrossCuttingInfo info) {
             m_info = info;
         }
@@ -49,22 +49,22 @@ public class IntroductionDeploymentAspect {
     }
 
     /**
-     * Note: explicit within(..) pointcut is needed
-     *
-     * @Introduce within(test.mixindeployment.IntroductionDeploymentTest$TargetC) deploymentModel=perClass
-     */
+    * Note: explicit within(..) pointcut is needed
+    *
+    * @Introduce within(test.mixindeployment.IntroductionDeploymentTest$TargetC) deploymentModel=perClass
+    */
     public static class AnotherMarkerImpl implements Marker {
         /**
-         * The cross-cutting info.
-         */
+        * The cross-cutting info.
+        */
         private final CrossCuttingInfo m_info;
 
         /**
-         * We are interested in cross-cutting info, therefore we have added a constructor that takes a cross-cutting
-         * infor instance as its only parameter.
-         *
-         * @param info the cross-cutting info
-         */
+        * We are interested in cross-cutting info, therefore we have added a constructor that takes a cross-cutting
+        * infor instance as its only parameter.
+        *
+        * @param info the cross-cutting info
+        */
         public AnotherMarkerImpl(final CrossCuttingInfo info) {
             m_info = info;
         }
