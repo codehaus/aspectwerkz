@@ -161,7 +161,7 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTArgs node, Object data) {
-        return Boolean.FALSE;
+        return Boolean.TRUE;
     }
 
     // ============ Patterns =============
