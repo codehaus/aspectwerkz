@@ -161,13 +161,17 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
      */
     private void retrieveCustomAttributes(final AttributeInfo attributeInfo, final List listToPutAttributesIn) {
         if (attributeInfo.getName().equals(RUNTIME_INVISIBLE_ANNOTATIONS)) {
+            // for weird reason, we may end up in not having an AnnotationsAttribute instance
+            if ( !(attributeInfo instanceof AnnotationsAttribute)) {
+                return;
+            }
             AnnotationsAttribute annotationAttribute = (AnnotationsAttribute)attributeInfo;
             for (int i = 0; i < annotationAttribute.getAnnotations().length; i++) {
                 Annotation annotation = annotationAttribute.getAnnotations()[i];
                 // TODO: stuff is hard coded here - dump it with AW 2.0
+                // TODO: when Javassist support primitive type array, then do not use BASE64
                 if (annotation.getTypeName().equals(CUSTOM_ATTRIBUTE_CLASSNAME)) {
                     String value = ((StringMemberValue)annotation.getMemberValue(VALUE)).getValue();
-                    // TODO: when Javassist support primitive type array, then do not use BASE64
                     byte[] bytes = Base64.decode(value);
                     listToPutAttributesIn.add(CustomAttributeHelper.extractCustomAnnotation(bytes));
                 }
