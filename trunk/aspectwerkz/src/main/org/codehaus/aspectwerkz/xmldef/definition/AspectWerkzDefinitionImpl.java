@@ -25,7 +25,6 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.attribdef.definition.InterfaceIntroductionDefinition;
 import org.codehaus.aspectwerkz.DeploymentModel;
 
 /**
@@ -285,27 +284,28 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
         return null;
     }
 
-    /**
-     * Returns the interface introductions for a certain class.
-     *
-     * @param classMetaData the class meta-data
-     * @return the names
-     */
-    public List getInterfaceIntroductions(final ClassMetaData classMetaData) {
-        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-
-        List introductionDefs = new ArrayList();
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
-            for (Iterator it2 = introDef.getInterfaceIntroductions().iterator(); it2.hasNext();) {
-                InterfaceIntroductionDefinition intfIntroDef = (InterfaceIntroductionDefinition)it2.next();
-                if (intfIntroDef.getWeavingRule().matchClassPointcut(classMetaData)) {
-                    introductionDefs.add(intfIntroDef);
-                }
-            }
-        }
-        return introductionDefs;
-    }
+//    /**
+//     * ALEX
+//     * Returns the interface introductions for a certain class.
+//     *
+//     * @param classMetaData the class meta-data
+//     * @return the names
+//     */
+//    public List getInterfaceIntroductions(final ClassMetaData classMetaData) {
+//        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+//
+//        List introductionDefs = new ArrayList();
+//        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+//            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
+//            for (Iterator it2 = introDef.getInterfaceIntroductions().iterator(); it2.hasNext();) {
+//                InterfaceIntroductionDefinition intfIntroDef = (InterfaceIntroductionDefinition)it2.next();
+//                if (intfIntroDef.getWeavingRule().matchClassPointcut(classMetaData)) {
+//                    introductionDefs.add(intfIntroDef);
+//                }
+//            }
+//        }
+//        return introductionDefs;
+//    }
 
     /**
      * Returns the name of the interface for an introduction.

@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import org.codehaus.aspectwerkz.attribdef.definition.MethodIntroductionDefinition;
-import org.codehaus.aspectwerkz.attribdef.definition.InterfaceIntroductionDefinition;
 import org.codehaus.aspectwerkz.MethodComparator;
 
 /**
@@ -142,34 +140,37 @@ public class IntroductionDefinition implements Serializable {
         m_attribute = attribute;
     }
 
-    /**
-     * Adds a new method introduction.
-     *
-     * @param introductionMetaData the introduction
-     */
-    public void addMethodIntroduction(final MethodIntroductionDefinition introductionMetaData) {
-        m_methodIntroductions.add(introductionMetaData);
-    }
+//    /**
+//     * ALEX
+//     * Adds a new method introduction.
+//     *
+//     * @param introductionMetaData the introduction
+//     */
+//    public void addMethodIntroduction(final MethodIntroductionDefinition introductionMetaData) {
+//        m_methodIntroductions.add(introductionMetaData);
+//    }
 
-    /**
-     * Adds a new interface introduction.
-     *
-     * @param interfaceIntroDef the introduction
-     */
-    public void addInterfaceIntroduction(final InterfaceIntroductionDefinition introductionMetaData) {
-        m_interfaceIntroductions.add(introductionMetaData);
-    }
+//    /**
+//     * ALEX
+//     * Adds a new interface introduction.
+//     *
+//     * @param interfaceIntroDef the introduction
+//     */
+//    public void addInterfaceIntroduction(final InterfaceIntroductionDefinition introductionMetaData) {
+//        m_interfaceIntroductions.add(introductionMetaData);
+//    }
 
-    /**
-     * Returns the method introductions.
-     *
-     * @TODO: gets sorted every time, have a flag?
-     *
-     * @return the introductions
-     */
-    public List getMethodIntroductions() {
-        return sortMethodIntroductions(m_methodIntroductions);
-    }
+//    /**
+//     * ALEX
+//     * Returns the method introductions.
+//     *
+//     * @TODO: gets sorted every time, have a flag?
+//     *
+//     * @return the introductions
+//     */
+//    public List getMethodIntroductions() {
+//        return sortMethodIntroductions(m_methodIntroductions);
+//    }
 
     /**
      * Returns the interface introductions.
@@ -180,22 +181,23 @@ public class IntroductionDefinition implements Serializable {
         return m_interfaceIntroductions;
     }
 
-    /**
-     * Sorts the introductions by method.
-     *
-     * @param introductions a list with the introductions to sort
-     * @return a sorted list with the introductions
-     */
-    public static List sortMethodIntroductions(final List introductions) {
-        Collections.sort(introductions, new Comparator() {
-            private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
-
-            public int compare(final Object obj1, final Object obj2) {
-                MethodIntroductionDefinition introduction1 = (MethodIntroductionDefinition)obj1;
-                MethodIntroductionDefinition introduction2 = (MethodIntroductionDefinition)obj2;
-                return m_comparator.compare(introduction1.getMethod(), introduction2.getMethod());
-            }
-        });
-        return introductions;
-    }
+//    /**
+//     * ALEX
+//     * Sorts the introductions by method.
+//     *
+//     * @param introductions a list with the introductions to sort
+//     * @return a sorted list with the introductions
+//     */
+//    public static List sortMethodIntroductions(final List introductions) {
+//        Collections.sort(introductions, new Comparator() {
+//            private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
+//
+//            public int compare(final Object obj1, final Object obj2) {
+//                MethodIntroductionDefinition introduction1 = (MethodIntroductionDefinition)obj1;
+//                MethodIntroductionDefinition introduction2 = (MethodIntroductionDefinition)obj2;
+//                return m_comparator.compare(introduction1.getMethod(), introduction2.getMethod());
+//            }
+//        });
+//        return introductions;
+//    }
 }
