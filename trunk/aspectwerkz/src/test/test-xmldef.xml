@@ -464,15 +464,23 @@
         <aspect name="ReflectionTest">
             <pointcut-def name="test1_exclude" type="method" pattern="* test.xmldef.reflection.*2.*(..)"/>
             <pointcut-def name="test1" type="method" pattern="* test.xmldef.reflection.*.incr(..)"/>
+            <pointcut-def name="test1Static" type="method" pattern="* test.xmldef.reflection.*.incrStatic(..)"/>
 
             <pointcut-def name="test2" type="method" pattern="* test.xmldef.reflection.Super2.incr(..)"/>
+            <pointcut-def name="test2Static" type="method" pattern="* test.xmldef.reflection.Super2.incrStatic(..)"/>
 
             <pointcut-def name="test3" type="method" pattern="* test.xmldef.reflection.*.do*(..)"/>
 
             <bind-advice expression="test1 AND !test1_exclude">
                 <advice-ref name="reflection_advice"/>
             </bind-advice>
+            <bind-advice expression="test1Static AND !test1_exclude">
+                <advice-ref name="reflection_advice"/>
+            </bind-advice>
             <bind-advice pointcut="test2">
+                <advice-ref name="reflection_advice"/>
+            </bind-advice>
+            <bind-advice pointcut="test2Static">
                 <advice-ref name="reflection_advice"/>
             </bind-advice>
             <bind-advice pointcut="test3">

@@ -16,6 +16,11 @@ public class Child extends Super {
         return (res>=0)?res+1:res-1;
     }
 
+    public static int incrStatic(int value) {
+        int res = Super.incrStatic(value);
+        return (res>=0)?res+1:res-1;
+    }
+
     public int do$2(int i) {
         return i;
     }
