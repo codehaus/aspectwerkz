@@ -14,6 +14,7 @@ public class TargetI implements ITarget {
 
     public TargetI() {
         TargetTest.log("TargetI");
+        TargetTest.logCtorExe("TargetI");
     }
 
     public void target() {

@@ -15,6 +15,8 @@ public class TargetSuper extends SuperTarget {
     public TargetSuper() {
         super();
         TargetTest.log("TargetSuper");
+        TargetTest.logCtorExe("TargetSuper");
+
     }
 
     public void targetAbstract() {

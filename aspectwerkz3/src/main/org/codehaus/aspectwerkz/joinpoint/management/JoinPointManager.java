@@ -491,7 +491,7 @@ public class JoinPointManager {
                     adviceToTargetArgs[k] = AdviceInfo.THIS_ARG;
                 } else {
                     throw new Error("Unbound advice parameter at index " + k +
-                            " in " + adviceInfo.getMethodSignature() + " named " + adviceArgName);
+                            " in " + adviceInfo.getMethodName() + adviceInfo.getMethodSignature() + " named " + adviceArgName);
                 }
             }
         }

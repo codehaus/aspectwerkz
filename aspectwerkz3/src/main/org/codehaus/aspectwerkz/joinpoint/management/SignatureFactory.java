@@ -110,7 +110,7 @@ public final class SignatureFactory {
                     Method method2 = methods[j];
                     if (method2.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
                         String[] tokens = Strings.splitString(method2.getName(), TransformationConstants.DELIMITER);
-                        String methodName = tokens[1];
+                        String methodName = (tokens.length<=1)?"":tokens[1];//ctor exe wrapper - FIXME do better
                         if (!methodName.equals(wrapperMethod.getName())) {
                             continue;
                         }

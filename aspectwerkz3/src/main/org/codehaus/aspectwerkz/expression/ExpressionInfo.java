@@ -275,6 +275,19 @@ public class ExpressionInfo {
     }
 
     /**
+     * Returns the argument at the given index.
+     *
+     * @param index
+     * @return paramName
+     */
+    public String getArgumentNameAtIndex(final int index) {
+        if (index >= m_argsTypeByName.size()) {
+            throw new ArrayIndexOutOfBoundsException("cannot get argument at index " + index + " in " + m_expression.toString());
+        }
+        return (String) m_argsTypeByName.keySet().toArray()[index];
+    }
+
+    /**
      * Returns all argument names.
      *
      * @return

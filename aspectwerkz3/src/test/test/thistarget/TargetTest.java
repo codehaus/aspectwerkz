@@ -17,6 +17,7 @@ import java.util.Stack;
 public class TargetTest extends TestCase {
 
     static String s_log = "";
+    static String s_logctorexe = "";
 
     public void testMethodExecutionTargetThis() {
         // interface
@@ -54,30 +55,6 @@ public class TargetTest extends TestCase {
         s_log = "";
         TargetI.staticTarget();
         assertEquals("", s_log);
-    }
-
-    public void testConstructorCallTargetThis() {
-        // interface
-        s_log = "";
-        ITarget iTarget = new TargetI();
-        // this is both an interface, and an instance of TargetI
-        assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_log);
-
-        // implementation of interface
-        s_log = "";
-        TargetI targetI = new TargetI();
-        // this is both an interface, and an instance of TargetI
-        assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_log);
-
-        // super class
-        s_log = "";
-        SuperTarget superTarget = new TargetSuper();
-        assertEquals("before_SuperTarget pre_SuperTarget SuperTarget TargetSuper post_SuperTarget after_SuperTarget ", s_log);
-
-        // none
-        s_log = "";
-        Target target = new Target();
-        assertEquals("Target ", s_log);
     }
 
     public void testMethodCallTargetThis() {
@@ -120,6 +97,54 @@ public class TargetTest extends TestCase {
     }
 
 
+    public void testConstructorCallTargetThis() {
+        // interface
+        s_log = "";
+        ITarget iTarget = new TargetI();
+        // this is both an interface, and an instance of TargetI
+        assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_log);
+
+        // implementation of interface
+        s_log = "";
+        TargetI targetI = new TargetI();
+        // this is both an interface, and an instance of TargetI
+        assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_log);
+
+        // super class
+        s_log = "";
+        SuperTarget superTarget = new TargetSuper();
+        assertEquals("before_SuperTarget pre_SuperTarget SuperTarget TargetSuper post_SuperTarget after_SuperTarget ", s_log);
+
+        // none
+        s_log = "";
+        Target target = new Target();
+        assertEquals("Target ", s_log);
+    }
+
+    public void testConstructorExecutionTargetThis() {
+        // interface
+        s_logctorexe = "";
+        ITarget iTarget = new TargetI();
+        // this is both an interface, and an instance of TargetI
+        assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_logctorexe);
+
+        // implementation of interface
+        s_logctorexe = "";
+        TargetI targetI = new TargetI();
+        // this is both an interface, and an instance of TargetI
+        assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_logctorexe);
+
+        // super class
+        s_logctorexe = "";
+        SuperTarget superTarget = new TargetSuper();
+        assertEquals("before_SuperTarget pre_SuperTarget SuperTarget post_SuperTarget after_SuperTarget before_SuperTarget pre_SuperTarget TargetSuper post_SuperTarget after_SuperTarget ", s_logctorexe);
+
+        // none
+        s_logctorexe = "";
+        Target target = new Target();
+        assertEquals("Target ", s_logctorexe);
+
+    }
 
 
     public static void main(String[] args) {
@@ -134,4 +159,7 @@ public class TargetTest extends TestCase {
         s_log += s + " ";
     }
 
+    static void logCtorExe(String s) {
+        s_logctorexe += s + " ";
+    }
 }
