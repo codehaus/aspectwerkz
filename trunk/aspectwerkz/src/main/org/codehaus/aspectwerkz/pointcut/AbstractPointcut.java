@@ -21,6 +21,8 @@ package org.codehaus.aspectwerkz.pointcut;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
@@ -28,23 +30,24 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
 /**
  * Abstract implementation of the pointcut concept.
  * I.e. an abstraction of a well defined point of execution in the program.<br/>
- * Could match one or many as long at it is well defined.<br/>
+ * Could matches one or many as long at it is well defined.<br/>
  * Stores the advices for the specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractPointcut.java,v 1.3 2003-06-09 08:24:49 jboner Exp $
+ * @version $Id: AbstractPointcut.java,v 1.4 2003-06-17 14:54:27 jboner Exp $
  */
 public abstract class AbstractPointcut implements Pointcut {
 
     /**
-     * The name of the pointcut.
+     * The expression for the pointcut.
      */
-    protected final String m_name;
+    protected final String m_expression;
 
     /**
-     * Defines if the the pointcut is thread-safe or not.
+     * The pointcut definitions referenced in the m_expression.
+     * Mapped to the name of the pointcut definition.
      */
-    protected final boolean m_isThreadSafe;
+    protected final Map m_pointcutDefs = new HashMap();
 
     /**
      * The names of the advices.
@@ -65,27 +68,14 @@ public abstract class AbstractPointcut implements Pointcut {
      * Creates a new pointcut.
      *
      * @param uuid the UUID for the AspectWerkz system
-     * @param name the name of the pointcut
-     */
-    public AbstractPointcut(final String uuid, final String name) {
-        this(uuid, name, false);
-    }
-
-    /**
-     * Creates a new pointcut.
-     *
-     * @param uuid the UUID for the AspectWerkz system
-     * @param name the name of the pointcut
-     * @param isThreadSafe the thread safe type
+     * @param pattern the pattern for the pointcut
      */
     public AbstractPointcut(final String uuid,
-                            final String name,
-                            final boolean isThreadSafe) {
+                            final String pattern) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        if (name == null || name.trim().length() == 0) throw new IllegalArgumentException("name of pointcut can not be null or an empty string");
+        if (pattern == null || pattern.trim().length() == 0) throw new IllegalArgumentException("pattern of pointcut can not be null or an empty string");
         m_uuid = uuid;
-        m_name = name;
-        m_isThreadSafe = isThreadSafe;
+        m_expression = pattern;
     }
 
     /**
@@ -280,50 +270,11 @@ public abstract class AbstractPointcut implements Pointcut {
     }
 
     /**
-     * Returns the name of the pointcut.
+     * Returns the expression for the pointcut.
      *
-     * @return the name
+     * @return the expression
      */
-    public String getName() {
-        return m_name;
+    public String getExpression() {
+        return m_expression;
     }
-
-    /**
-     * Checks if the pointcut is thread safe.
-     *
-     * @return boolean
-     */
-    public boolean isThreadSafe() {
-        return m_isThreadSafe;
-    }
-
-    // --- over-ridden methods ---
-
-//    public String toString() {
-//        return "["
-//                + super.toString()
-//                + ": "
-//                + m_name
-//                + "," + m_names
-//                + "," + m_jispIndexes
-//                + "]";
-//    }
-//
-//    public int hashCode() {
-//        int result = 17;
-//        result = 37 * result + hashCodeOrZeroIfNull(m_name);
-//        result = 37 * result + hashCodeOrZeroIfNull(m_names);
-//        result = 37 * result + hashCodeOrZeroIfNull(m_jispIndexes);
-//        return result;
-//    }
-//
-//    protected static int hashCodeOrZeroIfNull(final Object o) {
-//        if (null == o) return 19;
-//        return o.hashCode();
-//    }
-//
-//    protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
-//        if (null == o1) return (null == o2);
-//        return o1.equals(o2);
-//    }
 }

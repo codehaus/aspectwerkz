@@ -18,76 +18,100 @@
  */
 package org.codehaus.aspectwerkz.pointcut;
 
-import org.codehaus.aspectwerkz.definition.regexp.MethodPattern;
-import org.codehaus.aspectwerkz.definition.regexp.Pattern;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.jexl.JexlHelper;
+import org.apache.commons.jexl.Expression;
+import org.apache.commons.jexl.ExpressionFactory;
+
 import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.regexp.MethodPattern;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
 /**
  * Implements the pointcut concept for method access.
  * Is an abstraction of a well defined point of execution in the program.<br/>
- * Could match one or many points as long as they are well defined.<br/>
+ * Could matches one or many points as long as they are well defined.<br/>
  * Stores the advices for the specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodPointcut.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: MethodPointcut.java,v 1.3 2003-06-17 14:54:27 jboner Exp $
  */
 public class MethodPointcut extends AbstractPointcut {
 
     /**
-     * The pattern for this pointcut.
-     */
-    private final MethodPattern m_pattern;
-
-    /**
-     * Creates a new pointcut.
+     * Creates a new method pointcut.
      *
-     * @param pattern the pattern for the pointcut
+     * @param expression the expression for the pointcut
      */
-    public MethodPointcut(final String pattern) {
-        this(AspectWerkz.DEFAULT_SYSTEM, pattern, false);
+    public MethodPointcut(final String expression) {
+        this(AspectWerkz.DEFAULT_SYSTEM, expression);
     }
 
     /**
-     * Creates a new pointcut.
-     *
-     * @param pattern the pattern of the pointcut
-     * @param isThreadSafe the thread safe type
-     */
-    public MethodPointcut(final String pattern,
-                          final boolean isThreadSafe) {
-        this(AspectWerkz.DEFAULT_SYSTEM, pattern, isThreadSafe);
-    }
-
-    /**
-     * Creates a new pointcut.
+     * Creates a new method pointcut.
      *
      * @param uuid the UUID for the AspectWerkz system
-     * @param pattern the pattern for the pointcut
-     */
-    public MethodPointcut(final String uuid, final String pattern) {
-        this(uuid, pattern, false);
-    }
-
-    /**
-     * Creates a new pointcut.
-     *
-     * @param uuid the UUID for the AspectWerkz system
-     * @param pattern the pattern of the pointcut
-     * @param isThreadSafe the thread safe type
+     * @param expression the expression of the pointcut
      */
     public MethodPointcut(final String uuid,
-                          final String pattern,
-                          final boolean isThreadSafe) {
-        super(uuid, pattern, isThreadSafe);
-        m_pattern = Pattern.compileMethodPattern(pattern);
+                          final String expression) {
+        super(uuid, expression);
     }
 
     /**
-     * Returns a pre-compiled pattern for this pointcut.
+     * Adds a new pointcut definition.
      *
-     * @return the pattern
+     * @param pointcut the pointcut definition
      */
-    public MethodPattern getPattern() {
-        return m_pattern;
+    public void addPointcutDef(final PointcutDefinition pointcut) {
+        m_pointcutDefs.put(pointcut.getName(),
+                new PointcutPattern(
+                        pointcut.getRegexpClassPattern(),
+                        pointcut.getRegexpPattern()));
+    }
+
+    /**
+     * Checks if the pointcut matches a certain join point.
+     *
+     * @param className the name of the class
+     * @param methodMetaData the meta-data for the method
+     * @return boolean
+     */
+    public boolean matches(final String className,
+                           final MethodMetaData methodMetaData) {
+        JexlContext jexlContext = JexlHelper.createContext();
+
+        for (Iterator it = m_pointcutDefs.entrySet().iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry)it.next();
+            String name = (String)entry.getKey();
+            PointcutPattern pointcutPattern = (PointcutPattern)entry.getValue();
+
+            if (pointcutPattern.getClassPattern().matches(className) &&
+                    ((MethodPattern)pointcutPattern.getPattern()).matches(methodMetaData)) {
+                jexlContext.getVars().put(name, Boolean.TRUE);
+            }
+            else {
+                jexlContext.getVars().put(name, Boolean.FALSE);
+            }
+        }
+        try {
+            Expression e = ExpressionFactory.createExpression(m_expression);
+            Boolean result = (Boolean)e.evaluate(jexlContext);
+
+            if (result.booleanValue()) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 }

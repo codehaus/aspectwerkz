@@ -23,7 +23,7 @@ package org.codehaus.aspectwerkz.pointcut;
  * I.e.an abstraction of a well defined point of execution in the program.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Pointcut.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: Pointcut.java,v 1.3 2003-06-17 14:54:27 jboner Exp $
  */
 public interface Pointcut {
 
@@ -32,5 +32,5 @@ public interface Pointcut {
      *
      * @return the name
      */
-    String getName();
+    String getExpression();
 }

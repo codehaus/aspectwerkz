@@ -18,102 +18,143 @@
  */
 package org.codehaus.aspectwerkz.pointcut;
 
-import java.util.StringTokenizer;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.codehaus.aspectwerkz.definition.regexp.MethodPattern;
-import org.codehaus.aspectwerkz.definition.regexp.ClassPattern;
-import org.codehaus.aspectwerkz.definition.regexp.Pattern;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.jexl.JexlHelper;
+import org.apache.commons.jexl.Expression;
+import org.apache.commons.jexl.ExpressionFactory;
+
 import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.regexp.ThrowsPattern;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
 /**
  * Implements the pointcut concept for exception handling.
  * Is an abstraction of a well defined point of execution in the program.<br/>
- * Could match one or many points as long as they are well defined.<br/>
+ * Could matches one or many points as long as they are well defined.<br/>
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsPointcut.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: ThrowsPointcut.java,v 1.3 2003-06-17 14:54:27 jboner Exp $
  */
 public class ThrowsPointcut extends AbstractPointcut {
 
     /**
-     * The pattern for the method for this pointcut.
-     */
-    private final MethodPattern m_methodPattern;
-
-    /**
-     * The pattern for the exception for this pointcut.
-     */
-    private final ClassPattern m_classPattern;
-
-    /**
-     * Creates a new pointcut.
+     * Creates a new throws pointcut.
      *
-     * @param throwsPattern the throws pattern
+     * @param pattern the pattern
      */
-    public ThrowsPointcut(final String throwsPattern) {
-        this(AspectWerkz.DEFAULT_SYSTEM, throwsPattern, false);
+    public ThrowsPointcut(final String pattern) {
+        this(AspectWerkz.DEFAULT_SYSTEM, pattern);
     }
 
     /**
-     * Creates a new pointcut.
-     *
-     * @param throwsPattern the throws pattern
-     * @param isThreadSafe the thread safe type
-     */
-    public ThrowsPointcut(final String throwsPattern,
-                          final boolean isThreadSafe) {
-        this(AspectWerkz.DEFAULT_SYSTEM, throwsPattern, isThreadSafe);
-   }
-
-    /**
-     * Creates a new pointcut.
+     * Creates a new throws pointcut.
      *
      * @param uuid the UUID for the AspectWerkz system
-     * @param throwsPattern the throws pattern
+     * @param pattern the pattern
      */
-    public ThrowsPointcut(final String uuid, final String throwsPattern) {
-        this(uuid, throwsPattern, false);
+    public ThrowsPointcut(final String uuid, final String pattern) {
+        super(uuid, pattern);
     }
 
     /**
-     * Creates a new pointcut.
+     * Adds a new pointcut definition.
      *
-     * @param uuid the UUID for the AspectWerkz system
-     * @param throwsPattern the throws pattern
-     * @param isThreadSafe the thread safe type
+     * @param pointcut the pointcut definition
      */
-    public ThrowsPointcut(final String uuid,
-                          final String throwsPattern,
-                          final boolean isThreadSafe) {
-        super(uuid, throwsPattern, isThreadSafe);
-
-        final StringTokenizer tokenizer = new StringTokenizer(
-                throwsPattern,
-                AspectWerkzDefinition.THROWS_DELIMITER);
-        final String methodName = tokenizer.nextToken();
-        final String exceptionName = tokenizer.nextToken();
-
-        m_methodPattern = Pattern.compileMethodPattern(methodName);
-        m_classPattern = Pattern.compileClassPattern(exceptionName);
-   }
-
-    /**
-     * Returns a pre-compiled pattern for the method for this pointcut.
-     *
-     * @return the pattern
-     */
-    public MethodPattern getMethodPattern() {
-        return m_methodPattern;
+    public void addPointcutDef(final PointcutDefinition pointcut) {
+        m_pointcutDefs.put(pointcut.getName(),
+                new PointcutPattern(
+                        pointcut.getRegexpClassPattern(),
+                        pointcut.getRegexpPattern()));
     }
 
     /**
-     * Returns a pre-compiled pattern for the exception for this pointcut.
+     * Checks if the pointcut matches a certain join point.
      *
-     * @return the pattern
+     * @param className the name of the class
+     * @param methodMetaData the meta-data for the method
+     * @return boolean
      */
-    public ClassPattern getExceptionPattern() {
-        return m_classPattern;
+    public boolean matches(final String className,
+                           final MethodMetaData methodMetaData) {
+        JexlContext jexlContext = JexlHelper.createContext();
+
+        for (Iterator it = m_pointcutDefs.entrySet().iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry)it.next();
+            String name = (String)entry.getKey();
+            PointcutPattern pointcutPattern = (PointcutPattern)entry.getValue();
+
+            if (pointcutPattern.getClassPattern().matches(className) &&
+                    ((ThrowsPattern)pointcutPattern.getPattern()).
+                    matches(methodMetaData)) {
+                jexlContext.getVars().put(name, Boolean.TRUE);
+            }
+            else {
+                jexlContext.getVars().put(name, Boolean.FALSE);
+            }
+        }
+        try {
+            Expression e = ExpressionFactory.createExpression(m_expression);
+            Boolean result = (Boolean)e.evaluate(jexlContext);
+
+            if (result.booleanValue()) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    /**
+     * Checks if the pointcut matches a certain join point.
+     *
+     * @param className the name of the class
+     * @param methodMetaData the meta-data for the method
+     * @param exceptionClassName the name of the exception
+     * @return boolean
+     */
+    public boolean matches(final String className,
+                           final MethodMetaData methodMetaData,
+                           final String exceptionClassName) {
+        JexlContext jexlContext = JexlHelper.createContext();
+
+        for (Iterator it = m_pointcutDefs.entrySet().iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry)it.next();
+            String name = (String)entry.getKey();
+            PointcutPattern pointcutPattern = (PointcutPattern)entry.getValue();
+
+            if (pointcutPattern.getClassPattern().matches(className) &&
+                    ((ThrowsPattern)pointcutPattern.getPattern()).
+                    matches(methodMetaData, exceptionClassName)) {
+                jexlContext.getVars().put(name, Boolean.TRUE);
+            }
+            else {
+                jexlContext.getVars().put(name, Boolean.FALSE);
+            }
+        }
+        try {
+            Expression e = ExpressionFactory.createExpression(m_expression);
+            Boolean result = (Boolean)e.evaluate(jexlContext);
+
+            if (result.booleanValue()) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 }
