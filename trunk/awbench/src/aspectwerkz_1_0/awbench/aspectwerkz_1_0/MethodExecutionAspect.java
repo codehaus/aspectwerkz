@@ -78,6 +78,7 @@ public class MethodExecutionAspect {
          } catch (RuntimeException throwable) {
              e = throwable;
              Run.ADVICE_HIT++;
+             throw e;
          }
          return result;
      }

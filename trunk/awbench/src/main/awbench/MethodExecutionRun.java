@@ -54,7 +54,11 @@ public class MethodExecutionRun {
 
         run = new Run("method execution, after throwing <TYPE> advice");
         for (int i = 0; i < Run.ITERATIONS; i++) {
-            test.afterThrowingRTE();
+            try {
+                test.afterThrowingRTE();
+            } catch (RuntimeException e) {
+                // ignore
+            }
         }
         run.end();
 
