@@ -4,13 +4,13 @@
 <aspectwerkz>
     <system id="math">
         <aspect class="examples.async.AsyncAspect">
+            <advice name="execute" type="around" bind-to="execution(@examples.async.AsyncAspect$Async * examples.async.Math.*(..))"/>
+
 <!--            <pointcut name="asyncMethods" expression="execution(void examples.async.Math.async*(..))"/>-->
 <!--            <advice name="execute" type="around" bind-to="asyncMethods"/>-->
-            <advice name="execute" type="around" bind-to="execution(@examples.async.AsyncAspect$Async * examples.async.Math.*(..))"/>
 
 <!--            <pointcut name="annotatedMethods" expression="execution(void examples.async.Math.substract(..))"/>-->
 <!--            <advice name="execute" type="around" bind-to="annotatedMethods"/>-->
-            <advice name="execute" type="around" bind-to="execution(@examples.async.AsyncAspect$Async * examples.async.Math.*(..))"/>
         </aspect>
     </system>
 </aspectwerkz>

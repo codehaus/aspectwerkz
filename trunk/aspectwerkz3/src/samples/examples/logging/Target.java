@@ -15,12 +15,12 @@ package examples.logging;
 public class Target {
 
     /**
-     * log level=1 flt=5.8F iconstant=org.codehaus.aspectwerkz.DeploymentModel.PER_CLASS
+     * log level=1 flt=5.8F iconstant=org.codehaus.aspectwerkz.DeploymentModelEnum.PER_CLASS
      */
     private int m_counter1;
 
     /**
-     * log level=1 iconstant=org.codehaus.aspectwerkz.DeploymentModel.PER_THREAD
+     * log level=1 iconstant=org.codehaus.aspectwerkz.DeploymentModelEnum.PER_THREAD
      */
     private int m_counter2;
 

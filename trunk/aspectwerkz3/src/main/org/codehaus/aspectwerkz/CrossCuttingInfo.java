@@ -314,7 +314,7 @@ public final class CrossCuttingInfo implements Serializable {
         m_uuid = (String) fields.get("m_uuid", null);
         m_name = (String) fields.get("m_name", null);
         m_aspectClass = (Class) fields.get("m_aspectClass", null);
-        m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
+        m_deploymentModel = fields.get("m_deploymentModel", DeploymentModelEnum.PER_JVM);
         m_parameters = (Map) fields.get("m_parameters", new HashMap());
         m_metaData = (Map) fields.get("m_metaData", new HashMap());
         m_container = StartupManager.createAspectContainer(this);

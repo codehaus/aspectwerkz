@@ -10,6 +10,7 @@ package examples.async;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.DeploymentModelEnum;
 import org.codehaus.aspectwerkz.annotation.Expression;
 import org.codehaus.aspectwerkz.annotation.Around;
 import org.codehaus.aspectwerkz.annotation.Introduce;
@@ -34,7 +35,7 @@ public class AsyncAspect {
 //    @Expression("execution(@examples.async.Math.AsyncAspect$Async) && within(@examples.async.Math.AsyncAspect$Service)")
     Pointcut asyncMethods;
 
-    @Around("asyncMethods")
+    @Around(DeploymentModelEnum.PER_JVM)
     @Execution(Async.class)
     @Within(Service.class)
 //    @Around

@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.definition;
 import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
-import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.DeploymentModelEnum;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
@@ -164,9 +164,9 @@ public class StartupManager {
             }
             int deploymentModel;
             if ((aspectDef.getDeploymentModel() == null) || aspectDef.getDeploymentModel().equals("")) {
-                deploymentModel = DeploymentModel.PER_JVM;
+                deploymentModel = DeploymentModelEnum.PER_JVM;
             } else {
-                deploymentModel = DeploymentModel.getDeploymentModelAsInt(aspectDef.getDeploymentModel());
+                deploymentModel = DeploymentModelEnum.getDeploymentModelAsInt(aspectDef.getDeploymentModel());
             }
 
             //TODO: we could set the WHOLE AspectManager that defines the Aspect instead

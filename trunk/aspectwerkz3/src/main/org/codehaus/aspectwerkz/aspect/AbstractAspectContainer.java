@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.aspect;
 
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
-import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.DeploymentModelEnum;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
@@ -113,16 +113,16 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     public Object invokeAdvice(final int adviceIndex, final JoinPoint joinPoint, int[] methodToArgIndexes) throws Throwable {
         Object result = null;
         switch (m_infoPrototype.getDeploymentModel()) {
-            case DeploymentModel.PER_JVM:
+            case DeploymentModelEnum.PER_JVM:
                 result = invokeAdvicePerJvm(adviceIndex, joinPoint, methodToArgIndexes);
                 break;
-            case DeploymentModel.PER_CLASS:
+            case DeploymentModelEnum.PER_CLASS:
                 result = invokeAdvicePerClass(adviceIndex, joinPoint, methodToArgIndexes);
                 break;
-            case DeploymentModel.PER_INSTANCE:
+            case DeploymentModelEnum.PER_INSTANCE:
                 result = invokeAdvicePerInstance(adviceIndex, joinPoint, methodToArgIndexes);
                 break;
-            case DeploymentModel.PER_THREAD:
+            case DeploymentModelEnum.PER_THREAD:
                 result = invokeAdvicePerThread(adviceIndex, joinPoint, methodToArgIndexes);
                 break;
             default:
