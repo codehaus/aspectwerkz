@@ -23,15 +23,33 @@ public class HierachicalPatternTest extends TestCase implements Loggable, DummyI
         super(name);
     }
 
-    public void test1() {
+    public void testDeclaringType1() {
         m_logString = "";
-        testMethod1();
+        declaringType1();
         assertEquals("before1 invocation after1 ", m_logString);
     }
 
-    public void test2() {
+    public void testDeclaringType2() {
         m_logString = "";
-        testMethod2();
+        declaringType2();
+        assertEquals("before1 invocation after1 ", m_logString);
+    }
+
+    public void testReturnType1() {
+        m_logString = "";
+        returnType1();
+        assertEquals("before1 invocation after1 ", m_logString);
+    }
+
+    public void testReturnType2() {
+        m_logString = "";
+        returnType2();
+        assertEquals("before1 invocation after1 ", m_logString);
+    }
+
+    public void testParameterTypes() {
+        m_logString = "";
+        parameterTypes(null, null);
         assertEquals("before1 invocation after1 ", m_logString);
     }
 
@@ -48,11 +66,25 @@ public class HierachicalPatternTest extends TestCase implements Loggable, DummyI
         m_logString += wasHere;
     }
 
-    public void testMethod1() {
+    public void declaringType1() {
         log("invocation ");
     }
 
-    public void testMethod2() {
+    public void declaringType2() {
+        log("invocation ");
+    }
+
+    public HierachicalPatternTest returnType1() {
+        log("invocation ");
+        return null;
+    }
+
+    public DummyInterface1 returnType2() {
+        log("invocation ");
+        return null;
+    }
+
+    public void parameterTypes(HierachicalPatternTest d1, HierachicalPatternTest d2) {
         log("invocation ");
     }
 }

@@ -42,10 +42,8 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.annotation.AnnotationTest.class);
         suite.addTestSuite(test.modifier.ModifierTest.class);
         suite.addTestSuite(test.CFlowTest.class);
-
-        // bug tests
-        suite.addTestSuite(test.abstractclass.AbstractClassTest.class);
         suite.addTestSuite(test.hierarchicalpattern.HierachicalPatternTest.class);
+        suite.addTestSuite(test.abstractclass.AbstractClassTest.class);
         suite.addTestSuite(test.reflection.ReflectionTest.class);
         suite.addTestSuite(test.superclassconstructor.SuperClassConstructorTest.class);
         suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);

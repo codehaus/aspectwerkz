@@ -43,9 +43,11 @@ if [ "$1" != "-offline" ]; then
     # -Daspectwerkz.transform.verbose=yes to turn on verbose mode
     # -Daspectwerkz.transform.dump=package.foo.* to turn on dump in ./_dump of package.foo.* class
     # -Daspectwerkz.classloader.wait=10 to delay connection (launching VM)
+
+    # -- Use for Sun HotSpot and IBM JRE --
     $JAVA_COMMAND -cp $JAVA_HOME/lib/tools.jar:$ASPECTWERKZ_HOME/lib/javassist-3.0beta.jar:$ASPECTWERKZ_HOME/lib/aspectwerkz-core-$ASPECTWERKZ_VERSION.jar org.codehaus.aspectwerkz.hook.ProcessStarter -Xbootclasspath/p:"$ASPECTWERKZ_HOME/lib/javassist-3.0beta.jar:$ASPECTWERKZ_HOME/lib/aspectwerkz-core-$ASPECTWERKZ_VERSION.jar" -cp $CLASSPATH -cp $ASPECTWERKZ_HOME/lib/aspectwerkz-$ASPECTWERKZ_VERSION.jar:$ASPECTWERKZ_LIBS -Daspectwerkz.home=$ASPECTWERKZ_HOME "$@"
     
-    # sample usage for JRockit
+    # -- Use for BEA JRockit --
     # $JAVA_COMMAND -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/p:"$ASPECTWERKZ_HOME/target/extensions.jar:$ASPECTWERKZ_HOME/lib/javassist-3.0beta.jar:$ASPECTWERKZ_HOME/lib/aspectwerkz-core-$ASPECTWERKZ_VERSION.jar:$ASPECTWERKZ_HOME/lib/aspectwerkz-$ASPECTWERKZ_VERSION.jar:$ASPECTWERKZ_LIBS" -Daspectwerkz.home="$ASPECTWERKZ_HOME" "$@"
     
 else

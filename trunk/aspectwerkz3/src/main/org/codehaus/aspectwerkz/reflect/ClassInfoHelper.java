@@ -18,8 +18,8 @@ public class ClassInfoHelper {
     /**
      * Matches a type.
      *
-     * @param typePattern
-     * @param classInfo
+     * @param typePattern the pattern to try to match against
+     * @param classInfo the info of the class
      * @return
      */
     public static boolean matchType(final TypePattern typePattern, final ClassInfo classInfo) {

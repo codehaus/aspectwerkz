@@ -17,17 +17,27 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  */
 public class TestAspect {
     /**
-     * @Expression execution(* test.hierarchicalpattern.DummyInterface1+.testMethod1(..))
+     * @Expression execution(* test.hierarchicalpattern.DummyInterface1+.declaringType1(..))
      */
     Pointcut pc1;
 
     /**
-     * @Expression execution(* test.hierarchicalpattern.DummyInterface2+.testMethod2(..))
+     * @Expression execution(* test.hierarchicalpattern.DummyInterface2+.declaringType2(..))
      */
     Pointcut pc2;
 
     /**
-     * @Around pc1 || pc2
+     * @Expression execution(test.hierarchicalpattern.DummyInterface2+ test.hierarchicalpattern.HierachicalPatternTest.returnType*(..))
+     */
+    Pointcut pc3;
+
+    /**
+     * @Expression execution(* test.hierarchicalpattern.HierachicalPatternTest.parameterTypes(test.hierarchicalpattern.DummyInterface1+, test.hierarchicalpattern.DummyInterface2+))
+     */
+    Pointcut pc4;
+
+    /**
+     * @Around pc1 || pc2 || pc3 || pc4
      */
     public Object advice(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
