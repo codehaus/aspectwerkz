@@ -40,6 +40,9 @@ public class TracingAspect {
         return result;
     }
 
+    public void logBeforeArgs(final StaticJoinPoint joinPoint, Trace.Target t, Trace.Target arg) throws Throwable {
+        System.out.println("BEFORE: ARGS: I am [" + t + "] and args is [" + arg + "]") ;
+    }
     public void logBefore(final StaticJoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
