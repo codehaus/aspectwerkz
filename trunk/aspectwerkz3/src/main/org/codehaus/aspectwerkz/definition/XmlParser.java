@@ -43,6 +43,11 @@ public class XmlParser {
     private final static String DTD_PUBLIC_ID_ALIAS = "-//AspectWerkz//DTD//EN";
 
     /**
+     * A handler to the DTD stream so that we are only using one file descriptor
+     */
+    private final static InputStream DTD_STREAM = XmlParser.class.getResourceAsStream("/aspectwerkz.dtd");
+
+    /**
      * The timestamp, holding the last time that the definition was parsed.
      */
     private static File s_timestamp = new File(".timestamp");
@@ -252,16 +257,12 @@ public class XmlParser {
         EntityResolver resolver = new EntityResolver() {
             public InputSource resolveEntity(String publicId, String systemId) {
                 if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
-                    InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
-                    try {
-                        if (in == null) {
-                            System.err.println("AspectWerkz - WARN - could not open DTD");
-                            return new InputSource();
-                        } else {
-                            return new InputSource(in);
-                        }
-                    } finally {
-                        try { in.close(); } catch (Exception e) {;}
+                    InputStream in = DTD_STREAM;
+                    if (in == null) {
+                        System.err.println("AspectWerkz - WARN - could not open DTD");
+                        return new InputSource();
+                    } else {
+                        return new InputSource(in);
                     }
                 } else {
                     System.err.println(
