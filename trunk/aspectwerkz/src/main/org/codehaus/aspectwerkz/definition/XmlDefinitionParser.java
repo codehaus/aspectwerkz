@@ -202,16 +202,7 @@ public class XmlDefinitionParser {
      */
     public static Document createDocument(final URL url) throws DocumentException {
         SAXReader reader = new SAXReader();
-        EntityResolver resolver = new EntityResolver() {
-            public InputSource resolveEntity(String publicId, String systemId) {
-                if ( publicId.equals(DTD_PUBLIC_ID) ) {
-                    InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
-                    return new InputSource(in);
-                }
-                return null;
-            }
-        };
-        reader.setEntityResolver(resolver);
+        setEntityResolver(reader);
         return reader.read(url);
     }
 
@@ -225,6 +216,17 @@ public class XmlDefinitionParser {
      */
     public static Document createDocument(final InputStream stream) throws DocumentException {
         SAXReader reader = new SAXReader();
+        setEntityResolver(reader);
+        return reader.read(stream);
+    }
+
+    /**
+     * Sets the entity resolver which is created based on the DTD from in the root
+     * dir of the AspectWerkz distribution.
+     *
+     * @param reader the reader to set the resolver in
+     */
+    private static void setEntityResolver(final SAXReader reader) {
         EntityResolver resolver = new EntityResolver() {
             public InputSource resolveEntity(String publicId, String systemId) {
                 if ( publicId.equals(DTD_PUBLIC_ID) ) {
@@ -235,7 +237,6 @@ public class XmlDefinitionParser {
             }
         };
         reader.setEntityResolver(resolver);
-        return reader.read(stream);
     }
 
     /**
