@@ -66,6 +66,8 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
      */
     private final TLongObjectHashMap m_newInvocationsByCallerMemberHash;
 
+    private int m_lineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
+
     /**
      * Creates a new instance.
      *
@@ -163,8 +165,6 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
          * Flag set to true just after a NEW that match has been visited
          */
         private boolean m_skipNextDup = false;
-
-        private int m_lineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
 
         /**
          * Creates a new instance.

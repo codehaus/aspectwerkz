@@ -46,6 +46,8 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
     private final ClassLoader m_loader;
     private final ClassInfo m_callerClassInfo;
 
+    private int m_lineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
+
     /**
      * Creates a new instance.
      *
@@ -111,7 +113,6 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
         private final String m_callerMethodName;
         private final String m_callerMethodDesc;
         private final MemberInfo m_callerMemberInfo;
-        private int m_lineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
 
         /**
          * Creates a new instance.
