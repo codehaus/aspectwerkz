@@ -89,7 +89,7 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            AspectWerkzPreProcessor.dumpForce(className, klass);
+            AspectWerkzPreProcessor.dumpForce(className, context);
         }
     }
 

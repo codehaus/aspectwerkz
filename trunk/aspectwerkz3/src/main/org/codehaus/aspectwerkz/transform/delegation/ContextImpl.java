@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.transform.delegation;
 
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
+import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.transform.Context;
 
 import java.util.HashMap;
@@ -74,8 +75,7 @@ public class ContextImpl implements Context {
     /**
      * Creates a new context.
      * 
-     * @param loader
-     *            the class loader
+     * @param loader the class loader
      */
     public ContextImpl(final String className, final byte[] bytecode, final ClassLoader loader) {
         m_name = className.replace('/', '.');
@@ -173,8 +173,7 @@ public class ContextImpl implements Context {
     /**
      * Returns meta-data for the transformation.
      * 
-     * @param key
-     *            the key
+     * @param key the key
      * @return the value
      */
     public Object getMetaData(final Object key) {
@@ -184,10 +183,8 @@ public class ContextImpl implements Context {
     /**
      * Adds new meta-data for the transformation.
      * 
-     * @param key
-     *            the key
-     * @param value
-     *            the value
+     * @param key the key
+     * @param value the value
      */
     public void addMetaData(final Object key, final Object value) {
         if (m_readOnly) {
@@ -206,7 +203,22 @@ public class ContextImpl implements Context {
     /**
      * @return bytecode
      */
-    public byte[] getBytecode() {
+    public byte[] getCurrentBytecode() {
         return m_classAbstraction.getBytecode();
+    }
+
+    /**
+     * Dump the class to specific directory.
+     * 
+     * @param dir
+     */
+    public void dump(final String dir) {
+        try {
+            m_classAbstraction.getCtClass().writeFile(dir);
+            m_classAbstraction.getCtClass().defrost();
+        } catch (Exception e) {
+            AspectWerkzPreProcessor.log("failed to dump " + m_classAbstraction.getName());
+            e.printStackTrace();
+        }
     }
 }
