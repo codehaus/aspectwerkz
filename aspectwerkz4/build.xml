@@ -235,8 +235,8 @@
             <fileset dir="${main.classes}">
                 <exclude name="**/aspectwerkz/hook/**/*"/>
             </fileset>
-            <zipfileset src="${basedir}/lib/asm-1.5.1.jar"/>
-            <zipfileset src="${basedir}/lib/asm-attrs-1.5.1.jar"/>
+            <zipfileset src="${basedir}/lib/asm-1.5.2.jar"/>
+            <zipfileset src="${basedir}/lib/asm-attrs-1.5.2.jar"/>
             <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
         </jarjar>
         <copy tofile="${lib.dir}/aspectwerkz-${version}.jar" file="${build.dir}/aspectwerkz-${version}.jar" overwrite="true"/>
@@ -247,8 +247,8 @@
             <fileset dir="${main.classes}">
                 <include name="**/aspectwerkz/hook/**/*"/>
             </fileset>
-            <zipfileset src="${basedir}/lib/asm-1.5.1.jar"/>
-            <zipfileset src="${basedir}/lib/asm-attrs-1.5.1.jar"/>
+            <zipfileset src="${basedir}/lib/asm-1.5.2.jar"/>
+            <zipfileset src="${basedir}/lib/asm-attrs-1.5.2.jar"/>
             <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
         </jarjar>
         <copy tofile="${lib.dir}/aspectwerkz-core-${version}.jar" file="${build.dir}/aspectwerkz-core-${version}.jar" overwrite="true"/>
