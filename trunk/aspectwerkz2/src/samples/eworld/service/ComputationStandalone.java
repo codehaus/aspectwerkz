@@ -109,7 +109,11 @@ public class ComputationStandalone {
             int counter = 0;
             boolean isWeaved = false;
 
-            while(true) {
+            while (true) {
+                boolean statusCacheAspect = EWorldUtil.isWeaved(SYSTEM_ID, CacheAspect.class.getName());
+                boolean statusTraceAspect = EWorldUtil.isWeaved(SYSTEM_ID, TraceAspect.class.getName());
+                System.out.println("TraceAspect weave status = " + statusTraceAspect);
+                System.out.println("CacheAspect weave status = " + statusCacheAspect);
                 counter++;
                 Thread.sleep(sleep);
 
@@ -124,8 +128,6 @@ public class ComputationStandalone {
                         weave();
                         isWeaved = true;
                     }
-
-                    //EWorldUtil.dumpSystemDefinitions(Thread.currentThread().getContextClassLoader());
                     EWorldUtil.hotswap("eworld.service");
                 }
             }

@@ -21,6 +21,8 @@ import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * eworld/wlw/aop
@@ -29,8 +31,36 @@ import java.util.ArrayList;
  */
 public class EWorldUtil {
 
-    public static void activate(String uuid, String aspectName, String adviceName, String expression, String pointcutName) {
-        System.out.println("activate  = " + uuid + "," + aspectName + "." + adviceName + " @ " + expression + "," + pointcutName);
+    private static final Map s_weaveStatus = new HashMap();
+
+    public static boolean isWeaved(final String uuid, final String aspectName) {
+        Map aspects = (Map)s_weaveStatus.get(uuid);
+        if (aspects == null || aspects.keySet().size() == 0) {
+            return false;
+        }
+        else {
+            Boolean status = (Boolean)aspects.get(aspectName);
+            if (status == null) {
+                return false;
+            }
+            else {
+                return status.booleanValue();
+            }
+        }
+    }
+
+    public static void activate(
+            final String uuid,
+            final String aspectName,
+            final String adviceName,
+            final String expression,
+            final String pointcutName) {
+
+        setStatus(uuid, aspectName, Boolean.TRUE);
+
+        System.out.println(
+                "activate  = " + uuid + "," + aspectName + "." + adviceName + " @ " + expression + "," + pointcutName
+        );
         SystemDefinition sysDef = SystemDefinitionContainer.getSystemDefinition(
                 ClassLoader.getSystemClassLoader(), uuid
         );
@@ -39,12 +69,11 @@ public class EWorldUtil {
         }
         AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
 
-        Expression pcExpression = ExpressionNamespace.getExpressionNamespace(aspectDef)
-                .createExpression(
-                        expression,
-                        "",
-                        pointcutName
-                );
+        Expression pcExpression = ExpressionNamespace.getExpressionNamespace(aspectDef).createExpression(
+                expression,
+                "",
+                pointcutName
+        );
 
         AdviceDefinition newDef = null;
         boolean found = false;
@@ -77,7 +106,14 @@ public class EWorldUtil {
         }
     }
 
-    public static void deactivate(String uuid, String aspectName, String adviceName, String pointcutName) {
+    public static void deactivate(
+            final String uuid,
+            final String aspectName,
+            final String adviceName,
+            final String pointcutName) {
+
+        setStatus(uuid, aspectName, Boolean.FALSE);
+
         System.out.println("deactivate  = " + uuid + "," + aspectName + "." + adviceName + " @ " + pointcutName);
         SystemDefinition sysDef = SystemDefinitionContainer.getSystemDefinition(
                 ClassLoader.getSystemClassLoader(), uuid
@@ -115,7 +151,6 @@ public class EWorldUtil {
         }
         StartupManager.reinitializeSystem(ClassLoader.getSystemClassLoader(), sysDef);
     }
-
 
     public static void activateCache(String expression, String pointcutName) {
         activate("eworld/wlw/aop", "examples.caching.CachingAspect", "cache", expression, pointcutName);
@@ -178,5 +213,14 @@ public class EWorldUtil {
             out.println("\n----");
         }
 
+    }
+
+    private static void setStatus(final String uuid, final String aspectName, final Boolean status) {
+        Map aspects = (Map)s_weaveStatus.get(uuid);
+        if (aspects == null) {
+            aspects = new HashMap();
+            s_weaveStatus.put(uuid, aspects);
+        }
+        aspects.put(aspectName, status);
     }
 }
