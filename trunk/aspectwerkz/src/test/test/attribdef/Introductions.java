@@ -13,7 +13,6 @@ import java.io.Serializable;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface Introductions extends Serializable {
-    void method();
 
     void noArgs();
 
