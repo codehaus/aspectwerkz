@@ -20,7 +20,6 @@ import javassist.CtMethod;
 import javassist.NotFoundException;
 import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.CodeAttribute;
-import javassist.bytecode.ExceptionsAttribute;
 import javassist.bytecode.ConstantAttribute;
 import javassist.bytecode.SourceFileAttribute;
 import javassist.bytecode.LineNumberAttribute;
@@ -30,7 +29,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 
 /**
- * Convenience methods to construct <code>MetaData</code> instances from Javassist classes.
+ * Convenience methods to construct <code>MetaDataBase</code> instances from Javassist classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
@@ -42,18 +41,18 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * Construct class meta-data from a Javassist <code>JavaClass</code> object.
      *
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
-     * @return a <code>ClassMetaData</code> instance.
+     * @return a <code>ClassMetaDataImpl</code> instance.
      */
-    public static ClassMetaData createClassMetaData(final CtClass javaClass) {
+    public static ClassMetaDataImpl createClassMetaData(final CtClass javaClass) {
         if (javaClass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
 
         if (s_classMetaDataCache.containsKey(javaClass.getName())) {
-            return (ClassMetaData)s_classMetaDataCache.get(javaClass.getName());
+            return (ClassMetaDataImpl)s_classMetaDataCache.get(javaClass.getName());
         }
 
-        ClassMetaData classMetaData = new ClassMetaData();
+        ClassMetaDataImpl classMetaData = new ClassMetaDataImpl();
         classMetaData.setName(javaClass.getName());
         classMetaData.setModifiers(javaClass.getModifiers());
 
@@ -124,7 +123,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * Construct interface meta-data from a Javassist <code>JavaClass</code> object.
      *
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
-     * @return a <code>InterfaceMetaData</code> instance.
+     * @return a <code>InterfaceMetaDataImpl</code> instance.
      */
     private static InterfaceMetaData createInterfaceMetaData(final CtClass javaClass)
     throws NotFoundException {
@@ -136,7 +135,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             return (InterfaceMetaData)s_interfaceMetaDataCache.get(javaClass.getName());
         }
 
-        InterfaceMetaData interfaceMetaData = new InterfaceMetaData();
+        InterfaceMetaDataImpl interfaceMetaData = new InterfaceMetaDataImpl();
         interfaceMetaData.setName(javaClass.getName());
 
         // TODO not supported by Javassist ??
@@ -168,14 +167,14 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * Construct method meta-data from a Javassist <code>CtMethod</code> object.
      *
      * @param method is the <code>CtMethod</code> object to extract details from.
-     * @return a <code>MethodMetaData</code> instance.
+     * @return a <code>MethodMetaDataImpl</code> instance.
      */
-    public static MethodMetaData createMethodMetaData(final CtMethod method) {
+    public static MethodMetaDataImpl createMethodMetaData(final CtMethod method) {
         if (method == null) {
             throw new IllegalArgumentException("method can not be null");
         }
 
-        MethodMetaData methodMetaData = new MethodMetaData();
+        MethodMetaDataImpl methodMetaData = new MethodMetaDataImpl();
         methodMetaData.setName(method.getName());
 
         //Javassist modifier is the same as java modifier used in ReflectionMetaDataMaker
@@ -226,14 +225,14 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * Construct field meta-data from a Javassist <code>CtField</code> object.
      *
      * @param field is the <code>CtField</code> object to extract details from.
-     * @return a <code>FieldMetaData</code> instance.
+     * @return a <code>FieldMetaDataImpl</code> instance.
      */
-    public static FieldMetaData createFieldMetaData(final CtField field) {
+    public static FieldMetaDataImpl createFieldMetaData(final CtField field) {
         if (field == null) {
             throw new IllegalArgumentException("field can not be null");
         }
 
-        FieldMetaData fieldMetaData = new FieldMetaData();
+        FieldMetaDataImpl fieldMetaData = new FieldMetaDataImpl();
         fieldMetaData.setName(field.getName());
         fieldMetaData.setModifiers(field.getModifiers());
         try {
@@ -262,14 +261,14 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * Construct method meta-data from a Javassist <code>CtConstructor</code> object.
      *
      * @param constructor is the <code>CtConstructor</code> object to extract details from.
-     * @return a <code>ConstructorMetaData</code> instance.
+     * @return a <code>ConstructorMetaDataImpl</code> instance.
      */
-    public static ConstructorMetaData createConstructorMetaData(CtConstructor constructor) {
+    public static ConstructorMetaDataImpl createConstructorMetaData(final CtConstructor constructor) {
         if (constructor == null) {
             throw new IllegalArgumentException("constructor can not be null");
         }
 
-        ConstructorMetaData constructorMetaData = new ConstructorMetaData();
+        ConstructorMetaDataImpl constructorMetaData = new ConstructorMetaDataImpl();
         constructorMetaData.setName(CONSTRUCTOR_NAME);
 
         //Javassist modifier is the same as java modifier used in ReflectionMetaDataMaker
@@ -313,7 +312,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         }
     }
 
-    private static void addAttribute(MemberMetaData memberMetaData, AttributeInfo attributeInfo) {
+    private static void addAttribute(final MemberMetaData memberMetaData, final AttributeInfo attributeInfo) {
         if (true || filter(attributeInfo)) return;
         byte[] serializedAttribute = attributeInfo.get();
         try {
@@ -329,7 +328,13 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         }
     }
 
-    private static void addAttribute(ClassMetaData classMetaData, AttributeInfo attributeInfo) {
+    /**
+     * @TODO ALEX - needed, not used?
+     *
+     * @param classMetaData
+     * @param attributeInfo
+     */
+    private static void addAttribute(ClassMetaDataImpl classMetaData, AttributeInfo attributeInfo) {
         if (true || filter(attributeInfo)) return;
         byte[] serializedAttribute = attributeInfo.get();
         try {
@@ -345,7 +350,13 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         }
     }
 
-    private static void addAttribute(InterfaceMetaData interfaceMetaData, AttributeInfo attributeInfo) {
+    /**
+     * @TODO ALEX - needed, not used?
+     *
+     * @param interfaceMetaData
+     * @param attributeInfo
+     */
+    private static void addAttribute(final InterfaceMetaDataImpl interfaceMetaData, final AttributeInfo attributeInfo) {
         if (true || filter(attributeInfo)) return;
         byte[] serializedAttribute = attributeInfo.get();
         try {
@@ -361,7 +372,12 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         }
     }
 
-    private static boolean filter(AttributeInfo attr) {
+    /**
+     *
+     * @param attr
+     * @return
+     */
+    private static boolean filter(final AttributeInfo attr) {
         if (attr instanceof CodeAttribute ||
             attr instanceof ConstantAttribute ||
             attr instanceof SourceFileAttribute ||

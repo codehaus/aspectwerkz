@@ -7,60 +7,23 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Holds meta-data for an interface.
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class InterfaceMetaData extends MetaData {
-
-    /**
-     * The name of the class.
-     */
-    private String m_name;
-
-    /**
-     * A list with the interfaces.
-     */
-    private List m_interfaces = new ArrayList();
-
+public interface InterfaceMetaData extends MetaData {
     /**
      * Returns the name of the class.
      *
      * @return the name of the class
      */
-    public String getName() {
-        return m_name;
-    }
-
-    /**
-     * Sets the name of the class.
-     *
-     * @param name the name of the class
-     */
-    public void setName(final String name) {
-        m_name = name;
-    }
+    String getName();
 
     /**
      * Returns the interfaces.
      *
      * @return the interfaces
      */
-    public List getInterfaces() {
-        return m_interfaces;
-    }
-
-    /**
-     * Sets the interfaces.
-     *
-     * @param interfaces the interfaces
-     */
-    public void setInterfaces(final List interfaces) {
-        m_interfaces = interfaces;
-    }
+    List getInterfaces();
 }
-

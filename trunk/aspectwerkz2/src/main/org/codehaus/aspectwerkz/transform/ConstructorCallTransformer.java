@@ -22,8 +22,8 @@ import javassist.expr.NewExpr;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ConstructorMetaDataImpl;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 
 /**
@@ -63,7 +63,7 @@ public class ConstructorCallTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            ClassMetaDataImpl classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
             if (classFilter(definition, classMetaData, ctClass)) {
                 return;
             }
@@ -99,7 +99,7 @@ public class ConstructorCallTransformer implements Transformer {
                                 }
 
                                 // create the class meta-data
-                                ClassMetaData calleeSideClassMetaData;
+                                ClassMetaDataImpl calleeSideClassMetaData;
                                 try {
                                     calleeSideClassMetaData =
                                     JavassistMetaDataMaker.createClassMetaData(
@@ -111,7 +111,7 @@ public class ConstructorCallTransformer implements Transformer {
                                 }
 
                                 // create the method meta-data
-                                ConstructorMetaData constructorMetaData =
+                                ConstructorMetaDataImpl constructorMetaData =
                                         JavassistMetaDataMaker.createConstructorMetaData(newExpr.getConstructor());
 
                                 // is this a caller side method pointcut?
@@ -228,7 +228,7 @@ public class ConstructorCallTransformer implements Transformer {
      */
     private boolean classFilter(
             final SystemDefinition definition,
-            final ClassMetaData classMetaData,
+            final ClassMetaDataImpl classMetaData,
             final CtClass cg) {
         if (cg.isInterface() ||
             TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {

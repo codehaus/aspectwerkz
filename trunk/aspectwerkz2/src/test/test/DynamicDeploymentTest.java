@@ -10,8 +10,8 @@ package test;
 import java.util.List;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.NameIndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
@@ -29,7 +29,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 
     private String m_logString = "";
 
-    private ClassMetaData m_classMetaData = ReflectionMetaDataMaker.createClassMetaData(DynamicDeploymentTest.class);
+    private ClassMetaDataImpl m_classMetaData = ReflectionMetaDataMaker.createClassMetaData(DynamicDeploymentTest.class);
 
     public void testReorderAdvicesAtRuntime1() {
         m_logString = "";
@@ -60,7 +60,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         addAdviceTestMethod();
         assertEquals("before1 invocation after1 ", m_logString);
 
-        MethodMetaData methodMetaData = new MethodMetaData();
+        MethodMetaDataImpl methodMetaData = new MethodMetaDataImpl();
         methodMetaData.setName("addAdviceTestMethod");
         methodMetaData.setParameterTypes(new String[]{});
         methodMetaData.setReturnType("void");
@@ -86,7 +86,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         removeAdviceTestMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
 
-        MethodMetaData methodMetaData = new MethodMetaData();
+        MethodMetaDataImpl methodMetaData = new MethodMetaDataImpl();
         methodMetaData.setName("removeAdviceTestMethod");
         methodMetaData.setParameterTypes(new String[]{});
         methodMetaData.setReturnType("void");
@@ -149,7 +149,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             );
 
             // test an advice from the aspect in action
-            MethodMetaData methodMetaData = new MethodMetaData();
+            MethodMetaDataImpl methodMetaData = new MethodMetaDataImpl();
             methodMetaData.setName("createAspectTestMethod");
             methodMetaData.setParameterTypes(new String[]{});
             methodMetaData.setReturnType("void");

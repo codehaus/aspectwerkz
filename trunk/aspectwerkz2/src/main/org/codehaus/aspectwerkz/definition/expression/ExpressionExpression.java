@@ -30,7 +30,7 @@ import org.codehaus.aspectwerkz.definition.expression.visitor.CflowEvaluateVisit
 import org.codehaus.aspectwerkz.definition.expression.visitor.EarlyEvaluateVisitor;
 import org.codehaus.aspectwerkz.definition.expression.visitor.AnonymousInflateVisitor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 
 /**
@@ -145,7 +145,7 @@ public class ExpressionExpression extends Expression {
      * @param assumedType
      * @return simplified expression
      */
-    public Expression extractCflowExpression(ClassMetaData classMetaData, MemberMetaData memberMetaData, PointcutType assumedType) {
+    public Expression extractCflowExpression(ClassMetaDataImpl classMetaData, MemberMetaData memberMetaData, PointcutType assumedType) {
         ExpressionContext ctx = new ExpressionContext(
                 assumedType, m_namespace, classMetaData, memberMetaData, null
         );
@@ -189,7 +189,7 @@ public class ExpressionExpression extends Expression {
      * @param assumedType
      * @return
      */
-    public boolean match(final ClassMetaData classMetaData, PointcutType assumedType) {
+    public boolean match(final ClassMetaDataImpl classMetaData, PointcutType assumedType) {
         ExpressionContext ctx = new ExpressionContext(assumedType, m_namespace, classMetaData, null, null);
         return ((Boolean)root.jjtAccept(EARLYEVALUATE_VISITOR, ctx)).booleanValue();
     }
@@ -200,7 +200,7 @@ public class ExpressionExpression extends Expression {
      * @param classMetaData
      * @return
      */
-    public boolean match(final ClassMetaData classMetaData) {
+    public boolean match(final ClassMetaDataImpl classMetaData) {
         for (Iterator types = m_types.iterator(); types.hasNext();) {
             if (match(classMetaData, (PointcutType)types.next())) {
                 return true;
@@ -219,7 +219,7 @@ public class ExpressionExpression extends Expression {
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean matchInOrNotIn(final ClassMetaData classMetaData) {
+    public boolean matchInOrNotIn(final ClassMetaDataImpl classMetaData) {
         for (Iterator it = m_cflowExpressionRefs.values().iterator(); it.hasNext();) {
             Expression expression = (Expression)it.next();
             if (expression.match(classMetaData)) {
@@ -237,7 +237,7 @@ public class ExpressionExpression extends Expression {
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    public boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+    public boolean matchInOrNotIn(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData) {
         for (Iterator it = m_cflowExpressionRefs.values().iterator(); it.hasNext();) {
             Expression expression = (Expression)it.next();
             if (expression.match(classMetaData, memberMetaData)) {
@@ -258,7 +258,7 @@ public class ExpressionExpression extends Expression {
      * @return boolean
      */
     public boolean match(
-            final ClassMetaData classMetaData,
+            final ClassMetaDataImpl classMetaData,
             final MemberMetaData memberMetaData,
             final String exceptionType,
             final PointcutType assumedType) {
@@ -283,7 +283,7 @@ public class ExpressionExpression extends Expression {
      * @return
      */
     public boolean match(
-            final ClassMetaData classMetaData,
+            final ClassMetaDataImpl classMetaData,
             final MemberMetaData memberMetaData,
             final String exceptionType) {
         if (m_types.size() > 1) {
@@ -304,7 +304,7 @@ public class ExpressionExpression extends Expression {
      * @param assumedType
      * @return boolean
      */
-    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData, PointcutType assumedType) {
+    public boolean match(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData, PointcutType assumedType) {
         return match(classMetaData, memberMetaData, null, assumedType);
     }
 
@@ -315,7 +315,7 @@ public class ExpressionExpression extends Expression {
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+    public boolean match(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData) {
         if (m_types.size() > 1) {
             if (m_types.size() == 2 && m_types.contains(PointcutType.CFLOW)) {
                 PointcutType type = null;

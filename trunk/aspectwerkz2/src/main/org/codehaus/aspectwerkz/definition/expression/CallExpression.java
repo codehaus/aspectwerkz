@@ -11,9 +11,10 @@ import java.io.ObjectInputStream;
 import java.util.Iterator;
 import java.util.List;
 
+import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 
 /**
@@ -30,7 +31,7 @@ public class CallExpression extends LeafExpression {
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+    public boolean match(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData) {
         boolean matchCallerSide = false;
         // hierarchical on callee side handling
         if (m_isHierarchicalCallee) {

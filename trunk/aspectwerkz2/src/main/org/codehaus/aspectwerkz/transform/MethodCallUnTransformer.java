@@ -23,9 +23,9 @@ import javassist.expr.MethodCall;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
  * Advises method CALL join points.
@@ -119,7 +119,7 @@ public class MethodCallUnTransformer implements Transformer {
 //                                }
 //
 //                                // create the class meta-data
-//                                ClassMetaData calleeSideClassMetaData;
+//                                ClassMetaDataImpl calleeSideClassMetaData;
 //                                try {
 //                                    calleeSideClassMetaData =
 //                                    JavassistMetaDataMaker.createClassMetaData(
@@ -131,7 +131,7 @@ public class MethodCallUnTransformer implements Transformer {
 //                                }
 //
 //                                // create the method meta-data
-//                                MethodMetaData calleeSideMethodMetaData = JavassistMetaDataMaker.createMethodMetaData(
+//                                MethodMetaDataImpl calleeSideMethodMetaData = JavassistMetaDataMaker.createMethodMetaData(
 //                                        methodCall.getMethod()
 //                                );
 //

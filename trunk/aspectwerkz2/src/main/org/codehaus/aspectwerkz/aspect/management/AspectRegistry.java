@@ -33,9 +33,10 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.FieldMetaDataImpl;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.util.Strings;
@@ -391,7 +392,7 @@ public class AspectRegistry {
      * @param memberMetaData meta-data for the member
      * @return the pointcuts for this join point
      */
-    public List getExecutionPointcuts(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+    public List getExecutionPointcuts(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
@@ -408,7 +409,7 @@ public class AspectRegistry {
      * @param fieldMetaData meta-data for the field
      * @return the pointcuts for this join point
      */
-    public List getGetPointcuts(final ClassMetaData classMetaData, final FieldMetaData fieldMetaData) {
+    public List getGetPointcuts(final ClassMetaDataImpl classMetaData, final FieldMetaDataImpl fieldMetaData) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
@@ -424,7 +425,7 @@ public class AspectRegistry {
      * @param fieldMetaData meta-data for the field
      * @return the pointcuts for this join point
      */
-    public List getSetPointcuts(final ClassMetaData classMetaData, final FieldMetaData fieldMetaData) {
+    public List getSetPointcuts(final ClassMetaDataImpl classMetaData, final FieldMetaDataImpl fieldMetaData) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
@@ -439,7 +440,7 @@ public class AspectRegistry {
      * @param classMetaData the meta-data for the class
      * @return the pointcuts for this join point
      */
-    public List getHandlerPointcuts(final ClassMetaData classMetaData) {
+    public List getHandlerPointcuts(final ClassMetaDataImpl classMetaData) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
@@ -456,7 +457,7 @@ public class AspectRegistry {
      * @param memberMetaData meta-data for the member
      * @return the pointcuts for this join point
      */
-    public List getCallPointcuts(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+    public List getCallPointcuts(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
@@ -474,7 +475,7 @@ public class AspectRegistry {
      * @param pointcutType
      * @return the expression with 1+ cflow for this join point (optimized thru inflated evaluation)
      */
-    public List getCflowExpressions(final ClassMetaData classMetaData, final MemberMetaData memberMetaData,
+    public List getCflowExpressions(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData,
                                     final ClassMetaData callerClassMetaData, final PointcutType pointcutType) {
         List expressions = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {

@@ -20,8 +20,9 @@ import javassist.expr.Handler;
 
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
@@ -90,7 +91,7 @@ public class HandlerTransformer implements Transformer {
 
                                 MethodMetaData methodMetaData = null; //JavassistMetaDataMaker.createMethodMetaData(...);
 
-                                ClassMetaData exceptionClassMetaData = JavassistMetaDataMaker.createClassMetaData(
+                                ClassMetaDataImpl exceptionClassMetaData = JavassistMetaDataMaker.createClassMetaData(
                                         exceptionClass
                                 );
 

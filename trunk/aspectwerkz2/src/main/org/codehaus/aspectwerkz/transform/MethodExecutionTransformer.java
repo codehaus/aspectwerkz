@@ -25,9 +25,9 @@ import javassist.Modifier;
 import javassist.NotFoundException;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaDataImpl;
 import org.codehaus.aspectwerkz.MethodComparator;
 import gnu.trove.TObjectIntHashMap;
 
@@ -74,7 +74,7 @@ public class MethodExecutionTransformer implements Transformer {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            ClassMetaDataImpl classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
             if (classFilter(definition, classMetaData, ctClass, false)) {
                 return;
             }
@@ -92,7 +92,7 @@ public class MethodExecutionTransformer implements Transformer {
             final List sorteMethodTuples = new ArrayList(sortedMethods.size());
             for (Iterator methodsIt = sortedMethods.iterator(); methodsIt.hasNext();) {
                 CtMethod method = (CtMethod)methodsIt.next();
-                MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(method);
+                MethodMetaDataImpl methodMetaData = JavassistMetaDataMaker.createMethodMetaData(method);
 
                 int sequence = 1;
                 if (methodSequences.containsKey(method.getName())) {
@@ -316,7 +316,7 @@ public class MethodExecutionTransformer implements Transformer {
      */
     private boolean classFilter(
             final SystemDefinition definition,
-            final ClassMetaData classMetaData,
+            final ClassMetaDataImpl classMetaData,
             final CtClass cg,
             final boolean isActivatePhase) {
         if (cg.isInterface() ||
@@ -349,8 +349,8 @@ public class MethodExecutionTransformer implements Transformer {
      */
     private int methodFilter(
             final SystemDefinition definition,
-            final ClassMetaData classMetaData,
-            final MethodMetaData methodMetaData,
+            final ClassMetaDataImpl classMetaData,
+            final MethodMetaDataImpl methodMetaData,
             final CtMethod method) {
         if (Modifier.isAbstract(method.getModifiers()) ||
             Modifier.isNative(method.getModifiers()) ||
@@ -381,8 +381,8 @@ public class MethodExecutionTransformer implements Transformer {
      */
     private boolean methodHasNoPointcut(
             final SystemDefinition definition,
-            final ClassMetaData classMetaData,
-            final MethodMetaData methodMetaData,
+            final ClassMetaDataImpl classMetaData,
+            final MethodMetaDataImpl methodMetaData,
             final CtMethod method) {
         if (Modifier.isAbstract(method.getModifiers()) ||
             Modifier.isNative(method.getModifiers()) ||
