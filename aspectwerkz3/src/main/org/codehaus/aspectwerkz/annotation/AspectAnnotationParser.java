@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz.annotation;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.definition.Virtual;
 import org.codehaus.aspectwerkz.definition.DeploymentScope;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -19,12 +18,12 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
-import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
+import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
+import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModelManager;
 
 import java.util.Iterator;
 import java.util.List;
-
 
 /**
  * Extracts the aspects annotations from the class files and creates a meta-data representation of them.
@@ -57,6 +56,11 @@ public class AspectAnnotationParser {
      */
     public static void parse(final ClassInfo classInfo, final AspectDefinition aspectDef, final ClassLoader loader) {
         INSTANCE.doParse(classInfo, aspectDef, loader);
+
+        // load the different aspect model and let them define their aspects
+        for (Iterator it = AspectModelManager.getModels().iterator(); it.hasNext();) {
+            ((AspectModel) it.next()).defineAspect(classInfo, aspectDef, loader);
+        }
     }
 
     /**

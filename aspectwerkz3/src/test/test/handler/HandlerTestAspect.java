@@ -9,7 +9,6 @@ package test.handler;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
-import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import junit.framework.TestCase;
 
 /**

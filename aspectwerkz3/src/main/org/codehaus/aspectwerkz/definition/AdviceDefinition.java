@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.definition;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * Holds the meta-data for the advices.
@@ -66,6 +67,60 @@ public class AdviceDefinition {
     private String m_specialArgumentType;
 
     /**
+     * TODO only use this method and make ctor private?
+     * <p/>
+     * Creates a new advice definition.
+     *
+     * @param adviceName          the advice name
+     * @param adviceType          the advice type
+     * @param expression          the advice expression
+     * @param specialArgumentType the arg
+     * @param aspectName          the aspect name
+     * @param aspectClassName     the aspect class name
+     * @param method              the advice method
+     * @param aspectDef           the aspect definition
+     * @return the new advice definition
+     */
+    public static AdviceDefinition newInstance(final String adviceName,
+                                               final AdviceType adviceType,
+                                               final String expression,
+                                               final String specialArgumentType,
+                                               final String aspectName,
+                                               final String aspectClassName,
+                                               final MethodInfo method,
+                                               final AspectDefinition aspectDef) {
+        ExpressionInfo expressionInfo = new ExpressionInfo(
+                expression,
+                aspectDef.getQualifiedName()
+        );
+
+        // support for pointcut signature
+        String adviceCallSignature = null;
+        if (adviceName.indexOf('(') > 0) {
+            adviceCallSignature = adviceName.substring(adviceName.indexOf('(') + 1, adviceName.lastIndexOf(')'));
+            String[] parameters = Strings.splitString(adviceCallSignature, ",");
+            for (int i = 0; i < parameters.length; i++) {
+                String[] parameterInfo = Strings.splitString(
+                        Strings.replaceSubString(parameters[i].trim(), "  ", " "),
+                        " "
+                );
+                expressionInfo.addArgument(parameterInfo[1], parameterInfo[0]);
+            }
+        }
+
+        return new AdviceDefinition(
+                adviceName,
+                adviceType,
+                specialArgumentType,
+                aspectName,
+                aspectClassName,
+                expressionInfo,
+                method,
+                aspectDef
+        );
+    }
+
+    /**
      * Creates a new advice meta-data instance.
      *
      * @param name                the name of the expressionInfo
@@ -96,9 +151,6 @@ public class AdviceDefinition {
         if (aspectClassName == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
-//        if (expressionInfo == null) {
-//            throw new IllegalArgumentException("expressionInfo can not be null");
-//        }
         if (methodInfo == null) {
             throw new IllegalArgumentException("methodInfo can not be null");
         }

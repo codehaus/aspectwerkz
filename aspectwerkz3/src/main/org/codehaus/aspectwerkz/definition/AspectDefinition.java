@@ -15,13 +15,16 @@ import java.util.Map;
 
 /**
  * Holds the meta-data for the aspect.
- * <p/>
- * TODO XXX cleanup
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AspectDefinition {
+
+    /**
+     * The default aspectwerkz aspect model type id.
+     */
+    public static final String ASPECTWERKZ_ASPECT_MODEL_TYPE = "aspectwerkz";
 
     /**
      * The name of the aspect (nickname).
@@ -89,6 +92,11 @@ public class AspectDefinition {
     private SystemDefinition m_systemDefinition;
 
     /**
+     * The aspect model.
+     */
+    private String m_aspectModelType = ASPECTWERKZ_ASPECT_MODEL_TYPE;
+
+    /**
      * Creates a new aspect meta-data instance.
      *
      * @param name      the name of the aspect
@@ -117,6 +125,15 @@ public class AspectDefinition {
     }
 
     /**
+     * Sets the name for the aspect.
+     *
+     * @param name the name
+     */
+    public void setName(final String name) {
+        m_name = name.trim();
+    }
+
+    /**
      * Returns the fully qualified name for the advice
      *
      * @return the fully qualified name
@@ -135,21 +152,39 @@ public class AspectDefinition {
     }
 
     /**
-     * Sets the name for the aspect.
-     *
-     * @param name the name
-     */
-    public void setName(final String name) {
-        m_name = name.trim();
-    }
-
-    /**
      * Returns the class name.
      *
      * @return the class name
      */
     public String getClassName() {
         return m_className;
+    }
+
+    /**
+     * Returns the aspect model.
+     *
+     * @return the aspect model
+     */
+    public String getAspectModel() {
+        return m_aspectModelType;
+    }
+
+    /**
+     * Checks if the aspect defined is an AspectWerkz aspect.
+     *
+     * @return
+     */
+    public boolean isAspectWerkzAspect() {
+        return m_aspectModelType.equals(ASPECTWERKZ_ASPECT_MODEL_TYPE);
+    }
+
+    /**
+     * Sets the aspect model.
+     *
+     * @param aspectModelType the aspect model
+     */
+    public void setAspectModel(final String aspectModelType) {
+        m_aspectModelType = aspectModelType;
     }
 
     /**
