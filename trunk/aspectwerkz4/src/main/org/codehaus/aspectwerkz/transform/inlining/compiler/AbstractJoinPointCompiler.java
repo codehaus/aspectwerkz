@@ -585,7 +585,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
             cv.visitMethodInsn(INVOKESPECIAL, OBJECT_CLASS_NAME, INIT_METHOD_NAME, NO_PARAM_RETURN_VOID_SIGNATURE);
         }
 
-        cv.visitVarInsn(ALOAD, 0);
+        //cv.visitVarInsn(ALOAD, 0);
         resetStackFrameCounter(cv);
 
         cv.visitInsn(RETURN);
@@ -1032,6 +1032,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
                     cv, OPTIMIZED_JOIN_POINT, joinPointIndex, argStartIndex, callerIndex, calleeIndex
             );
         }
+
         cv.visitMaxs(0, 0);
     }
 
