@@ -223,6 +223,8 @@ public class AsmClassInfo implements ClassInfo {
         className = className.replace('.', '/');
         Class primitiveClass = AsmClassInfo.getPrimitiveClass(className);
      
+        // TODO put JavaClassInfo instances in the ASM repository????
+        
         // primitive type
         if (primitiveClass != null) {
             return JavaClassInfo.getClassInfo(primitiveClass);
