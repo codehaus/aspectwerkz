@@ -44,7 +44,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>-Daspectwerkz.definition.file=PathToFile</code>
  * as parameter to the JVM.
  * <p/>
- * If the above given parameter is not specified, the <code>StartupManager</code>
+ * If the above given parameter is not specified, the <code>StartupManager2</code>
  * tries locate a file called <code>aspectwerkz.xml</code> in the classpath
  * and if this fails the last attempt is to use the
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).

@@ -80,7 +80,7 @@ public interface Advice extends Serializable {
      *
      * @return the distribution type
      */
-    ContainerType getMemoryType();
+    ContainerType getContainerType();
 
     /**
      * Sets the class for the advice.

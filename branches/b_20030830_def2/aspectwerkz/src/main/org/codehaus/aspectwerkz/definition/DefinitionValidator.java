@@ -30,11 +30,9 @@ import java.util.Set;
  */
 public class DefinitionValidator {
 
-    private List m_errors = new ArrayList();
-
-    private Set m_names = new HashSet();
-    private Set m_attributes = new HashSet();
-
+    private final List m_errors = new ArrayList();
+    private final Set m_names = new HashSet();
+    private final Set m_attributes = new HashSet();
     private final AspectWerkzDefinition m_definition;
 
     /**
@@ -78,8 +76,7 @@ public class DefinitionValidator {
             }
 
             for (Iterator i2 = introductionRules.iterator(); i2.hasNext();) {
-                IntroductionWeavingRule rule =
-                        (IntroductionWeavingRule)i2.next();
+                IntroductionWeavingRule rule = (IntroductionWeavingRule)i2.next();
                 checkUndefinedIntroductions(rule.getIntroductionRefs());
             }
 
@@ -95,8 +92,9 @@ public class DefinitionValidator {
     private void checkUndefinedIntroductions(List refs) {
         for (Iterator i = refs.iterator(); i.hasNext();) {
             String ref = (String)i.next();
-            if (!m_definition.hasIntroduction(ref))
+            if (!m_definition.hasIntroduction(ref)) {
                 addErrorMessage("Introduction '" + ref + "' not defined");
+            }
         }
     }
 
@@ -107,8 +105,9 @@ public class DefinitionValidator {
     private void checkUndefinedAdvices(List refs) {
         for (Iterator i = refs.iterator(); i.hasNext();) {
             String ref = (String)i.next();
-            if (!m_definition.hasAdvice(ref))
+            if (!m_definition.hasAdvice(ref)) {
                 addErrorMessage("Advice '" + ref + "' not defined");
+            }
         }
     }
 
@@ -119,7 +118,6 @@ public class DefinitionValidator {
     private void validatePointcuts(Collection pointcutDefs) {
         for (Iterator i = pointcutDefs.iterator(); i.hasNext();) {
             PointcutDefinition def = (PointcutDefinition)i.next();
-
             checkDuplicateName(def.getName());
         }
     }
@@ -139,21 +137,10 @@ public class DefinitionValidator {
                 Class.forName(adviceClass);
             }
             catch (ClassNotFoundException e) {
-                addErrorMessage(
-                        "Advice class not found: "
-                        + adviceClass
-                        + "(exception: "
-                        + e
-                        + ")");
+                addErrorMessage("Advice class not found: " + adviceClass + "(exception: " + e + ")");
             }
             catch (NoClassDefFoundError e) {
-                addErrorMessage(
-                        "Advice class not found: "
-                        + adviceClass
-                        + "(exception: "
-                        + e
-                        + ")");
-
+                addErrorMessage("Advice class not found: " + adviceClass + "(exception: " + e + ")");
             }
 
             checkDuplicateName(def.getName());
@@ -185,8 +172,7 @@ public class DefinitionValidator {
                     Class.forName(impl);
                 }
                 catch (ClassNotFoundException e) {
-                    addErrorMessage(
-                            "Introduction implementation not found: " + impl);
+                    addErrorMessage("Introduction implementation not found: " + impl);
                 }
             }
 
@@ -200,11 +186,9 @@ public class DefinitionValidator {
      * @param attribute attribute name to check
      */
     private void checkDuplicateAttribute(String attribute) {
-        if (attribute != null
-                && !"".equals(attribute)
-                && !m_attributes.add(attribute))
-
+        if (attribute != null && !"".equals(attribute) && !m_attributes.add(attribute)) {
             addErrorMessage("Duplicate attribute definition: " + attribute);
+        }
     }
 
     /**
@@ -212,8 +196,9 @@ public class DefinitionValidator {
      * @param name name to check
      */
     private void checkDuplicateName(String name) {
-        if (!m_names.add(name))
+        if (!m_names.add(name)) {
             addErrorMessage("Duplicate name definition: " + name);
+        }
     }
 
     /**
@@ -222,7 +207,7 @@ public class DefinitionValidator {
      * @param errorMessage
      */
     private void addErrorMessage(String errorMessage) {
-        this.m_errors.add(errorMessage);
+        m_errors.add(errorMessage);
     }
 
     /**
@@ -231,5 +216,4 @@ public class DefinitionValidator {
     public List getErrorMessages() {
         return m_errors;
     }
-
 }

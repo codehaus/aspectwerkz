@@ -56,9 +56,9 @@ public abstract class AbstractAdvice implements Advice {
     protected Class m_adviceClass;
 
     /**
-     * The memory type for the advice.
+     * The container type for the advice.
      */
-    protected ContainerType m_memoryType;
+    protected ContainerType m_containerType;
 
     /**
      * Holds the parameters passed to the advice.
@@ -193,7 +193,7 @@ public abstract class AbstractAdvice implements Advice {
      *
      * @return the memory type
      */
-    public ContainerType getMemoryType() {
+    public ContainerType getContainerType() {
         return m_container.getContainerType();
     }
 
@@ -291,7 +291,7 @@ public abstract class AbstractAdvice implements Advice {
         m_name = (String)fields.get("m_name", null);
         m_adviceClass = (Class)fields.get("m_adviceClass", null);
         m_parameters = (Map)fields.get("m_parameters", null);
-        m_memoryType = (ContainerType)fields.get("m_memoryType", ContainerType.TRANSIENT);
+        m_containerType = (ContainerType)fields.get("m_containerType", ContainerType.TRANSIENT);
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
         m_container = StartupManager.createAdviceContainer(this);
     }
