@@ -8,11 +8,7 @@
 package examples.async;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.annotation.Around;
-import org.codehaus.aspectwerkz.annotation.Aspect;
-import org.codehaus.aspectwerkz.annotation.Execution;
-import org.codehaus.aspectwerkz.annotation.Within;
-import org.codehaus.aspectwerkz.annotation.Introduce;
+import org.codehaus.aspectwerkz.annotation.*;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -22,14 +18,14 @@ import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
 @Aspect
-public class AsyncAspect {
+        public class AsyncAspect {
 
     private Executor m_threadPool = Executors.newCachedThreadPool();
 
     @Around
-    @Execution(Async.class)
-    @Within(Service.class)
-    public Object execute(final JoinPoint jp) throws Throwable {
+            @Execution(Async.class)
+            @Within(Service.class)
+            public Object async(final JoinPoint jp) throws Throwable {
         m_threadPool.execute(
                 new Runnable() {
                     public void run() {
@@ -45,15 +41,14 @@ public class AsyncAspect {
         return null;
     }
 
-    @Introduce("withincode(void examples.async.Math.*(..))")
     @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    public static @interface Async {
+            @Target(ElementType.METHOD)
+            public static @interface Async {
         int timeout() default 0;
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    public static @interface Service {
+            @Target(ElementType.TYPE)
+            public static @interface Service {
     }
 }

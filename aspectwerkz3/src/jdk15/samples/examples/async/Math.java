@@ -11,10 +11,10 @@ import examples.async.AsyncAspect.Async;
 import examples.async.AsyncAspect.Service;
 
 @Service
-public class Math {
+        public class Math {
 
-    @Async(timeout = 5)
-    public void add(int a, int b) {
+    @Async(timeout = 10)
+            public void add(int a, int b) {
         System.out.printf(
                 "[ %s ] %d + %d = %d\n",
                 Thread.currentThread().getName(),
@@ -22,8 +22,8 @@ public class Math {
         );
     }
 
-    @Async(timeout = 5)
-    public void substract(int a, int b) {
+    @Async
+            public void subtract(int a, int b) {
         System.out.printf(
                 "[ %s ] %d - %d = %d\n",
                 Thread.currentThread().getName(),
@@ -40,11 +40,12 @@ public class Math {
         math.add(2, 6);
         math.add(4, 4);
         math.add(8, 4);
-
-        math.substract(7, 4);
-        math.substract(3, 5);
-        math.substract(1, 6);
-        math.substract(4, 4);
-        math.substract(8, 4);
+        math.subtract(7, 4);
+        math.subtract(3, 5);
+        math.subtract(1, 6);
+        math.subtract(4, 4);
+        math.subtract(8, 4);
+        Thread.sleep(100);
+        System.exit(0);
     }
 }

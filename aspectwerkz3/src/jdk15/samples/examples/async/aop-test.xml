@@ -5,7 +5,7 @@
 <aspectwerkz>
     <system id="math">
         <aspect class="examples.async.AsyncAspect">
-            <advice name="execute" type="around" bind-to="execution(@examples.async.AsyncAspect$Async * examples.async.Math.*(..))"/>
+            <advice name="async" type="around" bind-to="execution(@examples.async.AsyncAspect$Async * *..*.*(..)) AND within(@examples.async.AsyncAspect$Service *..*)"/>
         </aspect>
 
     </system>

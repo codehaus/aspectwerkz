@@ -7,16 +7,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 
-import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.annotation.Null;
-
-@Target({ElementType.METHOD,ElementType.FIELD})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Within {
-    int modifiers() default Modifier.PRIVATE|Modifier.PROTECTED; //etc
+@Target({ElementType.METHOD, ElementType.FIELD})
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface Within {
+    int modifiers() default Modifier.PRIVATE | Modifier.PROTECTED; // FIXME: etc.
     Class<? extends Annotation>[] annotations() default Null.class;
-    Class type() default Null.class;
 
+    Class type() default Null.class;
     // anonymous = Annotations only
     Class<? extends Annotation>[] value() default Null.class;
 }
