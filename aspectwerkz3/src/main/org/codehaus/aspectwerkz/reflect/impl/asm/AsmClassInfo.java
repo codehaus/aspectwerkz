@@ -241,7 +241,8 @@ public class AsmClassInfo implements ClassInfo {
             }
             primitiveClass = AsmClassInfo.getPrimitiveClass(componentTypeName);
             if (primitiveClass != null) {
-                return JavaClassInfo.getClassInfo(primitiveClass);
+                Class arrayClass = Array.newInstance(primitiveClass, dimension).getClass();
+                return JavaClassInfo.getClassInfo(arrayClass);
             } else {
                 try {
                     Class arrayClass = Array.newInstance(loader.loadClass(componentTypeName), dimension).getClass();
@@ -556,7 +557,7 @@ public class AsmClassInfo implements ClassInfo {
             struct.value = value;
             struct.attrs = attrs;
             AsmFieldInfo fieldInfo = new AsmFieldInfo(struct, m_name, m_loader);
-            m_methods.put(AsmHelper.calculateHash(struct), fieldInfo);
+            m_fields.put(AsmHelper.calculateHash(struct), fieldInfo);
             super.visitField(access, name, desc, value, attrs);
         }
 

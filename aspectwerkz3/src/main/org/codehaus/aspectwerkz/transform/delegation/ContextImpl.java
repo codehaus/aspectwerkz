@@ -38,11 +38,6 @@ public class ContextImpl implements Context {
     private final ClassLoader m_loader;
 
     /**
-     * The join point index.
-     */
-    private int m_joinPointIndex = -1;
-
-    /**
      * Marks the class being transformed as advised.
      */
     private boolean m_advised = false;
