@@ -26,14 +26,16 @@ public class ArgLoggingTarget {
         return null;
     }
 
-    private static void toLog_3(int typeMatch, String[] sarr) {
+    private static int toLog_3(int typeMatch, String[] sarr) {
         System.out.println("== toLog_3 " + typeMatch + ", " + sarr);
+        return -1;
     }
 
     public static void main(String args[]) throws Throwable {
         ArgLoggingTarget me = new ArgLoggingTarget();
         me.toLog_1(0, "a", 1);
         me.toLog_2(0, "b", 2);
-        me.toLog_3(0, new String[]{"c"});
+        int i = me.toLog_3(0, new String[]{"c"});
+        System.out.println("i = " + i);
     }
 }
