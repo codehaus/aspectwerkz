@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
+import org.codehaus.aspectwerkz.util.Util;
 import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
@@ -14,20 +15,15 @@ import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfoRepository;
 import org.codehaus.aspectwerkz.transform.delegation.DelegationWeavingStrategy;
-import org.codehaus.aspectwerkz.transform.delegation.Klass;
-import org.codehaus.aspectwerkz.util.Util;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
- * AspectWerkzPreProcessor is the entry point of the AspectWerkz layer 2.<p/>It implements the ClassPreProcessor
- * interface defined in layer 1.<p/>Available options are:
+ * AspectWerkzPreProcessor is the entry point of the AspectWerkz layer 2. <p/>It implements the ClassPreProcessor
+ * interface defined in layer 1. <p/>Available options are:
  * <ul>
  * <li><code>-Daspectwerkz.transform.verbose=yes</code> turns on verbose mode: print on stdout all non filtered class
  * names and which transformation are applied</li>
@@ -108,8 +104,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     /**
      * Initializes the transformer stack.
      * 
-     * @param params
-     *            not used
+     * @param params not used
      */
     public void initialize(final Hashtable params) {
         m_preProcessorStrategy.initialize(params);
@@ -119,12 +114,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     /**
      * Transform bytecode according to the transformer stack
      * 
-     * @param name
-     *            class name
-     * @param bytecode
-     *            bytecode to transform
-     * @param loader
-     *            classloader loading the class
+     * @param name class name
+     * @param bytecode bytecode to transform
+     * @param loader classloader loading the class
      * @return modified (or not) bytecode
      */
     public byte[] preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
@@ -157,7 +149,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         }
 
         // dump before (not compliant with multiple CL weaving same class differently, since based on class FQN name)
-//        dumpBefore(className, klass);
+        dumpBefore(className, context);
 
         // do the transformation
         m_preProcessorStrategy.transform(className, context);
@@ -166,13 +158,13 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (context.isPrepared()) {
             ClassCacheTuple key = new ClassCacheTuple(loader, className);
             log("cache prepared " + className);
-            s_classByteCache.put(key, new ByteArray(context.getBytecode()));
+            s_classByteCache.put(key, new ByteArray(context.getCurrentBytecode()));
         }
 
         // dump after (not compliant with multiple CL weaving same class differently,
         // since based on class FQN name)
-//        dumpAfter(className, klass);
-        return context.getBytecode();
+        //        dumpAfter(className, klass);
+        return context.getCurrentBytecode();
     }
 
     /**
@@ -206,8 +198,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     /**
      * Logs a message.
      * 
-     * @param msg
-     *            the message to log
+     * @param msg the message to log
      */
     public static void log(final String msg) {
         if (VERBOSE) {
@@ -218,8 +209,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     /**
      * Excludes instrumentation for the class used during the instrumentation
      * 
-     * @param klass
-     *            the AspectWerkz class
+     * @param klass the AspectWerkz class
      */
     private static boolean filter(final String klass) {
         return (klass == null) || klass.startsWith("org.codehaus.aspectwerkz.") || klass.startsWith("javassist.")
@@ -233,18 +223,12 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * Dumps class before weaving.
      * 
      * @param className
-     * @param klass
+     * @param context
      */
-    public static void dumpBefore(final String className, final Klass klass) {
+    public static void dumpBefore(final String className, final Context context) {
         if (DUMP_BEFORE) {
             if (DUMP_PATTERN.matches(className)) {
-                try {
-                    klass.getCtClass().writeFile("_dump/before/");
-                    klass.getCtClass().defrost();
-                } catch (Exception e) {
-                    log("failed to dump " + className);
-                    e.printStackTrace();
-                }
+                context.dump("_dump/before/");
             }
         }
     }
@@ -253,28 +237,18 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * Dumps class after weaving.
      * 
      * @param className
-     * @param klass
+     * @param context
      */
-    public static void dumpAfter(final String className, final Klass klass) {
+    public static void dumpAfter(final String className, final Context context) {
         if (DUMP_AFTER) {
             if (DUMP_PATTERN.matches(className)) {
-                try {
-                    klass.getCtClass().writeFile("_dump/" + (DUMP_BEFORE ? "after/" : ""));
-                } catch (Exception e) {
-                    log("failed to dump " + className);
-                    e.printStackTrace();
-                }
+                context.dump("_dump/" + (DUMP_BEFORE ? "after/" : ""));
             }
         }
     }
 
-    public static void dumpForce(final String className, final Klass klass) {
-        try {
-            klass.getCtClass().writeFile("_dump/force/");
-        } catch (Exception e) {
-            log("failed to dump " + className);
-            e.printStackTrace();
-        }
+    public static void dumpForce(final String className, final Context context) {
+        context.dump("_dump/force/");
     }
 
     public Collection getClassCacheTuples() {

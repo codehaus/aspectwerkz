@@ -10,12 +10,12 @@ package org.codehaus.aspectwerkz.transform;
 import java.util.List;
 
 /**
+ * Interface for the different transformation context implementations.
  * 
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface Context {
-    
+
     /**
      * Returns the class abstraction.
      * 
@@ -81,8 +81,7 @@ public interface Context {
     /**
      * Returns meta-data for the transformation.
      * 
-     * @param key
-     *            the key
+     * @param key the key
      * @return the value
      */
     public abstract Object getMetaData(final Object key);
@@ -90,20 +89,29 @@ public interface Context {
     /**
      * Adds new meta-data for the transformation.
      * 
-     * @param key
-     *            the key
-     * @param value
-     *            the value
+     * @param key the key
+     * @param value the value
      */
     public abstract void addMetaData(final Object key, final Object value);
 
     /**
+     * Returns the initial bytecode.
+     * 
      * @return bytecode
      */
     public abstract byte[] getInitialBytecode();
 
     /**
+     * Returns the current bytecode.
+     * 
      * @return bytecode
      */
-    public abstract byte[] getBytecode();
+    public abstract byte[] getCurrentBytecode();
+
+    /**
+     * Dump the class to specific directory.
+     * 
+     * @param dir
+     */
+    public abstract void dump(String dir);
 }
