@@ -19,7 +19,6 @@ import java.util.*;
  * and [opt] is patched to use <i>-Xdebug -Xrunjdwp:transport=..,address=..,server=y,suspend=y</i><br/>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: JDWPStarter.java,v 1.2 2003-07-23 14:20:32 avasseur Exp $
  */
 public class JDWPStarter extends AbstractStarter {
 

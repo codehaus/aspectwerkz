@@ -4,10 +4,13 @@ import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Identifiable;
 
-/**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: IntroductionTest.java,v 1.7 2003-07-04 08:45:27 jboner Exp $
- */
+/**************************************************************************************
+ * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the BSD style license *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 public class IntroductionTest extends TestCase implements Identifiable {
 
     private ToBeIntroduced m_toBeIntroduced;

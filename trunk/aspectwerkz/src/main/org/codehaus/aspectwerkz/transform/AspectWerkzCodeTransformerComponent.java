@@ -13,7 +13,6 @@ package org.codehaus.aspectwerkz.transform;
  * Note: derived from JMangler, needs refactoring
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: AspectWerkzCodeTransformerComponent.java,v 1.2 2003-07-23 14:20:31 avasseur Exp $
  */
 public interface AspectWerkzCodeTransformerComponent {
 

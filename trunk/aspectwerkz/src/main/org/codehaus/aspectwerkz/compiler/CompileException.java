@@ -14,7 +14,6 @@ import java.io.PrintStream;
  * An exception occured during compilation
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: CompileException.java,v 1.2 2003-07-23 14:20:32 avasseur Exp $
  */
 public class CompileException extends Exception {
 

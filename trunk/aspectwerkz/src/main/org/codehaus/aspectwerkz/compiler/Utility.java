@@ -26,7 +26,6 @@ import java.io.File;
  * This implementation uses Ant task programmaticaly
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: Utility.java,v 1.2 2003-07-23 14:20:32 avasseur Exp $
  */
 public class Utility {
 

@@ -25,7 +25,6 @@ import java.io.ByteArrayInputStream;
  * pre processor logic to be in system classpath and not in bootclasspath
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: ClassLoaderPreProcessorImpl.java,v 1.2 2003-07-23 14:20:32 avasseur Exp $
  */
 public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
 

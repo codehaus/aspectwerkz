@@ -17,7 +17,6 @@ import java.util.Arrays;
  * Note: derived from JMangler ExtensionSet, needs refactoring
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: AspectWerkzExtensionSet.java,v 1.2 2003-07-23 14:20:31 avasseur Exp $
  */
 public class AspectWerkzExtensionSet {
 

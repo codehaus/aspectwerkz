@@ -1,14 +1,14 @@
-/*
- * AspectWerkz AOP Framework.
- *
- * Distributable under LGPL license.
- * See terms of license at gnu.org.
- */
+/**************************************************************************************
+ * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the BSD style license *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package test;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSideTestHelper.java,v 1.4 2003-06-27 09:37:14 jboner Exp $
  */
 public class CallerSideTestHelper {
 

@@ -17,7 +17,6 @@ import java.io.File;
  * in a separate process.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: AbstractStarter.java,v 1.2 2003-07-23 14:20:32 avasseur Exp $
  */
 abstract class AbstractStarter {
 

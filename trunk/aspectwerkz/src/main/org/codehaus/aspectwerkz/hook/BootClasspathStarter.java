@@ -19,7 +19,6 @@ import java.util.StringTokenizer;
  * This can be use with java 1.4 to avoid running in JDWP mode.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: BootClasspathStarter.java,v 1.2 2003-07-23 14:20:32 avasseur Exp $
  */
 public class BootClasspathStarter extends AbstractStarter {
 
