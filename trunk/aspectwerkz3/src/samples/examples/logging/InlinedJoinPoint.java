@@ -10,9 +10,10 @@ package examples.logging;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 
-public class InlinedJoinPoint extends InlinedJoinPointBase {
+public class InlinedJoinPoint extends InlinedJoinPointBase {//implements JoinPoint {
 
     private static final Signature SIGNATURE;
 
@@ -86,5 +87,29 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {
             // add cflow
             m_stackFrame--;
         }
+    }
+    public Signature getSignature()
+    {
+        return SIGNATURE;
+    }
+
+    public void addMetaData(Object obj, Object obj1)
+    {
+        META_DATA.put(obj, obj1);
+    }
+
+    public Object getMetaData(Object obj)
+    {
+        return META_DATA.get(obj);
+    }
+
+    public Target getTarget()
+    {
+        return m_target;
+    }
+
+    public Target getThis()
+    {
+        return m_this;
     }
 }
