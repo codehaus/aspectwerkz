@@ -138,7 +138,6 @@ public class DefinitionParserHelper {
      * @param aspectName          the aspect name
      * @param aspectClassName     the aspect class name
      * @param method              the advice method
-     * @param methodIndex         the advice method index
      * @param aspectDef           the aspect definition
      * @return the new advice definition
      */
@@ -149,7 +148,6 @@ public class DefinitionParserHelper {
                                                           final String aspectName,
                                                           final String aspectClassName,
                                                           final Method method,
-                                                          final int methodIndex,
                                                           final AspectDefinition aspectDef) {
         ExpressionInfo expressionInfo = new ExpressionInfo(
                 expression,
@@ -178,7 +176,6 @@ public class DefinitionParserHelper {
                 aspectClassName,
                 expressionInfo,
                 method,
-                methodIndex,
                 aspectDef
         );
         return adviceDef;
