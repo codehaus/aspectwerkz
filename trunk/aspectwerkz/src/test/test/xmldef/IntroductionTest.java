@@ -8,8 +8,10 @@
 package test.xmldef;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
+import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
 import org.codehaus.aspectwerkz.Identifiable;
+import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -126,30 +128,30 @@ public class IntroductionTest extends TestCase implements Identifiable {
     }
 
     public void testReplaceImplementation() {
-        assertEquals("test.xmldef.IntroductionsImpl", AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").getImplementation());
-        AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").swapImplementation("test.xmldef.IntroductionsImplReplacement");
-        assertEquals("test.xmldef.IntroductionsImplReplacement", AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").getImplementation());
+        assertEquals("test.xmldef.IntroductionsImpl", ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionReplacement")).getImplementation());
+        ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionReplacement")).swapImplementation("test.xmldef.IntroductionsImplReplacement");
+        assertEquals("test.xmldef.IntroductionsImplReplacement", ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionReplacement")).getImplementation());
     }
 
     public void testGetInterface() {
-        assertEquals("test.xmldef.PerJVM", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getInterface());
+        assertEquals("test.xmldef.PerJVM", ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerJVM")).getInterface());
     }
 
     public void testGetImplementation() {
-        assertEquals("test.xmldef.PerJVMImpl", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getImplementation());
+        assertEquals("test.xmldef.PerJVMImpl", ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerJVM")).getImplementation());
     }
 
     public void testGetMethod() {
-        assertEquals("runPerJVM", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getMethod(0).getName());
+        assertEquals("runPerJVM", ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerJVM")).getMethod(0).getName());
     }
 
     public void testGetMethods() {
-        assertEquals(1, AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getMethods().length);
+        assertEquals(1, ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerJVM")).getMethods().length);
     }
 
     public void testInvokePerJVM() {
         try {
-            AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").invoke(0, this);
+            ((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerJVM").___AW_invokeMixin(0, this);
         }
         catch (Exception e) {
             fail();
@@ -158,7 +160,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
     public void testInvokePerClass() {
         try {
-            AspectWerkz.getSystem("tests").getIntroduction("introductionPerClass").invoke(0, this);
+            ((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerClass").___AW_invokeMixin(0, this);
         }
         catch (Exception e) {
             fail();
@@ -167,7 +169,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
     public void testInvokePerInstance() {
         try {
-            AspectWerkz.getSystem("tests").getIntroduction("introductionPerInstance").invoke(0, this);
+            ((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerInstance").___AW_invokeMixin(0, this);
         }
         catch (Exception e) {
             System.out.println("e = " + e);
@@ -177,7 +179,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
     public void testInvokePerThread() {
         try {
-            AspectWerkz.getSystem("tests").getIntroduction("introductionPerThread").invoke(0, this);
+            ((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionPerThread").___AW_invokeMixin(0, this);
         }
         catch (Exception e) {
             fail();
@@ -195,7 +197,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
     public IntroductionTest(String name) {
         super(name);
         m_toBeIntroduced = new ToBeIntroduced();
-        AspectWerkz.getSystem("tests").initialize();
+        SystemLoader.getSystem("tests").initialize();
     }
 
     public String ___AW_getUuid() {

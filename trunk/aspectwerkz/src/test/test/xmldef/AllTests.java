@@ -10,7 +10,8 @@ package test.xmldef;
 import junit.framework.TestCase;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
+import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -58,6 +59,6 @@ public class AllTests extends TestCase {
 
     public AllTests(String aName) {
         super(aName);
-        AspectWerkz.getSystem("tests").initialize();
+        SystemLoader.getSystem("tests").initialize();
     }
 }

@@ -9,7 +9,8 @@ package test.xmldef;
 
 import junit.framework.TestCase;
 
-import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
+import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -207,7 +208,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     public MemberMethodAdviceTest() {}
     public MemberMethodAdviceTest(String name) {
         super(name);
-        AspectWerkz.getSystem("tests").initialize();
+        SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

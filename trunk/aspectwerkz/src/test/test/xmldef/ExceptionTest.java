@@ -9,9 +9,10 @@ package test.xmldef;
 
 import junit.framework.TestCase;
 
-import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -46,6 +47,6 @@ public class ExceptionTest extends TestCase {
 
     public ExceptionTest(String name) {
         super(name);
-        AspectWerkz.getSystem("tests").initialize();
+        SystemLoader.getSystem("tests").initialize();
     }
 }

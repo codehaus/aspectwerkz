@@ -10,8 +10,8 @@ package test.xmldef;
 import java.lang.reflect.Method;
 
 import org.codehaus.aspectwerkz.xmldef.advice.ThrowsAdvice;
-import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.xmldef.joinpoint.ThrowsJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.ThrowsJoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>

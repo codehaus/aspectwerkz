@@ -12,13 +12,14 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 
-import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
-import org.codehaus.aspectwerkz.xmldef.Aspect;
-import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
-import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.AspectMetaData;
+import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
 import org.codehaus.aspectwerkz.xmldef.advice.Advice;
 import org.codehaus.aspectwerkz.xmldef.advice.PreAdvice;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -26,16 +27,16 @@ import org.codehaus.aspectwerkz.xmldef.advice.PreAdvice;
 public class AspectWerkzTest extends TestCase {
 
     public void testSetDeploymentModelForAdvice() {
-        assertEquals(DeploymentModel.PER_JVM, AspectWerkz.getSystem("tests").getAdvice("methodAdvice1").getDeploymentModel());
-        AspectWerkz.getSystem("tests").getAdvice("methodAdvice1").setDeploymentModel(DeploymentModel.PER_CLASS);
-        assertEquals(DeploymentModel.PER_CLASS, AspectWerkz.getSystem("tests").getAdvice("methodAdvice1").getDeploymentModel());
+        assertEquals(DeploymentModel.PER_JVM, ((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("methodAdvice1").getDeploymentModel());
+         ((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("methodAdvice1").setDeploymentModel(DeploymentModel.PER_CLASS);
+        assertEquals(DeploymentModel.PER_CLASS,  ((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("methodAdvice1").getDeploymentModel());
     }
 
     public void testRegisterAspect() {
-        AspectWerkz.getSystem("tests").register(new Aspect(getClass().getName()));
-        Collection aspects = AspectWerkz.getSystem("tests").getAspects();
+         ((XmlDefSystem)SystemLoader.getSystem("tests")).register(new AspectMetaData(getClass().getName()));
+        Collection aspects = SystemLoader.getSystem("tests").getAspectsMetaData();
         for (Iterator it = aspects.iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+            AspectMetaData aspect = (AspectMetaData)it.next();
             if (aspect.getName().equals(getClass().getName())) {
                 return;
             }
@@ -48,8 +49,8 @@ public class AspectWerkzTest extends TestCase {
             public void execute(final JoinPoint joinPoint) {
             }
         };
-        AspectWerkz.getSystem("tests").register("testRegisterAdvice", advice);
-        assertNotNull(AspectWerkz.getSystem("tests").getAdvice("testRegisterAdvice"));
+         ((XmlDefSystem)SystemLoader.getSystem("tests")).register("testRegisterAdvice", advice);
+        assertNotNull( ((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("testRegisterAdvice"));
     }
 
     public void testFindAdviceByIndex() {
@@ -57,9 +58,9 @@ public class AspectWerkzTest extends TestCase {
             public void execute(final JoinPoint joinPoint) {
             }
         };
-        AspectWerkz.getSystem("tests").register("testFindAdviceByIndex", advice);
-        int index = AspectWerkz.getSystem("tests").getAdviceIndexFor("testFindAdviceByIndex");
-        assertEquals(AspectWerkz.getSystem("tests").getAdvice("testFindAdviceByIndex"), AspectWerkz.getSystem("tests").getAdvice(index));
+         ((XmlDefSystem)SystemLoader.getSystem("tests")).register("testFindAdviceByIndex", advice);
+        IndexTuple index = SystemLoader.getSystem("tests").getAdviceIndexFor("testFindAdviceByIndex");
+        assertEquals(((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice("testFindAdviceByIndex"),  ((XmlDefSystem)SystemLoader.getSystem("tests")).getAdvice(index));
     }
 
     public static void main(String[] args) {
@@ -72,6 +73,6 @@ public class AspectWerkzTest extends TestCase {
 
     public AspectWerkzTest(String name) {
         super(name);
-        AspectWerkz.getSystem("tests").initialize();
+        SystemLoader.getSystem("tests").initialize();
     }
 }

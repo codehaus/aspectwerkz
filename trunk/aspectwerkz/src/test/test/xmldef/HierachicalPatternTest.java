@@ -9,7 +9,8 @@ package test.xmldef;
 
 import junit.framework.TestCase;
 
-import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
+import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -41,7 +42,7 @@ public class HierachicalPatternTest extends TestCase implements Loggable, DummyI
     public HierachicalPatternTest() {}
     public HierachicalPatternTest(String name) {
         super(name);
-        AspectWerkz.getSystem("tests").initialize();
+        SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

@@ -8,8 +8,8 @@
 package test.xmldef;
 
 import org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice;
-import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.xmldef.joinpoint.MethodJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>

@@ -9,7 +9,8 @@ package test.xmldef;
 
 import junit.framework.TestCase;
 
-import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
+import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -35,7 +36,7 @@ public class FieldAdviceTest extends TestCase {//implements Loggable {
         s_logString = "";
         try {
             setFieldPreAdviced();
-            assertEquals("pre1 pre2 ", s_logString);
+            assertEquals("pre2 pre1 ", s_logString);
         }
         catch (Exception e) {
             fail();
@@ -46,7 +47,7 @@ public class FieldAdviceTest extends TestCase {//implements Loggable {
         s_logString = "";
         try {
             setFieldPostAdviced();
-            assertEquals("post2 post1 ", s_logString);
+            assertEquals("post1 post2 ", s_logString);
         }
         catch (Exception e) {
             fail();
@@ -68,7 +69,7 @@ public class FieldAdviceTest extends TestCase {//implements Loggable {
         s_logString = "";
         try {
             getFieldPreAdviced();
-            assertEquals("pre2 pre1 ", s_logString);
+            assertEquals("pre1 pre2 ", s_logString);
         }
         catch (Exception e) {
             fail();
@@ -101,7 +102,7 @@ public class FieldAdviceTest extends TestCase {//implements Loggable {
         s_logString = "";
         try {
             setStaticFieldPreAdviced();
-            assertEquals("pre2 pre1 ", s_logString);
+            assertEquals("pre1 pre2 ", s_logString);
         }
         catch (Exception e) {
             fail();
@@ -134,7 +135,7 @@ public class FieldAdviceTest extends TestCase {//implements Loggable {
         s_logString = "";
         try {
             getStaticFieldPreAdviced();
-            assertEquals("pre2 pre1 ", s_logString);
+            assertEquals("pre1 pre2 ", s_logString);
         }
         catch (Exception e) {
             fail();
@@ -175,7 +176,7 @@ public class FieldAdviceTest extends TestCase {//implements Loggable {
 
     public FieldAdviceTest(String name) {
         super(name);
-        AspectWerkz.getSystem("tests").initialize();
+        SystemLoader.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

@@ -9,8 +9,9 @@ package test.xmldef;
 
 import java.lang.reflect.Method;
 
-import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.SystemLoader;
 import junit.framework.TestCase;
 
 /**
@@ -61,7 +62,7 @@ public class MethodComparatorTest extends TestCase {
 
     public MethodComparatorTest(String name) {
         super(name);
-        AspectWerkz.getSystem("tests").initialize();
+        SystemLoader.getSystem("tests").initialize();
     }
 
     public void __generated$_AW_$method1() {
