@@ -592,7 +592,7 @@ public class JavassistHelper {
         for (Iterator iterator = attributes.iterator(); iterator.hasNext();) {
             AttributeInfo attributeInfo = (AttributeInfo) iterator.next();
             // AW-273
-            // Note: this is cery crappy for Java 5 but anyway for now.
+            // Note: this is very crappy for Java 5 but anyway for now.
             if (attributeInfo.getName().startsWith("RuntimeInvisibleAnnotations")
                 || attributeInfo.getName().startsWith("RuntimeVisibleAnnotations")) {
                 copyTo.setAttribute(attributeInfo.getName(), ((AnnotationsAttribute)attributeInfo).get());

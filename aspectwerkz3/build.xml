@@ -49,7 +49,7 @@
 	<!-- =================================================== -->
 	<target name="init">
 		<property name="name" value="aspectwerkz" />
-		<property name="version" value="1.0.RC2" />
+		<property name="version" value="1.0.RC3" />
 		<property name="basedir" value="." />
 		<property name="src.dir" value="${basedir}/src" />
 		<property name="test.src.dir" value="${basedir}/src/test" />
@@ -129,7 +129,7 @@
 	<!-- ============================================================== -->
 	<!-- compiles the tests -->
 	<!-- ============================================================== -->
-	<target name="compile:test" depends="init">
+	<target name="compile:test" depends="init, compile">
 		<mkdir dir="${build.dir}" />
 		<mkdir dir="${build.test.dir}" />
 		<javac destdir="${build.test.dir}" debug="on">
@@ -139,6 +139,12 @@
                 <path refid="project.class.path"/>
 			</classpath>
 		</javac>
+        <!-- remap ASM since it is used directly in the tests for some -->
+        <jarjar destfile="${build.test.dir}.jar">
+            <fileset dir="${build.test.dir}" includes="**/*"/>
+            <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
+        </jarjar>
+        <unjar src="${build.test.dir}.jar" dest="${build.test.dir}" overwrite="true"/>
 	</target>
 
 	<!-- ============================================================== -->
@@ -274,7 +280,7 @@
 	</target>
 
 	<target name="test:weawe" depends="init, jars, test:annotationc">
-		<property name="weawe.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/javassist-3.0RC1.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/asm-attrs-1.5.1.jar"/>
+		<property name="weawe.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/javassist-3.0RC1.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
 		<echo>${weawe.classpath}</echo> 
 
 	    <java classname="org.codehaus.aspectwerkz.compiler.AspectWerkzC" fork="true"
@@ -295,9 +301,9 @@
 
 
 	<target name="test:offline" depends="init, jars, test:annotationc, test:weawe">
-		<property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/javassist-3.0RC1.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/asm-attrs-1.5.1.jar"/>
+		<property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/javassist-3.0RC1.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
 		<java 
-			classname="test.annotation.AnnotationTest"
+			classname="test.AllTests"
 			classpath="${offline.classpath}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar"
 		fork="true">
 			<jvmarg value="-Daspectwerkz.transform.dump=*"/>
@@ -316,9 +322,6 @@
             </classpath>
             <arg line="-verbose -src ${basedir}/src/test -classes ${basedir}/target/test-classes -custom ${basedir}/src/test/annotation.properties"/>
         </java>
-<!--		<exec executable="java">-->
-<!--			<arg line="-cp ${java.home}/../lib/tools.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/asm-attrs-1.5.1.jar org.codehaus.aspectwerkz.annotation.AnnotationC -verbose -src ${basedir}/src/test -classes ${basedir}/target/test-classes -custom ${basedir}/src/test/annotation.properties" />-->
-<!--		</exec>-->
 	</target>
 
 	<!-- =================================================== -->
@@ -332,9 +335,6 @@
             </classpath>
             <arg line="-verbose -src ${basedir}/src/samples -classes ${basedir}/target/samples-classes -custom ${basedir}/src/samples/annotation.properties"/>
         </java>
-<!--		<exec executable="java">-->
-<!--			<arg line="-cp ${java.home}/../lib/tools.jar${pathseparator}${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/asm-attrs-1.5.1.jar org.codehaus.aspectwerkz.annotation.AnnotationC -verbose -src ${basedir}/src/samples -classes ${basedir}/target/samples-classes -custom ${basedir}/src/samples/annotation.properties" />-->
-<!--		</exec>-->
 	</target>
 
 	<!-- =================================================== -->
@@ -351,7 +351,7 @@
 	<!-- =================================================== -->
 	<target name="test" depends="clean, jars, test:annotationc">
 		<exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-			<arg line="-cp ${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.jit.off=false -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests" />
+			<arg line="-cp ${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.verbose=false -Daspectwerkz.jit.off=false -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests" />
 		</exec>
 	</target>
     <target name="test:nojit" depends="clean, jars, test:annotationc">
@@ -537,7 +537,7 @@
 		</java>
 	</target>
 
-    <target name="samples" depends="samples:logging, samples:caching, samples:cflow, samples:exception, samples:introduction, samples:offline:logging, samples:offline:introduction"/>
+    <target name="samples" depends="samples:logging, samples:caching, samples:cflow, samples:exception, samples:introduction, samples:annotation, samples:offline:logging, samples:offline:introduction, samples:offline:annotation"/>
 
 </project>
 
