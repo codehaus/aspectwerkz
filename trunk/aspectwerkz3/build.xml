@@ -527,14 +527,18 @@
     <!-- =================================================== -->
     <!--  how to use the annotationc ant task -->
     <!-- =================================================== -->
-    <taskdef name="annotationc" classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" classpathref="project.class.path"/>
-    <target name="annotations" depends="init">
+    <target name="anntask" depends="init">
+        <taskdef name="annotationc" classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" classpathref="project.class.path"/>
         <annotationc
             verbose="true"
-            clsdir="${basedir}/target/samples-classes"
-            srcdir="${basedir}/src/samples"
             destdir="${basedir}/target/samples-classes"
             properties="${basedir}/src/samples/annotation.properties">
+            <src path="${basedir}/src/samples"/>
+            <src path="${basedir}/src/test"/>
+            <cls path="${basedir}/target/samples-classes"/>
+            <cls path="${basedir}/target/test-classes"/>
+            <cls path="${basedir}/target/classes"/>
         </annotationc>
     </target>
+
 </project>

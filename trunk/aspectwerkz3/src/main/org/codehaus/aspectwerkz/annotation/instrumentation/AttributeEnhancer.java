@@ -10,6 +10,8 @@ package org.codehaus.aspectwerkz.annotation.instrumentation;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 
+import java.net.URL;
+
 /**
  * Enhances a classes with attributes.
  *
@@ -28,7 +30,7 @@ public interface AttributeEnhancer {
      * @param classPath the class path
      * @return true if the class was succefully loaded, false otherwise
      */
-    boolean initialize(String className, String classPath);
+    boolean initialize(String className, URL[] classPath);
 
     /**
      * Inserts an attribute on class level.
