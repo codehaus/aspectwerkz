@@ -24,10 +24,10 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 public interface PointcutDefinition extends Serializable {
 
     String METHOD = "method";
-    String GET_FIELD = "getfield";
-    String SET_FIELD = "setfield";
+    String GET_FIELD = "getField";
+    String SET_FIELD = "setField";
     String THROWS = "throws";
-    String CALLER_SIDE = "callerside";
+    String CALLER_SIDE = "callerSide";
     String CFLOW = "cflow";
     String CLASS = "class";
 
