@@ -11,9 +11,9 @@ import org.codehaus.aspectwerkz.extension.persistence.PersistenceManager;
 import org.codehaus.aspectwerkz.extension.service.ServiceManager;
 import org.codehaus.aspectwerkz.extension.service.ServiceType;
 
-import org.codehaus.aspectwerkz.advice.PostAdvice;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
+import org.codehaus.aspectwerkz.xmldef.advice.PostAdvice;
+import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.xmldef.joinpoint.FieldJoinPoint;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
