@@ -13,9 +13,9 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -37,6 +37,11 @@ public class JavaClassInfo implements ClassInfo {
      * The name of the class.
      */
     private String m_name;
+
+    /**
+     * The signature of the class.
+     */
+    private String m_signature;
 
     /**
      * Is the class an interface.
@@ -103,6 +108,10 @@ public class JavaClassInfo implements ClassInfo {
             throw new IllegalArgumentException("class can not be null");
         }
         m_class = klass;
+
+        // FIXME does not handle arrays
+        m_signature = 'L' + klass.getName().replace('.', '/') + ';';
+
         m_classInfoRepository = JavaClassInfoRepository.getRepository(klass.getClassLoader());
         m_isInterface = klass.isInterface();
         if (klass.isPrimitive()) {
@@ -174,6 +183,18 @@ public class JavaClassInfo implements ClassInfo {
      */
     public String getName() {
         return m_name.replace('/', '.');
+    }
+
+    /**
+     * Returns the signature for the element.
+     *
+     * @return the signature for the element
+     */
+    public String getSignature() {
+        throw new UnsupportedOperationException(
+                "FIXME: getSignature() not implemented yet (does not handle arrays properly)"
+        );
+//        return m_signature;
     }
 
     /**
@@ -351,9 +372,6 @@ public class JavaClassInfo implements ClassInfo {
      * @return
      */
     public static String convertJavaArrayTypeNameToHumanTypeName(final String typeName) {
-
-        System.out.println("JavaClassInfo.convertJavaArrayTypeNameToHumanTypeName " + typeName);
-
         int index = typeName.lastIndexOf('[');
         if (index != -1) {
             StringBuffer arrayType = new StringBuffer();
@@ -379,10 +397,6 @@ public class JavaClassInfo implements ClassInfo {
             for (int i = 0; i < (index + 1); i++) {
                 arrayType.append("[]");
             }
-
-            //DEBUG
-            System.out.println("JavaClassInfo.convertJavaArrayTypeNameToHumanTypeName " + typeName + " " + arrayType.toString());
-
             return arrayType.toString();
         } else {
             return typeName;

@@ -7,15 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.asm;
 
-import org.objectweb.asm.Attribute;
-
 /**
+ * The member info.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class MemberStruct {
     public int modifiers;
-
     public String name;
-
     public String desc;
 }
