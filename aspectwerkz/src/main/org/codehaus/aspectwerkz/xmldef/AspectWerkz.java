@@ -55,7 +55,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * Stores A indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkz.java,v 1.8 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AspectWerkz.java,v 1.9 2003-07-08 16:44:17 jboner Exp $
  */
 public final class AspectWerkz {
 
@@ -155,7 +155,7 @@ public final class AspectWerkz {
     /**
      * Holds a list of the cflow join points passed by the control flow of the current thread.
      */
-    private ThreadLocal m_controlFlowLog = new ThreadLocal();
+    private final ThreadLocal m_controlFlowLog = new ThreadLocal();
 
     /**
      * Returns the AspectWerkz system, no system UUID is needed to be specified.
@@ -205,8 +205,7 @@ public final class AspectWerkz {
      * @param exception the Throwable to modify the stack trace on
      * @param className the name of the fake origin class of the exception
      */
-    public static void fakeStackTrace(final Throwable exception,
-                                      final String className) {
+    public static void fakeStackTrace(final Throwable exception, final String className) {
         if (exception == null) throw new IllegalArgumentException("exception can not be null");
         if (className == null) throw new IllegalArgumentException("class name can not be null");
 
@@ -237,8 +236,7 @@ public final class AspectWerkz {
      * @param metaData the meta-data
      * @return the hash
      */
-    public static Integer calculateHash(final String className,
-                                        final MetaData metaData) {
+    public static Integer calculateHash(final String className, final MetaData metaData) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         if (metaData == null) throw new IllegalArgumentException("meta-data can not be null");
 
@@ -319,8 +317,7 @@ public final class AspectWerkz {
      * @param name the name to map the introduction to
      * @param introduction the introduction to register
      */
-    public void register(final String name,
-                         final Introduction introduction) {
+    public void register(final String name, final Introduction introduction) {
         if (name == null) throw new IllegalArgumentException("introduction name can not be null");
         if (introduction == null) throw new IllegalArgumentException("introduction can not be null");
 

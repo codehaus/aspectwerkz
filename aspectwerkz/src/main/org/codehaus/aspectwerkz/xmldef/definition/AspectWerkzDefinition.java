@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.12 2003-07-08 12:59:08 jboner Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.13 2003-07-08 16:44:17 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -102,8 +102,6 @@ public class AspectWerkzDefinition implements Serializable {
      * The UUID for this definition.
      */
     private final String m_uuid = "default";
-
-    private List m_adviceWeavingRules = null;
 
     /**
      * Returns the definition.
