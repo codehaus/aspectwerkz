@@ -1,8 +1,9 @@
 <!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD 0.8.1//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd">
+    "-//AspectWerkz//DTD 0.9//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_9.dtd">
 
-<aspectwerkz id="extensions_samples">
+<aspectwerkz>
+    <system id="extensions_samples">
 
     <introduction-def name="persistable" interface="org.codehaus.aspectwerkz.extension.persistence.Persistable"/>
 
@@ -16,7 +17,7 @@
             <introduction-ref name="persistable"/>
         </bind-introduction>
 
-        <pointcut name="persistentFields" type="setField" pattern="* examples.xmldef.transparentpersistence.Counter.m_counter"/>
+        <pointcut-def name="persistentFields" type="setField" pattern="* examples.xmldef.transparentpersistence.Counter.m_counter"/>
 
         <bind-advice pointcut="persistentFields">
             <advice-ref name="makePersistent"/>
@@ -24,6 +25,5 @@
 
     </aspect>
 
-
-
+    </system>
 </aspectwerkz>

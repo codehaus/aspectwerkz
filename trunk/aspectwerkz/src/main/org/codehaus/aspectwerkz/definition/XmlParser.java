@@ -39,7 +39,8 @@ public class XmlParser {
     /**
      * The current DTD public id. The matching dtd will be searched as a resource.
      */
-    private final static String DTD_PUBLIC_ID = "-//AspectWerkz//DTD 0.8//EN";
+    private final static String DTD_PUBLIC_ID = "-//AspectWerkz//DTD 0.9//EN";
+    private final static String DTD_PUBLIC_ID_ALIAS = "-//AspectWerkz//DTD//EN";
 
     /**
      * The timestamp, holding the last time that the definition was parsed.
@@ -201,18 +202,18 @@ public class XmlParser {
      * Sets the entity resolver which is created based on the DTD from in the root
      * dir of the AspectWerkz distribution.
      *
-     * TODO: FAILS, the input stream for the DTD is null
-     *
      * @param reader the reader to set the resolver in
      */
     private static void setEntityResolver(final SAXReader reader) {
         EntityResolver resolver = new EntityResolver() {
             public InputSource resolveEntity(String publicId, String systemId) {
-                if (publicId.equals(DTD_PUBLIC_ID)) {
+                if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
                     InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
                     return new InputSource(in);
+                } else {
+                    System.err.println("AspectWerkz - WARN - unsupported DTD " + publicId + " - consider upgrading to " + DTD_PUBLIC_ID);
+                    return null;
                 }
-                return null;
             }
         };
         reader.setEntityResolver(resolver);
