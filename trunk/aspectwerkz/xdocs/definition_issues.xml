@@ -486,8 +486,6 @@
                 element which have one attribute <code>package</code> where you define the package
                 name. You can define as many transformation scopes as you want.<br/>
                 The <code>package</code> attribute supports only <code>.*</code> as an ending pattern (package and all sub package).
-                TODO fix bug com.do match com.doe
-                TODO check not homogenous with com.do.. - could be supported as well
             </p>
 
             <p>
