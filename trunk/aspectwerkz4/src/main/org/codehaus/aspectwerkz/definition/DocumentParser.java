@@ -214,6 +214,15 @@ public class DocumentParser {
             );
         }
 
+        // parse the global deployment scope
+        List globalDeploymentScopes = parseGlobalDeploymentScope(systemElement);
+        for (Iterator iterator = globalDeploymentScopes.iterator(); iterator.hasNext();) {
+            PointcutInfo pointcutInfo = (PointcutInfo) iterator.next();
+            DefinitionParserHelper.createAndAddDeploymentScopeDef(
+                    pointcutInfo.name, pointcutInfo.expression, definition
+            );
+        }
+
         // parse the include, exclude and prepare elements
         parseIncludePackageElements(systemElement, definition, basePackage);
         parseExcludePackageElements(systemElement, definition, basePackage);
@@ -262,6 +271,36 @@ public class DocumentParser {
             globalPointcuts.add(pointcutInfo);
         }
         return globalPointcuts;
+    }
+
+    /**
+     * Parses the global deployment-scope.
+     *
+     * @param systemElement the system element
+     * @return a list with the deployment scope as pointcutInfo object
+     */
+    private static List parseGlobalDeploymentScope(final Element systemElement) {
+        final List globalDeploymentScope = new ArrayList();
+        for (Iterator it11 = systemElement.elementIterator("deployment-scope"); it11.hasNext();) {
+            PointcutInfo pointcutInfo = new PointcutInfo();
+            Element globalPointcut = (Element) it11.next();
+            for (Iterator it2 = globalPointcut.attributeIterator(); it2.hasNext();) {
+                Attribute attribute = (Attribute) it2.next();
+                final String name = attribute.getName().trim();
+                final String value = attribute.getValue().trim();
+                if (name.equalsIgnoreCase("name")) {
+                    pointcutInfo.name = value;
+                } else if (name.equalsIgnoreCase("expression")) {
+                    pointcutInfo.expression = value;
+                }
+            }
+            // pointcut CDATA is expression unless already specified as an attribute
+            if (pointcutInfo.expression == null) {
+                pointcutInfo.expression = globalPointcut.getTextTrim();
+            }
+            globalDeploymentScope.add(pointcutInfo);
+        }
+        return globalDeploymentScope;
     }
 
     /**

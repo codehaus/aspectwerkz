@@ -25,34 +25,12 @@ You can also use the "aliasing DTD" that matchs always the latest release of Asp
 To not use this DTD, start your definition file with
 	<?xml version="1.0"?>
 
-Change from 0.8.1 to 0.9
-    Removed "id" attribute from "aspectwerkz" element
-    Added "<system id=...>" element
-    "system" element can be wether a xml defined, wether and attribute defined one
-    "system" element does not support mixin of xml aspects and attributes defined aspects
-    "advice-def advice" attribute removed, use "class" instead
-    "aspect/pointcut" removed, use "aspect/pointcut-def"
-    "aspect/introduction" removed, use "aspect/bind-introduction"
-    "abstract-aspect/introduction" removed, use "abstract-aspect/bind-introduction"
-    "aspect/advice" removed, use "aspect/bind-advice"
-    "abstract-aspect/advice" removed, use "abstract-aspect/bind-advice"
-    (introduction-def | advice-def | advices-def | abstract-aspect | aspect | package)*
-    add "exclude" and "include" element in "system" element
-    "system/transformation-scope" removed, use "include" and "exclude"
-    add "param" for "use-aspect"
-
-Change from 0.9 to 1.0-beta1
-    DTD refactored for Aspect as java class model
-
-Change from 0.10 to 1.0
-    fixed the system global pointcut element
-    added the aspect element container attribute for custom container
-
 Change from 1.0 to 2.0
     most of the changes implies non backward compatibility
     aspect/introduce element only allows to introduce interface. Use new <mixin element.
     introduce@deploymentModel is removed
     new system/mixin top level element
+    deployment-scope
 ******************************************************************************************************************************-->
 
 
@@ -77,7 +55,7 @@ Notes:
     Due to package nesting, we cannot define an order here
 ******************************************************************************************************************************-->
 <!ELEMENT system (
-    (exclude | include | prepare | pointcut)*,
+    (exclude | include | prepare | pointcut | deployment-scope)*,
     (aspect | mixin | package)*
 )>
 <!ATTLIST system
@@ -150,7 +128,7 @@ Attributes:
 ******************************************************************************************************************************-->
 <!ELEMENT aspect (
     param*,
-    (pointcut | advice | introduce)*
+    (pointcut | deployment-scope | advice | introduce)*
  )>
 <!ATTLIST aspect
 name CDATA #IMPLIED
@@ -178,6 +156,19 @@ Element data: equivalent to expression, but ignored if pointcut@expression is al
 ******************************************************************************************************************************-->
 <!ELEMENT pointcut (#PCDATA)>
 <!ATTLIST pointcut
+name CDATA #REQUIRED
+expression CDATA #IMPLIED
+>
+<!--*****************************************************************************************************************************
+deployment-scope
+*********************************************************************************************************************************
+Attributes:
+	name
+	expression (required unless element data is used)
+Element data: equivalent to expression, but ignored if deployment-scope@expression is already specified
+******************************************************************************************************************************-->
+<!ELEMENT deployment-scope (#PCDATA)>
+<!ATTLIST deployment-scope
 name CDATA #REQUIRED
 expression CDATA #IMPLIED
 >

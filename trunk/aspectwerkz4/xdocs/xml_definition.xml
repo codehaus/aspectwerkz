@@ -28,16 +28,22 @@
                         <a href="#Pointcuts">Pointcuts</a>
                     </li>
                     <li>
-                        <a href="#Advice">Advice</a>
-                    </li>
-                    <li>
-                        <a href="#Introductions">Introductions</a>
-                    </li>
-                    <li>
                         <a href="#System wide pointcuts">System wide pointcuts</a>
                     </li>
                     <li>
+                        <a href="#Deployment scope">Deployment scope</a>
+                    </li>
+                    <li>
+                        <a href="#System wide deployment scope">System wide deployment scope</a>
+                    </li>
+                    <li>
+                        <a href="#Advice">Advice</a>
+                    </li>
+                    <li>
                         <a href="#Passing parameters to aspects">Passing parameters to aspects</a>
+                    </li>
+                    <li>
+                        <a href="#Introductions">Introductions</a>
                     </li>
                     <li>
                         <a href="#Package namespaces">Package namespaces</a>
@@ -57,10 +63,10 @@
         <section name="Aspects">
             <p>
                 An aspect is defined in XML using the
-                <code>aspect</code> element, which has two attributes:
+                <code>aspect</code> element, which has the following attributes:
                 <ul>
                     <li>
-                        <code>class</code> - specifies a fully qualified class name for the aspect implementation class.
+                        <code>class</code> - [mandatory] specifies a fully qualified class name for the aspect implementation class.
                     </li>
                     <br/>
                     <li>
@@ -76,16 +82,18 @@
                             <li>
                                 <code>perInstance</code> - deploys the aspect as perInstance.
                             </li>
-                            <li>
-                                <code>perThread</code> - deploys the aspect as perThread.
-                            </li>
                         </ul>
+                    </li>
+                    <br/>
+                    <li>
+                        <code>name</code> - nickname for the aspect, unique in the <code>system</code>. It will defaults to the
+                        fully qualified class name of the aspect.
                     </li>
                 </ul>
             </p>
             <p>
                 Inside the
-                <code>aspect</code> elements you then define the poincuts, advice and introductions.
+                <code>aspect</code> elements you then define the poincuts and advice.
             </p>
         </section>
         <section name="Pointcuts">
@@ -99,7 +107,7 @@
                 <code>pointcut</code> there are two attributes that needs to be specified:
                 <ul>
                     <li>
-                        <code>name</code> -
+                        <code>name</code> - [mandatory]
                         specifies the name of the pointcut. Needs to be composed of a first part also called pointcut name, unique
                         throughout the aspect defininition, and an optional second part called the pointcut signature :
                         <code>name="&lt;pointcut name&gt;[(&lt;pointcut signature&gt;)]"</code>.
@@ -116,13 +124,13 @@
                         <br/>
                         The optional
                         <code>pointcut signature</code> must be compatible with the
-                        <code>args()</code> selector
+                        <code>args(), this() and target()</code> pointcuts designators
                         when used. The abbreviations for
                         <code>java.lang.*</code> can be used as described
                         <a href="definition_issues.html#Join_point_selection_pattern_language">here</a>.
                     </li>
                     <li>
-                        <code>expression</code> - specifies the expression for the pointcut. This is the
+                        <code>expression</code> - [mandatory unless body is used] specifies the expression for the pointcut. This is the
                         pattern that picks out the join points that should be included in the pointcut.
                         This attribute is "optional". If not specified, the
                         <code>&lt;pointcut&gt;</code> element
@@ -175,6 +183,30 @@
                 in the system defintion.
             </p>
         </section>
+        <section name="Deployment Scope">
+            <p>
+                The <code>deployment-scope</code> element within the <code>aspect</code> can be used to define and name a pointcut
+                that will be later used to hotdeploy and undeploy Aspects.
+                The attributes and their meaning is the same as for the <code>pointcut</code> elements.
+                <ul>
+                    <li><code>name</code> - the name of the deployment scope</li>
+                    <li><code>expression</code> - the pointcut expression</li>
+                </ul>
+                See the specific hotdeployment section.
+            </p>
+        </section>
+        <section name="System wide eeployment Scope">
+            <p>
+                The <code>deployment-scope</code> element within the <code>system</code> can be used to define and name a pointcut
+                that will be later used to hotdeploy and undeploy Aspects.
+                The attributes and their meaning is the same as for the <code>pointcut</code> elements.
+                <ul>
+                    <li><code>name</code> - the name of the deployment scope</li>
+                    <li><code>expression</code> - the pointcut expression</li>
+                </ul>
+                See the specific hotdeployment section.
+            </p>
+        </section>
         <section name="Advice">
             <p>
                 In the XML defintion advice are defined using the
@@ -186,10 +218,10 @@
                 needs to be specified:
                 <ul>
                     <li>
-                        <code>name</code> - the name of the advice is the name of the method in the
+                        <code>name</code> - [mandatory] the name of the advice is the name of the method in the
                         aspect class that implements the advice, with a optional method signature if pointcut with
                         signature are used. Abbreviations can be used in this signature, including for the
-                        <code>JoinPoint</code> parameter.
+                        <code>JoinPoint</code> or <code>StaticJoinPoint</code>parameter.
                         The signature must name its parameters (as if it was some source code) like
                         <code>advice3(JoinPoint jp, int i)</code>.
                         The method defined this way must exist with the same signature in the aspect class hierarchy.
@@ -205,7 +237,22 @@
                                 <code>before</code> - defines an before advice
                             </li>
                             <li>
-                                <code>after</code> - defines an after advice
+                                <code>after</code> - defines an after (finally) advice
+                            </li>
+                            <li>
+                                <code>after finally</code> - defines an after finally advice
+                            </li>
+                            <li>
+                                <code>after returning</code> - defines an after returning advice
+                            </li>
+                            <li>
+                                <code>after throwing</code> - defines an after throwing advice
+                            </li>
+                            <li>
+                                <code>after returning(..)</code> - defines an after returning advice and filters out or bind the returned value
+                            </li>
+                            <li>
+                                <code>after throwing(..)</code> - defines an after throwing advice and filters out or bind the throwned exception
                             </li>
                         </ul>
                     </li>
@@ -215,11 +262,49 @@
                         <code>pointcut</code> by referencing the name of the
                         <code>pointcut</code> or by defining an anonymous pointcut.
                         If the pointcut has a signature (with
-                        <code>args()</code> selector), then those
+                        <code>args(), this() and/or target() or after returning(..), after throwing(..)</code>), then those
                         must be refered as named in the advice name signature part.
                     </li>
                     <br/>
                 </ul>
+            </p>
+            <p>
+               For after returning and after throwing, you can filter out based on the returned value / exception throwned
+               or use explicit binding.
+            </p>
+            <p>
+                <b>after returning [TYPE]</b> advice are executed if the method returns normally (without
+                throwing an exception) <b>and</b> the actual type that is returned is of the type that is specified
+                in the advice declaration.
+                <br/>
+                If no return type is specified then it applies to all invocations that returns normally, e.g. not
+                when throwing an exception.
+                    <source><![CDATA[
+<advice type="after returning(@Service *..*)"
+        bind-to="execution(@TxRequired * *.*(..))"
+        name="txCommitReturningService"/>
+
+<advice type="after returning(returned)"
+        bind-to="execution(@TxRequired * *.*(..))"
+        name="txCommitReturningService(String returned)"/>
+                    ]]></source>
+            </p>
+            <p>
+                <b>after throwing [TYPE]</b> advice are executed if the returns with an exception
+                <b>and</b> the actual type of the exception that is thrown is of the type that is specified
+                in the advice declaration.
+                <br/>
+                If no exception type is specified then it applies to all invocations that returns with
+                an exception.
+                    <source><![CDATA[
+<advice type="after throwing(SecurityException+)"
+        bind-to="execution(@TxRequired * *.*(..))"
+        name="txRollbackOnRuntimeException"/>
+
+<advice type="after throwing(thrownedException)"
+        bind-to="execution(@TxRequired * *.*(..))"
+        name="txRollbackOnRuntimeException(SecurityException thrownedException)"/>
+                    ]]></source>
             </p>
             <p>
                 Example:
@@ -242,37 +327,9 @@
                  ]]></source>
             </p>
         </section>
-        <section name="Introductions">
-            <p>
-                When defining the mixin there are two attributes that needs to be specified:
-                <ul>
-                    <li>
-                        <code>class</code> - the class name of the mixin
-                    </li>
-                    <br/>
-                    <li>
-                        <code>bind-to</code> - binds the mixin to a class using the
-                        <code>within(...), hasmethod(...) and/or hasfield(...)</code> pointcuts
-                    </li>
-                    <br/>
-                </ul>
-            </p>
-            <p>
-                <b>XML definition</b>
-            </p>
-            <p>
-                <source><![CDATA[
-<aspect ...>
-    ...
-    <introduce class="IntroductionTestAspect$MyImpl" bind-to="within(test.mixin.perinstance.ToBeIntroduced)"/>
-    ...
-</aspect>
-                ]]></source>
-            </p>
-        </section>
         <section name="Passing parameters to aspects">
             <p>
-                You also have the option of passing parameters to your aspects.
+                You have the option of passing parameters to your aspects.
                 This can be very convenient if you want to reuse the same
                 aspect but with a different configuration without using aspect inheritance.
                 To pass a parameter to the aspect you simply add a
@@ -288,10 +345,104 @@
             </p>
             <p>
                 From within an
-                <code>Aspect</code> subclass use the method
-                <code>___AW_getParameter("timeout")</code> to retrieve
+                <code>Aspect</code> subclass use the API
+                <code>AspectContext.getParameter("timeout")</code> to retrieve
                 the parameter value as a String.
             </p>
+        </section>
+        <section name="Introductions">
+            <subsection name="Interface only introductions">
+                <p>
+                    <b>Interface only introductions</b> are defined within the <code>aspect</code> element
+                    using an <code>introduce</code> elemement.
+                    When defining the interface only introduction the following attributes can be used:
+                    <ul>
+                        <li>
+                            <code>class</code> - [mandatory] the class name of the introduced interface
+                        </li>
+                        <br/>
+                        <li>
+                            <code>bind-to</code> - [mandatory] binds the mixin to a class using the
+                            <code>within(...), hasmethod(...) and/or hasfield(...)</code> pointcuts
+                        </li>
+                        <br/>
+                    </ul>
+                </p>
+                <p>
+                    The <code>introduce</code> element supports nested <code>bind-to</code> elements.
+                </p>
+                <p>
+                    <source><![CDATA[
+    <aspect ...>
+        ...
+        <introduce class="java.io.Serializable" bind-to="within(test.some.ToBeSerializable)"/>
+        ...
+    </aspect>
+                    ]]></source>
+                </p>
+            </subsection>
+            <subsection name="Mixins">
+                <p>
+                    Mixin allows to introduce both interface(s) and implementation(s) of it.
+                    The <code>mixin</code> element within the <code>system</code> element is then used to declare the mixin.
+                    The mixin itself can be Annotation defined or XML defined.
+                </p>
+                <p>
+                    The <code>mixin</code> element in the XML definition (in the <code>META-INF/aop.xml</code> file) can be used for
+                    three different purposes:
+                    <ul>
+                        <li>
+                            Only to define which mixins should be used. Similar to how you declare which aspects
+                            should be used.) This can be the option if the mixin is defined in annotations.
+                            Then you only need to use the <code>class</code> attribute, e.g.
+                            <code>&lt;mixin class="foo.bar.MyMixinImpl"/&gt;</code>. See below for details.
+                        </li>
+                        <li>
+                            To completely define the mixin. See below for all the attributes that can be used.
+                        </li>
+                        <li>
+                            To override and/or resolve ad definition made using annotations.
+                            See below for all the attributes that can be used.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    To define the mixin using the XML definition, use the <code>mixin</code> element. It has
+                    those different attributes that can be used:
+                    <ul>
+                        <li>
+                            <code>class</code> [mandatory] - defines which class to use as the implementation class.
+                            Has to be the fully qualified name of the class.
+                        </li>
+                        <li>
+                            <code>deployment-model</code> (optional) - defines the deployment model. Can be one of
+                            <code>perClass</code> of <code>perInstance</code> (defaults).
+                        </li>
+                        <li>
+                            <code>transient</code> (optional) - defines the mixin as <code>transient</code> or not.
+                        </li>
+                        <li>
+                            <code>factory</code> (optional) - defines the custom mixin factory implementation to use
+                            with the specific mixin.
+                        </li>
+                        <li>
+                            <code>bind-to</code> (optional) - defines to which class set the mixin should be applied to.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                   Example:
+                    <source><![CDATA[
+<mixin class="foo.bar.MyMixinImpl"/>
+
+<mixin class="foo.bar.MyOtherMixinImpl"
+       deployment-model="perClass"
+       transient="true"
+       factory="factories.MyMixinFactory"
+       bind-to="within(*..domain.*)"/>
+                    ]]></source>
+                </p>
+            </subsection>
         </section>
         <section name="Package namespaces">
             <p>
@@ -436,12 +587,17 @@
             AND within(com.ToDO)
         </pointcut>
 
+        <deployment-scope name="mutliLineScope">
+            within(com.DynamicAOP)
+        </deployment-scope>
+
+        <!-- package prefix "examples." will be used for class=".." attributes of <aspect> and <mixin> elements -->
         <package name="examples">
 
             <aspect class="caching.CachingAspect" deployment-model="perInstance">
                 <param name="timeout" value="10"/>
 
-                <introduce class="IntroductionTestAspect$MyImpl"
+                <introduce class="IntroductionTestAspect$MarkerInterface"
                            bind-to="within(test.mixin.perinstance.ToBeIntroduced)"/>
 
                 <pointcut name="callee"
@@ -467,6 +623,16 @@
                         bind-to="calleeArgFiltered(theArg)"/>
 
             </aspect>
+
+            <mixin
+                class="caching.MyMixin"
+                deployment-model="perClass"
+                bind-to="within(test.mixin.perinstance.ToBeAffectedByMixin)"/>
+
+            <!-- annotation defined mixin -->
+            <mixin
+                class="caching.MyMixinAnnotationDefined"/>
+
         </package>
     </system>
 </aspectwerkz>
