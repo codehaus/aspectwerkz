@@ -26,16 +26,22 @@ public class CtorExecution extends TestCase implements Serializable {
 
     public CtorExecution m_ref;
 
-    public int m_i = 1;
+    public int m_i;// = 1;
 
     public CtorExecution(CtorExecution ref) {
-        m_ref = ref;
+        postInit(this);
+        //m_ref = ref;
+    }
+
+    static void postInit(CtorExecution target) {
+        ;
     }
 
     public CtorExecution() {
         // tricky INVOKESPECIAL indexing
         this(new CtorExecution((CtorExecution)null));
         new CtorExecution((CtorExecution)null);
+        postInit(this);
     }
 
     public CtorExecution(String s) {
