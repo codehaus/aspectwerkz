@@ -233,6 +233,16 @@
     </goal>
 
     <!-- =================================================== -->
+    <!--  runs the fibonacci test -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:samples:fibonacci">
+        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.caching.Fibonacci"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
     <!--  runs the caching test -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:caching">
