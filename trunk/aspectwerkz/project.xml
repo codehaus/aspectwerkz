@@ -86,7 +86,7 @@
         <contributor>
             <name>Ron Bodkin</name>
             <roles>
-                <role>Original idea of self defined Aspects</role>
+                <role>Original idea of self-defined Aspects</role>
             </roles>
         </contributor>
         <contributor>
@@ -152,11 +152,7 @@ Extensions:
         </dependency>
         <dependency>
             <id>qdox</id>
-            <version>1.3 (latest)</version>
-        </dependency>
-        <dependency>
-            <id>commons-jexl</id>
-            <version>1.0-beta-2</version>
+            <version>1.3</version>
         </dependency>
         <dependency>
             <id>concurrent</id>
@@ -174,10 +170,6 @@ Extensions:
         <!-- ============================================================== -->
         <!-- for building, testing and samples (not needed during runtime) -->
         <!-- ============================================================== -->
-        <dependency>
-            <id>jisp</id>
-            <version>2.0.1</version>
-        </dependency>
         <dependency>
             <id>ant</id>
             <version>1.5.2</version>
@@ -210,9 +202,9 @@ Extensions:
 
     <reports>
         <report>maven-license-plugin</report>
-<!--        <report>maven-tasklist-plugin</report>-->
+        <report>maven-tasklist-plugin</report>
         <report>maven-jdepend-plugin</report>
-<!--        <report>maven-pmd-plugin</report>-->
+        <report>maven-pmd-plugin</report>
         <report>maven-changes-plugin</report>
         <report>maven-jxr-plugin</report>
         <report>maven-javadoc-plugin</report>

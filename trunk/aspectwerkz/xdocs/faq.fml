@@ -76,7 +76,7 @@
         </faq>
         <faq id="general/dtd">
             <question>
-                Is there any DTD or XML Schema I can use to write the AspectWerkz XML definition file ?
+                Is there any DTD or XML Schema I can use to write the AspectWerkz XML definition fil?
             </question>
             <answer>
                 <p>
@@ -100,7 +100,7 @@
         </faq>
         <faq id="general/build">
             <question>
-                Why can't I build AspectWerkz in a directory whose name contains whitespaces ?
+                Why can't I build AspectWerkz in a directory whose name contains whitespaces?
             </question>
             <answer>
                 <p>
@@ -120,7 +120,7 @@
         <title>Migration</title>
         <faq id="migration/0.9">
             <question>
-                What is the migration effort to upgrade a 0.8.x application to a 0.9 ?
+                What is the migration effort to upgrade a 0.8.x application to a 0.9?
             </question>
             <answer>
                 <p>
@@ -140,7 +140,7 @@
         </faq>
         <faq id="migration/changes">
             <question>
-                What should I change in my project running on 0.7.4 to make it run on 0.8 and later ?
+                What should I change in my project running on 0.7.4 to make it run on 0.8 and later?
             </question>
             <answer>
                 <p>
@@ -175,7 +175,7 @@
         </faq>
         <faq id="migration/removed files">
             <question>
-                Are there any files not needed starting from 0.8 release ?
+                Are there any files not needed starting from 0.8 release?
             </question>
             <answer>
                 <p>
@@ -192,7 +192,7 @@
 
         <faq id="other/ibm">
             <question>
-                Does AspectWerkz supports custom JRE like IBM ones ?
+                Does AspectWerkz supports custom JRE like IBM ones?
             </question>
             <answer>
                 AspectWerkz supports all java environment thru offline mode. With online mode, AspectWerkz hooks at the class loader level.
@@ -201,7 +201,7 @@
         </faq>
         <faq id="other/bea">
             <question>
-                Does AspectWerkz support BEA JRockit ?
+                Does AspectWerkz support BEA JRockit?
             </question>
             <answer>
                 AspectWerkz supports BEA JRockit thru a dedicated module wich relies on low level BEA API.
