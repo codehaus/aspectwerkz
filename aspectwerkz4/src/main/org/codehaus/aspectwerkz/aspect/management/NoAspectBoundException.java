@@ -1,13 +1,10 @@
-/*******************************************************************************
- * Copyright (c) 2005 BEA 
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- *
- * Contributors:
- *    BEA - initial API and implementation
- *******************************************************************************/
+/**************************************************************************************
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the LGPL license      *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect.management;
 
 import java.io.PrintStream;
