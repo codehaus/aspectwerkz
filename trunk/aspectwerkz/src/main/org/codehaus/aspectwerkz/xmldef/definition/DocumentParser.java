@@ -76,12 +76,14 @@ public class DocumentParser {
         // parse with package elements
         if (parsePackageElements(systemElement, definition, basePackage)) hasDef = true;
 
-        if (hasDef) {
-            return definition;
-        }
-        else {
-            return null;
-        }
+        // disabled to allow empty system to be registered for programmatic support
+        //if (hasDef) {
+        //    return definition;
+        //}
+        //else {
+        //    return null;
+        //}
+        return definition;
     }
 
     /**
