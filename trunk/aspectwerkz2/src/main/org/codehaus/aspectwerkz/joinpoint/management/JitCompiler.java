@@ -218,7 +218,8 @@ public class JitCompiler {
             final String className = buf.toString().replace('.', '_').replace('-', '_');
 
             // try to load the class without generating it
-            Class joinPointClass = AsmHelper.loadClass(className);
+            ClassLoader loader = targetClass.getClassLoader();
+            Class joinPointClass = AsmHelper.loadClass(loader, className);
 
             if (joinPointClass == null) {
                 ClassWriter cw = new ClassWriter(true);
@@ -240,7 +241,7 @@ public class JitCompiler {
 //                AsmHelper.dumpClass("./_dump", className, cw);
 
                 // load the generated class
-                joinPointClass = AsmHelper.loadClass(cw.toByteArray(), className.replace('/', '.'));
+                joinPointClass = AsmHelper.loadClass(loader, cw.toByteArray(), className.replace('/', '.'));
             }
 
             // create the generated class
@@ -260,6 +261,7 @@ public class JitCompiler {
             );
         }
         catch (Throwable e) {
+            e.printStackTrace();
             StringBuffer buf = new StringBuffer();
             buf.append(
                     "WARNING: could not dynamically create, compile and load a JoinPoint class for join point with hash ["

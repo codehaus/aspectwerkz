@@ -8,6 +8,7 @@
 package test.aspect;
 
 import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.CrossCutting;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
