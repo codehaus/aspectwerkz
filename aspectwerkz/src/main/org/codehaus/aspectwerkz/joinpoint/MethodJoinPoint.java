@@ -19,6 +19,7 @@ import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Aspect;
+import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.joinpoint.control.JoinPointController;
 import org.codehaus.aspectwerkz.joinpoint.control.ControllerFactory;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
@@ -245,13 +246,9 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * @return the method name
      */
     public String getMethodName() {
-        // grab the original method name, ex: __originalMethod$<nameToExtract>$3
-        final StringTokenizer tokenizer = new StringTokenizer(
-                m_originalMethod.getName(),
-                TransformationUtil.DELIMITER
-        );
-        tokenizer.nextToken();
-        return tokenizer.nextToken();
+        // grab the original method name, ex: "__originalMethod SEP <nameToExtract>  SEP 3"
+        final String[] tokens = Strings.splitString(m_originalMethod.getName(), TransformationUtil.DELIMITER);
+        return tokens[1];
     }
 
     /**

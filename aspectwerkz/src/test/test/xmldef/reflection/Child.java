@@ -14,4 +14,12 @@ public class Child extends Super {
         return (res>=0)?res+1:res-1;
     }
 
+    public int do$2(int i) {
+        return i;
+    }
+
+    public int do$1(int i) {
+        return i;
+    }
+
 }

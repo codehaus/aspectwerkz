@@ -469,6 +469,10 @@
         <bind-advice pointcut="test2">
             <advice-ref name="reflection_advice"/>
         </bind-advice>
+        <pointcut-def name="test3" type="method" pattern="* test.reflection.*.do*(..)"/>
+        <bind-advice pointcut="test3">
+            <advice-ref name="reflection_advice"/>
+        </bind-advice>
     </aspect>
 
 </aspectwerkz>
