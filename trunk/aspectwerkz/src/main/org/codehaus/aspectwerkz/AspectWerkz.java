@@ -924,42 +924,5 @@ public final class AspectWerkz {
                 methods.add(declaredMethods[i]);
             }
         }
-
-//        Class superClass = klass.getSuperclass();
-//        if (superClass != null && Modifier.isAbstract(superClass.getModifiers())) {
-//        if (superClass != null) {
-//            collectMethods(superClass, methods); // calls itself recursively
-//        }
-//        else {
-//            return;
-//        }
     }
-
-
-//    protected void collectMethods(final Class klass, final List methods, final Set addedMethods) {
-//
-//        final Method[] declaredMethods = klass.getDeclaredMethods();
-//        for (int i = 0; i < declaredMethods.length; i++) {
-//
-//            MethodMetaData methodMetaData =
-//                    ReflectionMetaDataMaker.createMethodMetaData(declaredMethods[i]);
-//
-//            // add only the advised original methods to the lookup table,
-//            // method pairs that consists of original:proxy
-//            if (declaredMethods[i].getName().startsWith(
-//                    TransformationUtil.ORIGINAL_METHOD_PREFIX) &&
-//                    !addedMethods.contains(methodMetaData)) {
-//                methods.add(declaredMethods[i]);
-//                addedMethods.add(methodMetaData);
-//            }
-//        }
-//
-//        Class superClass = klass.getSuperclass();
-//        if (superClass != null) {
-//            collectMethods(superClass, methods, addedMethods); // calls itself recursively
-//        }
-//        else {
-//            return;
-//        }
-//    }
 }

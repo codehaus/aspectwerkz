@@ -187,8 +187,8 @@
                     class of <code>rt.jar</code> is overriden by a custom one, which contravenes the <i>Java 2 Runtime Environment
                     binary code license</i> as stated in <a href="http://java.sun.com/j2se/1.3/docs/tooldocs/win32/java.html#nonstandard">Sun documentation</a>.<br/>
                     On the same topic, the following <a href="http://java.sun.com/products/jdk/1.2/docs/tooldocs/solaris/migration.html#bootcp">Sun statement</a> is contradictory.<br/>
-                    Due to these legal issues, AspectWerkz does not shipped neither release the overriden class.<br/>
-                    java 1.3 support is provided for educational purpose and you application using this option <i>should not be
+                    Due to these legal issues, AspectWerkz do not ship nor release the overriden class.<br/>
+                    java 1.3 support is provided for educational purpose and your application using this option <i>should not be
                     deployed as doing so would contravene the Java 2 Runtime Environment binary code license.</i>
                     As a side note, you will note that overriding a class of <code>rt.jar</code> is possible thru HotSwap Sun technology with
                     java 1.4, or with <a href="http://java.sun.com/products/jdk/1.2/docs/guide/jvmpi/jvmpi.html#class_hook">JVMPI CLASS_LOAD_HOOK event</a> since java 1.2.

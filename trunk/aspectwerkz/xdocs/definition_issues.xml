@@ -484,7 +484,9 @@ String timeOut = getParameter("timeout");
                 into a single <code>AspectWerkz</code> XML definition file.
             </p>
 <source><![CDATA[
-<?xml version="1.0"?>
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 0.8//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8.dtd">
 
 <aspectwerkz>
     <!-- ============================================= -->

@@ -23,8 +23,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.util.UuidGenerator;
 
 /**
- * This class provides a general proxy that can be used with every interface.
- * It uses the reflection mechanism that was introduced with jdk 1.3.
+ * This class provides a general remote proxy.
+ * It uses the Dynamic Proxy mechanism that was introduced with JDK 1.3.
  * <p>
  * The client proxy sends all requests to a server via a socket connection.
  * The server returns results in the same way. Every object that is transferred
@@ -225,8 +225,7 @@ public class RemoteProxy implements InvocationHandler, Serializable {
     }
 
     /**
-     * This method is invoked automatically by the proxy. It is
-     * unusual to call this method directly.
+     * This method is invoked automatically by the proxy. Should not be called directly.
      *
      * @param proxy the proxy instance that the method was invoked on
      * @param method the Method instance corresponding to the interface method
