@@ -20,105 +20,142 @@ package org.codehaus.aspectwerkz.definition;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collection;
 import java.io.Serializable;
-
-import org.codehaus.aspectwerkz.definition.regexp.ClassPattern;
-import org.codehaus.aspectwerkz.definition.regexp.Pattern;
 
 /**
  * Holds the aspect definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectDefinition.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: AspectDefinition.java,v 1.4 2003-06-17 14:45:14 jboner Exp $
  */
 public class AspectDefinition implements Serializable {
 
     /**
-     * The class pattern for this aspect.
+     * The name of the aspect.
      */
-    private String m_pattern;
+    private String m_name;
 
     /**
-     * The introductions for this aspect.
+     * The aspect that this aspect extends.
      */
-    private final List m_introductions = new ArrayList();
+    private String m_extends;
 
     /**
      * The pointcuts for this aspect.
      */
-    private final List m_pointcuts = new ArrayList();
+    private final Map m_pointcuts = new HashMap();
 
     /**
-     * A pre-compiled regexp pattern for this aspect.
+     * The introduction weaving rules for this aspect.
      */
-    private ClassPattern m_regexp;
+    private final List m_introductionWeavingRules = new ArrayList();
+
+    /**
+     * The advice weaving rules for this aspect.
+     */
+    private final List m_adviceWeavingRules = new ArrayList();
 
     /**
      * Returns the pattern for the aspect
      * @return the pattern
      */
-    public String getPattern() {
-        return m_pattern;
+    public String getName() {
+        return m_name;
     }
 
     /**
-     * Sets the pattern for the aspect.
+     * Sets the name for the aspect.
      *
-     * @param pattern the pattern
+     * @param name the name
      */
-    public void setPattern(final String pattern) {
-        m_pattern = pattern.trim();
+    public void setName(final String name) {
+        m_name = name.trim();
     }
 
     /**
-     * Returns the introduction names as a list.
+     * Returns the name of the aspect to extend.
      *
-     * @return the introduction names
+     * @return the name of the aspect to extend
      */
-    public List getIntroductions() {
-        return m_introductions;
+    public String getExtends() {
+        return m_extends;
     }
 
     /**
-     * Adds a new introduction.
+     * Sets the name of the aspect to extend.
      *
-     * @param introduction the introduction to add
+     * @param anExtends the name of the aspect to extend
      */
-    public void addIntroduction(final String introduction) {
-        m_introductions.add(introduction.trim());
+    public void setExtends(final String anExtends) {
+        m_extends = anExtends;
     }
 
     /**
-     * Returns a list with the pointcuts.
-     *
-     * @return the pointcuts
-     */
-    public List getPointcuts() {
-        return m_pointcuts;
-    }
+      * Returns a list with the pointcuts.
+      *
+      * @return the pointcuts
+      */
+     public Collection getPointcuts() {
+         return m_pointcuts.values();
+     }
+
+     /**
+      * Adds a new pointcut.
+      *
+      * @param pointcut a pointcut
+      */
+     public void addPointcut(final PointcutDefinition pointcut) {
+         m_pointcuts.put(pointcut.getName(), pointcut);
+     }
 
     /**
-     * Adds a new pointcut.
-     *
-     * @param pointcut a pointcut
-     */
-    public void addPointcut(final PointcutDefinition pointcut) {
-        if (pointcut.getType().equalsIgnoreCase(
-                PointcutDefinition.CALLER_SIDE)) {
-            pointcut.setCallerSidePattern(m_pattern);
-        }
-        m_pointcuts.add(pointcut);
-    }
+      * Returns a list with the introduction weaving rules.
+      *
+      * @return the introduction weaving rules
+      */
+     public List getIntroductionWeavingRules() {
+         return m_introductionWeavingRules;
+     }
+
+     /**
+      * Adds a new introduction weaving rule.
+      *
+      * @param weavingRule an introduction weaving rule
+      */
+     public void addIntroductionWeavingRule(
+             final IntroductionWeavingRule weavingRule) {
+         m_introductionWeavingRules.add(weavingRule);
+     }
 
     /**
-     * Returns a pre-compiled ClassPattern instance.
+      * Returns a list with the advice weaving rules.
+      *
+      * @return the advice weaving rules
+      */
+     public List getAdviceWeavingRules() {
+         return m_adviceWeavingRules;
+     }
+
+     /**
+      * Adds a new advice weaving rule.
+      *
+      * @param weavingRule an advice weaving rule
+      */
+     public void addAdviceWeavingRule(
+             final AdviceWeavingRule weavingRule) {
+         m_adviceWeavingRules.add(weavingRule);
+     }
+
+    /**
+     * Returns the pointcut definition by its name.
      *
-     * @return a pre-compiled ClassPattern instance
+     * @param pointcut the name of the pointcut
+     * @return the pointcut definition
      */
-    public ClassPattern getRegexpPattern() {
-        if (m_regexp == null) {
-            m_regexp = Pattern.compileClassPattern(m_pattern);
-        }
-        return m_regexp;
+    public PointcutDefinition getPointcut(final String pointcut) {
+        return (PointcutDefinition)m_pointcuts.get(pointcut);
     }
 }
