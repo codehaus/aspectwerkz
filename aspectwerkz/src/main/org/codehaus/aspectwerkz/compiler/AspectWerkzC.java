@@ -281,7 +281,7 @@ public class AspectWerkzC {
 
             // verify modified class
             if (verify) {
-                URLClassLoader verifier = new URLClassLoader(compilationLoader.getURLs(), ClassLoader.getSystemClassLoader());
+                URLClassLoader verifier = new VerifierClassLoader(compilationLoader.getURLs(), ClassLoader.getSystemClassLoader());
                 try {
                     utility.log("   [verify] " + className);
                     Class.forName(className, false, verifier);
