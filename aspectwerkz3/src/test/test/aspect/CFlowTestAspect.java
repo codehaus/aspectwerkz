@@ -19,39 +19,34 @@ public class CFlowTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression cflow(call(* test.CFlowTest.step1()) && within(test.CFlowTest))
-     */
-    Pointcut cflowPC1;
-
-    /**
-     * @Expression cflow(call(* test.CFlowTest.step1_A()) && within(test.CFlowTest))
-     */
-    Pointcut cflowPC2;
-
-    /**
-     * @Expression cflow(call(* test.CFlowTest.step1_B()) && within(test.CFlowTest))
-     */
-    Pointcut cflowPC3;
-
-    /**
-     * @Expression cflow(call(* test.CFlowTest.step2()) && within(test.CFlowTest))
-     */
-    Pointcut cflowPC4;
-
-    /**
-     * @Expression execution(* test.CFlowTest.step2())
+     * @Expression cflow(call(* test.CFlowTest.step1()) AND within(test.CFlowTest))
      */
     Pointcut pc1;
 
     /**
-     * @Expression execution(* test.CFlowTest.step2_B())
+     * @Expression cflow(call(* test.CFlowTest.step1_A()) AND within(test.CFlowTest))
+     */
+    Pointcut pc1_A;
+
+    /**
+     * @Expression cflow(call(* test.CFlowTest.step1_B()) AND within(test.CFlowTest))
+     */
+    Pointcut pc1_B;
+
+    /**
+     * @Expression execution(* test.CFlowTest.step2())
      */
     Pointcut pc2;
+
+    /**
+     * @Expression execution(* test.CFlowTest.step2_B())
+     */
+    Pointcut pc2_B;
 
     // ============ Advices ============
 
     /**
-     * @Around pc1 AND cflowPC1
+     * @Around pc2 AND pc1
      */
     public Object execute(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("advice-before ");
@@ -64,7 +59,7 @@ public class CFlowTestAspect {
     }
 
     /**
-     * @Around pc2 AND cflowPC3 AND cflowPC2
+     * @Around pc2_B AND pc1_B AND pc1_A
      */
     public Object execute2(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("advice-before2 ");
@@ -77,9 +72,8 @@ public class CFlowTestAspect {
     }
 
     /**
-     * @Around execution(* test.CFlowTest.step2Anonymous())
-     *         &&
-     *         cflow(call(* test.CFlowTest.step1Anonymous()) && within(test.CFlowTest))
+     * @Around execution(* test.CFlowTest.step2Anonymous()) AND cflow(call(* test.CFlowTest.step1Anonymous()) AND
+     * within(test.CFlowTest))
      */
     public Object executeAnonymous(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("advice-beforeAnonymous ");
@@ -92,9 +86,8 @@ public class CFlowTestAspect {
     }
 
     /**
-     * @Around execution(* test.CFlowTest.step2_C())
-     *         AND NOT
-     *         cflow(call(* test.CFlowTest.step1_C()) && within(test.CFlowTest))
+     * @Around execution(* test.CFlowTest.step2_C()) AND NOT cflow(call(* test.CFlowTest.step1_C()) AND
+     * within(test.CFlowTest))
      */
     public Object executeC(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("advice-beforeC ");

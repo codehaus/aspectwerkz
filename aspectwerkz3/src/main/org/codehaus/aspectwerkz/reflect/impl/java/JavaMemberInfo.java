@@ -94,4 +94,42 @@ public abstract class JavaMemberInfo implements MemberInfo {
     public ClassInfo getDeclaringType() {
         return m_declaringType;
     }
+
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof JavaMemberInfo)) {
+            return false;
+        }
+
+        final JavaMemberInfo javaMemberInfo = (JavaMemberInfo)o;
+
+        if ((m_attributes != null) ? (!m_attributes.equals(javaMemberInfo.m_attributes))
+                                   : (javaMemberInfo.m_attributes != null)) {
+            return false;
+        }
+        if ((m_classInfoRepository != null) ? (!m_classInfoRepository.equals(javaMemberInfo.m_classInfoRepository))
+                                            : (javaMemberInfo.m_classInfoRepository != null)) {
+            return false;
+        }
+        if ((m_declaringType != null) ? (!m_declaringType.equals(javaMemberInfo.m_declaringType))
+                                      : (javaMemberInfo.m_declaringType != null)) {
+            return false;
+        }
+        if ((m_member != null) ? (!m_member.equals(javaMemberInfo.m_member)) : (javaMemberInfo.m_member != null)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        result = ((m_member != null) ? m_member.hashCode() : 0);
+        result = (29 * result) + ((m_declaringType != null) ? m_declaringType.hashCode() : 0);
+        result = (29 * result) + ((m_attributes != null) ? m_attributes.hashCode() : 0);
+        result = (29 * result) + ((m_classInfoRepository != null) ? m_classInfoRepository.hashCode() : 0);
+        return result;
+    }
 }

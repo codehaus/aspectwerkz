@@ -209,7 +209,9 @@ public final class AspectSystem {
         if (cflowSet == null) {
             cflowSet = new HashSet();
         }
-        cflowSet.add(new ExpressionContext(pointcutType, methodInfo, withinInfo));
+        ExpressionContext expressionContext = new ExpressionContext(pointcutType, methodInfo, withinInfo);
+        System.out.println("expressionContext.hashCode() = " + expressionContext.hashCode());
+        cflowSet.add(expressionContext);
         m_cflowStack.set(cflowSet);
     }
 
@@ -232,7 +234,8 @@ public final class AspectSystem {
         if (cflowSet == null) {
             return;
         }
-        cflowSet.remove(new ExpressionContext(pointcutType, methodInfo, withinInfo));
+        ExpressionContext expressionContext = new ExpressionContext(pointcutType, methodInfo, withinInfo);
+        cflowSet.remove(expressionContext);
         m_cflowStack.set(cflowSet);
     }
 

@@ -561,6 +561,15 @@ public class Pointcut implements Serializable {
     }
 
     /**
+     * Returns the aspect manager.
+     *
+     * @return the aspect manager
+     */
+    public AspectManager getAspectManager() {
+        return m_aspectManager;
+    }
+
+    /**
      * Provides custom deserialization.
      *
      * @param stream the object input stream containing the serialized object
