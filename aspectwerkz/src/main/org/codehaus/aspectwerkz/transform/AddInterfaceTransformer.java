@@ -35,7 +35,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an interfaces to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddInterfaceTransformer.java,v 1.13.2.2 2003-07-17 21:00:01 avasseur Exp $
+ * @version $Id: AddInterfaceTransformer.java,v 1.13.2.3 2003-07-20 10:38:37 avasseur Exp $
  */
 public final class AddInterfaceTransformer extends AspectWerkzAbstractInterfaceTransformer {
     ///CLOVER:OFF

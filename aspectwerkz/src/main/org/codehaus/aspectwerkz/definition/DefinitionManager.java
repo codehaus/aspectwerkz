@@ -59,7 +59,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.15 2003-07-08 11:43:35 jboner Exp $
+ * @version $Id: DefinitionManager.java,v 1.15.2.1 2003-07-20 10:38:36 avasseur Exp $
  */
 public class DefinitionManager {
 
@@ -369,7 +369,7 @@ public class DefinitionManager {
             throw new DefinitionException(adviceClassName + " must define a constructor that takes an integer as an argument");
         }
         catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getCause());
+            throw new WrappedRuntimeException(e.getTargetException());
         }
         catch (NullPointerException e) {
             throw new DefinitionException("advice definitions not properly defined");

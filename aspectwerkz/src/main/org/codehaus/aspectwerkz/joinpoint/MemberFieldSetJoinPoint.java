@@ -34,7 +34,7 @@ import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
  * A method etc. Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberFieldSetJoinPoint.java,v 1.8 2003-07-11 10:45:19 jboner Exp $
+ * @version $Id: MemberFieldSetJoinPoint.java,v 1.8.2.1 2003-07-20 10:38:36 avasseur Exp $
  */
 public class MemberFieldSetJoinPoint extends FieldJoinPoint {
 
@@ -45,6 +45,7 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
 
     /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = 3055780985379512486L;
 
@@ -61,6 +62,7 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
         super(uuid, signature);
         if (targetObject == null) throw new IllegalArgumentException("target object can not be null");
         m_targetObjectReference = new SoftReference(targetObject);
+        createMetaData();
     }
 
     /**
@@ -91,8 +93,7 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
 
-                List pointcuts = m_system.getSetFieldPointcuts(
-                        getTargetClass().getName(), m_metadata);
+                List pointcuts = m_system.getSetFieldPointcuts(m_classMetaData, m_fieldMetaData);
 
                 for (Iterator it = pointcuts.iterator(); it.hasNext();) {
                     FieldPointcut fieldPointcut = (FieldPointcut)it.next();

@@ -48,12 +48,13 @@ import org.apache.bcel.classfile.Field;
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticFieldTransformer.java,v 1.11.2.2 2003-07-17 21:00:01 avasseur Exp $
+ * @version $Id: AdviseStaticFieldTransformer.java,v 1.11.2.3 2003-07-20 10:38:37 avasseur Exp $
  */
 public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
@@ -87,13 +88,16 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
      */
     public void transformCode(final AspectWerkzUnextendableClassSet cs) {
 
-        final Iterator iterator = cs.getIteratorForTransformableClasses();
+        Iterator iterator = cs.getIteratorForTransformableClasses();
         while (iterator.hasNext()) {
+            ClassGen cg = (ClassGen)iterator.next();
+            if (classFilter(cg)) {
+                continue;
+            }
 
-            final ClassGen cg = (ClassGen)iterator.next();
-            if (classFilter(cg)) continue;
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
 
-            final Method[] methods = cg.getMethods();
+            Method[] methods = cg.getMethods();
 
             // get the index for the <clinit> method (if there is one)
             boolean noClInitMethod = true;
@@ -105,99 +109,73 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
                     break;
                 }
             }
-            final ConstantPoolGen cpg = cg.getConstantPool();
-            final String className = cg.getClassName();
-            final InstructionFactory factory = new InstructionFactory(cg);
-
-            addStaticClassField(cpg, cg);
+            ConstantPoolGen cpg = cg.getConstantPool();
+            String className = cg.getClassName();
+            InstructionFactory factory = new InstructionFactory(cg);
 
             final Set setFieldJoinPoints = new HashSet();
             final Set getFieldJoinPoints = new HashSet();
 
             Method clInitMethod = null;
-            final List newMethods = new ArrayList();
+            List newMethods = new ArrayList();
             boolean isClassAdvised = false;
             for (int i = 0; i < methods.length; i++) {
-                if (methodFilter(methods[i])) continue;
+                if (methodFilter(methods[i])) {
+                    continue;
+                }
 
-                final MethodGen mg = new MethodGen(
+                MethodGen mg = new MethodGen(
                         methods[i],
                         className,
                         cpg);
 
-                final InstructionList il = mg.getInstructionList();
+                InstructionList il = mg.getInstructionList();
                 InstructionHandle ih = il.getStart();
 
                 // search for all GETFIELD and GETSTATIC instructions and
                 // inserts the pre and post advices
                 while (ih != null) {
-                    final Instruction ins = ih.getInstruction();
+                    Instruction ins = ih.getInstruction();
 
                     if (ins instanceof GETFIELD || ins instanceof GETSTATIC) {
-                        final FieldInstruction gfIns = (FieldInstruction)ins;
+                        FieldInstruction gfIns = (FieldInstruction)ins;
 
-                        final String fieldName = gfIns.getName(cpg);
-                        final String signature = gfIns.getFieldType(cpg).
-                                toString() + " " + fieldName;
-                        final Type joinPointType =
-                                TransformationUtil.STATIC_FIELD_GET_JOIN_POINT_TYPE;
-                        final String joinPointClass =
-                                TransformationUtil.STATIC_FIELD_GET_JOIN_POINT_CLASS;
+                        String fieldName = gfIns.getName(cpg);
+                        String signature = gfIns.getFieldType(cpg).toString() + " " + fieldName;
+                        Type joinPointType = TransformationUtil.STATIC_FIELD_GET_JOIN_POINT_TYPE;
+                        String joinPointClass = TransformationUtil.STATIC_FIELD_GET_JOIN_POINT_CLASS;
 
-                        final FieldMetaData fieldMetaData =
+                        FieldMetaData fieldMetaData =
                                 BcelMetaDataMaker.createFieldMetaData(gfIns, cpg);
 
-                        String uuid = getFieldFilter(cg, fieldMetaData);
+                        String uuid = getFieldFilter(classMetaData, fieldMetaData);
                         if (uuid != null) {
 
-                            final String fieldClassName = gfIns.getClassName(cpg);
+                            String fieldClassName = gfIns.getClassName(cpg);
                             if (fieldClassName.equals(cg.getClassName())) {
                                 isClassAdvised = true;
 
                                 // in static context
                                 if (mg.isStatic()) {
-                                    insertPreAdvice(
-                                            il, ih, cg,
-                                            fieldName,
-                                            factory,
-                                            joinPointType);
-
-                                    insertPostAdvice(
-                                            il, ih.getNext(), cg,
-                                            fieldName,
-                                            factory,
-                                            joinPointType);
+                                    insertPreAdvice(il, ih, cg, fieldName, factory, joinPointType);
+                                    insertPostAdvice(il, ih.getNext(), cg, fieldName, factory, joinPointType);
 
                                     // skip the creation of the join point if we
                                     // already have one
                                     if (!getFieldJoinPoints.contains(fieldName)) {
                                         getFieldJoinPoints.add(fieldName);
 
-                                        addStaticJoinPointField(
-                                                cpg, cg,
-                                                fieldName,
-                                                joinPointType);
+                                        addStaticJoinPointField(cpg, cg, fieldName, joinPointType);
 
                                         if (noClInitMethod) {
                                             clInitMethod = createClInitMethodWithStaticJoinPointField(
-                                                    cpg, cg,
-                                                    fieldName,
-                                                    signature,
-                                                    factory,
-                                                    joinPointType,
-                                                    joinPointClass,
-                                                    uuid);
+                                                    cpg, cg, fieldName, signature, factory,
+                                                    joinPointType, joinPointClass, uuid);
                                         }
                                         else {
                                             methods[clinitIndex] = createStaticJoinPointField(
-                                                    cpg, cg,
-                                                    methods[clinitIndex],
-                                                    fieldName,
-                                                    signature,
-                                                    factory,
-                                                    joinPointType,
-                                                    joinPointClass,
-                                                    uuid);
+                                                    cpg, cg, methods[clinitIndex], fieldName, signature,
+                                                    factory, joinPointType, joinPointClass, uuid);
                                         }
                                     }
                                 }
@@ -205,40 +183,28 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
                         }
                     }
                     else if (ins instanceof PUTFIELD || ins instanceof PUTSTATIC) {
-                        final FieldInstruction pfIns = (FieldInstruction)ins;
+                        FieldInstruction pfIns = (FieldInstruction)ins;
 
-                        final String fieldName = pfIns.getName(cpg);
-                        final String signature = pfIns.getFieldType(cpg).
-                                toString() + " " + fieldName;
-                        final Type joinPointType =
-                                TransformationUtil.STATIC_FIELD_SET_JOIN_POINT_TYPE;
-                        final String joinPointClass =
-                                TransformationUtil.STATIC_FIELD_SET_JOIN_POINT_CLASS;
+                        String fieldName = pfIns.getName(cpg);
+                        String signature = pfIns.getFieldType(cpg).toString() + " " + fieldName;
+                        Type joinPointType = TransformationUtil.STATIC_FIELD_SET_JOIN_POINT_TYPE;
+                        String joinPointClass = TransformationUtil.STATIC_FIELD_SET_JOIN_POINT_CLASS;
 
-                        final FieldMetaData fieldMetaData =
+                        FieldMetaData fieldMetaData =
                                 BcelMetaDataMaker.createFieldMetaData(pfIns, cpg);
 
-                        String uuid = setFieldFilter(cg, fieldMetaData);
+                        String uuid = setFieldFilter(classMetaData, fieldMetaData);
                         if (uuid != null) {
 
-                            final String fieldClassName = pfIns.getClassName(cpg);
+                            String fieldClassName = pfIns.getClassName(cpg);
                             if (fieldClassName.equals(cg.getClassName())) {
 
                                 // in static context
                                 if (mg.isStatic()) {
                                     isClassAdvised = true;
 
-                                    insertPreAdvice(
-                                            il, ih, cg,
-                                            fieldName,
-                                            factory,
-                                            joinPointType);
-
-                                    insertPostAdvice(
-                                            il, ih.getNext(), cg,
-                                            fieldName,
-                                            factory,
-                                            joinPointType);
+                                    insertPreAdvice(il, ih, cg, fieldName, factory, joinPointType);
+                                    insertPostAdvice(il, ih.getNext(), cg, fieldName, factory, joinPointType);
 
                                     // skip the creation of the join point if we
                                     // already have one
@@ -252,24 +218,13 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
 
                                         if (noClInitMethod) {
                                             clInitMethod = createClInitMethodWithStaticJoinPointField(
-                                                    cpg, cg,
-                                                    fieldName,
-                                                    signature,
-                                                    factory,
-                                                    joinPointType,
-                                                    joinPointClass,
-                                                    uuid);
+                                                    cpg, cg, fieldName, signature, factory,
+                                                    joinPointType, joinPointClass, uuid);
                                         }
                                         else {
                                             methods[clinitIndex] = createStaticJoinPointField(
-                                                    cpg, cg,
-                                                    methods[clinitIndex],
-                                                    fieldName,
-                                                    signature,
-                                                    factory,
-                                                    joinPointType,
-                                                    joinPointClass,
-                                                    uuid);
+                                                    cpg, cg, methods[clinitIndex], fieldName, signature,
+                                                    factory, joinPointType, joinPointClass, uuid);
                                         }
                                     }
                                 }
@@ -286,18 +241,14 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
                 // if we have transformed methods, create the static class field
 
                 if (noClInitMethod && clInitMethod != null) {
-                    clInitMethod = createStaticClassField(
-                            cpg, cg,
-                            clInitMethod,
-                            factory);
-
+                    addStaticClassField(cpg, cg);
+                    clInitMethod = createStaticClassField(cpg, cg, clInitMethod, factory);
                     newMethods.add(clInitMethod);
                 }
                 else if (!noClInitMethod) {
-                    methods[clinitIndex] = createStaticClassField(
-                            cpg, cg,
-                            methods[clinitIndex],
-                            factory);
+                    addStaticClassField(cpg, cg);
+                    methods[clinitIndex] =
+                            createStaticClassField(cpg, cg, methods[clinitIndex], factory);
                 }
             }
             // update the old methods
@@ -324,8 +275,7 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
 
         // check if we already have added this field
         for (int i = 0; i < fields.length; i++) {
-            if (fields[i].getName().equals(
-                    TransformationUtil.STATIC_CLASS_FIELD))
+            if (fields[i].getName().equals(TransformationUtil.STATIC_CLASS_FIELD))
                 return;
         }
 
@@ -564,8 +514,7 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
         final String joinPointClass = getJoinPointClass(joinPointType);
 
-        final StringBuffer joinPoint =
-                getJoinPointName(joinPointPrefix, fieldName);
+        final StringBuffer joinPoint = getJoinPointName(joinPointPrefix, fieldName);
 
         il.insert(before, factory.createFieldAccess(
                 cg.getClassName(),
@@ -600,8 +549,7 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
         final String joinPointClass = getJoinPointClass(joinPointType);
 
-        final StringBuffer joinPoint =
-                getJoinPointName(joinPointPrefix, fieldName);
+        final StringBuffer joinPoint = getJoinPointName(joinPointPrefix, fieldName);
 
         il.insert(before, factory.createFieldAccess(
                 cg.getClassName(),
@@ -671,13 +619,13 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
     /**
      * Filters the PUTFIELD's to be transformed.
      *
-     * @param cg the class to filter
+     * @param classMetaData the class to filter
      * @param fieldMetaData the field to filter
      * @return the UUID for the weave model
      */
-    private String setFieldFilter(final ClassGen cg,
+    private String setFieldFilter(final ClassMetaData classMetaData,
                                   final FieldMetaData fieldMetaData) {
-        if (m_weaveModel.hasSetFieldPointcut(cg.getClassName(), fieldMetaData)) {
+        if (m_weaveModel.hasSetFieldPointcut(classMetaData, fieldMetaData)) {
             return m_weaveModel.getUuid();
         }
         return null;
@@ -686,13 +634,13 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
     /**
      * Filters the GETFIELD's to be transformed.
      *
-     * @param cg the class to filter
+     * @param classMetaData the class to filter
      * @param fieldMetaData the field to filter
      * @return the UUID for the weave model
      */
-    private String getFieldFilter(final ClassGen cg,
+    private String getFieldFilter(final ClassMetaData classMetaData,
                                   final FieldMetaData fieldMetaData) {
-        if (m_weaveModel.hasGetFieldPointcut(cg.getClassName(), fieldMetaData)) {
+        if (m_weaveModel.hasGetFieldPointcut(classMetaData, fieldMetaData)) {
             return m_weaveModel.getUuid();
         }
         return null;

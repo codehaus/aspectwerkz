@@ -49,12 +49,13 @@ import org.apache.bcel.classfile.Field;
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
  * Advises caller side method invocations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.10.2.1 2003-07-16 08:13:21 avasseur Exp $
+ * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.10.2.2 2003-07-20 10:38:37 avasseur Exp $
  */
 public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
@@ -113,8 +114,6 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
             final String className = cg.getClassName();
             final InstructionFactory factory = new InstructionFactory(cg);
 
-            addStaticClassField(cpg, cg);
-
             final Set callerSideJoinPoints = new HashSet();
 
             Method clInitMethod = null;
@@ -159,14 +158,12 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                         final String calleeMethodSignature =
                                 invokeInstruction.getSignature(cpg);
 
-                        // create the meta-data for the method
+                        // create the meta-data
                         MethodMetaData callerSideMethodMetaData =
                                 BcelMetaDataMaker.createMethodMetaData(invokeInstruction, cpg);
 
                         // is this a caller side method pointcut?
-                        if (m_weaveModel.isCallerSideMethod(
-                                calleeClassName,
-                                callerSideMethodMetaData)) {
+                        if (m_weaveModel.isCallerSideMethod(calleeClassName, callerSideMethodMetaData)) {
 
                             // get the caller method name and signature
                             Method method = mg.getMethod();
@@ -285,6 +282,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
             if (isClassAdvised) {
                 // if we have transformed methods, create the static class field
                 if (!hasClInitMethod && clInitMethod != null) {
+                    addStaticClassField(cpg, cg);
                     clInitMethod = createStaticClassField(
                             cpg, cg,
                             clInitMethod,
@@ -293,6 +291,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                     newMethods.add(clInitMethod);
                 }
                 else {
+                    addStaticClassField(cpg, cg);
                     methods[clinitIndex] = createStaticClassField(
                             cpg, cg,
                             methods[clinitIndex],
@@ -688,7 +687,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.hasCallerSidePointcut(cg.getClassName())) {
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+        if (m_weaveModel.hasCallerSidePointcut(classMetaData)) {
             return false;
         }
         return true;

@@ -20,6 +20,7 @@ package org.codehaus.aspectwerkz.pointcut;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
 
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
@@ -29,6 +30,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.regexp.ThrowsPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
 /**
@@ -38,7 +41,7 @@ import org.codehaus.aspectwerkz.definition.PointcutDefinition;
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsPointcut.java,v 1.7 2003-07-08 11:43:35 jboner Exp $
+ * @version $Id: ThrowsPointcut.java,v 1.7.2.1 2003-07-20 10:38:37 avasseur Exp $
  */
 public class ThrowsPointcut extends AbstractPointcut {
 
@@ -70,26 +73,90 @@ public class ThrowsPointcut extends AbstractPointcut {
         m_pointcutPatterns.put(pointcut.getName(),
                 new PointcutPatternTuple(
                         pointcut.getRegexpClassPattern(),
-                        pointcut.getRegexpPattern()));
+                        pointcut.getRegexpPattern(),
+                        pointcut.isHierarchical()));
     }
 
     /**
      * Checks if the pointcut matches a certain join point.
      *
-     * @param className the name of the class
-     * @param methodMetaData the meta-data for the method
+     * @param classMetaData the class meta-data
+     * @param methodMetaData the method meta-data
      * @return boolean
      */
-    public boolean matches(final String className,
+    public boolean matches(final ClassMetaData classMetaData,
                            final MethodMetaData methodMetaData) {
-        JexlContext jexlContext = JexlHelper.createContext();
+        try {
+            JexlContext jexlContext = JexlHelper.createContext();
 
+            matchPointcutPatterns(jexlContext, classMetaData, methodMetaData);
+
+            // evaluate expression
+            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
+            if (result == null || !result.booleanValue()) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    /**
+     * Checks if the pointcut matches a certain join point.
+     *
+     * @param classMetaData the class meta-data
+     * @param methodMetaData the method meta-data
+     * @param exception the name of the exception
+     * @return boolean
+     */
+    public boolean matches(final ClassMetaData classMetaData,
+                           final MethodMetaData methodMetaData,
+                           final String exception) {
+        try {
+            JexlContext jexlContext = JexlHelper.createContext();
+
+            matchesPointcutPatterns(jexlContext, classMetaData, methodMetaData, exception);
+
+            // evaluate expression
+            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
+            if (result == null || !result.booleanValue()) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    /**
+     * Matches the method pointcut patterns.
+     *
+     * @param jexlContext the Jexl context
+     * @param classMetaData the class meta-data
+     * @param methodMetaData the method meta-data
+     */
+    private void matchPointcutPatterns(final JexlContext jexlContext,
+                                       final ClassMetaData classMetaData,
+                                       final MethodMetaData methodMetaData) {
         for (Iterator it = m_pointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
             PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
 
-            if (pointcutPattern.getClassPattern().matches(className) &&
+            // try to find a match somewhere in the class hierarchy (interface or super class)
+            if (pointcutPattern.isHierarchical()) {
+                matchThrowsPointcutSuperClasses(
+                        jexlContext, name, classMetaData, methodMetaData, pointcutPattern);
+            }
+            // match the class only
+            else if (pointcutPattern.getClassPattern().matches(classMetaData.getName()) &&
                     ((ThrowsPattern)pointcutPattern.getPattern()).
                     matches(methodMetaData)) {
                 jexlContext.getVars().put(name, Boolean.TRUE);
@@ -98,63 +165,209 @@ public class ThrowsPointcut extends AbstractPointcut {
                 jexlContext.getVars().put(name, Boolean.FALSE);
             }
         }
-        try {
-            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
-
-            if (result.booleanValue()) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
     }
 
     /**
-     * Checks if the pointcut matches a certain join point.
+     * Matches the method pointcut patterns.
      *
-     * @param className the name of the class
-     * @param methodMetaData the meta-data for the method
-     * @param exceptionClassName the name of the exception
-     * @return boolean
+     * @param jexlContext the Jexl context
+     * @param classMetaData the class meta-data
+     * @param methodMetaData the method meta-data
+     * @param exception the class name of the exception
      */
-    public boolean matches(final String className,
-                           final MethodMetaData methodMetaData,
-                           final String exceptionClassName) {
-        JexlContext jexlContext = JexlHelper.createContext();
-
+    private void matchesPointcutPatterns(final JexlContext jexlContext,
+                                         final ClassMetaData classMetaData,
+                                         final MethodMetaData methodMetaData,
+                                         final String exception) {
         for (Iterator it = m_pointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
             PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
 
-            if (pointcutPattern.getClassPattern().matches(className) &&
+            // try to find a match somewhere in the class hierarchy (interface or super class)
+            if (pointcutPattern.isHierarchical()) {
+                matchThrowsPointcutSuperClasses(
+                        jexlContext, name, classMetaData,
+                        methodMetaData, pointcutPattern, exception);
+            }
+            // match the class only
+            else if (pointcutPattern.getClassPattern().matches(classMetaData.getName()) &&
                     ((ThrowsPattern)pointcutPattern.getPattern()).
-                    matches(methodMetaData, exceptionClassName)) {
+                    matches(methodMetaData, exception)) {
                 jexlContext.getVars().put(name, Boolean.TRUE);
             }
             else {
                 jexlContext.getVars().put(name, Boolean.FALSE);
             }
         }
-        try {
-            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
+    }
 
-            if (result == null) {
-                return false;
+    /**
+     * Tries to finds a match at some superclass in the hierarchy.
+     *
+     * @param jexlContext the Jexl context
+     * @param name the name of the pointcut to evaluate
+     * @param classMetaData the class meta-data
+     * @param methodMetaData the method meta-data
+     * @param pointcutPattern the pointcut pattern
+     * @return boolean
+     */
+    public static boolean matchThrowsPointcutSuperClasses(final JexlContext jexlContext,
+                                                          final String name,
+                                                          final ClassMetaData classMetaData,
+                                                          final MethodMetaData methodMetaData,
+                                                          final PointcutPatternTuple pointcutPattern) {
+        if (classMetaData == null) {
+            return false;
+        }
+
+        // match the class/super class
+        if (pointcutPattern.getClassPattern().matches(classMetaData.getName()) &&
+                ((ThrowsPattern)pointcutPattern.getPattern()).matches(methodMetaData)) {
+            jexlContext.getVars().put(name, Boolean.TRUE);
+            return true;
+        }
+        else {
+            // match the interfaces for the class
+            if (matchThrowsPointcutInterfaces(
+                    jexlContext, name, classMetaData.getInterfaces(),
+                    classMetaData, methodMetaData, pointcutPattern)) {
+                return true;
             }
-            if (result.booleanValue()) {
+
+            // no match; get the next superclass
+            return matchThrowsPointcutSuperClasses(
+                    jexlContext, name, classMetaData.getSuperClass(),
+                    methodMetaData, pointcutPattern);
+        }
+    }
+
+    /**
+     * Tries to finds a match at some interface in the hierarchy.
+     *
+     * @param jexlContext the Jexl context
+     * @param name the name of the pointcut to evaluate
+     * @param interfaces the interfaces
+     * @param classMetaData the class meta-data
+     * @param methodMetaData the method meta-data
+     * @param pointcutPattern the pointcut pattern
+     * @return boolean
+     */
+    private static boolean matchThrowsPointcutInterfaces(final JexlContext jexlContext,
+                                                         final String name,
+                                                         final List interfaces,
+                                                         final ClassMetaData classMetaData,
+                                                         final MethodMetaData methodMetaData,
+                                                         final PointcutPatternTuple pointcutPattern) {
+        if (interfaces.isEmpty()) {
+            return false;
+        }
+
+        for (Iterator it = interfaces.iterator(); it.hasNext();) {
+            InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
+            if (pointcutPattern.getClassPattern().matches(interfaceMD.getName()) &&
+                    ((ThrowsPattern)pointcutPattern.getPattern()).matches(methodMetaData)) {
+                jexlContext.getVars().put(name, Boolean.TRUE);
                 return true;
             }
             else {
-                return false;
+                if (matchThrowsPointcutInterfaces(
+                        jexlContext, name, interfaceMD.getInterfaces(),
+                        classMetaData, methodMetaData, pointcutPattern)) {
+                    return true;
+                }
+                else {
+                    continue;
+                }
             }
         }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
+        return false;
+    }
+
+    /**
+     * Tries to finds a match at some superclass in the hierarchy.
+     *
+     * @param jexlContext the Jexl context
+     * @param name the name of the pointcut to evaluate
+     * @param classMetaData the class meta-data
+     * @param methodMetaData the method meta-data
+     * @param pointcutPattern the pointcut pattern
+     * @param exception the exception's class name
+     * @return boolean
+     */
+    public static boolean matchThrowsPointcutSuperClasses(final JexlContext jexlContext,
+                                                          final String name,
+                                                          final ClassMetaData classMetaData,
+                                                          final MethodMetaData methodMetaData,
+                                                          final PointcutPatternTuple pointcutPattern,
+                                                          final String exception) {
+        if (classMetaData == null) {
+            return false;
         }
+
+        // match the class/super class
+        if (pointcutPattern.getClassPattern().matches(classMetaData.getName()) &&
+                ((ThrowsPattern)pointcutPattern.getPattern()).matches(methodMetaData, exception)) {
+            jexlContext.getVars().put(name, Boolean.TRUE);
+            return true;
+        }
+        else {
+            // match the interfaces for the class
+            if (matchThrowsPointcutInterfaces(
+                    jexlContext, name, classMetaData.getInterfaces(),
+                    classMetaData, methodMetaData, pointcutPattern, exception)) {
+                return true;
+            }
+
+            // no match; get the next superclass
+            return matchThrowsPointcutSuperClasses(
+                    jexlContext, name, classMetaData.getSuperClass(),
+                    methodMetaData, pointcutPattern, exception);
+        }
+    }
+
+    /**
+     * Tries to finds a match at some interface in the hierarchy.
+     *
+     * @param jexlContext the Jexl context
+     * @param name the name of the pointcut to evaluate
+     * @param interfaces the interfaces
+     * @param classMetaData the class meta-data
+     * @param methodMetaData the method meta-data
+     * @param pointcutPattern the pointcut pattern
+     * @param exception the exception's class name
+     * @return boolean
+     */
+    private static boolean matchThrowsPointcutInterfaces(final JexlContext jexlContext,
+                                                         final String name,
+                                                         final List interfaces,
+                                                         final ClassMetaData classMetaData,
+                                                         final MethodMetaData methodMetaData,
+                                                         final PointcutPatternTuple pointcutPattern,
+                                                         final String exception) {
+        if (interfaces.isEmpty()) {
+            return false;
+        }
+
+        for (Iterator it = interfaces.iterator(); it.hasNext();) {
+            InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
+            if (pointcutPattern.getClassPattern().matches(interfaceMD.getName()) &&
+                    ((ThrowsPattern)pointcutPattern.getPattern()).
+                    matches(methodMetaData, exception)) {
+                jexlContext.getVars().put(name, Boolean.TRUE);
+                return true;
+            }
+            else {
+                if (matchThrowsPointcutInterfaces(
+                        jexlContext, name, interfaceMD.getInterfaces(),
+                        classMetaData, methodMetaData, pointcutPattern, exception)) {
+                    return true;
+                }
+                else {
+                    continue;
+                }
+            }
+        }
+        return false;
     }
 }

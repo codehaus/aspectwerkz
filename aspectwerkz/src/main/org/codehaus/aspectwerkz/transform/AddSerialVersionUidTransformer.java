@@ -21,10 +21,6 @@ package org.codehaus.aspectwerkz.transform;
 import java.util.List;
 import java.util.Iterator;
 
-import org.cs3.jmangler.bceltransformer.ExtensionSet;
-import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
-import org.cs3.jmangler.bceltransformer.AbstractInterfaceTransformer;
-
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.FieldGen;
 import org.apache.bcel.generic.Type;
@@ -37,9 +33,9 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * have a UID already defined).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddSerialVersionUidTransformer.java,v 1.1 2003-07-19 20:36:16 jboner Exp $
+ * @version $Id: AddSerialVersionUidTransformer.java,v 1.1.2.1 2003-07-20 10:38:37 avasseur Exp $
  */
-public class AddSerialVersionUidTransformer extends AbstractInterfaceTransformer {
+public class AddSerialVersionUidTransformer extends AspectWerkzAbstractInterfaceTransformer {
 
     /**
      * Holds the weave model.
@@ -69,7 +65,7 @@ public class AddSerialVersionUidTransformer extends AbstractInterfaceTransformer
      * @param es the extension set
      * @param cs the unextendable class set
      */
-    public void transformInterface(final ExtensionSet es, final UnextendableClassSet cs) {
+    public void transformInterface(final AspectWerkzExtensionSet es, final AspectWerkzUnextendableClassSet cs) {
         Iterator it = cs.getIteratorForTransformableClasses();
         while (it.hasNext()) {
 
@@ -95,7 +91,7 @@ public class AddSerialVersionUidTransformer extends AbstractInterfaceTransformer
      * @param cg the class gen
      * @param es the extension set
      */
-    private void addSerialVersionUidField(final ClassGen cg, final ExtensionSet es) {
+    private void addSerialVersionUidField(final ClassGen cg, final AspectWerkzExtensionSet es) {
         FieldGen field = new FieldGen(
                 Constants.ACC_FINAL | Constants.ACC_STATIC,
                 Type.LONG,
@@ -103,7 +99,7 @@ public class AddSerialVersionUidTransformer extends AbstractInterfaceTransformer
                 cg.getConstantPool());
         final long uid = TransformationUtil.calculateSerialVersionUid(cg);
         field.setInitValue(uid);
-        es.addField(cg.getClassName(), field.getField());
+        es.addField(cg, field.getField());
     }
 
     /**

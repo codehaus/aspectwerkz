@@ -26,7 +26,7 @@ import java.io.Serializable;
  * Holds meta-data for a class.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ClassMetaData.java,v 1.3 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: ClassMetaData.java,v 1.3.2.1 2003-07-20 10:38:36 avasseur Exp $
  */
 public class ClassMetaData implements MetaData, Serializable {
 
@@ -46,11 +46,21 @@ public class ClassMetaData implements MetaData, Serializable {
     private List m_fields = new ArrayList();
 
     /**
+     * A list with the interfaces.
+     */
+    private List m_interfaces = new ArrayList();
+
+    /**
+     * The super class.
+     */
+    private ClassMetaData m_superClass;
+
+    /**
      * Returns the name of the class.
      *
      * @return the name of the class
      */
-    public String getClassName() {
+    public String getName() {
         return m_name;
     }
 
@@ -97,6 +107,42 @@ public class ClassMetaData implements MetaData, Serializable {
      */
     public void setFields(final List fields) {
         m_fields = fields;
+    }
+
+    /**
+     * Returns the interfaces.
+     *
+     * @return the interfaces
+     */
+    public List getInterfaces() {
+        return m_interfaces;
+    }
+
+    /**
+     * Sets the interfaces.
+     *
+     * @param interfaces the interfaces
+     */
+    public void setInterfaces(final List interfaces) {
+        m_interfaces = interfaces;
+    }
+
+    /**
+     * Returns the super class.
+     *
+     * @return the super class
+     */
+    public ClassMetaData getSuperClass() {
+        return m_superClass;
+    }
+
+    /**
+     * Sets the super class.
+     *
+     * @param superClass the super class
+     */
+    public void setSuperClass(final ClassMetaData superClass) {
+        m_superClass = superClass;
     }
 }
 

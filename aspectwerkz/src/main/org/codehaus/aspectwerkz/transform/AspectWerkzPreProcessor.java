@@ -7,6 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
+import org.apache.bcel.Repository;
+import org.apache.bcel.util.ClassLoaderRepository;
+
 import java.util.Hashtable;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +31,7 @@ import java.util.Iterator;
  * </ul>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: AspectWerkzPreProcessor.java,v 1.1.2.4 2003-07-19 12:06:20 avasseur Exp $
+ * @version $Id: AspectWerkzPreProcessor.java,v 1.1.2.5 2003-07-20 10:38:37 avasseur Exp $
  */
 public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.ClassPreProcessor {
 
@@ -86,6 +89,8 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
     public /*synchronized*/ byte[] preProcess(String klass, byte[] bytecode, ClassLoader loader) {
         if (filter(klass))
             return bytecode;
+
+        Repository.setRepository(new ClassLoaderRepository(loader));
 
         log(klass);
 

@@ -33,7 +33,7 @@ import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
  * join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticFieldGetJoinPoint.java,v 1.8 2003-07-09 11:55:27 jboner Exp $
+ * @version $Id: StaticFieldGetJoinPoint.java,v 1.8.2.1 2003-07-20 10:38:36 avasseur Exp $
  */
 public class StaticFieldGetJoinPoint extends FieldJoinPoint {
 
@@ -44,6 +44,7 @@ public class StaticFieldGetJoinPoint extends FieldJoinPoint {
 
     /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = 1790390896888275229L;
 
@@ -60,6 +61,7 @@ public class StaticFieldGetJoinPoint extends FieldJoinPoint {
         super(uuid, signature);
         if (targetClass == null) throw new IllegalArgumentException("target class can not be null");
         m_targetClass = targetClass;
+        createMetaData();
     }
 
     /**
@@ -89,7 +91,7 @@ public class StaticFieldGetJoinPoint extends FieldJoinPoint {
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
 
-                List pointcuts = m_system.getGetFieldPointcuts(getTargetClass().getName(), m_metadata);
+                List pointcuts = m_system.getGetFieldPointcuts(m_classMetaData, m_fieldMetaData);
 
                 for (Iterator it = pointcuts.iterator(); it.hasNext();) {
                     FieldPointcut fieldPointcut = (FieldPointcut)it.next();

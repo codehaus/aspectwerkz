@@ -45,6 +45,7 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MetaData;
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
@@ -56,7 +57,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Stores and indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkz.java,v 1.13.2.1 2003-07-17 21:00:00 avasseur Exp $
+ * @version $Id: AspectWerkz.java,v 1.13.2.2 2003-07-20 10:38:36 avasseur Exp $
  */
 public final class AspectWerkz {
 
@@ -209,24 +210,26 @@ public final class AspectWerkz {
         if (exception == null) throw new IllegalArgumentException("exception can not be null");
         if (className == null) throw new IllegalArgumentException("class name can not be null");
 
-        final List newStackTraceList = new ArrayList();
-        final StackTraceElement[] stackTrace = exception.getStackTrace();
-        int i;
-        for (i = 1; i < stackTrace.length; i++) {
-            if (stackTrace[i].getClassName().equals(className)) break;
-        }
-        for (int j = i; j < stackTrace.length; j++) {
-            newStackTraceList.add(stackTrace[j]);
-        }
+// TODO: how to mess w/ the stacktrace in JDK 1.3.x?
 
-        final StackTraceElement[] newStackTrace =
-                new StackTraceElement[newStackTraceList.size()];
-        int k = 0;
-        for (Iterator it = newStackTraceList.iterator(); it.hasNext(); k++) {
-            final StackTraceElement element = (StackTraceElement)it.next();
-            newStackTrace[k] = element;
-        }
-        exception.setStackTrace(newStackTrace);
+//        final List newStackTraceList = new ArrayList();
+//        final StackTraceElement[] stackTrace = exception.getStackTrace();
+//        int i;
+//        for (i = 1; i < stackTrace.length; i++) {
+//            if (stackTrace[i].getClassName().equals(className)) break;
+//        }
+//        for (int j = i; j < stackTrace.length; j++) {
+//            newStackTraceList.add(stackTrace[j]);
+//        }
+//
+//        final StackTraceElement[] newStackTrace =
+//                new StackTraceElement[newStackTraceList.size()];
+//        int k = 0;
+//        for (Iterator it = newStackTraceList.iterator(); it.hasNext(); k++) {
+//            final StackTraceElement element = (StackTraceElement)it.next();
+//            newStackTrace[k] = element;
+//        }
+//        exception.setStackTrace(newStackTrace);
     }
 
     /**
@@ -497,18 +500,18 @@ public final class AspectWerkz {
      * Caches the list, needed since the actual method call is expensive
      * and is made each time a new instance of an advised class is created.
      *
-     * @param className the class name
+     * @param classMetaData the meta-data for the class
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getMethodPointcuts(final String className,
+    public List getMethodPointcuts(final ClassMetaData classMetaData,
                                    final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         initialize();
 
-        Integer hashKey = calculateHash(className, methodMetaData);
+        Integer hashKey = calculateHash(classMetaData.getName(), methodMetaData);
 
         // if cached; return the cached list
         if (m_methodPointcutCache.containsKey(hashKey)) {
@@ -518,7 +521,7 @@ public final class AspectWerkz {
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
             Aspect aspect = (Aspect)it.next();
-            pointcuts.addAll(aspect.getMethodPointcuts(className, methodMetaData));
+            pointcuts.addAll(aspect.getMethodPointcuts(classMetaData, methodMetaData));
         }
 
         synchronized (m_methodPointcutCache) {
@@ -533,18 +536,18 @@ public final class AspectWerkz {
      * Caches the list, needed since the actual method call is expensive
      * and is made each time a new instance of an advised class is created.
      *
-     * @param className the class name
+     * @param classMetaData the meta-data for the class
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getGetFieldPointcuts(final String className,
+    public List getGetFieldPointcuts(final ClassMetaData classMetaData,
                                      final FieldMetaData fieldMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
         initialize();
 
-        Integer hashKey = calculateHash(className, fieldMetaData);
+        Integer hashKey = calculateHash(classMetaData.getName(), fieldMetaData);
 
         // if cached; return the cached list
         if (m_getFieldPointcutCache.containsKey(hashKey)) {
@@ -554,7 +557,7 @@ public final class AspectWerkz {
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
             Aspect aspect = (Aspect)it.next();
-            pointcuts.addAll(aspect.getGetFieldPointcuts(className, fieldMetaData));
+            pointcuts.addAll(aspect.getGetFieldPointcuts(classMetaData, fieldMetaData));
         }
 
         synchronized (m_getFieldPointcutCache) {
@@ -569,18 +572,18 @@ public final class AspectWerkz {
      * Caches the list, needed since the actual method call is expensive
      * and is made each time a new instance of an advised class is created.
      *
-     * @param className the class name
+     * @param classMetaData the meta-data for the class
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getSetFieldPointcuts(final String className,
+    public List getSetFieldPointcuts(final ClassMetaData classMetaData,
                                      final FieldMetaData fieldMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
         initialize();
 
-        Integer hashKey = calculateHash(className, fieldMetaData);
+        Integer hashKey = calculateHash(classMetaData.getName(), fieldMetaData);
 
         // if cached; return the cached list
         if (m_setFieldPointcutCache.containsKey(hashKey)) {
@@ -590,7 +593,7 @@ public final class AspectWerkz {
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
             Aspect aspect = (Aspect)it.next();
-            pointcuts.addAll(aspect.getSetFieldPointcuts(className, fieldMetaData));
+            pointcuts.addAll(aspect.getSetFieldPointcuts(classMetaData, fieldMetaData));
         }
 
         synchronized (m_setFieldPointcutCache) {
@@ -605,18 +608,18 @@ public final class AspectWerkz {
      * Caches the list, needed since the actual method call is expensive
      * and is made each time a new instance of an advised class is created.
      *
-     * @param className the class name
+     * @param classMetaData the meta-data for the class
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getThrowsPointcuts(final String className,
+    public List getThrowsPointcuts(final ClassMetaData classMetaData,
                                    final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         initialize();
 
-        Integer hashKey = calculateHash(className, methodMetaData);
+        Integer hashKey = calculateHash(classMetaData.getName(), methodMetaData);
 
         // if cached; return the cached list
         if (m_throwsPointcutCache.containsKey(hashKey)) {
@@ -626,7 +629,7 @@ public final class AspectWerkz {
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
             Aspect aspect = (Aspect)it.next();
-            pointcuts.addAll(aspect.getThrowsPointcuts(className, methodMetaData));
+            pointcuts.addAll(aspect.getThrowsPointcuts(classMetaData, methodMetaData));
         }
 
         synchronized (m_throwsPointcutCache) {
@@ -646,7 +649,7 @@ public final class AspectWerkz {
      * @return the pointcuts for this join point
      */
     public List getCallerSidePointcuts(final String className,
-                                       final MethodMetaData methodMetaData) {
+                                      final MethodMetaData methodMetaData) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
