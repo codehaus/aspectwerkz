@@ -10,6 +10,14 @@
         <mixin class="test.MixinTest$CounterImpl"/>
         <aspect class="test.LineNumberTest$Aspect"/>
         <aspect class="test.CustomProceedChangeTargetTest$Aspect"/>
-        <aspect class="test.PerInstanceSerialization$TestAspect"/>
+        <aspect class="test.PerInstanceSerializationTest$TestAspect"/>
+
+        <aspect name="Aspect_1" class="test.QNameTest$Aspect">
+            <param name="p" value="1"/>
+        </aspect>
+        <aspect name="Aspect_2" class="test.QNameTest$Aspect">
+            <param name="p" value="2"/>
+        </aspect>
+
     </system>
 </aspectwerkz>
