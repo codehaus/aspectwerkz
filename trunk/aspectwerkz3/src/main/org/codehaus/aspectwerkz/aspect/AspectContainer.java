@@ -54,21 +54,6 @@ public interface AspectContainer {
      */
     AspectContext getContext();
 
-//    /**
-//     * Returns the pointcut manager for the aspect.
-//     *
-//     * @return the pointcut manager
-//     */
-//    PointcutManager getPointcutManager();
-
-//    /**
-//     * Returns the advice info for the advice with the name specified.
-//     *
-//     * @param name the name of the advice
-//     * @return the advice info
-//     */
-//    AdviceInfo getAdviceInfo(String name);
-
     /**
      * Attach the introduction container to this aspect container to mirror the "aspect contains 0-n introduction"
      *

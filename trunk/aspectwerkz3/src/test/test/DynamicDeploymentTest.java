@@ -8,17 +8,9 @@
 package test;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.NameIndexTuple;
-import org.codehaus.aspectwerkz.aspect.management.Pointcut;
-import org.codehaus.aspectwerkz.expression.ExpressionContext;
-import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
-import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 
-import java.util.List;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
