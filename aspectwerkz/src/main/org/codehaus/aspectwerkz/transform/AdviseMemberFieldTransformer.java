@@ -323,8 +323,10 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                 }
             }
 
-            if (isClassAdvised)
+            if (isClassAdvised) {
+                context.markAsAdvised();
                 cg.setMethods(methods);
+            }
         }
     }
 

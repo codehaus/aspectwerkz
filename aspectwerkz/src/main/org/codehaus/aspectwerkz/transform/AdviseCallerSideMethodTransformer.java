@@ -277,6 +277,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         }
 
         if (isClassAdvised) {
+            context.markAsAdvised();
             // if we have transformed methods, create the static class field
             if (!hasClInitMethod && clInitMethod != null) {
                 addStaticClassField(cpg, cg);
@@ -296,7 +297,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                         factory
                 );
             }
-        }
+        //}//TODO CHECK THIS
         // update the old methods
         cg.setMethods(methods);
 
@@ -305,6 +306,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
             Method method = (Method)it.next();
             cg.addMethod(method);
         }
+        }//TODO CHECK THIS
     }
 
     /**

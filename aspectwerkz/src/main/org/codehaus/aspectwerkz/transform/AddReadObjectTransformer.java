@@ -77,6 +77,7 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
 
             // mark the class as transformed
             m_hasBeenTransformed.add(cg.getClassName());
+            context.markAsAdvised();
 
             addReadObjectMethod(cg, cpg, factory);
         }

@@ -95,6 +95,12 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
     private List m_stack;
 
     /**
+     * The transformer to add serial ver uid
+     * Out of the transformation stack to be applied only if class is weaved
+     */
+    private AspectWerkzInterfaceTransformerComponent addSerialVerUidTransformer;
+
+    /**
      * Marks the pre-processor as initialized.
      */
     private boolean initialized = false;
@@ -117,8 +123,10 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
     public void initialize(final Hashtable params) {
         m_metaDataRepository = new WeakHashMap();
         m_definitionRepository = new WeakHashMap();
+
+        addSerialVerUidTransformer = new AddSerialVersionUidTransformer();
+
         m_stack = new ArrayList();
-        m_stack.add(new AddSerialVersionUidTransformer());
         m_stack.add(new AddInterfaceTransformer());
         m_stack.add(new AddImplementationTransformer());
         m_stack.add(new AdviseMemberFieldTransformer());
@@ -128,6 +136,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         m_stack.add(new AdviseStaticMethodTransformer());
         m_stack.add(new AddMetaDataTransformer());
         m_stack.add(new AddUuidTransformer());
+
         initialized = true;
     }
 
@@ -219,6 +228,13 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             if (VERBOSE && !java.util.Arrays.equals(klass.getBytecode(), bytecodeBeforeLocalTransformation)) {
                 log(className + " <- " + transformer.getClass().getName());
             }
+        }
+
+        // handle the serial ver uid only if class was advised
+        if (context.isAdvised()) {
+            addSerialVerUidTransformer.sessionStart();
+            addSerialVerUidTransformer.transformInterface(context, klass);
+            addSerialVerUidTransformer.sessionEnd();
         }
 
         // dump after (not compliant with multiple CL weaving same class differently,
