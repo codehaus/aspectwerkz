@@ -1171,6 +1171,8 @@ public class JoinPointManager {
 
     /**
      * Contains the JoinPoint instance and some RTTI about the join point.
+     * This class is wrapped behing a ThreadLocal.
+     * 
      */
     static class JoinPointInfo {
         public JoinPoint joinPoint = null;
@@ -1184,24 +1186,28 @@ public class JoinPointManager {
         public AdviceInfo enterCflow;
 
         public AdviceInfo exitCflow;
-        
+
+        /**
+         * A stack of RTTI that allows us to keep RTTI even with reentrant target method call on other instances etc
+         */
         public Stack rttis = new Stack();
     }
 
+    /**
+     * Helper method, pop the rtti from the stack and reset the JP with it
+     *
+     * @param joinpointType
+     * @param joinPointInfo
+     */
     private static void unsetRtti(int joinpointType, JoinPointInfo joinPointInfo) {
-//        if (joinPointInfo.isJitCompiled)//joinPointInfo.joinPoint.getClass().getName().startsWith("org.codehaus.aspectwerkz.joinpoint.management.___AW_JP"))
-//            return;
         JoinPoint joinPoint = joinPointInfo.joinPoint;
         ((JoinPointBase)joinPoint).setRtti((Rtti)joinPointInfo.rttis.pop());
     }
 
     /**
-     * Helper
+     * Helper method, push the rtti to the stack and reset the jp with it
      */
     private static void setRtti(int joinpointType, JoinPointInfo joinPointInfo, Rtti rtti) {
-//        if (joinPointInfo.isJitCompiled)//joinPoint.getClass().getName().startsWith("org.codehaus.aspectwerkz.joinpoint.management.___AW_JP"))
-//            return;
-//
         JoinPoint joinPoint = joinPointInfo.joinPoint;
         ((JoinPointBase)joinPoint).setRtti(rtti);
         joinPointInfo.rttis.push(rtti);
