@@ -104,11 +104,11 @@ public class AroundAdviceExecutor implements Serializable {
         return m_adviceIndexes.length != 0;
     }
 
-  /**
-     * Resets the executor.
-     * <p/>
-     * Will restart the execution chain of advice.
-     */
+    /**
+       * Resets the executor.
+       * <p/>
+       * Will restart the execution chain of advice.
+       */
     public void reset() {
         m_currentAdviceIndex = -1;
         m_stackIndex = -1;
