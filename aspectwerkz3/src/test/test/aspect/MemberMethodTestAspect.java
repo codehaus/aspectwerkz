@@ -88,7 +88,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc12;
 
     /**
-     * @Expression execution(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..))
+     * @Expression call(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..))
      */
     Pointcut member_pc13;
 
