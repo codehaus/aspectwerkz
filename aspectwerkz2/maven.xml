@@ -164,6 +164,9 @@
     <!-- TODO : enhance this for jira AW-93 -->
     <goal name="aspectwerkz:test">
         <attainGoal name="aspectwerkz:test:aspectc"/>
+        <copy todir="${test.classes}">
+            <fileset dir="${src.dir}/test" includes="**/aop.xml"/>
+        </copy>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
         </exec>
