@@ -7,7 +7,7 @@ import org.codehaus.aspectwerkz.introduction.Introduction;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: IntroductionTest.java,v 1.4 2003-06-19 17:45:23 jboner Exp $
+ * @version $Id: IntroductionTest.java,v 1.5 2003-06-20 06:14:27 jboner Exp $
  */
 public class IntroductionTest extends TestCase implements Identifiable {
 
@@ -103,6 +103,11 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
     public void testObjectArg() {
         assertEquals("test", ((Introductions)m_toBeIntroduced).objectArg("test"));
+    }
+
+    public void testArrayArg() {
+        assertEquals("test1", ((Introductions)m_toBeIntroduced).arrayArg(new String[]{"test1", "test2"})[0]);
+        assertEquals("test2", ((Introductions)m_toBeIntroduced).arrayArg(new String[]{"test1", "test2"})[1]);
     }
 
     public void testVariousArguments1() {

@@ -45,7 +45,7 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.3 2003-06-19 17:45:23 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.4 2003-06-20 06:14:27 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -290,7 +290,11 @@ public class WeaveModel implements Serializable {
      * @return the definition
      */
     public static AspectWerkzDefinition getDefinition(final String uuid) {
-        return ((WeaveModel)s_weaveModels.get(uuid)).getDefinition();
+        WeaveModel weaveModel = (WeaveModel)s_weaveModels.get(uuid);
+        if (weaveModel == null) {
+            weaveModel = WeaveModel.loadModel(uuid);
+        }
+        return weaveModel.getDefinition();
     }
 
     /**

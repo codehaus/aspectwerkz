@@ -11,16 +11,16 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 0.6.
+                    The latest official release is 0.6.2.
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.6.zip?download">0.6 in zip format.</a>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.6.2.zip?download">0.6.2 in zip format.</a>
                         </li>
                         <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.6.tar.gz?download">0.6 in tar.gz format.</a>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.6.2.tar.gz?download">0.6.2 in tar.gz format.</a>
                         </li>
                         <br/>
                         <li>
@@ -35,7 +35,7 @@
 
             <section name="Release notes">
 
-                <subsection name="New features and changes in release 0.6">
+                <subsection name="New features and changes in release 0.6.2">
                     <ul>
                         <li>
                             Completely new definition model. Aspects, advices,

@@ -51,7 +51,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * Adds meta-data storage for the target classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddMetaDataTransformer.java,v 1.5 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: AddMetaDataTransformer.java,v 1.6 2003-06-20 06:14:27 jboner Exp $
  */
 public final class AddMetaDataTransformer extends AbstractInterfaceTransformer
         implements CodeTransformerComponent {
@@ -98,8 +98,12 @@ public final class AddMetaDataTransformer extends AbstractInterfaceTransformer
             final ConstantPoolGen cpg = cg.getConstantPool();
             final InstructionFactory factory = new InstructionFactory(cg);
 
-            if (classFilter(cg)) continue;
-            if (m_hasBeenTransformed.contains(cg.getClassName())) continue;
+            if (classFilter(cg)) {
+                continue;
+            }
+            if (m_hasBeenTransformed.contains(cg.getClassName())) {
+                continue;
+            }
 
             // mark the class as transformed
             m_hasBeenTransformed.add(cg.getClassName());
@@ -138,7 +142,6 @@ public final class AddMetaDataTransformer extends AbstractInterfaceTransformer
                     initIndexes.add(new Integer(i));
                 }
             }
-            if (initIndexes.size() == 0) throw new RuntimeException("class corrupt: no <init> method found in class " + cg.getClassName());
 
             // advise all the constructors
             for (Iterator it = initIndexes.iterator(); it.hasNext();) {

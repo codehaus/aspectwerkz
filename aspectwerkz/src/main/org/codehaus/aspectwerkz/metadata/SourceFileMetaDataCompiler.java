@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: SourceFileMetaDataCompiler.java,v 1.2 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: SourceFileMetaDataCompiler.java,v 1.3 2003-06-20 06:14:27 jboner Exp $
  */
 public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
@@ -702,14 +702,12 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
         for (Iterator it = model.getDefinition().
                 getIntroductionDefinitions().iterator(); it.hasNext();) {
-            final String introduction = ((IntroductionDefinition)it.next()).
-                    getImplementation();
+            String introduction = ((IntroductionDefinition)it.next()).getImplementation();
             if (introduction == null) {
                 continue; // interface introduction
             }
             for (Iterator it1 = parsedClasses.iterator(); it1.hasNext();) {
                 final String className = (String)it1.next();
-
                 if (introduction.equals(className)) {
                     model.addIntroductionMetaData(parseClass(qdoxParser, className));
                 }
@@ -726,8 +724,9 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
      */
     private static ClassMetaData parseClass(final QDoxParser qdoxParser,
                                             final String classToParse) {
-
-        if (!qdoxParser.parse(classToParse)) return null;
+        if (!qdoxParser.parse(classToParse)) {
+            return null;
+        }
 
         final JavaMethod[] methods = qdoxParser.getJavaMethods();
         final JavaField[] fields = qdoxParser.getJavaFields();
@@ -765,13 +764,29 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                 getModifiersAsInt(method.getModifiers()));
 
         if (method.getReturns() != null) {
-            methodMetaData.setReturnType(method.getReturns().getValue());
+            StringBuffer returnValue =
+                    new StringBuffer(method.getReturns().getValue());
+            int dimensions = method.getReturns().getDimensions();
+            if (dimensions > 0) {
+                returnValue.append('[');
+                returnValue.append(dimensions);
+                returnValue.append(']');
+            }
+            methodMetaData.setReturnType(returnValue.toString());
         }
 
         JavaParameter[] parameters = method.getParameters();
         String[] parameterTypes = new String[parameters.length];
         for (int j = 0; j < parameters.length; j++) {
-            parameterTypes[j] = parameters[j].getType().getValue();
+            StringBuffer parameterValue =
+                    new StringBuffer(parameters[j].getType().getValue());
+            int dimensions = parameters[j].getType().getDimensions();
+            if (dimensions > 0) {
+                parameterValue.append('[');
+                parameterValue.append(dimensions);
+                parameterValue.append(']');
+            }
+            parameterTypes[j] = parameterValue.toString();
         }
         methodMetaData.setParameterTypes(parameterTypes);
 
