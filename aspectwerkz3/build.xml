@@ -261,12 +261,12 @@
 		</jar>
 		<copy tofile="${lib.dir}/aspectwerkz-core-${version}.jar" file="${build.dir}/aspectwerkz-core-${version}.jar" overwrite="true" />
 	
-		<jar jarfile="${target.dir}/aspectwerkz-extensions.jar" basedir="${extensions.classes}" />
-		<copy tofile="${dist.dir}/aspectwerkz-extensions.jar" file="${target.dir}/aspectwerkz-extensions.jar" overwrite="true" />
+		<jar jarfile="${target.dir}/aspectwerkz-extensions-${version}.jar" basedir="${extensions.classes}" />
+		<copy tofile="${dist.dir}/aspectwerkz-extensions-${version}.jar" file="${target.dir}/aspectwerkz-extensions-${version}.jar" overwrite="true" />
 		
 		<antcall target="samples:annotationc" />
-         <jar jarfile="${target.dir}/aspectwerkz-samples.jar" basedir="${samples.classes}" />
-		<copy tofile="${dist.dir}/aspectwerkz-samples.jar" file="${target.dir}/aspectwerkz-samples.jar" overwrite="true" />
+         <jar jarfile="${target.dir}/aspectwerkz-samples-${version}.jar" basedir="${samples.classes}" />
+		<copy tofile="${dist.dir}/aspectwerkz-samples-${version}.jar" file="${target.dir}/aspectwerkz-samples-${version}.jar" overwrite="true" />
 	</target>
 
 	<!-- ============================================================== -->
