@@ -20,11 +20,13 @@ import org.codehaus.aspectwerkz.expression.ast.ASTStaticInitialization;
 import org.codehaus.aspectwerkz.expression.ast.ASTWithin;
 import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
 import org.codehaus.aspectwerkz.expression.ast.Node;
+import org.codehaus.aspectwerkz.expression.ast.ASTNot;
 
 /**
  * The advised cflow class filter visitor.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilterExpressionVisitor {
     /**
@@ -53,6 +55,17 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         }
     }
 
+    public Object visit(ASTNot node, Object data) {
+        ExpressionContext context = (ExpressionContext) data;
+        if (context.inCflowSubAST()) {
+            return super.visit(node, data);
+        } else {
+            // ignore the NOT
+            return Boolean.TRUE;
+        }
+    }
+
+
     public Object visit(ASTCflow node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
         context.setHasBeenVisitingCflow(true);
@@ -60,12 +73,13 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         Node child = node.jjtGetChild(0);
         Object result;
 
-        // if 'call' or 'handler' but no 'within*' then return true
-        if (child instanceof ASTCall || child instanceof ASTHandler) {
-            result = Boolean.TRUE;
-        } else {
-            result = child.jjtAccept(this, context);
-        }
+//        // if 'call' or 'handler' but no 'within*' then return true
+//        if (child instanceof ASTCall || child instanceof ASTHandler) {
+//            result = Boolean.TRUE;
+//        } else {
+//            result = child.jjtAccept(this, context);
+//        }
+        result = child.jjtAccept(this, context);
         context.setInCflowSubAST(false);
         return result;
     }
@@ -77,12 +91,13 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         Node child = node.jjtGetChild(0);
         Object result;
 
-        // if 'call' or 'handler' but no 'within*' then return true
-        if (child instanceof ASTCall || child instanceof ASTHandler) {
-            result = Boolean.TRUE;
-        } else {
-            result = child.jjtAccept(this, context);
-        }
+//        // if 'call' or 'handler' but no 'within*' then return true
+//        if (child instanceof ASTCall || child instanceof ASTHandler) {
+//            result = Boolean.TRUE;
+//        } else {
+//            result = child.jjtAccept(this, context);
+//        }
+        result = child.jjtAccept(this, context);
         context.setInCflowSubAST(false);
         return result;
     }
@@ -98,7 +113,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         }
     }
 
@@ -107,7 +122,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         }
     }
 
@@ -116,7 +131,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         }
     }
 
@@ -125,7 +140,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         }
     }
 
@@ -134,7 +149,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         }
     }
 
@@ -143,7 +158,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         }
     }
 
@@ -152,7 +167,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         }
     }
 
@@ -161,7 +176,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         if (context.inCflowSubAST()) {
             return super.visit(node, data);
         } else {
-            return Boolean.FALSE;
+            return Boolean.TRUE;
         }
     }
 }

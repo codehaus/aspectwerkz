@@ -40,11 +40,17 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * The advised class filter visitor.
+ *
+ * Visit() methods are returning Boolean.TRUE/FALSE or null when decision cannot be taken.
+ * Using null allow composition of OR/AND with NOT in the best way.
  *
  * FIXME - poorly optimized:
  * if pcA = within(X) and pcB = pcA AND call(* foo(..)), then ALL classes gets matched !
@@ -79,7 +85,12 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
      * @return
      */
     public boolean match(final ExpressionContext context) {
-        return ((Boolean) visit(m_root, context)).booleanValue();
+        Boolean match = ((Boolean) visit(m_root, context));
+        if (match != null) {
+            return match.booleanValue();
+        } else {
+            return true;
+        }
     }
 
     // ============ Boot strap =============
@@ -90,91 +101,129 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     public Object visit(ASTRoot node, Object data) {
         Node child = node.jjtGetChild(0);
 
-        // if 'call' or 'handler' but no 'within*' then return true
-        if (child instanceof ASTCall || child instanceof ASTHandler) {
-            return Boolean.TRUE;
-        }
-        return child.jjtAccept(this, data);
+//        // if 'call' or 'handler' but no 'within*' then return true
+//        if (child instanceof ASTCall || child instanceof ASTHandler) {
+//            return Boolean.TRUE;
+//        }
+        Boolean match = (Boolean) child.jjtAccept(this, data);
+        return match;
     }
 
     public Object visit(ASTExpression node, Object data) {
         Node child = node.jjtGetChild(0);
 
-        // if 'call' or 'handler' but no 'within*' then return true
-        if (child instanceof ASTCall || child instanceof ASTHandler) {
-            return Boolean.TRUE;
-        }
-        return child.jjtAccept(this, data);
+//        // if 'call' or 'handler' but no 'within*' then return true
+//        if (child instanceof ASTCall || child instanceof ASTHandler) {
+//            return Boolean.TRUE;
+//        }
+        Boolean match = (Boolean) child.jjtAccept(this, data);
+        return match;
     }
 
     // ============ Logical operators =============
     public Object visit(ASTOr node, Object data) {
-        int nrOfChildren = node.jjtGetNumChildren();
-        for (int i = 0; i < nrOfChildren; i++) {
-            Boolean match = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
-            if (match.equals(Boolean.TRUE)) {
+        Boolean matchL = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+        Boolean matchR = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+        if (matchL != null && matchR !=null) {
+            // regular OR
+            if (matchL.equals(Boolean.TRUE) || matchR.equals(Boolean.TRUE)) {
                 return Boolean.TRUE;
+            } else {
+                return Boolean.FALSE;
             }
+        } else {
+            // one or both is/are undetermined
+            // OR cannot be resolved
+            return null;
         }
-        return Boolean.FALSE;
     }
 
     public Object visit(ASTAnd node, Object data) {
-        boolean hasCallOrHandlerPc = false;
-        boolean hasWithinPc = false;
-        boolean hasNotPc = false;
-        int notPcIndex = -1;
-
-        // handle 'call', with and without 'within*'
-        int nrOfChildren = node.jjtGetNumChildren();
-        for (int i = 0; i < nrOfChildren; i++) {
-            Node child = node.jjtGetChild(i);
-            if (child instanceof ASTNot) {
-                hasNotPc = true;
-                notPcIndex = i;
-            } else if (child instanceof ASTCall || child instanceof ASTHandler) {
-                hasCallOrHandlerPc = true;
-            } else if (child instanceof ASTWithin || child instanceof ASTWithinCode) {
-                hasWithinPc = true;
-            }
-        }
-
-        // check the child of the 'not' node
-        if (hasCallOrHandlerPc && hasNotPc) {
-            Node childChild = node.jjtGetChild(notPcIndex).jjtGetChild(0);
-            if (childChild instanceof ASTWithin || childChild instanceof ASTWithinCode) {
-                if (Boolean.TRUE.equals(childChild.jjtAccept(this, data))) {
-                    return Boolean.FALSE;
-                } else {
-                    return Boolean.TRUE;
-                }
-            }
-        } else if (hasCallOrHandlerPc && !hasWithinPc) {
-            return Boolean.TRUE;
-        }
-
-        // if not a 'call' or 'handler' pointcut
-        for (int i = 0; i < nrOfChildren; i++) {
-            Boolean match = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
-            if (match.equals(Boolean.TRUE)) {
+        Boolean matchL = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+        Boolean matchR = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+        if (matchL != null && matchR !=null) {
+            // regular AND
+            if (matchL.equals(Boolean.TRUE) && matchR.equals(Boolean.TRUE)) {
                 return Boolean.TRUE;
+            } else {
+                return Boolean.FALSE;
             }
+        } else if (matchL != null && matchL.equals(Boolean.FALSE)) {
+            // one is undetermined and the other is false, so result is false
+            return Boolean.FALSE;
+        } else if (matchR != null && matchR.equals(Boolean.FALSE)) {
+            // one is undetermined and the other is false, so result is false
+            return Boolean.FALSE;
+        } else {
+            // both are undetermined, or one is true and the other undetermined
+            return null;
         }
-        return Boolean.FALSE;
+
+//        boolean hasCallOrHandlerPc = false;
+//        boolean hasWithinPc = false;
+//        boolean hasNotPc = false;
+//        int notPcIndex = -1;
+//
+//        // handle 'call', with and without 'within*'
+//        int nrOfChildren = node.jjtGetNumChildren();
+//        for (int i = 0; i < nrOfChildren; i++) {
+//            Node child = node.jjtGetChild(i);
+//            if (child instanceof ASTNot) {
+//                hasNotPc = true;
+//                notPcIndex = i;
+//            } else if (child instanceof ASTCall || child instanceof ASTHandler) {
+//                hasCallOrHandlerPc = true;
+//            } else if (child instanceof ASTWithin || child instanceof ASTWithinCode) {
+//                hasWithinPc = true;
+//            }
+//        }
+//
+//        // check the child of the 'not' node
+//        if (hasCallOrHandlerPc && hasNotPc) {
+//            Node childChild = node.jjtGetChild(notPcIndex).jjtGetChild(0);
+//            if (childChild instanceof ASTWithin || childChild instanceof ASTWithinCode) {
+//                if (Boolean.TRUE.equals(childChild.jjtAccept(this, data))) {
+//                    return Boolean.FALSE;
+//                } else {
+//                    return Boolean.TRUE;
+//                }
+//            }
+//        } else if (hasCallOrHandlerPc && !hasWithinPc) {
+//            return Boolean.TRUE;
+//        }
+//
+//        // if not a 'call' or 'handler' pointcut
+//        for (int i = 0; i < nrOfChildren; i++) {
+//            Boolean match = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
+//            if (match.equals(Boolean.TRUE)) {
+//                return Boolean.TRUE;
+//            }
+//        }
+//        return Boolean.FALSE;
     }
 
     public Object visit(ASTNot node, Object data) {
-        // the NOT is not evaluated unless on within expressions
-        if (node.jjtGetChild(0) instanceof ASTWithin) {
-            Boolean match = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+//        // the NOT is not evaluated unless on within expressions
+//        if (node.jjtGetChild(0) instanceof ASTWithin) {
+//            Boolean match = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+//            if (match.equals(Boolean.TRUE)) {
+//                return Boolean.FALSE;
+//            } else {
+//                return Boolean.TRUE;
+//            }
+//        }
+//
+        Boolean match = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+        if (match !=null) {
+            // regular NOT
             if (match.equals(Boolean.TRUE)) {
                 return Boolean.FALSE;
             } else {
                 return Boolean.TRUE;
             }
+        } else {
+            return null;
         }
-
-        return (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
     }
 
     // ============ Pointcut types =============
@@ -195,7 +244,12 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     public Object visit(ASTCall node, Object data) {
-        return Boolean.FALSE;
+        ExpressionContext context = (ExpressionContext) data;
+        if (context.hasAnyPointcut() || context.hasCallPointcut()) {
+            return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        } else {
+            return Boolean.FALSE;
+        }
     }
 
     public Object visit(ASTSet node, Object data) {
@@ -217,7 +271,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     public Object visit(ASTHandler node, Object data) {
-        return Boolean.FALSE;
+        return Boolean.TRUE;
     }
 
     public Object visit(ASTStaticInitialization node, Object data) {
@@ -247,11 +301,11 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     public Object visit(ASTCflow node, Object data) {
-        return Boolean.FALSE;
+        return Boolean.FALSE;//FIXME
     }
 
     public Object visit(ASTCflowBelow node, Object data) {
-        return Boolean.FALSE;
+        return Boolean.FALSE;//FIXME
     }
 
     public Object visit(ASTArgs node, Object data) {
@@ -275,6 +329,13 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
             if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
                 return Boolean.TRUE;
             }
+            return Boolean.FALSE;
+        } else if (data instanceof MethodInfo) {
+            MethodInfo methodInfo = (MethodInfo) data;
+            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), methodInfo.getDeclaringType())) {
+                return null;// it might not match further because of modifiers etc
+            }
+            return Boolean.FALSE;
         }
         return Boolean.FALSE;
     }
@@ -283,6 +344,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         if (data instanceof ClassInfo) {
             ClassInfo classInfo = (ClassInfo) data;
             if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
+                // we matched but the actual match result may be false
                 return Boolean.TRUE;
             }
         }
@@ -293,6 +355,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         if (data instanceof ClassInfo) {
             ClassInfo classInfo = (ClassInfo) data;
             if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
+                // we matched but the actual match result may be false
                 return Boolean.TRUE;
             }
         }
@@ -302,6 +365,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     public Object visit(ASTParameter node, Object data) {
         ClassInfo parameterType = (ClassInfo) data;
         if (ClassInfoHelper.matchType(node.getDeclaringClassPattern(), parameterType)) {
+            // we matched but the actual match result may be false
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;
@@ -309,15 +373,25 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     public Object visit(ASTArgParameter node, Object data) {
+        // never called
         return Boolean.TRUE;
     }
 
     public Object visit(ASTAttribute node, Object data) {
-        return Boolean.TRUE;
+        // called for class level annotation matching f.e. in a within context
+        List annotations = (List) data;
+        for (Iterator it = annotations.iterator(); it.hasNext();) {
+            AnnotationInfo annotation = (AnnotationInfo) it.next();
+            if (annotation.getName().equals(node.getName())) {
+                return Boolean.TRUE;
+            }
+        }
+        return Boolean.FALSE;
     }
 
     public Object visit(ASTModifier node, Object data) {
-        return Boolean.TRUE;
+        // ??
+        return null;
     }
 
     /**
