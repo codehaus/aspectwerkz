@@ -15,7 +15,11 @@ import aspectwerkz.aosd.persistence.jisp.JispPersistenceManager;
 //import aspectwerkz.aosd.app.domain.Customer;
 import aspectwerkz.aosd.security.SecurityManagerFactory;
 import aspectwerkz.aosd.security.SecurityManagerType;
+import aspectwerkz.aosd.addressbook.AddressBookManager;
+import aspectwerkz.aosd.addressbook.AddressBook;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+
+import java.util.Set;
 
 /**
  * Terrible boot strap class with the definition loading hard-coded.
@@ -42,20 +46,20 @@ public class ServiceManager {
              role.setName("jboner");
              securityDef.addRole(role);
 
+             SecurityDefinition.Permission permission1 = new SecurityDefinition.Permission();
+             permission1.setRole("jboner");
+             permission1.setKlass(AddressBookManager.class);
+             permission1.setMethod(AddressBookManager.class.getMethod("addContact", new Class[]{
+                 AddressBook.class, String.class, String.class, String.class
+             }));
+             securityDef.addPermission(permission1);
 
-             ServiceManager.class.getMethod("startSecurityManager", new Class[]{});
-
-//             SecurityDefinition.Permission permission1 = new SecurityDefinition.Permission();
-//             permission1.setRole("jboner");
-//             permission1.setKlass(CustomerManagerImpl.class);
-//             permission1.setMethod(CustomerManagerImpl.class.getMethod("getName", new Class[]{}));
-//             securityDef.addPermission(permission1);
-
-//             SecurityDefinition.Permission permission2 = new SecurityDefinition.Permission();
-//             permission2.setRole("jboner");
-//             permission2.setKlass(CustomerManagerImpl.class);
-//             permission2.setMethod(CustomerManagerImpl.class.getMethod("updateCustomerName", new Class[]{Customer.class}));
-//             securityDef.addPermission(permission2);
+             SecurityDefinition.Permission permission2 = new SecurityDefinition.Permission();
+             permission2.setRole("jboner");
+             permission2.setKlass(AddressBookManager.class);
+             permission2.setMethod(AddressBookManager.class.getMethod("removeContacts", new Class[]{
+                 AddressBook.class, Set.class}));
+             securityDef.addPermission(permission2);
 
              SecurityManagerFactory.getInstance(SecurityManagerType.JAAS).initialize(securityDef);
          }

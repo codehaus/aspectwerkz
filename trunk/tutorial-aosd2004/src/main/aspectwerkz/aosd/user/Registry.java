@@ -7,6 +7,9 @@
  **************************************************************************************/
 package aspectwerkz.aosd.user;
 
+import aspectwerkz.aosd.addressbook.AddressBookManager;
+import aspectwerkz.aosd.addressbook.AddressBookManagerImpl;
+
 /**
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -21,4 +24,9 @@ public class Registry {
     public static UserManager getUserManager() {
         return new UserManagerImpl();
     }
+
+    public static AddressBookManager getAddressBookManager() {
+        return new AddressBookManagerImpl();
+    }
+
 }

@@ -7,10 +7,16 @@
  **************************************************************************************/
 package aspectwerkz.aosd.addressbook;
 
+import java.util.Set;
+
 /**
- * @TODO: implement
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AddressBookManager {
+public interface AddressBookManager {
+
+    public Contact addContact(AddressBook addressBook, String firstName, String lastName, String email);
+
+    public void removeContacts(AddressBook addressBook, Set contacts);
+
 }
