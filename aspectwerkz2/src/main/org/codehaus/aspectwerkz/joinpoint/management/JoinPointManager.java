@@ -17,7 +17,7 @@ import java.util.Map;
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
-import org.codehaus.aspectwerkz.RuntimeSystem;
+import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
@@ -84,13 +84,12 @@ public class JoinPointManager {
     private static final JoinPointRegistry s_registry = new JoinPointRegistry();
 
     private final String m_uuid;
+    private final System m_system;
     private final Class m_targetClass;
     private final int m_classHash;
     private final ClassMetaData m_targetClassMetaData;
 
     private ThreadLocal[] m_joinPoints = new ThreadLocal[0];
-
-    private RuntimeSystem m_system = null;
 
     /**
      * Returns the join point manager for a specific class.
@@ -162,9 +161,6 @@ public class JoinPointManager {
 
         ThreadLocal threadLocal = null;
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
-            if (m_system == null) {
-                m_system = SystemLoader.getSystem(m_uuid);
-            }
             s_registry.registerJoinPoint(
                     joinPointType, methodHash, null,
                     m_classHash, m_targetClass, m_targetClassMetaData, m_system
@@ -270,9 +266,6 @@ public class JoinPointManager {
 
         ThreadLocal threadLocal = null;
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
-            if (m_system == null) {
-                m_system = SystemLoader.getSystem(m_uuid);
-            }
             s_registry.registerJoinPoint(
                     joinPointType, methodHash, null, m_classHash, declaringClass,
                     ReflectionMetaDataMaker.createClassMetaData(declaringClass), m_system
@@ -379,9 +372,6 @@ public class JoinPointManager {
 
         ThreadLocal threadLocal = null;
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
-            if (m_system == null) {
-                m_system = SystemLoader.getSystem(m_uuid);
-            }
             s_registry.registerJoinPoint(
                     JoinPointType.FIELD_SET, fieldHash, fieldSignature, m_classHash, declaringClass,
                     ReflectionMetaDataMaker.createClassMetaData(declaringClass), m_system
@@ -469,9 +459,6 @@ public class JoinPointManager {
 
         ThreadLocal threadLocal = null;
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
-            if (m_system == null) {
-                m_system = SystemLoader.getSystem(m_uuid);
-            }
             s_registry.registerJoinPoint(
                     JoinPointType.FIELD_GET, fieldHash, fieldSignature, m_classHash, declaringClass,
                     ReflectionMetaDataMaker.createClassMetaData(declaringClass), m_system
@@ -557,9 +544,6 @@ public class JoinPointManager {
 
         ThreadLocal threadLocal = null;
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
-            if (m_system == null) {
-                m_system = SystemLoader.getSystem(m_uuid);
-            }
             ClassMetaData exceptionMetaData = ReflectionMetaDataMaker.createClassMetaData(
                     exceptionInstance.getClass()
             );
@@ -936,6 +920,7 @@ public class JoinPointManager {
      */
     private JoinPointManager(final Class targetClass, final String uuid) {
         m_uuid = uuid;
+        m_system = SystemLoader.getSystem(m_uuid);
         m_targetClass = targetClass;
         m_classHash = m_targetClass.hashCode();
         m_targetClassMetaData = ReflectionMetaDataMaker.createClassMetaData(m_targetClass);

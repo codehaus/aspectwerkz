@@ -18,7 +18,7 @@ import java.util.Map;
 import gnu.trove.TLongObjectHashMap;
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
-import org.codehaus.aspectwerkz.RuntimeSystem;
+import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
@@ -68,7 +68,7 @@ class JoinPointRegistry {
             final int classHash,
             final Class definedClass,
             final ClassMetaData definedClassMetaData,
-            final RuntimeSystem system) {
+            final System system) {
 
         if (!m_joinPointAdvicesMap.containsKey(classHash)) {
             m_joinPointAdvicesMap.put(classHash, new TLongObjectHashMap());
@@ -147,7 +147,7 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerMethodExecutionJoinPoint(
-            final RuntimeSystem system,
+            final System system,
             final Class definedClass,
             final ClassMetaData definedClassMetaData,
             final int joinPointHash,
@@ -189,7 +189,7 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerMethodCallJoinPoint(
-            final RuntimeSystem system,
+            final System system,
             final Class definedClass,
             final ClassMetaData definedClassMetaData,
             final int joinPointHash,
@@ -232,7 +232,7 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerConstructorExecutionJoinPoint(
-            final RuntimeSystem system,
+            final System system,
             final Class definedClass,
             final ClassMetaData definedClassMetaData,
             final int joinPointHash,
@@ -274,7 +274,7 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerConstructorCallJoinPoint(
-            final RuntimeSystem system,
+            final System system,
             final Class definedClass,
             final ClassMetaData definedClassMetaData,
             final int joinPointHash,
@@ -316,7 +316,7 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerFieldSetJoinPoint(
-            final RuntimeSystem system,
+            final System system,
             final ClassMetaData definedClassMetaData,
             final String signature,
             final Map pointcutTypeToAdvicesMap) {
@@ -353,7 +353,7 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerFieldGetJoinPoint(
-            final RuntimeSystem system,
+            final System system,
             final ClassMetaData definedClassMetaData,
             final String signature,
             final Map pointcutTypeToAdvicesMap) {
@@ -389,7 +389,7 @@ class JoinPointRegistry {
      * @param pointcutTypeToAdvicesMap
      */
     private void registerHandlerJoinPoint(
-            final RuntimeSystem system,
+            final System system,
             final ClassMetaData exceptionClassMetaData,
             final Map pointcutTypeToAdvicesMap) {
         List handlerAdvices = new ArrayList();
