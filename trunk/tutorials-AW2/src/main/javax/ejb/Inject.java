@@ -12,6 +12,8 @@ import java.lang.annotation.Target;
 
 /**
  * Inject annotation for defaulted field and setter injection as per EJB 3 spec, chpt 8.
+ * Note that this implementation is very simple and does not provide @Inject annotation elements.
+ * The injected resource will be determined from the annotated field type / setter argument type.
  * 
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
