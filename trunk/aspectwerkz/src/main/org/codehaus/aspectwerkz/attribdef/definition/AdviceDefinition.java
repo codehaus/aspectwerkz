@@ -62,7 +62,7 @@ public class AdviceDefinition {
     /**
      * The advice weaving rule.
      */
-    private AdviceWeavingRule m_weavingRule = new AdviceWeavingRule();
+    private AdviceWeavingRule m_weavingRule = null;
 
     /**
      * The pointcut definition references.
@@ -109,6 +109,7 @@ public class AdviceDefinition {
         m_aspectDefinition = aspectDef;
 
         validateExpression();
+        m_weavingRule = new AdviceWeavingRule(expression);
     }
 
     /**

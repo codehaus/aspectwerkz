@@ -194,8 +194,7 @@ public abstract class AspectAttributeParser {
                 expression, method, methodIndex, aspectDef
         );
         try {
-            final AdviceWeavingRule weavingRule = new AdviceWeavingRule();
-            weavingRule.setExpression(expression);
+            final AdviceWeavingRule weavingRule = new AdviceWeavingRule(expression);
 
             for (Iterator it2 = adviceDef.getPointcutRefs().iterator(); it2.hasNext();) {
                 String pointcutName = (String)it2.next();
