@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 /**
  * Holds the meta-data for the advices.
@@ -271,7 +272,7 @@ public class AdviceDefinition {
      *
      * @return the deployment model
      */
-    public String getDeploymentModel() {
+    public DeploymentModel getDeploymentModel() {
         return m_aspectDefinition.getDeploymentModel();
     }
 

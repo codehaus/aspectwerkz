@@ -760,7 +760,7 @@ public class AsmClassInfo implements ClassInfo {
         }
         if (componentClassAsStream == null) {
             System.out.println(
-                    "AW:WARNING - could not load class ["
+                    "AW::WARNING - could not load class ["
                     + componentName
                     + "] as a resource in loader ["
                     + loader

@@ -73,14 +73,14 @@ public class AspectAnnotationParser {
                 AOPAnnotationConstants.ANNOTATION_ASPECT(),
                 classInfo
         );
-        //TODO review 1.5 annotation - depl model should be an ENUM or an int CONST (for 1.4 compat)
+        //TODO review 1.5 annotation - depl model should be an ENUM
         String aspectName = classInfo.getName();
-        String deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_JVM);
-        ;
+        String deploymentModelAsString = DeploymentModel.PER_JVM.toString();
+
         if (aspectAnnotation != null) {
             if (aspectAnnotation.value() != null) {
                 //@Aspect(perJVM)
-                deploymentModel = aspectAnnotation.value();
+                deploymentModelAsString = aspectAnnotation.value();
             } else {
                 if (aspectAnnotation.name() != null) {
                     //@Aspect(name=..)
@@ -88,13 +88,14 @@ public class AspectAnnotationParser {
                 }
                 if (aspectAnnotation.deploymentModel() != null) {
                     //@Aspect(deploymentModel=..)
-                    deploymentModel = aspectAnnotation.deploymentModel();
+                    deploymentModelAsString = aspectAnnotation.deploymentModel();
                 }
             }
         }
 
+        System.out.println("deploymentModelAsString = " + deploymentModelAsString);
         // attribute settings override the xml settings
-        aspectDef.setDeploymentModel(deploymentModel);
+        aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelFor(deploymentModelAsString));
         String className = classInfo.getName();
         parseFieldAttributes(classInfo, aspectDef);
         parseMethodAttributes(classInfo, className, aspectName, aspectDef);

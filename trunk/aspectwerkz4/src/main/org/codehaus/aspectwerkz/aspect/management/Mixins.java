@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.aspect.management;
 import org.codehaus.aspectwerkz.aspect.DefaultMixinFactory;
 import org.codehaus.aspectwerkz.aspect.MixinFactory;
 import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.definition.MixinDefinition;
@@ -68,7 +69,7 @@ public class Mixins {
             Class mixinClass = Class.forName(name, false, targetClass.getClassLoader());
             return mixinOf(mixinClass, targetClass);
         } catch (ClassNotFoundException e) {
-            throw new Error("could not load mixin " + name + " from " + targetClass.getClassLoader());
+            throw new RuntimeException("could not load mixin " + name + " from " + targetClass.getClassLoader());
         }
     }
 
@@ -96,7 +97,9 @@ public class Mixins {
             Class mixinClass = Class.forName(name, false, targetInstance.getClass().getClassLoader());
             return mixinOf(mixinClass, targetInstance);
         } catch (ClassNotFoundException e) {
-            throw new Error("could not load mixin " + name + " from " + targetInstance.getClass().getClassLoader());
+            throw new RuntimeException(
+                    "could not load mixin " + name + " from " + targetInstance.getClass().getClassLoader()
+            );
         }
     }
 
@@ -132,7 +135,7 @@ public class Mixins {
             }
         }
         if (mixinDefinition == null) {
-            throw new Error("could not find definition for mixin: " + mixinClass.getName());
+            throw new RuntimeException("could not find definition for mixin: " + mixinClass.getName());
         }
 
         String factoryClassName = mixinDefinition.getFactoryClassName();
@@ -143,7 +146,7 @@ public class Mixins {
             } else {
                 containerClass = ContextClassLoader.loadClass(mixinClass.getClassLoader(), factoryClassName);
             }
-            Constructor constructor = containerClass.getConstructor(new Class[]{Class.class, String.class});
+            Constructor constructor = containerClass.getConstructor(new Class[]{Class.class, DeploymentModel.class});
             final MixinFactory factory = (MixinFactory) constructor.newInstance(
                     new Object[]{mixinClass, mixinDefinition.getDeploymentModel()}
             );
@@ -152,9 +155,9 @@ public class Mixins {
             throw new DefinitionException(e.getTargetException().toString());
         } catch (NoSuchMethodException e) {
             throw new DefinitionException(
-                    "mixin container does not have a valid constructor ["
+                    "mixin factory does not have a valid constructor ["
                     + factoryClassName
-                    + "] need to take an AspectContext instance as its only parameter: "
+                    + "] need to have a signature like this [MyMixinFactory(Class mixin, DeploymentModel scope)]: "
                     + e.toString()
             );
         } catch (Throwable e) {
@@ -163,7 +166,6 @@ public class Mixins {
             cause.append(factoryClassName);
             cause.append("] due to: ");
             cause.append(e.toString());
-            e.printStackTrace();
             throw new DefinitionException(cause.toString());
         }
     }

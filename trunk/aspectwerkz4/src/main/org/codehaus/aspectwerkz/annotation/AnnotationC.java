@@ -379,7 +379,7 @@ public class AnnotationC {
                         logInfo("    interface introduction [" + introducedInterfaceNames[j] + ']');
                     }
                 }
-                String deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_JVM);
+                String deploymentModel = DeploymentModel.PER_JVM.toString();
                 if (((Mixin) introduceAnnotation).deploymentModel() != null) {
                     deploymentModel = ((Mixin) introduceAnnotation).deploymentModel();
                 }

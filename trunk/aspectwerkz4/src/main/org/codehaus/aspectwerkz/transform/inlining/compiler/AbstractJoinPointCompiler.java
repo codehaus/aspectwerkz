@@ -16,6 +16,7 @@ import org.objectweb.asm.ClassVisitor;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.AdviceInfo;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.transform.Compiler;
@@ -266,8 +267,9 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             AdviceInfo adviceInfo = adviceInfos[i];
 
             // if we have a perinstance deployed aspect and a static member target -> skip and go on
-            String deploymentModel = adviceInfo.getAdviceDefinition().getAspectDefinition().getDeploymentModel();
-            if (DeploymentModel.getDeploymentModelAsInt(deploymentModel) == DeploymentModel.PER_INSTANCE &&
+            DeploymentModel deploymentModel = adviceInfo.getAdviceDefinition().getAspectDefinition()
+                    .getDeploymentModel();
+            if (deploymentModel.equals(DeploymentModel.PER_INSTANCE) &&
                 Modifier.isStatic(m_calleeMemberModifiers)) {
                 continue;
             }
@@ -576,28 +578,24 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                                                   final AspectInfo aspectInfo,
                                                   final String joinPointClassName) {
         String aspectClassSignature = aspectInfo.getAspectClassSignature();
-        String aspectClassName = aspectInfo.getAspectClassName();
+
         // create a field depending on the aspect deployment model
-        switch (aspectInfo.getDeploymentModel()) {
-            case DeploymentModel.PER_JVM:
-            case DeploymentModel.PER_CLASS:
-                // add the aspect static field
-                cw.visitField(
-                        ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null
-                );
-                break;
-            case DeploymentModel.PER_INSTANCE:
-                // add the aspect field as a non static field
-                //TODO - may bee skip the aspect and all its advice is target is static, or ctor call
-                //that is no instance available
-                cw.visitField(ACC_PRIVATE, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null);
-                break;
-            default:
-                throw new UnsupportedOperationException(
-                        "unsupported deployment model - " +
-                        aspectInfo.getAspectClassName() + " " +
-                        DeploymentModel.getDeploymentModelAsString(aspectInfo.getDeploymentModel())
-                );
+        DeploymentModel deploymentModel = aspectInfo.getDeploymentModel();
+        if (deploymentModel.equals(DeploymentModel.PER_JVM) ||
+            deploymentModel.equals(DeploymentModel.PER_CLASS)) {
+            // add the aspect static field
+            cw.visitField(ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null);
+        } else if (deploymentModel.equals(DeploymentModel.PER_INSTANCE)) {
+            // add the aspect field as a non static field
+            //TODO - may bee skip the aspect and all its advice is target is static, or ctor call
+            //that is no instance available
+            cw.visitField(ACC_PRIVATE, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null);
+        } else {
+            throw new UnsupportedOperationException(
+                    "unsupported deployment model - " +
+                    aspectInfo.getAspectClassName() + " " +
+                    deploymentModel
+            );
         }
     }
 
@@ -614,42 +612,35 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         String aspectClassSignature = aspectInfo.getAspectClassSignature();
         String aspectClassName = aspectInfo.getAspectClassName();
         // retrieve the aspect set it to the field
-        switch (aspectInfo.getDeploymentModel()) {
-            case DeploymentModel.PER_JVM:
-                cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
-                cv.visitMethodInsn(
-                        INVOKESTATIC,
-                        ASPECTS_CLASS_NAME,
-                        ASPECT_OF_METHOD_NAME,
-                        ASPECT_OF_PER_JVM_METHOD_SIGNATURE
-                );
-                cv.visitTypeInsn(CHECKCAST, aspectClassName);
-                cv.visitFieldInsn(
-                        PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature
-                );
-                break;
-            case DeploymentModel.PER_CLASS:
-                cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
-                cv.visitFieldInsn(GETSTATIC, joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
-                cv.visitMethodInsn(
-                        INVOKESTATIC,
-                        ASPECTS_CLASS_NAME,
-                        ASPECT_OF_METHOD_NAME,
-                        ASPECT_OF_PER_CLASS_METHOD_SIGNATURE
-                );
-                cv.visitTypeInsn(CHECKCAST, aspectClassName);
-                cv.visitFieldInsn(
-                        PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature
-                );
-                break;
-            case DeploymentModel.PER_INSTANCE:
-                break;
-            default:
-                throw new UnsupportedOperationException(
-                        "unsupported deployment model - " +
-                        aspectInfo.getAspectClassName() + " " +
-                        DeploymentModel.getDeploymentModelAsString(aspectInfo.getDeploymentModel())
-                );
+        DeploymentModel deploymentModel = aspectInfo.getDeploymentModel();
+        if (deploymentModel.equals(DeploymentModel.PER_JVM)) {
+            cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
+            cv.visitMethodInsn(
+                    INVOKESTATIC,
+                    ASPECTS_CLASS_NAME,
+                    ASPECT_OF_METHOD_NAME,
+                    ASPECT_OF_PER_JVM_METHOD_SIGNATURE
+            );
+            cv.visitTypeInsn(CHECKCAST, aspectClassName);
+            cv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature);
+        } else if (deploymentModel.equals(DeploymentModel.PER_CLASS)) {
+            cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
+            cv.visitFieldInsn(GETSTATIC, joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+            cv.visitMethodInsn(
+                    INVOKESTATIC,
+                    ASPECTS_CLASS_NAME,
+                    ASPECT_OF_METHOD_NAME,
+                    ASPECT_OF_PER_CLASS_METHOD_SIGNATURE
+            );
+            cv.visitTypeInsn(CHECKCAST, aspectClassName);
+            cv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature);
+        } else if (deploymentModel.equals(DeploymentModel.PER_INSTANCE)) {
+        } else {
+            throw new UnsupportedOperationException(
+                    "unsupported deployment model - " +
+                    aspectInfo.getAspectClassName() + " " +
+                    deploymentModel
+            );
         }
     }
 
@@ -2017,21 +2008,21 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                               final boolean isOptimizedJoinPoint,
                               final int joinPointIndex,
                               final AspectInfo aspectInfo) {
-        switch (aspectInfo.getDeploymentModel()) {
-            case DeploymentModel.PER_JVM:
-            case DeploymentModel.PER_CLASS:
-                cv.visitFieldInsn(
-                        GETSTATIC, m_joinPointClassName, aspectInfo.getAspectFieldName(),
-                        aspectInfo.getAspectClassSignature()
-                );
-                break;
-            case DeploymentModel.PER_INSTANCE:
-                loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
-                cv.visitFieldInsn(
-                        GETFIELD, m_joinPointClassName, aspectInfo.getAspectFieldName(),
-                        aspectInfo.getAspectClassSignature()
-                );
-
+        DeploymentModel deploymentModel = aspectInfo.getDeploymentModel();
+        if (deploymentModel.equals(DeploymentModel.PER_JVM) ||
+            deploymentModel.equals(DeploymentModel.PER_CLASS)) {
+            cv.visitFieldInsn(
+                    GETSTATIC, m_joinPointClassName, aspectInfo.getAspectFieldName(),
+                    aspectInfo.getAspectClassSignature()
+            );
+        } else if (deploymentModel.equals(DeploymentModel.PER_INSTANCE)) {
+            loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
+            cv.visitFieldInsn(
+                    GETFIELD, m_joinPointClassName, aspectInfo.getAspectFieldName(),
+                    aspectInfo.getAspectClassSignature()
+            );
+        } else {
+            throw new DefinitionException("deployment model [" + deploymentModel + "] is not supported");
         }
     }
 

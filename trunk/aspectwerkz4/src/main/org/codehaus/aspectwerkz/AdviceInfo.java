@@ -70,7 +70,7 @@ public class AdviceInfo implements Serializable {
     /**
      * The aspect deployment model
      */
-    private int m_aspectDeploymentModel;
+    private DeploymentModel m_aspectDeploymentModel;
 
     /**
      * The advice method arg index mapped to the advisED target arg index.
@@ -135,7 +135,7 @@ public class AdviceInfo implements Serializable {
      */
     public AdviceInfo(final String aspectQualifiedName,
                       final String aspectClassName,
-                      final int aspectDeploymentModel,
+                      final DeploymentModel aspectDeploymentModel,
                       final String methodName,
                       final String methodSignature,
                       final Type[] methodParameterTypes,
@@ -214,7 +214,7 @@ public class AdviceInfo implements Serializable {
      *
      * @return
      */
-    public int getAspectDeploymentModel() {
+    public DeploymentModel getAspectDeploymentModel() {
         return m_aspectDeploymentModel;
     }
 

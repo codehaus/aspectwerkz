@@ -108,7 +108,7 @@ public class DocumentParser {
         }
         String specialAspectName = null;
         String className = null;
-        String deploymentModel = null;
+        String deploymentModelAsString = null;
         String containerClassName = null;
         for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
             Attribute attribute = (Attribute) it2.next();
@@ -117,7 +117,7 @@ public class DocumentParser {
             if (name.equalsIgnoreCase("class")) {
                 className = value;
             } else if (name.equalsIgnoreCase("deployment-model")) {
-                deploymentModel = value;
+                deploymentModelAsString = value;
             } else if (name.equalsIgnoreCase("name")) {
                 specialAspectName = value;
             } else if (name.equalsIgnoreCase("container")) {
@@ -134,7 +134,7 @@ public class DocumentParser {
         // create the aspect definition
         final AspectDefinition aspectDef = new AspectDefinition(specialAspectName, classInfo, systemDef);
         aspectDef.setContainerClassName(containerClassName);
-        aspectDef.setDeploymentModel(deploymentModel);
+        aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelFor(deploymentModelAsString));
 
         parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut in Attributes AW-152
 
@@ -370,8 +370,6 @@ public class DocumentParser {
             try {
                 aspectClassInfo = AsmClassInfo.getClassInfo(aspectClassName, loader);
             } catch (Exception e) {
-                System.out.println("loader: " + loader);
-                System.out.println("aspectClassName: " + aspectClassName);
                 System.err.println(
                         "Warning: could not load aspect "
                         + aspectClassName
@@ -404,7 +402,7 @@ public class DocumentParser {
             AspectAnnotationParser.parse(aspectClassInfo, aspectDef, loader);
 
             // XML definition settings always overrides attribute definition settings
-            aspectDef.setDeploymentModel(deploymentModel);
+            aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelFor(deploymentModel));
             aspectDef.setName(aspectName);
             aspectDef.setContainerClassName(containerClassName);
 
@@ -433,7 +431,7 @@ public class DocumentParser {
 
         for (Iterator it1 = systemElement.elementIterator("mixin"); it1.hasNext();) {
             String className = null;
-            String deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_INSTANCE);
+            String deploymentModelAsString = DeploymentModel.PER_INSTANCE.toString();
             boolean isTransient = false;
             String factoryClassName = null;
             String expression = null;
@@ -445,7 +443,7 @@ public class DocumentParser {
                 if (name.equalsIgnoreCase("class")) {
                     className = value;
                 } else if (name.equalsIgnoreCase("deployment-model")) {
-                    deploymentModel = value;
+                    deploymentModelAsString = value;
                 } else if (name.equalsIgnoreCase("transient")) {
                     if (value != null && value.equalsIgnoreCase("true")) {
                         isTransient = true;
@@ -474,6 +472,8 @@ public class DocumentParser {
                 e.printStackTrace();
                 continue;
             }
+
+            final DeploymentModel deploymentModel = DeploymentModel.getDeploymentModelFor(deploymentModelAsString);
 
             final MixinDefinition mixinDefinition =
                     DefinitionParserHelper.createAndAddMixinDefToSystemDef(

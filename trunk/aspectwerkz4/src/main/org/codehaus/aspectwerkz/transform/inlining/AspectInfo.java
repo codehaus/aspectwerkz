@@ -21,7 +21,7 @@ public class AspectInfo {
     private final String m_aspectFieldName;
     private final String m_aspectClassName;
     private final String m_aspectClassSignature;
-    private final int m_deploymentModel;
+    private final DeploymentModel m_deploymentModel;
 
     public AspectInfo(final AspectDefinition aspectDefinition,
                       final String aspectFieldName,
@@ -32,7 +32,7 @@ public class AspectInfo {
         m_aspectFieldName = aspectFieldName;
         m_aspectClassName = aspectClassName;
         m_aspectClassSignature = aspectClassSignature;
-        m_deploymentModel = DeploymentModel.getDeploymentModelAsInt(aspectDefinition.getDeploymentModel());
+        m_deploymentModel = aspectDefinition.getDeploymentModel();
     }
 
     public AspectDefinition getAspectDefinition() {
@@ -47,7 +47,7 @@ public class AspectInfo {
         return m_aspectQualifiedName;
     }
 
-    public int getDeploymentModel() {
+    public DeploymentModel getDeploymentModel() {
         return m_deploymentModel;
     }
 

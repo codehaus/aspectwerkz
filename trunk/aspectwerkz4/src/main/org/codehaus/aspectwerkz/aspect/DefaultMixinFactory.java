@@ -20,7 +20,13 @@ import org.codehaus.aspectwerkz.DeploymentModel;
  */
 public class DefaultMixinFactory extends AbstractMixinFactory {
 
-    public DefaultMixinFactory(final Class mixinClass, final String deploymentModel) {
+    /**
+     * Creates a new default mixin factory.
+     *
+     * @param mixinClass
+     * @param deploymentModel
+     */
+    public DefaultMixinFactory(final Class mixinClass, final DeploymentModel deploymentModel) {
         super(mixinClass, deploymentModel);
     }
 
@@ -50,7 +56,7 @@ public class DefaultMixinFactory extends AbstractMixinFactory {
         } else {
             throw new DefinitionException(
                     "Mixins.mixinOf(Class) is can not be invoked for mixin deployed using as " +
-                    DeploymentModel.getDeploymentModelAsString(m_deploymentModel)
+                    m_deploymentModel
             );
         }
     }
@@ -81,7 +87,7 @@ public class DefaultMixinFactory extends AbstractMixinFactory {
         } else {
             throw new DefinitionException(
                     "Mixins.mixinOf(Object) is can not be invoked for mixin deployed using as " +
-                    DeploymentModel.getDeploymentModelAsString(m_deploymentModel)
+                    m_deploymentModel
             );
         }
     }

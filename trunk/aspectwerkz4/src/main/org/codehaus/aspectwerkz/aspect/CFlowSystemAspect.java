@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.aspect;
 import org.codehaus.aspectwerkz.CflowStack;
 import org.codehaus.aspectwerkz.AspectContext;
 import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
@@ -44,7 +45,7 @@ public class CFlowSystemAspect {
     /**
      * The deployment model for the aspect.
      */
-    public static final String DEPLOYMENT_MODEL = null; // FIXME - broken, used to be PER_THREAD
+    public static final DeploymentModel DEPLOYMENT_MODEL = null; // FIXME - broken, used to be PER_THREAD
 
     /**
      * The name of the pre advice method.

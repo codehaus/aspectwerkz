@@ -396,7 +396,7 @@ public class JoinPointManager {
                         final AdviceInfo adviceInfo = new AdviceInfo(
                                 aspectDefinition.getQualifiedName(),
                                 aspectDefinition.getClassName(),
-                                DeploymentModel.getDeploymentModelAsInt(aspectDefinition.getDeploymentModel()),
+                                aspectDefinition.getDeploymentModel(),
                                 adviceMethodInfo.getName(),
                                 AsmHelper.getMethodDescriptor(adviceMethodInfo),
                                 AsmHelper.getArgumentTypes(adviceMethodInfo),

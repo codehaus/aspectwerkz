@@ -15,6 +15,7 @@ import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 import java.util.Iterator;
 
@@ -132,7 +133,7 @@ public class DefinitionParserHelper {
      */
     public static MixinDefinition createAndAddMixinDefToSystemDef(final ClassInfo mixinClassInfo,
                                                                   final String expression,
-                                                                  final String deploymentModel,
+                                                                  final DeploymentModel deploymentModel,
                                                                   final boolean isTransient,
                                                                   final SystemDefinition systemDef) {
         final MixinDefinition mixinDef = createMixinDefinition(
@@ -274,7 +275,7 @@ public class DefinitionParserHelper {
      */
     public static MixinDefinition createMixinDefinition(final ClassInfo mixinClassInfo,
                                                         final String expression,
-                                                        final String deploymentModel,
+                                                        final DeploymentModel deploymentModel,
                                                         final boolean isTransient,
                                                         final SystemDefinition systemDef) {
         final MixinDefinition mixinDef = new MixinDefinition(mixinClassInfo, deploymentModel, isTransient, systemDef);
