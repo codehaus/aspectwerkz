@@ -60,7 +60,7 @@ public class ArgsAdviceTest extends TestCase implements Loggable {
         m_logString = "";
         getFirstAnonymous("a0", "a1", 2);
         assertEquals("before a0 before1 a0 invocation after1 a0 after a0 ", m_logString);
-        //TODO (low prio): anonymous pc with args() is not supported in XML - see notes in test-attribdef.xml
+        //TODO (low prio): anonymous pc with args() is not supported in XML - see notes in aop.xml
 //        m_logString = "";
 //        getFirstAnonymousXML("a0", "a1", 2);
 //        assertEquals("before a0 before1 a0 invocation after1 a0 after a0 ", m_logString);

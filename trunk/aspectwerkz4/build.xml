@@ -284,7 +284,7 @@
         <echo>${weave.classpath}</echo>
 
         <java classname="org.codehaus.aspectwerkz.compiler.AspectWerkzC" fork="true" classpath="${weave.classpath}">
-            <jvmarg value="-Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml"/>
+            <jvmarg value="-Daspectwerkz.definition.file=${src.dir}/test/aop.xml"/>
             <jvmarg value="-Daspectwerkz.transform.verbose=true"/>
 
             <!-- an AspectWerkzC tool option -->
@@ -305,7 +305,7 @@
             classpath="${offline.classpath}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar"
             fork="true">
             <jvmarg value="-Daspectwerkz.transform.dump=*"/>
-            <jvmarg value="-Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml"/>
+            <jvmarg value="-Daspectwerkz.definition.file=${src.dir}/test/aop.xml"/>
         </java>
     </target>
 
@@ -340,7 +340,7 @@
     <!-- =================================================== -->
     <target name="offline:samples" depends="clean, compile:samples, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-offline ${basedir}/src/samples/samples-attribdef.xml -verbose -verify -cp ${extensions.classes} ${samples.classes}"/>
+            <arg line="-offline ${basedir}/src/samples/aop.xml -verbose -verify -cp ${extensions.classes} ${samples.classes}"/>
         </exec>
     </target>
 
@@ -349,7 +349,7 @@
     <!-- =================================================== -->
     <target name="test" depends="clean, dist, test:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${basedir}/lib/aspectwerkz-extensions-${version}.jar${pathseparator}${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTestsInlined"/>
+            <arg line="-cp ${basedir}/lib/aspectwerkz-extensions-${version}.jar${pathseparator}${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/aop.xml test.AllTestsInlined"/>
         </exec>
     </target>
 
@@ -358,7 +358,7 @@
     <!-- =================================================== -->
     <target name="test:perf" depends="clean, dist, test:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.xmldef.AllPerfTests"/>
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aop.xml test.xmldef.AllPerfTests"/>
         </exec>
     </target>
 
@@ -377,7 +377,7 @@
         </java>
         <!-- run the application thru AspectWerkz -->
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/test/test-attribdef.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp"/>
+            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/test/aop.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp"/>
         </exec>
     </target>
 
@@ -424,7 +424,7 @@
     <!-- =================================================== -->
     <target name="samples:logging" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes}${pathseparator}${extensions.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.logging.Target"/>
+            <arg line="-cp ${samples.classes}${pathseparator}${extensions.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.logging.Target"/>
         </exec>
     </target>
 
@@ -433,7 +433,7 @@
     <!-- =================================================== -->
     <target name="samples:annotation" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.verbose=true examples.annotation.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.verbose=true examples.annotation.Target"/>
         </exec>
     </target>
 
@@ -442,7 +442,7 @@
     <!-- =================================================== -->
     <target name="samples:caching" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.caching.CacheTest"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.caching.CacheTest"/>
         </exec>
     </target>
 
@@ -451,7 +451,7 @@
     <!-- =================================================== -->
     <target name="samples:cflow" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
         </exec>
     </target>
 
@@ -460,7 +460,7 @@
     <!-- =================================================== -->
     <target name="samples:introduction" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
         </exec>
     </target>
 
@@ -469,7 +469,7 @@
     <!-- =================================================== -->
     <target name="samples:exception" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
         </exec>
     </target>
 
@@ -508,7 +508,7 @@
                 <pathelement path="${java.home}/../lib/tools.jar"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml"/>
+            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/aop.xml"/>
         </java>
     </target>
 
@@ -523,7 +523,7 @@
                 <pathelement path="${java.home}/../lib/tools.jar"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml"/>
+            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/aop.xml"/>
         </java>
     </target>
 
@@ -538,7 +538,7 @@
                 <pathelement path="${java.home}/../lib/tools.jar"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml"/>
+            <jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/aop.xml"/>
         </java>
     </target>
 

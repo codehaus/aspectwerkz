@@ -1213,7 +1213,7 @@ depends="aspectwerkz:compile, aspectwerkz:war:aspectc">
 <target name="samples:task:awc" depends="init, compile:all, samples:task:annoationc">
 <awc
     verbose="true"
-    definition="${basedir}/src/samples/samples-attribdef.xml"
+    definition="${basedir}/src/samples/aop.xml"
     classpathref="project.class.path">
 
     <target path="${basedir}/target/samples-classes"/>
