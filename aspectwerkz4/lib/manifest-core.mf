@@ -1,2 +1,2 @@
-Class-Path: aspectwerkz-core-2.0.RC1.jar
+Class-Path: aspectwerkz-core-2.0.RC2-snapshot.jar
 Premain-Class: org.codehaus.aspectwerkz.hook.Agent
