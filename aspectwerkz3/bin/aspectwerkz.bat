@@ -47,7 +47,7 @@ IF "%OFFLINE%"==""false"" (
     "%JAVA_COMMAND%" -cp "%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar" org.codehaus.aspectwerkz.util.EnvironmentDetect -jvm
     IF ERRORLEVEL 2 (
         @REM -- Use for BEA JRockit --
-        "%JAVA_COMMAND%" -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\target\extensions.jar;%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
+        "%JAVA_COMMAND%" -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\lib\aspectwerkz-extensions-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
 
         @exit /B %ERRORLEVEL%
     )
