@@ -80,7 +80,7 @@ public class AspectWerkzDefinition implements Serializable {
     /**
      * Maps the introductions to it's name.
      */
-    private final Map m_introductionMap = new HashMap();
+    private final Map m_introductionMap = new SequencedHashMap();
 
     /**
      * Maps the advices to it's name.

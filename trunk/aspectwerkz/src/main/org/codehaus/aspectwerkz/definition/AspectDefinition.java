@@ -7,6 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -34,7 +36,7 @@ public class AspectDefinition implements Serializable {
     /**
      * The pointcuts for this aspect.
      */
-    private final Map m_pointcutDefs = new HashMap();
+    private final Map m_pointcutDefs = new SequencedHashMap();
 
     /**
      * The controller definitions.

@@ -34,6 +34,7 @@ public class XmlDefinitionParserTest extends TestCase {
         try {
             AspectWerkzDefinition aspectwerkz = XmlDefinitionParser.parseNoCache(m_input.toURL());
             Iterator it = aspectwerkz.getIntroductionDefinitions().iterator();
+            it.next();//skip "loggable"
             IntroductionDefinition introduction2 = (IntroductionDefinition)it.next();
             assertEquals("mixin", introduction2.getName());
             assertEquals("mixins.Mixin", introduction2.getInterface());
@@ -91,11 +92,15 @@ public class XmlDefinitionParserTest extends TestCase {
             Iterator itl = aspectwerkz.getAspectDefinitions().iterator();
             itl.next(); // SystemAspect @todo validate with Jonas (side effect of precedence fix)
             Iterator it = ((AspectDefinition)itl.next()).getPointcutDefs().iterator();
+            it.next();//skip "start"
             PointcutDefinition pointcut2 = (PointcutDefinition)it.next();
             assertEquals("method", pointcut2.getType());
             assertEquals("stop", pointcut2.getName());
             assertEquals("services.*", pointcut2.getClassPattern());
             assertEquals("* stop(..)", pointcut2.getPattern());
+            // absract aspect pointcut are added thereafter
+            // @todo review precedence
+            it.next();//skip "callerSideTest"
             PointcutDefinition pointcut1 = (PointcutDefinition)it.next();
             assertEquals("setField", pointcut1.getType());
             assertEquals("setFieldTest", pointcut1.getName());
