@@ -7,8 +7,8 @@
  **************************************************************************************/
 package test.clapp;
 
-import org.apache.bcel.classfile.ClassParser;
-import org.apache.bcel.generic.ClassGen;
+//import org.apache.bcel.classfile.ClassParser;
+//import org.apache.bcel.generic.ClassGen;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 
 import java.io.ByteArrayInputStream;
@@ -33,26 +33,27 @@ public class AddInterfacePreProcessor implements ClassPreProcessor {
         try {
             log(klass);
 
-            // build the ClassGen
-            ClassParser parser = new ClassParser(new ByteArrayInputStream(abyte), "<generated>"); //@todo
-                                                                                                  // is
-                                                                                                  // this
-            // needed
-            // _"+klass+">");
-            ClassGen cg = new ClassGen(parser.parse());
-
-            // instrument
-            if (!cg.isInterface()
-                && !Arrays.asList(cg.getInterfaceNames()).contains("java.util.EventListener")) {
-                cg.addInterface("java.util.EventListener");
-            }
-            try {
-                cg.getJavaClass().dump("_dump/" + klass.replace('.', '/') + ".class");
-            } catch (Exception e) {
-                System.err.println("failed to dump " + klass);
-                e.printStackTrace();
-            }
-            return cg.getJavaClass().getBytes();
+//            // build the ClassGen
+//            ClassParser parser = new ClassParser(new ByteArrayInputStream(abyte), "<generated>"); //@todo
+//                                                                                                  // is
+//                                                                                                  // this
+//            // needed
+//            // _"+klass+">");
+//            ClassGen cg = new ClassGen(parser.parse());
+//
+//            // instrument
+//            if (!cg.isInterface()
+//                && !Arrays.asList(cg.getInterfaceNames()).contains("java.util.EventListener")) {
+//                cg.addInterface("java.util.EventListener");
+//            }
+//            try {
+//                cg.getJavaClass().dump("_dump/" + klass.replace('.', '/') + ".class");
+//            } catch (Exception e) {
+//                System.err.println("failed to dump " + klass);
+//                e.printStackTrace();
+//            }
+//            return cg.getJavaClass().getBytes();
+return null;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
