@@ -16,82 +16,82 @@ public class Test extends TestCase {
         s_log += msg;
     }
 
-    public void testall() {
+    public void testAll() {
         s_log = "";
         all();
         assertEquals("logAround ", s_log);
     }
 
-    public void testaroundFinally() {
+    public void testAroundFinally() {
         s_log = "";
         aroundFinally();
         assertEquals("logAround logAfterFinally ", s_log);
     }
 
-    public void testaroundFinallyReturning() {
+    public void testAroundFinallyReturning() {
         s_log = "";
         aroundFinallyReturning();
-        assertEquals("logAround logAfterFinally ", s_log);
+        assertEquals("logAround logAfterReturning logAfterFinally ", s_log);
     }
 
-    public void testaroundReturning() {
+    public void testAroundReturning() {
         s_log = "";
         aroundReturning();
-        assertEquals("logAround logAfterReturning ", s_log);
+        assertEquals("logAround logAfterReturningString logAfterReturning ", s_log);
     }
 
-    public void testaroundFinallyReturningThrowing() {
+    public void testAroundFinallyReturningThrowing() {
         s_log = "";
         try {
             aroundFinallyReturningThrowing();
         } catch (UnsupportedOperationException e) {
         }
-        assertEquals("logAround logAfterThrowing logAfterFinally ", s_log);
+        assertEquals("logAround logAfterThrowing logAfterThrowingRTE logAfterFinally ", s_log);
     }
 
-    public void testaroundReturningThrowing() {
+    public void testAroundReturningThrowing() {
         s_log = "";
         try {
             aroundReturningThrowing();
         } catch (UnsupportedOperationException e) {
         }
-        assertEquals("logAround logAfterThrowing ", s_log);
+        assertEquals("logAround logAfterThrowing logAfterThrowingRTE ", s_log);
     }
 
-    public void test_finally() {
+    public void testFinally() {
         s_log = "";
         _finally();
         assertEquals("logAfterFinally ", s_log);
     }
 
-    public void testfinallyReturning() {
+    public void testFinallyReturning() {
         s_log = "";
         finallyReturning();
-        assertEquals("logAfterReturning logAfterFinally ", s_log);
+        assertEquals("logAfterReturningString logAfterReturning logAfterFinally ", s_log);
     }
 
-    public void testfinallyReturningThrowing() {
+    public void testFinallyReturningThrowing() {
         s_log = "";
         try {
             finallyReturningThrowing();
         } catch (UnsupportedOperationException e) {
         }
-        assertEquals("logAfterThrowing logAfterFinally ", s_log);
+        assertEquals("logAfterThrowing logAfterThrowingRTE logAfterFinally ", s_log);
     }
 
-    public void testreturning() {
+    public void testReturning() {
         s_log = "";
         returning();
-        assertEquals("logAfterReturning ", s_log);
+        assertEquals("logAfterReturningString logAfterReturning ", s_log);
     }
 
-    public void testreturningThrowing() {
+    public void testReturningThrowing() {
         s_log = "";
         try {
             returningThrowing();
         } catch (Exception e) {
         }
-        assertEquals("", s_log);
+        assertEquals("logAfterThrowing ", s_log);
     }
 
     public Test(String name) {

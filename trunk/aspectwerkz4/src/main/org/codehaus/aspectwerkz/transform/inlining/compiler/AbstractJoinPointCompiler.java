@@ -774,18 +774,28 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             cv.visitVarInsn(ALOAD, exceptionIndex1);
 
             // FIXME use classname, not type desc - needs test coverage !!
-            cv.visitTypeInsn(INSTANCEOF, advice.getSpecialArgumentTypeDesc());
+            final String specialArgDesc = advice.getSpecialArgumentTypeDesc();
+            if (specialArgDesc != null) {
+                // after throwing <TYPE>
+                cv.visitTypeInsn(INSTANCEOF, specialArgDesc);
 
-            Label ifInstanceOfLabel = new Label();
-            cv.visitJumpInsn(IFEQ, ifInstanceOfLabel);
+                Label ifInstanceOfLabel = new Label();
+                cv.visitJumpInsn(IFEQ, ifInstanceOfLabel);
 
-            // after throwing advice invocation
-            createAfterAdviceInvocation(
-                    cv, isOptimizedJoinPoint, advice, joinPointInstanceIndex,
-                    argStartIndex, callerIndex, calleeIndex
-            );
+                // after throwing advice invocation
+                createAfterAdviceInvocation(
+                        cv, isOptimizedJoinPoint, advice, joinPointInstanceIndex,
+                        argStartIndex, callerIndex, calleeIndex
+                );
 
-            cv.visitLabel(ifInstanceOfLabel);
+                cv.visitLabel(ifInstanceOfLabel);
+            } else {
+                // after throwing
+                createAfterAdviceInvocation(
+                        cv, isOptimizedJoinPoint, advice, joinPointInstanceIndex,
+                        argStartIndex, callerIndex, calleeIndex
+                );
+            }
         }
 
         // rethrow exception
@@ -1316,16 +1326,17 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             // set the return value index that will be used as arg to advice
             advice.setSpecialArgumentIndex(returnValueIndex);
 
-            String specialArgTypeDesc = advice.getSpecialArgumentTypeDesc();
-            if (specialArgTypeDesc == null) {
-                // we have a normal after advice (not after returning)
+            String specialArgDesc = advice.getSpecialArgumentTypeDesc();
+            if (specialArgDesc == null) {
+                // after returning
                 createAfterAdviceInvocation(
                         cv, isOptimizedJoinPoint, advice, joinPointInstanceIndex, argStartIndex,
                         callerIndex, calleeIndex
                 );
             } else {
+                // after returning <TYPE>
                 if (AsmHelper.isPrimitive(m_returnType)) {
-                    if (m_returnType.getDescriptor().equals(specialArgTypeDesc)) {
+                    if (m_returnType.getDescriptor().equals(specialArgDesc)) {
                         createAfterAdviceInvocation(
                                 cv, isOptimizedJoinPoint, advice, joinPointInstanceIndex, argStartIndex,
                                 callerIndex, calleeIndex
@@ -1341,7 +1352,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                     cv.visitVarInsn(ALOAD, returnValueIndex);
 
                     //FIXME - use className, not desc - need test coverage !!
-                    cv.visitTypeInsn(INSTANCEOF, specialArgTypeDesc);
+                    cv.visitTypeInsn(INSTANCEOF, specialArgDesc);
 
                     Label label = new Label();
                     cv.visitJumpInsn(IFEQ, label);

@@ -72,7 +72,8 @@ public class Aspect {
     Pointcut returningThrowing;
 
     /**
-     * @Around all || aroundFinally || aroundFinallyReturning ||
+     * @Around
+     * all || aroundFinally || aroundFinallyReturning ||
      * aroundFinallyReturningThrowing || aroundReturningThrowing || aroundReturning
      */
     public Object logAround(StaticJoinPoint joinPoint) throws Throwable {
@@ -82,7 +83,8 @@ public class Aspect {
     }
 
     /**
-     * @After returning(java.lang.String) aroundFinallyReturning || aroundFinallyReturningThrowing ||
+     * @After returning
+     * aroundFinallyReturning || aroundFinallyReturningThrowing ||
      * aroundReturningThrowing || finallyReturning || finallyReturningThrowing ||
      * returningThrowing || aroundReturning || returning
      */
@@ -91,20 +93,30 @@ public class Aspect {
     }
 
     /**
-     * @After throwing(java.lang.RuntimeException) aroundFinallyReturningThrowing || aroundReturningThrowing ||
+     * @After returning(java.lang.String)
+     * aroundFinallyReturning || aroundFinallyReturningThrowing ||
+     * aroundReturningThrowing || finallyReturning || finallyReturningThrowing ||
+     * returningThrowing || aroundReturning || returning
+     */
+    public void logAfterReturningString(final StaticJoinPoint joinPoint) throws Throwable {
+        Test.log("logAfterReturningString ");
+    }
+
+    /**
+     * @After throwing(java.lang.RuntimeException)
+     * aroundFinallyReturningThrowing || aroundReturningThrowing ||
+     * finallyReturningThrowing || returningThrowing
+     */
+    public void logAfterThrowingRTE(final StaticJoinPoint joinPoint) throws Throwable {
+        Test.log("logAfterThrowingRTE ");
+    }
+
+    /**
+     * @After throwing aroundFinallyReturningThrowing || aroundReturningThrowing ||
      * finallyReturningThrowing || returningThrowing
      */
     public void logAfterThrowing(final StaticJoinPoint joinPoint) throws Throwable {
         Test.log("logAfterThrowing ");
-    }
-
-    /**
-     * @After throwing(java.lang.IllegalArgumentException)
-     * aroundFinallyReturningThrowing || aroundReturningThrowing ||
-     * finallyReturningThrowing || returningThrowing
-     */
-    public void logAfterThrowing2(final StaticJoinPoint joinPoint) throws Throwable {
-        Test.log("logAfterThrowing2 ");
     }
 
     /**

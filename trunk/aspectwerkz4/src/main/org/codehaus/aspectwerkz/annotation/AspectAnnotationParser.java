@@ -11,14 +11,11 @@ import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.DeploymentScope;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
-import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
 
 import java.util.Iterator;
@@ -201,8 +198,7 @@ public class AspectAnnotationParser {
                 if (annotation != null) {
 
                     DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                            AspectAnnotationParser
-                            .getMethodPointcutCallSignature(method.getName(), annotation),
+                            AspectAnnotationParser.getMethodPointcutCallSignature(method.getName(), annotation),
                             annotation.expression(), aspectDef
                     );
                 }
