@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--*****************************************************************************************************************************
+	AspectWerkz DTD 0.9
+
+This DTD is provided as is. Some elements might have been deprecated since 0.7.4  (see comments)
+
+This DTD might be incomplete - drop a mail on the user / dev mailing list
+
+This DTD might clash with some of existing XML files since it imposes for some elements an order
+(see aspect: introductions then pointcuts then advices)
+
+The "unspecified" order of the aspectwerkz childs might change to the one similar of aspects
+(transformation scope, introduction-def, advice-def, advices-def, abstract-aspect, aspect, package)
+
+To use this DTD, start your defintion file with
+	<!DOCTYPE aspectwerkz PUBLIC
+	    "-//AspectWerkz//DTD 0.9//EN"
+	    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_9.dtd">
+
+You can also use the "aliasing DTD" that matchs always the latest release of AspectWerkz
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+
+To not use this DTD, start your definition file with
+	<?xml version="1.0"?>
+
+Change from 0.8.1 to 0.9
+    Removed "id" attribute from "aspectwerkz" element
+    Added "<system id=...>" element
+    "system" element can be wether a xml defined, wether and attribute defined one
+    "system" element does not support mixin of xml aspects and attributes defined aspects
+    "advice-def advice" attribute removed, use "class" instead
+    "aspect/pointcut" removed, use "aspect/pointcut-def"
+    "aspect/introduction" removed, use "aspect/bind-introduction"
+    "abstract-aspect/introduction" removed, use "abstract-aspect/bind-introduction"
+    "aspect/advice" removed, use "aspect/bind-advice"
+    "abstract-aspect/advice" removed, use "abstract-aspect/bind-advice"
+    (introduction-def | advice-def | advices-def | abstract-aspect | aspect | package)*
+    add "exclude" and "include" element in "system" element
+    "system/transformation-scope" removed, use "include" and "exclude"
+    add "param" for "use-aspect"
+******************************************************************************************************************************-->
+
+
+<!--*****************************************************************************************************************************
+aspectwerkz
+*********************************************************************************************************************************
+Aspectwerkz defines the root element
+For now a single system is supported.
+******************************************************************************************************************************-->
+<!ELEMENT aspectwerkz (system)>
+<!--*****************************************************************************************************************************
+system
+*********************************************************************************************************************************
+System allows isolation of AspectWerkz model
+For now we only support a single system.
+A system contains use-aspect syntax OR *-def *-ref syntax. The DTD cannot represent that.
+Attributes:
+    id: unique name of the AspectWerkz system (replaces <aspectwerkz id=..> in 0.8.1 DTD)
+    base-package: provides the global package prefix
+Notes:
+    Due to package nesting, we cannot define an order here
+******************************************************************************************************************************-->
+<!ELEMENT system (
+    (exclude | include)*,
+    (introduction-def | advice-def | advices-def | abstract-aspect | aspect | use-aspect | package )*
+)>
+<!ATTLIST system
+	id CDATA #REQUIRED
+    base-package CDATA #IMPLIED
+>
+<!--*****************************************************************************************************************************
+exclude
+*********************************************************************************************************************************
+Declares one global package prefix. Any class in the scope cannot have aspects on it within this system
+Attributes:
+	package: package prefix
+Note: package does not support pattern, excepted ending ".*" like "foo.*", which is equivalent to "foo."
+During weaving, a class is considered to be in the transformation scope with a classFQN.startsWith( ) test.
+Note: if a class is both in exclude and include, it is considered excluded.
+******************************************************************************************************************************-->
+<!ELEMENT exclude EMPTY>
+<!ATTLIST exclude
+	package CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+include
+*********************************************************************************************************************************
+Declares one global package prefix. Any class not in the scope cannot have aspects on it within this system
+Attributes:
+	package: package prefix
+Note: package does not support pattern, excepted ending ".*" like "foo.*", which is equivalent to "foo."
+During weaving, a class is considered to be in the transformation scope with a classFQN.startsWith( ) test.
+******************************************************************************************************************************-->
+<!ELEMENT include EMPTY>
+<!ATTLIST include
+	package CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+package
+*********************************************************************************************************************************
+Declares a package prefix which applies to all FQN (introduction, advice) and patterns (pointcuts, class)
+contained in the package element.
+Package elements can be nested to ease writing of package and subpackage
+(package@name "bar" nested in package@name "foo" means "foo.bar").
+Attributes:
+	name: package prefix
+Notes:
+    Does not support pattern, excepted ending ".*" like "foo.*" which is equivalent to "foo." and to "foo"
+******************************************************************************************************************************-->
+<!ELEMENT package (
+    introduction-def*,
+    (advice-def | advices-def | abstract-aspect | aspect)*,
+    use-aspect*
+)>
+<!ATTLIST package
+	name CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+use-aspect
+*********************************************************************************************************************************
+Declares self defined aspect.
+DO NOT MIX "use-aspect" with "aspect" in the same "system"
+******************************************************************************************************************************-->
+<!ELEMENT use-aspect (param*)>
+<!ATTLIST use-aspect
+    class CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+advice-def
+*********************************************************************************************************************************
+Allow for advice declaration for use in several aspects
+Attributes:
+	name: unique name of the advice in the system. Referenced in advice-ref@name element
+	class: full qualified class name of the advice
+	(Removed:advice, use class)
+	deployment-model: advice life cycle context, defaults to perJVM
+	(Removed: deploymentModel, use deployment-model)
+	attribute:
+To specify other advice param, use nested element advice-def/param
+******************************************************************************************************************************-->
+<!ELEMENT advice-def (param*)>
+<!ATTLIST advice-def
+	name CDATA #REQUIRED
+	class CDATA #REQUIRED
+	deployment-model (perJVM | perClass | perInstance | perThread) #IMPLIED
+	attribute CDATA #IMPLIED
+>
+<!--*****************************************************************************************************************************
+param
+*********************************************************************************************************************************
+Declares param for a use-aspect element or a advice-def element
+******************************************************************************************************************************-->
+<!ELEMENT param EMPTY>
+<!ATTLIST param
+	name CDATA #REQUIRED
+	value CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+advices-def
+*********************************************************************************************************************************
+Allow to define an advice stack
+******************************************************************************************************************************-->
+<!ELEMENT advices-def (advice-ref+)>
+<!ATTLIST advices-def
+	name CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+introduction-def
+*********************************************************************************************************************************
+Attributes:
+	name: unique name 
+	interface: FQN of interface 
+	implementation: FQN of class implementing interface to which calls will be delegated 
+	deployment-model: advice life cycle context 
+	(Removed: deploymentModel, use deployment-model)
+	attribute: ?? 
+******************************************************************************************************************************-->
+<!ELEMENT introduction-def EMPTY>
+<!ATTLIST introduction-def
+	name CDATA #REQUIRED
+	interface CDATA #REQUIRED
+	implementation CDATA #IMPLIED
+	deployment-model (perJVM | perClass | perInstance | perThread) #IMPLIED
+	attribute CDATA #IMPLIED
+>
+<!--*****************************************************************************************************************************
+abstract-aspect
+*********************************************************************************************************************************
+Allow for inheritance of aspects
+Attributes:
+	name: unique name. Referenced in aspect@extends.
+?? level of inheritance between abstract-aspects
+******************************************************************************************************************************-->
+<!ELEMENT abstract-aspect ( bind-introduction*, (pointcut-def | controller-def)* , bind-advice*)>
+<!ATTLIST abstract-aspect
+	name CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+aspect
+*********************************************************************************************************************************
+Attributes:
+	name: ??
+	extends: abstract-aspect@name
+******************************************************************************************************************************-->
+<!ELEMENT aspect ( bind-introduction*, (pointcut-def | controller-def)*, bind-advice*)>
+<!ATTLIST aspect
+	name CDATA #REQUIRED
+	extends CDATA #IMPLIED
+>
+<!--*****************************************************************************************************************************
+pointcut-def
+*********************************************************************************************************************************
+Attributes:
+	name
+	type
+	pattern
+    non-reentrant: set to "true" to disable reentrant calls
+    @todo non-reentrant keep or remove - since not supported
+******************************************************************************************************************************-->
+<!ELEMENT pointcut-def EMPTY>
+<!ATTLIST pointcut-def
+	name CDATA #REQUIRED
+	type (method | getField | setField | throws | callerSide | cflow) #REQUIRED
+	pattern CDATA #REQUIRED
+    non-reentrant CDATA #IMPLIED
+>
+<!--*****************************************************************************************************************************
+introduction-ref
+*********************************************************************************************************************************
+References introduction-def
+******************************************************************************************************************************-->
+<!ELEMENT introduction-ref EMPTY>
+<!ATTLIST introduction-ref
+	name CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+advice-ref
+*********************************************************************************************************************************
+References advice-def
+******************************************************************************************************************************-->
+<!ELEMENT advice-ref EMPTY>
+<!ATTLIST advice-ref
+	name CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+advices-ref
+*********************************************************************************************************************************
+References advices-def
+******************************************************************************************************************************-->
+<!ELEMENT advices-ref EMPTY>
+<!ATTLIST advices-ref
+	name CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+bind-introduction
+*********************************************************************************************************************************
+Attributes:
+	class: pattern for FQN to apply introduction
+Deprecated:	introduce
+Note: introduction-ref can be provided both thru a single attribute introduction@introduction-ref and thru one
+or more child elements introduction/introduction-ref. The introduction@introduction-ref will ?? be first on stack.
+******************************************************************************************************************************-->
+<!ELEMENT bind-introduction (introduction-ref*)>
+<!ATTLIST bind-introduction
+	class CDATA #REQUIRED
+	introduction-ref CDATA #IMPLIED
+>
+<!--*****************************************************************************************************************************
+bind-advice
+*********************************************************************************************************************************
+Attributes:
+	pointcut: references pointcut-def@name
+	expression: reference an logical combination of pointcut-def@name
+    [ use pointcut OR expression but not both ]
+	cflow: references pointcut-def@name whose @type is "cflow"
+One and only one of @pointcut and @expression must be present
+Note: advice-ref can be provided both thru a single attribute advice@advice-ref and thru one or more child
+elements advice/advice-ref. The advice@advice-ref will ?? be first on stack.
+******************************************************************************************************************************-->
+<!ELEMENT bind-advice (advices-ref | advice-ref)*>
+<!ATTLIST bind-advice
+	pointcut CDATA #IMPLIED
+	expression CDATA #IMPLIED
+	cflow CDATA #IMPLIED
+	advice-ref CDATA #IMPLIED
+>
+<!--*****************************************************************************************************************************
+controller-def
+Deprecated: controller
+*********************************************************************************************************************************
+Attributes:
+	pointcut: references pointcut-def@name
+	expression: reference an logical combination of pointcut-def@name
+	class: implementation of the controller
+One and only one of @pointcut and @expression must be present
+******************************************************************************************************************************-->
+<!ELEMENT controller-def EMPTY>
+<!ATTLIST controller-def
+	pointcut CDATA #IMPLIED
+	expression CDATA #IMPLIED
+	class CDATA #REQUIRED
+>	
