@@ -67,7 +67,6 @@ public class AdviceDefinition {
      * @param expression      the expression
      * @param method          the method
      * @param methodIndex     the method index
-     * @param deploymentModel the deployment model
      */
     public AdviceDefinition(
             final String name,
@@ -209,5 +208,14 @@ public class AdviceDefinition {
                 m_aspectDefinition
         );
         return def;
+    }
+
+    /**
+     * Returns the expression as a string.
+     *
+     * @return the expression as a string
+     */
+    public String getExpressionAsString() {
+        return getExpression().getExpression();
     }
 }

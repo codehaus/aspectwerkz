@@ -267,7 +267,7 @@ public abstract class Aspect implements Serializable {
      *
      * @return the aspect definition
      */
-    public AspectDefinition ___AW_getAspectDef() {
+    public AspectDefinition ___AW_getAspectDefinition() {
         return m_aspectDef;
     }
 

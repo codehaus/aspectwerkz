@@ -18,6 +18,7 @@ import javassist.CtMethod;
 import javassist.CtNewConstructor;
 import javassist.NotFoundException;
 import javassist.CtNewMethod;
+import javassist.Modifier;
 import javassist.bytecode.CodeAttribute;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
@@ -78,6 +79,8 @@ public class ConstructorExecutionTransformer implements Transformer {
                 }
                 context.markAsAdvised();
 
+                createStaticMethodWithConstructorBody(ctClass, constructor, i);
+
                 addPrefixToConstructor(ctClass, constructor);
                 int constructorHash = TransformationUtil.calculateHash(constructor);
                 createWrapperConstructor(constructor, constructorHash);
@@ -126,7 +129,6 @@ public class ConstructorExecutionTransformer implements Transformer {
     }
 
     /**
-     * Adds a prefix to the original constructor. To make it callable only from within the framework itself.
      *
      * @param ctClass     the class
      * @param constructor the current method
@@ -141,15 +143,17 @@ public class ConstructorExecutionTransformer implements Transformer {
                 constructor.getName(), methodSequence, ctClass.getName()
         );
 
-        String ctorBody = null;
-
         CtMethod method = CtNewMethod.make(
                 CtClass.voidType, prefixedMethodName, constructor.getParameterTypes(),
-                constructor.getExceptionTypes(), ctorBody, ctClass
+                constructor.getExceptionTypes(), null, ctClass
         );
+        method.setModifiers(Modifier.STATIC | Modifier.FINAL);
 
-        CodeAttribute codeAttribute = method.getMethodInfo().getCodeAttribute();
-        codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
+        CodeAttribute codeAttribute = constructor.getMethodInfo().getCodeAttribute();
+        method.getMethodInfo().setCodeAttribute(codeAttribute);
+
+//        CodeAttribute codeAttribute = method.getMethodInfo().getCodeAttribute();
+//        codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
 
         ctClass.addMethod(method);
     }

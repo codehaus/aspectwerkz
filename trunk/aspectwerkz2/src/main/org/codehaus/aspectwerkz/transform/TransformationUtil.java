@@ -431,14 +431,14 @@ public final class TransformationUtil {
             final String methodName,
             final int methodSequence,
             final String className) {
-        final StringBuffer methodName = new StringBuffer();
-        methodName.append(ORIGINAL_METHOD_PREFIX);
-        methodName.append(methodName);
-        methodName.append(DELIMITER);
-        methodName.append(methodSequence);
-        methodName.append(DELIMITER);
-        methodName.append(className.replace('.', '_'));
-        return methodName.toString();
+        final StringBuffer buf = new StringBuffer();
+        buf.append(ORIGINAL_METHOD_PREFIX);
+        buf.append(methodName);
+        buf.append(DELIMITER);
+        buf.append(methodSequence);
+        buf.append(DELIMITER);
+        buf.append(className.replace('.', '_'));
+        return buf.toString();
     }
 
     /**
