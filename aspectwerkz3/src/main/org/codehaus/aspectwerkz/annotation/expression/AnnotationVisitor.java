@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.annotation.expression;
 
 import org.codehaus.aspectwerkz.annotation.expression.ast.*;
+import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -30,9 +31,10 @@ public class AnnotationVisitor implements ExpressionParserVisitor {
         m_namespace = namespace;
     }
 
-    //    public boolean match(final ExpressionContext context) {
-    //        return ((Boolean)visit(m_root, context)).booleanValue();
-    //    }
+    public boolean match(final TypedAnnotationProxy context) {
+        return ((Boolean)visit(m_root, context)).booleanValue();
+    }
+
     public Object visit(SimpleNode node, Object data) {
         return node.jjtGetChild(0).jjtAccept(this, data);
     }

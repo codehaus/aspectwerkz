@@ -230,7 +230,7 @@ public class AnnotationC {
             String annotationName = (String)it.next();
             JAnnotation customAnnotation = clazz.getAnnotation(annotationName);
             if (customAnnotation != null) {
-                AnnotationProxyBase annotationProxy = (AnnotationProxyBase)customAnnotation.getProxy();
+                TypedAnnotationProxy annotationProxy = (TypedAnnotationProxy)customAnnotation.getProxy();
                 if (annotationProxy != null) {
                     enhancer.insertClassAttribute(new AnnotationInfo(annotationName, annotationProxy));
                     logInfo("custom class annotation [" + annotationName + " @ " + clazz.getQualifiedName() + ']');
@@ -272,7 +272,7 @@ public class AnnotationC {
             String annotationName = (String)it.next();
             JAnnotation customAnnotation = method.getAnnotation(annotationName);
             if (customAnnotation != null) {
-                AnnotationProxyBase annotationProxy = (AnnotationProxyBase)customAnnotation.getProxy();
+                TypedAnnotationProxy annotationProxy = (TypedAnnotationProxy)customAnnotation.getProxy();
                 if (annotationProxy != null) {
                     enhancer.insertMethodAttribute(method, new AnnotationInfo(annotationName, annotationProxy));
                     logInfo("custom method annotation [" + annotationName + " @ " + method.getQualifiedName() + ']');
@@ -307,7 +307,7 @@ public class AnnotationC {
             String annotationName = (String)it.next();
             JAnnotation customAnnotation = field.getAnnotation(annotationName);
             if (customAnnotation != null) {
-                AnnotationProxyBase annotationProxy = (AnnotationProxyBase)customAnnotation.getProxy();
+                TypedAnnotationProxy annotationProxy = (TypedAnnotationProxy)customAnnotation.getProxy();
                 if (annotationProxy != null) {
                     enhancer.insertFieldAttribute(field, new AnnotationInfo(annotationName, annotationProxy));
                     logInfo("custom field annotation [" + annotationName + " @ " + field.getQualifiedName() + ']');

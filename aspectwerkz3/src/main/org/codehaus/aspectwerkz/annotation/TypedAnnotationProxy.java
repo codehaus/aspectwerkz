@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class AnnotationProxyBase extends AnnotationProxy implements Annotation, Serializable {
+public abstract class TypedAnnotationProxy extends AnnotationProxy implements Annotation, Serializable {
     protected transient List m_values = null;
 
     public JAnnotationValue[] getValues() {

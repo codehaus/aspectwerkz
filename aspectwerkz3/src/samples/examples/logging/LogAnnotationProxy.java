@@ -7,14 +7,14 @@
  **************************************************************************************/
 package examples.logging;
 
-import org.codehaus.aspectwerkz.annotation.AnnotationProxyBase;
+import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
 
 /**
  * The 'log' annotation proxy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class LogAnnotationProxy extends AnnotationProxyBase {
+public class LogAnnotationProxy extends TypedAnnotationProxy {
     public static final int INFO = 0;
     public static final int ERROR = 1;
     public static final int WARNING = 2;

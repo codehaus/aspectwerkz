@@ -150,7 +150,7 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                 <ul>
                     <li>
                          The proxy extends the
-                        <code>org.codehaus.aspectwerkz.annotation.AnnotationProxyBase</code> class.
+                        <code>org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy</code> class.
                     </li>
                     <br/>
                     <li>
