@@ -39,17 +39,18 @@ public final class TransformationUtil {
     public static final String DELIMITER = "$";
     public static final String CALL_SIDE_DELIMITER = "#";
     public static final String UUID_FIELD = ASPECTWERKZ_PREFIX + "uuid";
-    public static final String META_DATA_FIELD = ASPECTWERKZ_PREFIX + "metaData";
+    public static final String META_DATA_FIELD = ASPECTWERKZ_PREFIX + "meta_data";
     public static final String STATIC_CLASS_FIELD = ASPECTWERKZ_PREFIX + "clazz";
     public static final String JOIN_POINT_PREFIX = ASPECTWERKZ_PREFIX + "jp";
-    public static final String ORIGINAL_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "originalMethod" + DELIMITER;
-    public static final String MEMBER_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "memberMethod" + DELIMITER;
-    public static final String STATIC_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "staticMethod" + DELIMITER;
-    public static final String MEMBER_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "memberField" + DELIMITER + "get" + DELIMITER;
-    public static final String MEMBER_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "memberField" + DELIMITER + "set" + DELIMITER;
-    public static final String STATIC_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "staticField" + DELIMITER + "get" + DELIMITER;
-    public static final String STATIC_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "staticField" + DELIMITER + "set" + DELIMITER;
-    public static final String CALLER_SIDE_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "callerSideMethod" + DELIMITER;
+    public static final String ORIGINAL_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "original_method" + DELIMITER;
+    public static final String SUPER_CALL_WRAPPER_PREFIX = ASPECTWERKZ_PREFIX + DELIMITER + "super_call_wrapper" + DELIMITER;
+    public static final String MEMBER_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "member_method" + DELIMITER;
+    public static final String STATIC_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "static_method" + DELIMITER;
+    public static final String MEMBER_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "member_field" + DELIMITER + "get" + DELIMITER;
+    public static final String MEMBER_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "member_field" + DELIMITER + "set" + DELIMITER;
+    public static final String STATIC_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "static_field" + DELIMITER + "get" + DELIMITER;
+    public static final String STATIC_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "static_field" + DELIMITER + "set" + DELIMITER;
+    public static final String CALLER_SIDE_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "caller_side_method" + DELIMITER;
     public static final String CONSTRUCTOR_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "constructor" + DELIMITER;
 
     public static final String FIELD_JOIN_POINT_PRE_EXECUTION_METHOD = "pre";
