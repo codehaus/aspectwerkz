@@ -11,13 +11,10 @@ import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.transform.inlining.deployer.Deployer;
 import org.codehaus.aspectwerkz.transform.inlining.deployer.DeploymentHandle;
 import org.codehaus.aspectwerkz.definition.PreparedPointcut;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
- * FIXME BUG with multiple advice - not in logging sample
- * FIXME add XML defined aspect test
+ * TODO add more tests, tests that can make things break, evil tests
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
