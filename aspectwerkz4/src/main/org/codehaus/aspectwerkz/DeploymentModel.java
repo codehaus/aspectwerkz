@@ -11,48 +11,34 @@ import org.codehaus.aspectwerkz.perx.PerObjectAspect;
 
 /**
  * Enum containing the different deployment model types.
+ * <p/>
+ * Note: equals does not check for pointcut equality for perthis/pertarget but
+ * does only checks for types
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public final class DeploymentModel {
+public class DeploymentModel {
 
     public static final DeploymentModel PER_JVM = new DeploymentModel("perJVM");
     public static final DeploymentModel PER_CLASS = new DeploymentModel("perClass");
     public static final DeploymentModel PER_INSTANCE = new DeploymentModel("perInstance");
     
-    public static final DeploymentModel PER_TARGET = new DeploymentModel("perTarget");
-    public static final DeploymentModel PER_THIS = new DeploymentModel("perThis");
+    public static final DeploymentModel PER_TARGET = new DeploymentModel("pertarget");
+    public static final DeploymentModel PER_THIS = new DeploymentModel("perthis");
     public static final DeploymentModel PER_CFLOW = new DeploymentModel("perCflow");
     public static final DeploymentModel PER_CFLOWBELOW = new DeploymentModel("perCflowbelow");
 
-    private static final String PERTHIS_MODEL_NAME = "perThis";
-    private static final String PERTARGET_MODEL_NAME = "perTarget";
-    
     private static final String THIS_POINTCUT = "this(" + PerObjectAspect.ADVICE_ARGUMENT_NAME + ")";
     private static final String TARGET_POINTCUT = "target(" + PerObjectAspect.ADVICE_ARGUMENT_NAME + ")";
 
-    private final String m_name;
-    private final String m_expression;
+    protected final String m_name;
 
     private DeploymentModel(String name) {
-        this(name, "");
+        m_name = name;
     }
 
-    private DeploymentModel(String name, String expression) {
-        m_name = name;
-        m_expression = expression;
-    }
-    
-    public String getDeploymentExpression() {
-        return m_expression;
-    }
-    
     public String toString() {
-        if ("".equals(m_expression)) {
-            return m_name;
-        } else {
-            return m_name + "(" + m_expression + ")";
-        }
+        return m_name;
     }
 
     public boolean equals(Object o) {
@@ -87,12 +73,12 @@ public final class DeploymentModel {
             return PER_CFLOW;
         } else if (deploymentModelAsString.equalsIgnoreCase(PER_CFLOWBELOW.toString())) {
             return PER_CFLOWBELOW;
-        } else if (deploymentModelAsString.toLowerCase().startsWith(PERTHIS_MODEL_NAME.toLowerCase())) {
-            return new DeploymentModel(PERTHIS_MODEL_NAME,
+        } else if (deploymentModelAsString.toLowerCase().startsWith(PER_THIS.m_name.toLowerCase())) {
+            return new PointcutControlledDeploymentModel(PER_THIS,
                                        getDeploymentExpression(deploymentModelAsString, THIS_POINTCUT)
                                        );
-        } else if (deploymentModelAsString.toLowerCase().startsWith(PERTARGET_MODEL_NAME.toLowerCase())) {
-            return new DeploymentModel(PERTARGET_MODEL_NAME,
+        } else if (deploymentModelAsString.toLowerCase().startsWith(PER_TARGET.m_name.toLowerCase())) {
+            return new PointcutControlledDeploymentModel(PER_TARGET,
                                        getDeploymentExpression(deploymentModelAsString, TARGET_POINTCUT)
                                        );            
         } else {
@@ -122,5 +108,34 @@ public final class DeploymentModel {
         return deploymentModelAsString.substring(startIndex + 1, endIndex).trim()
                 + " && "
                 + pointcut;
+    }
+
+    /**
+     * perthis.. pertarget.. deployment model depends on a pointcut expression
+     */
+    public static final class PointcutControlledDeploymentModel extends DeploymentModel {
+
+        private String m_expression;
+
+        private PointcutControlledDeploymentModel(DeploymentModel deploymentModel, String expression) {
+            super(deploymentModel.m_name);
+            m_expression = expression;
+        }
+
+        public String getDeploymentExpression() {
+            return m_expression;
+        }
+
+        public String toString() {
+            return m_name + "(" + m_expression + ")";
+        }
+
+        public boolean equals(Object o) {
+            return super.equals(o);
+        }
+
+        public int hashCode() {
+            return super.hashCode();
+        }
     }
 }

@@ -126,6 +126,7 @@ Attributes:
     class: FQN of Aspect (can have metdata or not)
     container: FQN of AspectContainer, defaults to regular org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy
     deployment-model: aspect life cycle, defaults to perJVM
+        valid values are: perJVM | perClass | perInstance | perthis(...pc expr) | pertarget(...pc expr)
 ******************************************************************************************************************************-->
 <!ELEMENT aspect (
     param*,
@@ -135,7 +136,7 @@ Attributes:
 name CDATA #IMPLIED
 class CDATA #REQUIRED
 container CDATA #IMPLIED
-deployment-model (perJVM | perClass | perInstance) #IMPLIED
+deployment-model CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 param
