@@ -67,7 +67,7 @@ import java.rmi.RemoteException;
 @Aspect("perJVM")
 public class TransactionAttributeAwareTransactionProtocol {
 
-    public static final String TRANSACTED_METHODS_POINTCUT = "transactional";
+    public static final String TRANSACTED_METHODS_POINTCUT = "transacted_methods";
     private static final String SUSPENDED_TRANSACTION = "SUSPENDED_TRANSACTION";
     private static final TMService TM;
     static {
@@ -78,8 +78,11 @@ public class TransactionAttributeAwareTransactionProtocol {
         }
     }
 
+    /**
+     * The pointcut that picks out all transacted methods.
+     */
     @Expression("execution(@javax.ejb.TransactionAttribute * *..*(..))")
-    Pointcut transactional;
+    Pointcut transacted_methods;
 
     /**
      * Invoked when entering a transacted method. Handles the different transaction attribute semantics and
