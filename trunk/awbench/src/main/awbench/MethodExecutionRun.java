@@ -19,7 +19,7 @@ public class MethodExecutionRun {
         if (args.length > 0) {
             int iteration = Integer.parseInt(args[0]);
             if (iteration > 0) {
-                Run.ITERATION = iteration;
+                Run.ITERATIONS = iteration;
             }
         }
 
@@ -29,61 +29,61 @@ public class MethodExecutionRun {
         Run run = null;
 
         run = new Run("method execution, @Before");
-        for (int i = 0; i < run.iteration; i++) {
+        for (int i = 0; i < Run.ITERATIONS; i++) {
             test.before();
         }
         run.end();
 
         run = new Run("method execution, @Before, Static JP");
-        for (int i = 0; i < run.iteration; i++) {
+        for (int i = 0; i < Run.ITERATIONS; i++) {
             test.beforeSJP();
         }
         run.end();
 
         run = new Run("method execution, @Before, JP");
-        for (int i = 0; i < run.iteration; i++) {
+        for (int i = 0; i < Run.ITERATIONS; i++) {
             test.beforeJP();
         }
         run.end();
 
         run = new Run("method execution, @Before/@After");
-        for (int i = 0; i < run.iteration; i++) {
+        for (int i = 0; i < Run.ITERATIONS; i++) {
             test.beforeAfter();
         }
         run.end();
 
         run = new Run("method execution, @Before, args() access for primitive");
-        for (int i = 0; i < run.iteration; i++) {
+        for (int i = 0; i < Run.ITERATIONS; i++) {
             test.withPrimitiveArgs(Constants.CONST_0);
         }
         run.end();
 
         run = new Run("method execution, @Before, args() access for objects");
-        for (int i = 0; i < run.iteration; i++) {
+        for (int i = 0; i < Run.ITERATIONS; i++) {
             test.withWrappedArgs(Constants.WRAPPED_0);
         }
         run.end();
 
         run = new Run("method execution, @Before, args() and target() access");
-        for (int i = 0; i < run.iteration; i++) {
+        for (int i = 0; i < Run.ITERATIONS; i++) {
             test.withArgsAndTarget(Constants.CONST_0);
         }
         run.end();
 
         run = new Run("method execution, @Around, JP");
-        for (int i = 0; i < run.iteration; i++) {
+        for (int i = 0; i < Run.ITERATIONS; i++) {
             test.aroundJP();
         }
         run.end();
 
         run = new Run("method execution, @Around, SJP");
-        for (int i = 0; i < run.iteration; i++) {
+        for (int i = 0; i < Run.ITERATIONS; i++) {
             test.aroundSJP();
         }
         run.end();
 
         run = new Run("method execution, @Around x 2, args() and target() access");
-        for (int i = 0; i < run.iteration; i++) {
+        for (int i = 0; i < Run.ITERATIONS; i++) {
             test.aroundStackedWithArgAndTarget(Constants.CONST_0);
         }
         run.end();

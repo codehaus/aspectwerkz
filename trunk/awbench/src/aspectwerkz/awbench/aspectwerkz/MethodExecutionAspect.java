@@ -24,7 +24,6 @@ public class MethodExecutionAspect {
 
     public static int s_count = 0;
 
-
     /** @Before execution(* awbench.method.Execution.before()) */
     public void before() {
         s_count++;
@@ -32,15 +31,12 @@ public class MethodExecutionAspect {
 
     /** @Before execution(* awbench.method.Execution.beforeSJP()) */
     public void beforeSJP(StaticJoinPoint sjp) {
-        // TODO - we don't make use of sjp / jp so a very lazy impl could hide its weakness
-        // but we want it comparable to before() advice
         s_count++;
     }
 
     /** @Before execution(* awbench.method.Execution.beforeJP()) */
-    public void beforeJP(JoinPoint jp) { // , Rtti rtti) {//when using Rtti, the current impl creates a lof of object not lazyly
-        // TODO - we don't make use of sjp / jp so a very lazy impl could hide its weakness
-        // but we want it comparable to before() advice
+    public void beforeJP(JoinPoint jp) {
+        Rtti rtti = jp.getRtti();
         s_count++;
     }
 
@@ -65,6 +61,7 @@ public class MethodExecutionAspect {
     /** @Around  execution(* awbench.method.Execution.aroundJP()) */
     public Object aroundJP(JoinPoint jp) throws Throwable {
         s_count++;
+        Rtti rtti = jp.getRtti();
         return jp.proceed();
     }
 
@@ -73,8 +70,6 @@ public class MethodExecutionAspect {
         s_count++;
         return sjp.proceed();
     }
-
-    //TODO: add Rtti around
 
     /** @Before  execution(* awbench.method.Execution.withArgsAndTarget(int)) && args(i) && target(t) */
     public void beforeWithArgsAndTarget(int i, Execution t) {

@@ -7,13 +7,12 @@
  **************************************************************************************/
 package awbench.method;
 
-import awbench.Measurement;
 import awbench.Constants;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class Execution implements Measurement {
+public class Execution implements IExecution {
 
     private int m_count = 0;
 
