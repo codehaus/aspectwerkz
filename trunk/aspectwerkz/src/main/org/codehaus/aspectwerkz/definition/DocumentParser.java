@@ -68,6 +68,18 @@ public class DocumentParser {
             }
         }
 
+        // handle backward compatibility with old XML definition
+        if (systemDefs.size() == 0) {
+            String uuid = root.attributeValue("id");
+            AspectWerkzDefinition definition =
+                    org.codehaus.aspectwerkz.xmldef.definition.DocumentParser.parseElements(
+                            root, basePackage, uuid
+                    );
+            if (definition != null) {
+                systemDefs.add(definition);
+            }
+        }
+
         return systemDefs;
     }
 
