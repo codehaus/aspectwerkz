@@ -134,8 +134,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         m_stack.add(new AdviseCallerSideMethodTransformer());
         m_stack.add(new AdviseMemberMethodTransformer());
         m_stack.add(new AdviseStaticMethodTransformer());
-        m_stack.add(new AddMetaDataTransformer());
-        m_stack.add(new AddUuidTransformer());
+//        m_stack.add(new AddMetaDataTransformer());
+//        m_stack.add(new AddUuidTransformer());
 
         initialized = true;
     }

@@ -524,13 +524,13 @@ public final class TransformationUtil {
         List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
             java.lang.reflect.Method method = methods[i];
-            if (!method.getName().equals("equals") ||
-                    !method.getName().equals("hashCode") ||
-                    !method.getName().equals("getClass") ||
-                    !method.getName().equals("toString") ||
-                    !method.getName().equals("wait") ||
-                    !method.getName().equals("notify") ||
-                    !method.getName().equals("notifyAll") ||
+            if (!method.getName().equals("equals") &&
+                    !method.getName().equals("hashCode") &&
+                    !method.getName().equals("getClass") &&
+                    !method.getName().equals("toString") &&
+                    !method.getName().equals("wait") &&
+                    !method.getName().equals("notify") &&
+                    !method.getName().equals("notifyAll") &&
                     !method.getName().startsWith(CLASS_LOOKUP_METHOD) &&
                     !method.getName().startsWith(GET_UUID_METHOD) &&
                     !method.getName().startsWith(GET_META_DATA_METHOD) &&
