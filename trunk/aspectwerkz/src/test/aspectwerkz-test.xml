@@ -1,0 +1,288 @@
+<?xml version="1.0"?>
+
+<aspectwerkz>
+
+    <!-- ============================================= -->
+    <!--  Define the introductions                     -->
+    <!-- ============================================= -->
+    <introduction name="serializable" interface="java.io.Serializable"/>
+    <introduction name="introductions" interface="test.Introductions" implementation="test.IntroductionsImpl" deployment-model="perJVM"/>
+    <introduction name="introductionPerJVM" interface="test.PerJVM" implementation="test.PerJVMImpl" deployment-model="perJVM"/>
+    <introduction name="introductionPerInstance" interface="test.PerInstance" implementation="test.PerInstanceImpl" deployment-model="perInstance"/>
+    <introduction name="introductionPerClass" interface="test.PerClass" implementation="test.PerClassImpl" deployment-model="perClass"/>
+    <introduction name="introductionPerThread" interface="test.PerThread" implementation="test.PerThreadImpl" deployment-model="perThread"/>
+    <introduction name="introductionReplacement" interface="test.Introductions" implementation="test.IntroductionsImpl" deployment-model="perJVM"/>
+
+    <!-- ============================================= -->
+    <!--  Define the advices                           -->
+    <!-- ============================================= -->
+    <advice name="methodAdvice1" advice="test.MyMemberMethodAdvice1" deployment-model="perJVM"/>
+    <advice name="methodAdvice2" advice="test.MyMemberMethodAdvice2" deployment-model="perClass"/>
+    <advice name="methodAdvice3" advice="test.MyMemberMethodAdvice3" deployment-model="perInstance"/>
+    <advice name="methodAdvice4" advice="test.MyMemberMethodAdvice4" deployment-model="perThread"/>
+    <advice name="methodAdvice5" advice="test.MyMemberMethodAdvice5" deployment-model="perJVM"/>
+    <advice name="staticMethodAdvice1" advice="test.MyMemberMethodAdvice1" deployment-model="perJVM"/>
+    <advice name="staticMethodAdvice2" advice="test.MyStaticMethodAdvice2" deployment-model="perClass"/>
+    <advice name="staticMethodAdvice3" advice="test.MyStaticMethodAdvice3" deployment-model="perJVM"/>
+    <advice name="staticMethodAdvice4" advice="test.MyStaticMethodAdvice4" deployment-model="perThread"/>
+    <advice name="staticMethodAdvice5" advice="test.MyStaticMethodAdvice5" deployment-model="perJVM"/>
+    <advice name="methodAdvicePerJVM" advice="test.MyMemberMethodAdvice1" deployment-model="perJVM"/>
+    <advice name="methodAdvicePerClass" advice="test.MyMemberMethodAdvice1" deployment-model="perClass"/>
+    <advice name="methodAdvicePerInstance" advice="test.MyMemberMethodAdvice1" deployment-model="perInstance"/>
+    <advice name="methodAdvicePerThread" advice="test.MyMemberMethodAdvice1" deployment-model="perThread"/>
+    <advice name="singleMethodAdvice" advice="test.SimpleMethodAdvice" deployment-model="perJVM"/>
+    <advice name="throwsAdvice1" advice="test.MyThrowsAdvice1" deployment-model="perJVM"/>
+    <advice name="throwsAdvice2" advice="test.MyThrowsAdvice1" deployment-model="perClass"/>
+    <advice name="throwsAdvice3" advice="test.MyThrowsAdvice1" deployment-model="perInstance"/>
+    <advice name="throwsAdvice4" advice="test.MyThrowsAdvice1" deployment-model="perThread"/>
+    <advice name="throwsAdviceMetaData" advice="test.MyThrowsAdvice2" deployment-model="perJVM"/>
+    <advice name="preAdvice1" advice="test.MyPreAdvice1" deployment-model="perJVM"/>
+    <advice name="preAdvice2" advice="test.MyPreAdvice1" deployment-model="perInstance"/>
+    <advice name="preAdvice3" advice="test.MyPreAdvice1" deployment-model="perClass"/>
+    <advice name="preAdvice4" advice="test.MyPreAdvice1" deployment-model="perThread"/>
+    <advice name="preAdvice5" advice="test.MyPreAdvice2" deployment-model="perJVM"/>
+    <advice name="preAdvice6" advice="test.MyPreAdvice2" deployment-model="perClass"/>
+    <advice name="preAdvice7" advice="test.MyPreAdvice3" deployment-model="perThread"/>
+    <advice name="preAdvice8" advice="test.MyPreAdvice3" deployment-model="perInstance"/>
+    <advice name="postAdvice1" advice="test.MyPostAdvice1"/>
+    <advice name="postAdvice2" advice="test.MyPostAdvice1" deployment-model="perInstance"/>
+    <advice name="postAdvice3" advice="test.MyPostAdvice1" deployment-model="perClass"/>
+    <advice name="postAdvice4" advice="test.MyPostAdvice1" deployment-model="perThread"/>
+    <advice name="postAdvice5" advice="test.MyPostAdvice2" deployment-model="perJVM"/>
+    <advice name="postAdvice6" advice="test.MyPostAdvice2" deployment-model="perClass"/>
+    <advice name="postAdvice7" advice="test.MyPostAdvice3" deployment-model="perThread"/>
+    <advice name="postAdvice8" advice="test.MyPostAdvice3" deployment-model="perInstance"/>
+    <advice name="methodAdvice6" advice="test.MyMemberMethodAdvice6" deployment-model="perJVM">
+        <param name="test" value="test_value"/>
+    </advice>
+    <advice name="preAdvice9" advice="test.MyPreAdvice4" deployment-model="perJVM">
+        <param name="test" value="test_value"/>
+    </advice>
+    <advices name="advice_stack_test">
+        <advice-ref name="preAdvice6"/>
+        <advice-ref name="preAdvice7"/>
+        <advice-ref name="postAdvice7"/>
+        <advice-ref name="postAdvice6"/>
+    </advices>
+
+    <!-- ============================================= -->
+    <!--  Define the aspects                           -->
+    <!-- ============================================= -->
+    <aspect class="test.FieldPointcutTest"/>
+
+    <aspect class="test.AbstractPointcutTest"/>
+
+    <aspect class="test.ToBeIntroduced">
+        <introduction-ref name="serializable"/>
+        <introduction-ref name="introductions"/>
+    </aspect>
+
+    <aspect class="test.MemberMethodAdviceTest">
+        <pointcut type="method">
+            <pattern>* get*(..)</pattern>
+            <pattern>* *Param*(..)</pattern>
+            <pattern>* testThrowException(..)</pattern>
+            <pattern>* methodAdvicedMethod(..)</pattern>
+            <advice-ref name="methodAdvice1"/>
+        </pointcut>
+        <pointcut type="method" pattern="* meth*AdvicedMethod(..)">
+            <advice-ref name="methodAdvice2"/>
+        </pointcut>
+        <pointcut type="method" pattern="* method*icedMethodNewThread(..)">
+            <advice-ref name="methodAdvice5"/>
+        </pointcut>
+        <pointcut type="method" pattern="* method*dvicedMethodNewThread(..)">
+            <advice-ref name="methodAdvice5"/>
+        </pointcut>
+        <pointcut type="method" pattern="* multipleMethodAdvicedMethod(..)">
+            <advice-ref name="methodAdvice2"/>
+            <advice-ref name="methodAdvice3"/>
+            <advice-ref name="methodAdvice3"/>
+        </pointcut>
+        <pointcut type="method" pattern="* multipleChainedMethodAdvicedMethod(..)">
+            <advice-ref name="methodAdvice1"/>
+            <advice-ref name="methodAdvice2"/>
+            <advice-ref name="methodAdvice3"/>
+        </pointcut>
+        <pointcut type="method" pattern="* joinPointMetaData(..)">
+            <advice-ref name="methodAdvice4"/>
+        </pointcut>
+        <pointcut type="method" pattern="void passingParameterToAdviceMethod()">
+            <advice-ref name="methodAdvice6"/>
+        </pointcut>
+    </aspect>
+
+    <aspect class="test.StaticMethodAdviceTest">
+        <pointcut type="method" pattern="* get*(..)">
+            <advice-ref name="staticMethodAdvice1"/>
+        </pointcut>
+        <pointcut type="method" pattern="* *Param*(..)">
+            <advice-ref name="staticMethodAdvice1"/>
+        </pointcut>
+        <pointcut type="throws" pattern="* exceptionThrower(..)#java.lang.UnsupportedOperationException">
+            <advice-ref name="throwsAdvice1"/>
+        </pointcut>
+        <pointcut type="method" pattern="void methodAdvicedMethod(..)">
+            <advice-ref name="staticMethodAdvice2"/>
+        </pointcut>
+        <pointcut type="method" pattern="* methodAdvicedMethod(..)">
+            <advice-ref name="staticMethodAdvice1"/>
+        </pointcut>
+        <pointcut type="method" pattern="* methodAdvicedMethodNewThread(..)">
+            <advice-ref name="staticMethodAdvice5"/>
+            <advice-ref name="staticMethodAdvice5"/>
+        </pointcut>
+        <pointcut type="method" pattern="* multipleMethodAdvicedMethod(..)">
+            <advice-ref name="staticMethodAdvice2"/>
+            <advice-ref name="staticMethodAdvice3"/>
+            <advice-ref name="staticMethodAdvice3"/>
+        </pointcut>
+        <pointcut type="method" pattern="* multipleChainedMethodAdvicedMethod(..)">
+            <advice-ref name="staticMethodAdvice1"/>
+            <advice-ref name="staticMethodAdvice2"/>
+            <advice-ref name="staticMethodAdvice3"/>
+        </pointcut>
+        <pointcut type="method" pattern="* joinPointMetaData(..)">
+            <advice-ref name="staticMethodAdvice4"/>
+        </pointcut>
+    </aspect>
+
+    <aspect class="test.DynamicDeploymentTest">
+        <pointcut type="method">
+            <pattern>* reorderAdvicesTestMethod(..)</pattern>
+            <pattern>* removeAdviceTestMethod(..)</pattern>
+            <advice-ref name="methodAdvice2"/>
+            <advice-ref name="methodAdvice3"/>
+            <advice-ref name="methodAdvice3"/>
+        </pointcut>
+        <pointcut type="method" pattern="* addAdviceTestMethod(..)">
+            <advice-ref name="methodAdvice2"/>
+        </pointcut>
+        <pointcut type="method" pattern="* createTransientAdviceTestMethod(..)"/>
+        <pointcut type="method" pattern="* createPersistentAdviceTestMethod(..)"/>
+    </aspect>
+
+    <aspect class="test.FieldAdviceTest">
+        <pointcut type="setField" pattern="* m_setFieldPreAdvice*">
+            <advice-ref name="preAdvice6"/>
+        </pointcut>
+        <pointcut type="setField" pattern="int m_setFieldPreAdvi*">
+            <advice-ref name="preAdvice7"/>
+        </pointcut>
+        <pointcut type="setField" pattern="* m_setFie*dPostAdviced">
+            <advice-ref name="postAdvice5"/>
+        </pointcut>
+        <pointcut type="setField" pattern="* m_se*FieldPostAdviced">
+            <advice-ref name="postAdvice8"/>
+        </pointcut>
+        <pointcut type="setField" pattern="* m_setFieldPrePostAdviced">
+            <advice-ref name="preAdvice6"/>
+            <advice-ref name="postAdvice6"/>
+            <advice-ref name="preAdvice7"/>
+            <advice-ref name="postAdvice7"/>
+        </pointcut>
+        <pointcut type="getField" pattern="* m_getFieldPreAdvic*">
+            <advice-ref name="preAdvice6"/>
+        </pointcut>
+        <pointcut type="getField" pattern="* m_getFieldPreAdvice*">
+            <advice-ref name="preAdvice7"/>
+        </pointcut>
+        <pointcut type="getField" pattern="* m_getFieldPostAdviced">
+            <advice-ref name="postAdvice5"/>
+            <advice-ref name="postAdvice8"/>
+        </pointcut>
+        <pointcut type="getField" pattern="* m_getFieldPrePostAdviced">
+            <advice-ref name="preAdvice5"/>
+            <advice-ref name="postAdvice5"/>
+            <advice-ref name="preAdvice8"/>
+            <advice-ref name="postAdvice8"/>
+        </pointcut>
+        <pointcut type="setField" pattern="* s_setStaticFieldPreAdvic*">
+            <advice-ref name="preAdvice6"/>
+        </pointcut>
+        <pointcut type="setField" pattern="* s_setStaticFieldPreAdvice*">
+            <advice-ref name="preAdvice7"/>
+        </pointcut>
+        <pointcut type="setField" pattern="* s_setStaticFieldPostAdviced">
+            <advice-ref name="postAdvice5"/>
+            <advice-ref name="postAdvice8"/>
+        </pointcut>
+        <pointcut type="setField" pattern="* s_setStaticFieldPrePostAdviced">
+            <advice-ref name="preAdvice6"/>
+            <advice-ref name="postAdvice6"/>
+            <advice-ref name="preAdvice7"/>
+            <advice-ref name="postAdvice7"/>
+        </pointcut>
+        <pointcut type="getField" pattern="* s_getStaticFieldPreAdvice*">
+            <advice-ref name="preAdvice6"/>
+        </pointcut>
+        <pointcut type="getField" pattern="* s_getStaticFieldPreAdvic*">
+            <advice-ref name="preAdvice7"/>
+        </pointcut>
+        <pointcut type="getField" pattern="* s_getStaticFieldPostAdviced">
+            <advice-ref name="postAdvice5"/>
+            <advice-ref name="postAdvice8"/>
+        </pointcut>
+        <pointcut type="getField" pattern="* s_getStaticFieldPrePostAdviced">
+            <advice-ref name="preAdvice5"/>
+            <advice-ref name="postAdvice5"/>
+            <advice-ref name="preAdvice8"/>
+            <advice-ref name="postAdvice8"/>
+        </pointcut>
+    </aspect>
+
+    <aspect class="test.ThrowsAdviceTest">
+        <pointcut type="throws" pattern="* throwsException()#java.lang.Exception">
+            <advice-ref name="throwsAdvice1"/>
+        </pointcut>
+        <pointcut type="throws" pattern="* throwsRuntimeException()#java.lang.RuntimeException">
+            <advice-ref name="throwsAdvice2"/>
+        </pointcut>
+        <pointcut type="throws" pattern="* throwsError()#java.lang.Error">
+            <advice-ref name="throwsAdvice3"/>
+        </pointcut>
+        <pointcut type="throws" pattern="* getJoinPointMetaData()#java.lang.Error">
+            <advice-ref name="throwsAdviceMetaData"/>
+        </pointcut>
+    </aspect>
+
+    <aspect class="test.CallerSideAdviceTest">
+        <pointcut type="callerSide" pattern="test.CallerSideTestHelper#String invokeMemberMethodPre()">
+            <advice-ref name="preAdvice6"/>
+            <advice-ref name="preAdvice7"/>
+        </pointcut>
+        <pointcut type="callerSide" pattern="test.CallerSideTestHelper#String invokeMemberMethodPost()">
+            <advice-ref name="postAdvice7"/>
+            <advice-ref name="postAdvice6"/>
+        </pointcut>
+        <pointcut type="callerSide" pattern="test.CallerSideTestHelper#String invokeMemberMethodPrePost()">
+            <advices-ref name="advice_stack_test"/>
+        </pointcut>
+        <pointcut type="callerSide" pattern="test.CallerSideTestHelper#String invokeStaticMethodPre()">
+            <advice-ref name="preAdvice6"/>
+            <advice-ref name="preAdvice7"/>
+        </pointcut>
+        <pointcut type="callerSide" pattern="test.CallerSideTestHelper#String invokeStaticMethodPost()">
+            <advice-ref name="postAdvice7"/>
+            <advice-ref name="postAdvice6"/>
+        </pointcut>
+        <pointcut type="callerSide" pattern="test.CallerSideTestHelper#String invokeStaticMethodPrePost()">
+            <advices-ref name="advice_stack_test"/>
+        </pointcut>
+        <pointcut type="callerSide" pattern="test.CallerSideTestHelper#void passingParameterToAdviceMethod()">
+            <advice-ref name="preAdvice9"/>
+        </pointcut>
+    </aspect>
+
+    <aspect class="test.PerformanceTest">
+        <introduction-ref name="introductionPerJVM"/>
+        <introduction-ref name="introductionPerClass"/>
+        <introduction-ref name="introductionPerInstance"/>
+        <introduction-ref name="introductionPerThread"/>
+        <pointcut type="method" pattern="* methodAdvisedMethodPerJVM(..)"/>
+        <pointcut type="method" pattern="* methodAdvisedMethodPerClass(..)"/>
+        <pointcut type="method" pattern="* methodAdvisedMethodPerInstance(..)"/>
+        <pointcut type="method" pattern="* methodAdvisedMethodPerThread(..)"/>
+    </aspect>
+
+</aspectwerkz>
