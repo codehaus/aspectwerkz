@@ -74,13 +74,13 @@ public class PointcutPatternTuple implements Serializable {
     }
 
     public String toString() {
-        return "["
+        return '['
                 + super.toString()
                 + ": "
-                + "," + m_pattern.toString()
-                + "," + m_classPattern.m_pattern
-                + "," + m_hierarchical
-                + "]";
+                + ',' + m_pattern.toString()
+                + ',' + m_classPattern.m_pattern
+                + ',' + m_hierarchical
+                + ']';
     }
 
     public int hashCode() {

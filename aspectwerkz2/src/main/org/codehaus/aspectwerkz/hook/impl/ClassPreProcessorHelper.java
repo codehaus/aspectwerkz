@@ -74,7 +74,7 @@ public class ClassPreProcessorHelper {
                 System.out.println("AspectWerkz - INFO - Pre-processor " + s + " loaded and initialized");
             }
             catch (Throwable throwable) {
-                System.err.println("AspectWerkz - WARN - Error initializing pre-processor class " + s + ":");
+                System.err.println("AspectWerkz - WARN - Error initializing pre-processor class " + s + ':');
                 throwable.printStackTrace();
             }
     }

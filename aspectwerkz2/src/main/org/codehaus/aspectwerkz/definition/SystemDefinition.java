@@ -373,7 +373,7 @@ public class SystemDefinition {
      */
     public void addIncludePackage(final String includePackage) {
         synchronized (m_includePackages) {
-            m_includePackages.add(includePackage + ".");
+            m_includePackages.add(includePackage + '.');
         }
     }
 
@@ -384,7 +384,7 @@ public class SystemDefinition {
      */
     public void addExcludePackage(final String excludePackage) {
         synchronized (m_excludePackages) {
-            m_excludePackages.add(excludePackage + ".");
+            m_excludePackages.add(excludePackage + '.');
         }
     }
 
@@ -395,7 +395,7 @@ public class SystemDefinition {
      */
     public void addPreparePackage(final String preparePackage) {
         synchronized (m_preparePackages) {
-            m_preparePackages.add(preparePackage + ".");
+            m_preparePackages.add(preparePackage + '.');
         }
     }
 

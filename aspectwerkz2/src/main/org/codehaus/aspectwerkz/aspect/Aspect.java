@@ -113,7 +113,7 @@ public abstract class Aspect implements Serializable {
             return clone;
         }
         catch (Exception e) {
-            throw new RuntimeException("could not clone aspect [" + prototype.___AW_getName() + "]");
+            throw new RuntimeException("could not clone aspect [" + prototype.___AW_getName() + ']');
         }
     }
 

@@ -471,19 +471,19 @@ public class PointcutManager {
     // --- over-ridden methods ---
 
     public String toString() {
-        return "["
+        return '['
                 + super.toString()
                 + ": "
-                + "," + m_name
-                + "," + m_uuid
-                + "," + m_deploymentModel
-                + "," + m_introductions
-                + "," + m_executionPointcuts
-                + "," + m_getPointcuts
-                + "," + m_setPointcuts
-                + "," + m_callPointcuts
-                + "," + m_methodToCFlowMethodsMap
-                + "]";
+                + ',' + m_name
+                + ',' + m_uuid
+                + ',' + m_deploymentModel
+                + ',' + m_introductions
+                + ',' + m_executionPointcuts
+                + ',' + m_getPointcuts
+                + ',' + m_setPointcuts
+                + ',' + m_callPointcuts
+                + ',' + m_methodToCFlowMethodsMap
+                + ']';
     }
 
     public int hashCode() {

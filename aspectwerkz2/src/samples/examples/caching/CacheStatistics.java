@@ -16,41 +16,41 @@ import java.util.Map;
  */
 public class CacheStatistics {
 
-    private static Map m_methodInvocations = Collections.synchronizedMap(new HashMap());
-    private static Map m_cacheInvocations = Collections.synchronizedMap(new HashMap());
+    private static Map s_methodInvocations = Collections.synchronizedMap(new HashMap());
+    private static Map s_cacheInvocations = Collections.synchronizedMap(new HashMap());
 
     public static void addMethodInvocation(final String methodName,
                                            final Class[] parameterTypes) {
         Long hash = calculateHash(methodName, parameterTypes);
 
-        if (!m_methodInvocations.containsKey(hash)) {
-            m_methodInvocations.put(hash, new Integer(0));
+        if (!s_methodInvocations.containsKey(hash)) {
+            s_methodInvocations.put(hash, new Integer(0));
         }
-        int counter = ((Integer)m_methodInvocations.get(hash)).intValue();
+        int counter = ((Integer)s_methodInvocations.get(hash)).intValue();
         counter++;
-        m_methodInvocations.put(hash, new Integer(counter));
+        s_methodInvocations.put(hash, new Integer(counter));
     }
 
     public static void addCacheInvocation(final String methodName,
                                           final Class[] parameterTypes) {
         Long hash = calculateHash(methodName, parameterTypes);
 
-        if (!m_cacheInvocations.containsKey(hash)) {
-            m_cacheInvocations.put(hash, new Integer(0));
+        if (!s_cacheInvocations.containsKey(hash)) {
+            s_cacheInvocations.put(hash, new Integer(0));
         }
-        int counter = ((Integer)m_cacheInvocations.get(hash)).intValue();
+        int counter = ((Integer)s_cacheInvocations.get(hash)).intValue();
         counter++;
-        m_cacheInvocations.put(hash, new Integer(counter));
+        s_cacheInvocations.put(hash, new Integer(counter));
     }
 
     public static int getNrOfMethodInvocationsFor(final String methodName,
                                                   final Class[] parameterTypes) {
-        return ((Integer)m_methodInvocations.get(calculateHash(methodName, parameterTypes))).intValue();
+        return ((Integer)s_methodInvocations.get(calculateHash(methodName, parameterTypes))).intValue();
     }
 
     public static int getNrOfCacheInvocationsFor(final String methodName,
                                                  final Class[] parameterTypes) {
-        return ((Integer)m_cacheInvocations.get(calculateHash(methodName, parameterTypes))).intValue();
+        return ((Integer)s_cacheInvocations.get(calculateHash(methodName, parameterTypes))).intValue();
     }
 
     private static Long calculateHash(final String methodName,

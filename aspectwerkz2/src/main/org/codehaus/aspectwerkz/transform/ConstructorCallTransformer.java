@@ -26,7 +26,6 @@ import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
  * Advises constructor CALL join points.
@@ -54,17 +53,12 @@ public class ConstructorCallTransformer implements Transformer {
      * @param context the transformation context
      * @param klass   the class set.
      */
-    public void transform(final Context context, final Klass klass)
-            throws NotFoundException, CannotCompileException {
-
-        // loop over all the definitions
+    public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
-
-            // filter caller classes
             if (classFilter(definition, classMetaData, ctClass)) {
                 return;
             }

@@ -10,16 +10,14 @@ package org.codehaus.aspectwerkz.aspect;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.WeakHashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.codehaus.aspectwerkz.ContainerType;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.aspect.Aspect;
-import org.codehaus.aspectwerkz.aspect.AspectContainer;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
  * Implements the default aspect container strategy.
@@ -41,7 +39,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
     /**
      * Holds references to the per class introductions.
      */
-    protected Map m_perClass = new HashMap();//TODO shoould be weak for 0.10
+    protected Map m_perClass = new WeakHashMap();
 
     /**
      * Holds references to the per instance introductions.
@@ -329,5 +327,4 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
     public IntroductionContainer getIntroductionContainer(String name) {
         return (IntroductionContainer)m_introductionContainers.get(name);
     }
-
 }

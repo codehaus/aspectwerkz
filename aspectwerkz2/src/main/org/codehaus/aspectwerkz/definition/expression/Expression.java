@@ -198,10 +198,10 @@ public abstract class Expression implements Serializable {
      * @return the string representation of the Expression instance
      */
     public String toString() {
-        return "[" + super.toString() + ": " +
-                m_name + "," +
-                m_namespace + "," +
-                m_package + "," +
-                m_expression + "]";
+        return '[' + super.toString() + ": " +
+                m_name + ',' +
+                m_namespace + ',' +
+                m_package + ',' +
+                m_expression + ']';
     }
 }
