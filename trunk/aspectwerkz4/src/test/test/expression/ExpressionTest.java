@@ -1558,134 +1558,138 @@ public class ExpressionTest extends TestCase {
                         NAMESPACE
                 )
         );
-        assertFalse(singleCflowOf(
-                new ExpressionInfo("string && cflowString", NAMESPACE))
+        assertFalse(
+                singleCflowOf(new ExpressionInfo("string && cflowString", NAMESPACE))
                 .getAdvisedClassFilterExpression()
                 .match(new ExpressionContext(PointcutType.WITHIN, s_declaringType, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo("string && cflowString", NAMESPACE))
-                .getAdvisedClassFilterExpression().match(
-                        new ExpressionContext(PointcutType.WITHIN, otherType, null)
-                )
+        assertTrue(
+                singleCflowOf(new ExpressionInfo("string && cflowString", NAMESPACE))
+                .getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.WITHIN, otherType, null))
         );
-        assertFalse(singleCflowOf(
-                new ExpressionInfo("target && cflowString", NAMESPACE)).getAdvisedClassFilterExpression()
+        assertFalse(
+                singleCflowOf(new ExpressionInfo("target && cflowString", NAMESPACE)).getAdvisedClassFilterExpression()
                 .match(new ExpressionContext(PointcutType.WITHIN, s_declaringType, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo("target && cflowString", NAMESPACE))
-                .getAdvisedClassFilterExpression().match(
-                        new ExpressionContext(PointcutType.WITHIN, otherType, null)
-                )
+        assertTrue(
+                singleCflowOf(new ExpressionInfo("target && cflowString", NAMESPACE))
+                .getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.WITHIN, otherType, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo("! target && cflowString", NAMESPACE))
-                .getAdvisedClassFilterExpression().match(
-                        new ExpressionContext(PointcutType.WITHIN, otherType, null)
-                )
+        assertTrue(
+                singleCflowOf(new ExpressionInfo("! target && cflowString", NAMESPACE))
+                .getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.WITHIN, otherType, null))
         );
         // will match since NOT is ignored so that cflow aspect can be plugged
-        assertTrue(singleCflowOf(
-                new ExpressionInfo("target && ! cflowString", NAMESPACE))
-                .getAdvisedClassFilterExpression().match(
-                        new ExpressionContext(PointcutType.WITHIN, otherType, null)
-                )
+        assertTrue(
+                singleCflowOf(new ExpressionInfo("target && ! cflowString", NAMESPACE))
+                .getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.WITHIN, otherType, null))
         );
-        assertFalse(singleCflowOf(
-                new ExpressionInfo("string && cflowTarget", NAMESPACE)).getAdvisedClassFilterExpression()
+        assertFalse(
+                singleCflowOf(new ExpressionInfo("string && cflowTarget", NAMESPACE)).getAdvisedClassFilterExpression()
                 .match(new ExpressionContext(PointcutType.WITHIN, otherType, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo("string && cflowTarget", NAMESPACE))
+        assertTrue(
+                singleCflowOf(new ExpressionInfo("string && cflowTarget", NAMESPACE))
                 .getAdvisedClassFilterExpression().match(
                         new ExpressionContext(PointcutType.WITHIN, s_declaringType, null)
                 )
         );
-        assertFalse(singleCflowOf(
-                new ExpressionInfo("target && cflowTarget", NAMESPACE)).getAdvisedClassFilterExpression()
+        assertFalse(
+                singleCflowOf(new ExpressionInfo("target && cflowTarget", NAMESPACE)).getAdvisedClassFilterExpression()
                 .match(new ExpressionContext(PointcutType.WITHIN, otherType, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo("target && cflowTarget", NAMESPACE))
+        assertTrue(
+                singleCflowOf(new ExpressionInfo("target && cflowTarget", NAMESPACE))
                 .getAdvisedClassFilterExpression().match(
                         new ExpressionContext(PointcutType.WITHIN, s_declaringType, null)
                 )
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "execution(void test.expression.Dummy.modifiers1()) && cflow(execution(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                )).getAdvisedClassFilterExpression().match(
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "execution(void test.expression.Dummy.modifiers1()) && cflow(execution(void test.expression.Target.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getAdvisedClassFilterExpression().match(
                         new ExpressionContext(PointcutType.WITHIN, s_declaringType, null)
                 )
         );
-        assertFalse(singleCflowOf(
-                new ExpressionInfo(
-                        "execution(void test.expression.Dummy.modifiers1()) && cflow(execution(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                )).getAdvisedClassFilterExpression().match(
-                        new ExpressionContext(PointcutType.WITHIN, otherType, null)
-                )
+        assertFalse(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "execution(void test.expression.Dummy.modifiers1()) && cflow(execution(void test.expression.Target.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.WITHIN, otherType, null))
         );
-        assertFalse(singleCflowOf(
-                new ExpressionInfo("cflow(execution(void test.expression.Target.modifiers1()))", NAMESPACE))
+        assertFalse(
+                singleCflowOf(
+                        new ExpressionInfo("cflow(execution(void test.expression.Target.modifiers1()))", NAMESPACE)
+                )
+                .getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.WITHIN, otherType, null))
+        );
+        assertTrue(
+                singleCflowOf(new ExpressionInfo("cflow(call(void test.expression.Target.modifiers1()))", NAMESPACE))
                 .getAdvisedClassFilterExpression().match(
-                        new ExpressionContext(PointcutType.WITHIN, otherType, null)
-                )
-        );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo("cflow(call(void test.expression.Target.modifiers1()))", NAMESPACE))
-                .getAdvisedClassFilterExpression().match(
                         new ExpressionContext(PointcutType.WITHIN, s_declaringType, null)
                 )
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "cflow(execution(void test.expression.Target.modifiers1())) && within(test.expression.Target)",
-                        NAMESPACE
-                )).getAdvisedClassFilterExpression().match(
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflow(execution(void test.expression.Target.modifiers1())) && within(test.expression.Target)",
+                                NAMESPACE
+                        )
+                ).getAdvisedClassFilterExpression().match(
                         new ExpressionContext(PointcutType.WITHIN, s_declaringType, null)
                 )
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "within(test.expression.Target) && cflow(call(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                )).getAdvisedClassFilterExpression().match(
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "within(test.expression.Target) && cflow(call(void test.expression.Target.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getAdvisedClassFilterExpression().match(
                         new ExpressionContext(PointcutType.WITHIN, s_declaringType, null)
                 )
         );
-        assertFalse(singleCflowOf(
-                new ExpressionInfo(
-                        "cflow(within(test.expression.T) && call(void test.expression.T.modifiers1()))",
-                        NAMESPACE
-                )).getAdvisedClassFilterExpression().match(
+        assertFalse(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflow(within(test.expression.T) && call(void test.expression.T.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getAdvisedClassFilterExpression().match(
                         new ExpressionContext(PointcutType.WITHIN, s_declaringType, null)
                 )
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "cflow(!within(test.expression.T) && call(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                )).getAdvisedClassFilterExpression().match(
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflow(!within(test.expression.T) && call(void test.expression.Target.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getAdvisedClassFilterExpression().match(
                         new ExpressionContext(PointcutType.WITHIN, s_declaringType, null)
                 )
         );
-        assertFalse(singleCflowOf(
-                new ExpressionInfo(
-                        "cflow(call(void test.expression.Target.modifiers1()) && !withincode(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                )).getAdvisedClassFilterExpression().match(
-                        new ExpressionContext(PointcutType.WITHIN, otherType, null)
-                )
+        assertFalse(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflow(call(void test.expression.Target.modifiers1()) && !withincode(void test.expression.Target.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.WITHIN, otherType, null))
         );
 
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "!execution(void test.expression.Target.modifiers1()) && cflow(call(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                )).getAdvisedClassFilterExpression().match(
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "!execution(void test.expression.Target.modifiers1()) && cflow(call(void test.expression.Target.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getAdvisedClassFilterExpression().match(
                         new ExpressionContext(PointcutType.WITHIN, s_declaringType, null)
                 )
         );
@@ -1715,8 +1719,10 @@ public class ExpressionTest extends TestCase {
                         NAMESPACE
                 )
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo("cflow(execution(void test.expression.Target.modifiers1()))", NAMESPACE))
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo("cflow(execution(void test.expression.Target.modifiers1()))", NAMESPACE)
+                )
                 .getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method1, null))
         );
 
@@ -1729,15 +1735,15 @@ public class ExpressionTest extends TestCase {
         assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 1);
 
         expression = new ExpressionInfo(
-                        "execution(void test.expression.Target.modifiers2()) && cflow(execution(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                );
+                "execution(void test.expression.Target.modifiers2()) && cflow(execution(void test.expression.Target.modifiers1()))",
+                NAMESPACE
+        );
         assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 1);
 
         expression = new ExpressionInfo(
-                        "cflow(execution(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers2())",
-                        NAMESPACE
-                );
+                "cflow(execution(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers2())",
+                NAMESPACE
+        );
         assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 1);
 
         expression = new ExpressionInfo("cflowPC && pc1", NAMESPACE);
@@ -1750,60 +1756,61 @@ public class ExpressionTest extends TestCase {
         assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 1);
 
         expression = new ExpressionInfo(
-                        "pc2 && cflow(pc1 || pc2 || call(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                );
+                "pc2 && cflow(pc1 || pc2 || call(void test.expression.Target.modifiers1()))",
+                NAMESPACE
+        );
         assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 1);
 
         expression = new ExpressionInfo(
-                        "cflow(pc1 || pc2 || call(void test.expression.Target.modifiers1())) AND pc1",
-                        NAMESPACE
-                );
+                "cflow(pc1 || pc2 || call(void test.expression.Target.modifiers1())) AND pc1",
+                NAMESPACE
+        );
         assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 1);
 
         expression = new ExpressionInfo(
-                        "cflow(pc1 || call(void test.expression.Target.modifiers1())) && (execution(void test.expression.Target.modifiers3()) || pc1)",
-                        NAMESPACE
-                );
+                "cflow(pc1 || call(void test.expression.Target.modifiers1())) && (execution(void test.expression.Target.modifiers3()) || pc1)",
+                NAMESPACE
+        );
         assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 1);
 
         expression = new ExpressionInfo(
-                        "cflow(execution(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers2())",
-                        NAMESPACE
-                );
+                "cflow(execution(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers2())",
+                NAMESPACE
+        );
         assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 1);
 
-        expression = new ExpressionInfo("cflow(pc1) && execution(void test.expression.Target.modifiers3())", NAMESPACE);
-        assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 1);
-
-        expression =new ExpressionInfo(
-                        "cflow(call(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers1())",
-                        NAMESPACE
-                );
+        expression =
+        new ExpressionInfo("cflow(pc1) && execution(void test.expression.Target.modifiers3())", NAMESPACE);
         assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 1);
 
         expression = new ExpressionInfo(
-                        "cflow(call(void test.expression.Target.modifiers1())) || execution(void test.expression.Target.modifiers1())",
-                        NAMESPACE
-                );
+                "cflow(call(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers1())",
+                NAMESPACE
+        );
         assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 1);
 
         expression = new ExpressionInfo(
-                        "cflow(call(void test.expression.Target.modifiers1())) && cflow(call(void test.expression.Target.modifiers2())) || execution(void test.expression.Target.modifiers1())",
-                        NAMESPACE
-                );
+                "cflow(call(void test.expression.Target.modifiers1())) || execution(void test.expression.Target.modifiers1())",
+                NAMESPACE
+        );
+        assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 1);
+
+        expression = new ExpressionInfo(
+                "cflow(call(void test.expression.Target.modifiers1())) && cflow(call(void test.expression.Target.modifiers2())) || execution(void test.expression.Target.modifiers1())",
+                NAMESPACE
+        );
         assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 2);
 
         expression = new ExpressionInfo(
-                        "call(void test.expression.Target.modifiers1()) || execution(void test.expression.Target.modifiers1())",
-                        NAMESPACE
-                );
+                "call(void test.expression.Target.modifiers1()) || execution(void test.expression.Target.modifiers1())",
+                NAMESPACE
+        );
         assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 0);
 
-        expression =new ExpressionInfo(
-                        "call(void test.expression.Target.modifiers1()) && execution(void test.expression.Target.modifiers1())",
-                        NAMESPACE
-                );
+        expression = new ExpressionInfo(
+                "call(void test.expression.Target.modifiers1()) && execution(void test.expression.Target.modifiers1())",
+                NAMESPACE
+        );
         assertTrue(CflowBinding.getCflowBindingsForCflowOf(expression).size() == 0);
     }
 
@@ -1829,87 +1836,106 @@ public class ExpressionTest extends TestCase {
                         NAMESPACE
                 )
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo("cflow(execution(void test.expression.Target.modifiers1()))", NAMESPACE)
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo("cflow(execution(void test.expression.Target.modifiers1()))", NAMESPACE)
                 ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method1, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "execution(void test.expression.Target.modifiers2()) && cflow(execution(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                )).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method1, null))
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "execution(void test.expression.Target.modifiers2()) && cflow(execution(void test.expression.Target.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method1, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "execution(void test.expression.Target.modifiers2()) && cflow(execution(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                )).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method1, null))
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "execution(void test.expression.Target.modifiers2()) && cflow(execution(void test.expression.Target.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method1, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "cflow(execution(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers2())",
-                        NAMESPACE
-                )).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method1, null))
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflow(execution(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers2())",
+                                NAMESPACE
+                        )
+                ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method1, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo("cflowPC && pc1", NAMESPACE)).getExpression().match(
+        assertTrue(
+                singleCflowOf(new ExpressionInfo("cflowPC && pc1", NAMESPACE)).getExpression().match(
                         new ExpressionContext(PointcutType.CALL, method3, s_declaringType)
                 )
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo("pc1 && cflowPC", NAMESPACE)).getExpression().match(
+        assertTrue(
+                singleCflowOf(new ExpressionInfo("pc1 && cflowPC", NAMESPACE)).getExpression().match(
                         new ExpressionContext(PointcutType.CALL, method3, s_declaringType)
                 )
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo("cflow(pc2) && pc1", NAMESPACE)).getExpression().match(
+        assertTrue(
+                singleCflowOf(new ExpressionInfo("cflow(pc2) && pc1", NAMESPACE)).getExpression().match(
                         new ExpressionContext(PointcutType.EXECUTION, method3, s_declaringType)
                 )
         );
-        assertFalse(singleCflowOf(
-                new ExpressionInfo("pc1 && cflow(pc2)", NAMESPACE)).getExpression().match(
+        assertFalse(
+                singleCflowOf(new ExpressionInfo("pc1 && cflow(pc2)", NAMESPACE)).getExpression().match(
                         new ExpressionContext(PointcutType.EXECUTION, method2, s_declaringType)
                 )
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "pc2 && cflow(pc1 || pc2 || call(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                )).getExpression().match(new ExpressionContext(PointcutType.CALL, method1, null))
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "pc2 && cflow(pc1 || pc2 || call(void test.expression.Target.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getExpression().match(new ExpressionContext(PointcutType.CALL, method1, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "cflow(pc1 || pc2 || call(void test.expression.Target.modifiers1())) AND pc1",
-                        NAMESPACE
-                )).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method3, null))
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflow(pc1 || pc2 || call(void test.expression.Target.modifiers1())) AND pc1",
+                                NAMESPACE
+                        )
+                ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method3, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "cflow(pc1 || call(void test.expression.Target.modifiers1())) && (execution(void test.expression.Target.modifiers3()) || pc1)",
-                        NAMESPACE
-                )).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method2, null))
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflow(pc1 || call(void test.expression.Target.modifiers1())) && (execution(void test.expression.Target.modifiers3()) || pc1)",
+                                NAMESPACE
+                        )
+                ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method2, null))
         );
-        assertFalse(singleCflowOf(
-                new ExpressionInfo(
-                        "cflow(execution(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers2())",
-                        NAMESPACE
-                )).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method2, null))
+        assertFalse(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflow(execution(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers2())",
+                                NAMESPACE
+                        )
+                ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method2, null))
         );
         assertTrue(
                 new ExpressionInfo("cflow(pc1) && execution(void test.expression.Target.modifiers3())", NAMESPACE)
                 .getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method3, null))
         );
-        assertFalse(singleCflowOf(
-                new ExpressionInfo(
-                        "cflow(call(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers1())",
-                        NAMESPACE
-                )).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method1, null))
+        assertFalse(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflow(call(void test.expression.Target.modifiers1())) && execution(void test.expression.Target.modifiers1())",
+                                NAMESPACE
+                        )
+                ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method1, null))
         );
-        assertFalse(singleCflowOf(
-                new ExpressionInfo(
-                        "cflow(call(void test.expression.Target.modifiers1())) || execution(void test.expression.Target.modifiers1())",
-                        NAMESPACE
-                )).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method1, null))
+        assertFalse(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflow(call(void test.expression.Target.modifiers1())) || execution(void test.expression.Target.modifiers1())",
+                                NAMESPACE
+                        )
+                ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method1, null))
         );
         assertTrue(
                 new ExpressionInfo(
@@ -1917,11 +1943,13 @@ public class ExpressionTest extends TestCase {
                         NAMESPACE
                 ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method2, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "execution(void test.expression.Target.modifiers2()) AND !cflow(call(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                )).getExpression().match(new ExpressionContext(PointcutType.CALL, method1, null))
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "execution(void test.expression.Target.modifiers2()) AND !cflow(call(void test.expression.Target.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getExpression().match(new ExpressionContext(PointcutType.CALL, method1, null))
         );
     }
 
@@ -1941,27 +1969,36 @@ public class ExpressionTest extends TestCase {
                         NAMESPACE
                 )
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo("cflowbelow(execution(void test.expression.Target.modifiers1()))", NAMESPACE)
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflowbelow(execution(void test.expression.Target.modifiers1()))", NAMESPACE
+                        )
                 ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method1, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "cflowbelow(pc1 || pc2 || call(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                )).getExpression().match(new ExpressionContext(PointcutType.CALL, method1, null))
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflowbelow(pc1 || pc2 || call(void test.expression.Target.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getExpression().match(new ExpressionContext(PointcutType.CALL, method1, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "cflowbelow(pc1 || pc2 || call(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                )).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method2, null))
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflowbelow(pc1 || pc2 || call(void test.expression.Target.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method2, null))
         );
-        assertTrue(singleCflowOf(
-                new ExpressionInfo(
-                        "cflowbelow(pc1 || pc2 || call(void test.expression.Target.modifiers1()))",
-                        NAMESPACE
-                )).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method3, null))
+        assertTrue(
+                singleCflowOf(
+                        new ExpressionInfo(
+                                "cflowbelow(pc1 || pc2 || call(void test.expression.Target.modifiers1()))",
+                                NAMESPACE
+                        )
+                ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method3, null))
         );
     }
 
@@ -2765,15 +2802,11 @@ public class ExpressionTest extends TestCase {
         info.addArgument("f", "float", this.getClass().getClassLoader());
         assertTrue(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
 
-        try {
-            info = new ExpressionInfo("call(void test.expression.Target.parameters2(..)) && args(i, f, b)", NAMESPACE);
-            info.addArgument("i", "int", this.getClass().getClassLoader());
-            info.addArgument("f", "WRONG", this.getClass().getClassLoader());
-            // b will be considered as a type
-            assertFalse(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
-        } catch (Exception e) {
-            return;
-        }
+//        info = new ExpressionInfo("call(void test.expression.Target.parameters2(..)) && args(i, f, b)", NAMESPACE);
+//        info.addArgument("i", "int", this.getClass().getClassLoader());
+//        info.addArgument("f", "WRONG", this.getClass().getClassLoader());
+//        // b will be considered as a type
+//        assertFalse(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
     }
 
     public void testAnnotationFQN() {

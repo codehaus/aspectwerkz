@@ -19,11 +19,11 @@
 
             <aspect class="annotation.Target$AnnotationMatchAspect"/>
 
-            <!--            <aspect class="logging.XmlDefLoggingAspect">-->
-            <!--                <pointcut name="methodsToLog" expression="execution(* examples.logging.Target.toLog*(..))"/>-->
-            <!--                <advice name="logMethod" type="around" bind-to="methodsToLog"/>-->
-            <!--                <advice name="logBefore" type="before" bind-to="methodsToLog"/>-->
-            <!--            </aspect>-->
+            <!--                        <aspect class="logging.XmlDefLoggingAspect">-->
+            <!--                            <pointcut name="methodsToLog" expression="execution(* examples.logging.Target.toLog*(..))"/>-->
+            <!--                            <advice name="logMethod" type="around" bind-to="methodsToLog"/>-->
+            <!--                            <advice name="logBefore" type="before" bind-to="methodsToLog"/>-->
+            <!--                        </aspect>-->
         </package>
     </system>
 </aspectwerkz>

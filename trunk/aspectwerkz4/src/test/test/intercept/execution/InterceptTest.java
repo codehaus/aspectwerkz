@@ -58,16 +58,17 @@ public class InterceptTest extends TestCase {
         adviseWithAround2();
         assertEquals("adviseWithAround2 ", LOG);
 
+        final AroundAdvice advice = new AroundAdvice() {
+            public Object invoke(JoinPoint jp) throws Throwable {
+                InterceptTest.log("around1_pre_execution ");
+                Object result = jp.proceed();
+                InterceptTest.log("around1_post_execution ");
+                return result;
+            }
+        };
         ((Advisable) this).aw$addAdvice(
                 "* test.intercept.execution.InterceptTest.adviseWithAround2(..)",
-                new AroundAdvice() {
-                    public Object invoke(JoinPoint jp) throws Throwable {
-                        InterceptTest.log("around1_pre_execution ");
-                        Object result = jp.proceed();
-                        InterceptTest.log("around1_post_execution ");
-                        return result;
-                    }
-                }
+                advice
         );
 
         LOG = "";
@@ -75,7 +76,8 @@ public class InterceptTest extends TestCase {
         assertEquals("around1_pre_execution adviseWithAround2 around1_post_execution ", LOG);
 
         ((Advisable) this).aw$removeAdvice(
-                "* test.intercept.execution.InterceptTest.adviseWithAround2(..)", AroundAdvice.class
+                "* test.intercept.execution.InterceptTest.adviseWithAround2(..)",
+                advice.getClass()
         );
 
         LOG = "";
