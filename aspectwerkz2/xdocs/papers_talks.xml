@@ -1,22 +1,58 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <document>
 
     <properties>
         <title>Papers &amp; Talks</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
+        <author email="alex at gnilux dot com">alexandre vasseur</author>
     </properties>
 
     <body>
 
        <section name="Papers">
             <p>
-                Add presentations we have made and will make.
+                <ul>
+                    <!-- TODO dev2dev  -->
+                    <li>AOSD 2004, Dynamic AOP WorkShop (March 2004)<br/>
+                        <i>Dynamic AOP and Runtime Weaving for Java - How does AspectWerkz Address it?</i>
+                        Alexandre Vasseur technical paper about dynamic AOP and especially the feature allowing
+                        addition of new pointcuts at runtime using HotSwap (since 0.10).<br/>
+                        [<a href="/downloads/papers/aosd2004-daw-aspectwerkz.pdf">pdf</a>]<br/>
+                    </li>
+                    <!-- TODO Jonas "rejected paper" -->
+                    <li>Hooking architecture (since 0.8) (August 12, 2003)<br/>
+                        The hooking architecture allows class load time weaving for all Java version since 1.3 and all
+                        JVMs (Sun, IBM, BEA).<br/>
+                        [<a href="/downloads/papers/AspectWerkz-online-architecture.pdf.zip">pdf</a>,
+                         <a href="/downloads/papers/AspectWerkz-online-architecture.ppt.zip">ppt</a>]<br/>
+                    </li>
+                </ul>
             </p>
         </section>
 
         <section name="Talks">
             <p>
-                Add presentations we have made and will make.
+                <ul>
+                    <!-- TODO j1 + BUG + eW, only after J1 show -->
+                    <li>
+                        AOSD 2004, AspectWerkz tutorial (March 2004)<br/>
+                        Jonas Bonér and Alexandre Vasseur 3h tutorial providing detailled information about AspectWerkz
+                        with emphasys on the <i>Aspects are regular Java classes</i> idea and <i>ease of integration</i>, with a complete
+                        demo (available from CVS usually for latest AspectWerkz release, module <i>tutorial-aosd2004</i>).<br/>
+                        [<a href="/downloads/papers/aosd2004_tutorial_aspectwerkz.pdf">pdf</a>]<br/>
+                    </li>
+                    <li>
+                        AOSD 2004, Invited Industry Talk (March 2004)<br/>
+                        <i>What are the Key Issues for Commercial AOP Use - how does AspectWerkz address them?</i>
+                        Jonas Bonér keynote about commercial AOP use and design decision for AspectWerkz.<br/>
+                        [<a href="/downloads/papers/InvitedTalkAOSD2004.pdf">pdf</a>]<br/>
+                    </li>
+                    <li>BEJug JavaPolis, Antwerp 2003 (December 16, 2003)<br/>
+                        Jonas Bonér 1h talk provides an introduction to AspectWerkz (targets 0.9) and gives concrete
+                        hands on samples (UnitOfWork pattern, JAAS security for POJOs).<br/>
+                        [<a href="/downloads/papers/bejug-aspectwerkz-boner.ppt.gz">ppt</a>]<br/>
+                    </li>
+                </ul>
             </p>
         </section>
 

@@ -30,7 +30,7 @@
             <item name="Attribute definition" href="/attribute_definition.html"/>
             <item name="XML definition" href="/xml_definition.html"/>
             <item name="Startup &amp; Runtime issues" href="/startup_and_runtime_issues.html"/>
-            <item name="Online mode issues" href="/online.html"/>
+            <item name="Weaving" href="/online.html"/>
             <item name="Examples" href="/examples_2.html"/>
             <item name="JavaDoc" href="/apidocs/index.html"/>
             <item name="FAQ" href="/faq.html"/>

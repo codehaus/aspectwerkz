@@ -99,7 +99,7 @@
 <!--                    <code>abstract</code> keyword as a regular abstract class and is inherited-->
 <!--                    using the <code>extends</code> keyword.-->
 <!--                </p>-->
-            </subsection>
+<!--            </subsection>-->
         </section>
 
         <section name="Advice">
