@@ -371,7 +371,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             createFieldsCommonToAllJoinPoints();
             //
             if (m_returnType.getSort() != Type.VOID) {
-                m_cw.visitField(ACC_PRIVATE, "RETURNED", m_returnType.getDescriptor(), null, null);
+                m_cw.visitField(ACC_PRIVATE, RETURN_VALUE_FIELD_NAME, m_returnType.getDescriptor(), null, null);
             }
 
 
@@ -601,7 +601,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * @param aspectInfo
      * @param joinPointClassName
      */
-    public static void createAspectInstantiation(CodeVisitor cv, final AspectInfo aspectInfo,
+    public static void createAspectInstantiation(final CodeVisitor cv,
+                                                 final AspectInfo aspectInfo,
                                                  final String joinPointClassName) {
         String aspectClassSignature = aspectInfo.getAspectClassSignature();
         String aspectClassName = aspectInfo.getAspectClassName();
@@ -687,17 +688,12 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             createInvocationLocalJoinPointInstance(cv, argStartIndex, joinPointIndex);
         }
 
-        // initialize the perTarget aspects
-        for (int i = 0; i < m_aspectInfos.length; i++) {
-            createInvocationToAspectOf(
-                    cv, isOptimizedJoinPoint, joinPointIndex, callerIndex, calleeIndex, m_aspectInfos[i]
-            );
-        }
+        // initialize the instance local aspects
+        initializeInstanceLevelAspects(cv, isOptimizedJoinPoint, joinPointIndex, callerIndex, calleeIndex);
 
         // before advices
         createBeforeAdviceInvocations(
-                cv, isOptimizedJoinPoint, argStartIndex, joinPointIndex,
-                callerIndex, calleeIndex
+                cv, isOptimizedJoinPoint, argStartIndex, joinPointIndex, callerIndex, calleeIndex
         );
 
         // handle different combinations of after advice (finally/throwing/returning)
@@ -715,6 +711,52 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             );
         }
         cv.visitMaxs(0, 0);
+    }
+
+    /**
+     * Initializes instance level aspects, retrieves them from the target instance through the
+     * <code>HasInstanceLevelAspect</code> interfaces.
+     *
+     * @param cv
+     * @param isOptimizedJoinPoint
+     * @param joinPointIndex
+     * @param callerIndex
+     * @param calleeIndex
+     */
+    protected void initializeInstanceLevelAspects(final CodeVisitor cv,
+                                                  final boolean isOptimizedJoinPoint,
+                                                  final int joinPointIndex,
+                                                  final int callerIndex,
+                                                  final int calleeIndex) {
+        for (int i = 0; i < m_aspectInfos.length; i++) {
+            AspectInfo aspectInfo = m_aspectInfos[i];
+            if (aspectInfo.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
+                //aspectField = (<TYPE>)((HasInstanceLocalAspect)target).class$getAspect(className, qualifiedName)
+                loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
+                if (calleeIndex >= 0) {
+                    cv.visitVarInsn(ALOAD, calleeIndex);
+                } else {
+                    throw new RuntimeException(
+                            "could not retreive instance local aspect for target class: target instance is not avaliable"
+                    );
+                }
+                cv.visitLdcInsn(aspectInfo.getAspectClassName().replace('/', '.'));
+                cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
+                cv.visitMethodInsn(
+                        INVOKEINTERFACE,
+                        HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME,
+                        GET_INSTANCE_LEVEL_ASPECT_METHOD_NAME,
+                        GET_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE
+                );
+                cv.visitTypeInsn(CHECKCAST, aspectInfo.getAspectClassName());
+                cv.visitFieldInsn(
+                        PUTFIELD,
+                        m_joinPointClassName,
+                        aspectInfo.getAspectFieldName(),
+                        aspectInfo.getAspectClassSignature()
+                );
+            }
+        }
     }
 
     /**
@@ -1489,7 +1531,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 }
                 cv.visitFieldInsn(
                         PUTFIELD, m_joinPointClassName,
-                        RETURNED_FIELD, m_returnType.getDescriptor()
+                        RETURN_VALUE_FIELD_NAME, m_returnType.getDescriptor()
                 );
             }
         }
@@ -1774,8 +1816,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         if (m_returnType.getSort() != Type.VOID) {
             cv.visitVarInsn(ALOAD, joinPointCloneIndex);
             cv.visitVarInsn(ALOAD, 0);
-            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, RETURNED_FIELD, m_returnType.getDescriptor());
-            cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, RETURNED_FIELD, m_returnType.getDescriptor());
+            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, RETURN_VALUE_FIELD_NAME, m_returnType.getDescriptor());
+            cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, RETURN_VALUE_FIELD_NAME, m_returnType.getDescriptor());
         }
 
         cv.visitVarInsn(ALOAD, joinPointCloneIndex);
@@ -1945,10 +1987,10 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * @param joinPointIndex
      * @param callerIndex
      */
-    public void loadCaller(final CodeVisitor cv,
-                           final boolean isOptimizedJoinPoint,
-                           final int joinPointIndex,
-                           final int callerIndex) {
+    protected void loadCaller(final CodeVisitor cv,
+                              final boolean isOptimizedJoinPoint,
+                              final int joinPointIndex,
+                              final int callerIndex) {
         if (isOptimizedJoinPoint) {
             // grab the callee from the invoke parameters directly
             cv.visitVarInsn(ALOAD, callerIndex);
@@ -1958,10 +2000,18 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         }
     }
 
-    public void loadAspect(final CodeVisitor cv,
-                           final boolean isOptimizedJoinPoint,
-                           final int joinPointIndex,
-                           final AspectInfo aspectInfo) {
+    /**
+     * Loads the aspect instance.
+     *
+     * @param cv
+     * @param isOptimizedJoinPoint
+     * @param joinPointIndex
+     * @param aspectInfo
+     */
+    protected void loadAspect(final CodeVisitor cv,
+                              final boolean isOptimizedJoinPoint,
+                              final int joinPointIndex,
+                              final AspectInfo aspectInfo) {
         switch (aspectInfo.getDeploymentModel()) {
             case DeploymentModel.PER_JVM:
             case DeploymentModel.PER_CLASS:
@@ -1978,11 +2028,24 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 );
 
         }
-        //FIXME - is that ok for other models ?
     }
 
-    public void createInvocationToAspectOf(CodeVisitor cv, boolean isOptimizedJoinPoint, int joinPointIndex,
-                                           int callerIndex, int calleeIndex, AspectInfo aspectInfo) {
+    /**
+     * Creates an invocation to Aspects.aspectOf(..).
+     *
+     * @param cv
+     * @param isOptimizedJoinPoint
+     * @param joinPointIndex
+     * @param callerIndex
+     * @param calleeIndex
+     * @param aspectInfo
+     */
+    public void createInvocationToAspectOf(final CodeVisitor cv,
+                                           final boolean isOptimizedJoinPoint,
+                                           final int joinPointIndex,
+                                           final int callerIndex,
+                                           final int calleeIndex,
+                                           final AspectInfo aspectInfo) {
         if (aspectInfo.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
             //aspectField = (cast) Aspects.aspectOf(aspectQN, callee)
             loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
@@ -2012,7 +2075,5 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                     aspectInfo.getAspectClassSignature()
             );
         }
-        //FIXME - is that ok for other models ?
     }
-
 }

@@ -219,7 +219,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
         // set the value
         cv.visitInsn(DUP);
         cv.visitVarInsn(ALOAD, 0);
-        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, RETURNED_FIELD, m_returnType.getDescriptor());
+        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, RETURN_VALUE_FIELD_NAME, m_returnType.getDescriptor());
         cv.visitMethodInsn(
                 INVOKEVIRTUAL, HANDLER_RTTI_IMPL_CLASS_NAME, SET_RETURN_VALUE_METHOD_NAME,
                 SET_RETURN_VALUE_METHOD_SIGNATURE

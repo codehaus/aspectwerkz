@@ -112,7 +112,7 @@ public interface TransformationConstants extends Constants {
     public static final String CALLEE_INSTANCE_FIELD_NAME = "CALLEE";
     public static final String CALLER_INSTANCE_FIELD_NAME = "CALLER";
     public static final String ARGUMENT_FIELD = "ARGUMENT_";
-    public static final String RETURNED_FIELD = "RETURNED";
+    public static final String RETURN_VALUE_FIELD_NAME = "RETURN_VALUE";
     public static final String OPTIMIZED_JOIN_POINT_INSTANCE_FIELD_NAME = "OPTIMIZED_JOIN_POINT";
 
     // runtime system signatures and types
@@ -207,8 +207,8 @@ public interface TransformationConstants extends Constants {
     public static final String HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME = "org/codehaus/aspectwerkz/aspect/management/HasInstanceLevelAspect";
     public static final String INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME = SYNTHETIC_MEMBER_PREFIX + "instanceLevelAspects";
     public static final String INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE = "Ljava/util/Map;";
-    public static final String GET_INSTANCE_LOCAL_ASPECT_METHOD_NAME = SYNTHETIC_MEMBER_PREFIX + "getAspect";
-    public static final String GET_INSTANCE_LOCAL_ASPECT_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;";
+    public static final String GET_INSTANCE_LEVEL_ASPECT_METHOD_NAME = WRAPPER_METHOD_PREFIX + "getAspect";
+    public static final String GET_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;";
 
     public static final int MODIFIER_INVOKEINTERFACE = 0x10000000;
     public static final int INDEX_NOTAVAILABLE = -1;

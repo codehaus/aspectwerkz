@@ -104,6 +104,9 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                                    final Attribute attrs) {
         if (m_isAdvised) {
             if (name.equals(INIT_METHOD_NAME)) {
+//                CodeVisitor ctorBodyMethodCodeVisitor = cv.visitMethod(
+//                        access, name, desc, exceptions, attrs
+//                );
                 CodeVisitor mv = new AppendToInitMethodCodeAdapter(
                         cv.visitMethod(access, name, desc, exceptions, attrs)
                 );
@@ -133,9 +136,9 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
      */
     private void addGetAspectMethod(final String name) {
         CodeVisitor cv = super.visitMethod(
-                ACC_PUBLIC + ACC_FINAL + ACC_SYNTHETIC,
-                GET_INSTANCE_LOCAL_ASPECT_METHOD_NAME,
-                GET_INSTANCE_LOCAL_ASPECT_METHOD_SIGNATURE,
+                ACC_PUBLIC + ACC_SYNTHETIC,
+                GET_INSTANCE_LEVEL_ASPECT_METHOD_NAME,
+                GET_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE,
                 null, null
         );
         cv.visitVarInsn(ALOAD, 0);
@@ -191,8 +194,20 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
             super(ca);
         }
 
-        public void visitInsn(final int opcode) {
-            if (opcode == RETURN) {
+        /**
+         * Inserts the init of the aspect field right after the call to super(..) of this(..).
+         *
+         * @param opcode
+         * @param owner
+         * @param name
+         * @param desc
+         */
+        public void visitMethodInsn(int opcode,
+                                    String owner,
+                                    String name,
+                                    String desc) {
+
+            if (opcode == INVOKESPECIAL) {
                 // initialize aspect map field
                 cv.visitVarInsn(ALOAD, 0);
                 cv.visitTypeInsn(NEW, HASH_MAP_CLASS_NAME);
@@ -210,7 +225,7 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                         INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
                 );
             }
-            super.visitInsn(opcode);
+            cv.visitMethodInsn(opcode, owner, name, desc);
         }
     }
 

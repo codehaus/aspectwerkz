@@ -215,11 +215,15 @@ public class MethodExecutionJoinPointCompiler extends AbstractJoinPointCompiler 
             if (AsmHelper.isPrimitive(m_returnType)) {
                 AsmHelper.prepareWrappingOfPrimitiveType(cv, m_returnType);
                 cv.visitVarInsn(ALOAD, 0);
-                cv.visitFieldInsn(GETFIELD, m_joinPointClassName, RETURNED_FIELD, m_returnType.getDescriptor());
+                cv.visitFieldInsn(
+                        GETFIELD, m_joinPointClassName, RETURN_VALUE_FIELD_NAME, m_returnType.getDescriptor()
+                );
                 AsmHelper.wrapPrimitiveType(cv, m_returnType);
             } else {
                 cv.visitVarInsn(ALOAD, 0);
-                cv.visitFieldInsn(GETFIELD, m_joinPointClassName, RETURNED_FIELD, m_returnType.getDescriptor());
+                cv.visitFieldInsn(
+                        GETFIELD, m_joinPointClassName, RETURN_VALUE_FIELD_NAME, m_returnType.getDescriptor()
+                );
             }
             cv.visitMethodInsn(
                     INVOKEVIRTUAL, METHOD_RTTI_IMPL_CLASS_NAME, SET_RETURN_VALUE_METHOD_NAME,
