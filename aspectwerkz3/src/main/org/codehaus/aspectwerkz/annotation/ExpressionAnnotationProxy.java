@@ -7,14 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.apache.xmlbeans.impl.jam.annotation.TypedAnnotationProxyBase;
 import org.codehaus.aspectwerkz.util.Strings;
-import java.io.Serializable;
 
 /**
+ * The 'Expression' annotation proxy.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ExpressionAnnotationProxy extends TypedAnnotationProxyBase implements Serializable {
+public class ExpressionAnnotationProxy extends AnnotationProxyBase {
     String m_expression;
 
     public String expression() {

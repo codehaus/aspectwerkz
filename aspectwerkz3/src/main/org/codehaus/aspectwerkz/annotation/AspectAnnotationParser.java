@@ -22,7 +22,7 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class AspectAnnotationParser implements AnnotationParser {
+public class AspectAnnotationParser {
     /**
      * Parse the attributes and create and return a meta-data representation of them.
      *
@@ -40,7 +40,6 @@ public class AspectAnnotationParser implements AnnotationParser {
             // fall back on using the class name as aspect name and let the deployment model be perJVM
             aspectAnnotation = new AspectAnnotationProxy();
             aspectAnnotation.setname(klass.getName());
-            aspectAnnotation.setvalue("perJVM");
         }
 
         // attribute settings override the xml settings

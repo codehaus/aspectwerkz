@@ -7,13 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.apache.xmlbeans.impl.jam.annotation.TypedAnnotationProxyBase;
-import java.io.Serializable;
+import org.codehaus.aspectwerkz.util.Strings;
 
 /**
+ * The 'Introduce' annotation proxy.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class IntroduceAnnotationProxy extends TypedAnnotationProxyBase implements Serializable {
+public class IntroduceAnnotationProxy extends AnnotationProxyBase {
     private String m_expression;
     private String m_deploymentModel = "perJVM";
     private String[] m_introducedInterfaces;
@@ -27,7 +28,7 @@ public class IntroduceAnnotationProxy extends TypedAnnotationProxyBase implement
     }
 
     public void setvalue(String value) {
-        m_expression = value;
+        m_expression = Strings.removeFormattingCharacters(value);
     }
 
     public void setdeploymentModel(final String deploymentModel) {

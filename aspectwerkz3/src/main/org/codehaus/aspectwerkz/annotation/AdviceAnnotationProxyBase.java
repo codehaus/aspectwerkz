@@ -7,14 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.apache.xmlbeans.impl.jam.annotation.TypedAnnotationProxyBase;
 import org.codehaus.aspectwerkz.util.Strings;
-import java.io.Serializable;
 
 /**
+ * The advice annotation proxy base.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AdviceAnnotationProxyBase extends TypedAnnotationProxyBase implements Serializable {
+public class AdviceAnnotationProxyBase extends AnnotationProxyBase {
     String m_name;
     String m_pointcut;
 

@@ -7,8 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-
 /**
+ * The 'Before' annotation proxy.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class BeforeAnnotationProxy extends AdviceAnnotationProxyBase {
