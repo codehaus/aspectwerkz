@@ -37,6 +37,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Manages the aspects in the AspectWerkz system.<br/>
@@ -837,23 +838,27 @@ public final class AspectWerkz {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
         if (index < 0) throw new IllegalArgumentException("method index can not be less than 0");
 
-        Method method;
         try {
             // create the method repository lazily
             if (!m_methods.containsKey(klass)) {
                 createMethodRepository(klass);
             }
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+
+        Method method;
+        try {
             method = ((Method[])m_methods.get(klass))[index];
         }
         catch (Throwable e1) {
-            System.out.println("====================> ERROR 1 = " + e1);
             initialize();
             try {
                 method = ((Method[])m_methods.get(klass))[index];
             }
-            catch (NullPointerException e2) {
-                System.out.println("====================> ERROR 2 = " + e2);
-                throw new DefinitionException(klass + " does not have any aspects defined");
+            catch (Exception e) {
+                throw new WrappedRuntimeException(e);
             }
         }
         return method;
