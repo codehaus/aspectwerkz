@@ -117,7 +117,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
             final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
 
-            handleCallToOverriddenSuperClassMethod(mg, cg, cpg, factory);
+//            handleCallToOverriddenSuperClassMethod(mg, cg, cpg, factory);
 
             // take care of identification of overloaded methods by inserting a sequence number
             if (methodSequences.containsKey(methods[i].getName())) {
@@ -194,48 +194,48 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * @param cpg the constant pool gen
      * @param factory the instruction factory
      */
-    private void handleCallToOverriddenSuperClassMethod(final MethodGen mg,
-                                                        final ClassGen cg,
-                                                        final ConstantPoolGen cpg,
-                                                        final InstructionFactory factory) {
-
-        InstructionList il = mg.getInstructionList();
-        if (il == null) return;
-
-        InstructionHandle ih = il.getStart();
-        while (ih != null) {
-            Instruction ins = ih.getInstruction();
-
-            // TODO: are both INVOKESPECIAL and INVOKEVIRTUAL needed?
-            if (ins instanceof INVOKESPECIAL || ins instanceof INVOKEVIRTUAL) {
-
-                InvokeInstruction invokeInstruction = (InvokeInstruction)ins;
-
-                // get the method name and class name of the method being invoked
-                String methodName = invokeInstruction.getName(cpg);
-                String className = invokeInstruction.getClassName(cpg);
-                String superClassName = cg.getSuperclassName();
-
-                if (methodName.equals(mg.getMethod().getName()) &&
-                        className.equals(superClassName)) {
-
-                    String wrapperMethodName = TransformationUtil.
-                            SUPER_CALL_WRAPPER_PREFIX + methodName;
-
-                    ih.swapInstruction(factory.createInvoke(
-                            superClassName,
-                            wrapperMethodName,
-                            mg.getReturnType(),
-                            mg.getArgumentTypes(),
-                            Constants.INVOKESPECIAL)
-                    );
-
-                    addSuperCallWrapperMethod(wrapperMethodName, mg, cg, cpg, factory);
-                }
-            }
-            ih = ih.getNext();
-        }
-    }
+//    private void handleCallToOverriddenSuperClassMethod(final MethodGen mg,
+//                                                        final ClassGen cg,
+//                                                        final ConstantPoolGen cpg,
+//                                                        final InstructionFactory factory) {
+//
+//        InstructionList il = mg.getInstructionList();
+//        if (il == null) return;
+//
+//        InstructionHandle ih = il.getStart();
+//        while (ih != null) {
+//            Instruction ins = ih.getInstruction();
+//
+//            // TODO: are both INVOKESPECIAL and INVOKEVIRTUAL needed?
+//            if (ins instanceof INVOKESPECIAL || ins instanceof INVOKEVIRTUAL) {
+//
+//                InvokeInstruction invokeInstruction = (InvokeInstruction)ins;
+//
+//                // get the method name and class name of the method being invoked
+//                String methodName = invokeInstruction.getName(cpg);
+//                String className = invokeInstruction.getClassName(cpg);
+//                String superClassName = cg.getSuperclassName();
+//
+//                if (methodName.equals(mg.getMethod().getName()) &&
+//                        className.equals(superClassName)) {
+//
+//                    String wrapperMethodName = TransformationUtil.
+//                            SUPER_CALL_WRAPPER_PREFIX + methodName;
+//
+//                    ih.swapInstruction(factory.createInvoke(
+//                            superClassName,
+//                            wrapperMethodName,
+//                            mg.getReturnType(),
+//                            mg.getArgumentTypes(),
+//                            Constants.INVOKESPECIAL)
+//                    );
+//
+//                    addSuperCallWrapperMethod(wrapperMethodName, mg, cg, cpg, factory);
+//                }
+//            }
+//            ih = ih.getNext();
+//        }
+//    }
 
     /**
      * Creates a wrapper method for the super class' method invocation.
@@ -245,47 +245,47 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * @param cpg the constant pool gen
      * @param factory the instruction factory
      */
-    private void addSuperCallWrapperMethod(final String methodName,
-                                           final MethodGen mg,
-                                           final ClassGen cg,
-                                           final ConstantPoolGen cpg,
-                                           final InstructionFactory factory) {
-        System.out.println("AdviseMemberMethodTransformer.addSuperCallWrapperMethod");
-        final InstructionList il = new InstructionList();
-
-        MethodGen method = new MethodGen(
-                mg.getModifiers(),
-                Type.getReturnType(mg.getSignature()),
-                Type.getArgumentTypes(mg.getSignature()),
-                mg.getArgumentNames(),
-                methodName,
-                cg.getClassName(),
-                il, cpg
-        );
-
-        // TODO: load the params at runtime
-        il.append(factory.createLoad(Type.OBJECT, 0));
-        il.append(factory.createLoad(Type.INT, 1));
-        il.append(factory.createLoad(Type.LONG,  2));
-        il.append(factory.createLoad(Type.OBJECT, 4));
-
-        il.append(factory.createInvoke(
-                cg.getClassName(),
-                TransformationUtil.ORIGINAL_METHOD_PREFIX + methodName,
-                Type.getReturnType(mg.getSignature()),
-                Type.getArgumentTypes(mg.getSignature()),
-                Constants.INVOKESPECIAL)
-        );
-
-        // TODO: choose return type at runtime
-        il.append(factory.createReturn(Type.OBJECT));
-
-        method.setMaxStack();
-        method.setMaxLocals();
-
-        cg.addMethod(method.getMethod());
-        il.dispose();
-    }
+//    private void addSuperCallWrapperMethod(final String methodName,
+//                                           final MethodGen mg,
+//                                           final ClassGen cg,
+//                                           final ConstantPoolGen cpg,
+//                                           final InstructionFactory factory) {
+//        System.out.println("AdviseMemberMethodTransformer.addSuperCallWrapperMethod");
+//        final InstructionList il = new InstructionList();
+//
+//        MethodGen method = new MethodGen(
+//                mg.getModifiers(),
+//                Type.getReturnType(mg.getSignature()),
+//                Type.getArgumentTypes(mg.getSignature()),
+//                mg.getArgumentNames(),
+//                methodName,
+//                cg.getClassName(),
+//                il, cpg
+//        );
+//
+//        // TODO: load the params at runtime
+//        il.append(factory.createLoad(Type.OBJECT, 0));
+//        il.append(factory.createLoad(Type.INT, 1));
+//        il.append(factory.createLoad(Type.LONG,  2));
+//        il.append(factory.createLoad(Type.OBJECT, 4));
+//
+//        il.append(factory.createInvoke(
+//                cg.getClassName(),
+//                TransformationUtil.ORIGINAL_METHOD_PREFIX + methodName,
+//                Type.getReturnType(mg.getSignature()),
+//                Type.getArgumentTypes(mg.getSignature()),
+//                Constants.INVOKESPECIAL)
+//        );
+//
+//        // TODO: choose return type at runtime
+//        il.append(factory.createReturn(Type.OBJECT));
+//
+//        method.setMaxStack();
+//        method.setMaxLocals();
+//
+//        cg.addMethod(method.getMethod());
+//        il.dispose();
+//    }
 
     /**
      * Adds a join point member field.
