@@ -16,6 +16,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.attribdef.definition.StartupManager;
 import org.codehaus.aspectwerkz.attribdef.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.ContainerType;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.System;
@@ -64,6 +65,11 @@ public abstract class Aspect implements Serializable {
     protected ContainerType m_containerType;
 
     /**
+     * Holds the parameters passed to the advice.
+     */
+    protected Map m_parameters = new HashMap();
+
+    /**
      * The UUID for the system housing this advice.
      */
     private String m_uuid;
@@ -107,7 +113,7 @@ public abstract class Aspect implements Serializable {
             clone.m_aspectClass = prototype.m_aspectClass;
             clone.m_container = prototype.m_container;
             clone.m_deploymentModel = prototype.m_deploymentModel;
-//            clone.m_parameters = prototype.m_parameters;
+            clone.m_parameters = prototype.m_parameters;
 
             return clone;
         }
@@ -348,6 +354,27 @@ public abstract class Aspect implements Serializable {
     }
 
     /**
+     * Sets a parameter for the advice.
+     *
+     * @param name the name of the parameter
+     * @param value the value of the parameter
+     */
+    public void ___AW_setParameter(final String name, final String value) {
+        m_parameters.put(name, value);
+    }
+
+    /**
+     * Returns the value of a parameter with the name specified.
+     *
+     * @param name the name of the parameter
+     * @return the value of the parameter
+     */
+    public String ___AW_getParameter(final String name) {
+        if (!m_parameters.containsKey(name)) throw new DefinitionException("parameter to advice not specified: " + name);
+        return (String)m_parameters.get(name);
+    }
+
+    /**
      * Provides custom deserialization.
      *
      * @param stream the object input stream containing the serialized object
@@ -363,6 +390,7 @@ public abstract class Aspect implements Serializable {
         m_containerType = (ContainerType)fields.get("m_containerType", ContainerType.TRANSIENT);
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
         m_aspectDef = (AspectDefinition)fields.get("m_aspectDef", null);
+        m_parameters = (Map)fields.get("m_parameters", null);
         m_container = StartupManager.createAspectContainer(this);
         m_system = SystemLoader.getSystem(m_uuid);
         m_system.initialize();
