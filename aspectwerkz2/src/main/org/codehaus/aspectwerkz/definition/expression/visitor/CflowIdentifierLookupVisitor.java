@@ -94,11 +94,9 @@ public class CflowIdentifierLookupVisitor implements ExpressionParserVisitor {
         ExpressionNamespace space = context.getNamespace();
         Expression expression = space.getExpression(node.name);
         if (expression != null) {
-            //TODO nested expression support
             if (! (expression instanceof LeafExpression)) {
                 context.addNames(expression.getCflowExpressions().keySet());
-                //throw new RuntimeException("nested expr in Cflow Id visitor");
-                return data;//SKIP
+                return data;
             } else {
                 LeafExpression leaf = (LeafExpression) expression;
                 // LeafExpression has a sole type

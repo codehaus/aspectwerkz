@@ -156,6 +156,11 @@ public class AnonymousInflateVisitor implements ExpressionParserVisitor {
                     expr.substring(8, expr.length()-1),
                     "", exprAutoName
             );
+        } else if (expr.startsWith("attribute(")) {
+            expression = ns.createAttributeExpression(
+                    expr.substring(10, expr.length()-1),
+                    exprAutoName
+            );
         } else {
             throw new RuntimeException("unknown anonymous: "+expr);
         }

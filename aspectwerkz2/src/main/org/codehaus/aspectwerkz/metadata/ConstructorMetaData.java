@@ -12,7 +12,7 @@ package org.codehaus.aspectwerkz.metadata;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ConstructorMetaData implements MemberMetaData {
+public class ConstructorMetaData extends MemberMetaData {
 
     /**
      * The name of the constructor.

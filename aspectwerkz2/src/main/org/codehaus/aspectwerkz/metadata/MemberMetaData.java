@@ -12,7 +12,7 @@ package org.codehaus.aspectwerkz.metadata;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface MemberMetaData extends MetaData {
+public abstract class MemberMetaData extends MetaData {
 
-    public String getName();
+    public abstract String getName();
 }
