@@ -183,8 +183,8 @@ public class ComputationStandalone {
     public static class CacheAspect {
         private Map m_cache = new HashMap();
 
-        public Object cache(final JoinPoint joinPoint, Rtti rtti) throws Throwable {
-            MethodRtti mrtti = (MethodRtti) rtti;
+        public Object cache(final JoinPoint joinPoint) throws Throwable {
+            MethodRtti mrtti = (MethodRtti) joinPoint.getRtti();
             Integer parameter = (Integer) mrtti.getParameterValues()[0];
             Integer cachedValue = (Integer) m_cache.get(parameter);
             if (cachedValue == null) {

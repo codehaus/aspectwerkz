@@ -29,8 +29,6 @@ public class ConstructorRttiImpl implements ConstructorRtti {
 
     private Object[] m_parameterValues = EMPTY_OBJECT_ARRAY;
 
-    private Object m_newInstance;
-
     /**
      * Creates a new constructor RTTI.
      *
@@ -92,24 +90,6 @@ public class ConstructorRttiImpl implements ConstructorRtti {
     public Class getDeclaringType() {
         return m_signature.getDeclaringType();
     }
-
-//    /**
-//     * Returns the new instance created by the constructor.
-//     *
-//     * @return the new instance
-//     */
-//    public Object getNewInstance() {
-//        return m_newInstance;
-//    }
-//
-//    /**
-//     * Sets the new instance created by the constructor.
-//     *
-//     * @param newInstance
-//     */
-//    public void setNewInstance(final Object newInstance) {
-//        m_newInstance = newInstance;
-//    }
 
     /**
      * Returns the modifiers for the signature. <p/>Could be used like this:

@@ -54,13 +54,13 @@ public class CachingAspect {
     /**
      * @Around execution(int examples.caching.Pi.getPiDecimal(int))
      */
-    public Object cache(final JoinPoint joinPoint, Rtti rtti) throws Throwable {
-        MethodRtti mrtti = (MethodRtti) rtti;
+    public Object cache(final JoinPoint joinPoint) throws Throwable {
+        MethodRtti mrtti = (MethodRtti) joinPoint.getRtti();
         final Long hash = new Long(calculateHash(mrtti));
         final Object cachedResult = m_cache.get(hash);
         if (cachedResult != null) {
             System.out.println("using            cache");
-            CacheStatistics.addCacheInvocation(rtti.getName(), mrtti.getParameterTypes());
+            CacheStatistics.addCacheInvocation(mrtti.getName(), mrtti.getParameterTypes());
             System.out.println("parameter: timeout = " + m_info.getParameter("timeout"));
             return cachedResult;
         }
