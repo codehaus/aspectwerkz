@@ -131,4 +131,32 @@ public class Aspect {
     public void logAfter(final StaticJoinPoint joinPoint) throws Throwable {
         Test.log("logAfter ");
     }
+
+    /**
+     * @AfterReturning(type="i", expression="execution(* test.afterxxx.TestBinding.returnInt(..))")
+     */
+    public void logAfterBinding(int i) {
+        TestBinding.log("afterReturningInt " + i);
+    }
+
+    /**
+     * @AfterReturning(type="s", expression="execution(* test.afterxxx.TestBinding.returnString(..))")
+     */
+    public void logAfterBinding(String s) {
+        TestBinding.log("afterReturningString " + s);
+    }
+
+    /**
+     * @AfterThrowing(type="e", expression="execution(* test.afterxxx.TestBinding.throwChecked(..))")
+     */
+    public void logAfterBindingExact(ClassNotFoundException e) {
+        TestBinding.log("afterThrowingExact " + e.getClass().getName());
+    }
+
+    /**
+     * @AfterThrowing(type="e", expression="execution(* test.afterxxx.TestBinding.throwChecked(..))")
+     */
+    public void logAfterBindingParentClass(Exception e) {
+        TestBinding.log(" afterThrowingParentClass " + e.getClass().getName());
+    }
 }
