@@ -117,8 +117,31 @@ public class JoinPointMetaData {
 //                    }
                     indexTuple.setMethodToArgIndexes(adviceToTargetArgs);
                 }
+                for (int j = 0; j < pointcut.getAfterAdviceIndexes().length; j++) {
+                    IndexTuple indexTuple = pointcut.getAfterAdviceIndexes()[j];
+                    String adviceName = pointcut.getAfterAdviceName(j);
+                    //grab the parameters names
+                    String[] adviceArgNames = JoinPointMetaData.getParameterNames(adviceName);
+                    // map them from the ctx info
+                    int[] adviceToTargetArgs = new int[adviceArgNames.length];
+                    for (int k = 0; k < adviceArgNames.length; k++) {
+                        String adviceArgName = adviceArgNames[k];
+                        int exprArgIndex = pointcut.getExpressionInfo().getArgumentIndex(adviceArgName);
+                        if (exprArgIndex >= 0 && ctx.m_exprIndexToTargetIndex.containsKey(exprArgIndex)) {
+                            adviceToTargetArgs[k] = ctx.m_exprIndexToTargetIndex.get(exprArgIndex);
+                        } else {
+                            adviceToTargetArgs[k] = -1;
+                        }
+                    }
+//                    //debug:
+//                    for (int k = 0; k < adviceToTargetArgs.length; k++) {
+//                        int adviceToTargetArg = adviceToTargetArgs[k];
+//                        System.out.println("      " + k + " -> " + adviceToTargetArg);
+//                    }
+                    indexTuple.setMethodToArgIndexes(adviceToTargetArgs);
+                }
 
-                //FIXME: do the same for after and around !
+                //FIXME: do the same for around !
 
                 adviceIndexInfoList.add(adviceIndexInfo);
     

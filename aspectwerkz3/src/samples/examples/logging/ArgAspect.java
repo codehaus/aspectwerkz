@@ -23,18 +23,25 @@ public class ArgAspect {
     }
 
     /**
+     * @After methodsToLogPC(ai, as)
+     */
+    public void afterWithArgs(final JoinPoint joinPoint, int ai, String as) throws Throwable {
+        System.out.println("== ==> ArgAspect.afterWithArgs " + joinPoint + ", "+ai + ", "+as);
+    }
+
+    /**
      * @Before methodsToLogPC(ai, as)
      */
     public void beforeWithArgs2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
         System.out.println("== ==> ArgAspect.beforeWithArgs2 " + joinPoint + ", "+as + ", "+ai);
     }
 
-//    /**
-//     * Before methodsToLog(s)
-//     */
-//    public void beforeWithArgs(final JoinPoint joinPoint, int s) throws Throwable {
-//        //FIXME
-//    }
+    /**
+     * @After methodsToLogPC(ai, as)
+     */
+    public void afterWithArgs2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
+        System.out.println("== ==> ArgAspect.afterWithArgs2 " + joinPoint + ", "+as + ", "+ai);
+    }
 
     /**
      * @Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(int, s, i)
