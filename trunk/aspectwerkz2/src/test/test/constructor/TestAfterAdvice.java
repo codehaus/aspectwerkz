@@ -12,6 +12,7 @@ package test.constructor;
  */
 public class TestAfterAdvice {
     public TestAfterAdvice(String test) {
-        ConstructorAdviceTest.log(test + ' ');
+        ConstructorAdviceTest.logCall(test + ' ');
+        ConstructorAdviceTest.logExecution("init ");
     }
 }

@@ -22,58 +22,115 @@ public class ConstructorTestAspect extends Aspect {
     /**
      * @Call test.constructor.TestAroundAdvice.new(..)
      */
-    Pointcut pc1;
+    Pointcut call1;
 
     /**
      * @Call test.constructor.TestBeforeAdvice.new()
      */
-    Pointcut pc2;
+    Pointcut call2;
 
     /**
      * @Call test.constructor.TestAfterAdvice.new(String)
      */
-    Pointcut pc3;
+    Pointcut call3;
 
     /**
      * @Call test.constructor.TestBeforeAfterAdvice.new(String[])
      */
-    Pointcut pc4;
+    Pointcut call4;
 
     /**
      * @Call test.constructor.TestReturnFalseType.new()
      */
-    Pointcut pc5;
+    Pointcut call5;
+
+    /**
+     * @Execution test.constructor.TestAroundAdvice.new(..)
+     */
+    Pointcut execution1;
+
+    /**
+     * @Execution test.constructor.TestBeforeAdvice.new()
+     */
+    Pointcut execution2;
+
+    /**
+     * @Execution test.constructor.TestAfterAdvice.new(String)
+     */
+    Pointcut execution3;
+
+    /**
+     * @Execution test.constructor.TestBeforeAfterAdvice.new(String[])
+     */
+    Pointcut execution4;
+
+    /**
+     * @Execution test.constructor.TestReturnFalseType.new()
+     */
+    Pointcut execution5;
+
 
     // ============ Advices ============
 
     /**
-     * @Around pc1
+     * @Around call1
      */
-    public Object around1(final JoinPoint joinPoint) throws Throwable {
-        ConstructorAdviceTest.log("before ");
+    public Object aroundCall(final JoinPoint joinPoint) throws Throwable {
+        ConstructorAdviceTest.logCall("beforeCall ");
         final Object result = joinPoint.proceed();
-        ConstructorAdviceTest.log("after ");
+        ConstructorAdviceTest.logCall("afterCall ");
         return result;
     }
 
     /**
-     * @Before pc2 || pc4
+     * @Before call2 || call4
      */
-    public void before1(final JoinPoint joinPoint) throws Throwable {
-        ConstructorAdviceTest.log("pre ");
+    public void beforeCall(final JoinPoint joinPoint) throws Throwable {
+        ConstructorAdviceTest.logCall("preCall ");
     }
 
     /**
-     * @After pc3 ||pc4
+     * @After call3 ||call4
      */
-    public void after1(final JoinPoint joinPoint) throws Throwable {
-        ConstructorAdviceTest.log("post ");
+    public void afterCall(final JoinPoint joinPoint) throws Throwable {
+        ConstructorAdviceTest.logCall("postCall ");
     }
 
     /**
-     * @Around pc5
+     * @Around call5
      */
-    public Object around2(final JoinPoint joinPoint) throws Throwable {
+    public Object aroundCall2(final JoinPoint joinPoint) throws Throwable {
+        return new Integer(0);
+    }
+
+    /**
+     * @Around execution1
+     */
+    public Object aroundExecution(final JoinPoint joinPoint) throws Throwable {
+        ConstructorAdviceTest.logExecution("beforeExecution ");
+        final Object result = joinPoint.proceed();
+        ConstructorAdviceTest.logExecution("afterExecution ");
+        return result;
+    }
+
+    /**
+     * @Before execution2 || execution4
+     */
+    public void beforeExecution(final JoinPoint joinPoint) throws Throwable {
+        ConstructorAdviceTest.logExecution("preExecution ");
+    }
+
+    /**
+     * @After execution3 || execution4
+     */
+    public void afterExecution(final JoinPoint joinPoint) throws Throwable {
+        ConstructorAdviceTest.logExecution("postExecution ");
+    }
+
+    /**
+     * @Around execution5
+     */
+    public Object aroundExecution2(final JoinPoint joinPoint) throws Throwable {
         return new Integer(0);
     }
 }

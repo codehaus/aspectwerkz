@@ -121,13 +121,18 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
         m_addSerialVerUidTransformer = new AddSerialVersionUidTransformer();
 
+        // NOTE: order is important
         m_stack = new ArrayList();
-        m_stack.add(new PrepareAdvisedClassTransformer());  // needs to be first
+        m_stack.add(new PrepareAdvisedClassTransformer());
 
         m_stack.add(new FieldSetGetTransformer());
+
         m_stack.add(new MethodCallTransformer());
         m_stack.add(new ConstructorCallTransformer());
+
         m_stack.add(new MethodExecutionTransformer());
+        m_stack.add(new ConstructorExecutionTransformer());
+
         m_stack.add(new AddInterfaceTransformer());
         m_stack.add(new AddImplementationTransformer());
 
@@ -151,7 +156,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             return bytecode;
         }
         if (VERBOSE) {
-            log(loader + ":" + className + " [" + Thread.currentThread().getName() + ']');
+            log(loader.toString() + ':' + className + '[' + Thread.currentThread().getName() + ']');
         }
 
         // prepare BCEL ClassGen
@@ -234,8 +239,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (DUMP_AFTER) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
-                    klass.getCtClass().getClassPool().writeFile(className,
-                                                                "_dump/" + (DUMP_BEFORE ? "after/" : ""));
+                    klass.getCtClass().getClassPool().writeFile(className, "_dump/" + (DUMP_BEFORE ? "after/" : ""));
                 }
                 catch (Exception e) {
                     log("failed to dump " + className);
@@ -287,7 +291,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         ClassCacheTuple key = new ClassCacheTuple(klazz);
         ByteArray bytesO = (ByteArray)m_classByteCache.get(key);
         if (bytesO == null) {
-            log("*** CANNOT FIND CACHED " + className);
+            log("CANNOT FIND CACHED " + className);
             throw new RuntimeException("CANNOT FIND CACHED " + className);
         }
 
@@ -302,7 +306,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         }
 
         if (VERBOSE) {
-            log(loader + ":" + className + " [" + Thread.currentThread().getName() + ']');
+            log(loader.toString() + ':' + className + '[' + Thread.currentThread().getName() + ']');
         }
 
         // prepare BCEL ClassGen
@@ -373,8 +377,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (DUMP_AFTER) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
-                    klass.getCtClass().getClassPool().writeFile(className,
-                                                                "_dump2/" + (DUMP_BEFORE ? "after/" : ""));
+                    klass.getCtClass().getClassPool().writeFile(className, "_dump2/" + (DUMP_BEFORE ? "after/" : ""));
                 }
                 catch (Exception e) {
                     log("failed to dump " + className);

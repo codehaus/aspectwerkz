@@ -18,7 +18,6 @@ import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
@@ -101,7 +100,7 @@ public class AroundAdviceExecutor implements AdviceExecutor {
                 return invokeTargetMethod(joinPoint);
             }
         }
-
+java.lang.System.out.println("m_adviceIndexes.length = " + m_adviceIndexes.length);
         Object result = null;
         if (m_currentAdviceIndex == m_adviceIndexes.length - 1) {
             m_currentAdviceIndex = -1;
@@ -114,10 +113,10 @@ public class AroundAdviceExecutor implements AdviceExecutor {
                         result = invokeTargetMethod(joinPoint);
                         break;
                     case JoinPointType.CONSTRUCTOR_EXECUTION:
-                        result = invokeTargetConstructor(joinPoint);
+                        result = invokeTargetConstructorExecution(joinPoint);
                         break;
                     case JoinPointType.CONSTRUCTOR_CALL:
-                        result = invokeTargetConstructor(joinPoint);
+                        result = invokeTargetConstructorCall(joinPoint);
                         break;
                     case JoinPointType.FIELD_SET:
                         setTargetField(joinPoint);
@@ -184,13 +183,36 @@ public class AroundAdviceExecutor implements AdviceExecutor {
     }
 
     /**
+     * Invokes the prefixed constructor.
+     *
+     * @param joinPoint the join point instance
+     * @return the newly created instance
+     * @throws Throwable the exception from the original constructor
+     */
+    public Object invokeTargetConstructorExecution(final JoinPoint joinPoint) throws Throwable {
+        ConstructorSignature signature = (ConstructorSignature)joinPoint.getSignature();
+        Constructor targetConstructor = signature.getConstructor();
+        Object[] parameterValues = signature.getParameterValues();
+        int length = parameterValues.length;
+        Object[] fakeParameterValues = new Object[length + 1];
+        java.lang.System.arraycopy(parameterValues, 0, fakeParameterValues, 0, length);
+        fakeParameterValues[length] = null;
+        try {
+            return targetConstructor.newInstance(fakeParameterValues);
+        }
+        catch (InvocationTargetException e) {
+            throw e.getTargetException();
+        }
+    }
+
+    /**
      * Invokes the original constructor.
      *
      * @param joinPoint the join point instance
      * @return the newly created instance
      * @throws Throwable the exception from the original constructor
      */
-    public Object invokeTargetConstructor(final JoinPoint joinPoint) throws Throwable {
+    public Object invokeTargetConstructorCall(final JoinPoint joinPoint) throws Throwable {
         ConstructorSignature signature = (ConstructorSignature)joinPoint.getSignature();
         Constructor targetConstructor = signature.getConstructor();
         Object[] parameterValues = signature.getParameterValues();

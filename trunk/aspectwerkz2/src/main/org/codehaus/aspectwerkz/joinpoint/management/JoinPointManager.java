@@ -166,7 +166,6 @@ public class JoinPointManager {
                                                 final int joinPointType,
                                                 final String methodSignature)
             throws Throwable {
-
         ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(methodHash);
 
         if (threadLocal == null) {
