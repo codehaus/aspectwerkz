@@ -70,4 +70,11 @@ public class SerialVerUidTest extends TestCase implements Serializable {
 
     }
 
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(suite());
+    }
+
+    public static junit.framework.Test suite() {
+        return new junit.framework.TestSuite(SerialVerUidTest.class);
+    }
 }

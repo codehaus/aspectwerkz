@@ -61,7 +61,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     private final static boolean DUMP_AFTER;
 
-    private final static boolean VERBOSE;
+    public final static boolean VERBOSE;
 
     private final static int WEAVING_STRATEGY;
 

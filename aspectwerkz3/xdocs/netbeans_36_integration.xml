@@ -56,9 +56,6 @@
                         <li>aspectwerkz-core-
                             <i>version</i>.jar
                         </li>
-                        <li>asm-
-                            <i>version</i>.jar
-                        </li>
                         <li>javassist-
                             <i>version</i>.jar
                         </li>
@@ -175,7 +172,6 @@
                             <li>aspectwerkz-
                                 <i>version</i>.jar
                             </li>
-                            <li>asm.jar</li>
                             <li>javassist-
                                 <i>version</i>.jar
                             </li>
