@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz;
 
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.objectweb.asm.Type;
 
 import java.io.Serializable;
 
@@ -36,7 +37,7 @@ public class AdviceInfo implements Serializable {
     /**
      * The method's parameter types.
      */
-    private String[] m_methodParameterTypes;
+    private Type[] m_methodParameterTypes;
 
     /**
      * The advice name
@@ -92,7 +93,7 @@ public class AdviceInfo implements Serializable {
                       final int aspectDeploymentModel,
                       final String methodName,
                       final String methodSignature,
-                      final String[] methodParameterTypes,
+                      final Type[] methodParameterTypes,
                       final AdviceType type,
                       final String specialArgumentType,
                       final String adviceName) {
@@ -130,7 +131,7 @@ public class AdviceInfo implements Serializable {
      *
      * @return the method name
      */
-    public String[] getMethodParameterTypes() {
+    public Type[] getMethodParameterTypes() {
         return m_methodParameterTypes;
     }
 
