@@ -43,10 +43,12 @@ public class StaticMethodAdviceTest extends TestCase {
     }
 
     public void testGetJoinPointMetaData() {
+        //TODO
+        //DAW G_IDX makes it hard to guess
         String param = "parameter";
         assertEquals(
                 getClass().getName() +
-                "___AW_original_method$_AW_$joinPointMetaData$_AW_$1$_AW_$test_xmldef_StaticMethodAdviceTest" +
+                "___AW_original_method$_AW_$16$_AW_$joinPointMetaData$_AW_$1$_AW_$test_xmldef_StaticMethodAdviceTest" +
                 param +
                 param.getClass().getName() +
                 "java.lang.String" +

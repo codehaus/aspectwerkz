@@ -263,12 +263,13 @@ public abstract class MethodJoinPoint extends AbstractJoinPoint {
      * @return the method name
      */
     public String getMethodName() {
-        // grab the original method name, ex: "__originalMethod SEP <nameToExtract>  SEP 3"
+        // DAW impacted for global index
+        // grab the original method name, ex: "__originalMethod SEP G_IDX SEP <nameToExtract>  SEP 3"
         final String[] tokens = Strings.splitString(
                 m_originalMethod.getName(),
                 TransformationUtil.DELIMITER
         );
-        return tokens[1];
+        return tokens[2];
     }
 
     /**
