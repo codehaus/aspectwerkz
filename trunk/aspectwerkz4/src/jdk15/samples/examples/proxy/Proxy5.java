@@ -61,7 +61,7 @@ public class Proxy5 {
 
         System.out.println("\n**** Use with proxy - adding interceptor to publicMethod()");
         // do some per instance changes
-        ((Advisable)meP).aw$addAdvice(
+        ((Advisable)meP).aw_addAdvice(
                 "* *.publicMethod(..)",
                 new BeforeAdvice() {
                     public void invoke(JoinPoint jp) throws Throwable {

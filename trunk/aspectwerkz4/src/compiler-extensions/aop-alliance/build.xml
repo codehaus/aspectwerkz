@@ -134,7 +134,7 @@
     <!-- create distribution -->
     <!-- ============================================================== -->
     <target name="dist" depends="compile">
-        <jar destfile="${build.dir}/${name}-${version}.jar" manifest="${lib.dir}/manifest.mf">
+        <jar destfile="${build.dir}/${name}-${version}.jar">
             <fileset dir="${build.core.dir}"/>
             <zipfileset src="${basedir}/lib/aopalliance-1.0.jar"/>
         </jar>
@@ -154,12 +154,23 @@
     <!-- ============================================================== -->
     <!-- run the YAPBAOP 1h hacked framework -->
     <!-- ============================================================== -->
-    <target name="yapbaop" depends="compile, compile:test">
+    <target name="yapbaop:dist" depends="compile, compile:test">
+        <jar destfile="${build.dir}/yapbaop-1.2.3.4.jar">
+            <fileset dir="${build.core.dir}"/>
+            <fileset dir="${build.test.dir}"/>
+            <zipfileset src="${basedir}/lib/aopalliance-1.0.jar"/>
+            <zipgroupfileset dir="${aw.home}/lib">
+                <include name="*.jar"/>
+                <exclude name="asm-*"/>
+                <exclude name="*jrockit*"/>
+                <exclude name="*-jdk14-*"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+    <target name="yapbaop" depends="yapbaop:dist">
         <java classname="yapbaop.demo.YapbaopDemo" fork="true">
             <classpath>
-                <path refid="project.class.path"/>
-                <pathelement path="${build.core.dir}"/>
-                <pathelement path="${build.test.dir}"/>
+                <pathelement path="${build.dir}/yapbaop-1.2.3.4.jar"/>
             </classpath>
         </java>
     </target>

@@ -279,7 +279,8 @@ public class MixinDefinition {
         MethodInfo[] methods = mixinClass.getMethods();
         for (int i = 0; i < methods.length; i++) {
             MethodInfo method = methods[i];
-            if (method.getName().startsWith(TransformationConstants.SYNTHETIC_MEMBER_PREFIX)) {
+            if (method.getName().startsWith(TransformationConstants.SYNTHETIC_MEMBER_PREFIX)
+                || method.getName().startsWith("aw_")) {//aw$ not reachable in IDEs without AW source code
                 m_methodsToIntroduce.add(method);
             }
         }
