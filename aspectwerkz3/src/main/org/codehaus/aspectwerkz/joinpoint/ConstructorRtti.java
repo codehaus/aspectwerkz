@@ -12,8 +12,7 @@ import java.lang.reflect.Constructor;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface ConstructorRtti extends CodeRtti
-{
+public interface ConstructorRtti extends CodeRtti {
     /**
      * Returns the constructor.
      *

@@ -12,8 +12,7 @@ import org.codehaus.aspectwerkz.WeavedTestCase;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class FieldAdviceTest extends WeavedTestCase
-{
+public class FieldAdviceTest extends WeavedTestCase {
     private static String s_logString = "";
     private static int s_setStaticFieldAroundAdviced = 0;
     private static int s_setStaticFieldPreAdviced = 0;
@@ -37,471 +36,361 @@ public class FieldAdviceTest extends WeavedTestCase
     private int m_getFieldPostAdviced = 1;
     private int m_getFieldPrePostAdviced = 1;
 
-    public FieldAdviceTest()
-    {
+    public FieldAdviceTest() {
     }
 
-    public FieldAdviceTest(String name)
-    {
+    public FieldAdviceTest(String name) {
         super(name);
     }
 
-    public void testSetMemberFieldAroundAdviced()
-    {
+    public void testSetMemberFieldAroundAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             setFieldAroundAdviced();
             assertEquals("before after ", s_logString);
             assertEquals(187, m_setFieldAroundAdviced);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testSetMemberFieldAroundAdvicedWithNullAdvice()
-    {
+    public void testSetMemberFieldAroundAdvicedWithNullAdvice() {
         s_logString = "";
 
-        try
-        {
+        try {
             setFieldAroundAdvicedWithNullAdvice();
             assertEquals("before after ", s_logString);
 
             //CAUTION: null advice for @Set leave the assigned value
             //The advice return value is ignored
             assertEquals(187, m_setFieldAroundAdvicedWithNullAdvice);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testSetMemberFieldAroundAdvicedObjectWithNullAdvice()
-    {
+    public void testSetMemberFieldAroundAdvicedObjectWithNullAdvice() {
         s_logString = "";
 
-        try
-        {
+        try {
             setFieldAroundAdvicedObjectWithNullAdvice();
             assertEquals("before after ", s_logString);
 
             //CAUTION: null advice for @Set leave the assigned value
             //The advice return value is ignored
             assertEquals("1", m_setFieldAroundAdvicedObjectWithNullAdvice);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testSetMemberFieldAroundAdvicedObjectWithAPI()
-    {
+    public void testSetMemberFieldAroundAdvicedObjectWithAPI() {
         s_logString = "";
 
-        try
-        {
+        try {
             setFieldAroundAdvicedObjectWithAPI();
             assertEquals("before after ", s_logString);
 
             //The advice is using the Signature API to alter the assigned value
             assertEquals("byAdvice", m_setFieldAroundAdvicedObjectWithAPI);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testSetMemberFieldAroundAdvicedWithAPI()
-    {
+    public void testSetMemberFieldAroundAdvicedWithAPI() {
         s_logString = "";
 
-        try
-        {
+        try {
             setFieldAroundAdvicedWithAPI();
             assertEquals("before after ", s_logString);
 
             //The advice is using the Signature API to alter the assigned value
             assertEquals(3, m_setFieldAroundAdvicedWithAPI);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testGetMemberFieldAroundAdviced()
-    {
+    public void testGetMemberFieldAroundAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             int i = getFieldAroundAdviced(); // int default value
 
             assertEquals("before after ", s_logString);
             assertEquals(1, i);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testGetMemberFieldAroundAdvicedWithNullAdvice()
-    {
+    public void testGetMemberFieldAroundAdvicedWithNullAdvice() {
         s_logString = "";
 
-        try
-        {
+        try {
             int i = getFieldAroundAdvicedWithNullAdvice();
 
             assertEquals("before after ", s_logString);
             assertEquals(0, i);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testSetFieldPreAdviced()
-    {
+    public void testSetFieldPreAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             setFieldPreAdviced();
             assertEquals("pre1 pre2 ", s_logString);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testSetFieldPostAdviced()
-    {
+    public void testSetFieldPostAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             setFieldPostAdviced();
             assertEquals("post2 post1 ", s_logString);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testSetFieldPrePostAdviced()
-    {
+    public void testSetFieldPrePostAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             setFieldPrePostAdviced();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testGetFieldPreAdviced()
-    {
+    public void testGetFieldPreAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             getFieldPreAdviced();
             assertEquals("pre1 pre2 ", s_logString);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             fail();
         }
     }
 
-    public void testGetFieldPostAdviced()
-    {
+    public void testGetFieldPostAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             getFieldPostAdviced();
             assertEquals("post2 post1 ", s_logString);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testGetFieldPrePostAdviced()
-    {
+    public void testGetFieldPrePostAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             getFieldPrePostAdviced();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testSetStaticFieldAroundAdviced()
-    {
+    public void testSetStaticFieldAroundAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             setStaticFieldAroundAdviced();
             assertEquals("before after ", s_logString);
             assertEquals(3, s_setStaticFieldAroundAdviced);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testGetStaticFieldAroundAdviced()
-    {
+    public void testGetStaticFieldAroundAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             int i = getStaticFieldAroundAdviced();
 
             assertEquals("before after ", s_logString);
             assertEquals(1, i);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testSetStaticFieldPreAdviced()
-    {
+    public void testSetStaticFieldPreAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             setStaticFieldPreAdviced();
             assertEquals("pre1 pre2 ", s_logString);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testSetStaticFieldPostAdviced()
-    {
+    public void testSetStaticFieldPostAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             setStaticFieldPostAdviced();
             assertEquals("post2 post1 ", s_logString);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testSetStaticFieldPrePostAdviced()
-    {
+    public void testSetStaticFieldPrePostAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             setStaticFieldPrePostAdviced();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testGetStaticFieldPreAdviced()
-    {
+    public void testGetStaticFieldPreAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             getStaticFieldPreAdviced();
             assertEquals("pre1 pre2 ", s_logString);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testGetStaticFieldPostAdviced()
-    {
+    public void testGetStaticFieldPostAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             getStaticFieldPostAdviced();
             assertEquals("post2 post1 ", s_logString);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public void testStaticGetFieldPrePostAdviced()
-    {
+    public void testStaticGetFieldPrePostAdviced() {
         s_logString = "";
 
-        try
-        {
+        try {
             getStaticFieldPrePostAdviced();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             fail();
         }
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
 
-    public static junit.framework.Test suite()
-    {
+    public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(FieldAdviceTest.class);
     }
 
     // ==== methods to test ====
-    public static void log(final String wasHere)
-    {
+    public static void log(final String wasHere) {
         s_logString += wasHere;
     }
 
-    public void setFieldAroundAdviced()
-    {
+    public void setFieldAroundAdviced() {
         m_setFieldAroundAdviced = 3 + (23 * 8);
     }
 
-    public void setFieldAroundAdvicedWithNullAdvice()
-    {
+    public void setFieldAroundAdvicedWithNullAdvice() {
         m_setFieldAroundAdvicedWithNullAdvice = 3 + (23 * 8);
     }
 
-    public void setFieldAroundAdvicedObjectWithNullAdvice()
-    {
+    public void setFieldAroundAdvicedObjectWithNullAdvice() {
         m_setFieldAroundAdvicedObjectWithNullAdvice = new String("1");
     }
 
-    public void setFieldAroundAdvicedObjectWithAPI()
-    {
+    public void setFieldAroundAdvicedObjectWithAPI() {
         m_setFieldAroundAdvicedObjectWithAPI = new String("original");
     }
 
-    public void setFieldAroundAdvicedWithAPI()
-    {
+    public void setFieldAroundAdvicedWithAPI() {
         m_setFieldAroundAdvicedWithAPI = 2;
     }
 
-    public void setFieldPreAdviced()
-    {
+    public void setFieldPreAdviced() {
         m_setFieldPreAdviced = 3 + (23 * 8);
     }
 
-    public void setFieldPostAdviced()
-    {
+    public void setFieldPostAdviced() {
         m_setFieldPostAdviced = 3;
     }
 
-    public void setFieldPrePostAdviced()
-    {
+    public void setFieldPrePostAdviced() {
         m_setFieldPrePostAdviced = 3;
     }
 
-    public int getFieldAroundAdviced()
-    {
+    public int getFieldAroundAdviced() {
         return m_getFieldAroundAdviced;
     }
 
-    public int getFieldAroundAdvicedWithNullAdvice()
-    {
+    public int getFieldAroundAdvicedWithNullAdvice() {
         return m_getFieldAroundAdvicedWithNullAdvice;
     }
 
-    public int getFieldPreAdviced()
-    {
+    public int getFieldPreAdviced() {
         return m_getFieldPreAdviced;
     }
 
-    public int getFieldPostAdviced()
-    {
+    public int getFieldPostAdviced() {
         return m_getFieldPostAdviced;
     }
 
-    public int getFieldPrePostAdviced()
-    {
+    public int getFieldPrePostAdviced() {
         return m_getFieldPrePostAdviced;
     }
 
-    public static void setStaticFieldAroundAdviced()
-    {
+    public static void setStaticFieldAroundAdviced() {
         s_setStaticFieldAroundAdviced = 3;
     }
 
-    public static void setStaticFieldPreAdviced()
-    {
+    public static void setStaticFieldPreAdviced() {
         s_setStaticFieldPreAdviced = 3;
     }
 
-    public static void setStaticFieldPostAdviced()
-    {
+    public static void setStaticFieldPostAdviced() {
         s_setStaticFieldPostAdviced = 3;
     }
 
-    public static void setStaticFieldPrePostAdviced()
-    {
+    public static void setStaticFieldPrePostAdviced() {
         s_setStaticFieldPrePostAdviced = 3;
     }
 
-    public static int getStaticFieldAroundAdviced()
-    {
+    public static int getStaticFieldAroundAdviced() {
         return s_getStaticFieldAroundAdviced;
     }
 
-    public static int getStaticFieldPreAdviced()
-    {
+    public static int getStaticFieldPreAdviced() {
         return s_getStaticFieldPreAdviced;
     }
 
-    public static int getStaticFieldPostAdviced()
-    {
+    public static int getStaticFieldPostAdviced() {
         return s_getStaticFieldPostAdviced;
     }
 
-    public static int getStaticFieldPrePostAdviced()
-    {
+    public static int getStaticFieldPrePostAdviced() {
         return s_getStaticFieldPrePostAdviced;
     }
 }

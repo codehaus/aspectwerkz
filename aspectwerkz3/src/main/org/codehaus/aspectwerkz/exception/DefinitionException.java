@@ -16,8 +16,7 @@ import java.io.PrintWriter;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vmassol@apache.org">Vincent Massol</a>
  */
-public class DefinitionException extends RuntimeException
-{
+public class DefinitionException extends RuntimeException {
     /**
      * Original exception which caused this exception.
      */
@@ -28,8 +27,7 @@ public class DefinitionException extends RuntimeException
      *
      * @param message the message
      */
-    public DefinitionException(final String message)
-    {
+    public DefinitionException(final String message) {
         super(message);
     }
 
@@ -39,8 +37,7 @@ public class DefinitionException extends RuntimeException
      * @param message   the detail of the error message
      * @param throwable the original exception
      */
-    public DefinitionException(String message, Throwable throwable)
-    {
+    public DefinitionException(String message, Throwable throwable) {
         super(message);
         this.originalException = throwable;
     }
@@ -48,8 +45,7 @@ public class DefinitionException extends RuntimeException
     /**
      * Print the full stack trace, including the original exception.
      */
-    public void printStackTrace()
-    {
+    public void printStackTrace() {
         printStackTrace(System.err);
     }
 
@@ -58,12 +54,10 @@ public class DefinitionException extends RuntimeException
      *
      * @param ps the byte stream in which to print the stack trace
      */
-    public void printStackTrace(PrintStream ps)
-    {
+    public void printStackTrace(PrintStream ps) {
         super.printStackTrace(ps);
 
-        if (this.originalException != null)
-        {
+        if (this.originalException != null) {
             this.originalException.printStackTrace(ps);
         }
     }
@@ -73,12 +67,10 @@ public class DefinitionException extends RuntimeException
      *
      * @param pw the character stream in which to print the stack trace
      */
-    public void printStackTrace(PrintWriter pw)
-    {
+    public void printStackTrace(PrintWriter pw) {
         super.printStackTrace(pw);
 
-        if (this.originalException != null)
-        {
+        if (this.originalException != null) {
             this.originalException.printStackTrace(pw);
         }
     }

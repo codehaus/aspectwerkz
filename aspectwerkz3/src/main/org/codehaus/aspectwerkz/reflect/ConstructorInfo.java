@@ -13,8 +13,7 @@ package org.codehaus.aspectwerkz.reflect;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface ConstructorInfo extends MemberInfo
-{
+public interface ConstructorInfo extends MemberInfo {
     /**
      * Returns the parameter types.
      *

@@ -13,8 +13,7 @@ package org.codehaus.aspectwerkz;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public final class NameIndexTuple
-{
+public final class NameIndexTuple {
     /**
      * The index.
      */
@@ -31,8 +30,7 @@ public final class NameIndexTuple
      * @param name  the name
      * @param index the index
      */
-    public NameIndexTuple(final String name, final IndexTuple index)
-    {
+    public NameIndexTuple(final String name, final IndexTuple index) {
         m_name = name;
         m_index = index;
     }
@@ -42,8 +40,7 @@ public final class NameIndexTuple
      *
      * @return the name
      */
-    public String getName()
-    {
+    public String getName() {
         return m_name;
     }
 
@@ -52,8 +49,7 @@ public final class NameIndexTuple
      *
      * @return the index
      */
-    public IndexTuple getIndex()
-    {
+    public IndexTuple getIndex() {
         return m_index;
     }
 }

@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javassist.ClassPool;
 import javassist.LoaderClassPath;
 
@@ -19,8 +18,7 @@ import javassist.LoaderClassPath;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class Context
-{
+public class Context {
     /**
      * The class loader for the class being transformed.
      */
@@ -56,8 +54,7 @@ public class Context
      *
      * @param loader the class loader
      */
-    public Context(final ClassLoader loader)
-    {
+    public Context(final ClassLoader loader) {
         m_loader = loader;
         m_repository = new ClassPool(null);
         m_repository.insertClassPath(new LoaderClassPath(loader));
@@ -68,8 +65,7 @@ public class Context
      *
      * @return the class loader
      */
-    public ClassLoader getLoader()
-    {
+    public ClassLoader getLoader() {
         return m_loader;
     }
 
@@ -78,26 +74,22 @@ public class Context
      *
      * @return the Javassist Repository based on context class loader
      */
-    public ClassPool getClassPool()
-    {
+    public ClassPool getClassPool() {
         return m_repository;
     }
 
     /**
      * Marks the class being transformed as advised. The marker can at most be set once per class per transformer
      */
-    public void markAsAdvised()
-    {
+    public void markAsAdvised() {
         m_advised = true;
     }
 
-    public void markAsPrepared()
-    {
+    public void markAsPrepared() {
         m_prepared = true;
     }
 
-    public void resetAdvised()
-    {
+    public void resetAdvised() {
         m_advised = false;
     }
 
@@ -106,21 +98,18 @@ public class Context
      *
      * @return boolean
      */
-    public boolean isAdvised()
-    {
+    public boolean isAdvised() {
         return m_advised;
     }
 
-    public boolean isPrepared()
-    {
+    public boolean isPrepared() {
         return m_prepared;
     }
 
     /**
      * Marks the context as read-only.
      */
-    public void markAsReadOnly()
-    {
+    public void markAsReadOnly() {
         m_readOnly = true;
     }
 
@@ -129,8 +118,7 @@ public class Context
      *
      * @return boolean
      */
-    public boolean isReadOnly()
-    {
+    public boolean isReadOnly() {
         return m_readOnly;
     }
 
@@ -140,8 +128,7 @@ public class Context
      * @param key the key
      * @return the value
      */
-    public Object getMetaData(final Object key)
-    {
+    public Object getMetaData(final Object key) {
         return m_metaData.get(key);
     }
 
@@ -151,10 +138,8 @@ public class Context
      * @param key   the key
      * @param value the value
      */
-    public void addMetaData(final Object key, final Object value)
-    {
-        if (m_readOnly)
-        {
+    public void addMetaData(final Object key, final Object value) {
+        if (m_readOnly) {
             throw new IllegalStateException("context is read only");
         }
 

@@ -7,17 +7,15 @@
  **************************************************************************************/
 package test.aspect;
 
+import test.Loggable;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-
-import test.Loggable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class CFlowTestAspect
-{
+public class CFlowTestAspect {
     // ============ Pointcuts ============
 
     /**
@@ -55,14 +53,12 @@ public class CFlowTestAspect
     /**
      * @Around pc2 AND cflowPC1
      */
-    public Object execute(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-before ");
+    public Object execute(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("advice-before ");
 
         final Object result = joinPoint.proceed();
 
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-after ");
+        ((Loggable)joinPoint.getTargetInstance()).log("advice-after ");
 
         return result;
     }
@@ -70,14 +66,12 @@ public class CFlowTestAspect
     /**
      * @Around pc2 AND cflowPC3 AND cflowPC2
      */
-    public Object execute2(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-before2 ");
+    public Object execute2(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("advice-before2 ");
 
         final Object result = joinPoint.proceed();
 
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-after2 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("advice-after2 ");
 
         return result;
     }
@@ -87,15 +81,12 @@ public class CFlowTestAspect
      *         &&
      *         cflow(call(* test.CFlowTest.step1Anonymous()) && within(test.CFlowTest))
      */
-    public Object executeAnonymous(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log(
-            "advice-beforeAnonymous ");
+    public Object executeAnonymous(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("advice-beforeAnonymous ");
 
         final Object result = joinPoint.proceed();
 
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-afterAnonymous ");
+        ((Loggable)joinPoint.getTargetInstance()).log("advice-afterAnonymous ");
 
         return result;
     }
@@ -105,14 +96,12 @@ public class CFlowTestAspect
      *         AND NOT
      *         cflow(call(* test.CFlowTest.step1_C()) && within(test.CFlowTest))
      */
-    public Object executeC(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-beforeC ");
+    public Object executeC(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("advice-beforeC ");
 
         final Object result = joinPoint.proceed();
 
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-afterC ");
+        ((Loggable)joinPoint.getTargetInstance()).log("advice-afterC ");
 
         return result;
     }

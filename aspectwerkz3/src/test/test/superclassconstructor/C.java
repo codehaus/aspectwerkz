@@ -13,15 +13,12 @@ package test.superclassconstructor;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class C
-{
-    public C()
-    {
+public class C {
+    public C() {
         set();
     }
 
-    public static void set()
-    {
+    public static void set() {
         // do something
     }
 }

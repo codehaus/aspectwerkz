@@ -28,6 +28,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.MethodComparatorTest.class);
         suite.addTestSuite(test.StringsTest.class);
         suite.addTestSuite(test.expression.ExpressionTest.class);
+
         // transformer and engine tests
         suite.addTestSuite(test.MemberMethodAdviceTest.class);
         suite.addTestSuite(test.StaticMethodAdviceTest.class);
@@ -50,8 +51,10 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
         suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);
         suite.addTestSuite(test.aopc.AspectSystemTest.class);
+
         // performance tests                       ,
         suite.addTestSuite(test.performance.PerformanceTest.class);
+
         // TODO: deprecated until a better hot deployment model has been implemented
         //        suite.addTestSuite(test.DynamicDeploymentTest.class);
         return suite;

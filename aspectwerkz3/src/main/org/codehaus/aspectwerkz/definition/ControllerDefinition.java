@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
-
 import java.io.Serializable;
 
 /**
@@ -16,8 +15,7 @@ import java.io.Serializable;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ControllerDefinition implements Serializable
-{
+public class ControllerDefinition implements Serializable {
     /**
      * The pointcut expression.
      */
@@ -33,8 +31,7 @@ public class ControllerDefinition implements Serializable
      *
      * @return the expression
      */
-    public ExpressionVisitor getExpression()
-    {
+    public ExpressionVisitor getExpression() {
         return m_expression;
     }
 
@@ -43,8 +40,7 @@ public class ControllerDefinition implements Serializable
      *
      * @param expression the expression
      */
-    public void setExpression(final ExpressionVisitor expression)
-    {
+    public void setExpression(final ExpressionVisitor expression) {
         m_expression = expression;
     }
 
@@ -53,8 +49,7 @@ public class ControllerDefinition implements Serializable
      *
      * @return the class name
      */
-    public String getClassName()
-    {
+    public String getClassName() {
         return m_className;
     }
 
@@ -63,8 +58,7 @@ public class ControllerDefinition implements Serializable
      *
      * @param className
      */
-    public void setClassName(final String className)
-    {
+    public void setClassName(final String className) {
         m_className = className;
     }
 }

@@ -11,8 +11,7 @@ package test.expression;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public final class Target
-{
+public final class Target {
     public static int modifier2 = 0;
     transient static final protected int modifier3 = 0;
 
@@ -32,69 +31,55 @@ public final class Target
     int attribute1;
 
     // ============ method modifiers test =============
-    void modifiers1()
-    {
+    void modifiers1() {
     }
 
-    public static void modifiers2()
-    {
+    public static void modifiers2() {
     }
 
     protected native static final synchronized void modifiers3();
 
     // ============ method parameters test =============
-    void parameters1()
-    {
+    void parameters1() {
     }
 
-    void parameters2(int i, float f, byte b)
-    {
+    void parameters2(int i, float f, byte b) {
     }
 
-    void parameters3(String s, java.lang.StringBuffer sb, java.lang.String s2)
-    {
+    void parameters3(String s, java.lang.StringBuffer sb, java.lang.String s2) {
     }
 
-    void parameters4(Object[] o)
-    {
+    void parameters4(Object[] o) {
     }
 
-    void parameters5(int[][] i)
-    {
+    void parameters5(int[][] i) {
     }
 
     // ============ method return type test =============
-    void returnType1()
-    {
+    void returnType1() {
     }
 
-    int returnType2()
-    {
+    int returnType2() {
         return -1;
     }
 
-    String returnType3()
-    {
+    String returnType3() {
         return "test";
     }
 
-    java.lang.Process returnType4()
-    {
+    java.lang.Process returnType4() {
         return null;
     }
 
-    float[][] returnType5()
-    {
+    float[][] returnType5() {
         return null;
     }
 
     // ============ method name test =============
-    void __method$Name1()
-    {
+    void __method$Name1() {
     }
 
     // ============ method attribute test =============
-    void attributes1()
-    {
+    void attributes1() {
     }
 }

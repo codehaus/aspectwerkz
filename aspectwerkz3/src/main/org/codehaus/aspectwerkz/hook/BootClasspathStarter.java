@@ -17,12 +17,10 @@ package org.codehaus.aspectwerkz.hook;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class BootClasspathStarter extends AbstractStarter
-{
+public class BootClasspathStarter extends AbstractStarter {
     private String bootDir;
 
-    public BootClasspathStarter(String opt, String main, String bootDir)
-    {
+    public BootClasspathStarter(String opt, String main, String bootDir) {
         super(opt, main);
         this.bootDir = bootDir;
 
@@ -32,44 +30,31 @@ public class BootClasspathStarter extends AbstractStarter
     /**
      * add dir in first position of -Xbootclasspath/p option for target VM
      */
-    private void patchBootclasspath()
-    {
+    private void patchBootclasspath() {
         // prepend dir in -Xbootclasspath/p:
-        if (opt.indexOf("-Xbootclasspath/p:") < 0)
-        {
+        if (opt.indexOf("-Xbootclasspath/p:") < 0) {
             opt = "-Xbootclasspath/p:\"" + bootDir + "\" " + opt;
 
             //todo ? is \" ok on *nix
-        }
-        else
-        {
+        } else {
             int index = -1;
 
-            if (opt.indexOf("-Xbootclasspath/p:\"") >= 0)
-            {
+            if (opt.indexOf("-Xbootclasspath/p:\"") >= 0) {
                 // -Xbootclasspath/p: is defined using "
-                index = opt.indexOf("-Xbootclasspath/p:\"")
-                    + "-Xbootclasspath/p:\"".length();
-            }
-            else if (opt.indexOf("-Xbootclasspath/p:'") >= 0)
-            {
+                index = opt.indexOf("-Xbootclasspath/p:\"") + "-Xbootclasspath/p:\"".length();
+            } else if (opt.indexOf("-Xbootclasspath/p:'") >= 0) {
                 // -Xbootclasspath/p: is defined using '
-                index = opt.indexOf("-Xbootclasspath/p:'")
-                    + "-Xbootclasspath/p:'".length();
-            }
-            else
-            {
+                index = opt.indexOf("-Xbootclasspath/p:'") + "-Xbootclasspath/p:'".length();
+            } else {
                 // -Xbootclasspath/p: is defined without quotes
-                index = opt.indexOf("-Xbootclasspath/p:")
-                    + "-Xbootclasspath/p:".length();
+                index = opt.indexOf("-Xbootclasspath/p:") + "-Xbootclasspath/p:".length();
             }
 
             StringBuffer optB = new StringBuffer("");
 
             optB.append(opt.substring(0, index));
             optB.append(bootDir);
-            optB.append((System.getProperty("os.name", "").toLowerCase()
-                               .indexOf("windows") >= 0) ? ";" : ":");
+            optB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) ? ";" : ":");
             optB.append(opt.substring(index));
             opt = optB.toString();
         }

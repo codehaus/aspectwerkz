@@ -13,6 +13,5 @@ package test.clapp;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class DummyReentrantClass
-{
+public class DummyReentrantClass {
 }

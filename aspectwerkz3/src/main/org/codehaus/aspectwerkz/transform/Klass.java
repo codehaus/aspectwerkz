@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.transform;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-
 import javassist.ByteArrayClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -88,10 +87,7 @@ public class Klass {
      */
     public CtClass getInitialCtClass() {
         if (m_initialCtClass == null) {
-            m_initialCtClass = fromByte(
-                    m_name, m_initialBytecode,
-                    m_loader
-            );
+            m_initialCtClass = fromByte(m_name, m_initialBytecode, m_loader);
         }
         return m_initialCtClass;
     }
@@ -104,8 +100,7 @@ public class Klass {
     public byte[] getBytecode() {
         try {
             return getCtClass().toBytecode();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -116,9 +111,7 @@ public class Klass {
      * @param bytecode the byte code
      * @return the Javassist class gen
      */
-    public static CtClass fromByte(
-            final String name, final byte[] bytecode,
-            final ClassLoader loader) {
+    public static CtClass fromByte(final String name, final byte[] bytecode, final ClassLoader loader) {
         try {
             ClassPool cp = new ClassPool(null);
 
@@ -126,8 +119,7 @@ public class Klass {
             cp.appendClassPath(new LoaderClassPath(loader));
 
             return cp.get(name);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }

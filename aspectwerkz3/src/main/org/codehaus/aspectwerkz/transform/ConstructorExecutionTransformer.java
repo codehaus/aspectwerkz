@@ -15,10 +15,8 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistConstructorInfo;
-
 import java.util.Iterator;
 import java.util.List;
-
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -26,7 +24,6 @@ import javassist.CtConstructor;
 import javassist.CtMethod;
 import javassist.CtNewConstructor;
 import javassist.NotFoundException;
-
 import javassist.bytecode.CodeAttribute;
 
 /**
@@ -35,8 +32,7 @@ import javassist.bytecode.CodeAttribute;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ConstructorExecutionTransformer implements Transformer
-{
+public class ConstructorExecutionTransformer implements Transformer {
     /**
      * The join point index.
      */
@@ -48,42 +44,31 @@ public class ConstructorExecutionTransformer implements Transformer
      * @param context the transformation context
      * @param klass   the class set.
      */
-    public void transform(final Context context, final Klass klass)
-        throws Exception
-    {
+    public void transform(final Context context, final Klass klass) throws Exception {
         List definitions = SystemDefinitionContainer.getDefinitionsContext();
 
-        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass
-                .getCtClass()); //TODO thread safe and reentrant
+        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe and reentrant
 
-        for (Iterator it = definitions.iterator(); it.hasNext();)
-        {
-            SystemDefinition definition = (SystemDefinition) it.next();
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
+            SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassInfo classInfo = new JavassistClassInfo(ctClass,
-                    context.getLoader());
+            ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
 
-            if (classFilter(definition,
-                    new ExpressionContext(PointcutType.EXECUTION, classInfo,
-                        null), ctClass))
-            {
+            if (classFilter(definition, new ExpressionContext(PointcutType.EXECUTION, classInfo, null), ctClass)) {
                 continue;
             }
 
             final CtConstructor[] constructors = ctClass.getConstructors();
 
-            for (int i = 0; i < constructors.length; i++)
-            {
+            for (int i = 0; i < constructors.length; i++) {
                 CtConstructor constructor = constructors[i];
-                ConstructorInfo constructorInfo = JavassistConstructorInfo
-                    .getConstructorInfo(constructor, context.getLoader());
+                ConstructorInfo constructorInfo = JavassistConstructorInfo.getConstructorInfo(constructor,
+                                                                                              context.getLoader());
 
-                ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION,
-                        constructorInfo, null);
+                ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, constructorInfo, null);
 
-                if (constructorFilter(definition, ctx))
-                {
+                if (constructorFilter(definition, ctx)) {
                     continue;
                 }
 
@@ -97,8 +82,7 @@ public class ConstructorExecutionTransformer implements Transformer
             }
         }
 
-        TransformationUtil.setJoinPointIndex(klass.getCtClass(),
-            m_joinPointIndex);
+        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
 
     /**
@@ -109,20 +93,15 @@ public class ConstructorExecutionTransformer implements Transformer
      * @param originalConstructor the original constructor
      * @param constructorHash     the constructor hash
      */
-    private void createWrapperConstructor(
-        final CtConstructor originalConstructor, final int constructorHash)
-        throws CannotCompileException, NotFoundException
-    {
+    private void createWrapperConstructor(final CtConstructor originalConstructor, final int constructorHash)
+                                   throws CannotCompileException, NotFoundException {
         StringBuffer body = new StringBuffer();
 
         body.append('{');
 
-        if (originalConstructor.getParameterTypes().length > 0)
-        {
+        if (originalConstructor.getParameterTypes().length > 0) {
             body.append("Object[] args = $args; ");
-        }
-        else
-        {
+        } else {
             body.append("Object[] args = null; ");
         }
 
@@ -183,33 +162,28 @@ public class ConstructorExecutionTransformer implements Transformer
      * @param ctClass     the class
      * @param constructor the current method
      */
-    private void addPrefixToConstructor(final CtClass ctClass,
-        final CtConstructor constructor)
-        throws NotFoundException, CannotCompileException
-    {
+    private void addPrefixToConstructor(final CtClass ctClass, final CtConstructor constructor)
+                                 throws NotFoundException, CannotCompileException {
         int accessFlags = constructor.getModifiers();
 
         CtClass[] parameterTypes = constructor.getParameterTypes();
         CtClass[] newParameterTypes = new CtClass[parameterTypes.length + 1];
 
-        for (int i = 0; i < parameterTypes.length; i++)
-        {
+        for (int i = 0; i < parameterTypes.length; i++) {
             newParameterTypes[i] = parameterTypes[i];
         }
 
         newParameterTypes[parameterTypes.length] = ClassPool.getDefault().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
 
-        CtConstructor newConstructor = CtNewConstructor.make(newParameterTypes,
-                constructor.getExceptionTypes(), CtNewConstructor.PASS_NONE,
-                null,
-                CtMethod.ConstParameter.string(constructor.getSignature()),
-                ctClass);
+        CtConstructor newConstructor = CtNewConstructor.make(newParameterTypes, constructor.getExceptionTypes(),
+                                                             CtNewConstructor.PASS_NONE, null,
+                                                             CtMethod.ConstParameter.string(constructor.getSignature()),
+                                                             ctClass);
 
         newConstructor.setBody(constructor, null);
         newConstructor.setModifiers(accessFlags);
 
-        CodeAttribute codeAttribute = newConstructor.getMethodInfo()
-                                                    .getCodeAttribute();
+        CodeAttribute codeAttribute = newConstructor.getMethodInfo().getCodeAttribute();
 
         codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
 
@@ -224,28 +198,22 @@ public class ConstructorExecutionTransformer implements Transformer
      * @param ctClass    the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition,
-        final ExpressionContext ctx, final CtClass ctClass)
-    {
-        if (ctClass.isInterface())
-        {
+    private boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass ctClass) {
+        if (ctClass.isInterface()) {
             return true;
         }
 
         String className = ctClass.getName().replace('/', '.');
 
-        if (definition.inExcludePackage(className))
-        {
+        if (definition.inExcludePackage(className)) {
             return true;
         }
 
-        if (!definition.inIncludePackage(className))
-        {
+        if (!definition.inIncludePackage(className)) {
             return true;
         }
 
-        if (definition.isAdvised(ctx))
-        {
+        if (definition.isAdvised(ctx)) {
             return false;
         }
 
@@ -259,15 +227,10 @@ public class ConstructorExecutionTransformer implements Transformer
      * @param ctx        the context
      * @return boolean
      */
-    private boolean constructorFilter(final SystemDefinition definition,
-        final ExpressionContext ctx)
-    {
-        if (definition.hasPointcut(ctx))
-        {
+    private boolean constructorFilter(final SystemDefinition definition, final ExpressionContext ctx) {
+        if (definition.hasPointcut(ctx)) {
             return false;
-        }
-        else
-        {
+        } else {
             return true;
         }
     }

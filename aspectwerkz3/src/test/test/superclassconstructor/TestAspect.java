@@ -14,8 +14,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect
  */
-public class TestAspect
-{
+public class TestAspect {
     /**
      * @Expression execution(void test.superclassconstructor.C+.set())
      */
@@ -24,8 +23,6 @@ public class TestAspect
     /**
      * @Before pc
      */
-    public void advice(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void advice(final JoinPoint joinPoint) throws Throwable {
     }
 }

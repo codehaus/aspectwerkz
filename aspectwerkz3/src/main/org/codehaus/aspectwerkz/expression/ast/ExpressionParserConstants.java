@@ -9,8 +9,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression.ast;
 
-public interface ExpressionParserConstants
-{
+public interface ExpressionParserConstants {
     int EOF = 0;
     int AND = 3;
     int OR = 4;
@@ -86,28 +85,23 @@ public interface ExpressionParserConstants
     int METHOD = 2;
     int FIELD = 3;
     int PARAMETERS = 4;
-    String[] tokenImage = 
-    {
-        "<EOF>", "\" \"", "\"\\t\"", "<AND>", "<OR>", "<NOT>",
-        "<POINTCUT_REFERENCE>", "\"execution(\"", "\"call(\"", "\"set(\"",
-        "\"get(\"", "\"handler(\"", "\"within(\"", "\"withincode(\"",
-        "\"staticinitialization(\"", "\"cflow(\"", "\"cflowbelow(\"",
-        "\"args(\"", "\"target(\"", "\"this(\"", "\"if(\"", "\".\"", "\"*\"",
-        "\"[]\"", "<EAGER_WILDCARD>", "\" \"", "\"\\t\"", "\"private\"",
-        "\"protected\"", "\"public\"", "\"static\"", "\"abstract\"", "\"final\"",
-        "<CLASS_ATTRIBUTE>", "<CLASS_PATTERN>", "<CLASS_IDENTIFIER>",
-        "<CLASS_JAVA_NAME_LETTER>", "\")\"", "\"+\"", "\" \"", "\"\\t\"",
-        "\"public\"", "\"protected\"", "\"private\"", "\"static\"",
-        "\"abstract\"", "\"final\"", "\"native\"", "\"synchronized\"",
-        "<METHOD_ATTRIBUTE>", "<METHOD_IDENTIFIER>", "<METHOD_CLASS_PATTERN>",
-        "<METHOD_ARRAY_CLASS_PATTERN>", "\",\"", "\"(\"", "\")\"",
-        "<METHOD_JAVA_NAME_LETTER>", "\" \"", "\"\\t\"", "\"private\"",
-        "\"protected\"", "\"public\"", "\"static\"", "\"abstract\"", "\"final\"",
-        "\"transient\"", "<FIELD_ATTRIBUTE>", "<FIELD_IDENTIFIER>",
-        "<FIELD_CLASS_PATTERN>", "<FIELD_ARRAY_CLASS_PATTERN>",
-        "<FIELD_JAVA_NAME_LETTER>", "\")\"", "\" \"", "\"\\t\"",
-        "<PARAMETER_IDENTIFIER>", "<PARAMETER_CLASS_PATTERN>", "\"+\"",
-        "<PARAMETER_ARRAY_CLASS_PATTERN>", "<PARAMETER_ANNOTATION>",
-        "<PARAMETER_JAVA_NAME_LETTER>", "\"(\"", "\")\"",
-    };
+    String[] tokenImage = {
+                              "<EOF>", "\" \"", "\"\\t\"", "<AND>", "<OR>", "<NOT>", "<POINTCUT_REFERENCE>",
+                              "\"execution(\"", "\"call(\"", "\"set(\"", "\"get(\"", "\"handler(\"", "\"within(\"",
+                              "\"withincode(\"", "\"staticinitialization(\"", "\"cflow(\"", "\"cflowbelow(\"",
+                              "\"args(\"", "\"target(\"", "\"this(\"", "\"if(\"", "\".\"", "\"*\"", "\"[]\"",
+                              "<EAGER_WILDCARD>", "\" \"", "\"\\t\"", "\"private\"", "\"protected\"", "\"public\"",
+                              "\"static\"", "\"abstract\"", "\"final\"", "<CLASS_ATTRIBUTE>", "<CLASS_PATTERN>",
+                              "<CLASS_IDENTIFIER>", "<CLASS_JAVA_NAME_LETTER>", "\")\"", "\"+\"", "\" \"", "\"\\t\"",
+                              "\"public\"", "\"protected\"", "\"private\"", "\"static\"", "\"abstract\"", "\"final\"",
+                              "\"native\"", "\"synchronized\"", "<METHOD_ATTRIBUTE>", "<METHOD_IDENTIFIER>",
+                              "<METHOD_CLASS_PATTERN>", "<METHOD_ARRAY_CLASS_PATTERN>", "\",\"", "\"(\"", "\")\"",
+                              "<METHOD_JAVA_NAME_LETTER>", "\" \"", "\"\\t\"", "\"private\"", "\"protected\"",
+                              "\"public\"", "\"static\"", "\"abstract\"", "\"final\"", "\"transient\"",
+                              "<FIELD_ATTRIBUTE>", "<FIELD_IDENTIFIER>", "<FIELD_CLASS_PATTERN>",
+                              "<FIELD_ARRAY_CLASS_PATTERN>", "<FIELD_JAVA_NAME_LETTER>", "\")\"", "\" \"", "\"\\t\"",
+                              "<PARAMETER_IDENTIFIER>", "<PARAMETER_CLASS_PATTERN>", "\"+\"",
+                              "<PARAMETER_ARRAY_CLASS_PATTERN>", "<PARAMETER_ANNOTATION>",
+                              "<PARAMETER_JAVA_NAME_LETTER>", "\"(\"", "\")\"",
+                          };
 }

@@ -15,9 +15,7 @@ import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
-
 import java.lang.reflect.Method;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,8 +25,7 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CFlowSystemAspect
-{
+public class CFlowSystemAspect {
     /**
      * A unique name for the aspect.
      */
@@ -64,8 +61,7 @@ public class CFlowSystemAspect
      */
     public static final int POST_ADVICE_INDEX;
 
-    static
-    {
+    static {
         // set the method flow indexes
         // this is used when the aspect is registered in the system
         // we assume enterControlFlow and exitControlFlow are defined once in this class
@@ -74,16 +70,12 @@ public class CFlowSystemAspect
         int preIndex = 0;
         int postIndex = 0;
 
-        for (Iterator i = methods.iterator(); i.hasNext(); index++)
-        {
-            Method m = (Method) i.next();
+        for (Iterator i = methods.iterator(); i.hasNext(); index++) {
+            Method m = (Method)i.next();
 
-            if (PRE_ADVICE.equals(m.getName()))
-            {
+            if (PRE_ADVICE.equals(m.getName())) {
                 preIndex = index;
-            }
-            else if (POST_ADVICE.equals(m.getName()))
-            {
+            } else if (POST_ADVICE.equals(m.getName())) {
                 postIndex = index;
             }
         }
@@ -107,8 +99,7 @@ public class CFlowSystemAspect
      *
      * @param info the cross-cutting info
      */
-    public CFlowSystemAspect(final CrossCuttingInfo info)
-    {
+    public CFlowSystemAspect(final CrossCuttingInfo info) {
         m_crossCuttingInfo = info;
         m_system = info.getSystem();
     }
@@ -119,9 +110,7 @@ public class CFlowSystemAspect
      * @param joinPoint the join point
      * @throws Throwable the exception from the invocation
      */
-    public void enterControlFlow(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void enterControlFlow(final JoinPoint joinPoint) throws Throwable {
         m_system.enteringControlFlow(getMethodInfo(joinPoint));
     }
 
@@ -131,9 +120,7 @@ public class CFlowSystemAspect
      * @param joinPoint the join point
      * @throws Throwable the exception from the invocation
      */
-    public void exitControlFlow(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void exitControlFlow(final JoinPoint joinPoint) throws Throwable {
         m_system.exitingControlFlow(getMethodInfo(joinPoint));
     }
 
@@ -145,8 +132,7 @@ public class CFlowSystemAspect
      * @todo should use a cache (used to cache on the Method instance but at caller side pointcuts no Method instance is
      * available)
      */
-    private static MethodInfo getMethodInfo(final JoinPoint joinPoint)
-    {
+    private static MethodInfo getMethodInfo(final JoinPoint joinPoint) {
         return createMethodInfo(joinPoint);
     }
 
@@ -155,9 +141,8 @@ public class CFlowSystemAspect
      *
      * @return the created method meta-data
      */
-    private static MethodInfo createMethodInfo(final JoinPoint joinPoint)
-    {
-        MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
+    private static MethodInfo createMethodInfo(final JoinPoint joinPoint) {
+        MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
         Method method = rtti.getMethod();
 
         return JavaMethodInfo.getMethodInfo(method);

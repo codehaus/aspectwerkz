@@ -1,14 +1,11 @@
 package test.clapp;
 
-public class Target
-{
-    public String callme()
-    {
+public class Target {
+    public String callme() {
         return call();
     }
 
-    private String call()
-    {
+    private String call() {
         return "call";
     }
 }

@@ -8,8 +8,13 @@
 package org.codehaus.aspectwerkz.definition;
 
 import java.net.URL;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * The SystemDefintionContainer maintains all the definition and is aware of the classloader hierarchy.
@@ -40,10 +45,8 @@ public class SystemDefinitionContainer {
     /**
      * Default location for default AspectWerkz definition file, JVM wide
      */
-    public static final String URL_JVM_OPTION_SYSTEM = System.getProperty(
-            "-Daspectwerkz.definition.file",
-            "no -Daspectwerkz.definition.file"
-    );
+    public static final String URL_JVM_OPTION_SYSTEM = System.getProperty("-Daspectwerkz.definition.file",
+                                                                          "no -Daspectwerkz.definition.file");
 
     /**
      * The AOP deployment descriptor for any deployed unit
@@ -98,11 +101,8 @@ public class SystemDefinitionContainer {
                 s_classLoaderDefinitionLocations.put(loader, defsLocation);
 
                 // is this system classloader ?
-                if (loader == ClassLoader.getSystemClassLoader() && !s_disableSystemWideDefinition) {
-                    aspectNames.addAll(
-                            DefinitionLoader
-                            .getDefaultDefinitionAspectNames()
-                    );
+                if ((loader == ClassLoader.getSystemClassLoader()) && !s_disableSystemWideDefinition) {
+                    aspectNames.addAll(DefinitionLoader.getDefaultDefinitionAspectNames());
                     defs.addAll(DefinitionLoader.getDefaultDefinition(loader)); // -D..file=... sysdef
                     defsLocation.add(URL_JVM_OPTION_SYSTEM);
                 }
@@ -114,8 +114,7 @@ public class SystemDefinitionContainer {
 
                     if (isDefinedBy(loader.getParent(), def.toExternalForm())) {
                         ;
-                    }
-                    else {
+                    } else {
                         aspectNames.addAll(XmlParser.getAspectClassNames(def));
                         defs.addAll(XmlParser.parseNoCache(loader, def));
                         defsLocation.add(def.toExternalForm());
@@ -123,8 +122,7 @@ public class SystemDefinitionContainer {
                 }
 
                 dump(loader);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 t.printStackTrace();
             }
         }
@@ -147,13 +145,11 @@ public class SystemDefinitionContainer {
             return false;
         }
 
-        ArrayList defLocation = (ArrayList)s_classLoaderDefinitionLocations
-                .get(loader);
+        ArrayList defLocation = (ArrayList)s_classLoaderDefinitionLocations.get(loader);
 
         if ((defLocation != null) && defLocation.contains(def)) {
             return true;
-        }
-        else {
+        } else {
             return isDefinedBy(loader.getParent(), def);
         }
     }
@@ -176,15 +172,9 @@ public class SystemDefinitionContainer {
             dump.append("\n* SystemID = ").append(def.getUuid());
         }
 
-        dump.append("\n* Aspect total count = ").append(
-                (
-                    (List)s_classLoaderAspectNames
-                          .get(loader)
-                ).size()
-        );
+        dump.append("\n* Aspect total count = ").append(((List)s_classLoaderAspectNames.get(loader)).size());
 
-        for (Iterator it = ((List)s_classLoaderDefinitionLocations.get(loader))
-                .iterator(); it.hasNext();) {
+        for (Iterator it = ((List)s_classLoaderDefinitionLocations.get(loader)).iterator(); it.hasNext();) {
             dump.append("\n* ").append(it.next());
         }
 
@@ -286,9 +276,7 @@ public class SystemDefinitionContainer {
      * @param loader      ClassLoader
      * @param definitions SystemDefinitions list
      */
-    public static void deploySystemDefinitions(
-            final ClassLoader loader,
-            final List definitions) {
+    public static void deploySystemDefinitions(final ClassLoader loader, final List definitions) {
         registerClassLoader(loader);
 
         List defs = (List)s_classLoaderSystemDefinitions.get(loader);
@@ -317,13 +305,10 @@ public class SystemDefinitionContainer {
      * @param uuid   system uuid
      * @return SystemDefinition or null if no such defined definition
      */
-    public static SystemDefinition getSystemDefinition(
-            final ClassLoader loader,
-            final String uuid) {
+    public static SystemDefinition getSystemDefinition(final ClassLoader loader, final String uuid) {
         registerClassLoader(loader);
 
-        for (Iterator defs = getSystemDefinitions(loader).iterator();
-             defs.hasNext();) {
+        for (Iterator defs = getSystemDefinitions(loader).iterator(); defs.hasNext();) {
             SystemDefinition def = (SystemDefinition)defs.next();
 
             if (def.getUuid().equals(uuid)) {

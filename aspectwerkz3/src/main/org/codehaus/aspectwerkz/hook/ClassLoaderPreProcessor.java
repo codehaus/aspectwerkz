@@ -19,8 +19,7 @@ package org.codehaus.aspectwerkz.hook;
  * @see org.codehaus.aspectwerkz.hook.ProcessStarter
  * @see org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl
  */
-public interface ClassLoaderPreProcessor
-{
+public interface ClassLoaderPreProcessor {
     /**
      * instruments the java.lang.ClassLoader bytecode
      */

@@ -8,11 +8,9 @@
 package org.codehaus.aspectwerkz.connectivity;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
 import java.net.Socket;
 
 /**
@@ -24,8 +22,7 @@ import java.net.Socket;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class RemoteProxyServerThread implements Runnable
-{
+public class RemoteProxyServerThread implements Runnable {
     /**
      * The socket.
      */
@@ -68,11 +65,9 @@ public class RemoteProxyServerThread implements Runnable
      * @param loader       the classloader to use
      * @param invoker      the invoker that makes the method invocation in the client thread
      */
-    public RemoteProxyServerThread(final Socket clientSocket,
-        final ClassLoader loader, final Invoker invoker, final int timeout)
-    {
-        if (clientSocket == null)
-        {
+    public RemoteProxyServerThread(final Socket clientSocket, final ClassLoader loader, final Invoker invoker,
+                                   final int timeout) {
+        if (clientSocket == null) {
             throw new IllegalArgumentException("client socket can not be null");
         }
 
@@ -85,50 +80,35 @@ public class RemoteProxyServerThread implements Runnable
     /**
      * Does the actual work of serving the client.
      */
-    public void run()
-    {
+    public void run() {
         Thread.currentThread().setContextClassLoader(m_loader);
 
-        try
-        {
+        try {
             m_socket.setTcpNoDelay(true);
             m_socket.setSoTimeout(m_timeout);
 
             m_in = new ObjectInputStream(m_socket.getInputStream());
             m_out = new ObjectOutputStream(m_socket.getOutputStream());
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
 
-        while (m_running)
-        {
-            try
-            {
-                switch (m_in.read())
-                {
-                case Command.CREATE:
-                    handleCreateCommand();
-
-                    break;
-
-                case Command.INVOKE:
-                    handleInvocationCommand();
-
-                    break;
-
-                case Command.CLOSE:
-                    m_running = false;
-
-                    break;
-
-                default:
-                    break;
+        while (m_running) {
+            try {
+                switch (m_in.read()) {
+                    case Command.CREATE:
+                        handleCreateCommand();
+                        break;
+                    case Command.INVOKE:
+                        handleInvocationCommand();
+                        break;
+                    case Command.CLOSE:
+                        m_running = false;
+                        break;
+                    default:
+                        break;
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 close();
                 throw new WrappedRuntimeException(e);
             }
@@ -146,10 +126,9 @@ public class RemoteProxyServerThread implements Runnable
      * @throws IllegalAccessException
      */
     private void handleCreateCommand()
-        throws IOException, ClassNotFoundException, InstantiationException, 
-            IllegalAccessException
-    {
-        final String className = (String) m_in.readObject();
+                              throws IOException, ClassNotFoundException, InstantiationException, 
+                                     IllegalAccessException {
+        final String className = (String)m_in.readObject();
         Class klass = m_loader.loadClass(className);
 
         final Object instance = klass.newInstance();
@@ -165,24 +144,18 @@ public class RemoteProxyServerThread implements Runnable
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private void handleInvocationCommand()
-        throws IOException, ClassNotFoundException
-    {
+    private void handleInvocationCommand() throws IOException, ClassNotFoundException {
         final Object context = m_in.readObject();
-        final String handle = (String) m_in.readObject();
-        final String methodName = (String) m_in.readObject();
-        final Class[] paramTypes = (Class[]) m_in.readObject();
-        final Object[] args = (Object[]) m_in.readObject();
+        final String handle = (String)m_in.readObject();
+        final String methodName = (String)m_in.readObject();
+        final Class[] paramTypes = (Class[])m_in.readObject();
+        final Object[] args = (Object[])m_in.readObject();
 
         Object result = null;
 
-        try
-        {
-            result = m_invoker.invoke(handle, methodName, paramTypes, args,
-                    context);
-        }
-        catch (Exception e)
-        {
+        try {
+            result = m_invoker.invoke(handle, methodName, paramTypes, args, context);
+        } catch (Exception e) {
             result = e;
         }
 
@@ -193,27 +166,20 @@ public class RemoteProxyServerThread implements Runnable
     /**
      * Close the input/output streams along with the socket.
      */
-    private void close()
-    {
-        try
-        {
-            if (m_in != null)
-            {
+    private void close() {
+        try {
+            if (m_in != null) {
                 m_in.close();
             }
 
-            if (m_out != null)
-            {
+            if (m_out != null) {
                 m_out.close();
             }
 
-            if (m_socket != null)
-            {
+            if (m_socket != null) {
                 m_socket.close();
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
     }

@@ -13,8 +13,7 @@ package org.codehaus.aspectwerkz.reflect;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class MetaDataInspector
-{
+public class MetaDataInspector {
     /**
      * Checks if a class has a certain field.
      *
@@ -22,15 +21,11 @@ public class MetaDataInspector
      * @param fieldName
      * @return
      */
-    public static boolean hasField(final ClassInfo classInfo,
-        final String fieldName)
-    {
-        for (int i = 0; i < classInfo.getFields().length; i++)
-        {
+    public static boolean hasField(final ClassInfo classInfo, final String fieldName) {
+        for (int i = 0; i < classInfo.getFields().length; i++) {
             FieldInfo fieldMetaData = classInfo.getFields()[i];
 
-            if (fieldMetaData.getName().equals(fieldName))
-            {
+            if (fieldMetaData.getName().equals(fieldName)) {
                 return true;
             }
         }
@@ -45,15 +40,11 @@ public class MetaDataInspector
      * @param interfaceName
      * @return
      */
-    public static boolean hasInterface(final ClassInfo classInfo,
-        final String interfaceName)
-    {
-        for (int i = 0; i < classInfo.getInterfaces().length; i++)
-        {
+    public static boolean hasInterface(final ClassInfo classInfo, final String interfaceName) {
+        for (int i = 0; i < classInfo.getInterfaces().length; i++) {
             ClassInfo interfaceMetaData = classInfo.getInterfaces()[i];
 
-            if (interfaceMetaData.getName().equals(interfaceName))
-            {
+            if (interfaceMetaData.getName().equals(interfaceName)) {
                 return true;
             }
         }

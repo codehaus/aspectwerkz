@@ -13,8 +13,7 @@ package org.codehaus.aspectwerkz.joinpoint;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface Rtti
-{
+public interface Rtti {
     /**
      * Returns the target instance.
      *

@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.joinpoint.impl;
 
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
-
 import java.lang.reflect.Field;
 
 /**
@@ -16,8 +15,7 @@ import java.lang.reflect.Field;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class FieldSignatureImpl implements FieldSignature
-{
+public class FieldSignatureImpl implements FieldSignature {
     private final Class m_declaringType;
     private final Field m_field;
 
@@ -25,8 +23,7 @@ public class FieldSignatureImpl implements FieldSignature
      * @param field
      * @param declaringType
      */
-    public FieldSignatureImpl(final Class declaringType, final Field field)
-    {
+    public FieldSignatureImpl(final Class declaringType, final Field field) {
         m_declaringType = declaringType;
         m_field = field;
         m_field.setAccessible(true);
@@ -37,8 +34,7 @@ public class FieldSignatureImpl implements FieldSignature
      *
      * @return the declaring class
      */
-    public Class getDeclaringType()
-    {
+    public Class getDeclaringType() {
         return m_declaringType;
     }
 
@@ -52,8 +48,7 @@ public class FieldSignatureImpl implements FieldSignature
      *
      * @return the mofifiers
      */
-    public int getModifiers()
-    {
+    public int getModifiers() {
         return m_field.getModifiers();
     }
 
@@ -62,8 +57,7 @@ public class FieldSignatureImpl implements FieldSignature
      *
      * @return the name
      */
-    public String getName()
-    {
+    public String getName() {
         return m_field.getName();
     }
 
@@ -72,8 +66,7 @@ public class FieldSignatureImpl implements FieldSignature
      *
      * @return the field
      */
-    public Field getField()
-    {
+    public Field getField() {
         return m_field;
     }
 
@@ -82,8 +75,7 @@ public class FieldSignatureImpl implements FieldSignature
      *
      * @return the field type
      */
-    public Class getFieldType()
-    {
+    public Class getFieldType() {
         return m_field.getType();
     }
 
@@ -93,8 +85,7 @@ public class FieldSignatureImpl implements FieldSignature
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */
-    public String toString()
-    {
+    public String toString() {
         return super.toString();
     }
 }

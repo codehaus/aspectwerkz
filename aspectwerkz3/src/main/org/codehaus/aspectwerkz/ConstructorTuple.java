@@ -14,8 +14,7 @@ import java.lang.reflect.Constructor;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ConstructorTuple
-{
+public class ConstructorTuple {
     private final Constructor m_wrapperConstructor;
     private final Constructor m_originalConstructor;
     private final Class m_declaringClass;
@@ -26,20 +25,14 @@ public class ConstructorTuple
      * @param wrapperConstructor
      * @param originalConstructor
      */
-    public ConstructorTuple(Constructor wrapperConstructor,
-        Constructor originalConstructor)
-    {
-        if (originalConstructor == null)
-        {
+    public ConstructorTuple(Constructor wrapperConstructor, Constructor originalConstructor) {
+        if (originalConstructor == null) {
             originalConstructor = wrapperConstructor;
         }
 
-        if (wrapperConstructor.getDeclaringClass() != originalConstructor
-            .getDeclaringClass())
-        {
-            throw new RuntimeException(wrapperConstructor.getName() + " and "
-                + originalConstructor.getName()
-                + " does not have the same declaring class");
+        if (wrapperConstructor.getDeclaringClass() != originalConstructor.getDeclaringClass()) {
+            throw new RuntimeException(wrapperConstructor.getName() + " and " + originalConstructor.getName()
+                                       + " does not have the same declaring class");
         }
 
         m_declaringClass = wrapperConstructor.getDeclaringClass();
@@ -49,28 +42,23 @@ public class ConstructorTuple
         m_originalConstructor.setAccessible(true);
     }
 
-    public boolean isWrapped()
-    {
+    public boolean isWrapped() {
         return m_originalConstructor != null;
     }
 
-    public Class getDeclaringClass()
-    {
+    public Class getDeclaringClass() {
         return m_declaringClass;
     }
 
-    public Constructor getWrapperConstructor()
-    {
+    public Constructor getWrapperConstructor() {
         return m_wrapperConstructor;
     }
 
-    public Constructor getOriginalConstructor()
-    {
+    public Constructor getOriginalConstructor() {
         return m_originalConstructor;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return m_wrapperConstructor.getName();
     }
 }

@@ -12,8 +12,7 @@ import java.lang.reflect.Method;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface MethodSignature extends CodeSignature
-{
+public interface MethodSignature extends CodeSignature {
     /**
      * Returns the method.
      *

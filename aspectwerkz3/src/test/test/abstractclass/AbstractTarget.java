@@ -11,15 +11,12 @@ package test.abstractclass;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class AbstractTarget
-{
-    public String method1()
-    {
+public abstract class AbstractTarget {
+    public String method1() {
         return "method1";
     }
 
-    public static String method2()
-    {
+    public static String method2() {
         return "method2";
     }
 }

@@ -17,8 +17,7 @@ import org.codehaus.aspectwerkz.aspect.management.AspectManager;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class AroundAdviceExecutor
-{
+public class AroundAdviceExecutor {
     /**
      * The index of the current advice.
      */
@@ -52,9 +51,7 @@ public class AroundAdviceExecutor
      * @param system
      * @param joinPointType
      */
-    public AroundAdviceExecutor(final IndexTuple[] adviceIndexes,
-        final AspectSystem system, final int joinPointType)
-    {
+    public AroundAdviceExecutor(final IndexTuple[] adviceIndexes, final AspectSystem system, final int joinPointType) {
         m_adviceIndexes = adviceIndexes;
         m_system = system;
         m_aspectManagers = m_system.getAspectManagers();
@@ -78,12 +75,9 @@ public class AroundAdviceExecutor
      * @param joinPoint the current join point
      * @return the result from the next advice in the chain or the invocation of the target method
      */
-    public Object proceed(final JoinPointBase joinPoint)
-        throws Throwable
-    {
+    public Object proceed(final JoinPointBase joinPoint) throws Throwable {
         //System.out.println("AroundAdviceExecutor.proceed " + joinPoint);
-        if (!joinPoint.isInCflow())
-        {
+        if (!joinPoint.isInCflow()) {
             return JoinPointBase.invokeJoinPoint(joinPoint, m_joinPointType);
         }
 
@@ -91,63 +85,45 @@ public class AroundAdviceExecutor
         //System.out.println("m_currentAdviceIndex = " + m_currentAdviceIndex);
         m_stackIndex++;
 
-        try
-        {
-            if (m_stackIndex == 0)
-            {
-                if (joinPoint.m_beforeAdviceExecutor.hasAdvices())
-                {
+        try {
+            if (m_stackIndex == 0) {
+                if (joinPoint.m_beforeAdviceExecutor.hasAdvices()) {
                     joinPoint.m_beforeAdviceExecutor.proceed(joinPoint);
                 }
             }
 
             Object result = null;
 
-            if (m_currentAdviceIndex == (m_adviceIndexes.length - 1))
-            {
+            if (m_currentAdviceIndex == (m_adviceIndexes.length - 1)) {
                 m_currentAdviceIndex = -1;
 
-                try
-                {
-                    result = JoinPointBase.invokeJoinPoint(joinPoint,
-                            m_joinPointType);
-                }
-                finally
-                {
+                try {
+                    result = JoinPointBase.invokeJoinPoint(joinPoint, m_joinPointType);
+                } finally {
                     m_currentAdviceIndex = m_adviceIndexes.length - 1;
                 }
-            }
-            else
-            {
+            } else {
                 m_currentAdviceIndex++;
 
-                try
-                {
+                try {
                     IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
 
-                    result = index.getAspectManager()
-                                  .getAspectContainer(index.getAspectIndex())
-                                  .invokeAdvice(index.getMethodIndex(),
-                            joinPoint);
-                }
-                finally
-                {
+                    result = index.getAspectManager().getAspectContainer(index.getAspectIndex()).invokeAdvice(index
+                                                                                                              .getMethodIndex(),
+                                                                                                              joinPoint);
+                } finally {
                     m_currentAdviceIndex--;
                 }
             }
 
-            if (m_stackIndex == 0)
-            {
-                if (joinPoint.m_afterAdviceExecutor.hasAdvices())
-                {
+            if (m_stackIndex == 0) {
+                if (joinPoint.m_afterAdviceExecutor.hasAdvices()) {
                     joinPoint.m_afterAdviceExecutor.proceed(joinPoint);
                 }
             }
 
             return result;
-        }
-        finally
-        {
+        } finally {
             m_stackIndex--;
         }
     }
@@ -157,8 +133,7 @@ public class AroundAdviceExecutor
      *
      * @return true if it has advices
      */
-    public boolean hasAdvices()
-    {
+    public boolean hasAdvices() {
         return m_adviceIndexes.length != 0;
     }
 }

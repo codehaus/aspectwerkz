@@ -44,9 +44,7 @@ import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AdvisedClassFilterExpressionVisitor
-    implements ExpressionParserVisitor
-{
+public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisitor {
     protected final ASTRoot m_root;
     protected final String m_expression;
     protected final String m_namespace;
@@ -58,9 +56,7 @@ public class AdvisedClassFilterExpressionVisitor
      * @param namespace  the namespace
      * @param root       the AST root
      */
-    public AdvisedClassFilterExpressionVisitor(final String expression,
-        final String namespace, final ASTRoot root)
-    {
+    public AdvisedClassFilterExpressionVisitor(final String expression, final String namespace, final ASTRoot root) {
         m_root = root;
         m_expression = expression;
         m_namespace = namespace;
@@ -72,37 +68,31 @@ public class AdvisedClassFilterExpressionVisitor
      * @param context
      * @return
      */
-    public boolean match(final ExpressionContext context)
-    {
-        return ((Boolean) visit(m_root, context)).booleanValue();
+    public boolean match(final ExpressionContext context) {
+        return ((Boolean)visit(m_root, context)).booleanValue();
     }
 
     // ============ Boot strap =============
-    public Object visit(SimpleNode node, Object data)
-    {
+    public Object visit(SimpleNode node, Object data) {
         return node.jjtGetChild(0).jjtAccept(this, data);
     }
 
-    public Object visit(ASTRoot node, Object data)
-    {
+    public Object visit(ASTRoot node, Object data) {
         Node child = node.jjtGetChild(0);
 
         // if 'call' or 'handler' but no 'within*' then return true
-        if (child instanceof ASTCall || child instanceof ASTHandler)
-        {
+        if (child instanceof ASTCall || child instanceof ASTHandler) {
             return Boolean.TRUE;
         }
 
         return child.jjtAccept(this, data);
     }
 
-    public Object visit(ASTExpression node, Object data)
-    {
+    public Object visit(ASTExpression node, Object data) {
         Node child = node.jjtGetChild(0);
 
         // if 'call' or 'handler' but no 'within*' then return true
-        if (child instanceof ASTCall || child instanceof ASTHandler)
-        {
+        if (child instanceof ASTCall || child instanceof ASTHandler) {
             return Boolean.TRUE;
         }
 
@@ -110,16 +100,13 @@ public class AdvisedClassFilterExpressionVisitor
     }
 
     // ============ Logical operators =============
-    public Object visit(ASTOr node, Object data)
-    {
+    public Object visit(ASTOr node, Object data) {
         int nrOfChildren = node.jjtGetNumChildren();
 
-        for (int i = 0; i < nrOfChildren; i++)
-        {
-            Boolean match = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
+        for (int i = 0; i < nrOfChildren; i++) {
+            Boolean match = (Boolean)node.jjtGetChild(i).jjtAccept(this, data);
 
-            if (match.equals(Boolean.TRUE))
-            {
+            if (match.equals(Boolean.TRUE)) {
                 return Boolean.TRUE;
             }
         }
@@ -127,8 +114,7 @@ public class AdvisedClassFilterExpressionVisitor
         return Boolean.FALSE;
     }
 
-    public Object visit(ASTAnd node, Object data)
-    {
+    public Object visit(ASTAnd node, Object data) {
         boolean hasCallOrHandlerPc = false;
         boolean hasWithinPc = false;
         boolean hasNotPc = false;
@@ -137,56 +123,39 @@ public class AdvisedClassFilterExpressionVisitor
         // handle 'call', with and without 'within*'
         int nrOfChildren = node.jjtGetNumChildren();
 
-        for (int i = 0; i < nrOfChildren; i++)
-        {
+        for (int i = 0; i < nrOfChildren; i++) {
             Node child = node.jjtGetChild(i);
 
-            if (child instanceof ASTNot)
-            {
+            if (child instanceof ASTNot) {
                 hasNotPc = true;
                 notPcIndex = i;
-            }
-            else if (child instanceof ASTCall || child instanceof ASTHandler)
-            {
+            } else if (child instanceof ASTCall || child instanceof ASTHandler) {
                 hasCallOrHandlerPc = true;
-            }
-            else if (child instanceof ASTWithin
-                || child instanceof ASTWithinCode)
-            {
+            } else if (child instanceof ASTWithin || child instanceof ASTWithinCode) {
                 hasWithinPc = true;
             }
         }
 
         // check the child of the 'not' node
-        if (hasCallOrHandlerPc && hasNotPc)
-        {
+        if (hasCallOrHandlerPc && hasNotPc) {
             Node childChild = node.jjtGetChild(notPcIndex).jjtGetChild(0);
 
-            if (childChild instanceof ASTWithin
-                || childChild instanceof ASTWithinCode)
-            {
-                if (Boolean.TRUE.equals(childChild.jjtAccept(this, data)))
-                {
+            if (childChild instanceof ASTWithin || childChild instanceof ASTWithinCode) {
+                if (Boolean.TRUE.equals(childChild.jjtAccept(this, data))) {
                     return Boolean.FALSE;
-                }
-                else
-                {
+                } else {
                     return Boolean.TRUE;
                 }
             }
-        }
-        else if (hasCallOrHandlerPc && !hasWithinPc)
-        {
+        } else if (hasCallOrHandlerPc && !hasWithinPc) {
             return Boolean.TRUE;
         }
 
         // if not 'call'
-        for (int i = 0; i < nrOfChildren; i++)
-        {
-            Boolean match = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
+        for (int i = 0; i < nrOfChildren; i++) {
+            Boolean match = (Boolean)node.jjtGetChild(i).jjtAccept(this, data);
 
-            if (match.equals(Boolean.TRUE))
-            {
+            if (match.equals(Boolean.TRUE)) {
                 return Boolean.TRUE;
             }
         }
@@ -194,155 +163,111 @@ public class AdvisedClassFilterExpressionVisitor
         return Boolean.FALSE;
     }
 
-    public Object visit(ASTNot node, Object data)
-    {
-        return (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+    public Object visit(ASTNot node, Object data) {
+        return (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
     }
 
     // ============ Pointcut types =============
-    public Object visit(ASTPointcutReference node, Object data)
-    {
-        ExpressionContext context = (ExpressionContext) data;
+    public Object visit(ASTPointcutReference node, Object data) {
+        ExpressionContext context = (ExpressionContext)data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
-        AdvisedClassFilterExpressionVisitor expression = namespace
-            .getAdvisedClassExpression(node.getName());
+        AdvisedClassFilterExpressionVisitor expression = namespace.getAdvisedClassExpression(node.getName());
 
         return Boolean.valueOf(expression.match(context));
     }
 
-    public Object visit(ASTExecution node, Object data)
-    {
-        ExpressionContext context = (ExpressionContext) data;
+    public Object visit(ASTExecution node, Object data) {
+        ExpressionContext context = (ExpressionContext)data;
 
-        if (context.hasAnyPointcut() || context.hasExecutionPointcut())
-        {
-            return node.jjtGetChild(0).jjtAccept(this,
-                context.getReflectionInfo());
-        }
-        else
-        {
+        if (context.hasAnyPointcut() || context.hasExecutionPointcut()) {
+            return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        } else {
             return Boolean.FALSE;
         }
     }
 
-    public Object visit(ASTCall node, Object data)
-    {
+    public Object visit(ASTCall node, Object data) {
         return Boolean.FALSE;
     }
 
-    public Object visit(ASTSet node, Object data)
-    {
-        ExpressionContext context = (ExpressionContext) data;
+    public Object visit(ASTSet node, Object data) {
+        ExpressionContext context = (ExpressionContext)data;
 
-        if (context.hasAnyPointcut() || context.hasSetPointcut())
-        {
-            return node.jjtGetChild(0).jjtAccept(this,
-                context.getReflectionInfo());
-        }
-        else
-        {
+        if (context.hasAnyPointcut() || context.hasSetPointcut()) {
+            return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        } else {
             return Boolean.FALSE;
         }
     }
 
-    public Object visit(ASTGet node, Object data)
-    {
-        ExpressionContext context = (ExpressionContext) data;
+    public Object visit(ASTGet node, Object data) {
+        ExpressionContext context = (ExpressionContext)data;
 
-        if (context.hasAnyPointcut() || context.hasGetPointcut())
-        {
-            return node.jjtGetChild(0).jjtAccept(this,
-                context.getReflectionInfo());
-        }
-        else
-        {
+        if (context.hasAnyPointcut() || context.hasGetPointcut()) {
+            return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        } else {
             return Boolean.FALSE;
         }
     }
 
-    public Object visit(ASTHandler node, Object data)
-    {
+    public Object visit(ASTHandler node, Object data) {
         return Boolean.FALSE;
     }
 
-    public Object visit(ASTStaticInitialization node, Object data)
-    {
-        ExpressionContext context = (ExpressionContext) data;
+    public Object visit(ASTStaticInitialization node, Object data) {
+        ExpressionContext context = (ExpressionContext)data;
 
-        if (context.hasAnyPointcut()
-            || context.hasStaticInitializationPointcut())
-        {
-            return node.jjtGetChild(0).jjtAccept(this,
-                context.getReflectionInfo());
-        }
-        else
-        {
+        if (context.hasAnyPointcut() || context.hasStaticInitializationPointcut()) {
+            return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        } else {
             return Boolean.FALSE;
         }
     }
 
-    public Object visit(ASTWithin node, Object data)
-    {
-        ExpressionContext context = (ExpressionContext) data;
+    public Object visit(ASTWithin node, Object data) {
+        ExpressionContext context = (ExpressionContext)data;
         ReflectionInfo reflectionInfo = context.getReflectionInfo();
 
-        if (reflectionInfo instanceof MemberInfo)
-        {
-            return node.jjtGetChild(0).jjtAccept(this,
-                ((MemberInfo) reflectionInfo).getDeclaringType());
-        }
-        else if (reflectionInfo instanceof ClassInfo)
-        {
+        if (reflectionInfo instanceof MemberInfo) {
+            return node.jjtGetChild(0).jjtAccept(this, ((MemberInfo)reflectionInfo).getDeclaringType());
+        } else if (reflectionInfo instanceof ClassInfo) {
             return node.jjtGetChild(0).jjtAccept(this, reflectionInfo);
-        }
-        else
-        {
+        } else {
             return Boolean.FALSE;
         }
     }
 
-    public Object visit(ASTWithinCode node, Object data)
-    {
-        ExpressionContext context = (ExpressionContext) data;
+    public Object visit(ASTWithinCode node, Object data) {
+        ExpressionContext context = (ExpressionContext)data;
 
         return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
     }
 
-    public Object visit(ASTCflow node, Object data)
-    {
+    public Object visit(ASTCflow node, Object data) {
         return Boolean.FALSE;
     }
 
-    public Object visit(ASTCflowBelow node, Object data)
-    {
+    public Object visit(ASTCflowBelow node, Object data) {
         return Boolean.FALSE;
     }
 
     // ============ Patterns =============
-    public Object visit(ASTClassPattern node, Object data)
-    {
-        ClassInfo classInfo = (ClassInfo) data;
+    public Object visit(ASTClassPattern node, Object data) {
+        ClassInfo classInfo = (ClassInfo)data;
         TypePattern typePattern = node.getDeclaringClassPattern();
 
-        if (ClassInfoHelper.matchType(typePattern, classInfo))
-        {
+        if (ClassInfoHelper.matchType(typePattern, classInfo)) {
             return Boolean.TRUE;
-        }
-        else
-        {
+        } else {
             return Boolean.FALSE;
         }
     }
 
-    public Object visit(ASTMethodPattern node, Object data)
-    {
-        if (data instanceof ClassInfo)
-        {
-            ClassInfo classInfo = (ClassInfo) data;
+    public Object visit(ASTMethodPattern node, Object data) {
+        if (data instanceof ClassInfo) {
+            ClassInfo classInfo = (ClassInfo)data;
 
-            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(),
-                    classInfo))
-            {
+            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
                 return Boolean.TRUE;
             }
         }
@@ -350,15 +275,11 @@ public class AdvisedClassFilterExpressionVisitor
         return Boolean.FALSE;
     }
 
-    public Object visit(ASTConstructorPattern node, Object data)
-    {
-        if (data instanceof ClassInfo)
-        {
-            ClassInfo classInfo = (ClassInfo) data;
+    public Object visit(ASTConstructorPattern node, Object data) {
+        if (data instanceof ClassInfo) {
+            ClassInfo classInfo = (ClassInfo)data;
 
-            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(),
-                    classInfo))
-            {
+            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
                 return Boolean.TRUE;
             }
         }
@@ -366,15 +287,11 @@ public class AdvisedClassFilterExpressionVisitor
         return Boolean.FALSE;
     }
 
-    public Object visit(ASTFieldPattern node, Object data)
-    {
-        if (data instanceof ClassInfo)
-        {
-            ClassInfo classInfo = (ClassInfo) data;
+    public Object visit(ASTFieldPattern node, Object data) {
+        if (data instanceof ClassInfo) {
+            ClassInfo classInfo = (ClassInfo)data;
 
-            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(),
-                    classInfo))
-            {
+            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
                 return Boolean.TRUE;
             }
         }
@@ -382,27 +299,21 @@ public class AdvisedClassFilterExpressionVisitor
         return Boolean.FALSE;
     }
 
-    public Object visit(ASTParameter node, Object data)
-    {
-        ClassInfo parameterType = (ClassInfo) data;
+    public Object visit(ASTParameter node, Object data) {
+        ClassInfo parameterType = (ClassInfo)data;
 
-        if (node.getDeclaringClassPattern().matches(parameterType.getName()))
-        {
+        if (node.getDeclaringClassPattern().matches(parameterType.getName())) {
             return Boolean.TRUE;
-        }
-        else
-        {
+        } else {
             return Boolean.FALSE;
         }
     }
 
-    public Object visit(ASTAttribute node, Object data)
-    {
+    public Object visit(ASTAttribute node, Object data) {
         return Boolean.TRUE;
     }
 
-    public Object visit(ASTModifier node, Object data)
-    {
+    public Object visit(ASTModifier node, Object data) {
         return Boolean.TRUE;
     }
 
@@ -411,8 +322,7 @@ public class AdvisedClassFilterExpressionVisitor
      *
      * @return
      */
-    public String toString()
-    {
+    public String toString() {
         return m_expression;
     }
 }

@@ -16,8 +16,7 @@ import org.codehaus.aspectwerkz.expression.ast.ExpressionParser;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ExpressionInfo
-{
+public class ExpressionInfo {
     /**
      * The sole instance of the parser.
      */
@@ -33,25 +32,18 @@ public class ExpressionInfo
      * @param expression the expression
      * @param namespace  the namespace
      */
-    public ExpressionInfo(final String expression, final String namespace)
-    {
-        try
-        {
+    public ExpressionInfo(final String expression, final String namespace) {
+        try {
             ASTRoot root = s_parser.parse(expression);
 
             m_expression = new ExpressionVisitor(expression, namespace, root);
-            m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(expression,
-                    namespace, root);
+            m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(expression, namespace, root);
 
-            m_cflowExpression = new CflowExpressionVisitor(expression,
-                    namespace, root);
-            m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(expression,
-                    namespace, root);
-        }
-        catch (Throwable e)
-        {
-            throw new DefinitionException("expression is not well-formed ["
-                + expression + "]: ", e);
+            m_cflowExpression = new CflowExpressionVisitor(expression, namespace, root);
+            m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(expression, namespace,
+                                                                                               root);
+        } catch (Throwable e) {
+            throw new DefinitionException("expression is not well-formed [" + expression + "]: ", e);
         }
     }
 
@@ -60,8 +52,7 @@ public class ExpressionInfo
      *
      * @return the regular expression
      */
-    public ExpressionVisitor getExpression()
-    {
+    public ExpressionVisitor getExpression() {
         return m_expression;
     }
 
@@ -70,8 +61,7 @@ public class ExpressionInfo
      *
      * @return the cflow expression
      */
-    public CflowExpressionVisitor getCflowExpression()
-    {
+    public CflowExpressionVisitor getCflowExpression() {
         return m_cflowExpression;
     }
 
@@ -80,8 +70,7 @@ public class ExpressionInfo
      *
      * @return the advised class filter expression
      */
-    public AdvisedClassFilterExpressionVisitor getAdvisedClassFilterExpression()
-    {
+    public AdvisedClassFilterExpressionVisitor getAdvisedClassFilterExpression() {
         return m_advisedClassFilterExpression;
     }
 
@@ -90,8 +79,7 @@ public class ExpressionInfo
      *
      * @return the advised cflow class filter expression
      */
-    public AdvisedCflowClassFilterExpressionVisitor getAdvisedCflowClassFilterExpression()
-    {
+    public AdvisedCflowClassFilterExpressionVisitor getAdvisedCflowClassFilterExpression() {
         return m_advisedCflowClassFilterExpression;
     }
 
@@ -100,8 +88,7 @@ public class ExpressionInfo
      *
      * @return the parser
      */
-    public static ExpressionParser getParser()
-    {
+    public static ExpressionParser getParser() {
         return s_parser;
     }
 }

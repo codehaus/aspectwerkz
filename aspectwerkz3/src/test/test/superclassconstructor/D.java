@@ -13,10 +13,8 @@ package test.superclassconstructor;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class D extends C
-{
-    public static void set()
-    {
+public class D extends C {
+    public static void set() {
         // do something more
     }
 }

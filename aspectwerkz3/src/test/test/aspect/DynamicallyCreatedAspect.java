@@ -7,17 +7,15 @@
  **************************************************************************************/
 package test.aspect;
 
+import test.Loggable;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-
-import test.Loggable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class DynamicallyCreatedAspect
-{
+public class DynamicallyCreatedAspect {
     // ============ Pointcuts ============
 
     /**
@@ -30,14 +28,12 @@ public class DynamicallyCreatedAspect
     /**
      * @Around pc1
      */
-    public Object advice1(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("beforeNew ");
+    public Object advice1(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("beforeNew ");
 
         final Object result = joinPoint.proceed();
 
-        ((Loggable) joinPoint.getTargetInstance()).log("afterNew ");
+        ((Loggable)joinPoint.getTargetInstance()).log("afterNew ");
 
         return result;
     }

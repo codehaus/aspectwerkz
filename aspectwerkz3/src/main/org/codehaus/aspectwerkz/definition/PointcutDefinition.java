@@ -14,8 +14,7 @@ import org.codehaus.aspectwerkz.expression.PointcutType;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class PointcutDefinition
-{
+public class PointcutDefinition {
     /**
      * The name of the pointcut.
      */
@@ -41,8 +40,7 @@ public class PointcutDefinition
      *
      * @return the expression for the pointcut
      */
-    public String getExpression()
-    {
+    public String getExpression() {
         return m_expression;
     }
 
@@ -51,8 +49,7 @@ public class PointcutDefinition
      *
      * @param expression the expression
      */
-    public void setExpression(final String expression)
-    {
+    public void setExpression(final String expression) {
         m_expression = expression;
     }
 
@@ -61,16 +58,14 @@ public class PointcutDefinition
      *
      * @return the name
      */
-    public String getName()
-    {
+    public String getName() {
         return m_name;
     }
 
     /**
      * Sets the name of the pointcut.
      */
-    public void setName(final String name)
-    {
+    public void setName(final String name) {
         m_name = name;
     }
 
@@ -79,8 +74,7 @@ public class PointcutDefinition
      *
      * @return the type
      */
-    public PointcutType getType()
-    {
+    public PointcutType getType() {
         return m_type;
     }
 
@@ -89,8 +83,7 @@ public class PointcutDefinition
      *
      * @param type the type
      */
-    public void setType(final PointcutType type)
-    {
+    public void setType(final PointcutType type) {
         m_type = type;
     }
 
@@ -99,8 +92,7 @@ public class PointcutDefinition
      *
      * @param isNonReentrant
      */
-    public void setNonReentrant(final String isNonReentrant)
-    {
+    public void setNonReentrant(final String isNonReentrant) {
         m_isNonReentrant = isNonReentrant;
     }
 
@@ -109,8 +101,7 @@ public class PointcutDefinition
      *
      * @return the non-reentrancy flag
      */
-    public String getNonReentrant()
-    {
+    public String getNonReentrant() {
         return m_isNonReentrant;
     }
 
@@ -119,8 +110,7 @@ public class PointcutDefinition
      *
      * @return the non-reentrancy flag
      */
-    public boolean isNonReentrant()
-    {
+    public boolean isNonReentrant() {
         return "true".equalsIgnoreCase(m_isNonReentrant);
     }
 }

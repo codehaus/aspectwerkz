@@ -11,8 +11,7 @@ package org.codehaus.aspectwerkz.joinpoint;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface CodeRtti extends MemberRtti
-{
+public interface CodeRtti extends MemberRtti {
     /**
      * Returns the exception types declared by the code block.
      *

@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.joinpoint.impl;
 
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
-
 import java.lang.reflect.Method;
 
 /**
@@ -17,8 +16,7 @@ import java.lang.reflect.Method;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MethodSignatureImpl implements MethodSignature
-{
+public class MethodSignatureImpl implements MethodSignature {
     private final Class m_declaringType;
     private final MethodTuple m_methodTuple;
 
@@ -26,9 +24,7 @@ public class MethodSignatureImpl implements MethodSignature
      * @param declaringType
      * @param methodTuple
      */
-    public MethodSignatureImpl(final Class declaringType,
-        final MethodTuple methodTuple)
-    {
+    public MethodSignatureImpl(final Class declaringType, final MethodTuple methodTuple) {
         m_declaringType = declaringType;
         m_methodTuple = methodTuple;
     }
@@ -38,8 +34,7 @@ public class MethodSignatureImpl implements MethodSignature
      *
      * @return the method tuple
      */
-    public MethodTuple getMethodTuple()
-    {
+    public MethodTuple getMethodTuple() {
         return m_methodTuple;
     }
 
@@ -48,8 +43,7 @@ public class MethodSignatureImpl implements MethodSignature
      *
      * @return the method
      */
-    public Method getMethod()
-    {
+    public Method getMethod() {
         return m_methodTuple.getOriginalMethod();
     }
 
@@ -58,8 +52,7 @@ public class MethodSignatureImpl implements MethodSignature
      *
      * @return the declaring class
      */
-    public Class getDeclaringType()
-    {
+    public Class getDeclaringType() {
         return m_declaringType;
     }
 
@@ -73,8 +66,7 @@ public class MethodSignatureImpl implements MethodSignature
      *
      * @return the mofifiers
      */
-    public int getModifiers()
-    {
+    public int getModifiers() {
         return m_methodTuple.getOriginalMethod().getModifiers();
     }
 
@@ -83,8 +75,7 @@ public class MethodSignatureImpl implements MethodSignature
      *
      * @return
      */
-    public String getName()
-    {
+    public String getName() {
         return m_methodTuple.getName();
     }
 
@@ -93,8 +84,7 @@ public class MethodSignatureImpl implements MethodSignature
      *
      * @return the exception types
      */
-    public Class[] getExceptionTypes()
-    {
+    public Class[] getExceptionTypes() {
         return m_methodTuple.getOriginalMethod().getExceptionTypes();
     }
 
@@ -103,8 +93,7 @@ public class MethodSignatureImpl implements MethodSignature
      *
      * @return the parameter types
      */
-    public Class[] getParameterTypes()
-    {
+    public Class[] getParameterTypes() {
         return m_methodTuple.getOriginalMethod().getParameterTypes();
     }
 
@@ -113,8 +102,7 @@ public class MethodSignatureImpl implements MethodSignature
      *
      * @return the return type
      */
-    public Class getReturnType()
-    {
+    public Class getReturnType() {
         return m_methodTuple.getOriginalMethod().getReturnType();
     }
 
@@ -124,8 +112,7 @@ public class MethodSignatureImpl implements MethodSignature
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */
-    public String toString()
-    {
+    public String toString() {
         return super.toString();
     }
 }

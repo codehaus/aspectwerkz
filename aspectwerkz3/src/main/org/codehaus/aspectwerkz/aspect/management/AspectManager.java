@@ -22,9 +22,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
-
 import java.lang.reflect.Field;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,8 +40,7 @@ import java.util.WeakHashMap;
  * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it should remove a
  * certain advice from the pointcut - notification of the JoinPoinManager.
  */
-public final class AspectManager
-{
+public final class AspectManager {
     /**
      * The system this AspectManager is defined in.
      */
@@ -80,9 +77,7 @@ public final class AspectManager
      * @param system     the system
      * @param definition the system definition
      */
-    public AspectManager(final AspectSystem system,
-        final SystemDefinition definition)
-    {
+    public AspectManager(final AspectSystem system, final SystemDefinition definition) {
         m_system = system;
         m_definition = definition;
         m_aspectRegistry = new AspectRegistry(this, m_definition);
@@ -92,8 +87,7 @@ public final class AspectManager
      * Initializes the manager. The initialization needs to be separated fromt he construction of the manager, and is
      * triggered by the runtime system.
      */
-    public void initialize()
-    {
+    public void initialize() {
         m_aspectRegistry.initialize();
     }
 
@@ -103,9 +97,7 @@ public final class AspectManager
      * @param container      the containern for the aspect to register
      * @param aspectMetaData the aspect meta-data
      */
-    public void register(final AspectContainer container,
-        final PointcutManager aspectMetaData)
-    {
+    public void register(final AspectContainer container, final PointcutManager aspectMetaData) {
         m_aspectRegistry.register(container, aspectMetaData);
     }
 
@@ -118,40 +110,29 @@ public final class AspectManager
      *                        DeploymentModel.PER_JVM)
      * @param loader          an optional class loader (if null it uses the context classloader)
      */
-    public void createAspect(final String name, final String aspectClassName,
-        final int deploymentModel, final ClassLoader loader)
-    {
-        if (name == null)
-        {
+    public void createAspect(final String name, final String aspectClassName, final int deploymentModel,
+                             final ClassLoader loader) {
+        if (name == null) {
             throw new IllegalArgumentException("aspect name can not be null");
         }
 
-        if (aspectClassName == null)
-        {
+        if (aspectClassName == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
 
-        if ((deploymentModel < 0) || (deploymentModel > 3))
-        {
-            throw new IllegalArgumentException(deploymentModel
-                + " is not a valid deployment model type");
+        if ((deploymentModel < 0) || (deploymentModel > 3)) {
+            throw new IllegalArgumentException(deploymentModel + " is not a valid deployment model type");
         }
 
         Class aspectClass = null;
 
-        try
-        {
-            if (loader == null)
-            {
+        try {
+            if (loader == null) {
                 aspectClass = ContextClassLoader.loadClass(aspectClassName);
-            }
-            else
-            {
+            } else {
                 aspectClass = loader.loadClass(aspectClassName);
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             StringBuffer msg = new StringBuffer();
 
             msg.append("could not load aspect class [");
@@ -164,25 +145,21 @@ public final class AspectManager
         }
 
         // create the aspect definition
-        AspectDefinition aspectDef = new AspectDefinition(aspectClassName,
-                aspectClassName);
+        AspectDefinition aspectDef = new AspectDefinition(aspectClassName, aspectClassName);
 
-        aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelAsString(
-                deploymentModel));
+        aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelAsString(deploymentModel));
 
         // parse the class attributes and create a definition
         m_attributeParser.parse(aspectClass, aspectDef, m_definition);
         m_definition.addAspect(aspectDef);
 
-        CrossCuttingInfo crossCuttingInfo = new CrossCuttingInfo(null,
-                aspectClass, aspectDef.getName(), deploymentModel, aspectDef,
-                new HashMap());
+        CrossCuttingInfo crossCuttingInfo = new CrossCuttingInfo(null, aspectClass, aspectDef.getName(),
+                                                                 deploymentModel, aspectDef, new HashMap());
 
         AspectContainer container = StartupManager.createAspectContainer(crossCuttingInfo);
 
         crossCuttingInfo.setContainer(container);
-        m_aspectRegistry.register(container,
-            new PointcutManager(name, deploymentModel));
+        m_aspectRegistry.register(container, new PointcutManager(name, deploymentModel));
     }
 
     /**
@@ -190,8 +167,7 @@ public final class AspectManager
      *
      * @return the UUID
      */
-    public String getUuid()
-    {
+    public String getUuid() {
         return m_definition.getUuid();
     }
 
@@ -201,8 +177,7 @@ public final class AspectManager
      * @param index the index of the aspect
      * @return the aspect
      */
-    public AspectContainer getAspectContainer(final int index)
-    {
+    public AspectContainer getAspectContainer(final int index) {
         return m_aspectRegistry.getAspectContainer(index);
     }
 
@@ -212,8 +187,7 @@ public final class AspectManager
      * @param name the name of the aspect
      * @return the the aspect prototype
      */
-    public AspectContainer getAspectContainer(final String name)
-    {
+    public AspectContainer getAspectContainer(final String name) {
         return m_aspectRegistry.getAspectContainer(name);
     }
 
@@ -222,8 +196,7 @@ public final class AspectManager
      *
      * @return the aspect containers
      */
-    public AspectContainer[] getAspectContainers()
-    {
+    public AspectContainer[] getAspectContainers() {
         return m_aspectRegistry.getAspectContainers();
     }
 
@@ -233,8 +206,7 @@ public final class AspectManager
      * @param name the name of the aspect
      * @return the the aspect
      */
-    public Object getCrossCuttingInfo(final String name)
-    {
+    public Object getCrossCuttingInfo(final String name) {
         return m_aspectRegistry.getCrossCuttingInfo(name);
     }
 
@@ -243,14 +215,11 @@ public final class AspectManager
      *
      * @return the cross-cutting infos
      */
-    public CrossCuttingInfo[] getCrossCuttingInfos()
-    {
-        AspectContainer[] aspectContainers = m_aspectRegistry
-            .getAspectContainers();
+    public CrossCuttingInfo[] getCrossCuttingInfos() {
+        AspectContainer[] aspectContainers = m_aspectRegistry.getAspectContainers();
         CrossCuttingInfo[] infos = new CrossCuttingInfo[aspectContainers.length];
 
-        for (int i = 0; i < aspectContainers.length; i++)
-        {
+        for (int i = 0; i < aspectContainers.length; i++) {
             AspectContainer aspectContainer = aspectContainers[i];
 
             infos[i] = aspectContainer.getCrossCuttingInfo();
@@ -265,8 +234,7 @@ public final class AspectManager
      * @param index the index of the introduction (aspect in this case)
      * @return the the mixin (aspect in this case)
      */
-    public Mixin getMixin(final int index)
-    {
+    public Mixin getMixin(final int index) {
         return m_aspectRegistry.getMixin(index);
     }
 
@@ -276,8 +244,7 @@ public final class AspectManager
      * @param name the name of the introduction (aspect in this case)
      * @return the the mixin (aspect in this case)
      */
-    public Mixin getMixin(final String name)
-    {
+    public Mixin getMixin(final String name) {
         return m_aspectRegistry.getMixin(name);
     }
 
@@ -287,8 +254,7 @@ public final class AspectManager
      * @param name the name of the aspect
      * @return the index of the aspect
      */
-    public int getAspectIndexFor(final String name)
-    {
+    public int getAspectIndexFor(final String name) {
         return m_aspectRegistry.getAspectIndexFor(name);
     }
 
@@ -298,8 +264,7 @@ public final class AspectManager
      * @param name the name of the advice
      * @return the index of the advice
      */
-    public IndexTuple getAdviceIndexFor(final String name)
-    {
+    public IndexTuple getAdviceIndexFor(final String name) {
         //java.lang.System.out.println("AspectManager.getAdviceIndexFor " + name + " = " + m_aspectRegistry.getAdviceIndexFor(name));
         return m_aspectRegistry.getAdviceIndexFor(name);
     }
@@ -310,8 +275,7 @@ public final class AspectManager
      * @param name the name of the aspect
      * @return thepointcut manager
      */
-    public PointcutManager getPointcutManager(final String name)
-    {
+    public PointcutManager getPointcutManager(final String name) {
         return m_aspectRegistry.getPointcutManager(name);
     }
 
@@ -320,8 +284,7 @@ public final class AspectManager
      *
      * @return thepointcut managers
      */
-    public Collection getPointcutManagers()
-    {
+    public Collection getPointcutManagers() {
         return m_aspectRegistry.getPointcutManagers();
     }
 
@@ -334,12 +297,9 @@ public final class AspectManager
      * @param ctx the expression context
      * @return the pointcuts for this join point
      */
-    public List getPointcuts(final ExpressionContext ctx)
-    {
-        if (ctx == null)
-        {
-            throw new IllegalArgumentException(
-                "expression context can not be null");
+    public List getPointcuts(final ExpressionContext ctx) {
+        if (ctx == null) {
+            throw new IllegalArgumentException("expression context can not be null");
         }
 
         initialize();
@@ -348,21 +308,16 @@ public final class AspectManager
         //TODO temp fix - AVEW eWorld RW / RuW requires NO CACHE
         List pointcuts;
 
-        if (m_pointcutCache.containsKey(ctx))
-        {
-            pointcuts = (List) m_pointcutCache.get(ctx);
+        if (m_pointcutCache.containsKey(ctx)) {
+            pointcuts = (List)m_pointcutCache.get(ctx);
 
-            if (pointcuts == null)
-            { // strange enough, but can be null
+            if (pointcuts == null) { // strange enough, but can be null
                 pointcuts = new ArrayList();
             }
-        }
-        else
-        {
+        } else {
             pointcuts = m_aspectRegistry.getPointcuts(ctx);
 
-            synchronized (m_pointcutCache)
-            {
+            synchronized (m_pointcutCache) {
                 m_pointcutCache.put(ctx, pointcuts);
             }
         }
@@ -380,10 +335,8 @@ public final class AspectManager
      * @param ctx the context
      * @return
      */
-    public List getCFlowExpressions(final ExpressionContext ctx)
-    {
-        if (ctx == null)
-        {
+    public List getCFlowExpressions(final ExpressionContext ctx) {
+        if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
 
@@ -406,8 +359,7 @@ public final class AspectManager
      * @param name the name of the aspect
      * @return boolean true if the class has an aspect defined
      */
-    public boolean hasAspect(final String name)
-    {
+    public boolean hasAspect(final String name) {
         return m_aspectRegistry.hasAspect(name);
     }
 
@@ -418,8 +370,7 @@ public final class AspectManager
      * @param methodHash the method hash
      * @return the method
      */
-    public MethodTuple getMethodTuple(final Class klass, final int methodHash)
-    {
+    public MethodTuple getMethodTuple(final Class klass, final int methodHash) {
         return AspectRegistry.getMethodTuple(klass, methodHash);
     }
 
@@ -430,9 +381,7 @@ public final class AspectManager
      * @param constructorHash the method hash
      * @return the constructor
      */
-    public ConstructorTuple getConstructorTuple(final Class klass,
-        final int constructorHash)
-    {
+    public ConstructorTuple getConstructorTuple(final Class klass, final int constructorHash) {
         return AspectRegistry.getConstructorTuple(klass, constructorHash);
     }
 
@@ -443,13 +392,11 @@ public final class AspectManager
      * @param fieldHash the method hash
      * @return the field
      */
-    public Field getField(final Class klass, final int fieldHash)
-    {
+    public Field getField(final Class klass, final int fieldHash) {
         return AspectRegistry.getField(klass, fieldHash);
     }
 
-    public String toString()
-    {
+    public String toString() {
         StringBuffer sb = new StringBuffer("AspectManager@");
 
         sb.append(this.hashCode());

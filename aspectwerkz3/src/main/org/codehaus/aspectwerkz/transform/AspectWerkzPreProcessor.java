@@ -13,7 +13,6 @@ import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,8 +42,7 @@ import java.util.Map;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @TODO: dump before/after broken on Javassist due to frozen status
  */
-public class AspectWerkzPreProcessor implements ClassPreProcessor,
-                                                RuntimeClassProcessor {
+public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassProcessor {
     private final static String AW_TRANSFORM_FILTER = "aspectwerkz.transform.filter";
     private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
     private final static String AW_TRANSFORM_DUMP = "aspectwerkz.transform.dump";
@@ -57,13 +55,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor,
     static {
         String verbose = System.getProperty(AW_TRANSFORM_VERBOSE, null);
 
-        VERBOSE = "yes".equalsIgnoreCase(verbose)
-                  || "true".equalsIgnoreCase(verbose);
+        VERBOSE = "yes".equalsIgnoreCase(verbose) || "true".equalsIgnoreCase(verbose);
 
         String filter = System.getProperty(AW_TRANSFORM_FILTER, null);
 
-        NOFILTER = "no".equalsIgnoreCase(filter)
-                   || "false".equalsIgnoreCase(filter);
+        NOFILTER = "no".equalsIgnoreCase(filter) || "false".equalsIgnoreCase(filter);
 
         String dumpPattern = System.getProperty(AW_TRANSFORM_DUMP, null);
 
@@ -71,15 +67,13 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor,
             DUMP_BEFORE = false;
             DUMP_AFTER = false;
             DUMP_PATTERN = null;
-        }
-        else {
+        } else {
             DUMP_AFTER = true;
             DUMP_BEFORE = dumpPattern.indexOf(",before") > 0;
 
             if (DUMP_BEFORE) {
                 DUMP_PATTERN = Pattern.compileTypePattern(dumpPattern.substring(0, dumpPattern.indexOf(',')), false);
-            }
-            else {
+            } else {
                 DUMP_PATTERN = Pattern.compileTypePattern(dumpPattern, false);
             }
         }
@@ -149,7 +143,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor,
     public byte[] preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
         // filter out ExtClassLoader and BootClassLoader
         if (!NOFILTER) {
-            if (loader == null || loader.getParent() == null) {
+            if ((loader == null) || (loader.getParent() == null)) {
                 return bytecode;
             }
         }
@@ -161,49 +155,34 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor,
         }
 
         if (VERBOSE) {
-            log(
-                    loader.toString() + ':' + className + '['
-                    + Thread.currentThread().getName() + ']'
-            );
+            log(loader.toString() + ':' + className + '[' + Thread.currentThread().getName() + ']');
         }
 
         // AOPC
         SystemDefinitionContainer.registerClassLoader(loader);
 
-        List preAspectNamesContext = SystemDefinitionContainer
-                .getAspectNamesContext();
-        List preDefintionsContext = SystemDefinitionContainer
-                .getAspectNamesContext();
+        List preAspectNamesContext = SystemDefinitionContainer.getAspectNamesContext();
+        List preDefintionsContext = SystemDefinitionContainer.getAspectNamesContext();
 
         try {
-            SystemDefinitionContainer.setAspectNamesContext(
-                    SystemDefinitionContainer
-                    .getHierarchicalAspectNames(loader)
-            );
-            SystemDefinitionContainer.setDefinitionsContext(
-                    SystemDefinitionContainer
-                    .getHierarchicalDefs(loader)
-            );
+            SystemDefinitionContainer.setAspectNamesContext(SystemDefinitionContainer.getHierarchicalAspectNames(loader));
+            SystemDefinitionContainer.setDefinitionsContext(SystemDefinitionContainer.getHierarchicalDefs(loader));
 
             return _preProcess(name, bytecode, loader);
-        }
-        finally {
+        } finally {
             SystemDefinitionContainer.setAspectNamesContext(preAspectNamesContext);
             SystemDefinitionContainer.setDefinitionsContext(preDefintionsContext);
         }
     }
 
-    public byte[] _preProcess(
-            final String name, final byte[] bytecode,
-            final ClassLoader loader) {
+    public byte[] _preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
         final String className = name.replace('/', '.'); // needed for JRockit (as well as all in all TFs)
 
         Klass klass = null;
 
         try {
             klass = new Klass(className, bytecode, loader);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log("failed " + className);
             e.printStackTrace();
 
@@ -228,8 +207,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor,
 
                 try {
                     tf.transform(context, klass);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -239,10 +217,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor,
 
                 // if VERBOSE confirm modification
                 if (VERBOSE && context.isAdvised()) {
-                    log(
-                            " " + className + " <- "
-                            + transformer.getClass().getName()
-                    );
+                    log(" " + className + " <- " + transformer.getClass().getName());
                 }
             }
         }
@@ -251,8 +226,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor,
         if (advisedAtLeastOnce) {
             try {
                 m_addSerialVerUidTransformer.transform(context, klass);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -281,8 +255,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor,
      * @return new bytes for Class representation
      * @throws Throwable
      */
-    public byte[] preProcessActivate(final Class klazz)
-            throws Throwable {
+    public byte[] preProcessActivate(final Class klazz) throws Throwable {
         String className = klazz.getName();
 
         // fetch class from prepared class cache
@@ -290,20 +263,14 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor,
         ByteArray currentBytesArray = (ByteArray)m_classByteCache.get(key);
 
         if (currentBytesArray == null) {
-            throw new RuntimeException(
-                    "can not find cached class in cache for prepared classes: "
-                    + className
-            );
+            throw new RuntimeException("can not find cached class in cache for prepared classes: " + className);
         }
 
         // flush class info repository cache so that new weaving is aware of wrapper method existence
         ClassInfoRepository.removeClassInfoFromAllClassLoaders(klazz.getName());
 
         // transform as if multi weaving
-        byte[] newBytes = preProcess(
-                klazz.getName(),
-                currentBytesArray.getBytes(), klazz.getClassLoader()
-        );
+        byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz.getClassLoader());
 
         // update cache
         m_classByteCache.put(key, new ByteArray(newBytes));
@@ -328,18 +295,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor,
      * @param klass the AspectWerkz class
      */
     private static boolean filter(final String klass) {
-        return klass == null
-               || klass.startsWith("org.codehaus.aspectwerkz.")
-               || klass.startsWith("javassist.")
-               || klass.startsWith("org.objectweb.asm.")
-               || klass.startsWith("com.karneim.")
-               || klass.startsWith("com.bluecast.")
-               || klass.startsWith("org.apache.bcel.")
-               || klass.startsWith("gnu.trove.")
-               || klass.startsWith("org.dom4j.")
-               || klass.startsWith("org.xml.sax.")
-               || klass.startsWith("javax.xml.parsers.")
-               || klass.startsWith("junit.");
+        return (klass == null) || klass.startsWith("org.codehaus.aspectwerkz.") || klass.startsWith("javassist.")
+               || klass.startsWith("org.objectweb.asm.") || klass.startsWith("com.karneim.")
+               || klass.startsWith("com.bluecast.") || klass.startsWith("org.apache.bcel.")
+               || klass.startsWith("gnu.trove.") || klass.startsWith("org.dom4j.") || klass.startsWith("org.xml.sax.")
+               || klass.startsWith("javax.xml.parsers.") || klass.startsWith("junit.");
     }
 
     /**
@@ -352,13 +312,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor,
         if (DUMP_BEFORE) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
-                    klass.getCtClass().getClassPool().writeFile(
-                            className,
-                            "_dump/before/"
-                    );
+                    klass.getCtClass().getClassPool().writeFile(className, "_dump/before/");
                     klass.getCtClass().defrost();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     log("failed to dump " + className);
                     e.printStackTrace();
                 }
@@ -376,12 +332,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor,
         if (DUMP_AFTER) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
-                    klass.getCtClass().getClassPool().writeFile(
-                            className,
-                            "_dump/" + (DUMP_BEFORE ? "after/" : "")
-                    );
-                }
-                catch (Exception e) {
+                    klass.getCtClass().getClassPool().writeFile(className, "_dump/" + (DUMP_BEFORE ? "after/" : ""));
+                } catch (Exception e) {
                     log("failed to dump " + className);
                     e.printStackTrace();
                 }
@@ -391,12 +343,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor,
 
     public static void dumpForce(final String className, final Klass klass) {
         try {
-            klass.getCtClass().getClassPool().writeFile(
-                    className,
-                    "_dump/force/"
-            );
-        }
-        catch (Exception e) {
+            klass.getCtClass().getClassPool().writeFile(className, "_dump/force/");
+        } catch (Exception e) {
             log("failed to dump " + className);
             e.printStackTrace();
         }

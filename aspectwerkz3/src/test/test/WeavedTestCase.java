@@ -8,18 +8,13 @@
 package test;
 
 import junit.framework.TestCase;
-
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.hook.impl.WeavingClassLoader;
-
 import java.io.File;
 import java.io.IOException;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -28,20 +23,17 @@ import java.util.StringTokenizer;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class WeavedTestCase extends TestCase
-{
+public class WeavedTestCase extends TestCase {
     /**
      * the test runner that runs the test thru reflection in a weaving ClassLoader
      */
     private static WeaverTestRunner s_runner = new WeaverTestRunner();
 
-    public WeavedTestCase()
-    {
+    public WeavedTestCase() {
         super();
     }
 
-    public WeavedTestCase(String name)
-    {
+    public WeavedTestCase(String name) {
         super(name);
     }
 
@@ -50,8 +42,7 @@ public class WeavedTestCase extends TestCase
      *
      * @throws Throwable
      */
-    public void runBare() throws Throwable
-    {
+    public void runBare() throws Throwable {
         s_runner.runTest(this.getClass().getName(), getName());
     }
 
@@ -60,17 +51,14 @@ public class WeavedTestCase extends TestCase
      *
      * @throws Throwable
      */
-    public void runBareAfterWeaving()
-        throws Throwable
-    {
+    public void runBareAfterWeaving() throws Throwable {
         super.runBare();
     }
 
     /**
      * Allow to run WeaverTestCase thru a weaving ClassLoader
      */
-    public static class WeaverTestRunner
-    {
+    public static class WeaverTestRunner {
         /**
          * Weaving classloader
          */
@@ -79,27 +67,19 @@ public class WeavedTestCase extends TestCase
         /**
          * Build weavin classloader with system class path and ext. classloader as parent
          */
-        public WeaverTestRunner()
-        {
-            try
-            {
+        public WeaverTestRunner() {
+            try {
                 String path = System.getProperty("java.class.path");
                 ArrayList paths = new ArrayList();
-                StringTokenizer st = new StringTokenizer(path,
-                        File.pathSeparator);
+                StringTokenizer st = new StringTokenizer(path, File.pathSeparator);
 
-                while (st.hasMoreTokens())
-                {
-                    paths.add((new File(st.nextToken())).getCanonicalFile()
-                               .toURL());
+                while (st.hasMoreTokens()) {
+                    paths.add((new File(st.nextToken())).getCanonicalFile().toURL());
                 }
 
-                cl = new WeavingClassLoader((URL[]) paths.toArray(
-                            new URL[] {  }),
-                        ClassLoader.getSystemClassLoader().getParent());
-            }
-            catch (IOException e)
-            {
+                cl = new WeavingClassLoader((URL[])paths.toArray(new URL[] {  }),
+                                            ClassLoader.getSystemClassLoader().getParent());
+            } catch (IOException e) {
                 throw new WrappedRuntimeException(e);
             }
         }
@@ -112,47 +92,35 @@ public class WeavedTestCase extends TestCase
          * @param testMethodName test method
          * @throws Throwable
          */
-        public void runTest(String testClassName, String testMethodName)
-            throws Throwable
-        {
+        public void runTest(String testClassName, String testMethodName) throws Throwable {
             // skip test embedded weaving if online mode / weavingClassLoader.main() is already used
             if ((cl.getClass().getClassLoader() == null)
-                || (cl.getClass().getClassLoader().getClass().getName().indexOf("hook.impl.Weaving") > 0))
-            {
+                || (cl.getClass().getClassLoader().getClass().getName().indexOf("hook.impl.Weaving") > 0)) {
                 ;
-            }
-            else
-            {
+            } else {
                 Thread.currentThread().setContextClassLoader(cl); // needed for Aspect loading
             }
 
-            Class testClass = Class.forName(testClassName, true,
-                    Thread.currentThread().getContextClassLoader());
+            Class testClass = Class.forName(testClassName, true, Thread.currentThread().getContextClassLoader());
 
             //)cl.loadClass(testClassName);
             Constructor ctor = null;
             Object testInstance = null;
 
-            try
-            {
+            try {
                 // new junit style
                 ctor = testClass.getConstructor(new Class[] {  });
                 testInstance = ctor.newInstance(new Object[] {  });
 
-                Method setNameMethod = testClass.getMethod("setName",
-                        new Class[] { String.class });
+                Method setNameMethod = testClass.getMethod("setName", new Class[] { String.class });
 
-                setNameMethod.invoke(testInstance,
-                    new Object[] { testMethodName });
-            }
-            catch (NoSuchMethodException e)
-            {
+                setNameMethod.invoke(testInstance, new Object[] { testMethodName });
+            } catch (NoSuchMethodException e) {
                 ctor = testClass.getConstructor(new Class[] { String.class });
                 testInstance = ctor.newInstance(new Object[] { testMethodName });
             }
 
-            Method runAfterWeavingMethod = testClass.getMethod("runBareAfterWeaving",
-                    new Class[] {  });
+            Method runAfterWeavingMethod = testClass.getMethod("runBareAfterWeaving", new Class[] {  });
 
             runAfterWeavingMethod.invoke(testInstance, new Object[] {  });
         }

@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.hook.impl;
 
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
-
 import java.security.ProtectionDomain;
 
 /**
@@ -21,8 +20,7 @@ import java.security.ProtectionDomain;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class ClassPreProcessorHelper
-{
+public class ClassPreProcessorHelper {
     /**
      * ClassPreProcessor used if aspectwerkz.classloader.preprocessor property is defined to full qualified class name
      */
@@ -43,8 +41,7 @@ public class ClassPreProcessorHelper
      */
     private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor";
 
-    static
-    {
+    static {
         initializePreProcessor();
     }
 
@@ -53,8 +50,7 @@ public class ClassPreProcessorHelper
      *
      * @return the preprocessor or null if not initialized
      */
-    public static ClassPreProcessor getClassPreProcessor()
-    {
+    public static ClassPreProcessor getClassPreProcessor() {
         return preProcessor;
     }
 
@@ -62,22 +58,18 @@ public class ClassPreProcessorHelper
      * Initialization of the ClassPreProcessor The ClassPreProcessor implementation is lazy loaded. This allow to put it
      * in the regular classpath whereas the instrumentation layer (layer 1) is in the bootclasspath
      */
-    public static synchronized void initializePreProcessor()
-    {
+    public static synchronized void initializePreProcessor() {
         //@todo review log statement according to log layer
-        if (preProcessorInitialized)
-        {
+        if (preProcessorInitialized) {
             return;
         }
 
         preProcessorInitialized = true;
 
         Class klass = null;
-        String s = System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY,
-                PRE_PROCESSOR_CLASSNAME_DEFAULT);
+        String s = System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT);
 
-        try
-        {
+        try {
             // force loading thru System class loader to allow
             // preprocessor implementation to be in standard classpath
             klass = Class.forName(s, true, ClassLoader.getSystemClassLoader());
@@ -85,32 +77,20 @@ public class ClassPreProcessorHelper
             // special hidden option to allow testing of HotSwap weaving when WeavingCL is used
             // in such a case the CLPP must be in the WeavingCL hierarchy, which is parrallel
             // to the regulare SystemCL
-            if (System.getProperty("aspectwerkz.transform.forceWCL") != null)
-            {
-                klass = Class.forName(s, true,
-                        Thread.currentThread().getContextClassLoader());
+            if (System.getProperty("aspectwerkz.transform.forceWCL") != null) {
+                klass = Class.forName(s, true, Thread.currentThread().getContextClassLoader());
             }
-        }
-        catch (ClassNotFoundException _ex)
-        {
-            System.err.println("AspectWerkz - WARN - Pre-processor class '" + s
-                + "' not found");
+        } catch (ClassNotFoundException _ex) {
+            System.err.println("AspectWerkz - WARN - Pre-processor class '" + s + "' not found");
         }
 
-        if (klass != null)
-        {
-            try
-            {
-                preProcessor = (ClassPreProcessor) klass.newInstance();
+        if (klass != null) {
+            try {
+                preProcessor = (ClassPreProcessor)klass.newInstance();
                 preProcessor.initialize(null);
-                System.out.println("AspectWerkz - INFO - Pre-processor " + s
-                    + " loaded and initialized");
-            }
-            catch (Throwable throwable)
-            {
-                System.err.println(
-                    "AspectWerkz - WARN - Error initializing pre-processor class "
-                    + s + ':');
+                System.out.println("AspectWerkz - INFO - Pre-processor " + s + " loaded and initialized");
+            } catch (Throwable throwable) {
+                System.err.println("AspectWerkz - WARN - Error initializing pre-processor class " + s + ':');
                 throwable.printStackTrace();
             }
         }
@@ -119,16 +99,13 @@ public class ClassPreProcessorHelper
     /**
      * byte code instrumentation of class loaded
      */
-    public static byte[] defineClass0Pre(ClassLoader caller, String name,
-        byte[] b, int off, int len, ProtectionDomain pd)
-    {
-        if (!preProcessorInitialized)
-        {
+    public static byte[] defineClass0Pre(ClassLoader caller, String name, byte[] b, int off, int len,
+                                         ProtectionDomain pd) {
+        if (!preProcessorInitialized) {
             initializePreProcessor();
         }
 
-        if (preProcessor == null)
-        {
+        if (preProcessor == null) {
             // we need to check this due to reentrancy when ClassPreProcessorHelper is beeing initialized
             // since it tries to load a ClassPreProcessor implementation
             byte[] obyte = new byte[len];
@@ -136,11 +113,8 @@ public class ClassPreProcessorHelper
             System.arraycopy(b, off, obyte, 0, len);
 
             return obyte;
-        }
-        else
-        {
-            try
-            {
+        } else {
+            try {
                 byte[] ibyte = new byte[len];
                 byte[] obyte = new byte[] {  };
 
@@ -148,12 +122,9 @@ public class ClassPreProcessorHelper
                 obyte = preProcessor.preProcess(name, ibyte, caller);
 
                 return obyte;
-            }
-            catch (Throwable throwable)
-            {
-                System.err.println(
-                    "AspectWerkz - WARN - Error pre-processing class " + name
-                    + " in " + Thread.currentThread());
+            } catch (Throwable throwable) {
+                System.err.println("AspectWerkz - WARN - Error pre-processing class " + name + " in "
+                                   + Thread.currentThread());
                 throwable.printStackTrace();
 
                 byte[] obyte = new byte[len];
