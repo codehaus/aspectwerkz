@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 
@@ -258,5 +260,31 @@ public class ClassInfoHelper {
             }
         }
         return match;
+    }
+
+    /**
+     * Collects all the interface from the given class including the one from its super class.
+     *
+     * @param classInfo
+     * @return list of interface classInfo declared in given class and its hierarchy in correct order
+     */
+    public static List collectInterfaces(final ClassInfo classInfo) {
+        final List interfaceList = new ArrayList();
+        final Set interfaceNames = new HashSet();
+        for (int i = 0; i < classInfo.getInterfaces().length; i++) {
+            ClassInfo interfaceInfo = classInfo.getInterfaces()[i];
+            interfaceList.add(interfaceInfo);
+            interfaceNames.add(interfaceInfo.getName());
+        }
+        for (ClassInfo superClass = classInfo.getSuperclass(); superClass != null; superClass = superClass.getSuperclass()) {
+            for (int i = 0; i < superClass.getInterfaces().length; i++) {
+                ClassInfo interfaceInfo = superClass.getInterfaces()[i];
+                if (!interfaceNames.contains(interfaceInfo.getName())) {
+                    interfaceList.add(interfaceInfo);
+                    interfaceNames.add(interfaceInfo.getName());
+                }
+            }
+        }
+        return interfaceList;
     }
 }

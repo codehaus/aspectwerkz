@@ -469,22 +469,24 @@ public class DocumentParser {
 
         for (Iterator it1 = systemElement.elementIterator("mixin"); it1.hasNext();) {
             String className = null;
-            String deploymentModelAsString = DeploymentModel.PER_INSTANCE.toString();
+            String deploymentModelAsString = null;
             boolean isTransient = false;
+            boolean isTransientSetInXML = false;
             String factoryClassName = null;
             String expression = null;
-            Element aspect = (Element) it1.next();
-            for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
+            Element mixin = (Element) it1.next();
+            for (Iterator it2 = mixin.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute) it2.next();
                 final String name = attribute.getName().trim();
                 final String value = attribute.getValue().trim();
                 if (name.equalsIgnoreCase("class")) {
                     className = value;
-                } else if (name.equalsIgnoreCase("deployment-model")) {
+                } else if (name.equalsIgnoreCase("deployment-model") && value!=null) {
                     deploymentModelAsString = value;
                 } else if (name.equalsIgnoreCase("transient")) {
                     if (value != null && value.equalsIgnoreCase("true")) {
                         isTransient = true;
+                        isTransientSetInXML = true;
                     }
                 } else if (name.equalsIgnoreCase("factory")) {
                     factoryClassName = value;
@@ -511,7 +513,9 @@ public class DocumentParser {
                 continue;
             }
 
-            final DeploymentModel deploymentModel = DeploymentModel.getDeploymentModelFor(deploymentModelAsString);
+            final DeploymentModel deploymentModel =
+                    (deploymentModelAsString!=null)?DeploymentModel.getDeploymentModelFor(deploymentModelAsString)
+                                                   :DeploymentModel.PER_INSTANCE;
 
             final MixinDefinition mixinDefinition =
                     DefinitionParserHelper.createAndAddMixinDefToSystemDef(
@@ -525,10 +529,16 @@ public class DocumentParser {
             // parse the class bytecode annotations
             MixinAnnotationParser.parse(mixinClassInfo, mixinDefinition);
 
-            // XML definition settings always overrides attribute definition settings
-            mixinDefinition.setDeploymentModel(deploymentModel);
-            mixinDefinition.setFactoryClassName(factoryClassName);
-            mixinDefinition.setTransient(isTransient);
+            // XML definition settings always overrides attribute definition settings if present
+            if (!Strings.isNullOrEmpty(deploymentModelAsString)) {
+                mixinDefinition.setDeploymentModel(DeploymentModel.getDeploymentModelFor(deploymentModelAsString));
+            }
+            if (!Strings.isNullOrEmpty(factoryClassName)) {
+                mixinDefinition.setFactoryClassName(factoryClassName);
+            }
+            if (isTransientSetInXML) {
+                mixinDefinition.setTransient(isTransient);
+            }
         }
     }
 

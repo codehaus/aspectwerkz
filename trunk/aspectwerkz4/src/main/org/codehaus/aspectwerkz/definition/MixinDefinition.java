@@ -93,9 +93,10 @@ public class MixinDefinition {
         if (isSystemMixin(mixinClass)) {
             mixinClass = defineSystemMixin(mixinClass.getClassLoader());
         } else {
-            ClassInfo[] interfaces = mixinClass.getInterfaces();
-            for (int i = 0; i < interfaces.length; i++) {
-                m_interfaceClassNames.add(interfaces[i].getName());
+            List allInterfaces = ClassInfoHelper.collectInterfaces(mixinClass);
+            for (Iterator iterator = allInterfaces.iterator(); iterator.hasNext();) {
+                ClassInfo interfaceInfo = (ClassInfo) iterator.next();
+                m_interfaceClassNames.add(interfaceInfo.getName());
             }
 
             List interfaceDeclaredMethods = ClassInfoHelper.collectMethodsFromInterfacesImplementedBy(mixinClass);
