@@ -38,7 +38,8 @@ import org.codehaus.aspectwerkz.util.Util;
  * Handles deployment, redeployment, management, configuration or redefinition of the aspects.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it should remove a certain advice from the pointcut - notification of the JoinPoinManager.
+ * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it should remove a
+ * certain advice from the pointcut - notification of the JoinPoinManager.
  */
 public final class AspectManager {
 
@@ -200,11 +201,9 @@ public final class AspectManager {
         }
 
         // create the aspect definition
-        AspectDefinition aspectDef = new AspectDefinition(
-                aspectClassName,
-                aspectClassName,
-                DeploymentModel.getDeploymentModelAsString(deploymentModel)
-        );
+        AspectDefinition aspectDef = new AspectDefinition(aspectClassName, aspectClassName);
+
+        aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelAsString(deploymentModel));
 
         // parse the class attributes and create a definition
         m_attributeParser.parse(aspectClass, aspectDef, m_definition);
@@ -481,16 +480,16 @@ public final class AspectManager {
     }
 
     /**
-     * Returns all Expression that match (no matter cflow) at join point related
-     * to given metadata and assumed type, and that contains 1+ cflow construct.
-     *
-     * The Expressions are inflated and evaluated to allow optimization
-     * (pc1 AND cflow => TRUE|FALSE AND cflow) depending on given MetaDataBase
+     * Returns all Expression that match (no matter cflow) at join point related to given metadata and assumed type, and
+     * that contains 1+ cflow construct.
+     * <p/>
+     * The Expressions are inflated and evaluated to allow optimization (pc1 AND cflow => TRUE|FALSE AND cflow)
+     * depending on given MetaDataBase
      *
      * @param classMetaData
      * @param memberMetaData
      * @param callerClassMetaData can be null if not @CALL
-     * @param pointcutType assumed
+     * @param pointcutType        assumed
      * @return
      */
     public List getCFlowExpressions(
@@ -507,8 +506,10 @@ public final class AspectManager {
 
         initialize();
         // Note: cache is done at JP level
-        return m_aspectRegistry.getCflowExpressions(classMetaData, memberMetaData,
-                                                    callerClassMetaData, pointcutType);
+        return m_aspectRegistry.getCflowExpressions(
+                classMetaData, memberMetaData,
+                callerClassMetaData, pointcutType
+        );
     }
 
     /**

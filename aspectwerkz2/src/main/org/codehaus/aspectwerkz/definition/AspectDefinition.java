@@ -39,7 +39,7 @@ public class AspectDefinition {
     /**
      * The deployment model for the aspect.
      */
-    private String m_deploymentModel;
+    private String m_deploymentModel = "perJVM";
 
     /**
      * The around advices.
@@ -81,24 +81,16 @@ public class AspectDefinition {
      *
      * @param name            the name of the aspect
      * @param className       the class name of the aspect
-     * @param deploymentModel the deployment model
      */
-    public AspectDefinition(
-            final String name,
-            final String className,
-            final String deploymentModel) {
+    public AspectDefinition(final String name, final String className) {
         if (name == null) {
             throw new IllegalArgumentException("aspect name can not be null");
         }
         if (className == null) {
             throw new IllegalArgumentException("aspect class name can not be null");
         }
-        if (deploymentModel == null) {
-            throw new IllegalArgumentException("deployment model can not be null");
-        }
         m_name = name;
         m_className = className;
-        m_deploymentModel = deploymentModel;
     }
 
     /**

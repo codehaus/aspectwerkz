@@ -7,7 +7,7 @@
         <prepare package="examples.logging." />
         <package name="examples">
             <aspect class="caching.Fibonacci$FibonacciCacheAspect" deployment-model="perInstance"/>
-            <aspect class="caching.CachingAspect" deployment-model="perInstance">
+            <aspect class="caching.CachingAspect">
                 <param name="timeout" value="10"/>
             </aspect>
 <!--            <aspect class="logging.LoggingAspect">-->
@@ -17,8 +17,8 @@
 
             <aspect class="logging.LoggingAspect"/>
             <aspect class="introduction.IntroductionAspect" deployment-model="perClass"/>
-            <aspect class="cflow.CFlowAspect" deployment-model="perInstance"/>
-            <aspect class="exception.ExceptionHandlingAspect" deployment-model="perInstance"/>
+            <aspect class="cflow.CFlowAspect"/>
+            <aspect class="exception.ExceptionHandlingAspect"/>
         </package>
     </system>
 </aspectwerkz>

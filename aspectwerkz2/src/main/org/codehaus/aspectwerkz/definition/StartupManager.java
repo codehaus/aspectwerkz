@@ -167,7 +167,9 @@ public class StartupManager {
                 aspect = (CrossCutting)aspectClass.newInstance();
             }
             catch (Exception e) {
-                throw new RuntimeException("could not create a new instance of aspect [" + aspectClassName + "]: " + e.toString());
+                throw new RuntimeException(
+                        "could not create a new instance of aspect [" + aspectClassName + "]: " + e.toString()
+                );
             }
 
             int deploymentModel;
@@ -303,9 +305,9 @@ public class StartupManager {
                         if (!SystemLoader.getSystem(uuid).getAspectManager().hasAspect(CFlowSystemAspect.NAME)) {
                             AspectDefinition cflowAspect = new AspectDefinition(
                                     CFlowSystemAspect.NAME,
-                                    CFlowSystemAspect.CLASS_NAME,
-                                    CFlowSystemAspect.DEPLOYMENT_MODEL
+                                    CFlowSystemAspect.CLASS_NAME
                             );
+                            cflowAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
                             cflowAspect.addPointcut(cflowPointcutDef);
 
                             Class cflowAspectClass = CFlowSystemAspect.class;

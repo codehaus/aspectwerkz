@@ -9,6 +9,7 @@ package examples.exception;
 
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -25,13 +26,9 @@ public class ExceptionHandlingAspect {
      * @Before methods
      */
     public Object logEntry(final JoinPoint joinPoint) throws Throwable {
-        throw new UnsupportedOperationException("fix this sample");
-//        ThrowsJoinPoint jp = (ThrowsJoinPoint)joinPoint;
-//        System.out.println("'" +
-//                jp.getExceptionName() + "' with message '" +
-//                jp.getMessage() + "' has ben thrown out of '" +
-//                jp.getTargetClass().getName() + "." +
-//                jp.getMethodName() + "'");
-//        return "fake result from advice";
+        CatchClauseSignature sig = (CatchClauseSignature)joinPoint.getSignature();
+        Exception e = (Exception)sig.getParameterValue();
+        System.out.println("[From advice] exception catched:" + e.toString());
+        return "fake result from advice";
     }
 }
