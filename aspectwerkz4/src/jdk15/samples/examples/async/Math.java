@@ -22,7 +22,7 @@ public class Math {
         );
     }
 
-    @Async
+    //@Async
     public void subtract(int a, int b) {
         System.out.printf(
                 "[ %s ] %d - %d = %d\n",

@@ -48,7 +48,7 @@ public class JoinPointFactory {
     public static Class compileJoinPointAndAttachToClassLoader(final CompilationInfo.Model model,
                                                                final ClassLoader loader) {
         final byte[] bytecode = compileJoinPoint(model);
-        return AsmHelper.loadClass(loader, bytecode, model.getJoinPointClassName());
+        return AsmHelper.defineClass(loader, bytecode, model.getJoinPointClassName());
     }
 
     /**

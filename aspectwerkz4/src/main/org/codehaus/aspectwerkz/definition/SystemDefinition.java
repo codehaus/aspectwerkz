@@ -240,22 +240,38 @@ public class SystemDefinition {
                 return;
             }
 
-            // hook for the registration of cflow aspects
+            // register the "cflow" aspects for this aspect bindings
             // note: this one will even support cflow(xx && cflow())
-            // note: the cflow aspect MUST be registered first for precedence purpose
+            // note: the cflow aspect MUST be registered FIRST for precedence purpose
             // so that pcX && cflow(pcX) match on pcX
             for (Iterator iterator = aspectDef.getAdviceDefinitions().iterator(); iterator.hasNext();) {
                 AdviceDefinition adviceDefinition = (AdviceDefinition) iterator.next();
                 List cflowBindings = CflowBinding.getCflowBindingsForCflowOf(adviceDefinition.getExpressionInfo());
                 for (Iterator cflows = cflowBindings.iterator(); cflows.hasNext();) {
                     CflowBinding cflowBinding = (CflowBinding) cflows.next();
-                    addAspect(cflowBinding.getAspectDefinition(this, aspectDef.getClassInfo().getClassLoader()));
+                    if (!cflowBinding.isCflowBelow()) {
+                        addAspect(cflowBinding.getAspectDefinition(this, aspectDef.getClassInfo().getClassLoader()));
+                    }
                 }
             }
 
+            // register the aspect itself
             m_aspectMap.put(aspectDef.getName(), aspectDef);
 
-
+            // register the "cflowbelow" aspects for this aspect bindings
+            // note: this one will even support cflowbelow(xx && cflowbelow())
+            // note: the cflowbelow aspect MUST be registered LAST for precedence purpose
+            // so that pcX && cflowbelow(pcX) does not match on just the pcX joinpoint
+            for (Iterator iterator = aspectDef.getAdviceDefinitions().iterator(); iterator.hasNext();) {
+                AdviceDefinition adviceDefinition = (AdviceDefinition) iterator.next();
+                List cflowBindings = CflowBinding.getCflowBindingsForCflowOf(adviceDefinition.getExpressionInfo());
+                for (Iterator cflows = cflowBindings.iterator(); cflows.hasNext();) {
+                    CflowBinding cflowBinding = (CflowBinding) cflows.next();
+                    if (cflowBinding.isCflowBelow()) {
+                        addAspect(cflowBinding.getAspectDefinition(this, aspectDef.getClassInfo().getClassLoader()));
+                    }
+                }
+            }
         }
     }
 

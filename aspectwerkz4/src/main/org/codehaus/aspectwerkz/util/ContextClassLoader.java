@@ -25,7 +25,7 @@ public final class ContextClassLoader {
      * @return
      * @throws ClassNotFoundException
      */
-    public static Class loadClass(final ClassLoader loader, final String name) throws ClassNotFoundException {
+    public static Class forName(final ClassLoader loader, final String name) throws ClassNotFoundException {
         Class klass = null;
         if (loader != null) {
             klass = Class.forName(name, false, loader);
@@ -43,10 +43,10 @@ public final class ContextClassLoader {
      * @return a <code>Class</code> object.
      * @throws ClassNotFoundException if the class was not found.
      */
-    public static Class loadClass(final String name) throws ClassNotFoundException {
+    public static Class forName(final String name) throws ClassNotFoundException {
         Class cls = null;
         try {
-            cls = Thread.currentThread().getContextClassLoader().loadClass(name);
+            cls = Class.forName(name, false, Thread.currentThread().getContextClassLoader());
         } catch (Exception e) {
             cls = Class.forName(name);
         }

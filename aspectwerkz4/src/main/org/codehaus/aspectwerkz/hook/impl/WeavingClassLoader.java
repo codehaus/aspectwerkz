@@ -73,7 +73,7 @@ public class WeavingClassLoader extends URLClassLoader {
         if (args1.length > 0) {
             System.arraycopy(args, 1, args1, 0, args.length - 1);
         }
-        Class class1 = cl.loadClass(s);
+        Class class1 = Class.forName(s, false, cl);
         Method method = class1.getMethod(
                 "main", new Class[]{
                     String[].class

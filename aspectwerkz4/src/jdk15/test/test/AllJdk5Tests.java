@@ -25,11 +25,14 @@ public class AllJdk5Tests extends TestCase {
 
         suite.addTestSuite(DefaultValueTest.class);
         suite.addTestSuite(HotDeployedTest.class);
+        suite.addTestSuite(CflowBelowTest.class);
 
         // bug fix tests
         suite.addTestSuite(FieldGetOutOfWeaver.class);
         suite.addTestSuite(InterfaceDefinedMethodTestCase.class);
-        suite.addTestSuite(CtorExecution.class);        
+        suite.addTestSuite(CtorExecution.class);
+        suite.addTestSuite(MixinTest.class);
+
         return suite;
     }
 

@@ -190,7 +190,13 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
         if (context.getWithinReflectionInfo() instanceof MemberInfo) {
             return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
         } else if (context.getWithinReflectionInfo() instanceof ClassInfo) {
-            return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
+            Boolean matchDeclaringType = (Boolean) node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
+            if (Boolean.FALSE.equals(matchDeclaringType)) {
+                return Boolean.FALSE;
+            } else {
+                // may be we match now but not later?
+                return null;
+            }
         } else {
             return null;
         }

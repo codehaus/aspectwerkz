@@ -8,6 +8,7 @@
 package examples.async;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.annotation.*;
 
 import java.util.concurrent.Executor;
@@ -17,20 +18,20 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
-@org.codehaus.aspectwerkz.annotation.Aspect
-        public class AsyncAspect {
+public class AsyncAspect {
 
     private Executor m_threadPool = Executors.newCachedThreadPool();
 
     @Around
-            @Execution(Async.class)
-            @Within(Service.class)
-            public Object async(final JoinPoint jp) throws Throwable {
+    @Execution(Async.class)
+    @Within(Service.class)
+    public Object async(final JoinPoint jp) throws Throwable {
         m_threadPool.execute(
                 new Runnable() {
                     public void run() {
                         try {
                             // proceed in a new thread
+                            //System.out.println("forked - timeout = " + ((MethodSignature)jp.getSignature()).getMethod().getAnnotation(Async.class).timeout());
                             jp.proceed();
                         } catch (Throwable e) {
                             throw new RuntimeException(e);
@@ -41,15 +42,14 @@ import java.lang.annotation.ElementType;
         return null;
     }
 
-
     @Retention(RetentionPolicy.RUNTIME)
-            @Target(ElementType.METHOD)
-            public static @interface Async {
+    @Target(ElementType.METHOD)
+    public static @interface Async {
         int timeout() default 0;
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-            @Target(ElementType.TYPE)
-            public static @interface Service {
+    @Target(ElementType.TYPE)
+    public static @interface Service {
     }
 }

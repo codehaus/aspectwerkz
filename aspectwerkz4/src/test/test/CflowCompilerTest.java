@@ -33,7 +33,6 @@ public class CflowCompilerTest extends TestCase {
             assertEquals(cflowAspect.getName().replace('/', '.'), "org.codehaus.aspectwerkz.cflow.Cflow_4");
             assertTrue(cflowAspect.getSuperclass().equals(AbstractCflowSystemAspect.class));
             Method enter = cflowAspect.getDeclaredMethod("isInCflow", new Class[0]);
-            Method exit = cflowAspect.getDeclaredMethod("isInCflowBelow", new Class[0]);
         } catch (Throwable t) {
             fail(t.toString());
         }
@@ -49,24 +48,17 @@ public class CflowCompilerTest extends TestCase {
         Method staticMethod = cflowAspect.getDeclaredMethod("isInCflow", new Class[0]);
         Boolean b = (Boolean) staticMethod.invoke(null, new Object[0]);
         assertFalse(b.booleanValue());
-        staticMethod = cflowAspect.getDeclaredMethod("isInCflowBelow", new Class[0]);
-        b = (Boolean) staticMethod.invoke(null, new Object[0]);
-        assertFalse(b.booleanValue());
-
 
         final AbstractCflowSystemAspect cflow = (AbstractCflowSystemAspect)cflowAspect.newInstance();
 
         assertFalse(cflow.inCflow());
-        assertFalse(cflow.inCflowBelow());
         Thread t = new Thread() {
             public void run() {
                 System.out.println(Thread.currentThread());
                 cflow.enter();
                 assertTrue(cflow.inCflow());
-                assertTrue( ! cflow.inCflowBelow());
                 cflow.enter();
                 assertTrue(cflow.inCflow());
-                assertFalse( ! cflow.inCflowBelow());
                 cflow.exit();
                 // leave the cflow in "inCflow" state is in this thread
             }
@@ -75,7 +67,6 @@ public class CflowCompilerTest extends TestCase {
         System.out.println(Thread.currentThread());
 
         assertFalse(cflow.inCflow());
-        assertFalse(cflow.inCflowBelow());
     }
 
 

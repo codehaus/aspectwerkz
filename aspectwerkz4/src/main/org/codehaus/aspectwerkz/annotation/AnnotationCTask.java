@@ -229,6 +229,7 @@ public class AnnotationCTask extends Task {
                     (String[]) classpathDirs.toArray(new String[]{}),
                     m_destdir == null ? null : m_destdir.getAbsolutePath(),
                     (String[]) allProperties.toArray(new String[]{})
+                    //,getClass().getClassLoader()
             );
 
             if (m_destdir != null) {

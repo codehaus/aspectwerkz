@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
+import java.lang.reflect.Proxy;
 
 /**
  * Fixes the ObjectInputStream class, which does not always resolve the class correctly in complex
@@ -46,28 +47,28 @@ public class UnbrokenObjectInputStream extends ObjectInputStream {
      */
     protected Class resolveClass(final ObjectStreamClass desc) throws IOException, ClassNotFoundException {
         try {
-            Class resolved = Thread.currentThread().getContextClassLoader().loadClass(desc.getName());
+            Class resolved = Class.forName(desc.getName(), false, Thread.currentThread().getContextClassLoader());
             return resolved;
         } catch (ClassNotFoundException ex) {
             return super.resolveClass(desc);
         }
     }
 
-//    /**
-//     * Overrides the parents resolveClass method and resolves the class using the context class loader
-//     * instead of Class.forName().
-//     */
-//    protected Class resolveProxyClass(String[] interfaces) throws IOException, ClassNotFoundException {
-//    try {
-//    	Class[] classObjs = new Class[interfaces.length];
-//    	for (int i = 0; i < interfaces.length; i++) {
-//            Class cl = Thread.currentThread().getContextClassLoader().loadClass(interfaces[i]);
-//            classObjs[i] = cl;
-//        }
-//	    return Proxy.getProxyClass(Thread.currentThread().getContextClassLoader(), classObjs);
-//	} catch (Exception e) {
-//	    return super.resolveProxyClass(interfaces);
-//	}
-//    }
+    /**
+     * Overrides the parents resolveClass method and resolves the class using the context class loader
+     * instead of Class.forName().
+     */
+    protected Class resolveProxyClass(String[] interfaces) throws IOException, ClassNotFoundException {
+        try {
+            Class[] classObjs = new Class[interfaces.length];
+            for (int i = 0; i < interfaces.length; i++) {
+                classObjs[i] = Class.forName(interfaces[i], false, Thread.currentThread().getContextClassLoader());
+            }
+            return Proxy.getProxyClass(Thread.currentThread().getContextClassLoader(), classObjs);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return super.resolveProxyClass(interfaces);
+        }
+    }
 
 }
