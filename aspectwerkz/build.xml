@@ -41,7 +41,7 @@
         <!--        <property name="build.compiler" value="jikes"/>-->
         <property name="javac.debug" value="on"/>
         <property name="javac.deprecation" value="on"/>
-        <property name="javac.optimize" value="on"/>
+        <property name="javac.optimize" value="off"/>
         <property name="javac.depend" value="off"/>
         <property name="javac.verbose" value="off"/>
         <mkdir dir="${dist.dir}"/>
@@ -158,7 +158,7 @@
     <target name="aspectwerkz:transform"
         depends="aspectwerkz:init">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-offline ${basedir}/src/samples/samples.xml -cp ${extensions.classes} ${samples.classes} "/>
+            <arg line="-offline ${basedir}/src/samples/samples.xml -verbose -verify -cp ${extensions.classes} ${samples.classes} "/>
         </exec>
     </target>
 
@@ -253,7 +253,10 @@
         <java classname="org.codehaus.aspectwerkz.hook.Plug" fork="true">
             <classpath>
                 <pathelement path="${main.classes}"/>
-                <pathelement path="${java.home}/../lib/tools.jar"/>
+                <!--<pathelement path="${java.home}/../lib/tools.jar"/>-->
+                <fileset dir="${lib.dir}">
+                    <include name="*.jar"/>
+                </fileset>
             </classpath>
             <arg line="${input.args}"/>
         </java>
