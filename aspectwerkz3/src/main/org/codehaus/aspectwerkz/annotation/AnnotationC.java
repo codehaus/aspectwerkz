@@ -209,6 +209,9 @@ public class AnnotationC {
             Annotation annotation = annotations[i];
             if (annotation != null) {
                 AspectAnnotationProxy aspectProxy = (AspectAnnotationProxy) annotation;
+                if (aspectProxy.aspectName()==null) {
+                    aspectProxy.setAspectName(clazz.getFullyQualifiedName());
+                }
                 enhancer.insertClassAttribute(new AnnotationInfo(ANNOTATION_ASPECT, aspectProxy));
                 logInfo("aspect [" + clazz.getFullyQualifiedName() + ']');
                 logInfo("    deployment model [" + aspectProxy.deploymentModel() + ']');

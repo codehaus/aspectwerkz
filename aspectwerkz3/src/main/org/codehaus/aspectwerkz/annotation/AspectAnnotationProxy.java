@@ -11,14 +11,29 @@ import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * The aspect annotation proxy.
+ * <br/>
+ * Note: this untyped annotation is like @Aspect perXXX name=foo [name is optional etc]
+ * ie perXX is sort of anonymous and name as well, but without defaullt, hence the setter.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AspectAnnotationProxy extends UntypedAnnotationProxy {
     private String m_deploymentModel = "perJVM";
 
+    private String m_aspectName = null;
+
     public String deploymentModel() {
         return m_deploymentModel;
+    }
+
+    public String aspectName() {
+        return m_aspectName;
+    }
+
+    public void setAspectName(String aspectName) {
+        m_aspectName = aspectName;
+        // update m_value for proper serialization
+        m_value = "name="+aspectName+" "+m_deploymentModel;
     }
 
     public void setValue(final String value) {
@@ -31,7 +46,7 @@ public class AspectAnnotationProxy extends UntypedAnnotationProxy {
                 String name = part.substring(0, equals);
                 String param = part.substring(equals + 1, part.length());
                 if (name.equalsIgnoreCase("name")) {
-                    m_name = param;
+                    m_aspectName = param;
                 }
             } else {
                 deploymentModel.append(' ');

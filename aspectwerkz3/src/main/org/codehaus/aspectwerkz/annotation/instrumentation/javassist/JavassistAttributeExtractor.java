@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.lang.reflect.Method;
 
 import javassist.CtClass;
 import javassist.CtConstructor;
@@ -76,6 +77,10 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
         return attributes.toArray(new Object[attributes.size()]);
     }
 
+    public Object[] getMethodAttributes(final Method method) {
+        throw new RuntimeException("NA");
+        //return getMethodAttributes(method.getName(), null);
+    }
     /**
      * Return all the attributes associated with a method that have a particular method signature.
      * 

@@ -56,12 +56,6 @@ public final class AspectManager {
     private final AspectRegistry m_aspectRegistry;
 
     /**
-     * The annotation parser to parse the definitions for the hot deployed aspects.
-     */
-    //    private AspectAttributeParser m_annotationParser = new AspectAttributeParser();
-    private AspectAnnotationParser m_annotationParser = new AspectAnnotationParser();
-
-    /**
      * Cache for the pointcuts.
      * 
      * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
@@ -153,7 +147,7 @@ public final class AspectManager {
         aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelAsString(deploymentModel));
 
         // parse the class attributes and create a definition
-        m_annotationParser.parse(aspectClass, aspectDef, m_definition);
+        AspectAnnotationParser.parse(aspectClass, aspectDef, m_definition);
         m_definition.addAspect(aspectDef);
         CrossCuttingInfo crossCuttingInfo = new CrossCuttingInfo(
             null,

@@ -109,18 +109,18 @@ public abstract class AsmMemberInfo implements MemberInfo {
         return m_declaringType;
     }
 
-    /**
-     * Returns the annotations.
-     *
-     * @return the annotations
-     */
-    public List getAnnotations() {
-        if (m_annotations == null) {
-            m_annotations = new ArrayList();
-            addAnnotations(m_member.attrs);
-        }
-        return m_annotations;
-    }
+//    /**
+//     * Returns the annotations.
+//     *
+//     * @return the annotations
+//     */
+//    public List getAnnotations() {
+//        if (m_annotations == null) {
+//            m_annotations = new ArrayList();
+//            addAnnotations(m_member.attrs);
+//        }
+//        return m_annotations;
+//    }
 
     /**
      * Retrieves and adds the annotations.

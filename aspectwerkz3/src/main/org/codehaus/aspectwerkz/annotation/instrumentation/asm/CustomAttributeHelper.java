@@ -19,18 +19,37 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import java.io.ByteArrayInputStream;
 
 /**
+ * Helper class to wrap a custom annotation proxy (1.3/1.4 javadoc annotation) in a RuntimeInvisibleAnnotations.
+ * <br/>
+ * The proxy is wrapped in a AnnotationInfo object which is serialized
+ * and base64 encoded (ASM issue on array types in RIV).
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class CustomAttributeHelper {
 
+    /**
+     * Annotation parameter - as if it was a single value Tiger annotation
+     */
     private final static String VALUE = "value";
 
+    /**
+     * Extract the AnnotationInfo from the bytecode Annotation representation.
+     *
+     * @param annotation must be a valid RIV, of type CustomAttribute.TYPE
+     * @return
+     */
     public static AnnotationInfo extractCustomAnnotation(final Annotation annotation) {
         AnnotationElementValue annotationElementValue = (AnnotationElementValue) ((Object[])annotation.elementValues.get(0))[1];
         byte[] bytes = Base64.decode((String)annotationElementValue.getValue());
         return extractCustomAnnotation(bytes);
     }
 
+    /**
+     * Extract the AnnotationInfo from the base64 encoded serialized version.
+     * @param bytes
+     * @return
+     */
     public static AnnotationInfo extractCustomAnnotation(final byte[] bytes) {
         try {
             Object userAnnotation = new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
@@ -45,6 +64,11 @@ public class CustomAttributeHelper {
         }
     }
 
+    /**
+     * Create an Annotation bytecode representation from the serialized version of the custom annotation proxy
+     * @param bytes
+     * @return
+     */
     public static Annotation createCustomAnnotation(final byte[] bytes) {
         Annotation annotation = new Annotation();
         annotation.type = CustomAttribute.TYPE;
@@ -52,6 +76,14 @@ public class CustomAttributeHelper {
         return annotation;
     }
 
+    /**
+     * Helper method to find the first RuntimeInvisibleAnnotations attribute in an Attribute chain.
+     * <br/>If no such RIV exists, a new one is created (empty) and added last in the chain.
+     * <br/>If the chain is null, a new sole RIV (empty) is created
+     *
+     * @param attribute
+     * @return the RuntimeInvisibleAnnotations to add Annotation to
+     */
     public static RuntimeInvisibleAnnotations linkRuntimeInvisibleAnnotations(final Attribute attribute) {
         RuntimeInvisibleAnnotations runtimeInvisibleAnnotations = null;
         Attribute lastAttribute = attribute;

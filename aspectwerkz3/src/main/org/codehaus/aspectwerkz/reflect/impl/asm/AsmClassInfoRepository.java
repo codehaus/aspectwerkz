@@ -52,13 +52,15 @@ public class AsmClassInfoRepository {
     private AsmClassInfoRepository(final ClassLoader loader) {
         m_loaderRef = new WeakReference(loader);
         m_annotationProperties = new Properties();
-        try {
-            InputStream stream = loader.getResourceAsStream("annotation.properties");
-            if (stream != null) {
-                m_annotationProperties.load(stream);
+        if (loader != null) {
+            try {
+                InputStream stream = loader.getResourceAsStream("annotation.properties");
+                if (stream != null) {
+                    m_annotationProperties.load(stream);
+                }
+            } catch (IOException e) {
+                throw new DefinitionException("could not find resource [annotation.properties] on classpath");
             }
-        } catch (IOException e) {
-            throw new DefinitionException("could not find resource [annotation.properties] on classpath");
         }
     }
 
