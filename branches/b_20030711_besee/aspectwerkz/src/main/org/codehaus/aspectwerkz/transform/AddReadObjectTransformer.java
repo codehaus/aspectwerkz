@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * to all target objects.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddReadObjectTransformer.java,v 1.9.2.2 2003-07-17 21:00:01 avasseur Exp $
+ * @version $Id: AddReadObjectTransformer.java,v 1.9.2.3 2003-07-20 10:38:37 avasseur Exp $
  */
 public class AddReadObjectTransformer extends AspectWerkzAbstractInterfaceTransformer {
     ///CLOVER:ON

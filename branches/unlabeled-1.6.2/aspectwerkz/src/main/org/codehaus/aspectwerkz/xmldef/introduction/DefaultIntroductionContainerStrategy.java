@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Implements the default introduction container strategy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefaultIntroductionContainerStrategy.java,v 1.6 2003-07-09 11:31:42 jboner Exp $
+ * @version $Id: DefaultIntroductionContainerStrategy.java,v 1.6.2.1 2003-07-20 10:38:36 avasseur Exp $
  */
 public class DefaultIntroductionContainerStrategy implements IntroductionContainer {
 
@@ -130,7 +130,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             result = m_methods[methodIndex].invoke(m_perJvm, parameters);
         }
         catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getCause());
+            throw new WrappedRuntimeException(e.getTargetException());
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -160,7 +160,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             result = m_methods[methodIndex].invoke(m_perClass.get(callingClass), parameters);
         }
         catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getCause());
+            throw new WrappedRuntimeException(e.getTargetException());
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -189,7 +189,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             result = m_methods[methodIndex].invoke(m_perInstance.get(callingObject), parameters);
         }
         catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getCause());
+            throw new WrappedRuntimeException(e.getTargetException());
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -217,7 +217,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             result = m_methods[methodIndex].invoke(m_perThread.get(currentThread), parameters);
         }
         catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getCause());
+            throw new WrappedRuntimeException(e.getTargetException());
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);

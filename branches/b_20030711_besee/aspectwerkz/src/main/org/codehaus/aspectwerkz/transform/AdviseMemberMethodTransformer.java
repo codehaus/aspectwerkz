@@ -49,12 +49,13 @@ import org.apache.bcel.classfile.Method;
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.15.2.2 2003-07-17 21:00:01 avasseur Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.15.2.3 2003-07-20 10:38:37 avasseur Exp $
  */
 public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
@@ -95,6 +96,8 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                 continue;
             }
 
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+
             final InstructionFactory factory = new InstructionFactory(cg);
             final ConstantPoolGen cpg = cg.getConstantPool();
             final Method[] methods = cg.getMethods();
@@ -110,7 +113,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             // build and sort the method lookup list
             final List methodLookupList = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
-                if (methodFilter(cg, methods[i]) == null) {
+                if (methodFilter(classMetaData, methods[i]) == null) {
                     continue;
                 }
                 methodLookupList.add(methods[i]);
@@ -121,7 +124,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             final List proxyMethods = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
 
-                String uuid = methodFilter(cg, methods[i]);
+                String uuid = methodFilter(classMetaData, methods[i]);
                 if (methods[i].isStatic() || uuid == null) {
                     continue;
                 }
@@ -150,22 +153,24 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                 addJoinPointField(cpg, cg, mg, methodSequence, isThreadSafe);
 
                 // get the join point controller
-                final String controllerClassName = m_weaveModel.getJoinPointController(
-                        cg.getClassName(), BcelMetaDataMaker.createMethodMetaData(methods[i]));
+                MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
+
+                final String controllerClassName =
+                        m_weaveModel.getJoinPointController(classMetaData, methodMetaData);
 
                 // advise all the constructors
                 for (Iterator it = initIndexes.iterator(); it.hasNext();) {
                     final int initIndex = ((Integer)it.next()).intValue();
 
                     methods[initIndex] = createJoinPointField(
-                                    cpg, cg,
-                                    methods[initIndex],
-                                    methods[i],
-                                    factory,
-                                    methodLookupId,
-                                    methodSequence,
-                                    isThreadSafe,
-                                    uuid).getMethod();
+                            cpg, cg,
+                            methods[initIndex],
+                            methods[i],
+                            factory,
+                            methodLookupId,
+                            methodSequence,
+                            isThreadSafe,
+                            uuid).getMethod();
                 }
 
                 proxyMethods.add(createProxyMethod(
@@ -816,11 +821,11 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
     /**
      * Filters the methods to be transformed.
      *
-     * @param cg the ClassGen
+     * @param classMetaData the class meta-data
      * @param method the method to filter
      * @return the UUID for the weave model
      */
-    private String methodFilter(final ClassGen cg, final Method method) {
+    private String methodFilter(final ClassMetaData classMetaData, final Method method) {
         String uuid = null;
         if (method.getName().equals("<init>") || method.getName().equals("<clinit>") ||
                 method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
@@ -831,10 +836,10 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
         }
         else {
             MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(method);
-            if (m_weaveModel.hasMethodPointcut(cg.getClassName(), methodMetaData)) {
+            if (m_weaveModel.hasMethodPointcut(classMetaData, methodMetaData)) {
                 uuid = m_weaveModel.getUuid();
             }
-            if (m_weaveModel.hasThrowsPointcut(cg.getClassName(), methodMetaData)) {
+            if (m_weaveModel.hasThrowsPointcut(classMetaData, methodMetaData)) {
                 uuid = m_weaveModel.getUuid();
             }
         }

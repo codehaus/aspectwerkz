@@ -46,7 +46,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * Adds meta-data storage for the target classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddMetaDataTransformer.java,v 1.11.2.2 2003-07-17 21:00:01 avasseur Exp $
+ * @version $Id: AddMetaDataTransformer.java,v 1.11.2.3 2003-07-20 10:38:37 avasseur Exp $
  */
 public final class AddMetaDataTransformer
         extends AspectWerkzAbstractInterfaceTransformer implements AspectWerkzCodeTransformerComponent {
@@ -112,9 +112,7 @@ public final class AddMetaDataTransformer
             m_hasBeenTransformed.add(cg.getClassName());
 
             addMetaDataEnhancableInterface(cg, cpg, es);
-
             addMapField(cg, es);
-
             addMetaDataGetterMethod(cg, cpg, factory, es);
             addMetaDataSetterMethod(cg, cpg, factory, es);
         }

@@ -18,8 +18,11 @@
  */
 package org.codehaus.aspectwerkz.regexp;
 
+import java.io.ObjectInputStream;
+
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * Implements the regular expression pattern matcher for fields in AspectWerkz.
@@ -36,19 +39,19 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * </pre>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldPattern.java,v 1.4 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: FieldPattern.java,v 1.4.2.1 2003-07-20 10:38:37 avasseur Exp $
  */
 public class FieldPattern extends Pattern {
 
     /**
      * The field name pattern.
      */
-    protected java.util.regex.Pattern m_fieldNamePattern;
+    protected transient com.karneim.util.collection.regex.Pattern m_fieldNamePattern;
 
     /**
      * The field type pattern.
      */
-    protected java.util.regex.Pattern m_fieldTypePattern;
+    protected transient com.karneim.util.collection.regex.Pattern m_fieldTypePattern;
 
     /**
      * The full pattern as a string.
@@ -80,7 +83,7 @@ public class FieldPattern extends Pattern {
     public boolean matchFieldName(final String fieldName) {
         if (fieldName == null) throw new IllegalArgumentException("field name can not be null");
         if (fieldName.equals("")) return false;
-        return m_fieldNamePattern.matcher(fieldName).matches();
+        return m_fieldNamePattern.contains(fieldName);
     }
 
     /**
@@ -92,7 +95,7 @@ public class FieldPattern extends Pattern {
     public boolean matchFieldType(final String fieldType) {
         if (fieldType == null) throw new IllegalArgumentException("field type can not be null");
         if (fieldType.equals("")) return false;
-        return m_fieldTypePattern.matcher(fieldType).matches();
+        return m_fieldTypePattern.contains(fieldType);
     }
 
     /**
@@ -110,7 +113,6 @@ public class FieldPattern extends Pattern {
      * @param pattern the field pattern
      */
     protected void parse(final String pattern) {
-        m_pattern = pattern;
         try {
             parseFieldTypePattern(pattern);
             parseFieldNamePattern(pattern);
@@ -129,12 +131,12 @@ public class FieldPattern extends Pattern {
         final int startIndexFieldName = pattern.indexOf(' ') + 1;
         String fieldName = pattern.substring(startIndexFieldName, pattern.length());
         if (fieldName.equals(SINGLE_WILDCARD)) {
-            fieldName = "\\b.*\\b";
+            fieldName = ".*"; // TODO: should use a 'word boundry pattern' (like \b.*\b)
         }
         else {
-            fieldName = fieldName.replaceAll("\\*", "\\.*");
+            fieldName = Strings.replaceSubString(fieldName, "*", ".*");
         }
-        m_fieldNamePattern = java.util.regex.Pattern.compile(fieldName);
+        m_fieldNamePattern = new com.karneim.util.collection.regex.Pattern(fieldName);
     }
 
     /**
@@ -149,13 +151,13 @@ public class FieldPattern extends Pattern {
             fieldType = (String)m_abbreviations.get(fieldType);
         }
         if (fieldType.equals(SINGLE_WILDCARD)) {
-            fieldType = "\\b.*\\b";
+            fieldType = ".*"; // TODO: should use a 'word boundry pattern' (like \b.*\b)
         }
         else {
-            fieldType = fieldType.replaceAll("\\.", "\\\\.");
-            fieldType = fieldType.replaceAll("\\*", "\\.*");
+            fieldType = Strings.replaceSubString(fieldType, ".", "\\.");
+            fieldType = Strings.replaceSubString(fieldType, "*", ".*");
         }
-        m_fieldTypePattern = java.util.regex.Pattern.compile(fieldType);
+        m_fieldTypePattern = new com.karneim.util.collection.regex.Pattern(fieldType);
     }
 
     /**
@@ -164,7 +166,20 @@ public class FieldPattern extends Pattern {
      * @param pattern the pattern
      */
     FieldPattern(final String pattern) {
-        parse(pattern);
+        m_pattern = pattern;
+        parse(m_pattern);
+    }
+
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws java.lang.Exception in case of failure
+     */
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
+        m_pattern = (String)fields.get("m_pattern", null);
+        parse(m_pattern);
     }
 
     public int hashCode() {

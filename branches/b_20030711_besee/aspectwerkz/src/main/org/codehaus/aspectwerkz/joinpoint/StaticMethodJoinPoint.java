@@ -31,12 +31,13 @@ import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
  * added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticMethodJoinPoint.java,v 1.10.2.1 2003-07-17 21:00:01 avasseur Exp $
+ * @version $Id: StaticMethodJoinPoint.java,v 1.10.2.2 2003-07-20 10:38:36 avasseur Exp $
  */
 public class StaticMethodJoinPoint extends MethodJoinPoint {
 
     /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = 1361833094714874172L;
 
@@ -52,7 +53,6 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
                                  final Class targetClass,
                                  final int methodId,
                                  final String controllerClass) {
-
         super(uuid, methodId, controllerClass);
 
         if (targetClass == null) throw new IllegalArgumentException("target class can not be null");
@@ -64,7 +64,7 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
         createMetaData();
 
         // get all the pointcuts for this class
-        List pointcuts = m_system.getMethodPointcuts(getTargetClass().getName(), m_metadata);
+        List pointcuts = m_system.getMethodPointcuts(m_classMetaData, m_methodMetaData);
 
         // put the pointcuts in the pointcut array
         m_pointcuts = new MethodPointcut[pointcuts.size()];
@@ -81,7 +81,7 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
         }
 
         // get the cflow pointcuts that affects this join point
-        m_cflowPointcuts = m_system.getCFlowPointcuts(m_targetClass.getName(), m_metadata);
+        m_cflowPointcuts = m_system.getCFlowPointcuts(m_targetClass.getName(), m_methodMetaData);
     }
 
     /**
@@ -106,7 +106,8 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
         clone.m_pointcuts = m_pointcuts;
         clone.m_parameters = m_parameters;
         clone.m_result = m_result;
-        clone.m_metadata = m_metadata;
+        clone.m_classMetaData = m_classMetaData;
+        clone.m_methodMetaData = m_methodMetaData;
         clone.m_controller = m_controller.deepCopy();
         return clone;
     }
@@ -126,7 +127,8 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
                 areEqualsOrBothNull(obj.m_targetClass, this.m_targetClass) &&
                 areEqualsOrBothNull(obj.m_pointcuts, this.m_pointcuts) &&
                 areEqualsOrBothNull(obj.m_result, this.m_result) &&
-                areEqualsOrBothNull(obj.m_metadata, this.m_metadata) &&
+                areEqualsOrBothNull(obj.m_classMetaData, this.m_classMetaData) &&
+                areEqualsOrBothNull(obj.m_methodMetaData, this.m_methodMetaData) &&
                 (obj.m_methodId == this.m_methodId) &&
                 areEqualsOrBothNull(obj.m_controller, this.m_controller);
     }

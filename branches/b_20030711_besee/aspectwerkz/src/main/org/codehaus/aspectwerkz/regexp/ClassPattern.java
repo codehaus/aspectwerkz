@@ -18,7 +18,10 @@
  */
 package org.codehaus.aspectwerkz.regexp;
 
+import java.io.ObjectInputStream;
+
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * Implements the regular expression pattern matcher for classes in AspectWerkz.
@@ -32,14 +35,14 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * </pre>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ClassPattern.java,v 1.4 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: ClassPattern.java,v 1.4.2.1 2003-07-20 10:38:37 avasseur Exp $
  */
 public class ClassPattern extends Pattern {
 
     /**
      * The fully qualified class name.
      */
-    protected java.util.regex.Pattern m_classNamePattern;
+    protected transient com.karneim.util.collection.regex.Pattern m_classNamePattern;
 
     /**
      * The pattern as a string.
@@ -55,7 +58,7 @@ public class ClassPattern extends Pattern {
     public boolean matches(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         if (className.equals("")) return false;
-        return m_classNamePattern.matcher(className).matches();
+        return m_classNamePattern.contains(className);
     }
 
     /**
@@ -73,20 +76,18 @@ public class ClassPattern extends Pattern {
      * @param pattern the method pattern
      */
     protected void parse(final String pattern) {
-        m_pattern = pattern;
         String className = pattern;
 
         try {
-            if (className.equals(SINGLE_WILDCARD) ||
-                    className.equals(MULTIPLE_WILDCARD)) {
-                className = "\\b.*\\b";
+            if (className.equals(SINGLE_WILDCARD) || className.equals(MULTIPLE_WILDCARD)) {
+                className = ".*"; // TODO: should use a 'word boundry pattern' (like \b.*\b)
             }
             else {
-                className = className.replaceAll("\\.\\.", "\\.*");
-                className = className.replaceAll("\\.", "\\\\.");
-                className = className.replaceAll("\\*", "\\.*");
+                className = Strings.replaceSubString(className, "..", ".*");
+                className = Strings.replaceSubString(className, ".", "\\.");
+                className = Strings.replaceSubString(className, "*", ".*");
             }
-            m_classNamePattern = java.util.regex.Pattern.compile(className);
+            m_classNamePattern = new com.karneim.util.collection.regex.Pattern(className);
         }
         catch (Exception e) {
             throw new DefinitionException("class pattern is not well formed: " + pattern);
@@ -99,7 +100,20 @@ public class ClassPattern extends Pattern {
      * @param pattern the pattern
      */
     ClassPattern(final String pattern) {
-        parse(pattern);
+        m_pattern = pattern;
+        parse(m_pattern);
+    }
+
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws java.lang.Exception in case of failure
+     */
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
+        m_pattern = (String)fields.get("m_pattern", null);
+        parse(m_pattern);
     }
 
     public int hashCode() {

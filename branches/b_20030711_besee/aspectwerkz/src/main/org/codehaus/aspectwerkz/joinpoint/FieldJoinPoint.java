@@ -25,6 +25,7 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Type;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
  * Matches well defined point of execution in the program where a field is set
@@ -33,7 +34,7 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
  * invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldJoinPoint.java,v 1.9 2003-07-09 11:55:27 jboner Exp $
+ * @version $Id: FieldJoinPoint.java,v 1.9.2.1 2003-07-20 10:38:36 avasseur Exp $
  */
 public abstract class FieldJoinPoint implements JoinPoint {
 
@@ -44,6 +45,7 @@ public abstract class FieldJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = -8388074970260062323L;
 
@@ -83,9 +85,14 @@ public abstract class FieldJoinPoint implements JoinPoint {
     protected boolean m_initialized = false;
 
     /**
+     * Meta-data for the class.
+     */
+    protected ClassMetaData m_classMetaData;
+
+    /**
      * Meta-data for the field.
      */
-    protected FieldMetaData m_metadata;
+    protected FieldMetaData m_fieldMetaData;
 
     /**
      * The UUID for the AspectWerkz system to use.
@@ -113,7 +120,6 @@ public abstract class FieldJoinPoint implements JoinPoint {
         m_fieldName = tokenizer.nextToken();
 
         setFieldType();
-        createMetaData();
     }
 
     /**
@@ -231,7 +237,8 @@ public abstract class FieldJoinPoint implements JoinPoint {
      * Creates a meta-data for the field for this joinpoint.
      */
     public void createMetaData() {
-        m_metadata = ReflectionMetaDataMaker.createFieldMetaData(m_fieldName, m_typeName);
+        m_classMetaData = ReflectionMetaDataMaker.createClassMetaData(getTargetClass());
+        m_fieldMetaData = ReflectionMetaDataMaker.createFieldMetaData(m_fieldName, m_typeName);
     }
 
     /**
@@ -290,18 +297,16 @@ public abstract class FieldJoinPoint implements JoinPoint {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-
         m_uuid = (String)fields.get("m_uuid", null);
         m_signature = (String)fields.get("m_signature", null);
         m_typeName = (String)fields.get("m_typeName", null);
         m_fieldName = (String)fields.get("m_fieldName", null);
         m_fieldType = (Type)fields.get("m_fieldType", null);
-
         m_preAdvices = (int[])fields.get("m_preAdvices", null);
         m_postAdvices = (int[])fields.get("m_postAdvices", null);
-        m_metadata = (FieldMetaData)fields.get("m_metadata", null);
+        m_classMetaData = (ClassMetaData)fields.get("m_classMetaData", null);
+        m_fieldMetaData = (FieldMetaData)fields.get("m_fieldMetaData", null);
         m_initialized = fields.get("m_initialized", false);
-
         m_system = AspectWerkz.getSystem(m_uuid);
         m_system.initialize();
     }

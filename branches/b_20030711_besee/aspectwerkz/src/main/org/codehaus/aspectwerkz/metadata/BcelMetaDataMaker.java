@@ -18,32 +18,125 @@
  */
 package org.codehaus.aspectwerkz.metadata;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.Type;
 
 /**
- * Convenience methods to construct <code>MetaData</code> instances.
+ * Convenience methods to construct <code>MetaData</code> instances from BCEL classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
- * @version $Id: BcelMetaDataMaker.java,v 1.2 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: BcelMetaDataMaker.java,v 1.2.2.1 2003-07-20 10:38:36 avasseur Exp $
  */
-public class BcelMetaDataMaker {
+public class BcelMetaDataMaker extends MetaDataMaker {
 
     /**
-     * Construct meta-data from a BCEL <code>Method</code> object.
+     * Construct class meta-data from a BCEL <code>JavaClass</code> object.
+     *
+     * @param method is the <code>JavaClass</code> object to extract details from.
+     * @return a <code>ClassMetaData</code> instance.
+     */
+    public static ClassMetaData createClassMetaData(final JavaClass javaClass) {
+        if (javaClass == null) throw new IllegalArgumentException("class can not be null");
+
+        if (s_classMetaDataCache.containsKey(javaClass.getClassName())) {
+            return (ClassMetaData)s_classMetaDataCache.get(javaClass.getClassName());
+        }
+
+        ClassMetaData classMetaData = new ClassMetaData();
+        classMetaData.setName(javaClass.getClassName());
+
+        // methods
+        List methodList = new ArrayList();
+        Method[] methods = javaClass.getMethods();
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
+            methodList.add(createMethodMetaData(method));
+        }
+        classMetaData.setMethods(methodList);
+
+        // fields
+        List fieldList = new ArrayList();
+        Field[] fields = javaClass.getFields();
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            fieldList.add(createFieldMetaData(field));
+        }
+        classMetaData.setFields(fieldList);
+
+        // interfaces
+        List interfaceList = new ArrayList();
+        JavaClass[] interfaces = javaClass.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            JavaClass anInterface = interfaces[i];
+            interfaceList.add(createInterfaceMetaData(anInterface));
+        }
+        classMetaData.setInterfaces(interfaceList);
+
+        // super class
+        JavaClass superClass = javaClass.getSuperClass();
+        if (superClass != null) { // has super class?
+            ClassMetaData superClassMetaData = createClassMetaData(superClass);
+            classMetaData.setSuperClass(superClassMetaData);
+        }
+
+        synchronized (s_classMetaDataCache) {
+            s_classMetaDataCache.put(classMetaData.getName(), classMetaData);
+        }
+        return classMetaData;
+    }
+
+    /**
+     * Construct interface meta-data from a BCEL <code>JavaClass</code> object.
+     *
+     * @param anInterface is the <code>JavaClass</code> object to extract details from.
+     * @return a <code>InterfaceMetaData</code> instance.
+     */
+    private static InterfaceMetaData createInterfaceMetaData(final JavaClass javaClass) {
+        if (javaClass == null) throw new IllegalArgumentException("class can not be null");
+
+        if (s_interfaceMetaDataCache.containsKey(javaClass.getClassName())) {
+            return (InterfaceMetaData)s_interfaceMetaDataCache.get(javaClass.getClassName());
+        }
+
+        InterfaceMetaData interfaceMetaData = new InterfaceMetaData();
+        interfaceMetaData.setName(javaClass.getClassName());
+
+        List interfaceList = new ArrayList();
+        JavaClass[] interfaces = javaClass.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            JavaClass anInterface = interfaces[i];
+            interfaceList.add(createInterfaceMetaData(anInterface));
+        }
+        interfaceMetaData.setInterfaces(interfaceList);
+
+        synchronized (s_interfaceMetaDataCache) {
+            s_interfaceMetaDataCache.put(interfaceMetaData.getName(), interfaceMetaData);
+        }
+        return interfaceMetaData;
+    }
+
+    /**
+     * Construct method meta-data from a BCEL <code>Method</code> object.
      *
      * @param method is the <code>Method</code> object to extract details from.
      * @return a <code>MethodMetaData</code> instance.
      */
     public static MethodMetaData createMethodMetaData(final Method method) {
-        MethodMetaData data = new MethodMetaData();
+        if (method == null) throw new IllegalArgumentException("method can not be null");
 
-        data.setName(method.getName());
-        data.setReturnType(method.getReturnType().toString());
+        MethodMetaData methodMetaData = new MethodMetaData();
+
+        methodMetaData.setName(method.getName());
+        methodMetaData.setReturnType(method.getReturnType().toString());
 
         Type[] javaParameters = method.getArgumentTypes();
 
@@ -52,14 +145,13 @@ public class BcelMetaDataMaker {
         for (int j = 0; j < javaParameters.length; j++) {
             parameterTypes[j] = javaParameters[j].toString();
         }
+        methodMetaData.setParameterTypes(parameterTypes);
 
-        data.setParameterTypes(parameterTypes);
-
-        return data;
+        return methodMetaData;
     }
 
     /**
-     * Construct meta-data from a Java <code>InvokeInstruction</code> object.
+     * Construct method meta-data from a Java <code>InvokeInstruction</code> object.
      *
      * @param instruction is the method invocation object to extract details from.
      * @param cpg is the constant pool generator.
@@ -67,22 +159,40 @@ public class BcelMetaDataMaker {
      */
     public static MethodMetaData createMethodMetaData(final InvokeInstruction instruction,
                                                       final ConstantPoolGen cpg) {
-        MethodMetaData data = new MethodMetaData();
+        if (instruction == null) throw new IllegalArgumentException("instruction can not be null");
+        if (cpg == null) throw new IllegalArgumentException("constant pool can not be null");
+
+        MethodMetaData methodMetaData = new MethodMetaData();
 
         String signature = instruction.getSignature(cpg);
-        data.setName(instruction.getName(cpg));
+        methodMetaData.setName(instruction.getName(cpg));
 
         Type[] parameterTypes = Type.getArgumentTypes(signature);
         String[] parameterTypeNames = new String[parameterTypes.length];
 
         for (int j = 0; j < parameterTypes.length; j++) {
             parameterTypeNames[j] = parameterTypes[j].toString();
-
         }
-        data.setParameterTypes(parameterTypeNames);
-        data.setReturnType(Type.getReturnType(signature).toString());
+        methodMetaData.setParameterTypes(parameterTypeNames);
+        methodMetaData.setReturnType(Type.getReturnType(signature).toString());
 
-        return data;
+        return methodMetaData;
+    }
+
+    /**
+     * Construct field meta-data from a BCEL <code>Field</code> object.
+     *
+     * @param field is the <code>Field</code> object to extract details from.
+     * @return a <code>FieldMetaData</code> instance.
+     */
+    private static FieldMetaData createFieldMetaData(final Field field) {
+        if (field == null) throw new IllegalArgumentException("field can not be null");
+
+        FieldMetaData fieldMetaData = new FieldMetaData();
+        fieldMetaData.setName(field.getName());
+        fieldMetaData.setType(field.getType().toString());
+        fieldMetaData.setModifiers(field.getModifiers());
+        return fieldMetaData;
     }
 
     /**
@@ -94,9 +204,12 @@ public class BcelMetaDataMaker {
      */
     public static FieldMetaData createFieldMetaData(final FieldInstruction instruction,
                                                     final ConstantPoolGen cpg) {
-        FieldMetaData data = new FieldMetaData();
-        data.setName(instruction.getFieldName(cpg));
-        data.setType(instruction.getFieldType(cpg).toString());
-        return data;
+        if (instruction == null) throw new IllegalArgumentException("instruction can not be null");
+        if (cpg == null) throw new IllegalArgumentException("constant pool can not be null");
+
+        FieldMetaData fieldMetaData = new FieldMetaData();
+        fieldMetaData.setName(instruction.getFieldName(cpg));
+        fieldMetaData.setType(instruction.getFieldType(cpg).toString());
+        return fieldMetaData;
     }
 }

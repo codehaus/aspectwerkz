@@ -44,9 +44,10 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * Adds an UuidGenerator to all transformed classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddUuidTransformer.java,v 1.11.2.2 2003-07-17 21:00:01 avasseur Exp $
+ * @version $Id: AddUuidTransformer.java,v 1.11.2.3 2003-07-20 10:38:37 avasseur Exp $
  */
-public final class AddUuidTransformer extends AspectWerkzAbstractInterfaceTransformer
+public final class AddUuidTransformer
+        extends AspectWerkzAbstractInterfaceTransformer
         implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
 
@@ -100,16 +101,18 @@ public final class AddUuidTransformer extends AspectWerkzAbstractInterfaceTransf
             final ConstantPoolGen cpg = cg.getConstantPool();
             final InstructionFactory factory = new InstructionFactory(cg);
 
-            if (classFilter(cg)) continue;
-            if (m_hasBeenTransformed.contains(cg.getClassName())) continue;
+            if (classFilter(cg)) {
+                continue;
+            }
+            if (m_hasBeenTransformed.contains(cg.getClassName())) {
+                continue;
+            }
 
             // mark the class as transformed
             m_hasBeenTransformed.add(cg.getClassName());
 
             addIdentifiableInterface(cg, cpg, es);
-
             addUuidField(cg, es);
-
             addUuidGetterMethod(cg, cpg, factory, es);
         }
     }
@@ -126,8 +129,12 @@ public final class AddUuidTransformer extends AspectWerkzAbstractInterfaceTransf
         while (iterator.hasNext()) {
             final ClassGen cg = (ClassGen)iterator.next();
 
-            if (classFilter(cg)) continue;
-            if (cg.containsField(TransformationUtil.UUID_FIELD) == null) continue;
+            if (classFilter(cg)) {
+                continue;
+            }
+            if (cg.containsField(TransformationUtil.UUID_FIELD) == null) {
+                continue;
+            }
 
             final InstructionFactory factory = new InstructionFactory(cg);
             final ConstantPoolGen cpg = cg.getConstantPool();

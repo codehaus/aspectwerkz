@@ -29,7 +29,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  *  in AspectWerkz.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsPattern.java,v 1.3 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: ThrowsPattern.java,v 1.3.2.1 2003-07-20 10:38:37 avasseur Exp $
  */
 public class ThrowsPattern extends Pattern {
 
@@ -87,7 +87,6 @@ public class ThrowsPattern extends Pattern {
      * @param pattern the method pattern
      */
     protected void parse(final String pattern) {
-        m_pattern = pattern;
         StringTokenizer tokenizer = new StringTokenizer(
                 m_pattern,
                 AspectWerkzDefinition.THROWS_DELIMITER);
@@ -106,6 +105,7 @@ public class ThrowsPattern extends Pattern {
      * @param pattern the pattern
      */
     ThrowsPattern(final String pattern) {
-        parse(pattern);
+        m_pattern = pattern;
+        parse(m_pattern);
     }
 }

@@ -31,6 +31,7 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
@@ -40,7 +41,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSideJoinPoint.java,v 1.11 2003-07-09 11:55:27 jboner Exp $
+ * @version $Id: CallerSideJoinPoint.java,v 1.11.2.1 2003-07-20 10:38:36 avasseur Exp $
  */
 public class CallerSideJoinPoint implements JoinPoint {
 
@@ -51,6 +52,7 @@ public class CallerSideJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = 172716696980471700L;
 
@@ -145,9 +147,14 @@ public class CallerSideJoinPoint implements JoinPoint {
     protected boolean m_initialized = false;
 
     /**
+     * Meta-data for the class.
+     */
+    protected ClassMetaData m_classMetaData;
+
+    /**
      * Meta-data for the method.
      */
-    protected MethodMetaData m_metadata;
+    protected MethodMetaData m_methodMetaData;
 
     /**
      * The UUID for the AspectWerkz system to use.
@@ -425,8 +432,7 @@ public class CallerSideJoinPoint implements JoinPoint {
     public Class getCallerMethodReturnType() {
         if (m_callerMethodReturnType == null) {
             Type returnType = Type.getReturnType(m_callerMethodSignature);
-            m_callerMethodReturnType =
-                    TransformationUtil.convertBcelTypeToClass(returnType);
+            m_callerMethodReturnType = TransformationUtil.convertBcelTypeToClass(returnType);
         }
         return m_callerMethodReturnType;
     }
@@ -438,8 +444,7 @@ public class CallerSideJoinPoint implements JoinPoint {
      */
     public String getCallerMethodReturnTypeName() {
         if (m_callerMethodReturnTypeName == null) {
-            m_callerMethodReturnTypeName =
-                    Type.getReturnType(m_callerMethodSignature).toString();
+            m_callerMethodReturnTypeName = Type.getReturnType(m_callerMethodSignature).toString();
         }
         return m_callerMethodReturnTypeName;
     }
@@ -462,7 +467,7 @@ public class CallerSideJoinPoint implements JoinPoint {
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
 
-                List pointcuts = m_system.getCallerSidePointcuts(m_calleeClassName, m_metadata);
+                List pointcuts = m_system.getCallerSidePointcuts(getCalleeClassName(), m_methodMetaData);
 
                 for (Iterator it = pointcuts.iterator(); it.hasNext();) {
                     CallerSidePointcut callerSidePointcut = (CallerSidePointcut)it.next();
@@ -498,7 +503,8 @@ public class CallerSideJoinPoint implements JoinPoint {
      * Creates meta-data for the join point.
      */
     protected void createMetaData() {
-        m_metadata = ReflectionMetaDataMaker.createMethodMetaData(
+        m_classMetaData = ReflectionMetaDataMaker.createClassMetaData(getTargetClass());
+        m_methodMetaData = ReflectionMetaDataMaker.createMethodMetaData(
                 getCalleeMethodName(),
                 getCalleeMethodParameterTypes(),
                 getCalleeMethodReturnType());
@@ -545,7 +551,8 @@ public class CallerSideJoinPoint implements JoinPoint {
         m_calleeMethodReturnTypeName = (String)fields.get("m_calleeMethodReturnTypeName", null);
         m_preAdvices = (int[])fields.get("m_preAdvices", null);
         m_postAdvices = (int[])fields.get("m_postAdvices", null);
-        m_metadata = (MethodMetaData)fields.get("m_metadata", null);
+        m_classMetaData = (ClassMetaData)fields.get("m_classMetaData", null);
+        m_methodMetaData = (MethodMetaData)fields.get("m_fieldMetaData", null);
         m_initialized = fields.get("m_initialized", false);
         m_system = AspectWerkz.getSystem(m_uuid);
         m_system.initialize();

@@ -29,7 +29,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  *  in AspectWerkz.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSidePattern.java,v 1.4 2003-07-08 11:43:35 jboner Exp $
+ * @version $Id: CallerSidePattern.java,v 1.4.2.1 2003-07-20 10:38:37 avasseur Exp $
  */
 public class CallerSidePattern extends Pattern {
 
@@ -52,12 +52,12 @@ public class CallerSidePattern extends Pattern {
      * Matches a caller side pointcut.
      *
      * @param className the class name
-     * @param method the method
+     * @param methodMetaData the method meta-data
      * @return true if we have a matches
      */
     public boolean matches(final String className,
-                           final MethodMetaData method) {
-        if (m_classPattern.matches(className) && m_methodPattern.matches(method)) {
+                           final MethodMetaData methodMetaData) {
+        if (m_classPattern.matches(className) && m_methodPattern.matches(methodMetaData)) {
             return true;
         }
         else {
@@ -80,7 +80,6 @@ public class CallerSidePattern extends Pattern {
      * @param pattern the method pattern
      */
     protected void parse(final String pattern) {
-        m_pattern = pattern;
         StringTokenizer tokenizer = new StringTokenizer(
                 m_pattern,
                 AspectWerkzDefinition.CALLER_SIDE_DELIMITER);
@@ -99,6 +98,7 @@ public class CallerSidePattern extends Pattern {
      * @param pattern the pattern
      */
     CallerSidePattern(final String pattern) {
-        parse(pattern);
+        m_pattern = pattern;
+        parse(m_pattern);
     }
 }

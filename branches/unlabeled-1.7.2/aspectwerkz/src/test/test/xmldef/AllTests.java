@@ -7,7 +7,7 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AllTests.java,v 1.7.2.1 2003-07-17 21:00:01 avasseur Exp $
+ * @version $Id: AllTests.java,v 1.7.2.2 2003-07-20 10:38:38 avasseur Exp $
  */
 public class AllTests extends TestCase {
 
@@ -34,6 +34,8 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.CFlowTest.class);
         suite.addTestSuite(test.PointcutExpressionTest.class);
         suite.addTestSuite(test.AbstractClassInstrumentationTest.class);
+        suite.addTestSuite(test.StringsTest.class);
+        suite.addTestSuite(test.HierachicalPatternTest.class);
 
         return suite;
     }

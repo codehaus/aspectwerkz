@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Parses the XML definition file using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParser.java,v 1.9.2.1 2003-07-17 21:00:00 avasseur Exp $
+ * @version $Id: XmlDefinitionParser.java,v 1.9.2.2 2003-07-20 10:38:36 avasseur Exp $
  */
 public class XmlDefinitionParser {
 
@@ -77,8 +77,7 @@ public class XmlDefinitionParser {
      */
     public static AspectWerkzDefinition parse(final File definitionFile, boolean isDirty) {
         // definition not updated; don't parse, return it
-        if (definitionFile.lastModified() < getParsingTimestamp() &&
-                s_definition != null) {
+        if (definitionFile.lastModified() < getParsingTimestamp() && s_definition != null) {
             isDirty = false;
             return s_definition;
         }
@@ -168,7 +167,7 @@ public class XmlDefinitionParser {
         // parse without package elements
         parseIntroductionElements(root, definition, basePackage);
         parseAdviceElements(root, definition, basePackage);
-        parseAdviceStackElements(root, definition, basePackage);
+        parseAdviceStackElements(root, definition);
         parseAspectElements(root, definition, basePackage);
 
         // parse with package elements
@@ -230,7 +229,7 @@ public class XmlDefinitionParser {
 
             parseIntroductionElements(packageElement, definition, packageName);
             parseAdviceElements(packageElement, definition, packageName);
-            parseAdviceStackElements(packageElement, definition, packageName);
+            parseAdviceStackElements(packageElement, definition);
             parseAspectElements(packageElement, definition, packageName);
         }
     }
@@ -678,11 +677,9 @@ public class XmlDefinitionParser {
      *
      * @param root the root element
      * @param definition the definition object
-     * @param packageName the package name
      */
     private static void parseAdviceStackElements(final Element root,
-                                                 final AspectWerkzDefinition definition,
-                                                 final String packageName) {
+                                                 final AspectWerkzDefinition definition) {
         for (Iterator it1 = root.elementIterator("advices-def"); it1.hasNext();) {
             final AdviceStackDefinition adviceStackDef = new AdviceStackDefinition();
 
@@ -725,7 +722,12 @@ public class XmlDefinitionParser {
 
         final String methodPattern = classNameWithMethodName.substring(
                 indexLastDot + 1, classNameWithMethodName.length()).trim();
-        final String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
+        String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
+
+        if (classPattern.endsWith("+")) {
+            classPattern = classPattern.substring(0, classPattern.length() - 1);
+            pointcutDef.markAsHierarchical();
+        }
 
         StringBuffer buf = new StringBuffer();
         buf.append(returnType);
@@ -753,7 +755,11 @@ public class XmlDefinitionParser {
 
         final String fieldPattern = classNameWithFieldName.substring(
                 indexLastDot + 1, classNameWithFieldName.length()).trim();
-        final String classPattern = packageName + classNameWithFieldName.substring(0, indexLastDot).trim();
+        String classPattern = packageName + classNameWithFieldName.substring(0, indexLastDot).trim();
+        if (classPattern.endsWith("+")) {
+            classPattern = classPattern.substring(0, classPattern.length() - 1);
+            pointcutDef.markAsHierarchical();
+        }
 
         StringBuffer buf = new StringBuffer();
         buf.append(fieldType);
@@ -783,7 +789,11 @@ public class XmlDefinitionParser {
         int indexLastDot = classNameWithMethodName.lastIndexOf('.');
         final String methodPattern = classNameWithMethodName.substring(
                 indexLastDot + 1, classNameWithMethodName.length()).trim();
-        final String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
+        String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
+        if (classPattern.endsWith("+")) {
+            classPattern = classPattern.substring(0, classPattern.length() - 1);
+            pointcutDef.markAsHierarchical();
+        }
 
         StringBuffer buf = new StringBuffer();
         buf.append(returnType);
@@ -806,6 +816,11 @@ public class XmlDefinitionParser {
                                                 final PointcutDefinition pointcutDef,
                                                 final String packageName) {
         String callerClassPattern = packageName + pattern.substring(0, pattern.indexOf('-')).trim();
+        if (callerClassPattern.endsWith("+")) {
+            callerClassPattern = callerClassPattern.substring(0, callerClassPattern.length() - 1);
+            pointcutDef.markAsHierarchical();
+        }
+
         String calleePattern = pattern.substring(pattern.indexOf('>') + 1).trim();
         int indexFirstSpace = calleePattern.indexOf(' ');
         String returnType = calleePattern.substring(0, indexFirstSpace + 1);
@@ -817,7 +832,13 @@ public class XmlDefinitionParser {
         String calleeMethodPattern = classNameWithMethodName.substring(
                 indexLastDot + 1, classNameWithMethodName.length()).trim();
         String calleeClassPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
+
+        if (calleeClassPattern.endsWith("+")) {
+            calleeClassPattern = calleeClassPattern.substring(0, calleeClassPattern.length() - 1);
+            pointcutDef.markAsHierarchical();
+        }
         calleeMethodPattern = returnType + calleeMethodPattern + parameterTypes;
+
         StringBuffer buf = new StringBuffer();
         buf.append(calleeClassPattern);
         buf.append('#');

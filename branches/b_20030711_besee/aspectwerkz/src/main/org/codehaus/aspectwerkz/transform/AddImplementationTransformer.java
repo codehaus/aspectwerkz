@@ -46,7 +46,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.15.2.2 2003-07-17 21:00:01 avasseur Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.15.2.3 2003-07-20 10:38:37 avasseur Exp $
  */
 public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -140,19 +140,19 @@ public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTr
 
                 // remove the ___AW_getUuid, ___AW_getMetaData, ___AW_addMetaData and class$ methods
                 // as well as the added proxy methods before sorting the method list
-                    if (methodMetaData.getName().equals(
-                            TransformationUtil.GET_UUID_METHOD) ||
-                            methodMetaData.getName().equals(
-                                    TransformationUtil.GET_META_DATA_METHOD) ||
-                            methodMetaData.getName().equals(
-                                    TransformationUtil.SET_META_DATA_METHOD) ||
-                            methodMetaData.getName().equals(
-                                    TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
-                            methodMetaData.getName().equals(
-                                    TransformationUtil.CLASS_LOOKUP_METHOD)) {
-                        methodMetaDataList.remove(methodMetaData);
-                    }
+                if (methodMetaData.getName().equals(
+                        TransformationUtil.GET_UUID_METHOD) ||
+                        methodMetaData.getName().equals(
+                                TransformationUtil.GET_META_DATA_METHOD) ||
+                        methodMetaData.getName().equals(
+                                TransformationUtil.SET_META_DATA_METHOD) ||
+                        methodMetaData.getName().equals(
+                                TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
+                        methodMetaData.getName().equals(
+                                TransformationUtil.CLASS_LOOKUP_METHOD)) {
+                    methodMetaDataList.remove(methodMetaData);
                 }
+            }
             // sort the list so that we can enshure that the indexes are in synch
             // see AbstractIntroductionContainerStrategy#AbstractIntroductionContainerStrategy
             Collections.sort(methodMetaDataList, MethodComparator.

@@ -28,6 +28,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
  * Matches well defined point of execution in the program where an exception is
@@ -36,7 +37,7 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsJoinPoint.java,v 1.9 2003-07-09 11:55:27 jboner Exp $
+ * @version $Id: ThrowsJoinPoint.java,v 1.9.2.1 2003-07-20 10:38:36 avasseur Exp $
  */
 public class ThrowsJoinPoint implements JoinPoint {
 
@@ -47,6 +48,7 @@ public class ThrowsJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = -5868604244664715450L;
 
@@ -71,9 +73,14 @@ public class ThrowsJoinPoint implements JoinPoint {
     protected int m_currentAdviceIndex = -1;
 
     /**
+     * Meta-data for the class.
+     */
+    protected ClassMetaData m_classMetaData;
+
+    /**
      * Meta-data for the method.
      */
-    protected MethodMetaData m_metadata;
+    protected MethodMetaData m_methodMetaData;
 
     /**
      * The UUID for the AspectWerkz system to use.
@@ -193,36 +200,40 @@ public class ThrowsJoinPoint implements JoinPoint {
      *
      * @return the line number
      */
-    public int getLineNumberForThrow() {
-        return m_exception.getStackTrace()[0].getLineNumber();
-    }
+    // Works for JDK 1.4.x only
+//    public int getLineNumberForThrow() {
+//        return m_exception.getStackTrace()[0].getLineNumber();
+//    }
 
     /**
      * Returns the method name where the exception was thrown.
      *
      * @return the method name
      */
-    public String getMethodNameForThrow() {
-        return m_exception.getStackTrace()[0].getMethodName();
-    }
+    // Works for JDK 1.4.x only
+//    public String getMethodNameForThrow() {
+//        return m_exception.getStackTrace()[0].getMethodName();
+//    }
 
     /**
      * Returns the file name where the exception was thrown.
      *
      * @return the file name
      */
-    public String getFileNameForThrow() {
-        return m_exception.getStackTrace()[0].getFileName();
-    }
+    // Works for JDK 1.4.x only
+//    public String getFileNameForThrow() {
+//        return m_exception.getStackTrace()[0].getFileName();
+//    }
 
     /**
      * Returns the class name where the exception was thrown.
      *
      * @return the class name
      */
-    public String getClassNameForThrow() {
-        return m_exception.getStackTrace()[0].getClassName();
-    }
+    // Works for JDK 1.4.x only
+//    public String getClassNameForThrow() {
+//        return m_exception.getStackTrace()[0].getClassName();
+//    }
 
     /**
      * Returns the target object.
@@ -295,7 +306,7 @@ public class ThrowsJoinPoint implements JoinPoint {
             List adviceIndexes = new ArrayList();
 
             // get all the throws pointcuts for this class
-            List pointcuts = m_system.getThrowsPointcuts(getTargetClass().getName(), m_metadata);
+            List pointcuts = m_system.getThrowsPointcuts(m_classMetaData, m_methodMetaData);
 
             for (Iterator it = pointcuts.iterator(); it.hasNext();) {
                 ThrowsPointcut throwsPointcut = (ThrowsPointcut)it.next();
@@ -317,7 +328,8 @@ public class ThrowsJoinPoint implements JoinPoint {
      * Creates meta-data for the join point.
      */
     protected void createMetaData() {
-        m_metadata = ReflectionMetaDataMaker.createMethodMetaData(
+        m_classMetaData = ReflectionMetaDataMaker.createClassMetaData(getTargetClass());
+        m_methodMetaData = ReflectionMetaDataMaker.createMethodMetaData(
                 getMethodName(),
                 getMethodParameterTypes(),
                 getMethodReturnType());
@@ -346,7 +358,8 @@ public class ThrowsJoinPoint implements JoinPoint {
         ObjectInputStream.GetField fields = stream.readFields();
         m_uuid = (String)fields.get("m_uuid", null);
         m_currentAdviceIndex = fields.get("m_currentAdviceIndex", -1);
-        m_metadata = (MethodMetaData)fields.get("m_metadata", null);
+        m_classMetaData = (ClassMetaData)fields.get("m_classMetaData", null);
+        m_methodMetaData = (MethodMetaData)fields.get("m_fieldMetaData", null);
         m_methodJoinPoint = (MethodJoinPoint)fields.get("m_methodJoinPoint", null);
         m_exception = (Throwable)fields.get("m_exception", null);
         m_adviceIndexes = (int[])fields.get("m_adviceIndexes", null);

@@ -30,6 +30,7 @@ import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
 import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.regexp.MethodPattern;
 
@@ -38,7 +39,7 @@ import org.codehaus.aspectwerkz.regexp.MethodPattern;
  * defined by this aspect.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Aspect.java,v 1.8 2003-07-09 05:21:27 jboner Exp $
+ * @version $Id: Aspect.java,v 1.8.2.1 2003-07-20 10:38:35 avasseur Exp $
  */
 public class Aspect {
 
@@ -427,19 +428,19 @@ public class Aspect {
     /**
      * Returns all the pointcuts for the method join point specified.
      *
-     * @param className the name of the class
+     * @param classMetaData the meta-data for the class
      * @param methodMetaData the meta-data for the method
      * @return the pointcuts
      */
-    public List getMethodPointcuts(final String className,
+    public List getMethodPointcuts(final ClassMetaData classMetaData,
                                    final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_methodPointcuts.values().iterator(); it.hasNext();) {
             MethodPointcut pointcut = (MethodPointcut)it.next();
-            if (pointcut.matches(className, methodMetaData)) {
+            if (pointcut.matches(classMetaData, methodMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -449,19 +450,19 @@ public class Aspect {
     /**
      * Returns all the pointcuts for the method join point specified.
      *
-     * @param className the name of the class
+     * @param classMetaData the meta-data for the class
      * @param fieldMetaData the meta-data for the field
      * @return the pointcuts
      */
-    public List getGetFieldPointcuts(final String className,
+    public List getGetFieldPointcuts(final ClassMetaData classMetaData,
                                      final FieldMetaData fieldMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_getFieldPointcuts.values().iterator(); it.hasNext();) {
             final FieldPointcut pointcut = (FieldPointcut)it.next();
-            if (pointcut.matches(className, fieldMetaData)) {
+            if (pointcut.matches(classMetaData, fieldMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -471,19 +472,19 @@ public class Aspect {
     /**
      * Returns all the pointcuts for the method join point specified.
      *
-     * @param className the name of the class
+     * @param classMetaData the meta-data for the class
      * @param fieldMetaData the meta-data for the field
      * @return the pointcuts
      */
-    public List getSetFieldPointcuts(final String className,
+    public List getSetFieldPointcuts(final ClassMetaData classMetaData,
                                      final FieldMetaData fieldMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_setFieldPointcuts.values().iterator(); it.hasNext();) {
             final FieldPointcut pointcut = (FieldPointcut)it.next();
-            if (pointcut.matches(className, fieldMetaData)) {
+            if (pointcut.matches(classMetaData, fieldMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -493,19 +494,19 @@ public class Aspect {
     /**
      * Returns the pointcut for the method/exception join point specified.
      *
-     * @param className the name of the class
+     * @param classMetaData the meta-data for the class
      * @param methodMetaData the method meta-data
      * @return the pointcut
      */
-    public List getThrowsPointcuts(final String className,
+    public List getThrowsPointcuts(final ClassMetaData classMetaData,
                                    final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_throwsPointcuts.values().iterator(); it.hasNext();) {
             final ThrowsPointcut pointcut = (ThrowsPointcut)it.next();
-            if (pointcut.matches(className, methodMetaData)) {
+            if (pointcut.matches(classMetaData, methodMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -515,7 +516,7 @@ public class Aspect {
     /**
      * Returns all the pointcuts for the caller side join point specified.
      *
-     * @param className the name of the class
+     * @param className the class name
      * @param methodMetaData the meta-data for the method
      * @return the pointcuts
      */
@@ -562,21 +563,21 @@ public class Aspect {
      * Checks if a specific method/exceptoin join point has a specific throws
      * pointcut configured.
      *
-     * @param className the name of the class
-     * @param methodName the name pattern of the method
-     * @param exceptionClassName the name pattern of the exception
+     * @param classMetaData the meta-data for the class
+     * @param methodMetaData the meta-data for the method
+     * @param exception the name pattern of the exception
      * @return boolean
      */
-    public boolean hasThrowsPointcut(final String className,
+    public boolean hasThrowsPointcut(final ClassMetaData classMetaData,
                                      final MethodMetaData methodMetaData,
-                                     final String exceptionClassName) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+                                     final String exception) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-        if (exceptionClassName == null) throw new IllegalArgumentException("exception class name can not be null");
+        if (exception == null) throw new IllegalArgumentException("exception class name can not be null");
 
         for (Iterator it = m_throwsPointcuts.values().iterator(); it.hasNext();) {
             final ThrowsPointcut pointcut = (ThrowsPointcut)it.next();
-            if (pointcut.matches(className, methodMetaData, exceptionClassName)) {
+            if (pointcut.matches(classMetaData, methodMetaData, exception)) {
                 return true;
             }
         }

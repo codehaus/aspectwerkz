@@ -22,7 +22,7 @@ package org.codehaus.aspectwerkz.util;
  * Utility methods for strings.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Strings.java,v 1.1 2003-07-19 20:36:17 jboner Exp $
+ * @version $Id: Strings.java,v 1.1.2.1 2003-07-20 10:38:38 avasseur Exp $
  */
 public class Strings {
 

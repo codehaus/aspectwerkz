@@ -42,6 +42,7 @@ import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
 import org.codehaus.aspectwerkz.definition.ControllerDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.advice.CFlowAdvice;
+import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * Parses a given source tree and compiles meta-data.
@@ -54,7 +55,7 @@ import org.codehaus.aspectwerkz.advice.CFlowAdvice;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: SourceFileMetaDataCompiler.java,v 1.9.2.1 2003-07-17 21:00:01 avasseur Exp $
+ * @version $Id: SourceFileMetaDataCompiler.java,v 1.9.2.2 2003-07-20 10:38:36 avasseur Exp $
  */
 public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
@@ -108,6 +109,8 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
         final WeaveModel weaveModel = weave(uuid, definition);
         compileIntroductionMetaData(weaveModel, qdoxParser);
+
+        validate(weaveModel);
 
         saveWeaveModelToFile(metaDataDir, weaveModel);
     }
@@ -302,8 +305,8 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             }
             String[] attributes = introductionTags[i].getParameters();
             for (int j = 0; j < attributes.length; j++) {
-                final String introductionRef =
-                        definition.getIntroductionNameByAttribute(attributes[j]);
+                final String introductionRef = definition.
+                        getIntroductionNameByAttribute(attributes[j]);
                 if (introductionRef == null) {
                     continue;
                 }
@@ -324,7 +327,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
-        String pointcutName = CONTROLLER_POINTCUT_NAME + className.replaceAll("\\.", "_");
+        String pointcutName = CONTROLLER_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
 
         int counter = 0;
         final JavaMethod[] javaMethods = qdoxParser.getJavaMethods();
@@ -380,7 +383,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
-        String pointcutName = METHOD_POINTCUT_NAME + className.replaceAll("\\.", "_");
+        String pointcutName = METHOD_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
 
         int counter = 0;
         final JavaMethod[] javaMethods = qdoxParser.getJavaMethods();
@@ -421,6 +424,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                             // get the advice ref
                             String adviceRef = definition.getAdviceNameByAttribute(adviceAttribute);
                             if (adviceRef == null) {
+                                // TODO: log a warning
                                 continue; // attribute not mapped to an advice
                             }
                             // create and add a new weaving rule def
@@ -454,7 +458,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
-        String pointcutName = SETFIELD_POINTCUT_NAME + className.replaceAll("\\.", "_");
+        String pointcutName = SETFIELD_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
 
         int counter = 0;
         final JavaField[] javaFields = qdoxParser.getJavaFields();
@@ -490,6 +494,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                             // get the advice ref
                             String adviceRef = definition.getAdviceNameByAttribute(adviceAttribute);
                             if (adviceRef == null) {
+                                // TODO: log a warning
                                 continue; // attribute not mapped to an advice
                             }
 
@@ -523,7 +528,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
-        String pointcutName = GETFIELD_POINTCUT_NAME + className.replaceAll("\\.", "_");
+        String pointcutName = GETFIELD_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
 
         int counter = 0;
         final JavaField[] javaFields = qdoxParser.getJavaFields();
@@ -559,6 +564,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                             // get the advice ref
                             String adviceRef = definition.getAdviceNameByAttribute(adviceAttribute);
                             if (adviceRef == null) {
+                                // TODO: log a warning
                                 continue; // attribute not mapped to an advice
                             }
 
@@ -592,7 +598,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
-        String pointcutName = THROWS_POINTCUT_NAME + className.replaceAll("\\.", "_");
+        String pointcutName = THROWS_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
 
         int counter = 0;
         final JavaMethod[] javaMethods = qdoxParser.getJavaMethods();
@@ -637,6 +643,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                             // get the advice ref
                             String adviceRef = definition.getAdviceNameByAttribute(adviceAttribute);
                             if (adviceRef == null) {
+                                // TODO: log a warning
                                 continue; // attribute not mapped to an advice
                             }
 
@@ -670,7 +677,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
-        String pointcutName = CALLERSIDE_POINTCUT_NAME + className.replaceAll("\\.", "_");
+        String pointcutName = CALLERSIDE_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
 
         int counter = 0;
         final JavaMethod[] javaMethods = qdoxParser.getJavaMethods();
@@ -713,6 +720,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                             // get the advice ref
                             String adviceRef = definition.getAdviceNameByAttribute(adviceAttribute);
                             if (adviceRef == null) {
+                                // TODO: log a warning
                                 continue; // attribute not mapped to an advice
                             }
 
@@ -807,6 +815,8 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
     /**
      * Compiles the class meta-data for all introduced implementations.
      *
+     * @todo Move this method to the AddImplementationTransformer and recode it to make it accept a BCEL JavaClass instead
+     *
      * @param model the weave model
      * @param qdoxParser the QDox parser
      * @param metaDataDir the meta-data dir
@@ -827,13 +837,6 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                 }
             }
         }
-
-        // TODO: consider removal
-        // compile and add the class meta-data for the HasMetaData system mixin
-        // ClassMetaData classMetaData = ClassFileMetaDataCompiler.compileClassMetaData(
-        //        Thread.currentThread().getContextClassLoader(),
-        //        HasMetaData.IMPLEMENTATION_CLASS);
-        // model.addIntroductionMetaData(classMetaData);
     }
 
     /**
@@ -851,7 +854,11 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
         JavaParameter[] parameters = javaMethod.getParameters();
         for (int l = 0; l < parameters.length; l++) {
             JavaParameter parameter = parameters[l];
-            pattern.append(parameter.getType().getValue());
+            String value = parameter.getType().getValue();
+            if (parameter.getType().getDimensions() >= 1) {
+                value += "[]";
+            }
+            pattern.append(value);
             if (l != parameters.length - 1) {
                 pattern.append(',');
             }
@@ -868,7 +875,11 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
      */
     private static String createFieldPattern(final JavaField javaField) {
         final StringBuffer pattern = new StringBuffer();
-        pattern.append(javaField.getType().getValue());
+        String value = javaField.getType().getValue();
+        if (javaField.getType().getDimensions() >= 1) {
+            value += "[]";
+        }
+        pattern.append(value);
         pattern.append(' ');
         pattern.append(javaField.getName());
         return pattern.toString();
@@ -881,9 +892,8 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
      * @param javaMethod the method
      * @return the pattern
      */
-    private static String createThrowsPattern(
-            final String exceptionClassPattern,
-            final JavaMethod javaMethod) {
+    private static String createThrowsPattern(final String exceptionClassPattern,
+                                              final JavaMethod javaMethod) {
         StringBuffer throwsPattern = new StringBuffer();
         throwsPattern.append(createMethodPattern(javaMethod));
         throwsPattern.append('#');
