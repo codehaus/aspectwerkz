@@ -40,14 +40,56 @@ public class Proxy {
     /**
      * Creates a new proxy instance based for the class specified and instantiates it using its default no-argument
      * constructor.
+     * <p/>
+     * The proxy will be cached and non-advisable.
      *
-     * @param clazz    the target class to make a proxy for
-     * @param useCache true if a cached instance of the proxy classed should be used
+     * @param clazz the target class to make a proxy for
      * @return the proxy instance
      */
-    public static Object newInstance(final Class clazz, final boolean useCache) {
+    public static Object newInstance(final Class clazz) {
         try {
-            Class proxyClass = getProxyClassFor(clazz, useCache);
+            Class proxyClass = getProxyClassFor(clazz, true, false);
+            return proxyClass.newInstance();
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw new Error(e.toString());
+        }
+    }
+
+    /**
+     * Creates a new proxy instance for the class specified and instantiates it using the constructor matching
+     * the argument type array specified.
+     * <p/>
+     * The proxy will be cached and non-advisable.
+     *
+     * @param clazz          the target class to make a proxy for
+     * @param argumentTypes  the argument types matching the signature of the constructor to use when instantiating the proxy
+     * @param argumentValues the argument values to use when instantiating the proxy
+     * @return the proxy instance
+     */
+    public static Object newInstance(final Class clazz, final Class[] argumentTypes, final Object[] argumentValues) {
+        try {
+            Class proxyClass = getProxyClassFor(clazz, true, false);
+            return proxyClass.getDeclaredConstructor(argumentTypes).newInstance(argumentValues);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw new Error(e.toString());
+        }
+    }
+
+    /**
+     * Creates a new proxy instance based for the class specified and instantiates it using its default no-argument
+     * constructor.
+     *
+     * @param clazz         the target class to make a proxy for
+     * @param useCache      true if a cached instance of the proxy classed should be used
+     * @param makeAdvisable true if the proxy class should implement the <code>Advisable</code> interface,
+     *                      e.g. be prepared for programmatic, runtime, per instance hot deployement of advice
+     * @return the proxy instance
+     */
+    public static Object newInstance(final Class clazz, final boolean useCache, final boolean makeAdvisable) {
+        try {
+            Class proxyClass = getProxyClassFor(clazz, useCache, makeAdvisable);
             return proxyClass.newInstance();
         } catch (Throwable e) {
             e.printStackTrace();
@@ -63,14 +105,17 @@ public class Proxy {
      * @param argumentTypes  the argument types matching the signature of the constructor to use when instantiating the proxy
      * @param argumentValues the argument values to use when instantiating the proxy
      * @param useCache       true if a cached instance of the proxy classed should be used
+     * @param makeAdvisable  true if the proxy class should implement the <code>Advisable</code> interface,
+     *                       e.g. be prepared for programmatic, runtime, per instance hot deployement of advice
      * @return the proxy instance
      */
     public static Object newInstance(final Class clazz,
                                      final Class[] argumentTypes,
                                      final Object[] argumentValues,
-                                     final boolean useCache) {
+                                     final boolean useCache,
+                                     final boolean makeAdvisable) {
         try {
-            Class proxyClass = getProxyClassFor(clazz, useCache);
+            Class proxyClass = getProxyClassFor(clazz, useCache, makeAdvisable);
             return proxyClass.getDeclaredConstructor(argumentTypes).newInstance(argumentValues);
         } catch (Throwable e) {
             e.printStackTrace();
@@ -81,25 +126,27 @@ public class Proxy {
     /**
      * Compiles and returns a proxy class for the class specified.
      *
-     * @param clazz    the target class to make a proxy for
-     * @param useCache true if a cached instance of the proxy classed should be used
+     * @param clazz         the target class to make a proxy for
+     * @param useCache      true if a cached instance of the proxy classed should be used
+     * @param makeAdvisable true if the proxy class should implement the <code>Advisable</code> interface,
+     *                      e.g. be prepared for programmatic, runtime, per instance hot deployement of advice
      * @return the proxy class
      */
-    public static Class getProxyClassFor(final Class clazz, final boolean useCache) {
+    public static Class getProxyClassFor(final Class clazz, final boolean useCache, final boolean makeAdvisable) {
 
         // FIXME - add support for proxying java.* classes
         if (clazz.getName().startsWith("java.")) {
             throw new RuntimeException("can not create proxies from system classes (java.*)");
         }
         if (!useCache) {
-            return getProxyClassFor(clazz);
+            return getNewProxyClassFor(clazz, makeAdvisable);
         } else {
             synchronized (PROXY_CLASS_CACHE) {
                 Object cachedProxyClass = PROXY_CLASS_CACHE.get(clazz);
                 if (cachedProxyClass != null) {
                     return (Class) cachedProxyClass;
                 }
-                Class proxyClass = getProxyClassFor(clazz);
+                Class proxyClass = getNewProxyClassFor(clazz, makeAdvisable);
                 PROXY_CLASS_CACHE.put(clazz, proxyClass);
                 return proxyClass;
             }
@@ -111,13 +158,17 @@ public class Proxy {
      * No cache is used, but compiles a new one each invocation.
      *
      * @param clazz
+     * @param makeAdvisable true if the proxy class should implement the <code>Advisable</code> interface,
+     *                      e.g. be prepared for programmatic, runtime, per instance hot deployement of advice
      * @return the proxy class
      */
-    private static Class getProxyClassFor(final Class clazz) {
+    private static Class getNewProxyClassFor(final Class clazz, final boolean makeAdvisable) {
         ClassLoader loader = clazz.getClassLoader();
         String proxyClassName = getUniqueClassNameForProxy(clazz);
 
-        makeProxyAdvisable(clazz, loader);
+        if (makeAdvisable) {
+            makeProxyAdvisable(clazz, loader);
+        }
 
         byte[] bytes = ProxyCompiler.compileProxyFor(clazz, proxyClassName);
         byte[] transformedBytes = ClassPreProcessorHelper.defineClass0Pre(

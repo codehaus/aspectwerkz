@@ -1135,6 +1135,7 @@ public class DocumentParser {
         }
         if (hasAllPointcuts || hasExecutionPointcut) {
             DefinitionParserHelper.createAndAddAdvisableDef(
+                    // TODO add ctor to expression - BUT: problem with mixin and ctor, ordering issue, Jp.invoke() calls field instance that has not been init yet in ctor (since body not invoked)
                     "(execution(!static * *.*(..)) && " + withinPointcut + ')',
                     definition
             );
@@ -1151,7 +1152,7 @@ public class DocumentParser {
         if (hasAllPointcuts || hasSetPointcut) {
             DefinitionParserHelper.createAndAddAdvisableDef(
                     "(set(!static * *.*) && " + withinPointcut + ')',
-                                                            // TODO might cause problem with fields in ctor, but grammar has bug so can't filter out ctors
+// TODO might cause problem with fields in ctor, but grammar has bug so can't filter out ctors
 //                    "(set(!static * *.*) && !withincode(*.new(..)) && " + pointcut + ')',
                     definition
             );
@@ -1159,7 +1160,7 @@ public class DocumentParser {
         if (hasAllPointcuts || hasGetPointcut) {
             DefinitionParserHelper.createAndAddAdvisableDef(
                     "(get(!static * *.*) && " + withinPointcut + ')',
-                                                            // TODO might cause problem with fields in ctor, but grammar has bug so can't filter out ctors
+// TODO might cause problem with fields in ctor, but grammar has bug so can't filter out ctors
 //                    "((get(!static * *.*) && !withincode(*.new(..))) && " + withinPointcut + ')',
                     definition
             );
