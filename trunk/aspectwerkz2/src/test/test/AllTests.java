@@ -49,7 +49,7 @@ public class AllTests extends TestCase {
 //        suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
 
         // TODO: does not work - ClassFormatException on all introductions
-//        suite.addTestSuite(test.IntroductionTest.class);
+        suite.addTestSuite(test.IntroductionTest.class);
 //        suite.addTestSuite(test.performance.PerformanceTest.class);
 
         return suite;

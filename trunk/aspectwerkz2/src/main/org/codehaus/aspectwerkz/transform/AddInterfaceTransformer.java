@@ -42,7 +42,6 @@ public final class AddInterfaceTransformer implements Transformer {
             if (classFilter(ctClass, classMetaData, definition)) {
                 return;
             }
-
             IntroductionTransformer.addInterfaceIntroductions(definition, ctClass, context, classMetaData);
         }
     }
