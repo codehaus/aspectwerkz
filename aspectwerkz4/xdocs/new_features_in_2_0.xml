@@ -196,9 +196,7 @@ void undeploy(DeploymentHandle deploymentHandle)
                     You define the deployment scope just as regular pointcuts, in its own aspect or in the same
                     aspect as the rest of your code:
                     <source><![CDATA[
-/**
- * @Expression execution(String *.toString())
- */
+@Expression("execution(String *.toString())")
 DeploymentScope toString;
                     ]]></source>
 
@@ -260,30 +258,43 @@ Deployer.undeploy(handle);
                         <code>@AfterFinally</code> (same as <code>@After</code>)
                     </li>
                     <li>
-                        <code>@AfterReturning [TYPE] (@AfterReturing(pointcut) or @AfterReturning(type=onReturnedType, expression=pointcut))</code>
+                        <code>@AfterReturning [TYPE]</code> -
+                        <code>@AfterReturing(pointcut)</code> or
+                        <code>@AfterReturning(type=onReturnedType, expression=pointcut)</code>
                     </li>
                     <li>
-                        <code>@AfterThrowing [TYPE] (@AfterThrowing(pointcut) or @AfterThrowing(type=onThrownedType, expression=pointcut))</code>
+                        <code>@AfterThrowing [TYPE]</code> -
+                        <code>@AfterThrowing(pointcut)</code> or
+                        <code>@AfterThrowing(type=onThrownedType, expression=pointcut))</code>
                     </li>
                 </ul>
             </p>
-            <subsection name="after finally">
+            <subsection name="after finally (after)">
                 <p>
                     An <code>after finally</code> advice declaration has the same semantics as an
                     <code>after</code> advice declaration, you can use any syntax you like.
                 </p>
                 <p>
                     <code>after finally</code> advice are always executed, they work the same as a finally block.
-                    Meaning that they will be invoked regardless of wheter an exception has been throw or if the
+                    Meaning that they will be invoked regardless of wheter an exception has been thrown or if the
                     method has returned successfully.
                 </p>
                 <p>
-                    <b>Annotation definition</b>
+                    <b>Java 5 annotation definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+@AfterFinally("execution(@TxRequired * *.*(..))")
+public void logTxMethods(StaticJoinPoint joinPoint) {..}
+                    ]]></source>
+                </p>
+                <p>
+                    <b>JavaDoc annotation definition</b>
                 </p>
                 <p>
                     <source><![CDATA[
 /**
- * @AfterFinally execution(@TxRequired * *.*(..))
+ * @AfterFinally("execution(@TxRequired * *.*(..))")
  */
 public void logTxMethods(StaticJoinPoint joinPoint) {..}
                     ]]></source>
@@ -306,7 +317,20 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
                     in the advice declaration.
                 </p>
                 <p>
-                    <b>Annotation definition</b>
+                    If no return type is specified then it applies to all invocations that returns normally, e.g. not
+                    when throwing an exception.
+                </p>
+                <p>
+                    <b>Java 5 annotation definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+@AfterReturning(type="@Service *..*", expression="execution(@TxRequired * *.*(..)")
+public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
+                    ]]></source>
+                </p>
+                <p>
+                    <b>JavaDoc annotation definition</b>
                 </p>
                 <p>
                     <source><![CDATA[
@@ -334,7 +358,20 @@ public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                     in the advice declaration.
                 </p>
                 <p>
-                    <b>Annotation definition</b>
+                    If no exception type is specified then it applies to all invocations that returns with
+                    an exception.
+                </p>
+                <p>
+                    <b>Java 5 annotation definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+@AfterThrowing(type="RuntimeException+", expression="execution(@TxRequired * *.*(..)")
+public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
+                    ]]></source>
+                </p>
+                <p>
+                    <b>JavaDoc annotation definition</b>
                 </p>
                 <p>
                     <source><![CDATA[
@@ -376,11 +413,6 @@ public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
             <p>
                 When only "StaticJoinPoint" is used, specific optimizations are used to maximize runtime performance
                 since RTTI access is then guaranteed to not happen.<br/>
-<!--                When neither "StaticJoinPoint" nor "JoinPoint" are used, extra optimization are used.<br/>-->
-<!--                Note that if at a join point, several advices are applied, the optimization will be limited by the-->
-<!--                least optimized advice, and thus if one single advice is using "JoinPoint", then even advice that makes-->
-<!--                use of "StaticJoinPoint" only (or no JoinPoint at all) will suffer from a performance penalty (the JoinPoint type-->
-<!--                is a subclass of the "StaticJoinPoint" type, and there is one instance at most per join point).-->
             </p>
             <p>
                 The following demonstrates legal syntax:
@@ -585,6 +617,7 @@ public void someMetod() {}
                         But you have the option of making the mixins <code>transient</code> (e.g. not serialized with
                         when the target class is serialized), by setting the <code>transient=true</code> flag.
                     </li>
+                    <br/>
                     <li>
                         Providing your own factory to control the instantiation of the mixin. This means that you
                         can plug in any IoC (dependency injection) framework to handle this for you. The custom
@@ -650,21 +683,21 @@ public void someMetod() {}
                     </ul>
                 </p>
                 <p>
-                   Example using Java 5 annotations:
+                    <b>Definition using Java 5 annotations</b>
                     <source><![CDATA[
 @Mixin("within(*..domain.*)")
 public class MyMixin { ... }
 
 @Mixin(
     expression="within(*..domain.*)",
-    depoymentModel="perClass",
+    deploymentModel="perClass",
     isTransient=true
 )
 public class MyOtherMixin { ... }
                     ]]></source>
                 </p>
                 <p>
-                   Example using JavaDoc annotations:
+                   <b>Definition using JavaDoc annotations</b>
                     <source><![CDATA[
 /** @Mixin("within(*..domain.*)") */
 public class MyMixin { ... }
@@ -672,7 +705,7 @@ public class MyMixin { ... }
 /**
  * @Mixin(
  *   expression="within(*..domain.*)",
- *   depoymentModel="perClass",
+ *   deploymentModel="perClass",
  *   isTransient=true
  * )
  */
@@ -728,7 +761,9 @@ public class MyOtherMixin { ... }
                 <p>
                    Example:
                     <source><![CDATA[
-<mixin class="foo.bar.MyMixinImpl"
+<mixin class="foo.bar.MyMixinImpl"/>
+
+<mixin class="foo.bar.MyOtherMixinImpl"
        deployment-model="perClass"
        transient="true"
        factory="factories.MyMixinFactory"
