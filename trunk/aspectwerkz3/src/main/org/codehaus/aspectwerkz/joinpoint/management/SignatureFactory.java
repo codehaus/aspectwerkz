@@ -7,22 +7,20 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.joinpoint.Signature;
-import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
-import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
-import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
-import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
-import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.ConstructorTuple;
+import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
-
+import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 import java.lang.reflect.Field;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public final class SignatureFactory {
-
     public static final Signature newMethodSignature(final Class declaringClass, final int joinPointHash) {
         MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
         return new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
