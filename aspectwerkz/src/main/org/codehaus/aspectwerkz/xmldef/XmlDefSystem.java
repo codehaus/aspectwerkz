@@ -877,7 +877,7 @@ public final class XmlDefSystem implements System {
         final Method[] sortedMethods = new Method[methods.size()];
         for (int i = 0; i < sortedMethods.length; i++) {
             sortedMethods[i] = (Method)methods.get(i);
-            java.lang.System.out.println(("JP " + i + " " + sortedMethods[i].getName()));
+            //ALEX debug global index: java.lang.System.out.println(("JP " + i + " " + sortedMethods[i].getName()));
         }
 
         synchronized (m_methods) {

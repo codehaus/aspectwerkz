@@ -198,7 +198,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * @param field is the <code>Field</code> object to extract details from.
      * @return a <code>FieldMetaData</code> instance.
      */
-    private static FieldMetaData createFieldMetaData(final CtField field) {
+    public static FieldMetaData createFieldMetaData(final CtField field) {
         if (field == null) throw new IllegalArgumentException("field can not be null");
 
         try {

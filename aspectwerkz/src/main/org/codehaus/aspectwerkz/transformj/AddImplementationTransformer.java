@@ -7,14 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transformj;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
@@ -97,8 +94,6 @@ public class AddImplementationTransformer implements Transformer {
      * Creates a proxy method for the introduces method.
      *
      * @param cg the class gen
-     * @param cpg the constant pool gen
-     * @param factory the instruction objectfactory
      * @param methodMetaData the meta-data for the method
      * @param mixinIndex the mixin index
      * @param methodIndex the method index
@@ -176,7 +171,6 @@ public class AddImplementationTransformer implements Transformer {
      */
     private static boolean isMethodStatic(final MethodMetaData methodMetaData) {
         int modifiers = methodMetaData.getModifiers();
-        //TODO are Javassist modifier same as Bcel (same as java)
         if ((modifiers & Modifier.STATIC) != 0) {
             return true;
         }
@@ -196,7 +190,11 @@ public class AddImplementationTransformer implements Transformer {
     private boolean classFilter(final CtClass cg,
                                 final ClassMetaData classMetaData,
                                 final AspectWerkzDefinition definition) {
-        if (cg.isInterface()) {
+        if (cg.isInterface() ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
             return true;
         }
         String className = cg.getName();

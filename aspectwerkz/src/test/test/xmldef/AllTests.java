@@ -31,7 +31,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.xmldef.MemberMethodAdviceTest.class);
         suite.addTestSuite(test.xmldef.StaticMethodAdviceTest.class);
 
-//        suite.addTestSuite(test.xmldef.FieldAdviceTest.class);
+        suite.addTestSuite(test.xmldef.FieldAdviceTest.class);
         suite.addTestSuite(test.xmldef.CallerSideAdviceTest.class);
 
         suite.addTestSuite(test.xmldef.ThrowsAdviceTest.class);
@@ -48,7 +48,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.xmldef.bindingsyntax.AdviceBindingTest.class);
         suite.addTestSuite(test.xmldef.superclassconstructorbug.SuperClassConstructorTest.class);
 
-//        suite.addTestSuite(test.xmldef.staticfield.StaticFieldAdviceTest.class);
+        suite.addTestSuite(test.xmldef.staticfield.StaticFieldAdviceTest.class);
 //        suite.addTestSuite(test.xmldef.staticfield.CollectionFieldTest.class);
 
         suite.addTestSuite(test.xmldef.PerformanceTest.class);

@@ -142,11 +142,14 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         m_stack.add(new AddInterfaceTransformer());
         m_stack.add(new AddImplementationTransformer());
         m_stack.add(new PrepareTransformer());
-//        m_stack.add(new AdviseMemberFieldTransformer());
-//        m_stack.add(new AdviseStaticFieldTransformer());
+
+        m_stack.add(new AdviseFieldTransformer());
+
         m_stack.add(new AdviseCallerSideMethodTransformer());
+
         m_stack.add(new AdviseMemberMethodTransformer());
         m_stack.add(new AdviseStaticMethodTransformer());
+
 //        m_stack.add(new AddMetaDataTransformer());
 //        m_stack.add(new AddUuidTransformer());
 
@@ -188,6 +191,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (DUMP_BEFORE) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
+                    //TODO: dump before make CtClass frozen in Javassist
                     klass.getClassGen().getClassPool().writeFile(className, "_dump/before/");
                 }
                 catch (Exception e) {
@@ -330,6 +334,12 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 //        return SELF.preProcessActivate(klazz);
 //    }
 
+    /**
+     * TODO runtime weaving
+     * @param klazz
+     * @return
+     * @throws Throwable
+     */
     public byte[] preProcessActivate(final Class klazz) throws Throwable {
         String className = klazz.getName();
         ClassLoader loader = klazz.getClassLoader();
