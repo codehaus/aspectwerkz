@@ -78,7 +78,7 @@ public class ClassPattern extends Pattern {
             m_classNamePattern = new com.karneim.util.collection.regex.Pattern(className);
         }
         catch (Throwable e) {
-            throw new DefinitionException("class pattern is not well formed: " + pattern);
+            throw new DefinitionException("class pattern is not well formed: " + pattern, e);
         }
     }
 
