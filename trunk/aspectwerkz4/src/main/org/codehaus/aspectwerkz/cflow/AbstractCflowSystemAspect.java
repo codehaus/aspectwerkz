@@ -10,45 +10,56 @@ package org.codehaus.aspectwerkz.cflow;
 import java.util.Stack;
 
 /**
- * An abstraction for the JIT gen cflow aspects
- *
- * A concrete JIT gen cflow aspect *class* should be generated per
- * cflow with a consistent naming scheme aka cflowID.
+ * An abstraction for the JIT gen cflow aspects.
+ * <p/>
+ * A concrete JIT gen cflow aspect *class* will be generated per
+ * cflow sub expression with a consistent naming scheme aka cflowID.
+ * <p/>
+ * The concrete cflow class will extends this one and implements two static methods.
+ * See the sample nested class.
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public abstract class AbstractCflowSystemAspect {
 
-    //TODO wrap in ThreadLocal
-    public Stack m_cflowStack = new Stack();
-
-    public void enter() {
-        m_cflowStack.push(Boolean.TRUE);
-    }
-
-    public void exit() {
-        m_cflowStack.pop();
-    }
-
-    public boolean inCflow() {
-        return m_cflowStack.size() > 0;
-    }
-
-    public boolean inCflowBelow() {
-        return m_cflowStack.size() == 1;
-    }
-
-    public int getCflowID() {
-        int indexOf = getClass().getName().lastIndexOf('_');
-        if (indexOf > 0) {
-            return Integer.parseInt(getClass().getName().substring(indexOf+1));
-        } else {
-            return 0;
+    //TODO do we really need a stack ? I think that an int increment wrapped in a ThreadLocal
+    // will be ok. The stack might only be needed for perCflow deployments
+    public ThreadLocal m_cflowStackLocal = new ThreadLocal() {
+        protected Object initialValue() {
+            return new Stack();
         }
+    };
+
+    /**
+     * before advice when entering this cflow
+     */
+    public void enter() {
+        ((Stack)m_cflowStackLocal.get()).push(Boolean.TRUE);
     }
 
     /**
-     * Sample jit cflow aspect that will gets generated
+     * after finally advice when exiting this cflow
+     */
+    public void exit() {
+        ((Stack)m_cflowStackLocal.get()).pop();
+    }
+
+    /**
+     * @return true if in the cflow
+     */
+    public boolean inCflow() {
+        return ((Stack)m_cflowStackLocal.get()).size() > 0;
+    }
+
+    /**
+     * @return true if in the cflowbelow
+     */
+    public boolean inCflowBelow() {
+        return ((Stack)m_cflowStackLocal.get()).size() == 1;
+    }
+
+    /**
+     * Sample jit cflow aspect that will gets generated.
      *
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
@@ -61,12 +72,19 @@ public abstract class AbstractCflowSystemAspect {
             INSTANCE = this;
         }
 
+        /**
+         * this method will be invoked by the JIT joinpoint
+         */
         public static boolean isInCflow() {
             return INSTANCE.inCflow();
         }
 
+        /**
+         * this method will be invoked by the JIT joinpoint
+         */
         public static boolean isInCflowBelow() {
             return INSTANCE.inCflowBelow();
         }
     }
+
 }

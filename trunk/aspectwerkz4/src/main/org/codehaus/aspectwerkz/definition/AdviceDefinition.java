@@ -12,11 +12,14 @@ import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.cflow.CflowBinding;
+
+import java.util.List;
 
 /**
  * Holds the meta-data for the advices.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Boner </a>
  */
 public class AdviceDefinition {
 
@@ -66,6 +69,11 @@ public class AdviceDefinition {
      * The special arg type, such as returning(TYPE) or throwing(TYPE).
      */
     private String m_specialArgumentType;
+
+    /**
+     * Indicates if this advice will need a cflow or cflowbelow runtime check
+     */
+    private boolean m_hasCflowOrCflowBelow = false;
 
     /**
      * TODO only use this method and make ctor private?
@@ -177,6 +185,10 @@ public class AdviceDefinition {
         m_expressionInfo = expressionInfo;
         m_method = methodInfo;
         m_aspectDefinition = aspectDef;
+
+        // get the cflow Advice bindings to know if this advice binding is using cflow or cflowbelow
+        List cflowBindings = CflowBinding.getCflowBindingsForCflowOf(m_expressionInfo);
+        m_hasCflowOrCflowBelow = (cflowBindings.size() > 0);
     }
 
     /**
@@ -233,6 +245,9 @@ public class AdviceDefinition {
      */
     public void setExpressionInfo(final ExpressionInfo newExpression) {
         m_expressionInfo = newExpression;
+        // update the hasCflow caracteristic
+        List cflowBindings = CflowBinding.getCflowBindingsForCflowOf(m_expressionInfo);
+        m_hasCflowOrCflowBelow = (cflowBindings.size() > 0);
     }
 
     /**
@@ -305,6 +320,15 @@ public class AdviceDefinition {
      */
     public AspectDefinition getAspectDefinition() {
         return m_aspectDefinition;
+    }
+
+    /**
+     * Check if the advice is bound to a pointcut with cflow or cflowbelow
+     *
+     * @return
+     */
+    public boolean hasCflowOrCflowBelow() {
+        return m_hasCflowOrCflowBelow;
     }
 
     /**

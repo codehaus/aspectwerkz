@@ -54,19 +54,9 @@ public class ExpressionInfo {
 
     private final ExpressionVisitor m_expression;
 
-    private final CflowExpressionVisitor m_cflowExpression;
-
-    private final CflowExpressionVisitorRuntime m_cflowExpressionRuntime;
-
     private final AdvisedClassFilterExpressionVisitor m_advisedClassFilterExpression;
 
-    private final AdvisedCflowClassFilterExpressionVisitor m_advisedCflowClassFilterExpression;
-
     private final CflowAspectExpressionVisitor m_cflowAspectExpression;
-
-    private boolean m_hasCflowPointcut;
-
-    private boolean m_hasCflowPointcutKnown = false;
 
     /**
      * Ordered map of the pointcut arguments type, indexed by their name.
@@ -100,15 +90,7 @@ public class ExpressionInfo {
             Node root = s_parser.parse(expression);
             m_expression = new ExpressionVisitor(this, expression, namespace, root);
             m_advisedClassFilterExpression =
-            new AdvisedClassFilterExpressionVisitor(this, expression, namespace, root);
-            m_cflowExpression = new CflowExpressionVisitor(this, expression, namespace, root);
-            m_cflowExpressionRuntime = new CflowExpressionVisitorRuntime(this, expression, namespace, root);
-            m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(
-                    this,
-                    expression,
-                    namespace,
-                    root
-            );
+                new AdvisedClassFilterExpressionVisitor(this, expression, namespace, root);
             m_cflowAspectExpression = new CflowAspectExpressionVisitor(root, namespace);
         } catch (Throwable e) {
             throw new DefinitionException("expression is not well-formed [" + expression + "]: " + e.getMessage(), e);
@@ -129,10 +111,7 @@ public class ExpressionInfo {
         try {
             m_expression = new ExpressionVisitor(this, "N/A", namespace, subExpression);
             m_advisedClassFilterExpression =
-            new AdvisedClassFilterExpressionVisitor(this, "N/A", namespace, subExpression);
-            m_cflowExpression = null;
-            m_cflowExpressionRuntime = new CflowExpressionVisitorRuntime(this, "N/A", namespace, subExpression);
-            m_advisedCflowClassFilterExpression = null;
+                new AdvisedClassFilterExpressionVisitor(this, "N/A", namespace, subExpression);
             m_cflowAspectExpression = new CflowAspectExpressionVisitor(subExpression, namespace);
         } catch (Throwable e) {
             throw new DefinitionException("sub expression is not well-formed from [" + subExpression+ "]: " + e.getMessage(), e);
@@ -158,30 +137,12 @@ public class ExpressionInfo {
     }
 
     /**
-     * Returns the cflow expression.
-     *
-     * @return the cflow expression
-     */
-    public CflowExpressionVisitor getCflowExpression() {
-        return m_cflowExpression;
-    }
-
-    /**
      * Returns the cflow aspect expression.
      *
      * @return the cflow aspect expression
      */
     public CflowAspectExpressionVisitor getCflowAspectExpression() {
         return m_cflowAspectExpression;
-    }
-
-    /**
-     * Returns the runtime cflow expression.
-     *
-     * @return the cflow expression
-     */
-    public CflowExpressionVisitorRuntime getCflowExpressionRuntime() {
-        return m_cflowExpressionRuntime;
     }
 
     /**
@@ -194,45 +155,12 @@ public class ExpressionInfo {
     }
 
     /**
-     * Returns the advised cflow class filter expression.
-     *
-     * @return the advised cflow class filter expression
-     */
-    public AdvisedCflowClassFilterExpressionVisitor getAdvisedCflowClassFilterExpression() {
-        return m_advisedCflowClassFilterExpression;
-    }
-
-    /**
      * Returns the parser.
      *
      * @return the parser
      */
     public static ExpressionParser getParser() {
         return s_parser;
-    }
-
-    /**
-     * Checks if the expression has a cflow pointcut node.
-     *
-     * @return
-     */
-    public boolean hasCflowPointcut() {
-        if (!m_hasCflowPointcutKnown) {
-            try {
-                m_hasCflowPointcut = new CflowPointcutFinderVisitor(
-                        toString(),
-                        m_expression.m_namespace,
-                        s_parser.parse(toString())
-                ).hasCflowPointcut();
-                m_hasCflowPointcutKnown = true;
-            } catch (Throwable e) {
-                // should not happen since the m_expression had been accepted
-                throw new DefinitionException(
-                        "expression is not well-formed [" + toString() + "]: " + e.getMessage(), e
-                );
-            }
-        }
-        return m_hasCflowPointcut;
     }
 
     /**

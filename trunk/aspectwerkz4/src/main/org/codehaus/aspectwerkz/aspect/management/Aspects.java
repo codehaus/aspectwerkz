@@ -8,18 +8,13 @@
 package org.codehaus.aspectwerkz.aspect.management;
 
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
-import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy;
 import org.codehaus.aspectwerkz.AspectContext;
-import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.AspectContext;
-import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.AspectContext;
 
 import java.util.*;
 import java.lang.reflect.Constructor;
@@ -200,9 +195,7 @@ public class Aspects {
         String containerClassName = aspectDefinition.getContainerClassName();
         try {
             Class containerClass;
-            //TODO remove cflow things here
-            if (containerClassName == null ||
-                aspectClass.getName().equals(CFlowSystemAspect.CLASS_NAME)) {
+            if (containerClassName == null) {
                 containerClass = ContextClassLoader.loadClass(aspectClass.getClassLoader(), DEFAULT_ASPECT_CONTAINER);
             } else {
                 containerClass = ContextClassLoader.loadClass(aspectClass.getClassLoader(), containerClassName);
