@@ -274,7 +274,7 @@ public class JavassistHelper {
         final CtClass ctClass,
         final CtMethod originalMethod,
         final int methodSequence) throws NotFoundException, CannotCompileException {
-        String wrapperMethodName = TransformationUtil.getPrefixedMethodName(
+        String wrapperMethodName = TransformationUtil.getPrefixedOriginalMethodName(
             originalMethod.getName(),
             methodSequence,
             ctClass.getName().replace('/', '.'));

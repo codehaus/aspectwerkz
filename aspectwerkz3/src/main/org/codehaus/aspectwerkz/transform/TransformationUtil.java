@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz.transform;
 
 /**
  * Contains constants and utility method used by the transformers.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class TransformationUtil {
@@ -31,7 +31,7 @@ public final class TransformationUtil {
 
     public static final String CROSS_CUTTING_INFO_CLASS_FIELD = ASPECTWERKZ_PREFIX + "crossCuttingInfo";
 
-    public static final String WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "wrapper";
+    public static final String WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "wrapper" + DELIMITER;
 
     public static final String JOIN_POINTS_INIT_METHOD = ORIGINAL_METHOD_PREFIX + "initJoinPoints";
 
@@ -62,57 +62,57 @@ public final class TransformationUtil {
     public static final String PROCEED_WITH_HANDLER_JOIN_POINT_METHOD = "proceedWithHandlerJoinPoint";
 
     public static final String SUPER_CALL_WRAPPER_PREFIX = ASPECTWERKZ_PREFIX
-        + DELIMITER
-        + "super_call_wrapper"
-        + DELIMITER;
+                                                           + DELIMITER
+                                                           + "super_call_wrapper"
+                                                           + DELIMITER;
 
     public static final String MEMBER_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER
-        + "member_method"
-        + DELIMITER;
+                                                                 + DELIMITER
+                                                                 + "member_method"
+                                                                 + DELIMITER;
 
     public static final String STATIC_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER
-        + "static_method"
-        + DELIMITER;
+                                                                 + DELIMITER
+                                                                 + "static_method"
+                                                                 + DELIMITER;
 
     public static final String MEMBER_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER
-        + "member_field"
-        + DELIMITER
-        + "get"
-        + DELIMITER;
+                                                                    + DELIMITER
+                                                                    + "member_field"
+                                                                    + DELIMITER
+                                                                    + "get"
+                                                                    + DELIMITER;
 
     public static final String MEMBER_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER
-        + "member_field"
-        + DELIMITER
-        + "set"
-        + DELIMITER;
+                                                                    + DELIMITER
+                                                                    + "member_field"
+                                                                    + DELIMITER
+                                                                    + "set"
+                                                                    + DELIMITER;
 
     public static final String STATIC_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER
-        + "static_field"
-        + DELIMITER
-        + "get"
-        + DELIMITER;
+                                                                    + DELIMITER
+                                                                    + "static_field"
+                                                                    + DELIMITER
+                                                                    + "get"
+                                                                    + DELIMITER;
 
     public static final String STATIC_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER
-        + "static_field"
-        + DELIMITER
-        + "set"
-        + DELIMITER;
+                                                                    + DELIMITER
+                                                                    + "static_field"
+                                                                    + DELIMITER
+                                                                    + "set"
+                                                                    + DELIMITER;
 
     public static final String CALLER_SIDE_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER
-        + "caller_side_method"
-        + DELIMITER;
+                                                               + DELIMITER
+                                                               + "caller_side_method"
+                                                               + DELIMITER;
 
     public static final String CONSTRUCTOR_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER
-        + "constructor"
-        + DELIMITER;
+                                                               + DELIMITER
+                                                               + "constructor"
+                                                               + DELIMITER;
 
     public static final String FIELD_JOIN_POINT_PRE_EXECUTION_METHOD = "pre";
 
@@ -196,15 +196,38 @@ public final class TransformationUtil {
 
     /**
      * Returns the prefixed method name.
-     * 
-     * @param methodName the method name
+     *
+     * @param methodName     the method name
      * @param methodSequence the method sequence
-     * @param className the class name
+     * @param className      the class name
      * @return the name of the join point
      */
-    public static String getPrefixedMethodName(final String methodName, final int methodSequence, final String className) {
+    public static String getPrefixedOriginalMethodName(final String methodName,
+                                                       final int methodSequence,
+                                                       final String className) {
         final StringBuffer buf = new StringBuffer();
         buf.append(ORIGINAL_METHOD_PREFIX);
+        buf.append(methodName);
+        buf.append(DELIMITER);
+        buf.append(methodSequence);
+        buf.append(DELIMITER);
+        buf.append(className.replace('.', '_').replace('/', '_'));
+        return buf.toString();
+    }
+
+    /**
+     * Returns the prefixed method name.
+     *
+     * @param methodName     the method name
+     * @param methodSequence the method sequence
+     * @param className      the class name
+     * @return the name of the join point
+     */
+    public static String getWrapperMethodName(final String methodName,
+                                              final int methodSequence,
+                                              final String className) {
+        final StringBuffer buf = new StringBuffer();
+        buf.append(WRAPPER_METHOD_PREFIX);
         buf.append(methodName);
         buf.append(DELIMITER);
         buf.append(methodSequence);

@@ -101,7 +101,7 @@ public class MethodExecutionTransformer implements Transformer {
             final int methodHash = JavassistHelper.calculateHash(method);
 
             // there was no empty method already
-            final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
+            final String prefixedMethodName = TransformationUtil.getPrefixedOriginalMethodName(
                 method.getName(),
                 methodSequence,
                 ctClass.getName().replace('/', '.'));
@@ -150,7 +150,7 @@ public class MethodExecutionTransformer implements Transformer {
             CtMethod method = tuple.getMethod();
 
             //System.out.println("FOUND NO PC = " + method.getName());
-            final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(method.getName(), tuple
+            final String prefixedMethodName = TransformationUtil.getPrefixedOriginalMethodName(method.getName(), tuple
                     .getSequence(), ctClass.getName().replace('/', '.'));
 
             // do we have a wrapper method, which is NOT marked empty
@@ -263,7 +263,7 @@ public class MethodExecutionTransformer implements Transformer {
     private void addPrefixToMethod(final CtClass cg, final CtMethod ctMethod, final int methodSequence) {
         // change the method access flags (should always be set to protected)
         int accessFlags = ctMethod.getModifiers();
-        String prefixedMethodName = TransformationUtil.getPrefixedMethodName(ctMethod.getName(), methodSequence, cg
+        String prefixedMethodName = TransformationUtil.getPrefixedOriginalMethodName(ctMethod.getName(), methodSequence, cg
                 .getName());
         ctMethod.setName(prefixedMethodName);
         ctMethod.setModifiers(accessFlags);
