@@ -18,20 +18,19 @@ import org.codehaus.aspectwerkz.CrossCuttingInfo;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  *
- * Aspect perInstance
- * @Aspect perInstance name=NAME
+ * @Aspect perInstance NAME
  */
 public class CachingAspect {
 
     /**
      * The cross-cutting info.
      */
-    private CrossCuttingInfo m_info;
+    private final CrossCuttingInfo m_info;
 
     /**
      * The cache.
      */
-    private Map m_cache = new HashMap();
+    private final Map m_cache = new HashMap();
 
     /**
      * We are interested in cross-cutting info, therefore we have added a constructor that takes a cross-cutting infor
@@ -44,8 +43,8 @@ public class CachingAspect {
     }
 
     /**
-     * @Before call(int examples.caching.Pi.getPiDecimal(int)) &&
-     *         withincode(int examples.caching.main(String[]))
+     * @Before call(int examples.caching.Pi.getPiDecimal(int))
+     *         && withincode(int examples.caching.main(String[]))
      */
     public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();

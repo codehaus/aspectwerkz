@@ -7,16 +7,26 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.apache.xmlbeans.impl.jam.*;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.apache.xmlbeans.impl.jam.JAnnotation;
+import org.apache.xmlbeans.impl.jam.JClass;
+import org.apache.xmlbeans.impl.jam.JField;
+import org.apache.xmlbeans.impl.jam.JMethod;
+import org.apache.xmlbeans.impl.jam.JamService;
+import org.apache.xmlbeans.impl.jam.JamServiceFactory;
+import org.apache.xmlbeans.impl.jam.JamServiceParams;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.annotation.instrumentation.bcel.BcelAttributeEnhancer;
-
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import java.net.URLClassLoader;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map;
 
 /**
  * Annotation compiler.
@@ -61,12 +71,8 @@ public class AnnotationC {
     public static void main(String[] args) {
         if (args.length < 2) {
             System.out.println("AspectWerkz (c) 2002-2004 Jonas Bonér, Alexandre Vasseur");
-            System.out.println(
-                    "usage: java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC [-verbose] <path to src dir> <path to classes dir> [<path to destination dir>]"
-            );
-            System.out.println(
-                    "       <path to destination dir> is optional, if omitted the compiled classes will be written to the initial directory"
-            );
+            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC [-verbose] <path to src dir> <path to classes dir> [<path to destination dir>]");
+            System.out.println("       <path to destination dir> is optional, if omitted the compiled classes will be written to the initial directory");
             System.out.println("       use -verbose to activate verbose logging");
             System.exit(0);
         }
@@ -119,8 +125,7 @@ public class AnnotationC {
             throw new IllegalArgumentException("class path can not be null");
         }
         try {
-            s_loader =
-            new URLClassLoader(new URL[]{new File(classPath).toURL()}, ClassLoader.getSystemClassLoader());
+            s_loader = new URLClassLoader(new URL[] { new File(classPath).toURL() }, ClassLoader.getSystemClassLoader());
             JamServiceFactory factory = JamServiceFactory.getInstance();
             JamServiceParams params = factory.createServiceParams();
 
@@ -132,7 +137,7 @@ public class AnnotationC {
             registerUserDefinedAnnotations(params);
 
             // register the source files of interest
-            params.includeSourcePattern(new File[]{new File(sourcePath)}, "**/*.java");
+            params.includeSourcePattern(new File[] { new File(sourcePath) }, "**/*.java");
 
             // get all the classes
             JamService service = factory.createService(params);
@@ -171,8 +176,8 @@ public class AnnotationC {
         if (index == -1) {
             return classFileName;
         } else {
-            newClassFileName = classFileName.substring(0, index) + '$' +
-                               classFileName.substring(index + 1, classFileName.length());
+            newClassFileName = classFileName.substring(0, index) + '$'
+                               + classFileName.substring(index + 1, classFileName.length());
             return newClassFileName;
         }
     }
@@ -183,8 +188,8 @@ public class AnnotationC {
         if (index == -1) {
             return classFileName;
         } else {
-            newClassFileName = classFileName.substring(0, index) + '$' +
-                               classFileName.substring(index + 1, classFileName.length());
+            newClassFileName = classFileName.substring(0, index) + '$'
+                               + classFileName.substring(index + 1, classFileName.length());
             return newClassFileName;
         }
     }
@@ -261,9 +266,7 @@ public class AnnotationC {
                     log("    interface introduction [" + introducedInterfaceNames[j] + ']');
                 }
                 if (introducedInterfaceNames.length == 0) {
-                    String innerClassName = AnnotationC.convertToJavaStyleInnerClassName(
-                            innerClass.getQualifiedName()
-                    );
+                    String innerClassName = AnnotationC.convertToJavaStyleInnerClassName(innerClass.getQualifiedName());
                     introducedInterfaceNames = enhancer.getNearestInterfacesInHierarchy(innerClassName);
                     if (introducedInterfaceNames.length == 0) {
                         throw new RuntimeException("no implicit interfaces found for " + innerClassName);
@@ -273,10 +276,8 @@ public class AnnotationC {
                     }
                 }
                 introduceProxy.setIntroducedInterfaces(introducedInterfaceNames);
-                log(
-                        "    mixin introduction [" + innerClass.getQualifiedName() + "::" +
-                        introduceProxy.expression() + "] "
-                );
+                log("    mixin introduction [" + innerClass.getQualifiedName() + "::" + introduceProxy.expression()
+                    + "] ");
                 log("    deployment model [" + introduceProxy.deploymentModel() + ']');
                 enhancer.insertClassAttribute(new AnnotationInfo(ANNOTATION_INTRODUCE, introduceProxy));
             }
@@ -302,10 +303,8 @@ public class AnnotationC {
             try {
                 klass = s_loader.loadClass(className);
             } catch (ClassNotFoundException e) {
-                throw new DefinitionException(
-                        "AnnotationC::ERROR" + className +
-                        " could not be found on system classpath or class path provided as argument to the compiler"
-                );
+                throw new DefinitionException("AnnotationC::ERROR" + className
+                                              + " could not be found on system classpath or class path provided as argument to the compiler");
             }
             params.registerAnnotationProxy(klass, name);
         }

@@ -7,9 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
-import org.codehaus.aspectwerkz.definition.attribute.AttributeExtractor;
-import org.codehaus.aspectwerkz.definition.attribute.Attributes;
-import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
+import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
+import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
+import org.codehaus.aspectwerkz.annotation.instrumentation.Attributes;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
@@ -101,7 +101,7 @@ public class JavassistClassInfo implements ClassInfo {
     private final ClassLoader m_loader;
 
     /**
-     * The annotation extractor.
+     * The attribute extractor.
      */
     private AttributeExtractor m_attributeExtractor;
 
@@ -158,25 +158,15 @@ public class JavassistClassInfo implements ClassInfo {
     }
 
     /**
-     * Returns the attributes.
+     * Returns the annotations.
      *
-     * @return the attributes
+     * @return the annotations
      */
     public List getAnnotations() {
         if (m_annotations == null) {
-            m_annotations = new ArrayList();
             addAnnotations();
         }
         return m_annotations;
-    }
-
-    /**
-     * Adds an annotation.
-     *
-     * @param annotation the annotation
-     */
-    public void addAnnotation(final Object annotation) {
-        m_annotations.add(annotation);
     }
 
     /**
@@ -342,16 +332,12 @@ public class JavassistClassInfo implements ClassInfo {
         if (m_attributeExtractor == null) {
             return;
         }
+        m_annotations = new ArrayList();
         Object[] attributes = m_attributeExtractor.getClassAttributes();
         for (int i = 0; i < attributes.length; i++) {
             Object attribute = attributes[i];
-            if (attribute instanceof CustomAttribute) {
-                CustomAttribute custom = (CustomAttribute)attribute;
-                if (custom.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
-                    // skip 'system' annotations
-                    continue;
-                }
-                addAnnotation(custom);
+            if (attribute instanceof AnnotationInfo) {
+                m_annotations.add(attribute);
             }
         }
     }

@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation;
 
+
 /**
  * Methods that should be implemented in order to extract attributes associate with a class.
  * <p/>
@@ -16,7 +17,6 @@ package org.codehaus.aspectwerkz.annotation.instrumentation;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface AttributeExtractor {
-
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[] {  };
 
     /**

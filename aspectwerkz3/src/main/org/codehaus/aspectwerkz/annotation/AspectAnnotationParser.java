@@ -11,7 +11,6 @@ import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -35,15 +34,15 @@ public class AspectAnnotationParser implements AnnotationParser {
         if (klass == null) {
             throw new IllegalArgumentException("class to parse can not be null");
         }
-        AspectAnnotationProxy aspectAnnotation = (AspectAnnotationProxy)Annotations.getAnnotation(
-                AnnotationC.ANNOTATION_ASPECT, klass
-        );
+        AspectAnnotationProxy aspectAnnotation = (AspectAnnotationProxy)Annotations.getAnnotation(AnnotationC.ANNOTATION_ASPECT,
+                                                                                                  klass);
         if (aspectAnnotation == null) {
             // fall back on using the class name as aspect name and let the deployment model be perJVM
             aspectAnnotation = new AspectAnnotationProxy();
             aspectAnnotation.setname(klass.getName());
             aspectAnnotation.setvalue("perJVM");
         }
+
         // attribute settings override the xml settings
         aspectDef.setDeploymentModel(aspectAnnotation.deploymentModel());
         String className = klass.getName();
@@ -71,25 +70,19 @@ public class AspectAnnotationParser implements AnnotationParser {
         // parse the pointcuts
         for (int i = 0; i < fieldList.length; i++) {
             Field field = fieldList[i];
-            ExpressionAnnotationProxy expressionAnnotation = (ExpressionAnnotationProxy)Annotations.getAnnotation(
-                    AnnotationC.ANNOTATION_EXPRESSION, field
-            );
+            ExpressionAnnotationProxy expressionAnnotation = (ExpressionAnnotationProxy)Annotations.getAnnotation(AnnotationC.ANNOTATION_EXPRESSION,
+                                                                                                                  field);
             if (expressionAnnotation != null) {
-                DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                        field.getName(),
-                        expressionAnnotation.expression(), aspectDef
-                );
+                DefinitionParserHelper.createAndAddPointcutDefToAspectDef(field.getName(),
+                                                                          expressionAnnotation.expression(), aspectDef);
             }
-            IntroduceAnnotationProxy introduceAnnotation = (IntroduceAnnotationProxy)Annotations.getAnnotation(
-                    AnnotationC.ANNOTATION_INTRODUCE, field
-            );
+            IntroduceAnnotationProxy introduceAnnotation = (IntroduceAnnotationProxy)Annotations.getAnnotation(AnnotationC.ANNOTATION_INTRODUCE,
+                                                                                                               field);
             if (introduceAnnotation != null) {
-                DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
-                        introduceAnnotation.expression(),
-                        field.getName(),
-                        field.getType().getName(),
-                        aspectDef
-                );
+                DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(introduceAnnotation.expression(),
+                                                                                       field.getName(),
+                                                                                       field.getType().getName(),
+                                                                                       aspectDef);
             }
         }
 
@@ -105,9 +98,8 @@ public class AspectAnnotationParser implements AnnotationParser {
      * @param aspectName      the aspect name
      * @param aspectDef       the aspect definition
      */
-    private void parseMethodAttributes(
-            final Class klass, final String aspectClassName, final String aspectName,
-            final AspectDefinition aspectDef) {
+    private void parseMethodAttributes(final Class klass, final String aspectClassName, final String aspectName,
+                                       final AspectDefinition aspectDef) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
@@ -129,36 +121,27 @@ public class AspectAnnotationParser implements AnnotationParser {
 
             // create the advice name out of the class and method name, <classname>.<methodname>
             String adviceName = aspectClassName + '.' + method.getName();
-            AroundAnnotationProxy aroundAnnotation = (AroundAnnotationProxy)Annotations.getAnnotation(
-                    AnnotationC.ANNOTATION_AROUND, method
-            );
+            AroundAnnotationProxy aroundAnnotation = (AroundAnnotationProxy)Annotations.getAnnotation(AnnotationC.ANNOTATION_AROUND,
+                                                                                                      method);
             if (aroundAnnotation != null) {
-                DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(
-                        aroundAnnotation.pointcut(), adviceName, aspectName,
-                        aspectClassName, method, methodIndex,
-                        aspectDef
-                );
+                DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(aroundAnnotation.pointcut(), adviceName,
+                                                                              aspectName, aspectClassName, method,
+                                                                              methodIndex, aspectDef);
             }
-            BeforeAnnotationProxy beforeAnnotation = (BeforeAnnotationProxy)Annotations.getAnnotation(
-                    AnnotationC.ANNOTATION_BEFORE, method
-            );
+            BeforeAnnotationProxy beforeAnnotation = (BeforeAnnotationProxy)Annotations.getAnnotation(AnnotationC.ANNOTATION_BEFORE,
+                                                                                                      method);
             if (beforeAnnotation != null) {
-                DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(
-                        beforeAnnotation.pointcut(), adviceName, aspectName,
-                        aspectClassName, method, methodIndex,
-                        aspectDef
-                );
+                DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(beforeAnnotation.pointcut(), adviceName,
+                                                                              aspectName, aspectClassName, method,
+                                                                              methodIndex, aspectDef);
             }
-            AfterAnnotationProxy afterAnnotation = (AfterAnnotationProxy)Annotations.getAnnotation(
-                    AnnotationC.ANNOTATION_AFTER, method
-            );
+            AfterAnnotationProxy afterAnnotation = (AfterAnnotationProxy)Annotations.getAnnotation(AnnotationC.ANNOTATION_AFTER,
+                                                                                                   method);
 
             if (afterAnnotation != null) {
-                DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(
-                        afterAnnotation.pointcut(), adviceName, aspectName,
-                        aspectClassName, method, methodIndex,
-                        aspectDef
-                );
+                DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(afterAnnotation.pointcut(), adviceName,
+                                                                             aspectName, aspectClassName, method,
+                                                                             methodIndex, aspectDef);
             }
         }
     }
@@ -175,19 +158,19 @@ public class AspectAnnotationParser implements AnnotationParser {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
-        IntroduceAnnotationProxy introduceAnnotation = (IntroduceAnnotationProxy)Annotations.getAnnotation(
-                AnnotationC.ANNOTATION_INTRODUCE, klass
-        );
-//        Class mixin;
-//        try {
-//            mixin = klass.getClassLoader().loadClass(introduceAnnotation.());
-//        } catch (ClassNotFoundException e) {
-//            throw new WrappedRuntimeException(e);
-//        }
-//        DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
-//                mixin, introduceAttr.getExpression(),
-//                introduceAttr.getDeploymentModel(),
-//                aspectDef
-//        );
+        IntroduceAnnotationProxy introduceAnnotation = (IntroduceAnnotationProxy)Annotations.getAnnotation(AnnotationC.ANNOTATION_INTRODUCE,
+                                                                                                           klass);
+
+        //        Class mixin;
+        //        try {
+        //            mixin = klass.getClassLoader().loadClass(introduceAnnotation.());
+        //        } catch (ClassNotFoundException e) {
+        //            throw new WrappedRuntimeException(e);
+        //        }
+        //        DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
+        //                mixin, introduceAttr.getExpression(),
+        //                introduceAttr.getDeploymentModel(),
+        //                aspectDef
+        //        );
     }
 }

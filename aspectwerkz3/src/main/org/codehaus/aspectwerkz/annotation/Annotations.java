@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.annotation;
 
 import org.apache.xmlbeans.impl.jam.annotation.TypedAnnotationProxyBase;
 import org.codehaus.aspectwerkz.annotation.instrumentation.Attributes;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;

@@ -9,9 +9,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression.ast;
 
-import java.io.Reader;
-import java.io.StringReader;
-import java.lang.reflect.Modifier;
 
 public class ExpressionParserTokenManager implements ExpressionParserConstants {
     public static java.io.PrintStream debugStream = System.out;

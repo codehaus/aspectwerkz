@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.annotation;
 
 import org.apache.xmlbeans.impl.jam.annotation.TypedAnnotationProxyBase;
 import org.codehaus.aspectwerkz.util.Strings;
-
 import java.io.Serializable;
 
 /**

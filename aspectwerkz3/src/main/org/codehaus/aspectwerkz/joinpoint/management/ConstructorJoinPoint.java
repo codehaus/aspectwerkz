@@ -11,7 +11,6 @@ import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
-import java.util.List;
 
 /**
  * Abstraction of a constructor join point.

@@ -259,7 +259,8 @@ public class JitCompiler {
                 cw.visitEnd();
 
                 // CAUTION: need to be commented when used in production (meaning when creating a dist)
-                //AsmHelper.dumpClass("_dump", className, cw);
+                AsmHelper.dumpClass("_dump", className, cw);
+
                 // load the generated class
                 joinPointClass = AsmHelper.loadClass(loader, cw.toByteArray(), className.replace('/', '.'));
             }

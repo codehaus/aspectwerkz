@@ -23,6 +23,19 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
             </source>
         </section>
+        <section name="Project License Issues">
+            <p>
+            AspectWerkz is Free Software. The LGPL license is sufficiently flexible to allow the use of AspectWerkz
+            in both open source and commercial projects. Using AspectWerkz (by importing AspectWerkz's public interfaces
+            in your Java code), and extending AspectWerkz (by subclassing) is considered by the authors of AspectWerkz
+            to be dynamic linking. Hence our interpretation of the LGPL is that the use of the unmodified AspectWerkz
+            source does not affect the license of your application code. The use of the unmodified AspectWerkz binary
+            of course never affects the license of your application or distribution.
+            </p>
+            <p>
+                If you modify AspectWerkz and redistribute your modifications, the LGPL applies.
+            </p>
+        </section>
         <section name="GNU Lesser General Public License (LGPL)">
             <source>
             GNU LESSER GENERAL PUBLIC LICENSE

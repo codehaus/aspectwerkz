@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
-import org.codehaus.aspectwerkz.definition.attribute.AttributeExtractor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
@@ -39,18 +38,12 @@ public abstract class JavaMemberInfo implements MemberInfo {
     protected final ClassInfoRepository m_classInfoRepository;
 
     /**
-     * The annotation extractor.
-     */
-    protected AttributeExtractor m_attributeExtractor;
-
-    /**
      * Creates a new member meta data instance.
      *
      * @param member
      * @param declaringType
-     * @param attributeExtractor
      */
-    JavaMemberInfo(final Member member, final JavaClassInfo declaringType, final AttributeExtractor attributeExtractor) {
+    JavaMemberInfo(final Member member, final JavaClassInfo declaringType) {
         if (member == null) {
             throw new IllegalArgumentException("member can not be null");
         }
@@ -60,7 +53,6 @@ public abstract class JavaMemberInfo implements MemberInfo {
         m_member = member;
         m_declaringType = declaringType;
         m_classInfoRepository = ClassInfoRepository.getRepository(member.getDeclaringClass().getClassLoader());
-        m_attributeExtractor = attributeExtractor;
     }
 
     /**

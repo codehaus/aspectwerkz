@@ -21,7 +21,7 @@ public interface AttributeEnhancer {
      *
      * @param className the class name
      * @param classPath the class path
-     * @param isInner 
+     * @param isInner
      * @return true if the class was succefully loaded, false otherwise
      */
     boolean initialize(String className, String classPath, boolean isInner);

@@ -64,20 +64,20 @@
                     in which those are deployed. As described <a href="xml_definition.html">here</a>, you need to write an <b>AOP XML deployement descriptor</b> for your aspects, that declares the
                     Aspects to use, and defines or refines the pointcuts (where to do) and advices (what to do), no matter your Aspects are using an Annotations attribute based
                     definition or a full XML defintions, or both.
-                    <br/>
+                    <p/>
                     When thinking about this <code>aop.xml</code> file, you need to remember that the declared Aspects will affects the classes visible from the ClassLoader that can access this file.
                     For example if you package this file in <code>application.war/WEB-INF/aop.xml</code>, it will affects all web-application classes, third parties libraries from
                     <code>application.war/WEB-INF/lib/</code> and all JSPs.
-                    <br/>
+                    <p/>
                     If you want to affect all JVM classes, you can use the JVM option <code>-Daspectwerkz.definition.file=path/aop.xml</code>, or better have one or more <code>META-INF/aop.xml</code> file(s)
                     accessible from the JVM regular classpath.
-                    <br/>
+                    <p/>
                     It is thus possible to organise your aspects alongside all your deployed applications, while allowing some interesting schemes: a tracing Aspect deployed
                     at the JVM level will affect all deployed applications, while Aspects deployed within the application itself will only affects this application.
-                    <br/>
+                    <p/>
                     If you plan to use <a href="Offline weaving">offline mode</a>, you need to post process your application as many time as you have aop.xml files, and still packaged the aop.xml file(s)
                     alongside the application and/or at a JVM wide level, depending on what you want to achieve.
-                    <br/>
+                    <p/>
                     <b>To summarize, you have to remember that an <code>META-INF/aop.xml</code> or <code>WEB-INF/aop.xml</code> file will affect the classes loaded by the classloader(s)
                     that have this aop.xml file in their path. The JVM wide aop.xml file will affect the system classloader and all child classloaders.</b>
                 </p>
@@ -87,13 +87,13 @@
             <subsection name="Understanding class loading in Java">
                 <p>
                     You should be familiar with the way Java handles <b>ClassLoader isolation</b> to fully understand how to deploy your own Aspects.
-                    <br/>
+                    <p/>
                     When you are invoking a <code>main</code> method of a Class, this class is loaded (and lives) in the <b>System ClassLoader</b>. All classes belonging to a path specified
                     with a <code>-cp</code> or <code>-classpath</code> JVM option will live in this ClassLoader.
-                    <br/>
+                    <p/>
                     If this class is using <code>java.lang.Object</code> and other <code>java.*</code> classes, those have been loaded (and live) in <b>Extension ClassLoader</b>
                     or <b>Bootstrap ClassLoader</b>.
-                    <br/>
+                    <p/>
                     The <code>java.lang.Object</code> can be seen and used by your main Class since the <b>System ClassLoader</b> is by convention a <b>child</b> of the <b>Extension ClassLoader</b>
                     which is himself a <b>child</b> of the <b>Boot ClassLoader</b>. This relation looks like this:
                     <code><pre>
@@ -103,13 +103,13 @@
                            |
                         System ClassLoader (your main Class, and all the -cp / -classpath jars and classes)
                     </pre></code>
-                    <br/>
+                    <p/>
                     When you are using an application server, there are usually many other classloaders. A simple view is to say that there is
                     one classloader per deployed application (that's why you don't need to add your war file in the JVM classpath right ?).
                     In fact the picture is a bit more complex to allow JSPs changes while the application is running etc.
                     Those <b>application ClassLoaders</b> are <b>child</b> of upper ClassLoaders like the <b>System ClassLoader</b>, but if you deploy two war files,
                     they cannot share classes unless thoses classes are in an upper ClassLoader.
-                    <br/>
+                    <p/>
                     If we deploy to war file in a Tomcat we will end-up in the following (simplified) organization:
                     <code><pre>
                         Boot ClassLoader (JRE / JDK classes)
@@ -151,7 +151,7 @@
                     the JVM wide defined one.<br/>
                     If a <b>jar file</b> of the JVM classpath contains a <code>META-INF/aop.xml</code> file, it will aslo have the same scope.<br/>
                     The <b>precedence</b> between the aspects is then the one of the classpath, and then the one of the order in the <code>aop.xml</code> file.
-                    <br/>
+                    <p/>
                     With this model, it is thus possible to package a tracing aspect in a jar file, with a <code>META-INF/aop.xml</code> file (with a pointcut for all public method execution f.e.)
                     and just add it to your classpath to allow a very simple generic tracing !
                     <br/>
@@ -163,7 +163,7 @@
                     have a well organized namespace for organizing your aspects.
                     The <b>precedence</b> will follow the order of the <code>&lt;system&gt;</code> elements in the XML file.
                     Each system must have a unique id within a ClassLoader hierarchy, as  defined with <code>&lt;system id="some/system"&gt;</code>
-                    <br/>
+                    <p/>
                     In the following two systems are defined, and the <code>system id</code> is using the application name and a path as a mnemonic, allthough it could
                     be any string.
                     <source><![CDATA[
@@ -187,10 +187,10 @@
                 <p>
                     AW provides several way to weave the aspects in the application classes at build time. This is called <i>offline weaving</i>, <i>offline mode</i>, or even
                     <i>class post-processing</i>.
-                    <br/>
+                    <p/>
                     With this mode you have to be sure to post-process the application classes as many times as required if you plan to use multiple Aspect Systems as described
                     <a href="#Handling several Aspects across several deployed applications">here</a>.
-                    <br/>
+                    <p/>
                     There is mainly two ways to achieve this, allthough some variants can be built on top of them:
                     <ul>
                         <li>Use the AspectWerkz command line tool with the <code>-offline</code> option on a specific <code>.class</code> file, directory or jar file.</li>
@@ -230,10 +230,10 @@ java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnE
                             For convenience you can use several <code>-cp ...</code> option. Be sure to use ";" or ":" as a path separator as for the regular JVM classpath option.</li>
                         <li><code>target path/classes path/application.jar</code>: defines the classes, classes directories and jar files to post-process. It is possible to pass as many target as needed.</li>
                     </ul>
-                    <br/>
+                    <p/>
                     A sample for Ant using the command line tool looks like the following. You will notice that the aspect classes
                     must be in the classpath (to retrieve their annotations that defines the pointcut f.e.).
-                    <br/>
+                    <p/>
                     In this sample, since the command line tool is used, it is mandatory to pass the XML definition file as the second argument.
                     <source><![CDATA[
 <!-- =================================================== -->
@@ -246,7 +246,7 @@ java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnE
     </exec>
 </target>
                     ]]></source>
-                    <br/>
+                    <p/>
                     A sample for Ant using the AspectWerkzC class looks like the following:
                     <source><![CDATA[
 <target name="aspectwerkz:war:transform"
@@ -267,7 +267,7 @@ java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnE
     </java>
 </target>
                     ]]></source>
-                    <br/>
+                    <p/>
                     There is also a native Maven plugin for this - you can read more about it <a href="TODO">here</a>.
                 </p>
             </subsection>
@@ -290,7 +290,7 @@ java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnE
             <p>
                 Class load time weaving allows to integrate AspectWerkz seamlessly in your applications, or in your whole application server.
                 Several schemes are supported, for <b>Java 1.3, Java 1.4, Java 1.5, BEA JRockit JVM</b> etc.
-                <br/>
+                <p/>
                 Allthough in some circumstances it is just a matter of adding a single JVM option and AspectWerkz jars to your classpath, a whole
                 documentation is available <a href="online.html">here</a>.
                 <br/>
@@ -303,7 +303,7 @@ java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnE
                 <p>
                     The command line tool is the easiest way to start using AW since it provides all classpath settings for both class load time weaving and
                     offline post-processing.
-                    <br/>
+                    <p/>
                     To use it, you first need to set the <code>ASPECTWERKZ_HOME</code> environment variable to the directory containing the AW installation.
                     <source>
 set ASPECTWERKZ_HOME=C:\aop\aspectwerkz\
@@ -321,7 +321,7 @@ set ASPECTWERKZ_HOME=C:\aop\aspectwerkz\
             <subsection name="Offline compilation">
                 <p>
                     To post-process all class files in a specific directory (recursively), jar or zip file:
-                    <br/>
+                    <p/>
                     <code>aspectwerkz -offline &lt;definition file&gt; [-verbose] [-verify] [-haltOnError] [-cp &lt;classpath&gt;]* &lt;target classes to transform&gt;+</code>
                     <ul>
                         <li>The 'definition file' option is the path to the XML definition file (mandatory).</li>
@@ -337,7 +337,7 @@ set ASPECTWERKZ_HOME=C:\aop\aspectwerkz\
                             It must the path to the root directory of the classes you want to transform, or a jar file or a zip file.
                             Several targets can be passed in one call (eg <code>toTransform.jar /classes otherToTransform.jar</code>).</li>
                     </ul>
-                    <br/>
+                    <p/>
                     Note: when you then are running the application (without using the <code>aspectwerkz</code> command)
                     you have to (apart from feeding it with the definition) put the aspectwerkz jars along with all
                     the the dependency jars the <code>ASPECTWERKZ_HOME/lib</code> directory in your classpath.
@@ -348,16 +348,16 @@ set ASPECTWERKZ_HOME=C:\aop\aspectwerkz\
                 <p>
                     It is possible to use the command line tool as a replacement of the <code>JAVA_HOME/bin/java</code> command. In such a case,
                     the command line tool will detect a suitable option for you and will enable class load time weaving.
-                    <br/>
+                    <p/>
                     This is the easiest way to give a try to class load time weaving although you should read and choose the best option by yourself by reading
                     more on this topic <a href="oneline.html">here</a>.
-                    <br/>
+                    <p/>
                     Starting up an application (use -Daspectwerkz.definition.file=.. or have META-INF/aop.xml and WEB-INF/aop.xml files in the classpath and applications packaging as explained in this section):
-                    <br/>
+                    <p/>
                     <code>aspectwerkz [-options] &lt;main class&gt; [args...]</code>
-                    <br/>
+                    <p/>
                     Starting up an application using an executable jar file:
-                    <br/>
+                    <p/>
                     <code>aspectwerkz [-options] -jar &lt;jar file&gt; [args...]</code>
                 </p>
             </subsection>

@@ -7,13 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
-import org.codehaus.aspectwerkz.definition.attribute.AttributeExtractor;
-import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -45,9 +41,8 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
      * @param constructor
      * @param declaringType
      */
-    JavaConstructorInfo(final Constructor constructor, final JavaClassInfo declaringType,
-                        final AttributeExtractor attributeExtractor) {
-        super(constructor, declaringType, attributeExtractor);
+    JavaConstructorInfo(final Constructor constructor, final JavaClassInfo declaringType) {
+        super(constructor, declaringType);
         JavaConstructorInfo.addConstructorInfo(constructor, this);
     }
 
@@ -83,19 +78,10 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
      */
     public List getAnnotations() {
         if (m_annotations == null) {
-            m_annotations = new ArrayList();
-            addAnnotations();
+            // TODO: fix constructor annotations
+            //            m_annotations = Annotations.getAnnotationInfos((Constructor)m_member);
         }
         return m_annotations;
-    }
-
-    /**
-     * Adds an attribute.
-     *
-     * @param attribute the attribute
-     */
-    public void addAnnotation(final Object attribute) {
-        m_annotations.add(attribute);
     }
 
     /**
@@ -183,33 +169,5 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
             result = (29 * result) + m_parameterTypes[i].getName().toString().hashCode();
         }
         return result;
-    }
-
-    /**
-     * Adds annotations to the method info.
-     */
-    private void addAnnotations() {
-        if (m_attributeExtractor == null) {
-            return;
-        }
-        if (m_parameterTypes == null) {
-            getParameterTypes();
-        }
-        String[] parameterNames = new String[m_parameterTypes.length];
-        for (int i = 0; i < m_parameterTypes.length; i++) {
-            parameterNames[i] = m_parameterTypes[i].getName();
-        }
-        Object[] attributes = m_attributeExtractor.getMethodAttributes(getName(), parameterNames);
-        for (int i = 0; i < attributes.length; i++) {
-            Object attribute = attributes[i];
-            if (attribute instanceof CustomAttribute) {
-                CustomAttribute custom = (CustomAttribute)attribute;
-                if (custom.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
-                    // skip 'system' annotations
-                    continue;
-                }
-                addAnnotation(custom);
-            }
-        }
     }
 }

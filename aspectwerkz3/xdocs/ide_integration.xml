@@ -7,6 +7,7 @@
     <body>
          <section name="IDE integration">
             <p>
+                Please help us and write a help page for you favorite IDE.
                 <ul>
                     <li>
                         <a href="netbeans_36_integration.html">NetBeans 3.6 integration</a>

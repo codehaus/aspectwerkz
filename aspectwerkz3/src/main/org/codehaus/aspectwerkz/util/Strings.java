@@ -21,6 +21,22 @@ public class Strings {
     }
 
     /**
+     * Removes NewLine, CarriageReturn and Tab characters from a String.
+     *
+     * @param s string to escape
+     * @return s the escaped string
+     */
+    public static String removeFormattingCharacters(final String s) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < s.length(); i++) {
+            if ((s.charAt(i) != '\n') && (s.charAt(i) != '\r') && (s.charAt(i) != '\t')) {
+                sb.append(s.charAt(i));
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
      * Replaces all occurences of a substring inside a string.
      *
      * @param str      the string to search and replace in
@@ -63,54 +79,55 @@ public class Strings {
      * String split on multicharacter delimiter.
      * <p/>
      * Written by Tim Quinn (tim.quinn@honeywell.com)
+     *
+     * @param stringToSplit
+     * @param delimiter
+     * @return
      */
-    public static final String[] splitString(String sS, String sD) {
+    public static final String[] splitString(String stringToSplit, String delimiter) {
         String[] aRet;
         int iLast;
         int iFrom;
         int iFound;
         int iRecords;
 
-        //Return Blank Array if sS == "")
-        if (sS.equals("")) {
+        // return Blank Array if stringToSplit == "")
+        if (stringToSplit.equals("")) {
             return new String[0];
         }
 
-        //Count Field Entries
+        // count Field Entries
         iFrom = 0;
         iRecords = 0;
         while (true) {
-            iFound = sS.indexOf(sD, iFrom);
+            iFound = stringToSplit.indexOf(delimiter, iFrom);
             if (iFound == -1) {
                 break;
             }
             iRecords++;
-            iFrom = iFound + sD.length();
+            iFrom = iFound + delimiter.length();
         }
         iRecords = iRecords + 1;
 
-        // Populate aRet[]
+        // populate aRet[]
         aRet = new String[iRecords];
         if (iRecords == 1) {
-            aRet[0] = sS;
+            aRet[0] = stringToSplit;
         } else {
             iLast = 0;
             iFrom = 0;
             iFound = 0;
             for (int i = 0; i < iRecords; i++) {
-                iFound = sS.indexOf(sD, iFrom);
-                if (iFound == -1) //At End
-                 {
-                    aRet[i] = sS.substring(iLast + sD.length(), sS.length());
-                } else if (iFound == 0) //At Beginning
-                 {
+                iFound = stringToSplit.indexOf(delimiter, iFrom);
+                if (iFound == -1) { // at End
+                    aRet[i] = stringToSplit.substring(iLast + delimiter.length(), stringToSplit.length());
+                } else if (iFound == 0) { // at Beginning
                     aRet[i] = "";
-                } else //Somewhere in middle
-                 {
-                    aRet[i] = sS.substring(iFrom, iFound);
+                } else { // somewhere in middle
+                    aRet[i] = stringToSplit.substring(iFrom, iFound);
                 }
                 iLast = iFound;
-                iFrom = iFound + sD.length();
+                iFrom = iFound + delimiter.length();
             }
         }
         return aRet;

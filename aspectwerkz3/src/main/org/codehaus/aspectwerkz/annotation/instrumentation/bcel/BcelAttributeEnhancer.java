@@ -20,11 +20,10 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.xmlbeans.impl.jam.JField;
 import org.apache.xmlbeans.impl.jam.JMethod;
 import org.apache.xmlbeans.impl.jam.JParameter;
+import org.codehaus.aspectwerkz.annotation.AnnotationC;
+import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
-import org.codehaus.aspectwerkz.annotation.AnnotationC;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -150,7 +149,8 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         for (int i = 0; i < methodParamTypes.length; i++) {
             JParameter parameter = parameters[i];
             methodParamTypes[i] = parameter.getType().getQualifiedName();
-//            methodParamTypes[i] = TypeConverter.convertTypeToJava(parameter.getType());
+
+            //            methodParamTypes[i] = TypeConverter.convertTypeToJava(parameter.getType());
         }
         Method[] classfileMethod = m_classGen.getMethods();
         for (int i = 0; i < classfileMethod.length; i++) {
@@ -228,9 +228,11 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
             Class innerClass = Class.forName(innerClassName, false, m_loader);
             return getNearestInterfacesInHierarchy(innerClass);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("could not load mixin for mixin implicit interface [" + innerClassName + "]: " + e.toString());
+            throw new RuntimeException("could not load mixin for mixin implicit interface [" + innerClassName + "]: "
+                                       + e.toString());
         } catch (NoClassDefFoundError er) {
-            throw new RuntimeException("could not find dependency for mixin implicit interface [" + innerClassName + "]: " + er.toString());
+            throw new RuntimeException("could not find dependency for mixin implicit interface [" + innerClassName
+                                       + "]: " + er.toString());
         }
     }
 

@@ -31,16 +31,9 @@ public interface ReflectionInfo extends Serializable {
     int getModifiers();
 
     /**
-     * Returns the attributes.
+     * Returns the annotation infos.
      *
-     * @return the attributes
+     * @return the annotations infos
      */
     List getAnnotations();
-
-    /**
-     * Adds an attribute.
-     *
-     * @param attribute the attribute
-     */
-    void addAnnotation(Object attribute);
 }

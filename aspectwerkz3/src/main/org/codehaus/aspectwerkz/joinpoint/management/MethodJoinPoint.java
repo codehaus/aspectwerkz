@@ -11,7 +11,6 @@ import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
-import java.util.List;
 
 /**
  * Abstraction of a method join point.
