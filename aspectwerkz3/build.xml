@@ -42,14 +42,12 @@
 		<property name="build.core.dir" value="${build.dir}/classes" />
 		<property name="build.test.dir" value="${build.dir}/test-classes" />
 		<property name="lib.dir" value="${basedir}/lib" />
-		<property name="dist.dir" value="${basedir}/dist" />
 		<property name="config.dir" value="${basedir}/config" />
 		<property name="javac.debug" value="on" />
 		<property name="javac.deprecation" value="on" />
 		<property name="javac.optimize" value="off" />
 		<property name="javac.depend" value="off" />
 		<property name="javac.verbose" value="off" />
-		<mkdir dir="${dist.dir}" />
 
 		<!-- os specific -->
 		<condition property="pathseparator" value=";">
@@ -72,7 +70,6 @@
 		<property name="target.dir" value="${basedir}/target" />
 		<property name="lib.dir" value="${basedir}/lib" />
 		<property name="bin.dir" value="${basedir}/bin" />
-		<property name="dist.dir" value="${basedir}/dist" />
 		<property name="main.classes" value="${target.dir}/classes" />
 		<property name="test.classes" value="${target.dir}/test-classes" />
 		<property name="samples.classes" value="${target.dir}/samples-classes" />
@@ -97,7 +94,6 @@
 		<mkdir dir="${build.test.dir}" />
 		<mkdir dir="${samples.classes}" />
 		<mkdir dir="${extensions.classes}" />
-		<mkdir dir="${dist.dir}" />
 	</target>
 
 	<!-- ============================================================== -->
@@ -172,10 +168,6 @@
 					<include name="*.jar">
 					</include>
 				</fileset>
-				<fileset dir="${dist.dir}">
-					<include name="*.jar">
-					</include>
-				</fileset>
 			</classpath>
 		</javac>
 	</target>
@@ -193,10 +185,6 @@
 			<classpath>
 				<pathelement path="${main.classes}" />
 				<fileset dir="${lib.dir}">
-					<include name="*.jar">
-					</include>
-				</fileset>
-				<fileset dir="${dist.dir}">
 					<include name="*.jar">
 					</include>
 				</fileset>
@@ -218,8 +206,7 @@
 	<!-- ============================================================== -->
 	<!-- create distribution -->
 	<!-- ============================================================== -->
-	<target name="dist" depends="compile">
-		<mkdir dir="${dist.dir}" />
+	<target name="dist" depends="compile, compile:jdk15">
 		<copy file="${src.dir}/main/aspectwerkz.dtd" todir="${build.core.dir}" />
 	
 		<jar destfile="${build.dir}/aspectwerkz-${version}.jar" manifest="${lib.dir}/manifest.mf">
@@ -243,30 +230,14 @@
 	<!-- create all jars -->
 	<!-- ============================================================== -->
 	<target name="jars" depends="compile:all">
-		<mkdir dir="${dist.dir}" />
-		<copy file="${src.dir}/main/aspectwerkz.dtd" todir="${build.core.dir}" />
-	
-		<jar destfile="${build.dir}/aspectwerkz-${version}.jar" manifest="${lib.dir}/manifest.mf">
-			<fileset dir="${build.core.dir}">
-				<exclude name="**/aspectwerkz/hook/**/*" />
-			</fileset>
-		</jar>
-		<copy tofile="${lib.dir}/aspectwerkz-${version}.jar" file="${build.dir}/aspectwerkz-${version}.jar" overwrite="true" />
+        <antcall target="dist"/>
 
-        <!-- core contains the hook part, including JVMTT agent if J2SE 5 build -->
-		<jar destfile="${build.dir}/aspectwerkz-core-${version}.jar" manifest="${lib.dir}/manifest-core.mf">
-			<fileset dir="${build.core.dir}">
-				<include name="**/aspectwerkz/hook/**/*" />
-			</fileset>
-		</jar>
-		<copy tofile="${lib.dir}/aspectwerkz-core-${version}.jar" file="${build.dir}/aspectwerkz-core-${version}.jar" overwrite="true" />
-	
 		<jar jarfile="${target.dir}/aspectwerkz-extensions-${version}.jar" basedir="${extensions.classes}" />
-		<copy tofile="${dist.dir}/aspectwerkz-extensions-${version}.jar" file="${target.dir}/aspectwerkz-extensions-${version}.jar" overwrite="true" />
+		<copy tofile="${lib.dir}/aspectwerkz-extensions-${version}.jar" file="${target.dir}/aspectwerkz-extensions-${version}.jar" overwrite="true" />
 		
 		<antcall target="samples:annotationc" />
          <jar jarfile="${target.dir}/aspectwerkz-samples-${version}.jar" basedir="${samples.classes}" />
-		<copy tofile="${dist.dir}/aspectwerkz-samples-${version}.jar" file="${target.dir}/aspectwerkz-samples-${version}.jar" overwrite="true" />
+		<copy tofile="${lib.dir}/aspectwerkz-samples-${version}.jar" file="${target.dir}/aspectwerkz-samples-${version}.jar" overwrite="true" />
 	</target>
 
 	<!-- ============================================================== -->
@@ -461,7 +432,7 @@
 	<!-- =================================================== -->
 	<target name="samples:remote:server" depends="clean, jars, samples:annotationc">
 		<exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-			<arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.remote.server.run=true -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Server" />
+			<arg line="-cp ${basedir}${pathseparator}${lib.dir}/aspectwerkz-extensions-${version}.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.remote.server.run=true -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Server" />
 		</exec>
 	</target>
 
@@ -471,10 +442,10 @@
 	<target name="samples:offline:logging" depends="clean, jars, offline:samples">
 		<java classname="examples.logging.Target" fork="true">
 			<classpath>
+                <pathelement path="${samples.classes}" />
+                <pathelement path="${main.classes}" />
 				<pathelement path="${java.home}/../lib/tools.jar" />
 				<fileset dir="${lib.dir}" includes="*.jar" />
-				<pathelement path="${main.classes}" />
-				<pathelement path="${samples.classes}" />
 			</classpath>
 			<jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml" />
 		</java>
@@ -486,14 +457,16 @@
 	<target name="samples:offline:introduction" depends="clean, jars, offline:samples">
 		<java classname="examples.introduction.Target" fork="true">
 			<classpath>
+                <pathelement path="${samples.classes}" />
+                <pathelement path="${main.classes}" />
 				<pathelement path="${java.home}/../lib/tools.jar" />
 				<fileset dir="${lib.dir}" includes="*.jar" />
-				<pathelement path="${main.classes}" />
-				<pathelement path="${samples.classes}" />
 			</classpath>
 			<jvmarg value="-Daspectwerkz.definition.file=${basedir}/src/samples/samples-attribdef.xml" />
 		</java>
 	</target>
+
+    <target name="samples" depends="samples:logging, samples:caching, samples:cflow, samples:exception, samples:introduction, samples:offline:logging, samples:offline:introduction"/>
 
 </project>
 
