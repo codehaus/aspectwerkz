@@ -21,6 +21,7 @@ import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 import java.util.Set;
 import java.util.Collections;
@@ -116,7 +117,7 @@ public class TypeVisitor implements ExpressionParserVisitor {
             return set;
         }
         else {
-            throw new RuntimeException("No such registered expression: " + node.name);
+            throw new DefinitionException("No such registered expression: " + node.name + " in " + space.getNamespaceKey());
         }
     }
 

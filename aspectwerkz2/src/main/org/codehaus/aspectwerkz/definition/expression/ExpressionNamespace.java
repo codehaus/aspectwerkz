@@ -344,6 +344,12 @@ public class ExpressionNamespace {
         m_namespace = namespace;
     }
 
+    public String getNamespaceKey() {
+        //TODO AV bad container stuff for AOPC (static)
+        // what should be the namespace scope?
+        return m_namespace;
+    }
+
     /**
      * Checks if the expression looks like a leaf expression.
      * TODO: unstable if space sep not use

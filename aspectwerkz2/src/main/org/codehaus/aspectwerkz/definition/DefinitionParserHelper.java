@@ -13,6 +13,7 @@ import java.util.Iterator;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * Helper class for the attribute and the XML definition parsers.
@@ -60,11 +61,23 @@ public class DefinitionParserHelper {
             final Method method,
             final int methodIndex,
             final AspectDefinition aspectDef) {
-        AdviceDefinition adviceDef = createAdviceDefinition(
-                adviceName, AdviceDefinition.AROUND_ADVICE, aspectName, aspectClassName,
-                expression, method, methodIndex, aspectDef
-        );
-        aspectDef.addAroundAdvice(adviceDef);
+        try {
+            AdviceDefinition adviceDef = createAdviceDefinition(
+                    adviceName, AdviceDefinition.AROUND_ADVICE, aspectName, aspectClassName,
+                    expression, method, methodIndex, aspectDef
+            );
+            aspectDef.addAroundAdvice(adviceDef);
+        } catch (DefinitionException e) {
+            // see AW-152.
+            System.err.println(
+                "AspectWerkz - <WARN> unable to register advice "
+                + aspectName + "." + adviceName
+                + " at \"" + expression
+                + "\": " + e.getMessage()
+            );
+            // go on silently
+            // TODO AV - better handling of reg issue (f.e. skip the whole aspect, in DocumentParser, based on DefinitionE
+        }
     }
 
     /**
@@ -86,11 +99,23 @@ public class DefinitionParserHelper {
             final Method method,
             final int methodIndex,
             final AspectDefinition aspectDef) {
-        AdviceDefinition adviceDef = createAdviceDefinition(
-                adviceName, AdviceDefinition.BEFORE_ADVICE, aspectName, aspectClassName,
-                expression, method, methodIndex, aspectDef
-        );
-        aspectDef.addBeforeAdvice(adviceDef);
+        try {
+            AdviceDefinition adviceDef = createAdviceDefinition(
+                    adviceName, AdviceDefinition.BEFORE_ADVICE, aspectName, aspectClassName,
+                    expression, method, methodIndex, aspectDef
+            );
+            aspectDef.addBeforeAdvice(adviceDef);
+        } catch (DefinitionException e) {
+            // see AW-152.
+            System.err.println(
+                "AspectWerkz - <WARN> unable to register advice "
+                + aspectName + "." + adviceName
+                + " at \"" + expression
+                + "\": " + e.getMessage()
+            );
+            // go on silently
+            // TODO AV - better handling of reg issue (f.e. skip the whole aspect, in DocumentParser, based on DefinitionE
+        }
     }
 
     /**
@@ -112,11 +137,23 @@ public class DefinitionParserHelper {
             final Method method,
             final int methodIndex,
             final AspectDefinition aspectDef) {
-        AdviceDefinition adviceDef = createAdviceDefinition(
-                adviceName, AdviceDefinition.AFTER_ADVICE, aspectName, aspectClassName,
-                expression, method, methodIndex, aspectDef
-        );
-        aspectDef.addAfterAdvice(adviceDef);
+        try {
+            AdviceDefinition adviceDef = createAdviceDefinition(
+                    adviceName, AdviceDefinition.AFTER_ADVICE, aspectName, aspectClassName,
+                    expression, method, methodIndex, aspectDef
+            );
+            aspectDef.addAfterAdvice(adviceDef);
+        } catch (DefinitionException e) {
+            // see AW-152.
+            System.err.println(
+                "AspectWerkz - <WARN> unable to register advice "
+                + aspectName + "." + adviceName
+                + " at \"" + expression
+                + "\": " + e.getMessage()
+            );
+            // go on silently
+            // TODO AV - better handling of reg issue (f.e. skip the whole aspect, in DocumentParser, based on DefinitionE
+        }
     }
 
     /**

@@ -234,6 +234,8 @@ public class DocumentParser {
 
             Class aspectClass = loadAspectClass(loader, aspectClassName);
 
+            System.out.println("aspectClassName = " + aspectClassName);
+            parsePointcutElements(aspect, aspectDef);//needed to support undefined named pointcut in Attributes AW-152
             s_attributeParser.parse(aspectClass, aspectDef, definition);
 
             // XML definition settings always overrides attribute definition settings
@@ -242,7 +244,7 @@ public class DocumentParser {
 
             // parse the aspect info
             parseParameterElements(aspect, definition, aspectDef);
-            parsePointcutElements(aspect, aspectDef);
+            parsePointcutElements(aspect, aspectDef);//reparse pc for XML override (AW-152)
             parseAdviceElements(loader, aspect, aspectDef, aspectClass);
             parseIntroductionElements(loader, aspect, aspectDef, aspectClass, packageName);
 

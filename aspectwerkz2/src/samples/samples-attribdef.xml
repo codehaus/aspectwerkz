@@ -10,7 +10,9 @@
             <aspect class="caching.CachingAspect">
                 <param name="timeout" value="10"/>
             </aspect>
-            <aspect class="logging.LoggingAspect"/>
+            <aspect class="logging.LoggingAspect">
+                <pointcut name="methodsToLog1" expression="execution(* examples.logging.Target.toLog1(..))"/>
+            </aspect>
             <aspect class="introduction.IntroductionAspect" deployment-model="perClass"/>
             <aspect class="cflow.CFlowAspect"/>
             <aspect class="exception.ExceptionHandlingAspect"/>
