@@ -68,6 +68,16 @@
             <email>alex AT gnilux DOT com</email>
             <organization>BEA Systems</organization>
             <roles>
+                <role>Co-founder</role>
+                <role>Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Alexandru Popescu</name>
+            <id>apopescu</id>
+            <email>the_mindstorm AT evolva DOT ro</email>
+            <organization></organization>
+            <roles>
                 <role>Developer</role>
             </roles>
         </developer>
