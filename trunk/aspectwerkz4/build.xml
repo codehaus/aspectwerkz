@@ -388,9 +388,15 @@
     <!-- =================================================== -->
     <target name="test:jdk15:call" if="jdk15"><antcall target="test:jdk15"/></target>
     <target name="test:jdk15" depends="clean, dist, test:annotationc" if="jdk15">
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${basedir}/lib/aspectwerkz-extensions-${version}.jar${pathseparator}${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/jdk15/test/aop.xml test.AllJdk5Tests"/>
-        </exec>
+        <java classname="test.AllJdk5Tests" fork="true">
+            <classpath>
+                <pathelement path="${jdk15.classes}"/>
+                <pathelement path="${test.classes}"/>
+                <pathelement path="${main.classes}"/>
+                <path refid="project.class.path"/>
+            </classpath>
+            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.RC2-snapshot.jar -Daspectwerkz.transform.verbose=false  -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/jdk15/test/aop.xml"/>
+        </java>
     </target>
 
     <!-- =================================================== -->
