@@ -170,4 +170,8 @@ public class Strings {
         }
         return (String[]) extracted.toArray(new String[]{});
     }
+
+    public static boolean isNullOrEmpty(String s) {
+        return (s==null)?true:(s.length()<=0);
+    }
 }
