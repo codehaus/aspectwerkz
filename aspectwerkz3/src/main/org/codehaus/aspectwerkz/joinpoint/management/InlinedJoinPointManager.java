@@ -99,6 +99,7 @@ public class InlinedJoinPointManager {
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
                 doLoadJoinPoint(
+                        joinPointClassName,
                         JoinPointType.METHOD_EXECUTION,
                         PointcutType.EXECUTION,
                         callerClass,
@@ -118,6 +119,7 @@ public class InlinedJoinPointManager {
 
             case JoinPointType.METHOD_CALL:
                 doLoadJoinPoint(
+                        joinPointClassName,
                         JoinPointType.METHOD_CALL,
                         PointcutType.CALL,
                         callerClass,
@@ -136,6 +138,7 @@ public class InlinedJoinPointManager {
                 break;
             case JoinPointType.FIELD_GET:
                 doLoadJoinPoint(
+                        joinPointClassName,
                         JoinPointType.FIELD_GET,
                         PointcutType.GET,
                         callerClass,
@@ -155,6 +158,7 @@ public class InlinedJoinPointManager {
 
             case JoinPointType.FIELD_SET:
                 doLoadJoinPoint(
+                        joinPointClassName,
                         JoinPointType.FIELD_SET,
                         PointcutType.SET,
                         callerClass,
@@ -174,6 +178,7 @@ public class InlinedJoinPointManager {
 
             case JoinPointType.CONSTRUCTOR_EXECUTION:
                 doLoadJoinPoint(
+                        joinPointClassName,
                         JoinPointType.CONSTRUCTOR_EXECUTION,
                         PointcutType.EXECUTION,
                         callerClass,
@@ -193,6 +198,7 @@ public class InlinedJoinPointManager {
 
             case JoinPointType.CONSTRUCTOR_CALL:
                 doLoadJoinPoint(
+                        joinPointClassName,
                         JoinPointType.CONSTRUCTOR_CALL,
                         PointcutType.CALL,
                         callerClass,
@@ -212,6 +218,7 @@ public class InlinedJoinPointManager {
 
             case JoinPointType.HANDLER:
                 doLoadJoinPoint(
+                        joinPointClassName,
                         JoinPointType.HANDLER,
                         PointcutType.HANDLER,
                         callerClass,
@@ -239,6 +246,7 @@ public class InlinedJoinPointManager {
     /**
      * Loads the join point.
      *
+     * @param joinPointClassName
      * @param joinPointType
      * @param pointcutType
      * @param callerClass
@@ -254,7 +262,8 @@ public class InlinedJoinPointManager {
      * @param system
      * @param thisClassInfo
      */
-    private static void doLoadJoinPoint(final int joinPointType,
+    private static void doLoadJoinPoint(final String joinPointClassName,
+                                        final int joinPointType,
                                         final PointcutType pointcutType,
                                         final Class callerClass,
                                         final String callerMethodName,
@@ -282,6 +291,7 @@ public class InlinedJoinPointManager {
         );
 
         JoinPointCompiler.loadJoinPoint(
+                joinPointClassName,
                 joinPointType,
                 joinPointHash,
 
