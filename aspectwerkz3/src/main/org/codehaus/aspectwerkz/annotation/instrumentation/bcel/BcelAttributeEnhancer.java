@@ -81,13 +81,14 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
             }
             InputStream classAsStream = m_loader.getResourceAsStream(classFileName);
             if (classAsStream == null) {
-
                 // TODO: this is an ugly bug fix due to JAM bug with inner class parsing
                 int lastSlash = classFileName.lastIndexOf('/');
-                classFileName = classFileName.substring(0, lastSlash) + '$' + classFileName.substring(lastSlash + 1, classFileName.length());
+                classFileName = classFileName.substring(0, lastSlash) + '$'
+                                + classFileName.substring(lastSlash + 1, classFileName.length());
                 classAsStream = m_loader.getResourceAsStream(classFileName);
-//                System.err.println("WARNING: " + className + " can not be found on classpath");
-//                return false;
+
+                //                System.err.println("WARNING: " + className + " can not be found on classpath");
+                //                return false;
             }
             ClassParser classParser = new ClassParser(classAsStream, className);
             m_javaClass = classParser.parse();

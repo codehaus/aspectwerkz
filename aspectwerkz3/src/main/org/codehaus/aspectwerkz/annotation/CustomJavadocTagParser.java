@@ -7,22 +7,20 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.apache.xmlbeans.impl.jam.annotation.JavadocTagParser;
-import org.apache.xmlbeans.impl.jam.mutable.MAnnotation;
-import org.apache.xmlbeans.impl.jam.mutable.MAnnotatedElement;
+import com.sun.javadoc.Tag;
 import org.apache.xmlbeans.impl.jam.JAnnotation;
 import org.apache.xmlbeans.impl.jam.JClass;
-import org.apache.xmlbeans.impl.jam.provider.JamServiceContext;
+import org.apache.xmlbeans.impl.jam.annotation.JavadocTagParser;
 import org.apache.xmlbeans.impl.jam.internal.elements.ElementContext;
-import org.codehaus.aspectwerkz.util.Strings;
+import org.apache.xmlbeans.impl.jam.mutable.MAnnotatedElement;
+import org.apache.xmlbeans.impl.jam.mutable.MAnnotation;
+import org.apache.xmlbeans.impl.jam.provider.JamServiceContext;
+import org.codehaus.aspectwerkz.annotation.expression.DumpVisitor;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ExpressionParser;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
-import org.codehaus.aspectwerkz.annotation.expression.DumpVisitor;
-
+import org.codehaus.aspectwerkz.util.Strings;
 import java.util.Enumeration;
 import java.util.Properties;
-
-import com.sun.javadoc.Tag;
 
 /**
  * Custom JAM Javadoc tag parser.
@@ -30,9 +28,7 @@ import com.sun.javadoc.Tag;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class CustomJavadocTagParser extends JavadocTagParser {
-
     private JamServiceContext m_ctx;
-
     private ExpressionParser m_parser;
 
     public void init(JamServiceContext ctx) {
@@ -58,15 +54,15 @@ public class CustomJavadocTagParser extends JavadocTagParser {
         String tagText = tag.text();
         tagText = Strings.removeFormattingCharacters(tagText);
         String annotation = null;
-//        try {
-//            annotation = tag.name() + "(\"" + tagText + "\")";
-////            annotation = tag.name() + '(' + tagText + ')';
-//            System.out.println("annotation = " + annotation);
-//            DumpVisitor.dumpAST(m_parser.parse(annotation));
-//        } catch (ParseException e) {
-//            System.err.println("could not parse annotation: " + annotation);
-//        }
 
+        //        try {
+        //            annotation = tag.name() + "(\"" + tagText + "\")";
+        ////            annotation = tag.name() + '(' + tagText + ')';
+        //            System.out.println("annotation = " + annotation);
+        //            DumpVisitor.dumpAST(m_parser.parse(annotation));
+        //        } catch (ParseException e) {
+        //            System.err.println("could not parse annotation: " + annotation);
+        //        }
         if (tagText == null) {
             return;
         }
@@ -120,10 +116,11 @@ public class CustomJavadocTagParser extends JavadocTagParser {
      */
     private void parseAssignments(Properties out, String line) {
         line = removeComments(line);
-        while (null != line && -1 != line.indexOf("=")) {
+        while ((null != line) && (-1 != line.indexOf("="))) {
             int keyStart = -1;
             int keyEnd = -1;
             int ind = 0;
+
             // Skip stuff before the key
             char c = line.charAt(ind);
             while (isBlank(c)) {
@@ -139,9 +136,11 @@ public class CustomJavadocTagParser extends JavadocTagParser {
             ind = line.indexOf("=");
             if (ind == -1) {
                 return; //FIXME let's be a little conservative, just for now
+
                 //throw new IllegalStateException("'=' expected: "+line);
             }
             ind++;
+
             // Skip stuff after the equal sign
             try {
                 c = line.charAt(ind);
@@ -163,7 +162,7 @@ public class CustomJavadocTagParser extends JavadocTagParser {
                 valueEnd = ind;
             } else {
                 valueStart = ind++;
-                while (ind < line.length() && isLegal(line.charAt(ind))) {
+                while ((ind < line.length()) && isLegal(line.charAt(ind))) {
                     ind++;
                 }
                 valueEnd = ind;
@@ -192,14 +191,14 @@ public class CustomJavadocTagParser extends JavadocTagParser {
 
         // Ignore if it's between double quotes
         int doubleQuotesIndex = current.indexOf("\"");
-        if (-1 != doubleQuotesIndex && doubleQuotesIndex < beginning) {
+        if ((-1 != doubleQuotesIndex) && (doubleQuotesIndex < beginning)) {
             // do nothing
             result = value;
         } else {
-            while (currentIndex < size && beginning != -1) {
+            while ((currentIndex < size) && (beginning != -1)) {
                 beginning = value.indexOf("//", currentIndex);
                 if (-1 != beginning) {
-                    if (beginning > 0 && value.charAt(beginning - 1) == ':') {
+                    if ((beginning > 0) && (value.charAt(beginning - 1) == ':')) {
                         //this is a quick fix for problem of unquoted url values.  for
                         //now, just say it's not a comment if preceded by ':'.  should
                         //review this later
@@ -210,6 +209,7 @@ public class CustomJavadocTagParser extends JavadocTagParser {
                     if (-1 == end) {
                         end = size;
                     }
+
                     // We have identified a portion to remove, copy the one we want to
                     // keep
                     result = result + value.substring(currentIndex, beginning).trim() + "\n";
@@ -223,10 +223,10 @@ public class CustomJavadocTagParser extends JavadocTagParser {
     }
 
     private boolean isBlank(char c) {
-        return c == ' ' || c == '\t' || c == '\n';
+        return (c == ' ') || (c == '\t') || (c == '\n');
     }
 
     private boolean isLegal(char c) {
-        return (!isBlank(c)) && c != '=';
+        return (!isBlank(c)) && (c != '=');
     }
 }

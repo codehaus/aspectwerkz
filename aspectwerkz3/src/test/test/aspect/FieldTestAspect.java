@@ -147,40 +147,35 @@ public class FieldTestAspect {
     // ============ Advices ============
 
     /**
-     * @Before pc2 || pc5 || pc10 || pc13
-     * @Before pc6 || pc9 || pc14 || pc17
+     * @Before pc2 || pc5 || pc10 || pc13 || pc6 || pc9 || pc14 || pc17
      */
     public void preAdvice1(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("pre1 ");
     }
 
     /**
-     * @Before pc1 || pc5 || pc11 || pc13
-     * @Before pc7 || pc9 || pc15 || pc17
+     * @Before pc1 || pc5 || pc11 || pc13 || pc7 || pc9 || pc15 || pc17
      */
     public void preAdvice2(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("pre2 ");
     }
 
     /**
-     * @After pc4 || pc5 || pc12 || pc13
-     * @After pc8 || pc9 || pc16 || pc17
+     * @After pc4 || pc5 || pc12 || pc13 || pc8 || pc9 || pc16 || pc17
      */
     public void postAdvice1(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("post1 ");
     }
 
     /**
-     * @After pc3 || pc5 || pc12 || pc13
-     * @After pc8 || pc9 || pc16 || pc17
+     * @After pc3 || pc5 || pc12 || pc13 || pc8 || pc9 || pc16 || pc17
      */
     public void postAdvice2(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("post2 ");
     }
 
     /**
-     * @Around pc18 || pc19
-     * @Around pc20 || pc21
+     * @Around pc18 || pc19 || pc20 || pc21
      */
     public Object around(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
@@ -190,8 +185,7 @@ public class FieldTestAspect {
     }
 
     /**
-     * @Around pc22
-     * @Around pc23
+     * @Around pc22 || pc23
      */
     public Object aroundNullAdvice(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");

@@ -15,16 +15,16 @@ import junit.framework.TestCase;
 public class AnnotationTest extends TestCase {
     private static String s_logString = "";
 
-    /** @@privateField */
+    /** @AnnotationPrivateField */
     private int privateField;
 
-    /** @@protectedField */
+    /** @AnnotationProtectedField */
     protected int protectedField;
 
-    /** @@publicField */
+    /** @AnnotationPublicField */
     public int publicField;
 
-    /** @@packagePrivateField */
+    /** @AnnotationPackagePrivateField */
     int packagePrivateField;
 
     public AnnotationTest() {
@@ -119,22 +119,22 @@ public class AnnotationTest extends TestCase {
         s_logString += wasHere;
     }
 
-    /** @@privateMethod */
+    /** @AnnotationPrivateMethod */
     private void privateMethod() {
         log("invocation ");
     }
 
-    /** @@protectedMethod */
+    /** @AnnotationProtectedMethod */
     protected void protectedMethod() {
         log("invocation ");
     }
 
-    /** @@publicMethod */
+    /** @AnnotationPublicMethod */
     public void publicMethod() {
         log("invocation ");
     }
 
-    /** @@packagePrivateMethod */
+    /** @AnnotationPackagePrivateMethod */
     void packagePrivateMethod() {
         log("invocation ");
     }

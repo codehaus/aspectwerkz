@@ -20,7 +20,8 @@ public class IntroductionDeploymentAspect {
      * Set to match
      *
      * @Introduce within(test.mixindeployment.IntroductionDeploymentTest$TargetA) ||
-     * within(test.mixindeployment.IntroductionDeploymentTest$TargetB) deploymentModel=perInstance
+     *            within(test.mixindeployment.IntroductionDeploymentTest$TargetB)
+     *            deploymentModel=perInstance
      */
     public static class MarkerImpl implements Marker {
         /**

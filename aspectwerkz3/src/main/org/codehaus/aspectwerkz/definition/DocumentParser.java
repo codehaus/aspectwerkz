@@ -8,8 +8,8 @@
 package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
+import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -31,7 +31,8 @@ public class DocumentParser {
     /**
      * The annotation parser, retrieves the custom attributes from the bytecode of the classes.
      */
-//    private static final AspectAttributeParser s_annotationParser = new AspectAttributeParser();
+
+    //    private static final AspectAttributeParser s_annotationParser = new AspectAttributeParser();
     private static final AspectAnnotationParser s_annotationParser = new AspectAnnotationParser();
 
     /**
