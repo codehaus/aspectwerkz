@@ -29,18 +29,19 @@ import org.codehaus.aspectwerkz.metadata.CflowMetaData;
  * it by gathering the AspectManager, which represents a single &lt;system ..&gt; entry.
  * <p/>
  * When an instance of an AspectSystem is created (perClassLoader), it checks for existence of
- * previous AspectManager defined in parent ClassLoader. AspectManager are indexed according to their
- * defining AspectSystem, but the index is shared among AspectSystem as shown below:<br/>
+ * previous AspectManager defined in parent ClassLoader. AspectManager are shared among AspectSystem as shown below:<br/>
  * </p>
  * <pre>
- *          [0d, 1d, 2d]  (3 SystemDefs, all defined in this classloader, and indexed)
+ *          [0d, 1d, 2d]  (3 SystemDefs, all defined in this classloader)
  *                  /   \
- * [0r, 1r, 2r, 3d]      \  (3 index reused, index 3 defined)
- *                     [0r, 1r, 2r, 3d]  (index 3 defined, not the same)
+ * [0r, 1r, 2r, 3d]      \  (3 reused, one more defined)
+ *                     [0r, 1r, 2r, 3d]  (one more defined, not the same)
  * </pre>
  * </p>
  * This composition strategy allow to avoid global static repository, but is tight to following
  * ClassLoader parent hierarchy.
+ * </p>
+ * If an AspectManager is added at runtime, it should be added in the whole child hierarchy. TODO
  * </p>
  *
  * TODO: caution when addding a new SystemDefinition in between.
