@@ -6,12 +6,12 @@
     <system id="eworld/wlw/aop">
         <prepare package="eworld.service."/>
         <aspect class="eworld.service.ComputationStandalone$CacheAspect">
-            <pointcut name="cache" expression="execution(* foo.*(..))"/>
-            <advice name="cache" type="around" bind-to="cache"/>
+            <pointcut name="cacheFAKE" expression="execution(* foo.*(..))"/>
+            <advice name="cache" type="around" bind-to="cacheFAKE"/>
         </aspect>
         <aspect class="eworld.service.ComputationStandalone$TraceAspect">
-            <pointcut name="trace" expression="execution(* foo.*(..))"/>
-            <advice name="trace" type="around" bind-to="trace"/>
+            <pointcut name="traceFAKE" expression="execution(* foo.*(..))"/>
+            <advice name="trace" type="around" bind-to="traceFAKE"/>
         </aspect>
     </system>
 </aspectwerkz>
