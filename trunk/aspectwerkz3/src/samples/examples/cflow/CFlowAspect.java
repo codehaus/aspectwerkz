@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class CFlowAspect {
 
     /**
-     * @Expression cflow(call(void examples.cflow.Target.step1()))
+     * @Expression cflow(within(examples.cflow.*) AND call(void examples.cflow.Target.step1()))
      */
     Pointcut cflowPointcut;
 
