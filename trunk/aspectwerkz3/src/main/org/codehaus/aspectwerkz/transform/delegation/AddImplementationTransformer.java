@@ -54,7 +54,7 @@ public class AddImplementationTransformer implements Transformer {
             if (classFilter(ctClass, ctx, definition)) {
                 continue;
             }
-            addMethodIntroductions(definition, context, ctx, ctClass, this);
+            addMethodIntroductions(definition, context, ctx, ctClass);
         }
     }
 
@@ -65,14 +65,12 @@ public class AddImplementationTransformer implements Transformer {
      * @param context the transformation context
      * @param ctx the context
      * @param ctClass the class gen
-     * @param transformer the transformer
      */
     private void addMethodIntroductions(
         final SystemDefinition definition,
         final Context context,
         final ExpressionContext ctx,
-        final CtClass ctClass,
-        final AddImplementationTransformer transformer) {
+        final CtClass ctClass) {
         List introductionDefs = definition.getIntroductionDefinitions(ctx);
         boolean isClassAdvised = false;
         for (Iterator it = introductionDefs.iterator(); it.hasNext();) {
@@ -84,18 +82,25 @@ public class AddImplementationTransformer implements Transformer {
                 if (methodToIntroduce == null) {
                     continue;
                 }
-                transformer.createProxyMethod(ctClass, methodToIntroduce, definition.getMixinIndexByName(introDef
-                        .getName()), methodIndex, definition, context);
+                createProxyMethod(
+                    ctClass,
+                    methodToIntroduce,
+                    definition.getMixinIndexByName(introDef.getName()),
+                    methodIndex,
+                    definition,
+                    context);
                 isClassAdvised = true;
             }
         }
         if (isClassAdvised) {
             context.markAsAdvised();
+            // weaved class might use the added interface to match pointcuts so mark the class info as dirty
+            JavassistClassInfo.markDirty(ctClass, context.getLoader());
         }
     }
 
     /**
-     * Creates a proxy method for the introduces method.
+     * Creates a proxy method for the introduced method.
      * 
      * @param ctClass the class gen
      * @param methodInfo the info for the method
@@ -194,26 +199,5 @@ public class AddImplementationTransformer implements Transformer {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Callback method. Is being called before each transformation.
-     */
-    public void sessionStart() {
-    }
-
-    /**
-     * Callback method. Is being called after each transformation.
-     */
-    public void sessionEnd() {
-    }
-
-    /**
-     * Callback method. Prints a log/status message at each transformation.
-     * 
-     * @return a log string
-     */
-    public String verboseMessage() {
-        return this.getClass().getName();
     }
 }

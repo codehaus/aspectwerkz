@@ -54,18 +54,7 @@ public class MethodExecutionTransformer implements Transformer {
         // thread safe
 
         final CtClass ctClass = klass.getCtClass();
-        
-        
-        // === DEBUG ===
-        System.out.println("=========== ctClass.to: " + ctClass.getName());
         ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
-        ClassInfo[] cis = classInfo.getInterfaces();
-        for (int i = 0; i < cis.length; i++) {
-            ClassInfo info = cis[i];
-            System.out.println("================== info.getName(): " + info.getName());
-        }
-        // === DEBUG ===
-        
         
         if (classFilter(definitions, new ExpressionContext(PointcutType.EXECUTION, classInfo, null), ctClass)) {
             return;

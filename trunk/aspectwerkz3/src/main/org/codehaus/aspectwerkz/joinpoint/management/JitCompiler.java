@@ -11,7 +11,7 @@ import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.AdviceIndex;
+import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
@@ -328,9 +328,9 @@ public class JitCompiler {
             if (pointcutType.equals(PointcutType.HANDLER)) { // TODO: fix handler pointcuts
                 return null;
             }
-            AdviceIndex[] aroundAdvice = JoinPointManager.extractAroundAdvice(advice);
-            AdviceIndex[] beforeAdvice = JoinPointManager.extractBeforeAdvice(advice);
-            AdviceIndex[] afterAdvice = JoinPointManager.extractAfterAdvice(advice);
+            AdviceInfo[] aroundAdvice = JoinPointManager.extractAroundAdvice(advice);
+            AdviceInfo[] beforeAdvice = JoinPointManager.extractBeforeAdvice(advice);
+            AdviceInfo[] afterAdvice = JoinPointManager.extractAfterAdvice(advice);
             if ((aroundAdvice.length == 0) && (beforeAdvice.length == 0) && (afterAdvice.length == 0)) {
                 return null; // no advice => bail out
             }
@@ -386,10 +386,8 @@ public class JitCompiler {
                     afterAdvice);
                 cw.visitEnd();
 
-                // TODO: should be a VM option
-                // CAUTION: need to be commented when used in production (meaning when creating a
-                // dist)
-                //                AsmHelper.dumpClass("_dump", className, cw);
+                // FIXME: should be a VM option
+                // AsmHelper.dumpClass("_dump", className, cw);
 
                 // load the generated class
                 joinPointClass = AsmHelper.loadClass(loader, cw.toByteArray(), className);
@@ -497,9 +495,9 @@ public class JitCompiler {
         final int joinPointType,
         final ClassWriter cw,
         final String className,
-        final AdviceIndex[] aroundAdvices,
-        final AdviceIndex[] beforeAdvices,
-        final AdviceIndex[] afterAdvices) {
+        final AdviceInfo[] aroundAdvices,
+        final AdviceInfo[] beforeAdvices,
+        final AdviceInfo[] afterAdvices) {
         CodeVisitor cv = cw.visitMethod(
             Constants.ACC_PUBLIC,
             INIT_METHOD_NAME,
@@ -634,7 +632,7 @@ public class JitCompiler {
      * @param className
      */
     private static boolean initAspectField(
-        final AdviceIndex adviceTuple,
+        final AdviceInfo adviceTuple,
         final ClassWriter cw,
         final String aspectFieldName,
         final CodeVisitor cv,
@@ -799,9 +797,9 @@ public class JitCompiler {
         final Class declaringClass,
         final int joinPointHash,
         final RttiInfo signatureCflowExprStruct,
-        final AdviceIndex[] aroundAdvice,
-        final AdviceIndex[] beforeAdvice,
-        final AdviceIndex[] afterAdvice) {
+        final AdviceInfo[] aroundAdvice,
+        final AdviceInfo[] beforeAdvice,
+        final AdviceInfo[] afterAdvice) {
         CodeVisitor cv = cw.visitMethod(
             Constants.ACC_PUBLIC | Constants.ACC_FINAL,
             PROCEED_METHOD_NAME,
@@ -1345,9 +1343,9 @@ public class JitCompiler {
     private static Labels invokeAdvice(
         final CodeVisitor cv,
         final String className,
-        final AdviceIndex[] aroundAdvices,
-        final AdviceIndex[] beforeAdvices,
-        final AdviceIndex[] afterAdvices,
+        final AdviceInfo[] aroundAdvices,
+        final AdviceInfo[] beforeAdvices,
+        final AdviceInfo[] afterAdvices,
         final RttiInfo signatureCflowExprStruct) {
         // creates the labels needed for the switch and try-finally blocks
         int nrOfCases = aroundAdvices.length;
@@ -1390,7 +1388,7 @@ public class JitCompiler {
             cv,
             switchCaseLabels,
             returnLabels);
-        invokesAroundAdvice(hasBeforeAfterAdvice, aroundAdvices, className, cv, switchCaseLabels, returnLabels);
+        invokeAroundAdvice(hasBeforeAfterAdvice, aroundAdvices, className, cv, switchCaseLabels, returnLabels);
         cv.visitLabel(defaultCaseLabel);
 
         // put the labels in a data structure and return them
@@ -1417,8 +1415,8 @@ public class JitCompiler {
      */
     private static void invokeBeforeAfterAdvice(
         boolean hasBeforeAfterAdvice,
-        final AdviceIndex[] beforeAdvices,
-        final AdviceIndex[] afterAdvices,
+        final AdviceInfo[] beforeAdvices,
+        final AdviceInfo[] afterAdvices,
         final String className,
         final CodeVisitor cv,
         final Label[] switchCaseLabels,
@@ -1428,7 +1426,7 @@ public class JitCompiler {
 
             // add invocations to the before advices
             for (int i = 0; i < beforeAdvices.length; i++) {
-                AdviceIndex beforeAdvice = beforeAdvices[i];
+                AdviceInfo beforeAdvice = beforeAdvices[i];
                 AspectContainer container = beforeAdvice.getAspectManager().getAspectContainer(
                     beforeAdvice.getAspectIndex());
                 Method adviceMethod = container.getAdvice(beforeAdvice.getMethodIndex());
@@ -1452,7 +1450,7 @@ public class JitCompiler {
 
             // add invocations to the after advices
             for (int i = afterAdvices.length - 1; i >= 0; i--) {
-                AdviceIndex afterAdvice = afterAdvices[i];
+                AdviceInfo afterAdvice = afterAdvices[i];
                 AspectContainer container = afterAdvice.getAspectManager().getAspectContainer(
                     afterAdvice.getAspectIndex());
                 Method adviceMethod = container.getAdvice(afterAdvice.getMethodIndex());
@@ -1487,9 +1485,9 @@ public class JitCompiler {
      * @param switchCaseLabels
      * @param returnLabels
      */
-    private static void invokesAroundAdvice(
+    private static void invokeAroundAdvice(
         boolean hasBeforeAfterAdvice,
-        final AdviceIndex[] aroundAdvices,
+        final AdviceInfo[] aroundAdvices,
         final String className,
         final CodeVisitor cv,
         final Label[] switchCaseLabels,
@@ -1500,7 +1498,7 @@ public class JitCompiler {
             j = 1;
         }
         for (; i < aroundAdvices.length; i++, j++) {
-            AdviceIndex aroundAdvice = aroundAdvices[i];
+            AdviceInfo aroundAdvice = aroundAdvices[i];
             AspectContainer container = aroundAdvice.getAspectManager().getAspectContainer(
                 aroundAdvice.getAspectIndex());
             Method adviceMethod = container.getAdvice(aroundAdvice.getMethodIndex());

@@ -57,13 +57,13 @@ public final class AddInterfaceTransformer implements Transformer {
      * Adds the interface introductions to the class.
      * 
      * @param definition the definition
-     * @param cg the class gen
+     * @param ctClass the class
      * @param context the TF context
      * @param ctx the context
      */
     private void addInterfaceIntroductions(
         final SystemDefinition definition,
-        final CtClass cg,
+        final CtClass ctClass,
         final Context context,
         final ExpressionContext ctx) {
         boolean isClassAdvised = false;
@@ -71,7 +71,7 @@ public final class AddInterfaceTransformer implements Transformer {
         for (Iterator it = interfaceIntroDefs.iterator(); it.hasNext();) {
             InterfaceIntroductionDefinition introductionDef = (InterfaceIntroductionDefinition) it.next();
             List interfaceClassNames = introductionDef.getInterfaceClassNames();
-            if (addInterfaces(interfaceClassNames, cg)) {
+            if (addInterfaces(interfaceClassNames, ctClass)) {
                 isClassAdvised = true;
             }
         }
@@ -79,7 +79,7 @@ public final class AddInterfaceTransformer implements Transformer {
         for (Iterator it = introDefs.iterator(); it.hasNext();) {
             IntroductionDefinition introductionDef = (IntroductionDefinition) it.next();
             List interfaceClassNames = introductionDef.getInterfaceClassNames();
-            if (addInterfaces(interfaceClassNames, cg)) {
+            if (addInterfaces(interfaceClassNames, ctClass)) {
                 isClassAdvised = true;
             }
         }
@@ -87,7 +87,7 @@ public final class AddInterfaceTransformer implements Transformer {
             context.markAsAdvised();
 
             // weaved class might use the added interface to match pointcuts so mark the class info as dirty
-            JavassistClassInfo.markDirty(cg, context.getLoader());
+            JavassistClassInfo.markDirty(ctClass, context.getLoader());
         }
     }
 
@@ -95,19 +95,19 @@ public final class AddInterfaceTransformer implements Transformer {
      * Adds the interfaces to the to target class.
      * 
      * @param interfaceClassNames
-     * @param cg
+     * @param ctClass
      * @return
      */
-    private boolean addInterfaces(final List interfaceClassNames, final CtClass cg) {
+    private boolean addInterfaces(final List interfaceClassNames, final CtClass ctClass) {
         boolean isClassAdvised = false;
         for (Iterator it = interfaceClassNames.iterator(); it.hasNext();) {
             String className = (String) it.next();
-            if (implementsInterface(cg, className)) {
+            if (implementsInterface(ctClass, className)) {
                 continue;
             }
             if (className != null) {
                 try {
-                    cg.addInterface(cg.getClassPool().get(className));
+                    ctClass.addInterface(ctClass.getClassPool().get(className));
                 } catch (NotFoundException e) {
                     throw new WrappedRuntimeException(e);
                 }
@@ -140,16 +140,19 @@ public final class AddInterfaceTransformer implements Transformer {
     /**
      * Filters the classes to be transformed.
      * 
-     * @param cg the class to filter
+     * @param ctClass the class to filter
      * @param ctx the context
      * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(final CtClass cg, final ExpressionContext ctx, final SystemDefinition definition) {
-        if (cg.isInterface()) {
+    public static boolean classFilter(
+        final CtClass ctClass,
+        final ExpressionContext ctx,
+        final SystemDefinition definition) {
+        if (ctClass.isInterface()) {
             return true;
         }
-        String className = cg.getName().replace('/', '.');
+        String className = ctClass.getName().replace('/', '.');
         if (definition.inExcludePackage(className)) {
             return true;
         }

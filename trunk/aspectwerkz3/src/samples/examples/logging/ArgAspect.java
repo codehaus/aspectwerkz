@@ -1,5 +1,5 @@
      /**************************************************************************************
- * Copyright (c) Jonas Bon?r, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -24,42 +24,58 @@ public class ArgAspect {
     public void before1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
         MethodSignature sig = (MethodSignature)joinPoint.getSignature();
         Annotation a = sig.getAnnotation("Annotation");
-        System.out.println("== ==> ArgAspect.before " + joinPoint + ", " + ai + ", " + as);
+        System.out.println("==> before1: " + ai + ", " + as);
     }
 
     /**
      * @After pc1(ai, as)
      */
     public void after1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
-        System.out.println("== ==> ArgAspect.after " + joinPoint + ", " + ai + ", " + as);
+        System.out.println("==> after1: " + ai + ", " + as);
     }
+
+    /**
+     * @Around pc3
+     */
+    public Object around1(final JoinPoint joinPoint) throws Throwable {
+        System.out.println("==> around1 -- pre: ");
+        Object result = joinPoint.proceed();
+        System.out.println("==> around1 -- post: ");
+        return result;
+    }
+//    public Object around1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
+//        System.out.println("== ==> ArgAspect.around1 (before)" + joinPoint + ", " + ai + ", " + as);
+//        Object result = joinPoint.proceed();
+//        System.out.println("== ==> ArgAspect.around1 (after)" + joinPoint + ", " + ai + ", " + as);
+//        return result;
+//    }
 
     /**
      * @Before pc1(ai, as)
      */
     public void before2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
-        System.out.println("== ==> ArgAspect.before2 " + joinPoint + ", " + as + ", " + ai);
+        System.out.println("==> before2: " + as + ", " + ai);
     }
 
     /**
      * @After pc1(ai, as)
      */
     public void after2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
-        System.out.println("== ==> ArgAspect.after2 " + joinPoint + ", " + as + ", " + ai);
+        System.out.println("==> after2: " + as + ", " + ai);
     }
 
     /**
      * @Before pc2(sarr)
      */
     public void before3(final JoinPoint joinPoint, String[] sarr) throws Throwable {
-        System.out.println("== ==> ArgAspect.before3 " + joinPoint + ", " + sarr);
+        System.out.println("==> before3: " + sarr);
     }
 
     /**
      * @After pc2(sarr)
      */
     public void after3(final JoinPoint joinPoint, String[] sarr) throws Throwable {
-        System.out.println("== ==> ArgAspect.after3 " + joinPoint + ", " + sarr);
+        System.out.println("==> after3: " + sarr);
     }
 
     /**
@@ -73,6 +89,13 @@ public class ArgAspect {
      * @Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(sarr)
      */
     Pointcut pc2(String[] sarr) {
+        return null;
+    }
+    
+    /**
+     * @Expression execution(* ..ArgLoggingTarget.toLog*(..))
+     */
+    Pointcut pc3() {
         return null;
     }
     

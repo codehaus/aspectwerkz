@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.AdviceIndex;
+import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 
 import java.io.Serializable;
@@ -32,7 +32,7 @@ public class AroundAdviceExecutor implements Serializable {
     /**
      * The advices indexes.
      */
-    private final AdviceIndex[] m_adviceIndexes;
+    private final AdviceInfo[] m_adviceIndexes;
 
     /**
      * The join point type.
@@ -45,7 +45,7 @@ public class AroundAdviceExecutor implements Serializable {
      * @param adviceIndexes
      * @param joinPointType
      */
-    public AroundAdviceExecutor(final AdviceIndex[] adviceIndexes, final int joinPointType) {
+    public AroundAdviceExecutor(final AdviceInfo[] adviceIndexes, final int joinPointType) {
         m_adviceIndexes = adviceIndexes;
         m_joinPointType = joinPointType;
     }
@@ -79,7 +79,7 @@ public class AroundAdviceExecutor implements Serializable {
             } else {
                 m_currentAdviceIndex++;
                 try {
-                    AdviceIndex index = m_adviceIndexes[m_currentAdviceIndex];
+                    AdviceInfo index = m_adviceIndexes[m_currentAdviceIndex];
                     AspectContainer container = index.getAspectManager().getAspectContainer(index.getAspectIndex());
                     result = container.invokeAdvice(index.getMethodIndex(), joinPoint);
                 } finally {
