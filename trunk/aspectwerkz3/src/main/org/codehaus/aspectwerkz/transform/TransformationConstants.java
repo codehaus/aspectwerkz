@@ -10,12 +10,14 @@ package org.codehaus.aspectwerkz.transform;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.objectweb.asm.Constants;
+
 /**
  * Interface with common constants used in the transformation process.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public interface TransformationConstants {
+public interface TransformationConstants extends Constants {
     public static final List EMTPTY_ARRAY_LIST = new ArrayList();
 
     // prefixes

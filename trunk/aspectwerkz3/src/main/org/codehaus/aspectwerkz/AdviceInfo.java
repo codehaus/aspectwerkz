@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
+import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.objectweb.asm.Type;
 
 import java.io.Serializable;
@@ -101,6 +102,13 @@ public class AdviceInfo implements Serializable {
     private ExpressionContext m_expressionContext;
 
     /**
+     * The advice definition for this advice.
+     */
+    private AdviceDefinition m_adviceDef;
+
+    /**
+     * TODO refactor - many member fields holds data that is in either the adviceDef (which is in the class) or the aspectDef (which is accessible from the adviceDef)
+     * <p/>
      * Creates a new advice info.
      *
      * @param aspectQualifiedName
@@ -115,6 +123,7 @@ public class AdviceInfo implements Serializable {
      * @param targetWithRuntimeCheck true if a runtime check is needed based on target instance
      * @param expressionInfo
      * @param expressionContext
+     * @param adviceDef
      */
     public AdviceInfo(final String aspectQualifiedName,
                       final String aspectClassName,
@@ -127,7 +136,8 @@ public class AdviceInfo implements Serializable {
                       final String adviceName,
                       final boolean targetWithRuntimeCheck,
                       final ExpressionInfo expressionInfo,
-                      final ExpressionContext expressionContext) {
+                      final ExpressionContext expressionContext,
+                      final AdviceDefinition adviceDef) {
         m_aspectQualifiedName = aspectQualifiedName;
         m_aspectClassName = aspectClassName;
         m_aspectDeploymentModel = aspectDeploymentModel;
@@ -140,6 +150,7 @@ public class AdviceInfo implements Serializable {
         m_targetWithRuntimeCheck = targetWithRuntimeCheck;
         m_expressionInfo = expressionInfo;
         m_expressionContext = expressionContext;
+        m_adviceDef = adviceDef;
     }
 
     /**
@@ -266,6 +277,15 @@ public class AdviceInfo implements Serializable {
      */
     public ExpressionContext getExpressionContext() {
         return m_expressionContext;
+    }
+
+    /**
+     * Returns the advice definition.
+     *
+     * @return
+     */
+    public AdviceDefinition getAdviceDefinition() {
+        return m_adviceDef;
     }
 
     public String toString() {

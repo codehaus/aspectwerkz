@@ -7,10 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.util.SequencedHashMap;
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Set;

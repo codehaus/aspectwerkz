@@ -401,7 +401,8 @@ public class JoinPointManager {
                                 adviceDefinition.getName(),
                                 expressionContext.m_targetWithRuntimeCheck,
                                 expressionInfo,
-                                expressionContext
+                                expressionContext,
+                                adviceDefinition
                         );
 
                         setMethodArgumentIndexes(expressionInfo, expressionContext, adviceInfo);
