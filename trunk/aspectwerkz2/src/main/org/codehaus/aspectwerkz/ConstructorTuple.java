@@ -20,6 +20,8 @@ public class ConstructorTuple {
     private final Class m_declaringClass;
 
     /**
+     * Creates a new tuple.
+     * 
      * @param wrapperConstructor
      * @param originalConstructor
      */

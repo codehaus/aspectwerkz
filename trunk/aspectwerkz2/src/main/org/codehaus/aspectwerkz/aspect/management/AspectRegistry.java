@@ -690,8 +690,8 @@ public class AspectRegistry {
         TIntObjectHashMap constructorMap = new TIntObjectHashMap(constructors.length);
         for (int i = 0; i < constructors.length; i++) {
             Constructor constructor1 = constructors[i];
-            Constructor prefixedConstructor = null;
-            Constructor wrapperConstructor = null;
+            Constructor prefixedConstructor = constructor1;
+            Constructor wrapperConstructor = constructor1;
             for (int j = 0; j < constructors.length; j++) {
                 Constructor constructor2 = constructors[j];
                 Class[] parameterTypes1 = constructor1.getParameterTypes();

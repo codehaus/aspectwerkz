@@ -17,9 +17,11 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
+ * Handles the execution of the before advices.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class BeforeAdviceExecutor {
+class BeforeAdviceExecutor {
 
     /**
      * The advices indexes.

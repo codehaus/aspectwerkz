@@ -17,9 +17,11 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
+ * Handles the execution of the around advices.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AroundAdviceExecutor {
+class AroundAdviceExecutor {
 
     /**
      * The index of the current advice.
@@ -81,6 +83,7 @@ public class AroundAdviceExecutor {
      * @return the result from the next advice in the chain or the invocation of the target method
      */
     public Object proceed(final JoinPoint joinPoint) throws Throwable {
+        Object result = null;
         if (m_checkCflow) {
             boolean isInCFlow = false;
             for (Iterator it = m_cflowExpressions.iterator(); it.hasNext();) {
@@ -91,33 +94,13 @@ public class AroundAdviceExecutor {
                 }
             }
             if (!isInCFlow) {
-                return JoinPointBase.invokeTargetMethod(joinPoint);
+                return invokeJoinPoint(joinPoint);
             }
         }
-        Object result = null;
         if (m_currentAdviceIndex == m_adviceIndexes.length - 1) {
             m_currentAdviceIndex = -1;
             try {
-                switch (m_joinPointType) {
-                    case JoinPointType.METHOD_EXECUTION:
-                        result = JoinPointBase.invokeTargetMethod(joinPoint);
-                        break;
-                    case JoinPointType.METHOD_CALL:
-                        result = JoinPointBase.invokeTargetMethod(joinPoint);
-                        break;
-                    case JoinPointType.CONSTRUCTOR_EXECUTION:
-                        result = JoinPointBase.invokeTargetConstructorExecution(joinPoint);
-                        break;
-                    case JoinPointType.CONSTRUCTOR_CALL:
-                        result = JoinPointBase.invokeTargetConstructorCall(joinPoint);
-                        break;
-                    case JoinPointType.FIELD_SET:
-                        JoinPointBase.setTargetField(joinPoint);
-                        break;
-                    case JoinPointType.FIELD_GET:
-                        result = JoinPointBase.getTargetField(joinPoint);
-                        break;
-                }
+                result = invokeJoinPoint(joinPoint);
             }
             finally {
                 m_currentAdviceIndex = m_adviceIndexes.length - 1;
@@ -155,4 +138,35 @@ public class AroundAdviceExecutor {
         return new AroundAdviceExecutor(m_adviceIndexes, m_cflowExpressions, m_system, m_joinPointType);
     }
 
+    /**
+     * Invoke the join point.
+     *
+     * @param joinPoint the join point instance
+     * @return the result from the invocation
+     * @throws Throwable
+     */
+    private Object invokeJoinPoint(final JoinPoint joinPoint) throws Throwable {
+        Object result = null;
+        switch (m_joinPointType) {
+            case JoinPointType.METHOD_EXECUTION:
+                result = JoinPointBase.invokeTargetMethod(joinPoint);
+                break;
+            case JoinPointType.METHOD_CALL:
+                result = JoinPointBase.invokeTargetMethod(joinPoint);
+                break;
+            case JoinPointType.CONSTRUCTOR_EXECUTION:
+                result = JoinPointBase.invokeTargetConstructorExecution(joinPoint);
+                break;
+            case JoinPointType.CONSTRUCTOR_CALL:
+                result = JoinPointBase.invokeTargetConstructorCall(joinPoint);
+                break;
+            case JoinPointType.FIELD_SET:
+                JoinPointBase.setTargetField(joinPoint);
+                break;
+            case JoinPointType.FIELD_GET:
+                result = JoinPointBase.getTargetField(joinPoint);
+                break;
+        }
+        return result;
+    }
 }

@@ -10,6 +10,7 @@ package test.constructor;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -93,6 +94,7 @@ public class ConstructorTestAspect extends Aspect {
      */
     public void afterCall(final JoinPoint joinPoint) throws Throwable {
         ConstructorAdviceTest.logCall("postCall ");
+        ConstructorSignature sig = (ConstructorSignature)joinPoint.getSignature();
     }
 
     /**

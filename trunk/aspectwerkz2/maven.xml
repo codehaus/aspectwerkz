@@ -165,6 +165,13 @@
     <goal name="aspectwerkz:test">
         <attainGoal name="aspectwerkz:test:aspectc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.jit.off=true -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
+        </exec>
+    </goal>
+
+    <goal name="aspectwerkz:test:jit">
+        <attainGoal name="aspectwerkz:test:aspectc"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
         </exec>
     </goal>

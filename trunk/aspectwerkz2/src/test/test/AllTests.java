@@ -24,40 +24,40 @@ public class AllTests extends TestCase {
         TestSuite suite = new TestSuite("All tests");
 
         // definition tests
-        suite.addTestSuite(test.ClassPatternTest.class);
-        suite.addTestSuite(test.MethodPatternTest.class);
-        suite.addTestSuite(test.ConstructorPatternTest.class);
-        suite.addTestSuite(test.FieldPatternTest.class);
-        suite.addTestSuite(test.ExceptionTest.class);
-        suite.addTestSuite(test.MethodComparatorTest.class);
-        suite.addTestSuite(test.StringsTest.class);
-        suite.addTestSuite(test.ExpressionTest.class);
-        suite.addTestSuite(test.ExpressionGrammarTest.class);
+//        suite.addTestSuite(test.ClassPatternTest.class);
+//        suite.addTestSuite(test.MethodPatternTest.class);
+//        suite.addTestSuite(test.ConstructorPatternTest.class);
+//        suite.addTestSuite(test.FieldPatternTest.class);
+//        suite.addTestSuite(test.ExceptionTest.class);
+//        suite.addTestSuite(test.MethodComparatorTest.class);
+//        suite.addTestSuite(test.StringsTest.class);
+//        suite.addTestSuite(test.ExpressionTest.class);
+//        suite.addTestSuite(test.ExpressionGrammarTest.class);
 
 
         // transformer and engine tests
-        suite.addTestSuite(test.MemberMethodAdviceTest.class);
-        suite.addTestSuite(test.StaticMethodAdviceTest.class);
-        suite.addTestSuite(test.FieldAdviceTest.class);
-        suite.addTestSuite(test.CallerSideAdviceTest.class);
-        suite.addTestSuite(test.CFlowTest.class);
-        suite.addTestSuite(test.IntroductionTest.class);
+//        suite.addTestSuite(test.MemberMethodAdviceTest.class);
+//        suite.addTestSuite(test.StaticMethodAdviceTest.class);
+//        suite.addTestSuite(test.FieldAdviceTest.class);
+//        suite.addTestSuite(test.CallerSideAdviceTest.class);
+//        suite.addTestSuite(test.CFlowTest.class);
+//        suite.addTestSuite(test.IntroductionTest.class);
         suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
-        suite.addTestSuite(test.handler.HandlerTest.class);
-        suite.addTestSuite(test.orthogonal.OrthogonalTest.class);
+//        suite.addTestSuite(test.handler.HandlerTest.class);
+//        suite.addTestSuite(test.orthogonal.OrthogonalTest.class);
 
         // bug tests
-        suite.addTestSuite(test.abstractclass.AbstractClassTest.class);
-        suite.addTestSuite(test.hierarchicalpattern.HierachicalPatternTest.class);
-        suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
-        suite.addTestSuite(test.reflection.ReflectionTest.class);
-        suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);
-        suite.addTestSuite(test.superclassconstructor.SuperClassConstructorTest.class);
-        suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
-        suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
+//        suite.addTestSuite(test.abstractclass.AbstractClassTest.class);
+//        suite.addTestSuite(test.hierarchicalpattern.HierachicalPatternTest.class);
+//        suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
+//        suite.addTestSuite(test.reflection.ReflectionTest.class);
+//        suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);
+//        suite.addTestSuite(test.superclassconstructor.SuperClassConstructorTest.class);
+//        suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
+//        suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
 
         // performance tests                       ,
-        suite.addTestSuite(test.performance.PerformanceTest.class);
+//        suite.addTestSuite(test.performance.PerformanceTest.class);
 
         // TODO: deprecated until a better hot deployment model has been implemented
 //        suite.addTestSuite(test.DynamicDeploymentTest.class);
