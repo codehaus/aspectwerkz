@@ -186,21 +186,13 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
                                     String calleeClassName,
                                     final String calleeMethodName,
                                     final String calleeMethodDesc) {
-//            if (calleeClassName.startsWith("[")) {
-//                System.out.println("m_callerClassName = " + m_callerClassName);
-//                System.out.println("calleeClassName = " + calleeClassName);
-//                System.out.println("calleeMethodName = " + calleeMethodName);
-//                int index = calleeClassName.indexOf('L');
-//                calleeClassName = calleeClassName.substring(index + 1, calleeClassName.length() - 1);
-//            }
-//
             if (INIT_METHOD_NAME.equals(calleeMethodName) ||
                 CLINIT_METHOD_NAME.equals(calleeMethodName) ||
                 calleeMethodName.startsWith(ASPECTWERKZ_PREFIX) ||
                 calleeClassName.endsWith(AbstractJoinPointCompiler.JOIN_POINT_CLASS_SUFFIX) ||
                 calleeClassName.startsWith(ASPECTWERKZ_PACKAGE_NAME) ||
 
-                // TODO make generic fix by invoking all AspectModels (same problem in other visitors as well)
+                // FIXME make generic fix by invoking all AspectModels (same problem in other visitors as well)
                 calleeClassName.startsWith("org/aopalliance/")) {
 
                 super.visitMethodInsn(opcode, calleeClassName, calleeMethodName, calleeMethodDesc);
@@ -232,15 +224,23 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
                     }
                 }
                 if (calleeMethodInfo == null) {
-                    throw new Error(
-                            "callee method info metadata structure could not be build for method: "
-                            + calleeClassName
+                    System.err.println("AW::WARNING - " +
+                            "callee method info metadata structure could not be build for method ["
+                            + calleeClassName.replace('/', '.')
                             + '.'
                             + calleeMethodName
                             + ':'
                             + calleeMethodDesc
+                            + "] when parsing method ["
+                            + m_callerClassInfo.getName()
+                            + '.'
+                            + m_callerMethodName
+                            + "(..)]"
                     );
                 }
+                // bail out
+                super.visitMethodInsn(opcode, calleeClassName, calleeMethodName, calleeMethodDesc);
+                return;
             }
 
             ExpressionContext ctx = new ExpressionContext(PointcutType.CALL, calleeMethodInfo, m_callerMemberInfo);
