@@ -16,6 +16,7 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +27,12 @@ import java.util.ArrayList;
 public class JavaLoggingAspect {
 
     private int m_level = 0;
+
+    private CrossCuttingInfo m_cci;
+
+    public JavaLoggingAspect(CrossCuttingInfo cci) {
+        m_cci = cci;
+    }
 
     /**
      */
@@ -74,9 +81,9 @@ public class JavaLoggingAspect {
      * @param pointcut
      * @param pointcutName
      */
-    public static void addPointcutForLoggingAdvice(String pointcut, String pointcutName) {
+    public void addPointcutForLoggingAdvice(String pointcut, String pointcutName) {
         final String aspectName = "examples.logging.JavaLoggingAspect";
-        Expression pcExpression = ExpressionNamespace.getExpressionNamespace(null/*aspectName*/)//AVAOPC TODO classloader or CCI ?
+        Expression pcExpression = ExpressionNamespace.getExpressionNamespace(m_cci.getAspectDefinition())
                 .createExpression(
                         pointcut,
                         "",
