@@ -135,6 +135,7 @@ public class DocumentParser {
 
         // create the aspect definition
         final AspectDefinition aspectDef = new AspectDefinition(specialAspectName, classInfo, systemDef);
+        //TODO: if this XML centric deployment is supposed to PRESERVE @Aspect values, then it is broken
         aspectDef.setContainerClassName(containerClassName);
         aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelFor(deploymentModelAsString));
 
@@ -432,9 +433,16 @@ public class DocumentParser {
             AspectAnnotationParser.parse(aspectClassInfo, aspectDef, loader);
 
             // XML definition settings always overrides attribute definition settings
-            aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelFor(deploymentModel));
-            aspectDef.setName(aspectName);
-            aspectDef.setContainerClassName(containerClassName);
+            // AW-357
+            if (!Strings.isNullOrEmpty(deploymentModel)) {
+                aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelFor(deploymentModel));
+            }
+            if (!Strings.isNullOrEmpty(aspectName)) {
+                aspectDef.setName(aspectName);
+            }
+            if (!Strings.isNullOrEmpty(containerClassName)) {
+                aspectDef.setContainerClassName(containerClassName);
+            }
 
             // parse the aspect info
             parseParameterElements(aspect, definition, aspectDef);
