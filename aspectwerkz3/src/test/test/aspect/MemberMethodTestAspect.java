@@ -28,7 +28,7 @@ public class MemberMethodTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression execution(* test.MemberMethodAdviceTest.get*(..))
+     * @Expression call(* test.MemberMethodAdviceTest.get*(..))
      */
     Pointcut member_pc1;
 
@@ -43,7 +43,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc3;
 
     /**
-     * @Expression execution(* test.MemberMethodAdviceTest.methodAdvicedMethod())
+     * @Expression call(* test.MemberMethodAdviceTest.methodAdvicedMethod())
      */
     Pointcut member_pc4;
 
@@ -53,7 +53,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc5;
 
     /**
-     * @Expression execution(* test.MemberMethodAdviceTest.method*icedMethodNewThread(..))
+     * @Expression call(* test.MemberMethodAdviceTest.method*icedMethodNewThread(..))
      */
     Pointcut member_pc6;
 
@@ -63,7 +63,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc7;
 
     /**
-     * @Expression execution(* test.MemberMethodAdviceTest.multipleMethodAdvicedMethod(..))
+     * @Expression call(* test.MemberMethodAdviceTest.multipleMethodAdvicedMethod(..))
      */
     Pointcut member_pc8;
 
@@ -73,12 +73,12 @@ public class MemberMethodTestAspect {
     Pointcut member_pc9;
 
     /**
-     * @Expression execution(* test.MemberMethodAdviceTest.joinPointMetaData(..))
+     * @Expression call(* test.MemberMethodAdviceTest.joinPointMetaData(..))
      */
     Pointcut member_pc10;
 
     /**
-     * @Expression execution(void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..))
+     * @Expression call(void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..))
      */
     Pointcut member_pc11;
 
@@ -88,7 +88,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc12;
 
     /**
-     * @Expression execution(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..))
+     * @Expression call(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..))
      */
     Pointcut member_pc13;
 
@@ -98,7 +98,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc14;
 
     /**
-     * @Expression execution(long test.MemberMethodAdviceTest.getPrimitiveAndNullFromAdvice())
+     * @Expression call(long test.MemberMethodAdviceTest.getPrimitiveAndNullFromAdvice())
      */
     Pointcut member_pc15;
 
@@ -108,7 +108,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc16;
 
     /**
-     * @Expression execution(void test.MemberMethodAdviceTest.afterAdvicedMethod())
+     * @Expression call(void test.MemberMethodAdviceTest.afterAdvicedMethod())
      */
     Pointcut member_pc17;
 
@@ -118,12 +118,12 @@ public class MemberMethodTestAspect {
     Pointcut member_pc18;
 
     /**
-     * @Expression execution(void test.MemberMethodAdviceTest.beforeAroundAfterAdvicedMethod())
+     * @Expression call(void test.MemberMethodAdviceTest.beforeAroundAfterAdvicedMethod())
      */
     Pointcut member_pc19;
 
     /**
-     * @Expression execution(* test.MemberMethodAdviceTest.longNoAroundAdvice(..))
+     * @Expression call(* test.MemberMethodAdviceTest.longNoAroundAdvice(..))
      */
     Pointcut noAroundAdvice;
 
@@ -163,12 +163,12 @@ public class MemberMethodTestAspect {
         final Object result = joinPoint.proceed();
         MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
         String metadata = joinPoint.getTargetClass().getName()
-            + rtti.getMethod().getName()
-            + joinPoint.getTarget().hashCode()
-            + rtti.getParameterValues()[0]
-            + rtti.getParameterTypes()[0].getName()
-            + rtti.getReturnType().getName()
-            + rtti.getReturnValue();
+                          + rtti.getMethod().getName()
+                          + joinPoint.getTarget().hashCode()
+                          + rtti.getParameterValues()[0]
+                          + rtti.getParameterTypes()[0].getName()
+                          + rtti.getReturnType().getName()
+                          + rtti.getReturnValue();
         return metadata;
     }
 
@@ -217,7 +217,7 @@ public class MemberMethodTestAspect {
 
     /**
      * @After call(* test.MemberMethodAdviceTest.callWithincodeCtor(..))
-     *        && withincode(test.MemberMethodAdviceTest.new(int))
+     * && withincode(test.MemberMethodAdviceTest.new(int))
      */
     public void afterWithinCtor(final JoinPoint joinPoint) {
         ((Loggable) joinPoint.getTarget()).log("post ");

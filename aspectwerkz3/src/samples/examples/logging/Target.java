@@ -9,7 +9,7 @@ package examples.logging;
 
 /**
  * serializable
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Target {
@@ -34,13 +34,15 @@ public class Target {
 
     /**
      * log level=0
-     *      sconstant=org.codehaus.aspectwerkz.transform.TransformationConstants.ASPECTWERKZ_PREFIX
+     * sconstant=org.codehaus.aspectwerkz.transform.TransformationConstants.ASPECTWERKZ_PREFIX
      */
     public static int toLog1(int i) {
         System.out.println("Target.toLog1()");
-        new Target().toLog2(new String[] {
-            "parameter"
-        });
+        new Target().toLog2(
+                new String[]{
+                    "parameter"
+                }
+        );
         return 1;
     }
 
@@ -70,11 +72,9 @@ public class Target {
             target.increment();
             target.getCounter();
 
-            TargetOther.toLog1(new int[]{1,2,3}, null, null, 0);
+            TargetOther.toLog1(new int[]{1, 2, 3}, null, null, 0);
         } catch (Throwable e) {
-            // TODO Auto-generated catch block
             System.out.println("The runtime exception went thru");
-            //e.printStackTrace();
         }
     }
 
@@ -84,6 +84,5 @@ public class Target {
             System.out.println("TargetOther.toLog1()");
             return i;
         }
-
     }
 }

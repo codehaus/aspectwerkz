@@ -20,16 +20,15 @@ import java.util.List;
 /**
  * Implementation of the pointcut concept. I.e. an abstraction of a well defined point of execution in the program.
  * <p/>Could matches one or many as long at it is well defined. <br/>Stores the advices for the specific pointcut. <p/>
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
- *
- * TODO this class has transient fields that might cause pbms after serialization
- *
- * TODO change addXXAdvice to allow 'aspectName, adviceName' params
+ *         <p/>
+ *         TODO this class has transient fields that might cause pbms after serialization
+ *         <p/>
+ *         TODO change addXXAdvice to allow 'aspectName, adviceName' params
  */
-public class
-        Pointcut implements Serializable {
+public class Pointcut implements Serializable {
     /**
      * The expression for the pointcut.
      */
@@ -87,15 +86,15 @@ public class
 
     /**
      * The AspectManager for the AspectWerkz system.
-     *
+     * <p/>
      * TODO if the manager is needed after serialization it can be rebuild using  UUID, see AdviceInfo.java
      */
     protected transient final AspectManager m_aspectManager;
 
     /**
      * Creates a new pointcut.
-     * 
-     * @param aspectManager the aspectManager for the AspectWerkz system
+     *
+     * @param aspectManager  the aspectManager for the AspectWerkz system
      * @param expressionInfo the pattern for the pointcut
      */
     public Pointcut(final AspectManager aspectManager, final ExpressionInfo expressionInfo) {
@@ -111,7 +110,7 @@ public class
 
     /**
      * Adds an around advice to the pointcut.
-     * 
+     *
      * @param advice the name of the advice to add
      */
     public void addAroundAdvice(final String advice) {
@@ -145,7 +144,7 @@ public class
 
     /**
      * Adds a before advice to the pointcut.
-     * 
+     *
      * @param advice the name of the advice to add
      */
     public void addBeforeAdvice(final String advice) {
@@ -215,7 +214,8 @@ public class
                 // update the indexes
                 m_afterReturningAdviceIndexes = new AdviceInfo[m_afterReturningAdviceNames.length];
                 for (int i = 0, j = m_afterReturningAdviceNames.length; i < j; i++) {
-                    m_afterReturningAdviceIndexes[i] = m_aspectManager.getAdviceIndexFor(m_afterReturningAdviceNames[i]);
+                    m_afterReturningAdviceIndexes[i] =
+                    m_aspectManager.getAdviceIndexFor(m_afterReturningAdviceNames[i]);
                 }
             }
         }
@@ -249,10 +249,9 @@ public class
 
     /**
      * Removes an advice from the pointcut.
-     * 
-     * @TODO not used - remove?
      *
      * @param advice the name of the advice to remove
+     * @TODO not used - remove?
      */
     public void removeAroundAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
@@ -298,10 +297,9 @@ public class
 
     /**
      * Removes an advice from the pointcut.
-     * 
-     * @TODO not used - remove?
      *
      * @param advice the name of the advice to remove
+     * @TODO not used - remove?
      */
     public void removeBeforeAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
@@ -348,9 +346,8 @@ public class
     /**
      * Removes an advice from the pointcut.
      *
-     * @TODO not used - remove?
-     * 
      * @param advice the name of the advice to remove
+     * @TODO not used - remove?
      */
     public void removeAfterAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
@@ -396,11 +393,10 @@ public class
 
     /**
      * Checks if the pointcuts has a certain advice.
-     * 
-     * @TODO not used - remove?
      *
      * @param advice the advice to check for existence
      * @return boolean
+     * @TODO not used - remove?
      */
     public boolean hasAroundAdvice(final String advice) {
         for (int i = 0; i < m_aroundAdviceNames.length; i++) {
@@ -413,10 +409,10 @@ public class
 
     /**
      * Checks if the pointcuts has a certain advice.
-     * @TODO not used - remove?
      *
      * @param advice the advice to check for existence
      * @return boolean
+     * @TODO not used - remove?
      */
     public boolean hasBeforeAdvice(final String advice) {
         for (int i = 0; i < m_beforeAdviceNames.length; i++) {
@@ -429,11 +425,10 @@ public class
 
     /**
      * Checks if the pointcuts has a certain advice.
-     * 
-     * @TODO not used - remove?
      *
      * @param advice the advice to check for existence
      * @return boolean
+     * @TODO not used - remove?
      */
     public boolean hasAfterAdvice(final String advice) {
         for (int i = 0; i < m_afterFinallyAdviceNames.length; i++) {
@@ -448,10 +443,9 @@ public class
      * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
      * is necessary. <br/>For addition of an advice see <code>addAdviceTestMethod(..)</code>. <br/>For removal of an
      * advice see <code>removeAdviceTestMethod(..)</code>.
-     * 
-     * @TODO not used - remove?
      *
      * @return the current advice/index tuples as a list
+     * @TODO not used - remove?
      */
     public List getAroundAdviceIndexTuples() {
         synchronized (m_aroundAdviceIndexes) {
@@ -469,10 +463,9 @@ public class
      * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
      * is necessary. <br/>For addition of an advice see <code>addAdviceTestMethod(..)</code>. <br/>For removal of an
      * advice see <code>removeAdviceTestMethod(..)</code>.
-     * 
-     * @TODO not used - remove?
      *
      * @return the current advice/index tuples as a list
+     * @TODO not used - remove?
      */
     public List getBeforeAdviceIndexTuples() {
         synchronized (m_beforeAdviceIndexes) {
@@ -490,10 +483,9 @@ public class
      * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
      * is necessary. <br/>For addition of an advice see <code>addAdviceTestMethod(..)</code>. <br/>For removal of an
      * advice see <code>removeAdviceTestMethod(..)</code>.
-     * 
-     * @TODO not used - remove?
      *
      * @return the current advice/index tuples as a list
+     * @TODO not used - remove?
      */
     public List getAfterAdviceIndexTuples() {
         synchronized (m_afterFinallyAdviceIndexes) {
@@ -511,10 +503,9 @@ public class
      * Sets the advices. To be used when a reordering of the advices is necessary. <br/>For addition of an advice see
      * <code>addAdviceTestMethod(..)</code>. <br/>For removal of an advice see
      * <code>removeAdviceTestMethod(..)</code>.
-     * 
-     * @TODO not used - remove?
      *
      * @param advices the new advice/index tuple array
+     * @TODO not used - remove?
      */
     public void setAroundAdviceIndexTuples(final List advices) {
         synchronized (m_aroundAdviceIndexes) {
@@ -539,10 +530,9 @@ public class
      * Sets the advices. To be used when a reordering of the advices is necessary. <br/>For addition of an advice see
      * <code>addAdviceTestMethod(..)</code>. <br/>For removal of an advice see
      * <code>removeAdviceTestMethod(..)</code>.
-     * 
-     * @TODO not used - remove?
      *
      * @param advices the new advice/index tuple array
+     * @TODO not used - remove?
      */
     public void setBeforeAdviceIndexTuples(final List advices) {
         synchronized (m_beforeAdviceIndexes) {
@@ -567,10 +557,9 @@ public class
      * Sets the advices. To be used when a reordering of the advices is necessary. <br/>For addition of an advice see
      * <code>addAdviceTestMethod(..)</code>. <br/>For removal of an advice see
      * <code>removeAdviceTestMethod(..)</code>.
-     * 
-     * @TODO not used - remove?
      *
      * @param advices the new advice/index tuple array
+     * @TODO not used - remove?
      */
     public void setAfterAdviceIndexTuples(final List advices) {
         synchronized (m_afterFinallyAdviceIndexes) {
@@ -602,10 +591,9 @@ public class
 
     /**
      * Returns a specific advice index.
-     * 
-     * @TODO not used - remove?
      *
      * @return the advice index
+     * @TODO not used - remove?
      */
     public AdviceInfo getAroundAdviceIndex(final int index) {
         return m_aroundAdviceIndexes[index];
@@ -613,10 +601,9 @@ public class
 
     /**
      * Returns a specific advice index.
-     * 
-     * @TODO not used - remove?
      *
      * @return the advice index
+     * @TODO not used - remove?
      */
     public AdviceInfo getBeforeAdviceIndex(final int index) {
         return m_beforeAdviceIndexes[index];
@@ -624,10 +611,9 @@ public class
 
     /**
      * Returns a specific advice index.
-     * 
-     * @TODO not used - remove?
      *
      * @return the advice index
+     * @TODO not used - remove?
      */
     public AdviceInfo getAfterAdviceIndex(final int index) {
         return m_afterFinallyAdviceIndexes[index];
@@ -635,7 +621,7 @@ public class
 
     /**
      * Returns a list with the indexes for the around advices for the pointcut.
-     * 
+     *
      * @return the advices
      */
     public AdviceInfo[] getAroundAdviceIndexes() {
@@ -644,7 +630,7 @@ public class
 
     /**
      * Returns a list with the indexes for the before advices for the pointcut.
-     * 
+     *
      * @return the advices
      */
     public AdviceInfo[] getBeforeAdviceIndexes() {
@@ -653,7 +639,7 @@ public class
 
     /**
      * Returns the before advice name at the given index
-     * 
+     *
      * @return the advice name
      */
     public String getBeforeAdviceName(int index) {
@@ -716,7 +702,7 @@ public class
 
     /**
      * Returns the expression for the pointcut.
-     * 
+     *
      * @return the expression
      */
     public ExpressionInfo getExpressionInfo() {
@@ -725,7 +711,7 @@ public class
 
     /**
      * Returns the aspect manager.
-     * 
+     *
      * @return the aspect manager
      */
     public AspectManager getAspectManager() {
@@ -734,7 +720,7 @@ public class
 
     /**
      * Provides custom deserialization.
-     * 
+     *
      * @param stream the object input stream containing the serialized object
      * @throws java.lang.Exception in case of failure
      * @TODO needs aspectManager recovery

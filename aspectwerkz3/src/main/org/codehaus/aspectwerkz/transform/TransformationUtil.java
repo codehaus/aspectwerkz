@@ -40,30 +40,26 @@ public final class TransformationUtil {
     /**
      * Returns the prefixed method name.
      *
-     * @param methodName     the method name
-     * @param methodSequence the method sequence
-     * @param className      the class name
+     * @param methodName the method name
+     * @param methodDesc the method desc
+     * @param className  the class name
      * @return the name of the join point
      */
     public static String getWrapperMethodName(final String methodName,
-                                                    final int methodSequence,
-                                                    final String className,
-                                                    final String prefix) {
+                                              final String methodDesc,
+                                              final String className,
+                                              final String prefix) {
         final StringBuffer buf = new StringBuffer();
         //FIXME: double check me
         // we use the javaC convention for hidden synthetic method
         // is the methodSequence enough ?
         // [ Alex: looks like it will change between each RW since tied to ctx match ]
         buf.append(TransformationConstants.WRAPPER_METHOD_PREFIX);
-        buf.append(methodSequence);
-        buf.append("$");
         buf.append(prefix);
         buf.append(methodName);
-        buf.append(TransformationConstants.DELIMITER);
-        buf.append(methodSequence);
-        buf.append(TransformationConstants.DELIMITER);
+        buf.append(methodDesc.hashCode());
         buf.append(className.replace('.', '_').replace('/', '_'));
-        return buf.toString();
+        return buf.toString().replace('-', '_');
     }
 
     /**
@@ -141,7 +137,7 @@ public final class TransformationUtil {
     /**
      * Returns the method used for constructor body signature
      * The callee type name is prepended to the constructor signature
-     * 
+     *
      * @param ctorDesc
      * @param calleeTypeName
      * @return

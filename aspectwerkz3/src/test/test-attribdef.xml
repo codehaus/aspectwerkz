@@ -163,11 +163,11 @@
     </system>
 
     <system id="polymorphic">
-         <aspect class="test.polymorphic.PolymorphicTest$TestAspect">
-             <pointcut name="in" expression="within(test.polymorphic..*)"/>
-             <advice name="method1Advise" type="before"  bind-to="in AND call(* test.polymorphic.*.methodTest())"/>
-             <advice name="ctor1Advise" type="before"  bind-to="execution(test.polymorphic.*.new(int))"/>
-             <advice name="ctor2Advise" type="before"  bind-to="in AND call(test.polymorphic.*.new(String))"/>
+        <aspect class="test.polymorphic.PolymorphicTest$TestAspect">
+            <pointcut name="in" expression="within(test.polymorphic..*)"/>
+            <advice name="method1Advise" type="before" bind-to="in AND call(* test.polymorphic.*.methodTest())"/>
+            <advice name="ctor1Advise" type="before" bind-to="execution(test.polymorphic.*.new(int))"/>
+            <advice name="ctor2Advise" type="before" bind-to="in AND call(test.polymorphic.*.new(String))"/>
         </aspect>
     </system>
 </aspectwerkz>

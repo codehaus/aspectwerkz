@@ -35,11 +35,11 @@ public interface StaticJoinPoint {
     Object proceed() throws Throwable;
 
     /**
-     * Clones the join point instance.
+     * Creates a copy of the join point instance.
      *
-     * @return the cloned join point instance
+     * @return a copy of the join point instance
      */
-    StaticJoinPoint deepCopy();
+    StaticJoinPoint copy();
 
     /**
      * Returns metadata matchingn a specfic key.

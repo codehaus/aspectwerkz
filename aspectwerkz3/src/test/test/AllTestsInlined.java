@@ -13,10 +13,10 @@ import junit.framework.TestSuite;
 
 /**
  * Copied from AllTest, kept only relevant test (using the weaver), and commented the test that fail for now.
- *
+ * <p/>
  * This tests can be run without online / offline or other post compilation mode. Used to test
  * standalone component of AspectWerkz.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -25,7 +25,7 @@ public class AllTestsInlined extends TestCase {
         TestSuite suite = new TestSuite("All tests");
 
         suite.addTestSuite(MemberMethodAdviceTest.class);
-        suite.addTestSuite(StaticMethodAdviceTest.class);//RTTI missing - fails with NPE
+        suite.addTestSuite(StaticMethodAdviceTest.class);
         suite.addTestSuite(CallerSideAdviceTest.class);
         suite.addTestSuite(test.callAndExecution.CallExecutionTest.class);
         suite.addTestSuite(test.hierarchicalpattern.HierachicalPatternTest.class);
