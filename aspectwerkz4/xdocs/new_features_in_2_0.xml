@@ -1240,7 +1240,7 @@ public class Caller {
                 ]]></source>
             </p>
             <p>
-                Note: constructors are not made advisable ie open for this programmatic interception for now (2.0.RC3)
+                Note: constructors are not made advisable ie open for this programmatic interception for now (2.0)
             </p>
         </section>
 
