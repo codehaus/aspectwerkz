@@ -37,7 +37,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * Base class for the different memory strategies.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: IntroductionMemoryStrategy.java,v 1.1.1.1 2003-05-11 15:14:20 jboner Exp $
+ * @version $Id: IntroductionMemoryStrategy.java,v 1.2 2003-06-05 06:23:05 jboner Exp $
  */
 public abstract class IntroductionMemoryStrategy {
 
@@ -92,7 +92,9 @@ public abstract class IntroductionMemoryStrategy {
                         !declaredMethods[i].getName().equals(
                                 TransformationUtil.GET_META_DATA_METHOD) &&
                         !declaredMethods[i].getName().equals(
-                                TransformationUtil.SET_META_DATA_METHOD)) {
+                                TransformationUtil.SET_META_DATA_METHOD) &&
+                        !declaredMethods[i].getName().startsWith(
+                                TransformationUtil.ORIGINAL_METHOD_PREFIX) ) {
                     toSort.add(declaredMethods[i]);
                 }
             }
