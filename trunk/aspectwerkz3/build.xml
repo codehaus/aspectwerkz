@@ -344,6 +344,11 @@
 			<arg line="-cp ${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests" />
 		</exec>
 	</target>
+    <target name="test:inlining" depends="clean, jars, test:annotationc">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml -Daspectwerkz.weaving.strategy=inlining test.AllTestsInlined" />
+        </exec>
+    </target>
 
 	<!-- =================================================== -->
 	<!--  runs perf tests -->
