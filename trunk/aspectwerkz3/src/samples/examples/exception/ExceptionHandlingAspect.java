@@ -15,8 +15,8 @@ public class ExceptionHandlingAspect {
      *
      * @Before handler(java.lang.Exception) && within(examples.exception.Target)
      */
-    public void logEntry(final JoinPoint joinPoint, Rtti rtti) throws Throwable {
-        CatchClauseRtti crtti = (CatchClauseRtti) rtti;
+    public void logEntry(final JoinPoint joinPoint) throws Throwable {
+        CatchClauseRtti crtti = (CatchClauseRtti) joinPoint.getRtti();
         Exception e = (Exception) crtti.getParameterValue();
         System.out.println("[From advice] exception catched:" + e.toString());
     }
