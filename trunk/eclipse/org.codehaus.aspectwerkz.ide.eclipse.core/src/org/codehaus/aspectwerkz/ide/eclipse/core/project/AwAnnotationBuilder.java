@@ -237,21 +237,20 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
             }
 
             // AnnotationC
-            //FIXME improve the lookup of annotation.properties
-            URL annotationProps = pcl.getResource("annotation.properties");
-            String annotationPropsFile = null;
-            if (annotationProps != null) {
-                annotationPropsFile = annotationProps.getFile().toString();
-                AwLog
-                        .logInfo("using custom annotations "
-                                + annotationPropsFile);
+            // lookup of annotation.properties
+            Enumeration annotationProps = pcl.getResources("annotation.properties");
+            List annotationPropsFilesList = new ArrayList();
+            while (annotationProps.hasMoreElements()) {
+                String annFile = ((URL)annotationProps.nextElement()).getFile().toString();
+                annotationPropsFilesList.add(annFile);
+                AwLog.logInfo("using custom annotations " + annFile);
             }
+            String[] annotationPropsFile = (String[])annotationPropsFilesList.toArray(new String[]{});
+            
             // extract the file path
-            //FIXME what about inner classes
             int segments = Strings.splitString(className, ".").length;
             // = 2 for pack.Hello
-            IPath pathToFile = resource.getRawLocation().removeLastSegments(
-                    segments);
+            IPath pathToFile = resource.getRawLocation().removeLastSegments(segments);
             String destDir = pathToFile.toFile().toString();
             AwLog.logTrace("will annotate to " + destDir);
 
@@ -279,7 +278,7 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
                         .toString();
                 AnnotationC.compile(verbose, new String[0],
                         new String[] { targetFile }, pathFiles, destDir,
-                        annotationPropsFile==null?null:new String[]{annotationPropsFile});
+                        annotationPropsFile.length==0?null:annotationPropsFile);
                 AwLog.logTrace("annotated " + className + " from " + targetFile);
             }
             if (checkCancel(monitor))
