@@ -56,7 +56,7 @@ public class HotSwapTarget {
 
     private String toLog3() {
         System.out.println("    toLog3()");
-        toLog3(1);
+        //toLog3(1);
         return "result";
     }
 
@@ -67,19 +67,19 @@ public class HotSwapTarget {
 
     public static void main(String[] args) throws Throwable {
         // regular calls
-        System.out.println("== before activation ==");
+        System.out.println("\n== before activation ==");
         HotSwapTarget.toLog1();
         HotSwapTarget target = new HotSwapTarget();
         target.increment();
         target.getCounter();
 
         // add new pointcuts
-        addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog3()", "runtimePCToLog3");
+        addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog1()", "runtimePCToLog1");
         // call HotSwap for runtime weaving
         HotSwapClient.hotswap(HotSwapTarget.class);
 
         // hotswapped calls
-        System.out.println("== after activation, same instance ==");
+        System.out.println("\n== after activation, same instance ==");
         HotSwapTarget.toLog1();
         target.increment();
         target.getCounter();
@@ -87,23 +87,32 @@ public class HotSwapTarget {
         // add new pointcuts
         //addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog3(int)", "runtimePCToLog3b");
         addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog2(..)", "runtimePCToLog2");
-
-        // remove
-        removePointcutForLoggingAdvice("","runtimePCToLog3");
-
         // call HotSwap for runtime weaving
         HotSwapClient.hotswap(HotSwapTarget.class);
 
         // hotswapped calls
-        System.out.println("== after second activation, same instance ==");
+        System.out.println("\n== after second activation, same instance ==");
         HotSwapTarget.toLog1();
         target.increment();
         target.getCounter();
-        System.out.println("== after second activation, other instance ==");
+        System.out.println("\n== after second activation, other instance ==");
         HotSwapTarget.toLog1();
         target = new HotSwapTarget();
         target.increment();
         target.getCounter();
+
+        // remove
+        //removePointcutForLoggingAdvice("","runtimePCToLog3");
+        removePointcutForLoggingAdvice("","runtimePCToLog2");
+        System.out.println("\n== after removal of pc defs ==");
+        HotSwapTarget.toLog1();
+
+        // call HotSwap for runtime weaving
+        HotSwapClient.hotswap(HotSwapTarget.class);
+        System.out.println("\n== after un-weaving of removed pc defs ==");
+        HotSwapTarget.toLog1();
+
+        System.exit(0);
     }
 
     /**
@@ -139,6 +148,7 @@ public class HotSwapTarget {
         }
         aspectDef.addAroundAdvice(newDef);
 
+        // TODO : needed but has side effect for toLog3 - review API
         ExecutionPointcut pointcutInstance = new ExecutionPointcut("samples", newDef.getExpression());
         PointcutManager pointcutManager = SystemLoader.getSystem("samples").
                 getAspectManager().getPointcutManager(aspectName);
@@ -171,6 +181,6 @@ public class HotSwapTarget {
         for (Iterator arounds = removedAdviceDefs.iterator(); arounds.hasNext();) {
             aspectDef.removeAroundAdvice((AdviceDefinition)arounds.next());
         }
-        //TODO remove from PointcutManager as well for mem safety
+        //TODO remove from PointcutManager as well for mem safety ?
     }
 }
