@@ -65,20 +65,21 @@ public class HotSwapClient {
             && (ClassPreProcessorHelper.class.getClassLoader() != null)) {
             throw new RuntimeException(
                     "AspectWerkz is misconfigured for HotSwap cache to work: "
-                    + ClassPreProcessorHelper.class.getClassLoader() + " incompatible with "
-                    + ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader()
+                    + ClassPreProcessorHelper.class.getClassLoader() +
+                    " incompatible with "
+                    +
+                    ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader()
             );
         }
+        // Note: the following will not reset the JoinPointManager - see 1.0 instead.
         try {
             RuntimeClassProcessor runtimeProcessor = (RuntimeClassProcessor)ClassPreProcessorHelper.getClassPreProcessor();
-            byte[] newBytes = runtimeProcessor.preProcessActivate(klazz);
+            hotswap(klazz, runtimeProcessor.preProcessActivate(klazz));
 
-            hotswap(klazz, newBytes);
             // trash the join points
             //JoinPointManager joinPointManager = JoinPointManager.getJoinPointManager(klazz, "N/A/notneeded");
             //joinPointManager.reset();
             JoinPointManager.reset(klazz);
-
 
         }
         catch (Throwable t) {

@@ -14,7 +14,7 @@ import org.codehaus.aspectwerkz.WeavedTestCase;
  */
 public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable
 {
-    private String java = "a field that can make Javassist confused, AW-147 item2, fixed in AW 0.10.RC2";
+    private String java = "a field that can make Javassist confused, AW-147 item2, fixed in AW 1.0-beta1";
     private String m_logString = "";
 
     public MemberMethodAdviceTest()
