@@ -21,35 +21,41 @@ import java.lang.reflect.Field;
 /**
  * Factory class for the signature hierarchy.
  * 
+ * FIXME all methods return NULL
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class SignatureFactory {
     public static final Signature newMethodSignature(
         final Class declaringClass,
         final int joinPointHash) {
-        MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
-        return new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
+//        MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
+//        return new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
+        return null;
     }
 
     public static final Signature newFieldSignature(
         final Class declaringClass,
         final int joinPointHash) {
-        Field field = AspectRegistry.getField(declaringClass, joinPointHash);
-        return new FieldSignatureImpl(field.getDeclaringClass(), field);
+//        Field field = AspectRegistry.getField(declaringClass, joinPointHash);
+//        return new FieldSignatureImpl(field.getDeclaringClass(), field);
+        return null;
     }
 
     public static final Signature newConstructorSignature(
         final Class declaringClass,
         final int joinPointHash) {
-        ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(
-            declaringClass,
-            joinPointHash);
-        return new ConstructorSignatureImpl(constructorTuple.getDeclaringClass(), constructorTuple);
-    }
+//        ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(
+//            declaringClass,
+//            joinPointHash);
+//        return new ConstructorSignatureImpl(constructorTuple.getDeclaringClass(), constructorTuple);
+        return null;
+  }
 
     public static final Signature newCatchClauseSignature(
         final Class declaringClass,
         final int joinPointHash) {
-        return new CatchClauseSignatureImpl(declaringClass, declaringClass, "");
+//        return new CatchClauseSignatureImpl(declaringClass, declaringClass, "");
+        return null;
     }
 }

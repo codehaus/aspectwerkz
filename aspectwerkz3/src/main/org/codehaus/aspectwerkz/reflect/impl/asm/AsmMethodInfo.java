@@ -57,6 +57,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
      */
     AsmMethodInfo(final MethodStruct method, final String declaringType, final ClassLoader loader) {
         super(method, declaringType, loader);
+        
         m_returnTypeName = Type.getReturnType(method.desc).getClassName();
         Type[] argTypes = Type.getArgumentTypes(method.desc);
         m_parameterTypeNames = new String[argTypes.length];

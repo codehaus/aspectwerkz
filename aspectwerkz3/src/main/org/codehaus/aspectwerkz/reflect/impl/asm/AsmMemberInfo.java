@@ -70,7 +70,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
         }
         m_member = member;
         m_loaderRef = new WeakReference(loader);
-        m_declaringTypeName = declaringType;
+        m_declaringTypeName = declaringType.replace('/', '.');
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
     }
 

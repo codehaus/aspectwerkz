@@ -218,7 +218,7 @@ public final class TransformationUtil {
         buf.append(DELIMITER);
         buf.append(methodSequence);
         buf.append(DELIMITER);
-        buf.append(className.replace('.', '_'));
+        buf.append(className.replace('.', '_').replace('/', '_'));
         return buf.toString();
     }
 }
