@@ -18,8 +18,9 @@ public class LoggingAspect extends AbstractLoggingAspect {
 
     public LoggingAspect() {
         super();
-        System.out.println("LoggingAspect.LoggingAspect " + ((CrossCutting)this).getCrossCuttingInfo().getUuid());
+        System.out.println("LoggingAspect UUID: " + ((CrossCutting)this).getCrossCuttingInfo().getUuid());
     }
+    
     // ============ Pointcuts ============
 
     /**

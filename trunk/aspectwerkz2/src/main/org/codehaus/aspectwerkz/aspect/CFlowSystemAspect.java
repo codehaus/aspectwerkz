@@ -136,16 +136,6 @@ public class CFlowSystemAspect implements CrossCutting {
     }
 
     /**
-     * Sets the cross-cutting info for the class.
-     *
-     * @param info the cross-cutting info
-     */
-    public void setCrossCuttingInfo(final CrossCuttingInfo info) {
-        m_crossCuttingInfo = info;
-        m_system = m_crossCuttingInfo.getSystem();
-    }
-
-    /**
      * Creates and returns the meta-data for the join point. Uses a cache.
      *
      * @param joinPoint the join point
