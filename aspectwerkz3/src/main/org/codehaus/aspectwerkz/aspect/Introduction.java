@@ -121,31 +121,6 @@ public class Introduction implements Mixin {
                                                                                         .getDeploymentModel()));
             }
         }
-        m_mixinImpl = createMixin();
-
-        //        try {
-        //            if (isInnerClassOf(implClass, m_crossCuttingInfo.getAspectClass())) {
-        //                Constructor constructor = m_mixinImplClass.getConstructors()[0];
-        //                if (constructor.getParameterTypes().length == 0) {
-        //                    // static inner class
-        //                    m_mixinImpl = m_mixinImplClass.newInstance();
-        //                }
-        //                else {
-        //                    // member inner class
-        //                    constructor.setAccessible(true);
-        //                    m_mixinImpl = constructor.newInstance(new Object[]{crossCuttingInfo});
-        //                }
-        //            }
-        //            else {
-        //                m_mixinImpl = m_mixinImplClass.newInstance();
-        //            }
-        //        }
-        //        catch (Exception e) {
-        //            throw new RuntimeException(
-        //                    "could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " +
-        //                    e.toString()
-        //            );
-        //        }
     }
 
     /**
@@ -156,7 +131,35 @@ public class Introduction implements Mixin {
      * @return new introduction instance
      */
     public static Introduction newInstance(final Introduction prototype, final CrossCuttingInfo crossCuttingInfo) {
-        return new Introduction(prototype.m_name, prototype.m_mixinImplClass, crossCuttingInfo, prototype.m_definition);
+        Introduction introduction = new Introduction(prototype.m_name, prototype.m_mixinImplClass, crossCuttingInfo,
+                                                     prototype.m_definition);
+        introduction.createMixin();
+        return introduction;
+    }
+
+    /**
+     * Creates a new mixin instance.
+     */
+    public void createMixin() {
+        try {
+            switch (m_mixinConstructionType) {
+                case MIXIN_CONSTRUCTION_TYPE_DEFAULT:
+                    m_mixinImpl = m_mixinConstructor.newInstance(EMPTY_OBJECT_ARRAY);
+                    break;
+                case MIXIN_CONSTRUCTION_TYPE_CROSS_CUTTING_INFO:
+                    m_mixinImpl = m_mixinConstructor.newInstance(ARRAY_WITH_CROSS_CUTTING_INFO);
+                    break;
+                default:
+                    throw new RuntimeException("mixin [" + m_mixinImplClass.getName()
+                                               + "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)");
+            }
+        } catch (InstantiationException e) {
+            throw new WrappedRuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new WrappedRuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new WrappedRuntimeException(e.getTargetException());
+        }
     }
 
     /**
@@ -261,7 +264,16 @@ public class Introduction implements Mixin {
      * @return the implementation class name for the mixin
      */
     public String getImplementationClassName() {
-        return m_mixinImpl.getClass().getName();
+        return m_mixinImplClass.getName();
+    }
+
+    /**
+     * Returns the implementation object for the mixin.
+     *
+     * @return the implementation for the mixin
+     */
+    public Class getImplementationClass() {
+        return m_mixinImplClass;
     }
 
     /**
@@ -291,18 +303,6 @@ public class Introduction implements Mixin {
     }
 
     /**
-     * Check if klazz is an inner class of containingClass. Based on name to support private inner class with no arg
-     * ctor.
-     *
-     * @param klazz
-     * @param containingClass
-     * @return true if is an inner class
-     */
-    private static boolean isInnerClassOf(final Class klazz, final Class containingClass) {
-        return klazz.getName().startsWith(containingClass.getName() + "$");
-    }
-
-    /**
      * Grabs the correct constructor for the mixin.
      *
      * @return the constructor for the mixin
@@ -316,7 +316,8 @@ public class Introduction implements Mixin {
             if (parameterTypes.length == 0) {
                 m_mixinConstructionType = MIXIN_CONSTRUCTION_TYPE_DEFAULT;
                 mixinConstructor = constructor;
-            } else if ((parameterTypes.length == 1) && parameterTypes[0].equals(CrossCuttingInfo.class)) {
+            } else if ((parameterTypes.length == 1)
+                       && parameterTypes[0].getName().equals(CrossCuttingInfo.class.getName())) {
                 m_mixinConstructionType = MIXIN_CONSTRUCTION_TYPE_CROSS_CUTTING_INFO;
                 mixinConstructor = constructor;
                 break;
@@ -330,31 +331,6 @@ public class Introduction implements Mixin {
     }
 
     /**
-     * Creates a new mixin instance.
-     *
-     * @return the new mixin instance
-     */
-    private Object createMixin() {
-        try {
-            switch (m_mixinConstructionType) {
-                case MIXIN_CONSTRUCTION_TYPE_DEFAULT:
-                    return m_mixinConstructor.newInstance(EMPTY_OBJECT_ARRAY);
-                case MIXIN_CONSTRUCTION_TYPE_CROSS_CUTTING_INFO:
-                    return m_mixinConstructor.newInstance(ARRAY_WITH_CROSS_CUTTING_INFO);
-                default:
-                    throw new RuntimeException("mixin [" + m_mixinImplClass.getName()
-                                               + "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)");
-            }
-        } catch (InstantiationException e) {
-            throw new WrappedRuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new WrappedRuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
-        }
-    }
-
-    /**
      * Swap the implementation of the mixin represented by this Introduction wrapper.
      *
      * @param newImplClass
@@ -362,6 +338,6 @@ public class Introduction implements Mixin {
     void swapImplementation(final Class newImplClass) {
         m_mixinImplClass = newImplClass;
         m_mixinConstructor = findConstructor();
-        m_mixinImpl = createMixin();
+        createMixin();
     }
 }

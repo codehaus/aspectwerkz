@@ -134,12 +134,12 @@ public class AspectRegistry {
     /**
      * Registers a new aspect.
      *
-     * @param container       the container for the aspect to register
+     * @param aspectContainer       the aspectContainer for the aspect to register
      * @param pointcutManager the pointcut manager
      */
-    public void register(final AspectContainer container, final PointcutManager pointcutManager) {
-        if (container == null) {
-            throw new IllegalArgumentException("aspect container can not be null");
+    public void register(final AspectContainer aspectContainer, final PointcutManager pointcutManager) {
+        if (aspectContainer == null) {
+            throw new IllegalArgumentException("aspect aspectContainer can not be null");
         }
         if (pointcutManager == null) {
             throw new IllegalArgumentException("pointcut manager can not be null");
@@ -150,18 +150,18 @@ public class AspectRegistry {
                     synchronized (m_mixins) {
                         synchronized (m_pointcutManagerMap) {
                             try {
-                                CrossCuttingInfo crossCuttingInfo = container.getCrossCuttingInfo();
+                                CrossCuttingInfo crossCuttingInfo = aspectContainer.getCrossCuttingInfo();
                                 m_pointcutManagerMap.put(crossCuttingInfo.getName(), pointcutManager);
                                 final int indexAspect = m_aspectContainers.length + 1;
                                 m_aspectIndexes.put(crossCuttingInfo.getName(), indexAspect);
                                 final Object[] tmpAspects = new Object[m_aspectContainers.length + 1];
                                 java.lang.System.arraycopy(m_aspectContainers, 0, tmpAspects, 0,
                                                            m_aspectContainers.length);
-                                tmpAspects[m_aspectContainers.length] = container;
+                                tmpAspects[m_aspectContainers.length] = aspectContainer;
                                 m_aspectContainers = new AspectContainer[m_aspectContainers.length + 1];
                                 java.lang.System.arraycopy(tmpAspects, 0, m_aspectContainers, 0, tmpAspects.length);
 
-                                // retrieve a sorted advices list => matches the sorted method list in the container
+                                // retrieve a sorted advices list => matches the sorted method list in the aspectContainer
                                 List advices = crossCuttingInfo.getAspectDefinition().getAllAdvices();
                                 for (Iterator it = advices.iterator(); it.hasNext();) {
                                     final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
@@ -177,24 +177,30 @@ public class AspectRegistry {
                                 for (Iterator it = introductions.iterator(); it.hasNext();) {
                                     IntroductionDefinition introDef = (IntroductionDefinition)it.next();
 
-                                    // load default mixin impl from the aspect which defines it
+                                    // load default mixinPrototype impl from the aspect which defines it
                                     Class defaultImplClass = crossCuttingInfo.getAspectClass().getClassLoader()
                                                                              .loadClass(introDef.getName());
-                                    Introduction mixin = new Introduction(introDef.getName(), defaultImplClass,
-                                                                          crossCuttingInfo, introDef);
 
-                                    // prepare the container
-                                    mixin.setContainer(new IntroductionContainer(mixin, container));
+                                    Introduction mixinPrototype = new Introduction(introDef.getName(),
+                                                                                   defaultImplClass, crossCuttingInfo,
+                                                                                   introDef);
+
+                                    IntroductionContainer introductionContainer = new IntroductionContainer(mixinPrototype,
+                                                                                                            aspectContainer);
+                                    aspectContainer.addIntroductionContainer(introDef.getName(), introductionContainer);
+
+                                    // prepare the aspectContainer
+                                    mixinPrototype.setContainer(introductionContainer);
                                     final Mixin[] tmpMixins = new Mixin[m_mixins.length + 1];
                                     java.lang.System.arraycopy(m_mixins, 0, tmpMixins, 0, m_mixins.length);
-                                    tmpMixins[m_mixins.length] = mixin;
+                                    tmpMixins[m_mixins.length] = mixinPrototype;
                                     m_mixins = new Mixin[m_mixins.length + 1];
                                     java.lang.System.arraycopy(tmpMixins, 0, m_mixins, 0, tmpMixins.length);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 throw new DefinitionException("could not register aspect ["
-                                                              + container.getCrossCuttingInfo().getName()
+                                                              + aspectContainer.getCrossCuttingInfo().getName()
                                                               + "] due to: " + e.toString());
                             }
                             if (m_aspectContainers.length != m_aspectIndexes.size()) {

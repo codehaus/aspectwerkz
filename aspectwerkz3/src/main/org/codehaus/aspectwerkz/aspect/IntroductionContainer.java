@@ -58,19 +58,23 @@ public class IntroductionContainer {
     protected Method[] m_methodRepository = new Method[0];
 
     /**
+     * The aspect container for the introduction.
+     */
+    protected AspectContainer m_definingAspectContainer;
+
+    /**
      * Creates a new container strategy.
      *
-     * @param prototype the advice prototype
+     * @param definingAspectContainer the aspect container
      */
     public IntroductionContainer(final Introduction prototype, final AspectContainer definingAspectContainer) {
         if (prototype == null) {
             throw new IllegalArgumentException("introduction prototype can not be null");
         }
+        m_definingAspectContainer = definingAspectContainer;
         m_prototype = prototype;
-        createMethodRepository();
 
-        // link it to the aspect container
-        definingAspectContainer.addIntroductionContainer(prototype.getName(), this);
+        createMethodRepository();
     }
 
     /**
@@ -198,48 +202,6 @@ public class IntroductionContainer {
     }
 
     /**
-     * Retrieve the related aspect instance from the aspect container The mixin deployment model is tight to the aspect
-     * deployment model as follows: Mixin            Aspect possible models perJVM            perJVM perClass            perJVM,perClass
-     * perInstance        perJVM,perClass,perInstance perThread        perThread
-     *
-     * @param referent (null, targetClass, targetInstance or currentThread depending of mixin deployment model)
-     * @return related cross-cutting info
-     */
-
-    //    private CrossCuttingInfo getRelatedCrossCuttingInfo() {
-    //        CrossCuttingInfo info = m_prototype.getCrossCuttingInfos();
-    //
-    //        switch (m_prototype.getDeploymentModel()) {
-    //            case (DeploymentModel.PER_JVM):
-    //                return info.getContainer().getCrossCuttingInfos();
-    //
-    //            case (DeploymentModel.PER_CLASS):
-    //                if (info.getDeploymentModel() == DeploymentModel.PER_CLASS) {
-    //                    return info.getContainer().getCrossCuttingInfos((Class)referent);
-    //                }
-    //                else {//PER_JVM
-    //                    return info.getContainer().getCrossCuttingInfos();
-    //                }
-    //
-    //            case (DeploymentModel.PER_INSTANCE):
-    //                if (info.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
-    //                    return info.getContainer().getCrossCuttingInfos(referent);
-    //                }
-    //                else if (info.getDeploymentModel() == DeploymentModel.PER_CLASS) {
-    //                    return info.getContainer().getCrossCuttingInfos((Class)referent.getClass());
-    //                }
-    //                else {//PER_JVM
-    //                    return info.getContainer().getCrossCuttingInfos();
-    //                }
-    //
-    //            case (DeploymentModel.PER_THREAD):
-    //                return info.getContainer().getCrossCuttingInfos(Thread.currentThread());
-    //
-    //        }
-    //        throw new RuntimeException("this point should never be reached");
-    //    }
-
-    /**
      * Swaps the current mixin implementation.
      *
      * @param newImplementationClass the class of the new implementation to use
@@ -303,7 +265,7 @@ public class IntroductionContainer {
      */
     private void createMethodRepository() {
         synchronized (m_methodRepository) {
-            List methodList = TransformationUtil.createSortedMethodList(m_prototype.getImplementation().getClass());
+            List methodList = TransformationUtil.createSortedMethodList(m_prototype.getImplementationClass());
             m_methodRepository = new Method[methodList.size()];
             for (int i = 0; i < m_methodRepository.length; i++) {
                 Method method = (Method)methodList.get(i);
