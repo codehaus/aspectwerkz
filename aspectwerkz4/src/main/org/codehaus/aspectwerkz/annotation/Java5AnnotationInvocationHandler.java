@@ -45,7 +45,7 @@ public class Java5AnnotationInvocationHandler implements InvocationHandler {
     private final String m_annotationClassName;
 
     /**
-     * A list of AnnotationElement containing the annotation instance elemnt values
+     * A list of AnnotationElement containing the annotation instance element values
      * (including the defaulted value)
      */
     private final List m_annotationElements;

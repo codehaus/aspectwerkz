@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.aspect.management;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy;
 import org.codehaus.aspectwerkz.AspectContext;
+import org.codehaus.aspectwerkz.cflow.CflowCompiler;
 import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;

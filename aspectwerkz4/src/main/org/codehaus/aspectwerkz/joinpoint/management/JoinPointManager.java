@@ -127,7 +127,8 @@ public class JoinPointManager {
                 calleeMemberModifiers,
                 joinPointHash,
                 joinPointClassName,
-                calleeClass
+                calleeClass,
+                classLoader
         );
 
         Class jpClass = JoinPointFactory.attachToClassLoader(
@@ -151,6 +152,9 @@ public class JoinPointManager {
      * @param joinPointHash
      * @param joinPointClassName
      * @param calleeClass
+     * @param loader the loader that hosts the definitions, and from where caller, callee and aspect are visible.
+     * At runtime it is exactly callerClass.getClassLoader() but in offline mode and keepjp, it can happen to be
+     * different when weaved class also exists in the compilation classpath.
      * @return
      */
     public static CompiledJoinPoint compileJoinPoint(final int joinPointType,
@@ -164,7 +168,8 @@ public class JoinPointManager {
                                                       final int calleeMemberModifiers,
                                                       final int joinPointHash,
                                                       final String joinPointClassName,
-                                                      final Class calleeClass) {
+                                                      final Class calleeClass,
+                                                      final ClassLoader loader) {
 
         ClassInfo calleeClassInfo = JavaClassInfo.getClassInfo(calleeClass);
 
@@ -223,7 +228,7 @@ public class JoinPointManager {
         // get the compilation model
         final ExpressionContext ctx = new ExpressionContext(pointcutType, reflectionInfo, withinInfo);
         final AdviceInfoContainer adviceContainer = getAdviceInfoContainerForJoinPoint(
-                ctx, callerClass.getClassLoader()
+                ctx, loader
         );
         final EmittedJoinPoint emittedJoinPoint = new EmittedJoinPoint(
                 joinPointType,
@@ -251,7 +256,7 @@ public class JoinPointManager {
      */
     public static class CompiledJoinPoint {
         public byte[] bytecode;
-        private CompilationInfo compilationInfo;
+        public CompilationInfo compilationInfo;
 
         public CompiledJoinPoint(CompilationInfo.Model model) {
             bytecode = JoinPointFactory.compileJoinPoint(model);

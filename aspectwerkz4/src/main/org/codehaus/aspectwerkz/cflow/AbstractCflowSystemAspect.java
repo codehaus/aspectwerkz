@@ -17,6 +17,8 @@ import java.util.Stack;
  * <p/>
  * The concrete cflow class will extends this one and implements two static methods.
  * See the sample nested class.
+ * <p/>
+ * Note: the Cflow implements a real aspectOf singleton scheme and is not visible to Aspects.aspectOf
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
@@ -60,11 +62,10 @@ public abstract class AbstractCflowSystemAspect {
      */
     private static class Cflow_sample extends AbstractCflowSystemAspect {
 
-        private static AbstractCflowSystemAspect INSTANCE;
+        private static Cflow_sample INSTANCE = null;
 
-        public Cflow_sample() {
+        private Cflow_sample() {
             super();
-            INSTANCE = this;
         }
 
         /**
@@ -75,6 +76,16 @@ public abstract class AbstractCflowSystemAspect {
                 return false;
             }
             return INSTANCE.inCflow();
+        }
+
+        /**
+         * Real aspectOf as a singleton
+         */
+        public static Cflow_sample aspectOf() {
+            if (INSTANCE == null) {
+                INSTANCE = new Cflow_sample();
+            }
+            return INSTANCE;
         }
 
     }

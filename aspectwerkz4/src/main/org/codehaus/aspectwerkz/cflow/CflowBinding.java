@@ -24,6 +24,8 @@ import java.util.ArrayList;
  * <p/>
  * For a given pointcut "pcA and cflowA or cflowbelowB", we will extract two bindings.
  * The m_cflowID must be unique on a per cflow sub expresion basis ie JVM wide.
+ * <p/>
+ * Note: CflowBinding hashcode depends on Cflow_ID (sub expr) + isCflowBelow only.
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
@@ -167,4 +169,26 @@ public class CflowBinding {
         return m_isCflowBelow;
     }
 
+    public int getCflowID() {
+        return m_cflowID;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CflowBinding)) return false;
+
+        final CflowBinding cflowBinding = (CflowBinding) o;
+
+        if (m_cflowID != cflowBinding.m_cflowID) return false;
+        if (m_isCflowBelow != cflowBinding.m_isCflowBelow) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        result = m_cflowID;
+        result = 29 * result + (m_isCflowBelow ? 1 : 0);
+        return result;
+    }
 }
