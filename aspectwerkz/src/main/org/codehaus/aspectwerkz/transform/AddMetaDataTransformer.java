@@ -29,7 +29,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.ConstantClass;
 
-import org.codehaus.aspectwerkz.definition.version1.AspectWerkzDefinition1;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Adds meta-data storage for the target classes.
@@ -48,7 +48,7 @@ public final class AddMetaDataTransformer
     /**
      * The definition.
      */
-    private final org.codehaus.aspectwerkz.definition.version1.AspectWerkzDefinition1 m_definition;
+    private final AspectWerkzDefinition m_definition;
 
     /**
      * Flag to tell the transformer to do transformations or not.
@@ -60,7 +60,7 @@ public final class AddMetaDataTransformer
      */
     public AddMetaDataTransformer() {
         super();
-        m_definition = org.codehaus.aspectwerkz.definition.version1.AspectWerkzDefinition1.getDefinitionForTransformation();
+        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**

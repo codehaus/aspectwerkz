@@ -30,8 +30,6 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.AspectWerkz;
-import org.codehaus.aspectwerkz.regexp.MethodPattern;
-import org.codehaus.aspectwerkz.regexp.FieldPattern;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.AspectAttributeParser;
@@ -43,6 +41,13 @@ import org.codehaus.aspectwerkz.util.SequencedHashMap;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AspectWerkzDefinition implements Serializable {
+
+    public static final String PER_JVM = "perJVM";
+    public static final String PER_CLASS = "perClass";
+    public static final String PER_INSTANCE = "perInstance";
+    public static final String PER_THREAD = "perThread";
+    public static final String THROWS_DELIMITER = "#";
+    public static final String CALLER_SIDE_DELIMITER = "#";
 
     /**
      * The path to the definition file.

@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
-import org.codehaus.aspectwerkz.definition.version1.AspectWerkzDefinition1;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Enum containing the different deployment model types.
@@ -29,16 +29,16 @@ public final class DeploymentModel {
      * @return the matched deployment type
      */
     public static int getDeploymentModelAsInt(final String type) {
-        if (type == null || type.equals(org.codehaus.aspectwerkz.definition.version1.AspectWerkzDefinition1.PER_JVM)) {
+        if (type == null || type.equals(AspectWerkzDefinition.PER_JVM)) {
             return PER_JVM;
         }
-        else if (type.equals(org.codehaus.aspectwerkz.definition.version1.AspectWerkzDefinition1.PER_CLASS)) {
+        else if (type.equals(AspectWerkzDefinition.PER_CLASS)) {
             return PER_CLASS;
         }
-        else if (type.equals(org.codehaus.aspectwerkz.definition.version1.AspectWerkzDefinition1.PER_INSTANCE)) {
+        else if (type.equals(AspectWerkzDefinition.PER_INSTANCE)) {
             return PER_INSTANCE;
         }
-        else if (type.equals(org.codehaus.aspectwerkz.definition.version1.AspectWerkzDefinition1.PER_THREAD)) {
+        else if (type.equals(AspectWerkzDefinition.PER_THREAD)) {
             return PER_THREAD;
         }
         else {
