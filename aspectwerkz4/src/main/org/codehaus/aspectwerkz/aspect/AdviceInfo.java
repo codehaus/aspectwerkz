@@ -154,7 +154,7 @@ public class AdviceInfo implements Serializable {
         m_methodSignature = methodSignature;
         m_methodParameterTypes = methodParameterTypes;
         m_type = type;
-        if (specialArgumentType != null) {
+        if (specialArgumentType != null && specialArgumentType.length()>0) {//AW-434
             m_specialArgumentTypeDesc = AsmHelper.convertReflectDescToTypeDesc(specialArgumentType);
             m_specialArgumentTypeName = specialArgumentType.replace('.', '/');
         }
