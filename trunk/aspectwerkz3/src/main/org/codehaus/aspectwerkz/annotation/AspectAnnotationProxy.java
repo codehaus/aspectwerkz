@@ -11,7 +11,7 @@ package org.codehaus.aspectwerkz.annotation;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AspectAnnotationProxy extends AnnotationProxyBase {
+public class AspectAnnotationProxy extends UntypedAnnotationProxy {
     private String m_name;
     private String m_deploymentModel = "perJVM";
 

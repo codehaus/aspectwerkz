@@ -16,9 +16,9 @@ import java.io.Serializable;
  */
 public class AnnotationInfo implements Serializable {
     private final String m_name;
-    private final AnnotationProxyBase m_annotation;
+    private final Annotation m_annotation;
 
-    public AnnotationInfo(final String name, final AnnotationProxyBase annotation) {
+    public AnnotationInfo(final String name, final Annotation annotation) {
         m_name = name;
         m_annotation = annotation;
     }
@@ -27,7 +27,7 @@ public class AnnotationInfo implements Serializable {
         return m_name;
     }
 
-    public AnnotationProxyBase getAnnotation() {
+    public Annotation getAnnotation() {
         return m_annotation;
     }
 }

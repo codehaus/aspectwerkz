@@ -13,16 +13,12 @@ package examples.logging;
 public class Target {
 
     /**
-     * log level=1  f=5.8F iconstant=org.codehaus.aspectwerkz.DeploymentModel.PER_CLASS
-     * @log some value that is
-     * on different line
-     * of the comment
+     * @log level=1  f=5.8F iconstant=org.codehaus.aspectwerkz.DeploymentModel.PER_CLASS
      */
     private int m_counter1;
 
     /**
-     * log level=1 iconstant=org.codehaus.aspectwerkz.DeploymentModel.PER_THREAD
-     * @log
+     * @log level=1 iconstant=org.codehaus.aspectwerkz.DeploymentModel.PER_THREAD
      */
     private int m_counter2;
 
@@ -35,24 +31,21 @@ public class Target {
     }
 
     /**
-     * log level=0 sconstant=org.codehaus.aspectwerkz.transform.TransformationUtil.ASPECTWERKZ_PREFIX
-     * @log
+     * @log level=0 sconstant=org.codehaus.aspectwerkz.transform.TransformationUtil.ASPECTWERKZ_PREFIX
      */
     public static void toLog1() {
         new Target().toLog2("parameter");
     }
 
     /**
-     * log level=3 sarr={"Hello","World"}
-     * @log
+     * @log level=3 sarr={"Hello","World"}
      */
     protected void toLog2(java.lang.String arg) {
         new Target().toLog3();
     }
 
     /**
-     * log level=4 darr={4.5D,8.98665D,0.00000342}
-     * @log
+     * @log level=4 darr={4.5D,8.98665D,0.00000342}
      */
     private String toLog3() {
         return "result";

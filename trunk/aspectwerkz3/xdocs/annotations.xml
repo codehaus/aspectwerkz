@@ -47,6 +47,7 @@
                 </ol>
             </p>
         </section>
+
         <section name="Matching on Annotations">
             <p>
                 <code>AspectWerkz</code> supports matching on annotations. This means that you can
@@ -56,7 +57,33 @@
             <p>
                 The matching will work equally good with JavaDoc-style annotations or a Java 1.5 annotations.
             </p>
+            <p>
+                For example if you have annotated a method using the <code>@Asynchronous</code>
+                annotation:
+                <source><![CDATA[
+@Asynchronous(timeout=60)
+public Object someMethod() {
+    ...
+}
+                ]]></source>
+            </p>
+            <p>
+                You can then pick out this method (and all other methods that are annotated with
+                the <code>@Asynchronous</code> annotation like this:
+                <source><![CDATA[
+call(@Asynchronous * *..*.*(..))
+                ]]></source>
+                or like this
+                <source><![CDATA[
+execution(@Asynchronous * *..*.*(..))
+                ]]></source>
+            </p>
+            <p>
+                Read more about this in the
+                <a href="definition_issues.html#Join_point_selection_pattern_language">Join point selection pattern language section</a>
+            </p>
         </section>
+
         <section name="Typed Annotations">
             <p>
                 To be make the migration phase from JavaDoc-style to Java 1.5 annotations as smooth
@@ -156,50 +183,52 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                     <ul>
                         <li>
                         primitive values
-                            <br/>
                         -
+                            <br/>
                             <code>int=8366 dbl=86.2345D char='\n'</code>
                         </li>
                         <br/>
                         <li>
                         boolean values
-                            <br/>
                          -
+                            <br/>
                             <code>usecache=true failover=false</code>
+                            (<code>TRUE</code> and <code>FALSE</code> works a well)
                         </li>
                         <br/>
                         <li>
                         strings
-                            <br/>
                          -
+                            <br/>
                             <code>name="blablabla"</code>
                         </li>
                         <br/>
                         <li>
                         arrays
-                            <br/>
                         -
-                            <code>name={"Hello", "World"}</code> or
-                            <code>name={46.34F, 836.45F}</code>
+                            <br/>
+                            <code>stringArr={"Hello", " ", "World", "!"}</code>
+                            <code>floatArr={46.34F, 836.45F}</code>
                         </li>
                         <br/>
                         <li>
                         references to static fields
-                            <br/>
                         -
+                            <br/>
                             <code>name=org.foo.Bar.PUBLIC_CONSTANT</code>
                         </li>
                         <br/>
                         <li>
                         types
-                            <br/>
-                         - TO BE IMPLEMENTED
+                         -
+                        <br/>
+                        TO BE IMPLEMENTED
                         </li>
                         <br/>
                         <li>
-                        nested annotations
-                            <br/>
-                         - TO BE IMPLEMENTED
+                        nested annotations -
+                         <br/>
+                         TO BE IMPLEMENTED
                         </li>
                     </ul>
                 </p>
@@ -333,16 +362,16 @@ readonly
                 annotations and the fully qualified name of the annotation interface for Java 1.5 annotations.
             </p>
             <p>
-                All these methods returns an instance of
-                <code>AnnotationProxyBase</code>.
+                All these methods returns an instance of the type
+                <code>org.codehaus.aspectwerkz.annotation.Annotation</code>.
                 The proxies needs to be casted to the correct proxy implementation.
                 If there are more than one it returns the first one found. This method is
                 useful when working with Java 1.5 annotations in which there can be only one
                 instance per member or class.
                 <source><![CDATA[
-AnnotationProxyBase annotationProxy = Annotations.getAnnotation("Session", klass);
-AnnotationProxyBase annotationProxy  = Annotations.getAnnotation("Transaction", method);
-AnnotationProxyBase annotationProxy  = Annotations.getAnnotation("ReadOnly", field);
+Annotation annotation = Annotations.getAnnotation("Session", klass);
+Annotation annotation = Annotations.getAnnotation("Transaction", method);
+Annotation annotation = Annotations.getAnnotation("ReadOnly", field);
                 ]]></source>
             </p>
             <p>
