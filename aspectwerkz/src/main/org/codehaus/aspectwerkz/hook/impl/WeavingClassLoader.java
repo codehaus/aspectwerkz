@@ -18,10 +18,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
-import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
-import test.clapp.AwareClassLoader;
 
 /**
  * Very basic classloader that do online weaving.
