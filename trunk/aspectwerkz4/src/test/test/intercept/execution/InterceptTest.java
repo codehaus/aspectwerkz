@@ -231,6 +231,41 @@ public class InterceptTest extends TestCase {
         assertEquals("adviseWithAfterThrowing afterThrowing noop ", LOG);
     }
 
+    public void testAddAfterAndAfterThrowing() {
+        LOG = "";
+        try {
+            addAfterAndAfterThrowing();
+        } catch (RuntimeException e) {
+        }
+        assertEquals("addAfterAndAfterThrowing ", LOG);
+
+        ((Advisable) this).aw$addAdvice(
+                "* test.intercept.execution.InterceptTest.addAfterAndAfterThrowing(..)",
+                new AfterAdvice() {
+                    public void invoke(JoinPoint jp) throws Throwable {
+                        InterceptTest.log("after ");
+                    }
+                }
+        );
+        ((Advisable) this).aw$addAdvice(
+                "* test.intercept.execution.InterceptTest.addAfterAndAfterThrowing(..)",
+                new AfterThrowingAdvice() {
+                    public void invoke(JoinPoint jp, Throwable exception) throws Throwable {
+                        InterceptTest.log("afterThrowing ");
+                        InterceptTest.log(exception.getMessage());
+                        InterceptTest.log(" ");
+                    }
+                }
+        );
+
+        LOG = "";
+        try {
+            addAfterAndAfterThrowing();
+        } catch (RuntimeException e) {
+        }
+        assertEquals("addAfterAndAfterThrowing afterThrowing noop after ", LOG);
+    }
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
@@ -271,6 +306,11 @@ public class InterceptTest extends TestCase {
 
     public void adviseWithAfterThrowing() {
         log("adviseWithAfterThrowing ");
+        throw new RuntimeException("noop");
+    }
+
+    public void addAfterAndAfterThrowing() {
+        log("addAfterAndAfterThrowing ");
         throw new RuntimeException("noop");
     }
 }
