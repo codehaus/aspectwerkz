@@ -27,7 +27,7 @@
     <!-- =================================================== -->
     <target name="aspectwerkz:init">
         <property name="name" value="aspectwerkz"/>
-        <property name="version" value="0.9"/>
+        <property name="version" value="0.9.RC1"/>
         <property name="basedir" value="."/>
         <property name="src.dir" value="${basedir}/src"/>
         <property name="test.src.dir" value="${basedir}/src/test"/>
@@ -41,7 +41,7 @@
         <!--        <property name="build.compiler" value="jikes"/>-->
         <property name="javac.debug" value="on"/>
         <property name="javac.deprecation" value="on"/>
-        <property name="javac.optimize" value="on"/>
+        <property name="javac.optimize" value="off"/>
         <property name="javac.depend" value="off"/>
         <property name="javac.verbose" value="off"/>
         <mkdir dir="${dist.dir}"/>
