@@ -15,21 +15,21 @@
                     <li><a href="#Aspect models">Aspect models</a><br/></li>
                     <li><a href="#Model 1 - XML centric">Model 1 - XML centric</a>
                         <ol>
-                            <li><a href="#1_Advices">Advices</a></li>
-                            <li><a href="#1_Introductions">Introductions</a></li>
-                            <li><a href="#1_Pointcuts">Pointcuts</a></li>
-                            <li><a href="#1_Aspects">Aspects</a></li>
-                            <li><a href="#1_Join points">Join points</a></li>
+                            <li><a href="#Model 1 - Advices">Advices</a></li>
+                            <li><a href="#Model 1 - Introductions">Introductions</a></li>
+                            <li><a href="#Model 1 - Pointcuts">Pointcuts</a></li>
+                            <li><a href="#Model 1 - Aspects">Aspects</a></li>
+                            <li><a href="#Model 1 - Join points">Join points</a></li>
                         </ol>
                     </li>
                     <li><a href="#Model 2">Model 2 - Self defined Aspects</a>
                         <ol>
-                            <li><a href="#2_Aspects">Aspects</a></li>
-                            <li><a href="#2_Pointcuts">Pointcuts</a></li>
-                            <li><a href="#2_Advices">Advices</a></li>
-                            <li><a href="#2_Introductions">Introductions</a></li>
-                            <li><a href="#2_Metadata reference">Metadata reference</a></li>
-                            <li><a href="#2_Aspect compilation">Aspect compilation</a></li>
+                            <li><a href="#Model 2 - Aspects">Aspects</a></li>
+                            <li><a href="#Model 2 - Pointcuts">Pointcuts</a></li>
+                            <li><a href="#Model 2 - Advices">Advices</a></li>
+                            <li><a href="#Model 2 - Introductions">Introductions</a></li>
+                            <li><a href="#Model 2 - Metadata reference">Metadata reference</a></li>
+                            <li><a href="#Model 2 - Aspect post compilation">Aspect post compilation</a></li>
                         </ol>
                     </li>
                     <li><a href="Choosing a model">Choosing a model</a></li>
@@ -66,16 +66,16 @@
                 The following sections detail the Model 1 XML centric approach where Advices and Introductions are classes and
                 Aspect are described in an XML file.
                 <ol>
-                    <li><a href="#1_Advices">Advices</a></li>
-                    <li><a href="#1_Introductions">Introductions</a></li>
-                    <li><a href="#1_Pointcuts">Pointcuts</a></li>
-                    <li><a href="#1_Aspects">Aspects</a></li>
-                    <li><a href="#1_Join points">Join points</a></li>
+                    <li><a href="#Model 1 - Advices">Advices</a></li>
+                    <li><a href="#Model 1 - Introductions">Introductions</a></li>
+                    <li><a href="#Model 1 - Pointcuts">Pointcuts</a></li>
+                    <li><a href="#Model 1 - Aspects">Aspects</a></li>
+                    <li><a href="#Model 1 - Join points">Join points</a></li>
                 </ol>
             </p>
         </section>
 
-        <section name="1_Advices">
+        <section name="Model 1 - Advices">
             <p>
                 The <code>Advice</code> class implements the advice concept,
                 i.e. defines code that is executed when a join point is reached.
@@ -294,7 +294,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
             </subsection>
         </section>
 
-        <section name="1_Introductions">
+        <section name="Model 1 - Introductions">
             <p>
                 The <code>Introduction</code> class implements the concept of
                 Mixins/Open Classes. I.e. an <code>Introduction</code> makes it
@@ -382,13 +382,13 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 <p>
                     (These examples only shows how to define the
                     <code>Introduction</code>, for examples how to add them see
-                    the <a href="#1_Aspects">Aspects section</a>.)
+                    the <a href="#Model 1 - Aspects">Aspects section</a>.)
                 </p>
             </subsection>
         </section>
 
 
-        <section name="1_Pointcuts">
+        <section name="Model 1 - Pointcuts">
             <p>
                 The <code>Pointcut</code> class implements the pointcut concept.
                 Pointcuts selects join points and values at those points,
@@ -520,7 +520,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
 
         </section>
 
-        <section name="1_Aspects">
+        <section name="Model 1 - Aspects">
             <p>
                 The <code>Aspect</code> class implements the aspect concept.
                 Aspects are <code>AspectWerkz's</code> unit of modularity for
@@ -563,7 +563,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 </p>
                 <p>
                     In the aspect definition you put the pointcut definitions (see the
-                    <a href="#1_Pointcuts">Pointcuts section</a>).
+                    <a href="#Model 1 - Pointcuts">Pointcuts section</a>).
                 </p>
                 <p>
                     <b>Adding the introductions</b>
@@ -638,7 +638,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
             </subsection>
         </section>
 
-        <section name="1_Join points">
+        <section name="Model 1 - Join points">
             <p>
                 The <code>JoinPoint</code> class implements the join point
                 concept, i.e. a well-defined point in the program flow.
@@ -682,18 +682,18 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 You should be familiar with AOP vocabulary and AspectWerkz implementation as explained
                 in the <a href="TODO">model 1</a> section.
                 <ol>
-                    <li><a href="#2_Aspects">Aspects</a></li>
-                    <li><a href="#2_Pointcuts">Pointcuts</a></li>
-                    <li><a href="#2_Advices">Advices</a></li>
-                    <li><a href="#2_Introductions">Introductions</a></li>
+                    <li><a href="#Model 2 - Aspects">Aspects</a></li>
+                    <li><a href="#Model 2 - Pointcuts">Pointcuts</a></li>
+                    <li><a href="#Model 2 - Advices">Advices</a></li>
+                    <li><a href="#Model 2 - Introductions">Introductions</a></li>
                     <li><a href="#2_Abstract Aspects">Abstract Aspects</a></li>
-                    <li><a href="#2_Metadata reference">Metadata reference</a></li>
-                    <li><a href="#2_Aspect compilation">Aspect compilation</a></li>
+                    <li><a href="#Model 2 - Metadata reference">Metadata reference</a></li>
+                    <li><a href="#Model 2 - Aspect post compilation">Aspect compilation</a></li>
                 </ol>
             </p>
         </section>
 
-        <section name="#2_Aspects">
+        <section name="Model 2 - Aspects">
             <p>
                 The Aspect class implements the aspect concept.
                 Aspects are AspectWerkz's unit of modularity for crosscutting concerns.
@@ -770,7 +770,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 <p>
                     In the aspect class you put the pointcut definitions as fields of type <code>org.codehaus.aspectwerkz.attribdef.Pointcut</code>
                     with metadata to specify the type of pointcut (method, field, caller side ... ).
-                    See <a href="#2_Pointcuts">Pointcuts section</a>.
+                    See <a href="#Model 2 - Pointcuts">Pointcuts section</a>.
                 </p>
 
                 <p>
@@ -784,7 +784,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                     Pure interface introduction are added by adding a field to the aspect. The field class has to be the
                     interface that you want to introduce. The <code>@Introduce</code> metadata specify on which class pattern
                     you want the introduction to be applied.
-                    See <a href="#2_Introductions">Introductions section</a>.
+                    See <a href="#Model 2 - Introductions">Introductions section</a>.
                 </p>
                 <p>
                     Interface introduction with implementation are added by adding a public inner-class to the aspect class.
@@ -793,7 +793,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                     The interface(s) introduced can be whether set explicitly by letting the inner-class implementing the interface, wether implicitly
                     by inheritating another class which is itself implementing the interface(s).
                     This can be handy when distributing reusable aspects.
-                    See <a href="#2_Introductions">Introductions section</a>.
+                    See <a href="#Model 2 - Introductions">Introductions section</a>.
                  </p>
 
                 <p>
@@ -803,7 +803,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                     In the aspect class the advice are methods conforming to the <code>public Object myMethod(final JoinPoint joinPoint) throws Throwable</code> signature.
                     A metadata allow to define the type of advice (execution, call, setFiel, getFiel, cflow) as well as the
                     method or field pattern or pattern expression to which it applies.
-                    See <a href="#2_Advices">Advices section</a>
+                    See <a href="#Model 2 - Advices">Advices section</a>
                 </p>
                 <p>
                     This expression can be any (almost) kind of algebraic expression.
@@ -840,7 +840,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
 public class MyAspect extends Aspect {
 
     /**
-     * @Introduce com.mypackage.*
+     * @Implements com.mypackage.*
      */
     MarkerInterface anIntroduction;
 
@@ -860,7 +860,7 @@ public class MyAspect extends Aspect {
     }
 
     /**
-     * @Implements com.mypackage.Target*
+     * @Introduce com.mypackage.Target*
      */
     public class OtherIntroduction implements ContractualInterface extends SuperMixin {
         ... // introduced methods
@@ -871,7 +871,7 @@ public class MyAspect extends Aspect {
             </subsection>
         </section>
 
-        <section name="#2_Pointcuts">
+        <section name="Model 2 - Pointcuts">
             <p>
                 The <code>Pointcut</code> class implements the pointcut concept.
                 Pointcuts selects join points and values at those points,
@@ -886,7 +886,7 @@ public class MyAspect extends Aspect {
                             the field is of type <code>org.codehaus.aspectwerkz.attribdef.Pointcut</code> in the aspect class (or hierarchy).
                         </li><br/>
                         <li>
-                            metadata markers at the field level allow to define the type of Pointcut (see <a href="#1_Pointcuts">model 1 section</a>).
+                            metadata markers at the field level allow to define the type of Pointcut (see <a href="#Model 1 - Pointcuts">model 1 section</a>).
                         </li><br/>
                     </ol>
                 </p>
@@ -971,7 +971,7 @@ public class MyAspect extends Aspect {
             </subsection>
         </section>
 
-        <section name="#2_Advices">
+        <section name="Model 2 - Advices">
             <p>
                 The Advices are implemented as Aspect class method with the following requirements:
                 <ol>
@@ -1035,8 +1035,8 @@ public class MyAspect extends Aspect {
                 <p>
 <source><![CDATA[
     /**
-     * Non anonymous expression
-     * @Around pc1
+     * Non anonymous expression (pc1 and pc2 are fields)
+     * @Around pc1 && pc2
      */
     public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
         // do some stuff
@@ -1044,40 +1044,243 @@ public class MyAspect extends Aspect {
         // do some more stuff
         return result;
     }
+
+    /**
+     * Anonymous pointcut
+     * @Around * com.package.Target.*(..)
+     */
+    public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
+        // do some stuff
+        Object result = joinPoint.proceed();
+        // do some more stuff
+        return result;
+    }
+
 }]]></source>
                 </p>
             </subsection>
 
         </section>
 
-        <section name="#2_Introductions">
+        <section name="Model 2 - Introductions">
             <p>
-
-
+                The Introduction class implements the concept of Mixins/Open Classes.
+                I.e. an Introduction makes it possible to extend a class with a new interface and/or a new implementation (methods and fields).
+            </p>
+            <p>
+                In model 2, introductions are defined as
+                <ul>
+                    <li>Fields of the aspect class whose type is the interface to introduce.<br/>
+                        Use if the interface does not require any implementation (marker interface).<br/>
+                        Fields are marked with metadata <code>@Implements &lt;classPattern&gt;</code>.
+                    </li><br/>
+                    <li>Public inner class of the aspect class.<br/>
+                        The inner class declares to implement the interface(s) to introduce and effectively implements it.
+                        The inner class is marked with metadata <code>@Introduce &lt;classPattern&gt;</code>.
+                    </li>
+                </ul>
             </p>
             <subsection name="Pure Interface introduction">
                 <p>
-
+                    Interface introductions (marker interface) are defined as fields in the aspect class.
+                    The type of the field is the interface to introduce.<br/>
+                    The field is marked with metadata <code>@Implements &lt;classPattern&gt;</code> to specify to which classes the introduction applies.<br/>
+                    The name of the introduction is the field name.TODO this is bad - aspect name concat required ?
                 </p>
+                <p>
+                    When using abstract aspect or aspect inheritance, the aspect super class can define such introductions without
+                    specifying a <code>classPattern</code> thru metadata.
+                    The concrete aspect should thus override the fields to specify thru metadata to which classes the introduction applies.
+                </p>
+                <p>
+                    <source><![CDATA[
+/**
+ * @Aspect
+ */
+public MyAspect extends Aspect {
+
+    /** @Implements com.package.* */
+    protected Serializable introduce1;
+
+    /** @Implements com.package.* */
+    public OtherMarkerInterface introduce2;
+
+ }
+                    ]]></source>
+                </p>
+
             </subsection>
             <subsection name="Implementation introduction">
                 <p>
-
+                    TODO where is public inner class required ??? / protected etc
+                    Implementation introductions (interface with concrete implementation) are defined as public inner class of the aspect class.
+                    The inner class implements the interface(s) to introduce.<br/>
+                    The inner class is marked with metadata <code>@Introduce &lt;classPattern&gt;</code> to specify to which classes the introduction applies.<br/>
+                    The name of the introduction is the full qualified inner class name (thus like <code>&lt;aspectClassName&gt;$&lt;innerClassName&gt;</code>).
                 </p>
+                <p>
+                    When using abstract aspect or aspect inheritance, the aspect super class can define such introductions without
+                    specifying a <code>classPattern</code> thru metadata.
+                    The concrete aspect should thus declare an inner class that extends the super class aspect one's and specify thru metadata to which classes the introduction applies.
+                </p>
+                <p>
+                    <source><![CDATA[
+/**
+ * @Aspect
+ */
+public MyAspect extends Aspect {
+
+    /** @Introduce com.package.* */
+    public class MyIntroduction extends SuperIntroduction implements ToBeIntroduced {
+
+        // introduced methods implementation
+        ...
+    }
+
+ }
+                    ]]></source>
+                </p>
+
             </subsection>
             <subsection name="Implementation swapping">
                 <p>
-
+                    It is possible to replace the introduction implementation at runtime using a call like
+                    <source><![CDATA[
+    SystemLoader.getSystem("tests").getMixin("test.attribdef.aspect.IntroductionTestAspect$MyImpl").
+        ___AW_swapImplementation("test.attribdef.aspect.IntroductionTestAspectMyImplReplacement");
+                    ]]></source>
+                </p>
+                <p>
+                    The swapped implementation must implements the introduced interfaces, but can be an autonomous class
+                    or an aspect inner class. Only the default introduced implementation must be an inner class.
                 </p>
             </subsection>
         </section>
 
-        <section name="2_Metadata reference">
-
+        <section name="Model 2 - Metadata reference">
+            <p>
+                This section references all metadata used in the model 2 - Self defined aspect model.
+            </p>
+            <p>
+                <table>
+                    <tr>
+                        <th>meta</th>
+                        <th>level</th>
+                        <th>component</th>
+                        <th>anonymous parameter</th>
+                        <th>parameter(s)</th>
+                    </tr>
+                    <tr>
+                        <th colspan="5">[O:defaultValue] for optional parameter with default value</th>
+                    </tr>
+                    <tr>
+                        <td>@Aspect</td>
+                        <td>class</td>
+                        <td>Aspect</td>
+                        <td>perJVM | perClass | perInstance | perThread [O:perJVM]</td>
+                        <td>name [0:&lt;aspectClassName&gt;]</td>
+                    </tr>
+                    <tr>
+                        <td>@Implements</td>
+                        <td>field</td>
+                        <td>Interface Introduction</td>
+                        <td>&lt;classPattern&gt;</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>@Introduce</td>
+                        <td>inner class, class level</td>
+                        <td>Implementation Introduction</td>
+                        <td>&lt;classPattern&gt;</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>@Execution</td>
+                        <td>Pointcut field</td>
+                        <td>Pointcut, method execution</td>
+                        <td>&lt;methodPattern&gt;</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>@Call</td>
+                        <td>Pointcut field</td>
+                        <td>Pointcut, method call</td>
+                        <td>&lt;callerSidePattern&gt;</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>@Set / @Get</td>
+                        <td>Pointcut field</td>
+                        <td>Pointcut, field modification / access</td>
+                        <td>&lt;fieldPattern&gt;</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>@Throws</td>
+                        <td>Pointcut field</td>
+                        <td>Pointcut, exception throwned out</td>
+                        <td>&lt;throwsPattern&gt;</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>@CFlow</td>
+                        <td>Pointcut field</td>
+                        <td>Pointcut, in cflow of</td>
+                        <td>&lt;methodPattern&gt;</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>@Around</td>
+                        <td>Method</td>
+                        <td>Advice for @Around, @Throws</td>
+                        <td>&lt;expression&gt;</td>
+                        <td>name [0:&lt;aspectClassName&gt;.&lt;methodName&gt;</td>
+                    </tr>
+                    <tr>
+                        <td>@Pre / @Post</td>
+                        <td>Method</td>
+                        <td>Advice for @Call, @Set, @Get</td>
+                        <td>&lt;expression&gt;</td>
+                        <td>name [0:&lt;aspectClassName&gt;.&lt;methodName&gt;</td>
+                    </tr>
+                    <tr>
+                        <td>@Throws</td>
+                        <td>Method</td>
+                        <td>Advice for @Throws</td>
+                        <td>&lt;expression&gt;</td>
+                        <td>name [0:&lt;aspectClassName&gt;.&lt;methodName&gt;</td>
+                    </tr>
+                    <tr>
+                        <td>@Custom</td>
+                        <td>any</td>
+                        <td>custom runtime accessible attribute</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </p>
         </section>
 
-        <section name="2_Aspect compilation">
+        <section name="Model 2 - Aspect post compilation">
+            <p>
+                The model 2 - self defined Aspects have to be post compiled to incorporate the metadata into the class file bybtecode.
+                This post compilation will not be needed with java 1.5 and JSR-175. For now you need to first compile the aspect classes with javac compiler
+                and thus post compile the <code>.class</code> files with the aspect source code as inputs.<br/>
+                See <a href="startup_and_runtime_issues.html#Aspect compilation">specific part</a>
+            </p>
+        </section>
 
+        <section name="Choosing a model">
+            <p>
+                The model 1 - XML centric allows to define the pointcuts expression in an external file. It can be thus used
+                to provide aspects that needs to be tuned without extra development phase except editing an XML file.
+                This model leads to a more exploded aspect since several classes are needed (one per Advice).
+            </p>
+            <p>
+                The model 2 - Self defined aspect allows to have self contained aspect. Those are easier to maintain, but requires
+                a small development phase to extend them and specify the binding as metadata.
+                The self defined aspect requires and extra post compilation phase (until java 1.5).
+            </p>
         </section>
     </body>
 
