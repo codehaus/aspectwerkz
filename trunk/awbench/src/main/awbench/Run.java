@@ -21,7 +21,7 @@ public class Run {
     /** advice should update this counter so that we can check proper execution and report N/A */
     public static long ADVICE_HIT = 0;
 
-    public static int ITERATIONS = 2000000;
+    public static int ITERATIONS = 2000000;//10000;
 
     public static List suite = new ArrayList();
 

@@ -95,8 +95,7 @@ public class MethodExecutionRun {
 
         enhancer = new Enhancer();
         enhancer.setSuperclass(Execution.class);
-        enhancer.setCallback(new MethodExecutionBeforeAdvice());
-        enhancer.setCallback(new MethodExecutionAfterAdvice());
+        enhancer.setCallback(new MethodExecutionBeforeAfterAdvice(new MethodExecutionAfterAdvice()));
         test = (IExecution) enhancer.create();
         test.warmup();
         run = new Run("method execution, before + after advice");
@@ -149,6 +148,17 @@ public class MethodExecutionRun {
 
         enhancer = new Enhancer();
         enhancer.setSuperclass(Execution.class);
+        enhancer.setCallback(new MethodExecutionAroundAdvice());
+        test = (IExecution) enhancer.create();
+        test.warmup();
+        run = new Run("method execution, around advice");
+        for (int i = 0; i < Run.ITERATIONS; i++) {
+            test.around_();
+        }
+        run.end();
+
+        enhancer = new Enhancer();
+        enhancer.setSuperclass(Execution.class);
         enhancer.setCallback(new MethodExecutionAroundSJPAdvice());
         test = (IExecution) enhancer.create();
         test.warmup();
@@ -170,6 +180,14 @@ public class MethodExecutionRun {
         run.end();
 
         enhancer = new Enhancer();
+        enhancer.setSuperclass(Execution.class);
+        enhancer.setCallbacks(new Callback[]{
+            new MethodExecutionGetTargetAndArgsAroundAdvice(
+                new MethodExecutionGetTargetAndArgsAroundAdvice2()),
+            new IgnoreInterceptor()});
+        enhancer.setCallbackFilter(new IgnoreAllBut("aroundStackedWithArgAndTarget"));
+        test = (IExecution) enhancer.create();
+        test.warmup();
         run = new Run("method execution, around advice x 2, args() and target() access");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.aroundStackedWithArgAndTarget(Constants.CONST_0);
