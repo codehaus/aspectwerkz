@@ -20,7 +20,6 @@ import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
-import org.codehaus.aspectwerkz.DeploymentModel;
 
 import java.util.Iterator;
 import java.util.List;
@@ -191,7 +190,8 @@ public class AspectAnnotationParser {
                 parseBeforeAttributes(method, aspectName, aspectClassName, aspectDef);
                 parseAfterAttributes(method, aspectName, aspectClassName, aspectDef);
             } catch (DefinitionException e) {
-                System.err.println("WARNING: unable to register advice: " + e.getMessage());
+                e.printStackTrace();
+                System.err.println("AW::WARNING - unable to register advice: " + e.toString());
                 // TODO AV - better handling of reg issue (f.e. skip the whole aspect, in DocumentParser, based on DefinitionE
             }
         }
@@ -379,12 +379,13 @@ public class AspectAnnotationParser {
         if (methodInfo.getParameterNames() == null
             || methodInfo.getParameterNames().length != methodInfo.getParameterTypes().length
             || (methodInfo.getParameterNames().length > 0 && methodInfo.getParameterNames()[0] == null)) {
-            throw new DefinitionException(
-                    "Could not access source information for method " + methodInfo.getDeclaringType().getName() + "." +
-                    methodInfo.getName() +
-                    methodInfo.getSignature() +
-                    ". Compile aspects with javac -g."
-            );
+            return methodInfo.getName();
+//            throw new DefinitionException(
+//                    "Could not access source information for method " + methodInfo.getDeclaringType().getName() + "." +
+//                    methodInfo.getName() +
+//                    methodInfo.getSignature() +
+//                    ". Compile aspects with javac -g."
+//            );
         }
         if (methodInfo.getParameterNames().length > 0) {
             buffer.append('(');

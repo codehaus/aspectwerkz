@@ -86,11 +86,9 @@ public class DefinitionParserHelper {
     public static void createAndAddDeploymentScopeDef(final String name,
                                                       final String expression,
                                                       final SystemDefinition systemDef) {
-        final AspectDefinition aspectDef = systemDef.getAspectDefinition(Virtual.class.getName());
-        final PointcutDefinition pointcutDef = new PointcutDefinition(expression);
-        aspectDef.addPointcutDefinition(pointcutDef);
-        final DeploymentScope deploymentScope = new DeploymentScope(name, expression);
-        systemDef.addDeploymentScope(deploymentScope);
+        AspectDefinition aspectDef = systemDef.getAspectDefinition(Virtual.class.getName());
+        aspectDef.addPointcutDefinition(new PointcutDefinition(expression));
+        systemDef.addDeploymentScope(new DeploymentScope(name, expression));
     }
 
     /**
@@ -100,9 +98,25 @@ public class DefinitionParserHelper {
      * @param systemDef
      */
     public static void createAndAddAdvisableDef(final String expression, final SystemDefinition systemDef) {
-        final AspectDefinition aspectDef = systemDef.getAspectDefinition(Virtual.class.getName());
-        final PointcutDefinition pointcutDef = new PointcutDefinition(expression);
-        aspectDef.addPointcutDefinition(pointcutDef);
+        AspectDefinition virtualAspectDef = systemDef.getAspectDefinition(Virtual.class.getName());
+        virtualAspectDef.addPointcutDefinition(new PointcutDefinition(expression));
+
+        AdviceDefinition virtualAdviceDef = (AdviceDefinition) virtualAspectDef.getBeforeAdviceDefinitions().get(0);
+        ExpressionInfo oldExpressionInfo = virtualAdviceDef.getExpressionInfo();
+        String newExpression;
+        if (oldExpressionInfo != null) {
+            String oldExpression = oldExpressionInfo.toString();
+            newExpression = oldExpression + " || " + expression;
+        } else {
+            newExpression = expression;
+        }
+
+        virtualAdviceDef.setExpressionInfo(
+                new ExpressionInfo(
+                        newExpression,
+                        virtualAspectDef.getQualifiedName()
+                )
+        );
     }
 
     /**
@@ -110,11 +124,17 @@ public class DefinitionParserHelper {
      *
      * @param systemDef the system definition
      */
-    public static void attachDeploymentScopesToVirtualAdvice(final SystemDefinition systemDef) {
+    public static void attachDeploymentScopeDefsToVirtualAdvice(final SystemDefinition systemDef) {
         AspectDefinition virtualAspectDef = systemDef.getAspectDefinition(Virtual.class.getName());
         AdviceDefinition virtualAdviceDef = (AdviceDefinition) virtualAspectDef.getBeforeAdviceDefinitions().get(0);
 
         StringBuffer newExpression = new StringBuffer();
+        ExpressionInfo oldExpressionInfo = virtualAdviceDef.getExpressionInfo();
+        if (oldExpressionInfo != null) {
+            String oldExpression = oldExpressionInfo.toString();
+            newExpression.append(oldExpression);
+            newExpression.append(" || ");
+        }
         for (Iterator it = systemDef.getDeploymentScopes().iterator(); it.hasNext();) {
             DeploymentScope deploymentScope = (DeploymentScope) it.next();
             newExpression.append(deploymentScope.getExpression());
@@ -122,13 +142,13 @@ public class DefinitionParserHelper {
                 newExpression.append(" || ");
             }
         }
-
         if (newExpression.length() != 0) {
-            final ExpressionInfo newExpressionInfo = new ExpressionInfo(
-                    newExpression.toString(),
-                    virtualAspectDef.getQualifiedName()
+            virtualAdviceDef.setExpressionInfo(
+                    new ExpressionInfo(
+                            newExpression.toString(),
+                            virtualAspectDef.getQualifiedName()
+                    )
             );
-            virtualAdviceDef.setExpressionInfo(newExpressionInfo);
         }
     }
 

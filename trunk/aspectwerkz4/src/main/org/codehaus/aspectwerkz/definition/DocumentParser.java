@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.StringTokenizer;
 
 /**
  * Parses the XML definition using <tt>dom4j</tt>.
@@ -237,7 +238,7 @@ public class DocumentParser {
         parsePackageElements(loader, systemElement, definition, basePackage, globalPointcuts);
 
         // add all deployment scopes to the virtual advice
-        DefinitionParserHelper.attachDeploymentScopesToVirtualAdvice(definition);
+        DefinitionParserHelper.attachDeploymentScopeDefsToVirtualAdvice(definition);
 
         return definition;
     }
@@ -313,19 +314,22 @@ public class DocumentParser {
         for (Iterator it11 = systemElement.elementIterator("advisable"); it11.hasNext();) {
             Element globalPointcut = (Element) it11.next();
             String expression = "";
+            String pointcutTypes = "all";
             for (Iterator it2 = globalPointcut.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute) it2.next();
                 final String name = attribute.getName().trim();
                 final String value = attribute.getValue().trim();
                 if (name.equalsIgnoreCase("expression")) {
                     expression = value;
-                    break;
+                } else if (name.equalsIgnoreCase("pointcut-type")) {
+                    pointcutTypes = value;
                 }
             }
+            // pointcut CDATA is expression unless already specified as an attribute
             if (expression == null) {
                 expression = globalPointcut.getTextTrim();
             }
-            handleAdvisableDefinition(definition, expression);
+            handleAdvisableDefinition(definition, expression, pointcutTypes);
         }
     }
 
@@ -602,10 +606,11 @@ public class DocumentParser {
                 );
             } else if (pointcutElement.getName().trim().equals("advisable")) {
                 String expression = pointcutElement.attributeValue("expression");
+                String pointcutTypes = pointcutElement.attributeValue("pointcut-type");
                 if (expression == null) {
                     expression = pointcutElement.getTextTrim();
                 }
-                handleAdvisableDefinition(aspectDef.getSystemDefinition(), expression);
+                handleAdvisableDefinition(aspectDef.getSystemDefinition(), expression, pointcutTypes);
             }
         }
     }
@@ -1064,9 +1069,11 @@ public class DocumentParser {
      *
      * @param definition
      * @param expression
+     * @param pointcutTypes
      */
     private static void handleAdvisableDefinition(final SystemDefinition definition,
-                                                  final String expression) {
+                                                  final String expression,
+                                                  final String pointcutTypes) {
         // add the Advisable Mixin with the expression defined to the system definitions
         definition.addMixinDefinition(
                 DefinitionParserHelper.createAndAddMixinDefToSystemDef(
@@ -1078,11 +1085,50 @@ public class DocumentParser {
                 )
         );
 
-        DefinitionParserHelper.createAndAddAdvisableDef("execution(* *..*.*(..)) && " + expression, definition);
-        DefinitionParserHelper.createAndAddAdvisableDef("execution(*..*.new(..)) && " + expression, definition);
-        DefinitionParserHelper.createAndAddAdvisableDef("set(* *..*.*) && " + expression, definition);
-        DefinitionParserHelper.createAndAddAdvisableDef("get(* *..*.*) && " + expression, definition);
-
+        boolean hasAll = false;
+        boolean hasExecution = false;
+        boolean hasCall = false;
+        boolean hasSet = false;
+        boolean hasGet = false;
+        boolean hasHandler = false;
+        if (pointcutTypes == null || pointcutTypes.equals("") || pointcutTypes.equalsIgnoreCase("all")) {
+            hasAll = true;
+        } else {
+            StringTokenizer tokenizer = new StringTokenizer(pointcutTypes, "|");
+            while (tokenizer.hasMoreTokens()) {
+                String token = tokenizer.nextToken();
+                if (token.trim().equalsIgnoreCase("all")) {
+                    hasAll = true;
+                    break;
+                } else if (token.trim().equalsIgnoreCase("execution")) {
+                    hasExecution = true;
+                } else if (token.trim().equalsIgnoreCase("call")) {
+                    hasCall = true;
+                } else if (token.trim().equalsIgnoreCase("set")) {
+                    hasSet = true;
+                } else if (token.trim().equalsIgnoreCase("get")) {
+                    hasGet = true;
+                } else if (token.trim().equalsIgnoreCase("handler")) {
+                    hasHandler = true;
+                }
+            }
+        }
+        if (hasAll || hasExecution) {
+            DefinitionParserHelper.createAndAddAdvisableDef(
+                    "((execution(* *..*.*(..)) || execution(*..*.new(..))) && " + expression + ')', definition
+            );
+        }
+        if (hasAll || hasCall) {
+            DefinitionParserHelper.createAndAddAdvisableDef(
+                    "((call(* *..*.*(..)) || call(*..*.new(..))) && " + expression + ')', definition
+            );
+        }
+        if (hasAll || hasSet) {
+            DefinitionParserHelper.createAndAddAdvisableDef("(set(* *..*.*) && " + expression + ')', definition);
+        }
+        if (hasAll || hasGet) {
+            DefinitionParserHelper.createAndAddAdvisableDef("(get(* *..*.*) && " + expression + ')', definition);
+        }
         //TODO handler
     }
 }

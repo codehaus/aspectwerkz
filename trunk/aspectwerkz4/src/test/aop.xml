@@ -2,6 +2,7 @@
 <aspectwerkz>
     <system id="tests">
         <exclude package="test.attribdeff"/>
+        <advisable pointcut-type="execution" expression="within(test.advisable.AdvisableTest)"/>
         <pointcut name="handler">
             handler(test.handler.HandlerTestBeforeException)
             AND
