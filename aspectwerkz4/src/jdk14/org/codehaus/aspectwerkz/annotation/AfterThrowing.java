@@ -1,10 +1,30 @@
+/**************************************************************************************
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the LGPL license      *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
 /**
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * Annotation for after throwing advice
+ *
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public interface AfterThrowing {
-    public String value();
-    public String expression();
-    public String type();
+    /**
+     * The pointcut expression to bind, when no type is specified for the throwned value
+     */
+    String value();
+
+    /**
+     * The pointcut expression to bind, when a type is specified for the throwned value
+     */
+    String expression();
+
+    /**
+     * The type pattern for the returned value
+     */
+    String type();
 }
