@@ -41,7 +41,7 @@ import org.codehaus.aspectwerkz.attribdef.definition.attribute.bcel.BcelAttribut
  */
 public class AspectC {
 
-    public static final String ATTR_GENERIC_PREFIX = "Attribute.";
+    public static final String ATTR_GENERIC_PREFIX = "attribute.";
     public static final String ATTR_ASPECT = "Aspect";
     public static final String ATTR_EXECUTION = "Execution";
     public static final String ATTR_CALL = "Call";
