@@ -51,10 +51,7 @@ import org.objectweb.asm.Constants;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants {
-    public static final int NULL_PER_OBJECT_TYPE = -1;
-    public static final int PER_THIS_TYPE        = 1;
-    public static final int PER_TARGET_TYPE      = 2;
-    
+
     private AbstractJoinPointCompiler m_compiler;
 
     private CodeVisitor cv;
@@ -65,14 +62,8 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
 
     private int m_joinPointIndex;
 
-    private int m_callerIndex;
-    
     private int m_calleeIndex;
 
-    private int m_perObjectCheckType = NULL_PER_OBJECT_TYPE;
-
-    private String m_aspectQName;
-    
     /**
      * Create a new visitor given a specific AdviceInfo
      *
@@ -82,30 +73,20 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
      * @param isOptimizedJoinPoint
      * @param joinPointIndex
      */
-    public RuntimeCheckVisitor(final AbstractJoinPointCompiler compiler, 
-                               final CodeVisitor cv,
-                               final ExpressionInfo info, 
-                               final boolean isOptimizedJoinPoint,
-                               final int joinPointIndex,
-                               final int callerIndex,
-                               final int calleeIndex,
-                               final int perObjectType,
-                               final String aspectQName) {
+    public RuntimeCheckVisitor(final AbstractJoinPointCompiler compiler, final CodeVisitor cv,
+                               final ExpressionInfo info, final boolean isOptimizedJoinPoint,
+                               final int joinPointIndex, final int calleeIndex) {
         super(
                 info,
                 info.toString(),
                 info.getNamespace(),
                 info.getExpression().getASTRoot()
         );
-        m_compiler             = compiler;
-        m_expressionInfo       = info;
+        m_compiler = compiler;
+        m_expressionInfo = info;
         m_isOptimizedJoinPoint = isOptimizedJoinPoint;
-        m_joinPointIndex       = joinPointIndex;
-        m_callerIndex          = callerIndex;
-        m_calleeIndex          = calleeIndex;
-        m_perObjectCheckType   = perObjectType;
-        m_aspectQName          = aspectQName;
-        
+        m_joinPointIndex = joinPointIndex;
+        m_calleeIndex = calleeIndex;
         this.cv = cv;
     }
 
@@ -116,36 +97,6 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
      */
     public void pushCheckOnStack(ExpressionContext context) {
         super.match(context);
-        
-        switch(m_perObjectCheckType) {
-            case PER_THIS_TYPE: {
-              m_compiler.loadCaller(cv, m_isOptimizedJoinPoint, m_joinPointIndex, m_callerIndex);
-              cv.visitLdcInsn(m_aspectQName);
-              cv.visitMethodInsn(INVOKESTATIC,
-                                 TransformationConstants.PEROBJECTHELPER_CLASS_NAME,
-                                 TransformationConstants.PEROBJECTHELPER_HASASPECT_METHOD_NAME,
-                                 TransformationConstants.PEROBJECTHELPER_HASASPECT_METHOD_SIGNATURE);
-
-              /*"org/codehaus/aspectwerkz/perx/PerObjectHelper",
-              "hasAspect",
-              "(Ljava/lang/Object;Ljava/lang/String;)Z");*/
-              cv.visitInsn(IAND);
-
-              break;
-            }
-
-            case PER_TARGET_TYPE: {
-              m_compiler.loadCallee(cv, m_isOptimizedJoinPoint, m_joinPointIndex, m_calleeIndex);
-              cv.visitLdcInsn(m_aspectQName);
-              cv.visitMethodInsn(INVOKESTATIC,
-                                 TransformationConstants.PEROBJECTHELPER_CLASS_NAME,
-                                 TransformationConstants.PEROBJECTHELPER_HASASPECT_METHOD_NAME,
-                                 TransformationConstants.PEROBJECTHELPER_HASASPECT_METHOD_SIGNATURE);
-              cv.visitInsn(IAND);
-
-              break;
-            }
-        }
     }
 
     /**
@@ -244,15 +195,9 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
 
         // build a new RuntimeCheckVisitor to visit the sub expression
         RuntimeCheckVisitor referenced = new RuntimeCheckVisitor(
-                m_compiler, 
-                cv, 
-                expression.getExpressionInfo(),
-                m_isOptimizedJoinPoint, 
-                m_joinPointIndex,
-                m_callerIndex,
-                m_calleeIndex,
-                m_perObjectCheckType,
-                m_aspectQName
+                m_compiler, cv, expression.getExpressionInfo(),
+                m_isOptimizedJoinPoint, m_joinPointIndex,
+                m_calleeIndex
         );
         return referenced.matchUndeterministic(context);
     }
