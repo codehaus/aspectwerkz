@@ -14,10 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.codehaus.aspectwerkz.metadata.WeaveModel;
-
 /**
- * Validates a Weave Model, looking for:
+ * Validates an AspectWerkz definition, looking for:
  * <ul>
  *  <li>Class and interface references not found on the CLASSPATH</li>
  *  <li>Duplicate aspect, advice, pointcut and introduction definitions</li>
@@ -25,215 +23,215 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * </ul>
  *
  * TODO: Add warning for duplicated/redundant advices for the same join point
- * TODO: Check pattern expressions syntax 
- * 
+ * TODO: Check pattern expressions syntax
+ *
  * @author <a href="mailto:carlos@bluebox.com.br">Carlos Villela</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class DefinitionValidator {
 
-	private List errors = new ArrayList();
+    private List m_errors = new ArrayList();
 
-	private Set names = new HashSet();
-	private Set attributes = new HashSet();
+    private Set m_names = new HashSet();
+    private Set m_attributes = new HashSet();
 
-	private WeaveModel weaveModel;
+    private final AspectWerkzDefinition m_definition;
 
-	/**
-	 * Creates a new WeaveModel Validator
-	 * @param weaveModel the WeaveModel to validate
-	 */
-	public DefinitionValidator(WeaveModel weaveModel) {
-		this.weaveModel = weaveModel;
-	}
+    /**
+     * Creates a new Definition Validator
+     *
+     * @param definition the definition to validate
+     */
+    public DefinitionValidator(final AspectWerkzDefinition definition) {
+        m_definition = definition;
+    }
 
-	/**
-	 * Validates a Weave Model
-	 */
-	public void validate() {
-		AspectWerkzDefinition definition = weaveModel.getDefinition();
+    /**
+     * Validates a Weave Model
+     */
+    public void validate() {
+        Collection introductionDefs = m_definition.getIntroductionDefinitions();
+        Collection adviceDefs = m_definition.getAdviceDefinitions();
+        Collection aspectDefs = m_definition.getAspectDefinitions();
 
-		Collection introductionDefs = definition.getIntroductionDefinitions();
-		Collection adviceDefs = definition.getAdviceDefinitions();
-		Collection aspectDefs = definition.getAspectDefinitions();
+        validateIntroductions(introductionDefs);
+        validateAdvices(adviceDefs);
+        validateAspects(aspectDefs);
+    }
 
-		validateIntroductions(introductionDefs);
-		validateAdvices(adviceDefs);
-		validateAspects(aspectDefs);
-	}
+    /**
+     * Validates aspect definitions
+     *
+     * @param aspectDefs a Collection of AspectDefinitions
+     */
+    private void validateAspects(Collection aspectDefs) {
+        for (Iterator i = aspectDefs.iterator(); i.hasNext();) {
+            AspectDefinition def = (AspectDefinition)i.next();
 
-	/**
-	 * Validates aspect definitions
-	 * 
-	 * @param aspectDefs a Collection of AspectDefinitions
-	 */
-	private void validateAspects(Collection aspectDefs) {
-		for (Iterator i = aspectDefs.iterator(); i.hasNext();) {
-			AspectDefinition def = (AspectDefinition) i.next();
+            List adviceRules = def.getAdviceWeavingRules();
+            List introductionRules = def.getIntroductionWeavingRules();
 
-			List adviceRules = def.getAdviceWeavingRules();
-			List introductionRules = def.getIntroductionWeavingRules();
+            for (Iterator i1 = adviceRules.iterator(); i1.hasNext();) {
+                AdviceWeavingRule rule = (AdviceWeavingRule)i1.next();
+                checkUndefinedAdvices(rule.getAdviceRefs());
+                // TODO: Check for undefined advice stacks
+            }
 
-			for (Iterator i1 = adviceRules.iterator(); i1.hasNext();) {
-				AdviceWeavingRule rule = (AdviceWeavingRule) i1.next();
-				checkUndefinedAdvices(rule.getAdviceRefs());
-				// TODO: Check for undefined advice stacks
-			}
+            for (Iterator i2 = introductionRules.iterator(); i2.hasNext();) {
+                IntroductionWeavingRule rule =
+                        (IntroductionWeavingRule)i2.next();
+                checkUndefinedIntroductions(rule.getIntroductionRefs());
+            }
 
-			for (Iterator i2 = introductionRules.iterator(); i2.hasNext();) {
-				IntroductionWeavingRule rule =
-					(IntroductionWeavingRule) i2.next();
-				checkUndefinedIntroductions(rule.getIntroductionRefs());
-			}
+            Collection pointcutDefs = def.getPointcutDefs();
+            validatePointcuts(pointcutDefs);
+        }
+    }
 
-			Collection pointcutDefs = def.getPointcutDefs();
-			validatePointcuts(pointcutDefs);
-		}
-	}
+    /**
+     * Checks for undefined introduction references
+     * @param refs introduction references to check
+     */
+    private void checkUndefinedIntroductions(List refs) {
+        Collection defs = m_definition.getIntroductionDefinitions();
+        for (Iterator i = refs.iterator(); i.hasNext();) {
+            String ref = (String)i.next();
+            if (!m_definition.hasIntroduction(ref))
+                addErrorMessage("Introduction '" + ref + "' not defined");
+        }
+    }
 
-	/**
-	 * Checks for undefined introduction references
-	 * @param refs introduction references to check
-	 */
-	private void checkUndefinedIntroductions(List refs) {
-		AspectWerkzDefinition definition = weaveModel.getDefinition();
+    /**
+     * Check for undefined advice references
+     * @param refs advice references to check
+     */
+    private void checkUndefinedAdvices(List refs) {
+        Collection defs = m_definition.getAdviceDefinitions();
+        for (Iterator i = refs.iterator(); i.hasNext();) {
+            String ref = (String)i.next();
+            if (!m_definition.hasAdvice(ref))
+                addErrorMessage("Advice '" + ref + "' not defined");
+        }
+    }
 
-		Collection defs = definition.getIntroductionDefinitions();
-		for (Iterator i = refs.iterator(); i.hasNext();) {
-			String ref = (String) i.next();
-			if (!definition.hasIntroduction(ref))
-				addErrorMessage("Introduction '" + ref + "' not defined");
-		}
-	}
+    /**
+     * Validates pointcut definitions
+     * @param pointcutDefs a Collection of PointcutDefinitions
+     */
+    private void validatePointcuts(Collection pointcutDefs) {
+        for (Iterator i = pointcutDefs.iterator(); i.hasNext();) {
+            PointcutDefinition def = (PointcutDefinition)i.next();
 
-	/**
-	 * Check for undefined advice references
-	 * @param refs advice references to check
-	 */
-	private void checkUndefinedAdvices(List refs) {
-		AspectWerkzDefinition definition = weaveModel.getDefinition();
+            checkDuplicateName(def.getName());
+        }
+    }
 
-		Collection defs = definition.getAdviceDefinitions();
-		for (Iterator i = refs.iterator(); i.hasNext();) {
-			String ref = (String) i.next();
-			if (!definition.hasAdvice(ref))
-				addErrorMessage("Advice '" + ref + "' not defined");
-		}
-	}
+    /**
+     * Validates advice definitions
+     *
+     * @param adviceDefs a Collection of AdviceDefinitions
+     */
+    private void validateAdvices(Collection adviceDefs) {
 
-	/**
-	 * Validates pointcut definitions
-	 * @param pointcutDefs a Collection of PointcutDefinitions
-	 */
-	private void validatePointcuts(Collection pointcutDefs) {
-		for (Iterator i = pointcutDefs.iterator(); i.hasNext();) {
-			PointcutDefinition def = (PointcutDefinition) i.next();
+        for (Iterator i = adviceDefs.iterator(); i.hasNext();) {
+            AdviceDefinition def = (AdviceDefinition)i.next();
 
-			checkDuplicateName(def.getName());
-		}
-	}
+            String adviceClass = def.getAdviceClassName();
+            try {
+                Class.forName(adviceClass);
+            }
+            catch (ClassNotFoundException e) {
+                addErrorMessage(
+                        "Advice class not found: "
+                        + adviceClass
+                        + "(exception: "
+                        + e
+                        + ")");
+            }
+            catch (NoClassDefFoundError e) {
+                addErrorMessage(
+                        "Advice class not found: "
+                        + adviceClass
+                        + "(exception: "
+                        + e
+                        + ")");
 
-	/**
-	 * Validates advice definitions
-	 * 
-	 * @param adviceDefs a Collection of AdviceDefinitions
-	 */
-	private void validateAdvices(Collection adviceDefs) {
+            }
 
-		for (Iterator i = adviceDefs.iterator(); i.hasNext();) {
-			AdviceDefinition def = (AdviceDefinition) i.next();
+            checkDuplicateName(def.getName());
+            checkDuplicateAttribute(def.getAttribute());
+        }
+    }
 
-			String adviceClass = def.getAdviceClassName();
-			try {
-				Class.forName(adviceClass);
-			} catch (ClassNotFoundException e) {
-				addErrorMessage(
-					"Advice class not found: "
-						+ adviceClass
-						+ "(exception: "
-						+ e
-						+ ")");
-			} catch (NoClassDefFoundError e) {
-				addErrorMessage(
-					"Advice class not found: "
-						+ adviceClass
-						+ "(exception: "
-						+ e
-						+ ")");
+    /**
+     * Validates introduction definitions
+     *
+     * @param introductionDefs a Collection of IntroductionDefinitions
+     */
+    private void validateIntroductions(Collection introductionDefs) {
 
-			}
+        for (Iterator i = introductionDefs.iterator(); i.hasNext();) {
+            IntroductionDefinition def = (IntroductionDefinition)i.next();
 
-			checkDuplicateName(def.getName());
-			checkDuplicateAttribute(def.getAttribute());
-		}
-	}
+            String interf = def.getInterface();
+            try {
+                Class.forName(interf);
+            }
+            catch (ClassNotFoundException e) {
+                addErrorMessage("Introduction interface not found: " + interf);
+            }
 
-	/**
-	 * Validates introduction definitions
-	 * 
-	 * @param introductionDefs a Collection of IntroductionDefinitions
-	 */
-	private void validateIntroductions(Collection introductionDefs) {
+            String impl = def.getImplementation();
+            if (impl != null) {
+                try {
+                    Class.forName(impl);
+                }
+                catch (ClassNotFoundException e) {
+                    addErrorMessage(
+                            "Introduction implementation not found: " + impl);
+                }
+            }
 
-		for (Iterator i = introductionDefs.iterator(); i.hasNext();) {
-			IntroductionDefinition def = (IntroductionDefinition) i.next();
+            checkDuplicateName(def.getName());
+            checkDuplicateAttribute(def.getAttribute());
+        }
+    }
 
-			String interf = def.getInterface();
-			try {
-				Class.forName(interf);
-			} catch (ClassNotFoundException e) {
-				addErrorMessage("Introduction interface not found: " + interf);
-			}
+    /**
+     * Checks for duplicate attribute m_names
+     * @param attribute attribute name to check
+     */
+    private void checkDuplicateAttribute(String attribute) {
+        if (attribute != null
+                && !"".equals(attribute)
+                && !m_attributes.add(attribute))
 
-			String impl = def.getImplementation();
-			if (impl != null) {
-				try {
-					Class.forName(impl);
-				} catch (ClassNotFoundException e) {
-					addErrorMessage(
-						"Introduction implementation not found: " + impl);
-				}
-			}
+            addErrorMessage("Duplicate attribute definition: " + attribute);
+    }
 
-			checkDuplicateName(def.getName());
-			checkDuplicateAttribute(def.getAttribute());
-		}
-	}
+    /**
+     * Checks for duplicate aspect, advice or introduction m_names
+     * @param name name to check
+     */
+    private void checkDuplicateName(String name) {
+        if (!m_names.add(name))
+            addErrorMessage("Duplicate name definition: " + name);
+    }
 
-	/**
-	 * Checks for duplicate attribute names
-	 * @param attribute attribute name to check
-	 */
-	private void checkDuplicateAttribute(String attribute) {
-		if (attribute != null
-			&& !"".equals(attribute)
-			&& !attributes.add(attribute))
-			
-			addErrorMessage("Duplicate attribute definition: " + attribute);
-	}
+    /**
+     * Adds an error message to the error messages list.
+     * You can query these error messages using getErrorMessages().
+     * @param errorMessage
+     */
+    private void addErrorMessage(String errorMessage) {
+        this.m_errors.add(errorMessage);
+    }
 
-	/**
-	 * Checks for duplicate aspect, advice or introduction names
-	 * @param name name to check
-	 */
-	private void checkDuplicateName(String name) {
-		if (!names.add(name))
-			addErrorMessage("Duplicate name definition: " + name);
-	}
-
-	/**
-	 * Adds an error message to the error messages list.
-	 * You can query these error messages using getErrorMessages().
-	 * @param errorMessage
-	 */
-	private void addErrorMessage(String errorMessage) {
-		this.errors.add(errorMessage);
-	}
-
-	/**
-	 * @return a list of the errors found
-	 */
-	public List getErrorMessages() {
-		return errors;
-	}
+    /**
+     * @return a list of the m_errors found
+     */
+    public List getErrorMessages() {
+        return m_errors;
+    }
 
 }

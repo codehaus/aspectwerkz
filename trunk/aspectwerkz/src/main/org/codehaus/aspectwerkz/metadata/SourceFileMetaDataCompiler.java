@@ -29,6 +29,7 @@ import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionWeavingRule;
 import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
 import org.codehaus.aspectwerkz.definition.ControllerDefinition;
+import org.codehaus.aspectwerkz.definition.DefinitionValidator;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.advice.CFlowPreAdvice;
 import org.codehaus.aspectwerkz.advice.CFlowPostAdvice;
@@ -40,9 +41,9 @@ import org.codehaus.aspectwerkz.util.Strings;
  * as well as "runtime attributes" set as JavaDoc tags throughout the code.
  * <p/>
  * Can be called from the command line.
- *
- * @todo only compile if we have a change in the source file
- * @todo problem with inner classes
+ * <p/>
+ * Validation is turned off by default. To turn it on feed the JVM with:
+ * <code>-Daspectwerkz.definition.validate=true</code>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -90,16 +91,21 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
         if (metaDataDir == null) throw new IllegalArgumentException("meta-data dir can not be null");
 
         createMetaDataDir(metaDataDir);
-        final AspectWerkzDefinition definition =
-                AspectWerkzDefinition.getDefinition(definitionFile);
+        final AspectWerkzDefinition definition = AspectWerkzDefinition.getDefinition(definitionFile);
 
         QDoxParser qdoxParser = new QDoxParser(sourcePath);
         parseAttributeDefinitions(definition, qdoxParser.getAllClassesNames(), qdoxParser);
 
-        final WeaveModel weaveModel = weave(uuid, definition);
-        compileIntroductionMetaData(weaveModel, qdoxParser);
+        validate(definition);
 
-        validate(weaveModel);
+        WeaveModel weaveModel;
+        if (uuid != null) {
+            weaveModel = new WeaveModel(definition, uuid);
+        }
+        else {
+            weaveModel = new WeaveModel(definition);
+        }
+        compileIntroductionMetaData(weaveModel, qdoxParser);
 
         saveWeaveModelToFile(metaDataDir, weaveModel);
     }
