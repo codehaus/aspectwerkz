@@ -149,7 +149,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * @return modified (or not) bytecode
      */
     public byte[] preProcess(final String className, final byte[] bytecode, final ClassLoader loader) {
-        if (!m_initialized || (filter(className) && !NOFILTER)) {
+        if (!m_initialized || (className==null) || (filter(className) && !NOFILTER)) {
             return bytecode;
         }
 
