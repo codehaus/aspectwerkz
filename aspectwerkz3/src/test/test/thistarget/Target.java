@@ -19,4 +19,8 @@ public class Target {
     public void target() {
         TargetTest.log("Target");
     }
+
+    public void call() {
+        TargetTest.log("Target");
+    }
 }

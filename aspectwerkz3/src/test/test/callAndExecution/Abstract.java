@@ -5,28 +5,20 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package test.thistarget;
+package test.callAndExecution;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public abstract class SuperTarget {
+public abstract class Abstract {
 
-    public SuperTarget() {
-        TargetTest.log("SuperTarget");
+    public abstract void called();
+
+    public static class AbstractImpl extends Abstract {
+
+        public void called() {
+            CallExecutionTest.log("invocation ");
+        }
     }
-
-    public void target() {
-        TargetTest.log("SuperTarget");
-    }
-
-    public void call() {
-        TargetTest.log("SuperTarget");
-    }
-
-    public abstract void targetAbstract();
-
-    public abstract void callAbstract();
-
 
 }

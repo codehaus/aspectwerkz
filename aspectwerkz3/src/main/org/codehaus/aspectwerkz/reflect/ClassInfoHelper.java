@@ -80,18 +80,19 @@ public class ClassInfoHelper {
     }
 
     /**
-     * Creates a sorted method list of all the methods in the class and super classes, including package private ones.
+     * Creates a method list of all the methods in the class and super classes, including package private ones.
+     * Inherited methods are last in the list.
      *
      * @param klass the class with the methods
      * @return the sorted method list
      */
-    public static List createSortedMethodList(final ClassInfo klass) {
+    public static List createMethodList(final ClassInfo klass) {
         if (klass == null) {
             return new ArrayList();
         }
 
         // get all the inherited methods, as long as they are user defined ones
-        List parentMethods = createSortedMethodList(klass.getSuperclass());
+        List parentMethods = createMethodList(klass.getSuperclass());
 
         // get this klass methods
         List methods = new ArrayList();
@@ -110,8 +111,21 @@ public class ClassInfoHelper {
                 methods.add(parentMethod);
             }
         }
-        //Note: sorting is only use to maintain mixin consistency - TODO: remove at some stage
+        return methods;
+    }
+
+    /**
+     * Creates a sorted method list of all the methods in the class and super classes, including package private ones.
+     *
+     * @param klass the class with the methods
+     * @return the sorted method list
+     */
+    public static List createSortedMethodList(final ClassInfo klass) {
+        List methods = createMethodList(klass);
+
+        //Note: sorting is only use to maintain mixin consistency
         Collections.sort(methods, MethodComparator.getInstance(MethodComparator.METHOD_META_DATA));
+
         return methods;
     }
 

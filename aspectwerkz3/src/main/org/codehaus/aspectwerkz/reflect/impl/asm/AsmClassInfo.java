@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.reflect.impl.asm;
 
 import gnu.trove.TIntObjectHashMap;
+import gnu.trove.TIntArrayList;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.Annotations;
@@ -40,6 +41,9 @@ import java.util.Iterator;
  * Implementation of the ClassInfo interface utilizing the ASM bytecode library for the info retriaval.
  * <p/>
  * Annotations are lazily gathered, unless required to visit them at the same time as we visit methods and fields.
+ * <p/>
+ * This implementation guarantees that the method, fields and constructors can be retrieved in the same order as they were in the bytecode
+ * (it can depends of the compiler and might not be the order of the source code - f.e. IBM compiler)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
@@ -92,18 +96,31 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * A list with the <code>ConstructorInfo</code> instances.
+     * When visiting the bytecode, we keep track of the order of the visit.
+     * The first time the getConstructors() gets called, we build an array and then reuse it directly.
      */
     private final TIntObjectHashMap m_constructors = new TIntObjectHashMap();
+    private TIntArrayList m_sortedConstructorHashes = new TIntArrayList();
+    private ConstructorInfo[] m_constructorsLazy = null;
+
 
     /**
      * A list with the <code>MethodInfo</code> instances.
+     * When visiting the bytecode, we keep track of the order of the visit.
+     * The first time the getMethods() gets called, we build an array and then reuse it directly.
      */
     private final TIntObjectHashMap m_methods = new TIntObjectHashMap();
+    private TIntArrayList m_sortedMethodHashes = new TIntArrayList();
+    private MethodInfo[] m_methodsLazy = null;
 
     /**
      * A list with the <code>FieldInfo</code> instances.
+     * When visiting the bytecode, we keep track of the order of the visit.
+     * The first time the getFields() gets called, we build an array and then reuse it directly.
      */
     private final TIntObjectHashMap m_fields = new TIntObjectHashMap();
+    private TIntArrayList m_sortedFieldHashes = new TIntArrayList();
+    private FieldInfo[] m_fieldsLazy = null;
 
     /**
      * A list with the interfaces class names.
@@ -469,12 +486,14 @@ public class AsmClassInfo implements ClassInfo {
      * @return the constructors info
      */
     public ConstructorInfo[] getConstructors() {
-        Object[] values = m_constructors.getValues();
-        ConstructorInfo[] methodInfos = new ConstructorInfo[values.length];
-        for (int i = 0; i < values.length; i++) {
-            methodInfos[i] = (ConstructorInfo) values[i];
+        if (m_constructorsLazy == null) {
+            ConstructorInfo[] constructorInfos = new ConstructorInfo[m_sortedConstructorHashes.size()];
+            for (int i = 0; i < m_sortedConstructorHashes.size(); i++) {
+                constructorInfos[i] = (ConstructorInfo) m_constructors.get(m_sortedConstructorHashes.get(i));
+            }
+            m_constructorsLazy = constructorInfos;
         }
-        return methodInfos;
+        return m_constructorsLazy;
     }
 
     /**
@@ -493,12 +512,14 @@ public class AsmClassInfo implements ClassInfo {
      * @return the methods info
      */
     public MethodInfo[] getMethods() {
-        Object[] values = m_methods.getValues();
-        MethodInfo[] methodInfos = new MethodInfo[values.length];
-        for (int i = 0; i < values.length; i++) {
-            methodInfos[i] = (MethodInfo) values[i];
+        if (m_methodsLazy == null) {
+            MethodInfo[] methodInfos = new MethodInfo[m_sortedMethodHashes.size()];
+            for (int i = 0; i < m_sortedMethodHashes.size(); i++) {
+                methodInfos[i] = (MethodInfo) m_methods.get(m_sortedMethodHashes.get(i));
+            }
+            m_methodsLazy = methodInfos;
         }
-        return methodInfos;
+        return m_methodsLazy;
     }
 
     /**
@@ -517,12 +538,14 @@ public class AsmClassInfo implements ClassInfo {
      * @return the field info
      */
     public FieldInfo[] getFields() {
-        Object[] values = m_fields.getValues();
-        FieldInfo[] fieldInfos = new FieldInfo[values.length];
-        for (int i = 0; i < values.length; i++) {
-            fieldInfos[i] = (FieldInfo) values[i];
+        if (m_fieldsLazy == null) {
+            FieldInfo[] fieldInfos = new FieldInfo[m_sortedFieldHashes.size()];
+            for (int i = 0; i < m_sortedFieldHashes.size(); i++) {
+                fieldInfos[i] = (FieldInfo) m_fields.get(m_sortedFieldHashes.get(i));
+            }
+            m_fieldsLazy = fieldInfos;
         }
-        return fieldInfos;
+        return m_fieldsLazy;
     }
 
     /**
@@ -854,7 +877,9 @@ public class AsmClassInfo implements ClassInfo {
                 AsmAnnotationHelper.extractAnnotations(annotations, attrs, (ClassLoader) m_loaderRef.get());
                 fieldInfo.m_annotations = annotations;
             }
-            m_fields.put(AsmHelper.calculateFieldHash(name, desc), fieldInfo);
+            int hash = AsmHelper.calculateFieldHash(name, desc);
+            m_fields.put(hash, fieldInfo);
+            m_sortedFieldHashes.add(hash);
             super.visitField(access, name, desc, value, attrs);
         }
 
@@ -876,9 +901,11 @@ public class AsmClassInfo implements ClassInfo {
                 if (name.equals(INIT_METHOD_NAME)) {
                     memberInfo = new AsmConstructorInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
                     m_constructors.put(hash, memberInfo);
+                    m_sortedConstructorHashes.add(hash);
                 } else {
                     memberInfo = new AsmMethodInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
                     m_methods.put(hash, memberInfo);
+                    m_sortedMethodHashes.add(hash);
                 }
                 // attributes
                 if (!m_lazyAttributes) {

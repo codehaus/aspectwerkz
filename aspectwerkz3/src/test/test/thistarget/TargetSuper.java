@@ -21,4 +21,7 @@ public class TargetSuper extends SuperTarget {
         TargetTest.log("TargetSuperA");
     }
 
+    public void callAbstract() {
+        TargetTest.log("TargetSuperA");
+    }
 }

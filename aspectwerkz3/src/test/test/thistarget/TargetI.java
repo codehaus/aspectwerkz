@@ -20,8 +20,14 @@ public class TargetI implements ITarget {
         TargetTest.log("TargetI");
     }
 
-    public static void staticTarget() {
+    public void call() {
+        TargetTest.log("TargetI");
+    }
 
+    public static void staticTarget() {
+    }
+
+    public static void staticCall() {
     }
 
 

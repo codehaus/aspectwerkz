@@ -238,4 +238,7 @@ public interface TransformationConstants {
     public static final String SET_FIELD_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
     public static final String SET_RETURN_VALUE_METHOD_NAME = "setReturnValue";
     public static final String SET_RETURN_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
+
+    public static final int MODIFIER_INVOKEINTERFACE           = 0x10000000;
+
 }
