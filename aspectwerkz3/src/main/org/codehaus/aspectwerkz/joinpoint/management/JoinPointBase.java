@@ -432,7 +432,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * @return the target instance
      */
     public Object getTarget() {
-        return getRtti().getTarget();//m_targetInstanceRef.get();//AW-265
+        return getRtti().getTarget();//AW-265
     }
 
     /**
