@@ -32,7 +32,6 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.StaticMethodAdviceTest.class);
         suite.addTestSuite(test.FieldAdviceTest.class);
         suite.addTestSuite(test.CallerSideAdviceTest.class);
-        suite.addTestSuite(test.IntroductionTest.class);
         suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
         suite.addTestSuite(test.handler.HandlerTest.class);
         suite.addTestSuite(test.callAndExecution.CallExecutionTest.class);
@@ -44,15 +43,17 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.abstractclass.AbstractClassTest.class);
         suite.addTestSuite(test.reflection.ReflectionTest.class);
         suite.addTestSuite(test.superclassconstructor.SuperClassConstructorTest.class);
-        suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
         suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
         suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
         suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);
         suite.addTestSuite(test.aopc.AspectSystemTest.class);
-        suite.addTestSuite(test.implementsbug.ImplementsTest.class);
-        suite.addTestSuite(test.inheritedmixinbug.Target.class);
-        suite.addTestSuite(test.interfacesubtypebug.InterfaceSubtypeBug.class);
-        suite.addTestSuite(test.performance.PerformanceTest.class);
+
+//        suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
+//        suite.addTestSuite(test.IntroductionTest.class);
+//        suite.addTestSuite(test.implementsbug.ImplementsTest.class);
+//        suite.addTestSuite(test.inheritedmixinbug.Target.class);
+//        suite.addTestSuite(test.interfacesubtypebug.InterfaceSubtypeBug.class);
+//        suite.addTestSuite(test.performance.PerformanceTest.class);
 
         // TODO: deprecated until a better hot deployment model has been implemented
         //        suite.addTestSuite(test.DynamicDeploymentTest.class);

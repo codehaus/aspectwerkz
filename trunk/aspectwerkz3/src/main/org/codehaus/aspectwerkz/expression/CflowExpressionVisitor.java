@@ -141,7 +141,7 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_expression = (String)fields.get("m_expression", null);
+        m_expression = (String)fields.get("m_annotation", null);
         m_namespace = (String)fields.get("m_namespace", null);
         m_hasCflowPointcut = fields.get("m_namespace", false);
         m_root = ExpressionInfo.getParser().parse(m_expression);
