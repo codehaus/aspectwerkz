@@ -18,8 +18,9 @@ import org.codehaus.aspectwerkz.regexp.ThrowsPattern;
  * @todo document
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class ThrowsExpression extends Expression {
+public class ThrowsExpression extends LeafExpression {
 
     /**
      * Matches the leaf-node pattern.
@@ -28,8 +29,8 @@ public class ThrowsExpression extends Expression {
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    protected boolean matchPattern(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
-        if (!matchPattern(classMetaData)) {
+    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+        if (!match(classMetaData)) {
             return false;
         }
         if (!(memberMetaData instanceof MethodMetaData)) {
@@ -46,10 +47,12 @@ public class ThrowsExpression extends Expression {
      * @param exceptionType the exception type
      * @return boolean
      */
-    protected boolean matchPattern(final ClassMetaData classMetaData,
+    public boolean match(final ClassMetaData classMetaData,
                                    final MemberMetaData memberMetaData,
                                    final String exceptionType) {
-        if (!matchPattern(classMetaData)) {
+        if (exceptionType==null)
+            return match(classMetaData, memberMetaData);
+        if (!match(classMetaData)) {
             return false;
         }
         return ((ThrowsPattern)m_memberPattern).matches((MethodMetaData)memberMetaData, exceptionType);
@@ -86,10 +89,10 @@ public class ThrowsExpression extends Expression {
      * @param expression the expression as a string
      * @param pointcutName the name of the pointcut
      */
-    ThrowsExpression(final String namespace,
+    ThrowsExpression(final ExpressionNamespace namespace,
                      final String expression,
                      final String pointcutName) {
-        super(namespace, expression, pointcutName, PointcutType.THROWS);
+        this(namespace, expression, "", pointcutName);
     }
 
     /**
@@ -100,7 +103,7 @@ public class ThrowsExpression extends Expression {
      * @param packageNamespace the package namespace that the expression is living in
      * @param pointcutName the name of the pointcut
      */
-    ThrowsExpression(final String namespace,
+    ThrowsExpression(final ExpressionNamespace namespace,
                      final String expression,
                      final String packageNamespace,
                      final String pointcutName) {

@@ -838,9 +838,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
                         expression.match(classMetaData)) {
                     return true;
                 }
-                Expression cflowExpression = rule.getCflowExpression();
-                if (cflowExpression != null &&
-                        cflowExpression.match(classMetaData)) {
+                if (expression.matchInOrNotIn(classMetaData)) {
                     return true;
                 }
             }
@@ -874,12 +872,9 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
                         && expression.match(classMetaData, methodMetaData)) {
                     return true;
                 }
-                Expression cflowExpression = rule.getCflowExpression();
-                if (cflowExpression != null
-                        && cflowExpression.match(classMetaData, methodMetaData)) {
+                if (expression.matchInOrNotIn(classMetaData, methodMetaData)) {
                     return true;
                 }
-
             }
         }
         return false;

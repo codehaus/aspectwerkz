@@ -736,7 +736,6 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      * @return boolean
      */
     public boolean hasCallPointcut(final ClassMetaData classMetaData) {
-        //TODO CFLOW match
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
@@ -747,6 +746,9 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
                 Expression expression = adviceDef.getExpression();
                 if (expression.getType().equals(PointcutType.CALL)
                         && expression.match(classMetaData)) {
+                    return true;
+                }
+                if (expression.matchInOrNotIn(classMetaData)) {
                     return true;
                 }
             }
@@ -764,7 +766,6 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      */
     public boolean isPickedOutByCallPointcut(final ClassMetaData classMetaData,
                                              final MethodMetaData methodMetaData) {
-        //TODO cflow
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
@@ -776,6 +777,9 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
                 Expression expression = adviceDef.getExpression();
                 if (expression.getType().equals(PointcutType.CALL)
                         && expression.match(classMetaData, methodMetaData)) {
+                    return true;
+                }
+                if (expression.matchInOrNotIn(classMetaData, methodMetaData)) {
                     return true;
                 }
             }

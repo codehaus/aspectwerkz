@@ -18,8 +18,9 @@ import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
  * @todo document
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CallExpression extends Expression {
+public class CallExpression extends LeafExpression {
 
     /**
      * Matches the leaf-node pattern.
@@ -28,12 +29,15 @@ public class CallExpression extends Expression {
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    protected boolean matchPattern(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+        /*if (!match(classMetaData)) {
+            return false;
+        }*/
         if (!(memberMetaData instanceof MethodMetaData)) {
             return false;
         }
         return ((CallerSidePattern)m_memberPattern).matches(
-                classMetaData.getName(),
+                classMetaData.getName(),/* TODO BOGUS with HIERARCHICAL */
                 (MethodMetaData)memberMetaData
         );
     }
@@ -69,10 +73,10 @@ public class CallExpression extends Expression {
      * @param expression the expression as a string
      * @param pointcutName the name of the pointcut
      */
-    CallExpression(final String namespace,
+    CallExpression(final ExpressionNamespace namespace,
                    final String expression,
                    final String pointcutName) {
-        super(namespace, expression, pointcutName, PointcutType.CALL);
+        this(namespace, expression, "", pointcutName);
     }
 
     /**
@@ -83,7 +87,7 @@ public class CallExpression extends Expression {
      * @param packageNamespace the package namespace that the expression is living in
      * @param pointcutName the name of the pointcut
      */
-    CallExpression(final String namespace,
+    CallExpression(final ExpressionNamespace namespace,
                    final String expression,
                    final String packageNamespace,
                    final String pointcutName) {

@@ -45,6 +45,7 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.util.UuidGenerator;
 
@@ -408,13 +409,15 @@ public class AttributeC {
                 throw new ExpressionException("pointcut type not supported: " + pointcutType);
             }
 
-            Expression.createExpressionTemplate(
-                    aspectDef.getName(),
-                    pointcutDef.getExpression(),
-                    "",
-                    pointcutDef.getName(),
-                    pointcutType
-            );
+            ExpressionNamespace space = ExpressionNamespace.getExpressionNamespace(aspectDef.getName());
+            space.registerExpression(pointcutDef.getExpression(), "", pointcutDef.getName(), pointcutType);
+//            Expression.createExpressionTemplate(
+//                    aspectDef.getName(),
+//                    pointcutDef.getExpression(),
+//                    "",
+//                    pointcutDef.getName(),
+//                    pointcutType
+//            );
 
             pointcutDefElement.addAttribute("pattern", pointcutDef.getExpression());
         }
@@ -597,9 +600,13 @@ public class AttributeC {
         DocletTag[] introductionTags = javaClass.getTagsByName(AttributeTag.INTRODUCTION);
 
         BindIntroductionRule bindIntroductionRule = new BindIntroductionRule();
-        bindIntroductionRule.setExpression(Expression.createRootExpression(
-                aspectDef.getName(), className, PointcutType.CLASS
-        ));
+        bindIntroductionRule.setExpression(ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).
+                                            createExpression(className));
+        //TODO ALEX JJ - not sure here.
+//
+//                Expression.createRootExpression(
+//                aspectDef.getName(), className, PointcutType.CLASS
+//        ));
 
         for (int i = 0; i < introductionTags.length; i++) {
             if (introductionTags[i] == null) {
@@ -660,12 +667,17 @@ public class AttributeC {
                     // create a new controller definition
                     ControllerDefinition controllerDef = new ControllerDefinition();
                     controllerDef.setClassName(attribute);
-                    controllerDef.setExpression(Expression.createExecutionExpression(
-                            aspectDef.getName(),
+                    controllerDef.setExpression(ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).createExecutionExpression(
                             expression,
                             "",
                             pointcutName
                     ));
+//                    controllerDef.setExpression(Expression.createExecutionExpression(
+//                            aspectDef.getName(),
+//                            expression,
+//                            "",
+//                            pointcutName
+//                    ));
 
                     aspectDef.addControllerDef(controllerDef);
 
@@ -736,12 +748,15 @@ public class AttributeC {
                             // create and add a new rule
                             BindAdviceRule bindAdviceRule = new BindAdviceRule();
                             bindAdviceRule.setExpression(
-                                    Expression.createExecutionExpression(
-                                            aspectDef.getName(),
-                                            expression,
-                                            "",
-                                            pointcutName
+                                    ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).createExecutionExpression(
+                                            expression, "", pointcutName
                                     ));
+//                                    Expression.createExecutionExpression(
+//                                            aspectDef.getName(),
+//                                            expression,
+//                                            "",
+//                                            pointcutName
+//                                    ));
                             // TODO: how to handle cflow?
 //                            bindAdviceRule.setCFlowExpression(cflowRef);
                             bindAdviceRule.addAdviceRef(adviceRef);
@@ -810,12 +825,15 @@ public class AttributeC {
                             // create and add a new weaving rule def
                             BindAdviceRule bindAdviceRule = new BindAdviceRule();
                             bindAdviceRule.setExpression(
-                                    Expression.createSetExpression(
-                                            aspectDef.getName(),
-                                            expression,
-                                            "",
-                                            pointcutName
+                                    ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).createSetExpression(
+                                            expression, "", pointcutName
                                     ));
+//                                    Expression.createSetExpression(
+//                                            aspectDef.getName(),
+//                                            expression,
+//                                            "",
+//                                            pointcutName
+//                                    ));
                             bindAdviceRule.addAdviceRef(adviceRef);
                             aspectDef.addBindAdviceRule(bindAdviceRule);
 
@@ -881,12 +899,15 @@ public class AttributeC {
                             // create and add a new weaving rule def
                             BindAdviceRule bindAdviceRule = new BindAdviceRule();
                             bindAdviceRule.setExpression(
-                                    Expression.createGetExpression(
-                                            aspectDef.getName(),
-                                            expression,
-                                            "",
-                                            pointcutName
+                                    ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).createGetExpression(
+                                            expression, "", pointcutName
                                     ));
+//                                    Expression.createGetExpression(
+//                                            aspectDef.getName(),
+//                                            expression,
+//                                            "",
+//                                            pointcutName
+//                                    ));
                             bindAdviceRule.addAdviceRef(adviceRef);
                             aspectDef.addBindAdviceRule(bindAdviceRule);
 
@@ -959,12 +980,16 @@ public class AttributeC {
                             }
 
                             BindAdviceRule bindAdviceRule = new BindAdviceRule();
-                            bindAdviceRule.setExpression(Expression.createThrowsExpression(
-                                    aspectDef.getName(),
-                                    expression,
-                                    "",
-                                    pointcutName
-                            ));
+                            bindAdviceRule.setExpression(
+                                    ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).createThrowsExpression(
+                                            expression, "", pointcutName
+                                    ));
+//                                    Expression.createThrowsExpression(
+//                                    aspectDef.getName(),
+//                                    expression,
+//                                    "",
+//                                    pointcutName
+//                            ));
                             bindAdviceRule.addAdviceRef(adviceRef);
                             aspectDef.addBindAdviceRule(bindAdviceRule);
 
@@ -1038,12 +1063,16 @@ public class AttributeC {
 
                             // create and add a new weaving rule def
                             BindAdviceRule bindAdviceRule = new BindAdviceRule();
-                            bindAdviceRule.setExpression(Expression.createCallExpression(
-                                    aspectDef.getName(),
-                                    expression,
-                                    "",
-                                    pointcutName
-                            ));
+                            bindAdviceRule.setExpression(
+                                    ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).createCallExpression(
+                                            expression, "", pointcutName
+                                    ));
+//                                    Expression.createCallExpression(
+//                                    aspectDef.getName(),
+//                                    expression,
+//                                    "",
+//                                    pointcutName
+//                            ));
                             bindAdviceRule.addAdviceRef(adviceRef);
                             aspectDef.addBindAdviceRule(bindAdviceRule);
 

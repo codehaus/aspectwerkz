@@ -18,8 +18,9 @@ import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
  * @todo document
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CflowExpression extends Expression {
+public class CflowExpression extends LeafExpression {
 
     /**
      * Matches the leaf-node pattern.
@@ -28,8 +29,8 @@ public class CflowExpression extends Expression {
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    protected boolean matchPattern(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
-        if (!matchPattern(classMetaData)) {
+    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+        if (!match(classMetaData)) {
             return false;
         }
         if (!(memberMetaData instanceof MethodMetaData)) {
@@ -72,10 +73,10 @@ public class CflowExpression extends Expression {
      * @param expression the expression as a string
      * @param pointcutName the name of the pointcut
      */
-    CflowExpression(final String namespace,
+    CflowExpression(final ExpressionNamespace namespace,
                     final String expression,
                     final String pointcutName) {
-        super(namespace, expression, pointcutName, PointcutType.CFLOW);
+        this(namespace, expression, "", pointcutName);
     }
 
     /**
@@ -86,7 +87,7 @@ public class CflowExpression extends Expression {
      * @param packageNamespace the package namespace that the expression is living in
      * @param pointcutName the name of the pointcut
      */
-    CflowExpression(final String namespace,
+    CflowExpression(final ExpressionNamespace namespace,
                     final String expression,
                     final String packageNamespace,
                     final String pointcutName) {

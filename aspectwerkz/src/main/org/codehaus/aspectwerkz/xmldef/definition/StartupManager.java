@@ -30,6 +30,8 @@ import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.CflowExpression;
+import org.codehaus.aspectwerkz.definition.expression.LeafExpression;
+import org.codehaus.aspectwerkz.definition.expression.ExpressionExpression;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
@@ -751,43 +753,65 @@ public class StartupManager {
                 BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
 
                 Expression expression = bindAdviceRule.getExpression();
-                Expression cflowExpression = bindAdviceRule.getCflowExpression();
-                if ( cflowExpression == null ) {
-                    continue;
+                for (Iterator it3 = expression.getCflowExpressions().entrySet().iterator(); it3.hasNext();) {
+                    Map.Entry entry = (Map.Entry) it3.next();
+                    Expression value = (Expression) entry.getValue();
+                    if (value instanceof ExpressionExpression) {
+                        // recursive
+                        //TODO exprexpr using exprexpr
+                        // like pc cflow = "a or b"
+                        // .. pc exec = "c IN cflow"
+                        (new Exception("todo")).printStackTrace();
+                    } else {
+                        // get the referenced cflow poincut definition
+                        PointcutDefinition cflowPointcutDef =
+                                aspectDefinition.getPointcutDef(value.getName());
+
+                        // create call pointcut
+                        CallPointcut pointcut = new CallPointcut(uuid, value);
+
+                        // register the cflow advices in the system (if they does not already exist)
+                        //TODO: [alex] clean this - works as well when commented.
+                        if (!SystemLoader.getSystem(uuid).hasAspect(CFlowPreAdvice.NAME)) {
+                            AdviceDefinition adviceDef = CFlowPreAdvice.getDefinition();
+                            // add the advice to the aspectwerkz definition
+                            definition.addAdvice(adviceDef);
+                            // add the advice to the aspectwerkz system
+                            registerAdvice(uuid, adviceDef);
+                        }
+                        if (!SystemLoader.getSystem(uuid).hasAspect(CFlowPostAdvice.NAME)) {
+                            AdviceDefinition adviceDef = CFlowPostAdvice.getDefinition();
+                            // add the advice to the aspectwerkz definition
+                            definition.addAdvice(adviceDef);
+                            // add the advice to the aspectwerkz system
+                            registerAdvice(uuid, adviceDef);
+                        }
+
+                        // add the pointcut definition to the method pointcut
+                        pointcut.addPointcutDef(cflowPointcutDef);
+                        // add references to the cflow advices to the cflow pointcut
+                        pointcut.addBeforeAdvice(CFlowPreAdvice.NAME);
+                        pointcut.addAfterAdvice(CFlowPostAdvice.NAME);
+                        // add the method pointcut
+                        aspect.addCallPointcut(pointcut);
+
+                        //TODO USELESS - does not support NOT IN
+                        // impl a visitor
+                        aspect.addMethodToCflowExpressionMap(expression, value);
+                    }
                 }
-                // get the referenced cflow poincut definition
-                PointcutDefinition cflowPointcutDef =
-                        aspectDefinition.getPointcutDef(cflowExpression.getName());
-
-                // create call pointcut
-                CallPointcut pointcut = new CallPointcut(uuid, cflowExpression);
-
-                // register the cflow advices in the system (if they does not already exist)
-                //TODO: [alex] clean this - works as well when commented.
-                if (!SystemLoader.getSystem(uuid).hasAspect(CFlowPreAdvice.NAME)) {
-                    AdviceDefinition adviceDef = CFlowPreAdvice.getDefinition();
-                    // add the advice to the aspectwerkz definition
-                    definition.addAdvice(adviceDef);
-                    // add the advice to the aspectwerkz system
-                    registerAdvice(uuid, adviceDef);
-                }
-                if (!SystemLoader.getSystem(uuid).hasAspect(CFlowPostAdvice.NAME)) {
-                    AdviceDefinition adviceDef = CFlowPostAdvice.getDefinition();
-                    // add the advice to the aspectwerkz definition
-                    definition.addAdvice(adviceDef);
-                    // add the advice to the aspectwerkz system
-                    registerAdvice(uuid, adviceDef);
-                }
-
-                // add the pointcut definition to the method pointcut
-                pointcut.addPointcutDef(cflowPointcutDef);
-                // add references to the cflow advices to the cflow pointcut
-                pointcut.addBeforeAdvice(CFlowPreAdvice.NAME);
-                pointcut.addAfterAdvice(CFlowPostAdvice.NAME);
-                // add the method pointcut
-                aspect.addCallPointcut(pointcut);
-
-                aspect.addMethodToCflowExpressionMap(expression, cflowExpression);
+//                //expression.
+//                Expression cflowExpression = bindAdviceRule.getCflowExpression();
+//                if ( cflowExpression == null ) {
+//                    continue;
+//                }
+//                // get the referenced cflow poincut definition
+//                PointcutDefinition cflowPointcutDef =
+//                        aspectDefinition.getPointcutDef(cflowExpression.getName());
+//
+//                // create call pointcut
+//                CallPointcut pointcut = new CallPointcut(uuid, cflowExpression);
+//
             }
         }
     }

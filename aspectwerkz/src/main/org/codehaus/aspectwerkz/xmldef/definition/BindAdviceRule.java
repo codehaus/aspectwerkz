@@ -26,10 +26,10 @@ public class BindAdviceRule implements BindRule {
      */
     private Expression m_expression;
 
-    /**
-     * The cflow pointcut expression - if any
-     */
-    private Expression m_cflow;
+//    /**
+//     * The cflow pointcut expression - if any
+//     */
+//    private Expression m_cflow;
 
     /**
      * The advices references.
@@ -59,23 +59,23 @@ public class BindAdviceRule implements BindRule {
         m_expression = expression;
     }
 
-    /**
-     * Returns the cflow expression - if any
-     *
-     * @return the cflow expression or null
-     */
-    public Expression getCflowExpression() {
-        return m_cflow;
-    }
+//    /**
+//     * Returns the cflow expression - if any
+//     *
+//     * @return the cflow expression or null
+//     */
+//    public Expression getCflowExpression() {
+//        return null;//m_cflow;
+//    }
 
-    /**
-     * Sets the cflow expression - if any
-     *
-     * @param expression the expression
-     */
-    public void setCflowExpression(Expression expression) {
-        this.m_cflow = expression;
-    }
+//    /**
+//     * Sets the cflow expression - if any
+//     *
+//     * @param expression the expression
+//     */
+//    public void setCflowExpression(Expression expression) {
+//        this.m_cflow = expression;
+//    }
 
     /**
      * Returns a list with all the advice references.
