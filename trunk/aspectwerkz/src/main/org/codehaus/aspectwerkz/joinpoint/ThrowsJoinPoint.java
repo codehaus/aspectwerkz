@@ -32,7 +32,7 @@ import org.codehaus.aspectwerkz.util.Util;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ThrowsJoinPoint implements JoinPoint {
+public class ThrowsJoinPoint extends AbstractJoinPoint {
 
     /**
      * The AspectWerkz system for this join point.
@@ -41,6 +41,7 @@ public class ThrowsJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = 6363637170952486892L;
 

@@ -14,7 +14,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.ref.WeakReference;
 
-import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
+import org.codehaus.aspectwerkz.pointcut.SetPointcut;
 import org.codehaus.aspectwerkz.IndexTuple;
 
 /**
@@ -82,10 +82,10 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
 
-                List pointcuts = m_system.getSetFieldPointcuts(m_classMetaData, m_fieldMetaData);
+                List pointcuts = m_system.getSetPointcuts(m_classMetaData, m_fieldMetaData);
 
                 for (Iterator it = pointcuts.iterator(); it.hasNext();) {
-                    FieldPointcut fieldPointcut = (FieldPointcut)it.next();
+                    SetPointcut fieldPointcut = (SetPointcut)it.next();
 
                     IndexTuple[] preAdviceIndexes = fieldPointcut.getPreAdviceIndexes();
                     for (int j = 0; j < preAdviceIndexes.length; j++) {

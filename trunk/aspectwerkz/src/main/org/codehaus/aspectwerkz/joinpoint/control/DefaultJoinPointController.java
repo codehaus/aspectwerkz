@@ -8,9 +8,9 @@
 package org.codehaus.aspectwerkz.joinpoint.control;
 
 import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
-import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
+import org.codehaus.aspectwerkz.regexp.CompiledPatternTuple;
 import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
 import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
 import org.codehaus.aspectwerkz.attribdef.AttribDefSystem;
 
@@ -50,7 +50,7 @@ public class DefaultJoinPointController extends AbstractJoinPointController {
             // we must check if we are in the correct control flow
             boolean isInCFlow = false;
             for (Iterator it = joinPoint.getCFlowPointcuts().iterator(); it.hasNext();) {
-                PointcutPatternTuple patternTuple = (PointcutPatternTuple)it.next();
+                CompiledPatternTuple patternTuple = (CompiledPatternTuple)it.next();
                 if (joinPoint.getSystem().isInControlFlowOf(patternTuple)) {
                     isInCFlow = true;
                     break;
@@ -90,7 +90,7 @@ public class DefaultJoinPointController extends AbstractJoinPointController {
                 if (joinPoint.getSystem().isAttribDef()) {
                     AttribDefSystem system = (AttribDefSystem)joinPoint.getSystem();
 
-                    MethodPointcut methodPointcut = joinPoint.getPointcuts()[m_currentPointcutIndex];
+                    ExecutionPointcut methodPointcut = joinPoint.getPointcuts()[m_currentPointcutIndex];
                     IndexTuple index = methodPointcut.getAdviceIndex(m_currentAdviceIndex);
                     int aspectIndex = index.getAspectIndex();
                     int methodIndex = index.getMethodIndex();

@@ -28,17 +28,12 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class FieldJoinPoint implements JoinPoint {
+public abstract class FieldJoinPoint extends AbstractJoinPoint {
 
     /**
      * The AspectWerkz system for this join point.
      */
     protected transient System m_system;
-
-    /**
-     * The serial version uid for the class.
-     */
-    private static final long serialVersionUID = 3860645288055327581L;
 
     /**
      * The signature for the field.
