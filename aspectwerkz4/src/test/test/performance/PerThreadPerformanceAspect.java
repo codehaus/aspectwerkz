@@ -23,7 +23,7 @@ public class PerThreadPerformanceAspect {
     }
 
     /**
-     * @Introduce within(test.performance.PerformanceTest)
+     * @Mixin within(test.performance.PerformanceTest)
      */
     public static class PerThreadImpl implements PerThread {
         public void runPerThread() {

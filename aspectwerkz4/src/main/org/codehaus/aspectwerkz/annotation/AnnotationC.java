@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAttributeEnhan
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,7 +58,7 @@ public class AnnotationC {
     static final String[] SYSTEM_ANNOTATIONS = new String[]{
         AOPAnnotationConstants.ANNOTATION_ASPECT(), AOPAnnotationConstants.ANNOTATION_AROUND(), AOPAnnotationConstants.ANNOTATION_BEFORE(),
         AOPAnnotationConstants.ANNOTATION_AFTER(), AOPAnnotationConstants.ANNOTATION_AFTER_FINALLY(), AOPAnnotationConstants.ANNOTATION_AFTER_RETURNING(), AOPAnnotationConstants.ANNOTATION_AFTER_THROWING(),
-        AOPAnnotationConstants.ANNOTATION_EXPRESSION(), AOPAnnotationConstants.ANNOTATION_IMPLEMENTS(), AOPAnnotationConstants.ANNOTATION_INTRODUCE()
+        AOPAnnotationConstants.ANNOTATION_EXPRESSION(), AOPAnnotationConstants.ANNOTATION_IMPLEMENTS(), AOPAnnotationConstants.ANNOTATION_MIXIN()
     };
 
     /**
@@ -353,39 +354,42 @@ public class AnnotationC {
     private static void parseMixinAnnotations(final JavaClass clazz,
                                               final AnnotationManager manager,
                                               final AttributeEnhancer enhancer) {
-        final Annotation[] introduceAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_INTRODUCE(), clazz);
+        final Annotation[] introduceAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_MIXIN(), clazz);
         final String className = clazz.getFullyQualifiedName();
         for (int k = 0; k < introduceAnnotations.length; k++) {
             Annotation introduceAnnotation = introduceAnnotations[k];
-            if (introduceAnnotation != null) {
-                IntroduceAnnotationProxy introduceProxy = (IntroduceAnnotationProxy) introduceAnnotation;
-                if (introduceProxy != null) {
-                    //directly implemented interfaces
-                    JavaClass[] introducedInterfaceClasses = clazz.getImplementedInterfaces();
-                    String[] introducedInterfaceNames = new String[introducedInterfaceClasses.length];
-                    for (int j = 0; j < introducedInterfaceClasses.length; j++) {
-                        introducedInterfaceNames[j] = introducedInterfaceClasses[j].getFullyQualifiedName();
+            if (introduceAnnotation != null && introduceAnnotation instanceof Mixin) {
+                //directly implemented interfaces
+                JavaClass[] introducedInterfaceClasses = clazz.getImplementedInterfaces();
+                String[] introducedInterfaceNames = new String[introducedInterfaceClasses.length];
+                for (int j = 0; j < introducedInterfaceClasses.length; j++) {
+                    introducedInterfaceNames[j] = introducedInterfaceClasses[j].getFullyQualifiedName();
+                    logInfo("    interface introduction [" + introducedInterfaceNames[j] + ']');
+                }
+                if (introducedInterfaceNames.length == 0) {
+                    introducedInterfaceNames = enhancer.getNearestInterfacesInHierarchy(className);
+                    if (introducedInterfaceNames.length == 0) {
+                        throw new RuntimeException("no implicit interfaces found for " + className);
+                    }
+                    for (int j = 0; j < introducedInterfaceNames.length; j++) {
                         logInfo("    interface introduction [" + introducedInterfaceNames[j] + ']');
                     }
-                    if (introducedInterfaceNames.length == 0) {
-                        introducedInterfaceNames = enhancer.getNearestInterfacesInHierarchy(className);
-                        if (introducedInterfaceNames.length == 0) {
-                            throw new RuntimeException("no implicit interfaces found for " + className);
-                        }
-                        for (int j = 0; j < introducedInterfaceNames.length; j++) {
-                            logInfo("    interface introduction [" + introducedInterfaceNames[j] + ']');
-                        }
-                    }
-                    introduceProxy.setIntroducedInterfaces(introducedInterfaceNames);
-                    introduceProxy.setInnerClassName(className);
-                    logInfo(
-                            "    mixin introduction [" + clazz.getFullyQualifiedName()
-                            + " :: " + introduceProxy.expression() +
-                            "] deployment model ["
-                            + introduceProxy.deploymentModel() + ']'
-                    );
-                    enhancer.insertClassAttribute(new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_INTRODUCE(), introduceProxy));
                 }
+                String deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_JVM);
+                if (((Mixin)introduceAnnotation).deploymentModel() != null) {
+                    deploymentModel = ((Mixin)introduceAnnotation).deploymentModel();
+                }
+                String expression = ((Mixin)introduceAnnotation).expression();
+                if (expression == null) {
+                    expression = ((Mixin)introduceAnnotation).value();
+                }
+                logInfo(
+                        "    mixin introduction [" + clazz.getFullyQualifiedName()
+                        + " :: " + expression +
+                        "] deployment model ["
+                        + deploymentModel + ']'
+                );
+                enhancer.insertClassAttribute(new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_MIXIN(), introduceAnnotation));
             }
         }
     }
@@ -478,7 +482,7 @@ public class AnnotationC {
                 enhancer.insertMethodAttribute(method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER_RETURNING(), afterAnnotation));
                 logInfo(
                         "    after returning advice [" + AnnotationC.getShortCallSignature(method) + " :: "
-                        + AspectAnnotationParser.getAfterXXExpression(((AfterReturning) afterAnnotation).value(),
+                        + AspectAnnotationParser.getExpressionElseValue(((AfterReturning) afterAnnotation).value(),
                                                                       ((AfterReturning) afterAnnotation).expression())
                         + " :: " + ((AfterReturning) afterAnnotation).type()+ ']'
                 );
@@ -491,7 +495,7 @@ public class AnnotationC {
                 enhancer.insertMethodAttribute(method, new AnnotationInfo(AOPAnnotationConstants.ANNOTATION_AFTER_THROWING(), afterAnnotation));
                 logInfo(
                         "    after throwing advice [" + AnnotationC.getShortCallSignature(method) + " :: "
-                        + AspectAnnotationParser.getAfterXXExpression(((AfterThrowing) afterAnnotation).value(),
+                        + AspectAnnotationParser.getExpressionElseValue(((AfterThrowing) afterAnnotation).value(),
                                                                       ((AfterThrowing) afterAnnotation).expression())
                         + " :: " + ((AfterThrowing) afterAnnotation).type()+ ']'
                 );
@@ -576,17 +580,16 @@ public class AnnotationC {
         Annotation[] implementsAnnotations = manager.getAnnotations(AOPAnnotationConstants.ANNOTATION_IMPLEMENTS(), field);
         for (int i = 0; i < implementsAnnotations.length; i++) {
             Annotation implementsAnnotation = implementsAnnotations[i];
-            if (implementsAnnotation != null) {
-                ImplementsAnnotationProxy implementsProxy = (ImplementsAnnotationProxy) implementsAnnotation;
+            if (implementsAnnotation != null && implementsAnnotation instanceof Implements) {
                 enhancer.insertFieldAttribute(
                         field, new AnnotationInfo(
                                 AOPAnnotationConstants.ANNOTATION_IMPLEMENTS(),
-                                implementsProxy
+                                implementsAnnotation
                         )
                 );
                 logInfo(
                         "    interface introduction [" + field.getName() + " :: "
-                        + implementsProxy.expression() + ']'
+                        + ((Implements)implementsAnnotation).value() + ']'
                 );
             }
         }
@@ -641,9 +644,8 @@ public class AnnotationC {
         manager.registerAnnotationProxy(AfterThrowing.class, AOPAnnotationConstants.ANNOTATION_AFTER_THROWING());
         manager.registerAnnotationProxy(AfterFinally.class, AOPAnnotationConstants.ANNOTATION_AFTER_FINALLY());
         manager.registerAnnotationProxy(Expression.class, AOPAnnotationConstants.ANNOTATION_EXPRESSION());
-        //FIXME change those ones as well
-        manager.registerAnnotationProxy(ImplementsAnnotationProxy.class, AOPAnnotationConstants.ANNOTATION_IMPLEMENTS());
-        manager.registerAnnotationProxy(IntroduceAnnotationProxy.class, AOPAnnotationConstants.ANNOTATION_INTRODUCE());
+        manager.registerAnnotationProxy(Implements.class, AOPAnnotationConstants.ANNOTATION_IMPLEMENTS());
+        manager.registerAnnotationProxy(Mixin.class, AOPAnnotationConstants.ANNOTATION_MIXIN());
     }
 
     /**

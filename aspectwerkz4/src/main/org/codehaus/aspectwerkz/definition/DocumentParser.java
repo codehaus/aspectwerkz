@@ -440,9 +440,7 @@ public class DocumentParser {
             // XML definition settings always overrides attribute definition settings
             mixinDefinition.setDeploymentModel(deploymentModel);
             mixinDefinition.setFactoryClassName(factoryClassName);
-            if (isTransient) {
-                mixinDefinition.setTransient(true);
-            }
+            mixinDefinition.setTransient(isTransient);
         }
     }
 

@@ -59,7 +59,7 @@ public class PerJVMPerformanceAspect {
     }
 
     /**
-     * @Introduce within(test.performance.PerformanceTest)
+     * @Mixin within(test.performance.PerformanceTest)
      */
     public static class PerJVMImpl implements PerJVM {
         public void runPerJVM() {

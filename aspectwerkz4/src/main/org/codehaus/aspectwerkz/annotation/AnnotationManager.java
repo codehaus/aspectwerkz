@@ -222,85 +222,161 @@ public class AnnotationManager {
      * @return RawAnnotation or null if not found
      */
     private RawAnnotation getRawAnnotation(String annotationName, DocletTag tag) {
-        String tagName = tag.getName().trim();
-        boolean untypedStyle = false;
+        String asIs = tag.getName() + " " + tag.getValue();
+        asIs = asIs.trim();
+        Strings.removeFormattingCharacters(asIs);
 
-        // early filtering
-        if (!tagName.startsWith(annotationName)) {
+        // filter out if annotationName cannot be found
+        if (!asIs.startsWith(annotationName)) {
             return null;
         }
 
-        // check first for untyped annotations
-        if (m_registeredAnnotations.containsKey(annotationName)) {
-            Class proxyClass = (Class) m_registeredAnnotations.get(annotationName);
-            if (UntypedAnnotationProxy.class.isAssignableFrom(proxyClass)) {
-                // we do have an untyped annotation
-                // does it match
-                if (tagName.equals(annotationName)) {
-                    RawAnnotation rawAnnotation = new RawAnnotation();
-                    rawAnnotation.name = annotationName;
-                    rawAnnotation.value = Strings.removeFormattingCharacters(tag.getValue().trim());
-                    return rawAnnotation;
-                } else {
-                    // go on, we will need to parse the doclet
-                    ;
-                }
-            }
-        }
+        String name = null;
+        String value = null;
 
-        // handles case where there is no space between the @Annotation and the annotation values (x=1)
-        // In such a case Qdox, see one single annotation whose name is the first part up to the first space
-        // character
-        String rawValue = null;
-        if (tagName.indexOf('(') > 0) {//@Void(), @Do(x = 3), @Do(x=3)
-            untypedStyle = false;
-            rawValue = tagName.substring(tagName.indexOf('(') + 1).trim();//), x, x=3)
-            tagName = tagName.substring(0, tagName.indexOf('(')).trim();//Void, Do
-            if (rawValue.endsWith(")")) {
-                if (rawValue.length() > 1) {
-                    rawValue = rawValue.substring(0, rawValue.length() - 1);
-                } else {
-                    rawValue = null;
-                }
+        // try untyped split
+        if (asIs.indexOf(' ') > 0) {
+            name = asIs.substring(0, asIs.indexOf(' '));
+        }
+        if (annotationName.equals(name)) {
+            // untyped
+            value = asIs.substring(asIs.indexOf(' ')+1, asIs.length());
+            if (!value.startsWith("\"") && !value.endsWith("\"")) {
+                //value = "\""+value+"\"";
             }
         } else {
-            untypedStyle = true;
-        }
-        String rawEndValue = Strings.removeFormattingCharacters(tag.getValue().trim());
-        if (rawEndValue.endsWith(")")) {
-            if (rawEndValue.length() > 1) {
-                if (!untypedStyle) {
-                    rawEndValue = rawEndValue.substring(0, rawEndValue.length() - 1);
-                } else {
-                    ;//rawEndValue unchanged
+            // try typed split
+            if (asIs.indexOf('(') > 0) {
+                name = asIs.substring(0, asIs.indexOf('('));
+            }
+            if (annotationName.equals(name)) {
+                value = asIs.substring(asIs.indexOf('(')+1, asIs.length());
+                if (value.endsWith(")")) {
+                    if (value.length() > 1) {
+                        value = value.substring(0, value.length()-1);
+                        if (value.startsWith("\"") && value.endsWith("\"")) {
+                            if (value.length() > 2) {
+                                value = value.substring(1, value.length()-1);
+                            }
+                        }
+                    } else {
+                        value = "";
+                    }
                 }
-            } else {
-                rawEndValue = null;
+            } else if (annotationName.equals(asIs)) {
+                value = "";
             }
         }
-        StringBuffer raw = new StringBuffer();
-        if (rawValue != null) {
-            raw.append(rawValue);
-        }
-        if (rawEndValue != null) {
-            raw.append(' ').append(rawEndValue);
-        }
 
-        // exact filtering
-        if (tagName.equals(annotationName) && m_registeredAnnotations.containsKey(tagName)) {
-            RawAnnotation rawAnnotation = new RawAnnotation();
-            rawAnnotation.name = annotationName;
-            rawAnnotation.value = raw.toString().trim();
-            //remove " chars
-            if (rawAnnotation.value.startsWith("\"") && rawAnnotation.value.endsWith("\"")) {
-                rawAnnotation.value = rawAnnotation.value.substring(1, rawAnnotation.value.length()-1);
-            }
-
-            return rawAnnotation;
+        // found one
+        if (value != null) {
+            RawAnnotation annotation = new RawAnnotation();
+            annotation.name = annotationName;
+            annotation.value = value;
+            return annotation;
+        } else {
+            return null;
         }
-
-        // no match
-        return null;
+//
+//        // untyped annotation
+//        if (asIs.startsWith(annotationName + " ")) {
+//            // untyped
+//
+//        } else if (asIs.startsWith(annotationName + "(")) {
+//            // typed
+//
+//        } else if (asIs.trim().endsWith(")")) {
+//            // assumed typed
+//        }
+//
+//        //@Foo ddd  ==> "ddd"
+//        //@Foo(dd)
+//
+//
+//        String tagName = tag.getName().trim();
+//
+//        if (! tag.getName().equals("author")) {
+//            System.out.println(tag.getName());
+//            System.out.println(tag.getValue());
+//        }
+//        boolean untypedStyle = false;
+//
+//        // early filtering
+//        if (!tagName.startsWith(annotationName)) {
+//            return null;
+//        }
+//
+//        // check first for untyped annotations
+//        if (m_registeredAnnotations.containsKey(annotationName)) {
+//            Class proxyClass = (Class) m_registeredAnnotations.get(annotationName);
+//            if (UntypedAnnotationProxy.class.isAssignableFrom(proxyClass)) {
+//                // we do have an untyped annotation
+//                // does it match
+//                if (tagName.equals(annotationName)) {
+//                    RawAnnotation rawAnnotation = new RawAnnotation();
+//                    rawAnnotation.name = annotationName;
+//                    rawAnnotation.value = Strings.removeFormattingCharacters(tag.getValue().trim());
+//                    return rawAnnotation;
+//                } else {
+//                    // go on, we will need to parse the doclet
+//                    ;
+//                }
+//            }
+//        }
+//
+//        // handles case where there is no space between the @Annotation and the annotation values (x=1)
+//        // In such a case Qdox, see one single annotation whose name is the first part up to the first space
+//        // character
+//        String rawValue = null;
+//        if (tagName.indexOf('(') > 0) {//@Void(), @Do(x = 3), @Do(x=3)
+//            untypedStyle = false;
+//            rawValue = tagName.substring(tagName.indexOf('(') + 1).trim();//), x, x=3)
+//            tagName = tagName.substring(0, tagName.indexOf('(')).trim();//Void, Do
+//            if (rawValue.endsWith(")")) {
+//                if (rawValue.length() > 1) {
+//                    rawValue = rawValue.substring(0, rawValue.length() - 1);
+//                } else {
+//                    rawValue = null;
+//                }
+//            }
+//        } else {
+//            untypedStyle = true;
+//        }
+//        String rawEndValue = Strings.removeFormattingCharacters(tag.getValue().trim());
+//        if (rawEndValue.endsWith(")")) {
+//            if (rawEndValue.length() > 1) {
+//                if (!untypedStyle) {
+//                    rawEndValue = rawEndValue.substring(0, rawEndValue.length() - 1);
+//                } else {
+//                    ;//rawEndValue unchanged
+//                }
+//            } else {
+//                rawEndValue = null;
+//            }
+//        }
+//        StringBuffer raw = new StringBuffer();
+//        if (rawValue != null) {
+//            raw.append(rawValue);
+//        }
+//        if (rawEndValue != null) {
+//            raw.append(' ').append(rawEndValue);
+//        }
+//
+//        // exact filtering
+//        if (tagName.equals(annotationName) && m_registeredAnnotations.containsKey(tagName)) {
+//            RawAnnotation rawAnnotation = new RawAnnotation();
+//            rawAnnotation.name = annotationName;
+//            rawAnnotation.value = raw.toString().trim();
+//            //remove " chars
+//            if (rawAnnotation.value.startsWith("\"") && rawAnnotation.value.endsWith("\"")) {
+//                rawAnnotation.value = rawAnnotation.value.substring(1, rawAnnotation.value.length()-1);
+//            }
+//
+//            return rawAnnotation;
+//        }
+//
+//        // no match
+//        return null;
     }
 
     /**
