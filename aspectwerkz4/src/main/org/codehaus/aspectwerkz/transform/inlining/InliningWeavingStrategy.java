@@ -125,11 +125,11 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             List catchLabels = new ArrayList();
             if (!filterForHandler) {
                 final ClassReader crLookahead2 = new ClassReader(bytecode);
-                final ClassWriter cw2 =  AsmHelper.newClassWriter(true);
+                final ClassWriter cw2 = AsmHelper.newClassWriter(true);
 
                 HandlerVisitor.LookaheadCatchLabelsClassAdapter lookForCatches =
                         new HandlerVisitor.LookaheadCatchLabelsClassAdapter(
-                            cw2, loader, classInfo, context, catchLabels
+                                cw2, loader, classInfo, context, catchLabels
                         );
                 // we must visit exactly as we will do further on with debug info (that produces extra labels)
                 crLookahead2.accept(lookForCatches, Attributes.getDefaultAttributes(), false);

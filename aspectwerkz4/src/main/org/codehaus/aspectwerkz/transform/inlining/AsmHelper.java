@@ -100,6 +100,27 @@ public class AsmHelper implements TransformationConstants {
      *
      * @param dumpDir
      * @param className
+     * @param bytes
+     * @throws java.io.IOException
+     */
+    public static void dumpClass(final String dumpDir, final String className, final byte[] bytes)
+            throws IOException {
+        File dir = new File(dumpDir + File.separator + className.substring(0, className.lastIndexOf('/')));
+        dir.mkdirs();
+        String fileName = dumpDir + File.separator + className + ".class";
+        if (AspectWerkzPreProcessor.VERBOSE) {
+            System.out.println("AW INFO: dumping class " + className + " to " + dumpDir);
+        }
+        FileOutputStream os = new FileOutputStream(fileName);
+        os.write(bytes);
+        os.close();
+    }
+
+    /**
+     * Dumps an ASM class to disk.
+     *
+     * @param dumpDir
+     * @param className
      * @param cw
      * @throws java.io.IOException
      */

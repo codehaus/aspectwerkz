@@ -537,7 +537,7 @@
             <classpath>
                 <path refid="project.class.path"/>
                 <pathelement path="${samples.classes}"/>
-                <pathelement path="${src.dir}/samplesp"/>
+                <pathelement path="${src.dir}/samples"/>
             </classpath>
         </java>
     </target>
