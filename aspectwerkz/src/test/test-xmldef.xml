@@ -19,6 +19,7 @@
             <introduction-def name="introductionReplacement" interface="Introductions" implementation="IntroductionsImpl" deployment-model="perJVM"/>
         </package>
         <introduction-def name="serializable" interface="java.io.Serializable"/>
+        <introduction-def name="clonable" interface="java.lang.Clonable"/>
 
         <!-- ============================================= -->
         <!--  Define the advices                           -->
@@ -361,6 +362,7 @@
                     <introduction-ref name="serializable"/>
                     <introduction-ref name="introductions"/>
                 </bind-introduction>
+                <bind-introduction introduction-ref="clonable" class="ToBeIntroduced"/><!-- AW-105 -->
             </aspect>
         </package>
 
@@ -659,9 +661,7 @@
             <bind-advice pointcut="pcGet">
                 <advice-ref name="postStaticField"/>
             </bind-advice>
-            <bind-advice pointcut="pcGetMember">
-                <advice-ref name="postMemberField"/>
-            </bind-advice>
+            <bind-advice advice-ref="postMemberField" pointcut="pcGetMember"/><!-- AW-105 -->
         </aspect>
 
         <advice-def name="memUsage" class="test.xmldef.memusage.MyAroundAdvice"/>
