@@ -29,6 +29,12 @@
                 <value>theMethodExecutionGetTargetAndArgsAroundAdvisor2</value>
             </list>
         </property>
+        <property name="frozen">
+            <value>true</value>
+        </property>
+        <property name="optimize">
+            <value>true</value>
+        </property>
     </bean>
 
     <bean id="executionImpl" class="awbench.method.Execution"/>
@@ -210,3 +216,4 @@
     <bean id="theMethodExecutionAfterThrowingAdvice" class="awbench.spring.MethodExecutionAfterThrowingAdvice"/>
     <bean id="theMethodExecutionGetTargetAndArgsAroundAdvice" class="awbench.spring.MethodExecutionGetTargetAndArgsAroundAdvice"/>
 </beans>
+
