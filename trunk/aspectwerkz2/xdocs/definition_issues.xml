@@ -781,7 +781,8 @@ SystemLoader.getSystem("system name")
         <section name="Custom metadata compilation">
             <p>
                 Custom metadata compilation allows to turn
-                <code>@Attribute.&lt;name&gt; [&lt;value&gt;]</code> from source files to
+                <code>@AW.&lt;name&gt; [&lt;value&gt;]</code> or <code>@Attribute.&lt;name&gt; [&lt;value&gt;]</code>
+                from source files to
                 <code>.class</code> files by incorporating
                 them into bytecode. This can be used f.e. to implement declarative transaction demarcation for POJO.
             </p>

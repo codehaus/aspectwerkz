@@ -563,7 +563,8 @@ public class JitCompiler {
             final IndexTuple[] afterAdvice) {
 
         CodeVisitor cv = cw.visitMethod(
-                Constants.ACC_PUBLIC, PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE,
+                Constants.ACC_PUBLIC | Constants.ACC_FINAL,
+                PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE,
                 new String[]{THROWABLE_CLASS_NAME}, null
         );
 

@@ -89,7 +89,7 @@ public class JoinPointManager {
      * @param uuid
      * @return the join point manager instance for this class
      */
-    public static JoinPointManager getJoinPointManager(final Class targetClass, final String uuid) {
+    public final static JoinPointManager getJoinPointManager(final Class targetClass, final String uuid) {
         if (s_managers.containsKey(targetClass)) {
             return (JoinPointManager)s_managers.get(targetClass);
         }
@@ -143,7 +143,7 @@ public class JoinPointManager {
      * @return
      * @throws Throwable
      */
-    public Object proceedWithExecutionJoinPoint(
+    public final Object proceedWithExecutionJoinPoint(
             final int methodHash,
             final int joinPointIndex,
             final Object[] parameters,
@@ -240,7 +240,7 @@ public class JoinPointManager {
      * @return the result from the method invocation
      * @throws Throwable
      */
-    public Object proceedWithCallJoinPoint(
+    public final Object proceedWithCallJoinPoint(
             final int methodHash,
             final int joinPointIndex,
             final Object[] parameters,
@@ -318,7 +318,7 @@ public class JoinPointManager {
         if (parameters != null) {
             ((CodeSignature)joinPoint.getSignature()).setParameterValues(parameters);
         }
-        
+
         return ((JoinPointBase)joinPoint).proceed();
     }
 
@@ -334,7 +334,7 @@ public class JoinPointManager {
      * @param fieldSignature
      * @throws Throwable
      */
-    public void proceedWithSetJoinPoint(
+    public final void proceedWithSetJoinPoint(
             final int fieldHash,
             final int joinPointIndex,
             final Object[] fieldValue,
@@ -417,7 +417,7 @@ public class JoinPointManager {
      * @param fieldSignature
      * @throws Throwable
      */
-    public Object proceedWithGetJoinPoint(
+    public final Object proceedWithGetJoinPoint(
             final int fieldHash,
             final int joinPointIndex,
             final Object targetInstance,
@@ -497,7 +497,7 @@ public class JoinPointManager {
      * @param handlerSignature
      * @throws Throwable
      */
-    public void proceedWithHandlerJoinPoint(
+    public final void proceedWithHandlerJoinPoint(
             final int handlerHash,
             final int joinPointIndex,
             final Object exceptionInstance,
@@ -580,7 +580,7 @@ public class JoinPointManager {
      * @param declaringClass
      * @param targetClass
      */
-    private void handleJitCompilation(
+    private final void handleJitCompilation(
             final int joinPointHash,
             final int joinPointType,
             final PointcutType pointcutType,
@@ -613,7 +613,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    private MethodJoinPoint createMethodJoinPoint(
+    private final MethodJoinPoint createMethodJoinPoint(
             final int methodHash,
             final int joinPointType,
             final Class declaringClass,
@@ -646,7 +646,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    private JoinPoint createConstructorJoinPoint(
+    private final JoinPoint createConstructorJoinPoint(
             final int constructorHash,
             final int joinPointType,
             final Class declaringClass,
@@ -681,7 +681,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    private JoinPoint createFieldJoinPoint(
+    private final JoinPoint createFieldJoinPoint(
             final int fieldHash,
             final String fieldSignature,
             final int joinPointType,
@@ -714,7 +714,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    private JoinPoint createCatchClauseJoinPoint(
+    private final JoinPoint createCatchClauseJoinPoint(
             final Class exceptionClass,
             final Class declaringClass,
             final String catchClauseSignature,
@@ -740,7 +740,7 @@ public class JoinPointManager {
      * @param joinPointType
      * @return the advice executor
      */
-    private AroundAdviceExecutor createAroundAdviceExecutor(
+    private final AroundAdviceExecutor createAroundAdviceExecutor(
             final AdviceContainer[] adviceIndexes,
             final int joinPointType) {
         return new AroundAdviceExecutor(extractAroundAdvice(adviceIndexes), m_system, joinPointType);
@@ -752,7 +752,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return the advice executor
      */
-    private BeforeAdviceExecutor createBeforeAdviceExecutor(final AdviceContainer[] adviceIndexes) {
+    private final BeforeAdviceExecutor createBeforeAdviceExecutor(final AdviceContainer[] adviceIndexes) {
         return new BeforeAdviceExecutor(extractBeforeAdvice(adviceIndexes), m_system);
     }
 
@@ -762,7 +762,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return the advice executor
      */
-    private AfterAdviceExecutor createAfterAdviceExecutor(final AdviceContainer[] adviceIndexes) {
+    private final AfterAdviceExecutor createAfterAdviceExecutor(final AdviceContainer[] adviceIndexes) {
         return new AfterAdviceExecutor(extractAfterAdvice(adviceIndexes), m_system);
     }
 
@@ -772,7 +772,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    static IndexTuple[] extractAroundAdvice(final AdviceContainer[] adviceIndexes) {
+    final static IndexTuple[] extractAroundAdvice(final AdviceContainer[] adviceIndexes) {
         int i, j;
         List aroundAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
@@ -796,7 +796,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    static IndexTuple[] extractBeforeAdvice(final AdviceContainer[] adviceIndexes) {
+    final static IndexTuple[] extractBeforeAdvice(final AdviceContainer[] adviceIndexes) {
         int i, j;
         List beforeAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
@@ -820,7 +820,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    static IndexTuple[] extractAfterAdvice(final AdviceContainer[] adviceIndexes) {
+    final static IndexTuple[] extractAfterAdvice(final AdviceContainer[] adviceIndexes) {
         int i, j;
         List afterAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
