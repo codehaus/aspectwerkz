@@ -5,6 +5,7 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
+
 package org.codehaus.aspectwerkz.reflect;
 
 import java.util.HashMap;
@@ -13,6 +14,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
+ * A repository for the class info hierarchy. Is class loader aware.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class ClassInfoRepository {
@@ -31,6 +34,11 @@ public class ClassInfoRepository {
      */
     private final ClassLoader m_loader;
 
+    /**
+     * Creates a new repository.
+     *
+     * @param loader
+     */
     private ClassInfoRepository(final ClassLoader loader) {
         m_loader = loader;
     }
@@ -46,9 +54,7 @@ public class ClassInfoRepository {
             return (ClassInfoRepository)s_repositories.get(loader);
         } else {
             ClassInfoRepository repository = new ClassInfoRepository(loader);
-
             s_repositories.put(loader, repository);
-
             return repository;
         }
     }
@@ -61,23 +67,31 @@ public class ClassInfoRepository {
     public static void removeClassInfoFromAllClassLoaders(final String className) {
         for (Iterator it = s_repositories.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
-
-            if (((String)entry.getKey()).equals(className)) {
+            if (entry.getKey().equals(className)) {
                 s_repositories.remove(className);
             }
         }
     }
 
+    /**
+     * Returns the class info.
+     *
+     * @param className
+     * @return
+     */
     public ClassInfo getClassInfo(final String className) {
         ClassInfo info = (ClassInfo)m_repository.get(className);
-
         if (info == null) {
             return checkParentClassRepository(className, m_loader);
         }
-
         return (ClassInfo)m_repository.get(className);
     }
 
+    /**
+     * Adds a new class info.
+     *
+     * @param classInfo
+     */
     public void addClassInfo(final ClassInfo classInfo) {
         // is the class loaded by a class loader higher up in the hierarchy?
         if (checkParentClassRepository(classInfo.getName(), m_loader) == null) {
@@ -87,23 +101,33 @@ public class ClassInfoRepository {
         }
     }
 
+    /**
+     * Checks if the class info for a specific class exists.
+     *
+     * @param name
+     * @return
+     */
     public boolean hasClassInfo(final String name) {
         return m_repository.containsKey(name);
     }
 
+    /**
+     * Searches for a class info up in the class loader hierarchy.
+     * 
+     * @param className
+     * @param loader
+     * @return
+     */
     private ClassInfo checkParentClassRepository(final String className, final ClassLoader loader) {
         if (loader == null) {
             return null;
         }
-
-        ClassInfo info = null;
+        ClassInfo info;
         ClassLoader parent = loader.getParent();
-
         if (parent == null) {
             return null;
         } else {
             info = ClassInfoRepository.getRepository(parent).getClassInfo(className);
-
             if (info != null) {
                 return info;
             } else {

@@ -13,9 +13,8 @@ import org.codehaus.aspectwerkz.expression.ast.ASTCflowBelow;
 import org.codehaus.aspectwerkz.expression.ast.ASTOr;
 import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
 import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
-
-import java.io.Serializable;
 import java.io.ObjectInputStream;
+import java.io.Serializable;
 
 /**
  * The Cflow visitor.

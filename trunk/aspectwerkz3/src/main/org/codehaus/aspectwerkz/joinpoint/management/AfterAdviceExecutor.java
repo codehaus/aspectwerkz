@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.IndexTuple;
-
 import java.io.Serializable;
 
 /**

@@ -39,7 +39,8 @@ public class ExpressionInfo {
             m_expression = new ExpressionVisitor(expression, namespace, root);
             m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(expression, namespace, root);
             m_cflowExpression = new CflowExpressionVisitor(expression, namespace, root);
-            m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(expression, namespace, root);
+            m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(expression, namespace,
+                                                                                               root);
             m_hasCflowPointcut = new CflowPointcutFinderVisitor(expression, namespace, root).hasCflowPointcut();
         } catch (Throwable e) {
             throw new DefinitionException("expression is not well-formed [" + expression + "]: ", e);

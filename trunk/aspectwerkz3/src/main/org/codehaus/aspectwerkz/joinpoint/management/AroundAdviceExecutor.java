@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.IndexTuple;
-
 import java.io.Serializable;
 
 /**
@@ -60,14 +59,12 @@ public class AroundAdviceExecutor implements Serializable {
             return JoinPointBase.invokeJoinPoint(joinPoint, m_joinPointType);
         }
         m_stackIndex++;
-
         try {
             if (m_stackIndex == 0) {
                 if (joinPoint.m_beforeAdviceExecutor.hasAdvices()) {
                     joinPoint.m_beforeAdviceExecutor.proceed(joinPoint);
                 }
             }
-
             Object result = null;
             if (m_currentAdviceIndex == (m_adviceIndexes.length - 1)) {
                 m_currentAdviceIndex = -1;
@@ -105,5 +102,15 @@ public class AroundAdviceExecutor implements Serializable {
      */
     public boolean hasAdvices() {
         return m_adviceIndexes.length != 0;
+    }
+
+  /**
+     * Resets the executor.
+     * <p/>
+     * Will restart the execution chain of advice.
+     */
+    public void reset() {
+        m_currentAdviceIndex = -1;
+        m_stackIndex = -1;
     }
 }

@@ -12,7 +12,6 @@ import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
 import java.util.List;
-import java.io.ObjectInputStream;
 
 /**
  * Abstraction of a method join point.
@@ -20,7 +19,6 @@ import java.io.ObjectInputStream;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 class MethodJoinPoint extends JoinPointBase {
-
     private MethodSignature m_signature;
     private MethodRttiImpl m_rtti;
 
@@ -56,9 +54,7 @@ class MethodJoinPoint extends JoinPointBase {
      */
     public Object proceed() throws Throwable {
         Object result = m_aroundAdviceExecutor.proceed(this);
-
         m_rtti.setReturnValue(result);
-
         return result;
     }
 
@@ -90,15 +86,15 @@ class MethodJoinPoint extends JoinPointBase {
         return super.toString();
     }
 
-//    /**
-//     * Provides custom deserialization.
-//     *
-//     * @param stream the object input stream containing the serialized object
-//     * @throws Exception in case of failure
-//     */
-//    private void readObject(final ObjectInputStream stream) throws Exception {
-//        ObjectInputStream.GetField fields = stream.readFields();
-//        m_rtti = (MethodRttiImpl)fields.get("m_rtti", null);
-//        m_signature = (MethodSignature)fields.get("m_signature", null);
-//    }
+    //    /**
+    //     * Provides custom deserialization.
+    //     *
+    //     * @param stream the object input stream containing the serialized object
+    //     * @throws Exception in case of failure
+    //     */
+    //    private void readObject(final ObjectInputStream stream) throws Exception {
+    //        ObjectInputStream.GetField fields = stream.readFields();
+    //        m_rtti = (MethodRttiImpl)fields.get("m_rtti", null);
+    //        m_signature = (MethodSignature)fields.get("m_signature", null);
+    //    }
 }
