@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractClassInstrumentationTest.java,v 1.1.2.1 2003-07-17 21:00:01 avasseur Exp $
+ * @version $Id: AbstractClassInstrumentationTest.java,v 1.1.2.2 2003-07-22 16:20:11 avasseur Exp $
  */
 public class AbstractClassInstrumentationTest extends TestCase {
 

@@ -20,7 +20,7 @@ package test;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractTarget.java,v 1.1.2.1 2003-07-17 21:00:01 avasseur Exp $
+ * @version $Id: AbstractTarget.java,v 1.1.2.2 2003-07-22 16:20:11 avasseur Exp $
  */
 public abstract class AbstractTarget {
     public String method1() {

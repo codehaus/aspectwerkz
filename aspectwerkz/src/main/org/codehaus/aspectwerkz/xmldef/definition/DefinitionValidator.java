@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * TODO: Check pattern expressions syntax 
  * 
  * @author <a href="mailto:carlos@bluebox.com.br">Carlos Villela</a>
- * @version $Id: DefinitionValidator.java,v 1.1.2.1 2003-07-20 10:38:36 avasseur Exp $
+ * @version $Id: DefinitionValidator.java,v 1.1.2.2 2003-07-22 16:20:08 avasseur Exp $
  */
 public class DefinitionValidator {
 

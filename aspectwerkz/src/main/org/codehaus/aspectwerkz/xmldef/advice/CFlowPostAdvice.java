@@ -33,7 +33,7 @@ import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
  * Registers the join point as the end of a control flow (cflow) in the AspectWerkz system.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CFlowPostAdvice.java,v 1.1 2003-07-22 14:14:21 jboner Exp $
+ * @version $Id: CFlowPostAdvice.java,v 1.1.2.1 2003-07-22 16:20:08 avasseur Exp $
  */
 public class CFlowPostAdvice extends PostAdvice {
 
