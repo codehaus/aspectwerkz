@@ -20,7 +20,7 @@ import java.security.ProtectionDomain;
  * implementation of the class preprocessor (AspectWerkz layer 2) can be in standard system classpath (-cp).
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: ClassPreProcessorHelper.java,v 1.1.2.1 2003-07-16 08:09:54 avasseur Exp $
+ * @version $Id: ClassPreProcessorHelper.java,v 1.1.2.2 2003-07-19 12:06:20 avasseur Exp $
  */
 public class ClassPreProcessorHelper {
 
@@ -90,7 +90,7 @@ public class ClassPreProcessorHelper {
                 abyte = preProcessor.preProcess(name, abyte, caller);
                 return abyte;
             } catch (Throwable throwable) {
-                System.err.println("AspectWerkz - WARN - Error pre-processing class " + name);
+                System.err.println("AspectWerkz - WARN - Error pre-processing class " + name + " in " + Thread.currentThread());
                 throwable.printStackTrace();
                 byte[] abyte = new byte[len];
                 System.arraycopy(b, off, abyte, 0, len);
