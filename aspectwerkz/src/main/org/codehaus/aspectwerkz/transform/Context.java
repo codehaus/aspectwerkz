@@ -11,15 +11,9 @@ import org.apache.bcel.util.Repository;
 import org.apache.bcel.util.ClassLoaderRepository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ClassGen;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.WeakHashMap;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.List;
 
 /**
  * Transformation context.
@@ -158,13 +152,14 @@ public class Context {
     }
 
     /**
-     * Returns the JavaClass corresponding to the ClassGen
-     * Set its repository based on the context class loader
+     * Returns the JavaClass corresponding to the ClassGen.
+     * Set its repository based on the context class loader.
+     *
      * @param cg the ClassGen
      * @return JavaClass
      */
     public JavaClass getJavaClass(final ClassGen cg) {
-        JavaClass jc = cg.getJavaClass();
+        final JavaClass jc = cg.getJavaClass();
         jc.setRepository(m_repository);
         return jc;
     }

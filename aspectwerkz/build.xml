@@ -37,8 +37,8 @@
         <property name="lib.dir" value="${basedir}/lib"/>
         <property name="dist.dir" value="${basedir}/dist"/>
         <property name="config.dir" value="${basedir}/config"/>
-<!--        <property name="build.compiler.emacs" value="true"/>-->
-<!--        <property name="build.compiler" value="jikes"/>-->
+        <!--        <property name="build.compiler.emacs" value="true"/>-->
+        <!--        <property name="build.compiler" value="jikes"/>-->
         <property name="javac.debug" value="on"/>
         <property name="javac.deprecation" value="on"/>
         <property name="javac.optimize" value="on"/>
@@ -55,10 +55,14 @@
         </condition>
         <!-- os specific -->
         <condition property="pathseparator" value=":">
-            <not><os family="dos"/></not>
+            <not>
+                <os family="dos"/>
+            </not>
         </condition>
         <condition property="executableSuffix" value="">
-            <not><os family="dos"/></not>
+            <not>
+                <os family="dos"/>
+            </not>
         </condition>
         <property name="target.dir" value="${basedir}/target"/>
         <property name="lib.dir" value="${basedir}/lib"/>
@@ -215,24 +219,24 @@
     </target>
 
     <!-- =================================================== -->
-     <!--  multithreaded custom classloader tests -->
-     <!--  thread number and loops can be passed as argument -->
-     <!--  refer to test.clapp javadoc -->
-     <!-- =================================================== -->
-     <target name="aspectwerkz:test:clapp"
-         depends="aspectwerkz:init, aspectwerkz:compile">
-         <!-- run the application in regular mode -->
-         <java classname="test.clapp.CrazyClassLoaderApp" fork="true">
-             <classpath>
-                 <pathelement path="${test.classes}"/>
-             </classpath>
-             <jvmarg value="-DDummyClass=${test.classes}"/>
-         </java>
-         <!-- run the application thru AspectWerkz -->
-         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" >
-             <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp"/>
-         </exec>
-     </target>
+    <!--  multithreaded custom classloader tests -->
+    <!--  thread number and loops can be passed as argument -->
+    <!--  refer to test.clapp javadoc -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:test:clapp"
+        depends="aspectwerkz:init, aspectwerkz:compile">
+        <!-- run the application in regular mode -->
+        <java classname="test.clapp.CrazyClassLoaderApp" fork="true">
+            <classpath>
+                <pathelement path="${test.classes}"/>
+            </classpath>
+            <jvmarg value="-DDummyClass=${test.classes}"/>
+        </java>
+        <!-- run the application thru AspectWerkz -->
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp"/>
+        </exec>
+    </target>
 
     <!-- =================================================== -->
     <!--  JDWP interactive Plug -->
@@ -302,22 +306,22 @@
     <!-- =================================================== -->
     <!--  runs the transparent persistence test -->
     <!-- =================================================== -->
-    <!--    <target name="aspectwerkz:samples:transparentpersistence"-->
-    <!--        depends="aspectwerkz:init, aspectwerkz:attributes:extensions">-->
-    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
-    <!--            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml examples.transparentpersistence.Client"/>-->
-    <!--        </exec>-->
-    <!--    </target>-->
+    <target name="aspectwerkz:samples:transparentpersistence"
+        depends="aspectwerkz:init, aspectwerkz:attributes:extensions">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml examples.transparentpersistence.Client"/>
+        </exec>
+    </target>
 
     <!-- =================================================== -->
     <!--  runs the introduction test -->
     <!-- =================================================== -->
-    <!--    <target name="aspectwerkz:samples:introduction"-->
-    <!--        depends="aspectwerkz:init, aspectwerkz:attributes:samples">-->
-    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
-    <!--            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.introduction.Target"/>-->
-    <!--        </exec>-->
-    <!--    </target>-->
+    <target name="aspectwerkz:samples:introduction"
+        depends="aspectwerkz:init, aspectwerkz:attributes:samples">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.introduction.Target"/>
+        </exec>
+    </target>
 
     <!-- =================================================== -->
     <!--  compiles attributes for the samples, merges w/ the samples.xml -->

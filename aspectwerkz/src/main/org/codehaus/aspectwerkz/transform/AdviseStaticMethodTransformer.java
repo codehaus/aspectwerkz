@@ -71,11 +71,12 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
     public void transformCode(final Context context, final Klass klass) {
 
         final ClassGen cg = klass.getClassGen();
-        if (classFilter(cg)) {
+        ClassMetaData classMetaData = BcelMetaDataMaker.
+                createClassMetaData(context.getJavaClass(cg));
+
+        if (classFilter(classMetaData, cg)) {
             return;
         }
-
-        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
 
         final InstructionFactory factory = new InstructionFactory(cg);
         final ConstantPoolGen cpg = cg.getConstantPool();
@@ -930,22 +931,25 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
     /**
      * Filters the classes to be transformed.
      *
+     * @param classMetaData the meta-data for the class
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg) {
-        if (cg.isInterface() ||
+    private boolean classFilter(final ClassMetaData classMetaData, final ClassGen cg) {
+        if (    cg.isInterface() ||
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.AroundAdvice") ||
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PreAdvice") ||
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PostAdvice")) {
             return true;
         }
-        else if (m_definition.inTransformationScope(cg.getClassName())) {
-            return false;
-        }
-        else {
+        if (!m_definition.inTransformationScope(cg.getClassName())) {
             return true;
         }
+        if (m_definition.hasMethodPointcut(classMetaData) ||
+                m_definition.hasThrowsPointcut(classMetaData)) {
+            return false;
+        }
+        return true;
     }
 
     /**

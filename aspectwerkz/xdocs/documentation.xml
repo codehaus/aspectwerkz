@@ -1623,7 +1623,7 @@ public Object someMethod(..) {..}
                     <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)
                 </p>
                 <p>
-                    <code>java [options...] org.codehaus.aspectwerkz.metadata.AttributeC &lt;path to src dir&gt; &lt;file name&gt; -m &lt;file name to merge with&gt; -u &lt;uuid for definition&gt;</code>
+                    <code>java [options...] org.codehaus.aspectwerkz.metadata.AttributeC &lt;path to src dir&gt; &lt;file name&gt; -merge &lt;file name to merge with&gt; -uuid &lt;uuid for definition&gt;</code>
                 </p>
                 <p>
                     <ul>
@@ -1636,12 +1636,12 @@ public Object someMethod(..) {..}
                             file to compile the attributes to
                         </li><br/>
                         <li>
-                            <code>-m &lt;file name to merge with&gt;</code> - the name of the file
-                            to merge the compiled attributes with
+                            <code>-merge &lt;file name to merge with&gt;</code> (or <code>-m</code>)
+                            - the name of the file to merge the compiled attributes with.
                         </li><br/>
                         <li>
-                            <code>-u &lt;uuid for definition&gt;</code> - the UUID for the
-                            definition. (Is optional and if not specified one will
+                            <code>-uuid &lt;uuid for definition&gt;</code> (or <code>-u</code>)
+                            - the UUID for the definition. (Is optional and if not specified one will
                             be generated)
                         </li>
                     </ul>
