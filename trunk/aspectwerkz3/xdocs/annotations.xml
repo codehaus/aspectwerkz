@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+    <properties>
+        <title>Annnotation driven development</title>
+        <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
+    </properties>
+    <body>
+        <section name="Table of Contents">
+            <p>
+                <b>Annnotation driven development</b>
+            </p>
+            <p>
+                Note: Java 1.5 annotation support is
+                <b>not</b> implemented in the 1.0-beta1 release.
+            </p>
+            <p>
+                But what we have is an API that will make the migration minimal and will allow both
+                annotation schemes to co-exist seamlessly.
+            </p>
+            <p>
+                We will have it implemented for the 1.0-beta2 release, so stay tuned.
+            </p>
+            <p>
+                <ol>
+                    <li>
+                        <a href="#Matching on Annotations">Matching on Annotations</a>
+                    </li>
+                    <li>
+                        <a href="#Annotation Proxies">Annotation Proxies</a>
+                    </li>
+                    <li>
+                        <a href="#Compiling Annotations - JavaDoc style annotations">Compiling Annotations - JavaDoc style annotations</a>
+                    </li>
+                    <li>
+                        <a href="#Runtime retrieval of Annotations">Runtime retrieval of Annotations</a>
+                    </li>
+                    <li>
+                        <a href="#Introducing Annotations">Introducing Annotations</a>
+                    </li>
+                </ol>
+            </p>
+        </section>
+        <section name="Matching on Annotations">
+            <p>
+                <code>AspectWerkz</code> supports matching on annotations. This means that you can
+                define your pointcuts to pick out join points that is annotated with a certain
+                annotation.
+            </p>
+            <p>
+                The matching will work equally good with JavaDoc-style annotations or a Java 1.5 annotations.
+            </p>
+        </section>
+        <section name="Annotation Proxies">
+            <p>
+                To be make the migration phase from JavaDoc-style to Java 1.5 annotations as smooth
+                as possible
+                <code>AspectWerkz</code> has implemented a concept of
+                <i>Annotation Proxies</i>.
+            </p>
+            <p>
+                This proxy concept also makes it possible to achive strong typing even for JavaDoc-style
+                annotations. Errors are reported already in the compilation phase. This is much safer than
+                most JavaDoc annotation implementations available, since those are weakly typed, string based
+                solutions.
+            </p>
+            <p>
+                An annotation proxy is a proxy class with a field for each key:value pair in the annotation.
+            </p>
+            <p>
+                For example if you have the JavaDoc annotation:
+                <source><![CDATA[
+/**
+ * @Asynchronous (useThreadPool=true timeout=60)
+ */
+ public Object someMethod() {
+     ...
+ }
+                ]]></source>
+            </p>
+            <p>
+               Which can be written like this in Java 1.5 annotations
+                <source><![CDATA[
+@Asynchronous(useThreadPool=true timeout=60)
+public Object someMethod() {
+    ...
+}
+                ]]></source>
+            </p>
+            <p>
+                Then you can write an annotation proxy that works equally good with both of these schemes.
+                Here is an example:
+                <source><![CDATA[
+public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
+    private boolean m_useThreadPool;
+    private int m_timeout;
+
+    public boolean useThreadPool() {
+        return m_useThreadPool;
+    }
+
+    public int timeout() {
+        return m_timeout;
+    }
+
+    public void setuseThreadPool(boolean flag) {
+        m_useThreadPool = flag;
+    }
+
+    public void settimeout(int timeout) {
+        m_timeout = timeout;
+    }
+}                ]]></source>
+            </p>
+            <p>
+                As you can see, the proxy extends the
+                <code>AnnotationProxyBase</code> class.
+                Then there is a getter method with the exact same name as the name for the parameter and a
+                setter method which has the name prefixed with
+                <code>set</code>.
+            </p>
+            <p>
+                The getter methods will be used by you to retrieve the data and the setter methods are used
+                by the framework to set the data in the proxy.
+            </p>
+            <p>
+                This proxy does now work equally good with JavaDoc style annotations and Java 1.5 style
+                annotations.
+            </p>
+            <subsection name="Strongly typed Annotations">
+                <p>
+                    All annotations are strongly typed. Both JavaDoc-style and Java 1.5 style annotations.
+                </p>
+                <p>
+                We currently support the following type of named parameters:
+                    <ul>
+                        <li>
+                        primitives
+                            <br/>
+                        -
+                            <code>name1=8366 name2=86.2345D name3=true name4='\n'</code>
+                        </li>
+                        <br/>
+                        <li>
+                        strings
+                            <br/>
+                         -
+                            <code>name="blablabla"</code>
+                        </li>
+                        <br/>
+                        <li>
+                        arrays
+                            <br/>
+                        -
+                            <code>name={"Hello", "World"}</code> or
+                            <code>name={46.34F, 836.45F}</code>
+                        </li>
+                        <br/>
+                        <li>
+                        references to static fields
+                            <br/>
+                        -
+                            <code>name=org.foo.Bar.SOME_CONSTANT</code>
+                        </li>
+                        <br/>
+                        <li>
+                        nested annotations
+                            <br/>
+                         - TO BE IMPLEMENTED
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                You can also define just one single anonymous value for the annotation. This value will then
+                be set by the framework through the method called
+                    <code>void setvalue(String value)</code>.
+                So in order for this to work the parameter must be a
+                    <code>String</code>
+                (a current limitation, might change later) and add the method to the proxy class.
+                This maps to the Java 1.5
+                    <i>simple value</i> idea.
+                </p>
+            </subsection>
+        </section>
+        <section name="Compiling Annotations - JavaDoc style annotations">
+            <p>
+                If you are using custom JavaDoc-style annotations then you have to compile in into
+                bytecode of the classes. This is done with the
+                <code>AnnotationC</code> compiler.
+                Please note that this is
+                <b>not</b> needed for Java 1.5 annotations.
+            </p>
+            <p>
+                You can run
+                <code>AnnotationC</code> from the command line.
+                (It might be useful to run the
+                <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)
+            </p>
+            <p>
+                You invoke the compiler like this:
+                <source><![CDATA[
+java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC
+    [-verbose]
+    -src <path to src dir>
+    -classes <path to classes dir>
+    [-dest <path to destination dir>]
+    [-custom <property file for custom annotations>]
+                ]]></source>
+            </p>
+            <p>
+                The last option
+                <code>-custom property_file_for_custom_annotations</code> points to
+                the a property file which defines the annotations by mapping the names to the proxy implementations.
+            </p>
+            <p>
+                Example of an annotation properties file:
+                <source><![CDATA[
+ReadOnly      = test.expression.ReadOnlyAnnotationProxy
+Requires      = test.expression.RequiresAnnotationProxy
+Serializable  = test.expression.SerializableAnnotationProxy
+                ]]></source>
+                In which f.e.
+                <code>Requires</code> is the
+                <code>@Requries</code> annotation
+            </p>
+            <p>
+                For Java 1.5 annotations you would have to specify the fully qualified name of the
+                annotation interface as the name.
+            </p>
+        </section>
+        <section name="Runtime retrieval of Annotations">
+            <p>
+                You can retrieve the annotations at runtime using the
+                <code>Annotations</code> class.
+            </p>
+            <p>
+                For example
+                <source><![CDATA[
+//
+// the proxies needs to be casted to the correct proxy implementation
+//
+AnnotationProxyBase annotationProxy = Annotations.getAnnotation("Session", klass);
+...
+AnnotationProxyBase annotationProxy  = Annotations.getAnnotation("Transaction", method);
+...
+AnnotationProxyBase annotationProxy  = Annotations.getAnnotation("ReadOnly", field);
+
+//
+// returns a list with AnnotationInfo instances which contains the:
+//    - name of the annotation
+//    - annotation proxy instance
+//
+List annotationInfos = Annotations.getAnnotationInfos(klass);
+...
+List annotationInfos = Annotations.getAnnotationInfos(method);
+...
+List annotationInfos = Annotations.getAnnotationInfos(field);
+                ]]></source>
+            </p>
+        </section>
+        <section name="Introducing Annotations">
+            <p>
+                TODO - not yet implemented
+            </p>
+        </section>
+    </body>
+</document>

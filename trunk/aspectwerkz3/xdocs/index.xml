@@ -31,7 +31,7 @@
                     introductions at runtime.
                                             
                     Your aspects can be defined using either an XML definition
-                    file or using runtime attributes.
+                    file or using runtime annotations.
                 </p>
                 <p>
                     <code>AspectWerkz</code> is Free Software. The

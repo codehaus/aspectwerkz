@@ -3,16 +3,16 @@
     <properties>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <author email="alex at gnilux dot com">alexandre vasseur</author>
-        <title>Attribute definition</title>
+        <title>Annotation definition</title>
     </properties>
     <body>
-        <section name="Attribute definition - Self-defined Aspects">
+        <section name="Annotation definition - Self-defined Aspects">
             <p>
-                What is important to understand is that both the Attribute and the XML definition are both just
+                What is important to understand is that both the Annotation and the XML definition are both just
                 different views of the same underlying model. This means that they can easily co-exist and can
-                succesfully be used together. The XML definition can be used as a replacement to the Attribute definition
-                or as a complement. It can be used to refine and override definitions made in attributes as well as
-                resolve missing pieces (for example pointcut definitions referenced but not defined) in the attribute
+                succesfully be used together. The XML definition can be used as a replacement to the Annotation definition
+                or as a complement. It can be used to refine and override definitions made in annotations as well as
+                resolve missing pieces (for example pointcut definitions referenced but not defined) in the annotation
                 definition. See the
                 <a href="implementation.html#Choosing a definition model">Choosing a definition model</a>
                 section for best practices.
@@ -34,10 +34,10 @@
                         <a href="#Introductions">Introductions</a>
                     </li>
                     <li>
-                        <a href="#Attribute reference">Attribute reference</a>
+                        <a href="#Annotation reference">Annotation reference</a>
                     </li>
                     <li>
-                        <a href="#Attribute compilation">Attribute compilation</a>
+                        <a href="#Aspect annotation compilation">Aspect annotation compilation</a>
                     </li>
                     <li>
                         <a href="#XML deployment descriptor">XML deployment descriptor</a>
@@ -47,14 +47,14 @@
         </section>
         <section name="Aspects">
             <p>
-                    Even if all definition is made using attribute (and nothing in XML) an tiny deployment descriptor in
+                    Even if all definition is made using annotations (and nothing in XML) an tiny deployment descriptor in
                     XML still has to be written. This is needed for the runtime system to know which aspects it should
                     load. See the
                 <a href="#XML deployment descriptor">XML deployment descriptor</a> section for more
                     information on how to write such a deployment descriptor.
             </p>
             <p>
-                    When defining an aspect using attributes, the deployment model is specified as metadata argument
+                    When defining an aspect using annotations, the deployment model is specified as metadata argument
                     of the metadata tag
                 <code>@Aspect</code>. (The current implementation uses a doclet syntax.
                 <code>AspectWerkz</code> will support JSR-175 syntax as well, as soon as it is available.)
@@ -95,7 +95,7 @@
                 <p>
                     In the aspect class you put the pointcut definitions as fields of the type
                     <code>org.codehaus.aspectwerkz.Pointcut</code>
-                    along with metadata attributes which specifies the type of (execution, call, set, get, cflow or handler)
+                    along with metadata annotations which specifies the type of (execution, call, set, get, cflow or handler)
                     and pattern for the pointcut.
                     See
                     <a href="#Pointcuts">Pointcuts section</a>.
@@ -136,7 +136,7 @@
                     One of
                     <code>@Around</code>,
                     <code>@Before</code> or
-                    <code>@After</code> attributes needs to be is specified.
+                    <code>@After</code> annotations needs to be is specified.
                     See the
                     <a href="#Advice">Advice section</a> for details.
                 </p>
@@ -201,7 +201,7 @@ public class MyAspect {
                 A Pointcut picks out join points, i.e. selects well-defined points in the program flow.
             </p>
             <p>
-                This section describes how to define named pointcuts using attributes, for a detailed description on how
+                This section describes how to define named pointcuts using annotations, for a detailed description on how
                 pointcuts are written and composed see the
                 <a href="definition_issues.html#Pointcut definition">Pointcut definition</a> and
                 <a href="definition_issues.html#Pointcut composition">Pointcut composition</a> sections.
@@ -217,7 +217,7 @@ public class MyAspect {
                     <br/>
                     <li>
                         The
-                        <code>@Expression</code> attribute allows us to define the type and pattern of the pointcut.
+                        <code>@Expression</code> annotation allows us to define the type and pattern of the pointcut.
                         There can be a composition, whether or not anonymous like in
                         <code>@Expression anExpression OR call(&lt;call pattern&gt;)</code>
                     </li>
@@ -323,7 +323,7 @@ public class MyAspect {
                 and/or a new implementation (methods and fields).
             </p>
             <p>
-               Using attributes, introductions are defined as:
+               Using annotations, introductions are defined as:
                 <ul>
                     <li>Fields of the aspect class whose type is the interface to introduce.
                         <br/>
@@ -380,7 +380,7 @@ public class MyAspect {
                     to specify to which classes the introduction applies.
                     <br/>
                     The
-                    <code>@Introduce</code> attribute accepts an optional
+                    <code>@Introduce</code> annotation accepts an optional
                     <code>deploymentModel=</code> parameter to specify the
                     introduction deployment model. If not specified the aspect deployment model applies.
                     See
@@ -427,9 +427,9 @@ public class MyAspect {
                 </p>
             </subsection>
         </section>
-        <section name="Attribute reference">
+        <section name="Annotation reference">
             <p>
-                This section references all attributes used in the attribute definition.
+                This section references all annotations used in the annotation definition.
             </p>
             <p>
                 <table>
@@ -495,16 +495,16 @@ public class MyAspect {
                     <tr>
                         <td>@@&lt;name&gt;</td>
                         <td>any</td>
-                        <td>custom runtime accessible attribute</td>
+                        <td>custom runtime accessible annotation</td>
                         <td></td>
                         <td></td>
                     </tr>
                 </table>
             </p>
         </section>
-        <section name="Attribute compilation">
+        <section name="Aspect annotation compilation">
             <p>
-                Attribute defined aspects have to be post-compiled to incorporate the metadata into the class file bytecode.
+                Annotation defined aspects have to be post-compiled to incorporate the metadata into the class file bytecode.
                 This post-compilation step will not be needed with Java 1.5 and JSR-175. For now you need to first compile
                 the aspect classes with javac compiler and then post compile the
                 <code>.class</code> files with the aspect source code as input.
@@ -515,48 +515,58 @@ public class MyAspect {
                 <code>AspectC</code>
                     compiler, which needs both the regular
                 <code>.class</code> files and the aspect sources files
-                    containing the attributes metadata. You can run the
-                <code>AspectC</code> from the command line.
+                    containing the annotation metadata. You can run the
+                <code>AnnotationC</code> from the command line.
                     (It might be useful to run the
                 <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)
             </p>
-            <p>
-                <code>java [options...] org.codehaus.aspectwerkz.definition.AspectC [-verbose] &lt;path to src dir&gt; &lt;path to classes dir&gt; [&lt;path to destination dir&gt;]</code>
-            </p>
-            <p>
+                You invoke the compiler like this:
+                <source><![CDATA[
+java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC
+    [-verbose]
+    -src <path to src dir>
+    -classes <path to classes dir>
+    [-dest <path to destination dir>]
+    [-custom <property file for custom annotations>]
+                ]]></source>            <p>
                 <ul>
                     <li>
                         <code>-verbose</code> - (optional) to activate verbose logging of compilation
                     </li>
                     <li>
-                        <code>&lt;path to src dir&gt;</code> - the path directory
+                        <code>-src &lt;path to src dir&gt;</code> - the path directory
                             for the source files (not mandatory; it is not needed to point to the root package directory
                             since package name is extracted from the source file itself)
                     </li>
                     <br/>
                     <li>
-                        <code>&lt;path to classes dir&gt;</code> - the path to the root directory of the regular
+                        <code>-classes &lt;path to classes dir&gt;</code> - the path to the root directory of the regular
                         <code>.class</code> files for the aspects
                     </li>
                     <br/>
                     <li>
-                        <code>&lt;path to destination dir&gt;</code> - (optional)
+                        <code>-dest &lt;path to destination dir&gt;</code> - (optional)
                             - the path to the root directory to write the new
                         <code>.class</code> files for the self-defined aspects.
                             If not specified, the initial
                         <code>.class</code> files are overridden.
                     </li>
+                    <li>
+                        <code>-custom &lt;property file for custom annotations&gt;</code> - optional,
+                        needed to compile custom annotations.
+                    </li>
+                    <br/>
                 </ul>
             </p>
             <p>
-                <code>AspectC</code> can also be used to handle custom attributes as described
-                <a href="definition_issues.html#Custom attribute compilation and retrieval">here</a>.
+                <code>AnnotationC</code> can also be used to handle custom annotations as described
+                <a href="annotations.html#Compiling Annotations - JavaDoc style annotations">here</a>.
             </p>
         </section>
         <section name="XML deployment descriptor">
             <p>
                 The deployment descriptor is needed for the runtime system to know which aspects it should load.
-                It always has to be specified even though all definition is made in attributes.
+                It always has to be specified even though all definition is made in annotations.
             </p>
             <p>
                Example:
