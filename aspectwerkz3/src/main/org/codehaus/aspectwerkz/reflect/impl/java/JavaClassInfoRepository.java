@@ -59,12 +59,12 @@ public class JavaClassInfoRepository {
         } else {
             hash = loader.hashCode();
         }
-        WeakReference repositoryRef = (WeakReference)s_repositories.get(hash);
+        WeakReference repositoryRef = (WeakReference) s_repositories.get(hash);
         JavaClassInfoRepository repository = (
-                                                 (repositoryRef == null)
-                                                 ? null
-                                                 : (JavaClassInfoRepository)repositoryRef.get()
-                                             );
+                (repositoryRef == null)
+                ? null
+                : (JavaClassInfoRepository) repositoryRef.get()
+                );
         if (repository != null) {
             return repository;
         } else {
@@ -91,11 +91,11 @@ public class JavaClassInfoRepository {
      * @return
      */
     public ClassInfo getClassInfo(final String className) {
-        ClassInfo info = (ClassInfo)m_repository.get(className);
+        ClassInfo info = (ClassInfo) m_repository.get(className);
         if (info == null) {
-            return checkParentClassRepository(className, (ClassLoader)m_loaderRef.get());
+            return checkParentClassRepository(className, (ClassLoader) m_loaderRef.get());
         }
-        return (ClassInfo)m_repository.get(className);
+        return (ClassInfo) m_repository.get(className);
     }
 
     /**
@@ -105,7 +105,7 @@ public class JavaClassInfoRepository {
      */
     public void addClassInfo(final ClassInfo classInfo) {
         // is the class loaded by a class loader higher up in the hierarchy?
-        if (checkParentClassRepository(classInfo.getName(), (ClassLoader)m_loaderRef.get()) == null) {
+        if (checkParentClassRepository(classInfo.getName(), (ClassLoader) m_loaderRef.get()) == null) {
             m_repository.put(new String(classInfo.getName()), classInfo);
         } else {
             // TODO: remove class in child class repository and add it for the current (parent) CL
