@@ -1,5 +1,5 @@
 <!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD//EN"
+    "-//AspectWerkz//DTD 0.9//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
 <aspectwerkz>
     <system id="tests">

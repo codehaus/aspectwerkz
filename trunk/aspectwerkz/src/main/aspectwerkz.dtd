@@ -37,6 +37,8 @@ Change from 0.8.1 to 0.9
     "aspect/advice" removed, use "aspect/bind-advice"
     "abstract-aspect/advice" removed, use "abstract-aspect/bind-advice"
     (introduction-def | advice-def | advices-def | abstract-aspect | aspect | package)*
+    add "exclude" and "include" element in "system" element
+    "system/transformation-scope" removed, use "include" and "exclude"
 ******************************************************************************************************************************-->
 
 
@@ -57,23 +59,37 @@ Attributes:
     id: unique name of the AspectWerkz system (replaces <aspectwerkz id=..> in 0.8.1 DTD)
 ******************************************************************************************************************************-->
 <!ELEMENT system (
-    transformation-scope*,
+    (exclude | include)*,
     (introduction-def | advice-def | advices-def | abstract-aspect | aspect | use-aspect | package )*
 )>
 <!ATTLIST system
 	id CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
-transformation-scope
+exclude
 *********************************************************************************************************************************
-Declares one or more global package prefix. Any class not in the scope cannot have aspects on it.
+Declares one global package prefix. Any class in the scope cannot have aspects on it within this system
+Attributes:
+	package: package prefix
+Note: package does not support pattern, excepted ending ".*" like "foo.*", which is equivalent to "foo."
+During weaving, a class is considered to be in the transformation scope with a classFQN.startsWith( ) test.
+Note: if a class is both in exclude and include, it is considered excluded.
+******************************************************************************************************************************-->
+<!ELEMENT exclude EMPTY>
+<!ATTLIST exclude
+	package CDATA #REQUIRED
+>
+<!--*****************************************************************************************************************************
+include
+*********************************************************************************************************************************
+Declares one global package prefix. Any class not in the scope cannot have aspects on it within this system
 Attributes:
 	package: package prefix
 Note: package does not support pattern, excepted ending ".*" like "foo.*", which is equivalent to "foo."
 During weaving, a class is considered to be in the transformation scope with a classFQN.startsWith( ) test.
 ******************************************************************************************************************************-->
-<!ELEMENT transformation-scope EMPTY>
-<!ATTLIST transformation-scope
+<!ELEMENT include EMPTY>
+<!ATTLIST include
 	package CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
