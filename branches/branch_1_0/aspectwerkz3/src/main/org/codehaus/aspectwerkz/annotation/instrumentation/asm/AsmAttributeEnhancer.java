@@ -24,8 +24,6 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
-import org.objectweb.asm.attrs.Annotation;
-import org.objectweb.asm.attrs.AnnotationElementValue;
 import org.objectweb.asm.attrs.Attributes;
 
 import java.io.ByteArrayOutputStream;

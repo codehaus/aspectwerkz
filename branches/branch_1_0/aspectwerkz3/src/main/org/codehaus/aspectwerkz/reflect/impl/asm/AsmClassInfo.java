@@ -26,7 +26,6 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.attrs.Annotation;
-import org.objectweb.asm.attrs.AnnotationElementValue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -722,7 +721,7 @@ public class AsmClassInfo implements ClassInfo {
                 Object[] keyValuePair = (Object[])iterator.next();
                 annotationValues.append((String)keyValuePair[0]);
                 annotationValues.append('=');
-                annotationValues.append(((AnnotationElementValue)keyValuePair[1]).getValue());
+                annotationValues.append(keyValuePair[1].toString());
                 if (i < elementValues.size() - 1) {
                     annotationValues.append(',');
                 }
