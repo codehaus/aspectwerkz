@@ -154,6 +154,10 @@
         </javac>
     </target>
 
+    <target name="compile:ext:aspectj" depends="init">
+        <ajc srcdir="${d}/src/compiler-extensions/aspectj" destdir="${d}/target" classpathref="project.classpath"/>
+    </target>
+
     <!-- ============================================================== -->
     <!-- pre Run (annotationc, weave etc) -->
     <!-- ============================================================== -->
@@ -259,6 +263,16 @@
             </classpath>
             <!-- need to be aware of the aspectmodels for the runtime as well as at weave time -->
             <jvmarg line="-Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.spring.SpringAspectModel ${java.jvmarg}"/>
+            <arg line="${args}"/>
+        </java>
+    </target>
+
+    <target name="run:ext:aspectj" depends="init, clean, compile, compile:ext:aspectj">
+        <java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
+            <classpath>
+                <pathelement path="${d}/src/compiler-extensions/aspectj/"/>
+            </classpath>
+            <jvmarg line="-Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib/aspectwerkz-core-2.0beta1.jar:lib/asm-1.5.1.jar:lib/asm-attrs-1.5.1.jar -Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.aspectj.AspectJAspectModel -Daspectwerkz.transform.verbose=true ${java.jvmarg}"/>
             <arg line="${args}"/>
         </java>
     </target>
