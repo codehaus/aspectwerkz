@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.net.ConnectException;
 
 /**
  * Utility methods to manipulate class redefinition of java.lang.ClassLoader in xxxStarter
@@ -169,7 +170,23 @@ public class ClassLoaderPatcher {
             if (secondsToWait > 0) {
                 try { Thread.sleep(1000*secondsToWait); } catch (Exception e) { ; }
             }
-            VirtualMachine vm = connector.attach(args);
+            // loop 10 times, during 5 sec max. It appears some VM under Linux take time to accept connections
+            // this avoid to specifically set -Daspectwerkz.classloader.wait
+            VirtualMachine vm = null;
+            ConnectException vmConnectionRefused = new ConnectException("should not appear as is");
+            for (int retry=0; retry<10; retry++) {
+                try {
+                    vm = connector.attach(args);
+                    break;
+                } catch (ConnectException ce) {
+                    vmConnectionRefused = ce;
+                    try { Thread.sleep(500); } catch (Throwable t) {;}
+                }
+            }
+            if (vm==null) {
+                throw vmConnectionRefused;
+            }
+            vm = connector.attach(args);
             redefineClass(vm, "java.lang.ClassLoader", getPatchedClassLoader(preProcessorName));
             return vm;
         } catch (IllegalConnectorArgumentsException e) {
