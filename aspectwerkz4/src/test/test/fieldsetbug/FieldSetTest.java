@@ -18,7 +18,6 @@ import junit.framework.TestCase;
  */
 public class FieldSetTest extends TestCase {
     public void testNonLongDoublePublicFieldSet() {
-        System.out.println(".exec");
         TargetClass instance1ofA = new TargetClass();
 
         instance1ofA.publicIntField = 2;
@@ -49,7 +48,6 @@ public class FieldSetTest extends TestCase {
      * Inconsistent stack height 0 != 2
      */
     public void testLongDoublePublicFieldSetWithExceptionHandling() {
-		System.out.println(".testLongDoublePublicFieldSet");
 		TargetClass instance1ofA = new TargetClass();
 
 		instance1ofA.publicLongField = 2L;
@@ -89,7 +87,7 @@ public class FieldSetTest extends TestCase {
         try {
             mayThrowException();
         } catch(Exception e) {
-            System.out.println("awakened prematurely");
+            ;
         }
     }
 
