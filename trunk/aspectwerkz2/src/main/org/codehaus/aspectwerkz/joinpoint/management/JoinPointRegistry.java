@@ -29,24 +29,6 @@ import org.codehaus.aspectwerkz.pointcut.SetPointcut;
 
 /**
  * Manages the registration of join points and advices for these join points.
- * <p/>
- * Manages the states of all join points.
- * <p/>
- * A join point can be in one of the following states:
- * <ol>
- *      <li>
- *          <code>JoinPointState.NOT_ADVISED</code> - the join point is not advised
- *      </li>
- *      <li>
- *          <code>JoinPointState.ADVISED</code> -     the join point is advised (this does not mean that it has advices attached to it)
- *      </li>
- *      <li>
- *          <code>JoinPointState.HAS_ADVICES</code> - the join point has advices attached to it
- *      </li>
- *      <li>
- *          <code>JoinPointState.REDEFINED</code>  -  the definition of the join point had been changed, needs to be updated
- *      </li>
- * </ol>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -58,11 +40,6 @@ public class JoinPointRegistry {
     private static final List EMTPY_ARRAY_LIST = new ArrayList();
 
     /**
-     * The registry with all the classes and the status of their join points.
-     */
-    private static final TLongObjectHashMap m_joinPointStateMap = new TLongObjectHashMap();
-
-    /**
      * The registry with all the classes and the index for the advices attatched to the join points in this class.
      * <p/>
      * Map of: the class hash => map of: join point hash => map of: join point type => array with advice indexes.
@@ -70,7 +47,10 @@ public class JoinPointRegistry {
     private static final TLongObjectHashMap m_joinPointAdvicesMap = new TLongObjectHashMap();
 
     /**
-     * Registers the method join point.
+     * Registers the advices for the method join point.
+     *
+     * @TODO: clean up and refactor
+     * @TODO: cache the metadata created in the method - map it to the method hash (see pointcut for caching)
      *
      * @param joinPointType
      * @param joinPointHash
@@ -87,48 +67,6 @@ public class JoinPointRegistry {
                                   final Class definedClass,
                                   final ClassMetaData definedClassMetaData,
                                   final System system) {
-        registerStateForJoinPoint(joinPointHash, classHash);
-        registerAdvicesForJoinPoint(
-                joinPointType, joinPointHash, signature, classHash,
-                definedClass, definedClassMetaData, system
-        );
-    }
-
-    /**
-     * Registes the state for the join point.
-     *
-     * @param joinPointHash
-     * @param classHash
-     */
-    public void registerStateForJoinPoint(final long joinPointHash, final long classHash) {
-        if (!m_joinPointStateMap.containsKey(classHash)) {
-            m_joinPointStateMap.put(classHash, new TLongIntHashMap());
-        }
-        TLongIntHashMap joinPointStatus = (TLongIntHashMap)m_joinPointStateMap.get(classHash);
-        joinPointStatus.put(joinPointHash, JoinPointState.NOT_ADVISED);
-    }
-
-    /**
-     * Registers the advices for the method join point.
-     *
-     * @TODO: clean up and refactor
-     * @TODO: cache the metadata created in the method - map it to the method hash (see pointcut for caching)
-     *
-     * @param joinPointType
-     * @param joinPointHash
-     * @param signature
-     * @param classHash
-     * @param definedClass
-     * @param definedClassMetaData
-     * @param system
-     */
-    public void registerAdvicesForJoinPoint(final int joinPointType,
-                                            final int joinPointHash,
-                                            final String signature,
-                                            final long classHash,
-                                            final Class definedClass,
-                                            final ClassMetaData definedClassMetaData,
-                                            final System system) {
         if (!m_joinPointAdvicesMap.containsKey(classHash)) {
             m_joinPointAdvicesMap.put(classHash, new TLongObjectHashMap());
         }
@@ -279,21 +217,6 @@ public class JoinPointRegistry {
     }
 
     /**
-     * Returns the state of the join point.
-     *
-     * @param classHash
-     * @param joinPointHash
-     * @return the state
-     */
-    public int getStateForJoinPoint(final long classHash, final long joinPointHash) {
-        if (!m_joinPointStateMap.containsKey(classHash)) {
-            return JoinPointState.NOT_ADVISED;
-        }
-        TLongIntHashMap joinPoints = (TLongIntHashMap)m_joinPointStateMap.get(classHash);
-        return joinPoints.get(joinPointHash);
-    }
-
-    /**
      * Returns the keys to the advices for the join point.
      *
      * @param classHash
@@ -303,111 +226,6 @@ public class JoinPointRegistry {
     public Map getAdvicesForJoinPoint(final long classHash, final long joinPointHash) {
         TLongObjectHashMap joinPoints = (TLongObjectHashMap)m_joinPointAdvicesMap.get(classHash);
         return (Map)joinPoints.get(joinPointHash);
-    }
-
-    /**
-     * Checks if the join point is registered or not.
-     *
-     * @param classHash
-     * @param joinPointHash
-     * @return
-     */
-    public boolean isRegistered(final long classHash, final long joinPointHash) {
-        return getStateForJoinPoint(classHash, joinPointHash) == JoinPointState.NOT_ADVISED;
-    }
-
-    /**
-     * Checks if the join point is not advised.
-     *
-     * @param classHash
-     * @param joinPointHash
-     * @return
-     */
-    public boolean isNotAdvised(final long classHash, final long joinPointHash) {
-        return getStateForJoinPoint(classHash, joinPointHash) == JoinPointState.NOT_ADVISED;
-    }
-
-    /**
-     * Checks if the join point has advices.
-     *
-     * @param classHash
-     * @param joinPointHash
-     * @return
-     */
-    public boolean isAdvised(final long classHash, final long joinPointHash) {
-        return getStateForJoinPoint(classHash, joinPointHash) == JoinPointState.ADVISED;
-    }
-
-    /**
-     * Checks if the join point has advices.
-     *
-     * @param classHash
-     * @param joinPointHash
-     * @return
-     */
-    public boolean hasAdvices(final long classHash, final long joinPointHash) {
-        return getStateForJoinPoint(classHash, joinPointHash) == JoinPointState.HAS_ADVICES;
-    }
-
-    /**
-     * Checks if the join point has beed redefined.
-     *
-     * @param classHash
-     * @param joinPointHash
-     * @return
-     */
-    public boolean isRedefined(final long classHash, final long joinPointHash) {
-        return getStateForJoinPoint(classHash, joinPointHash) == JoinPointState.REDEFINED;
-    }
-
-    /**
-     * Sets the join point as not advised.
-     *
-     * @param classHash
-     * @param joinPointHash
-     */
-    public void setNotAdvised(final long classHash, final long joinPointHash) {
-        getJoinPointStates(classHash).put(joinPointHash, JoinPointState.NOT_ADVISED);
-    }
-
-    /**
-     * Sets the join point as advised.
-     *
-     * @param classHash
-     * @param joinPointHash
-     */
-    public void setAdvised(final long classHash, final long joinPointHash) {
-        getJoinPointStates(classHash).put(joinPointHash, JoinPointState.ADVISED);
-    }
-
-    /**
-     * Marks the join point as one that has advices attached to it.
-     *
-     * @param classHash
-     * @param joinPointHash
-     */
-    public void setHasAdvices(final long classHash, final long joinPointHash) {
-        getJoinPointStates(classHash).put(joinPointHash, JoinPointState.HAS_ADVICES);
-    }
-
-    /**
-     * Sets the join point as redefined.
-     *
-     * @param classHash
-     * @param joinPointHash
-     */
-    public void setRedefined(final long classHash, final long joinPointHash) {
-        getJoinPointStates(classHash).put(joinPointHash, JoinPointState.REDEFINED);
-    }
-
-    /**
-     * Returns information about the join points for as specific class
-     *
-     * @param classHash
-     * @return information about the join points for the class
-     */
-    private TLongIntHashMap getJoinPointStates(final long classHash) {
-        return (TLongIntHashMap)m_joinPointStateMap.get(classHash);
     }
 
     /**
