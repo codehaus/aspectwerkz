@@ -8,7 +8,7 @@
 @REM ----------------------------------------------------------------------------------
 
 @ECHO OFF
-set ASPECTWERKZ_VERSION=0.7.4
+set ASPECTWERKZ_VERSION=0.8
 
 IF "%1"=="" goto error
 IF "%ASPECTWERKZ_HOME%"=="" goto error_no_aw_home
@@ -33,13 +33,13 @@ IF "%OFFLINE%"==""false"" (
     IF "%1"=="" goto error
     IF "%2"=="" goto error
     IF "%3"=="" goto error
-    "%JAVA_COMMAND%" -Daspectwerkz.definition.file="%2" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -cp "%ASPECTWERKZ_HOME%\lib\ant-1.5.2.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\bcel.jar" org.codehaus.aspectwerkz.compiler.AspectWerkzC -verbose %3 %4 %5 %6 %7 %8 %9
+    "%JAVA_COMMAND%" -Daspectwerkz.definition.file="%2" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -cp "%ASPECTWERKZ_HOME%\lib\ant-1.5.2.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\bcel.jar" org.codehaus.aspectwerkz.compiler.AspectWerkzC %3 %4 %5 %6 %7 %8 %9
     @exit /B %ERRORLEVEL%
 )
 
 :error
-    IF EXIST "%ASPECTWERKZ_HOME%\config\usage.txt" (
-        type "%ASPECTWERKZ_HOME%\config\usage.txt"
+    IF EXIST "%ASPECTWERKZ_HOME%\bin\usage.txt" (
+        type "%ASPECTWERKZ_HOME%\bin\usage.txt"
     ) ELSE (
         echo ASPECTWERKZ_HOME does not point to the aspectwerkz directory
     )
