@@ -45,6 +45,7 @@
                             <li>AspectWerkzCTask to run AspectWerkzC offline weaving from Ant as a custom task
                             (thanks to the_mindstorm(at)evolva(dot)ro)</li>
                             <li>Minor bug fix when using META-INF/aop.xml in J2EE environments</li>
+                            <li>Added verbosity on pointcut matchs with -Daspectwerkz.transform.details=true</li>
                         </ul>
                     </p>
                 </subsection>

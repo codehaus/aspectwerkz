@@ -107,6 +107,8 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
                 m_reader = new ClassReader(classAsStream);
             } catch (Exception e) {
                 throw new ClassNotFoundException(m_className, e);
+            } finally {
+                classAsStream.close();//AW-296
             }
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);

@@ -526,7 +526,7 @@ public class SystemDefinition {
                 ExpressionVisitor expression = adviceDef.getExpressionInfo().getExpression();
 
                 if (expression.match(ctx)) {
-                    if (AspectWerkzPreProcessor.VERBOSE) {
+                    if (AspectWerkzPreProcessor.DETAILS) {
                         System.out.println(
                                 "match: " + expression.toString() + " @ " + aspectDef.getName() + "/" +
                                 adviceDef.getName()
@@ -585,7 +585,7 @@ public class SystemDefinition {
                     ExpressionContext ctx = ctxs[i];
                     if (expressionInfo.getAdvisedClassFilterExpression().match(ctx)
                         || expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx)) {
-                        if (AspectWerkzPreProcessor.VERBOSE) {
+                        if (AspectWerkzPreProcessor.DETAILS) {
                             System.out.println(
                                     "early match: " + expressionInfo.toString() + " @ " +
                                     aspectDef.getName() +

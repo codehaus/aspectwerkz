@@ -42,7 +42,7 @@
 <!--    <property name="aspectwerkz.classpath" refid="aspectwerkz.classpath" />-->
 
     <!--    define the jarjar task we use to remap ASM -->
-    <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="${basedir}/lib/jarjar-0.3-dev.jar"/>
+    <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="${basedir}/lib/jarjar-0.3.jar"/>
 
 	<!-- =================================================== -->
 	<!--  initializes parameters  -->
