@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
@@ -40,15 +40,15 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         methodMetaData.setReturnType("void");
         methodMetaData.setExceptionTypes(new String[]{});
 
-        List advices = ((MethodPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
+        List advices = ((ExecutionPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
+                getExecutionPointcuts(m_classMetaData, methodMetaData).get(0)).
                 getAdviceIndexTuples();
         NameIndexTuple tuple1 = (NameIndexTuple)advices.get(0);
         NameIndexTuple tuple2 = (NameIndexTuple)advices.get(1);
         advices.set(0, tuple2);
         advices.set(1, tuple1);
-        ((MethodPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
+        ((ExecutionPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
+                getExecutionPointcuts(m_classMetaData, methodMetaData).get(0)).
                 setAdviceIndexTuples(advices);
 
         m_logString = "";
@@ -58,8 +58,8 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         //reorder for other tests
         advices.set(0, tuple1);
         advices.set(1, tuple2);
-        ((MethodPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
+        ((ExecutionPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
+                getExecutionPointcuts(m_classMetaData, methodMetaData).get(0)).
                 setAdviceIndexTuples(advices);
     }
 
@@ -84,8 +84,8 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             methodMetaData.setReturnType("void");
             methodMetaData.setExceptionTypes(new String[]{});
 
-            ((MethodPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
-                    getMethodPointcuts(m_classMetaData, methodMetaData).
+            ((ExecutionPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
+                    getExecutionPointcuts(m_classMetaData, methodMetaData).
                     get(0)).addAdvice("createTransientAdviceTest");
 
             m_logString = "";
@@ -93,8 +93,8 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             assertEquals("before invocation after ", m_logString);
 
             //remove it for other tests
-            ((MethodPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
-                    getMethodPointcuts(m_classMetaData, methodMetaData).
+            ((ExecutionPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
+                    getExecutionPointcuts(m_classMetaData, methodMetaData).
                     get(0)).removeAdvice("createTransientAdviceTest");
         }
         catch (Exception e) {
@@ -113,16 +113,16 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         methodMetaData.setReturnType("void");
         methodMetaData.setExceptionTypes(new String[]{});
 
-        ((MethodPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).addAdvice("methodAdvice3");
+        ((ExecutionPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
+                getExecutionPointcuts(m_classMetaData, methodMetaData).get(0)).addAdvice("methodAdvice3");
 
         m_logString = "";
         addAdviceTestMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
 
         // remove it for other tests
-        ((MethodPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).removeAdvice("methodAdvice3");
+        ((ExecutionPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
+                getExecutionPointcuts(m_classMetaData, methodMetaData).get(0)).removeAdvice("methodAdvice3");
     }
 
     public void testRemoveAdviceAtRuntime() {
@@ -136,12 +136,12 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         methodMetaData.setReturnType("void");
         methodMetaData.setExceptionTypes(new String[]{});
 
-        List advices = ((MethodPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
+        List advices = ((ExecutionPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
+                getExecutionPointcuts(m_classMetaData, methodMetaData).get(0)).
                 getAdviceIndexTuples();
         NameIndexTuple adviceTuple0 = (NameIndexTuple)advices.remove(0);
-        ((MethodPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
+        ((ExecutionPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
+                getExecutionPointcuts(m_classMetaData, methodMetaData).get(0)).
                 setAdviceIndexTuples(advices);
 
         m_logString = "";
@@ -151,8 +151,8 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         // restore it for other tests
         // the methodAdvice2 was first
         advices.add(0, adviceTuple0);
-        ((MethodPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
+        ((ExecutionPointcut)SystemLoader.getSystem("tests").getAspectMetaData("DynamicDeploymentTest").
+                getExecutionPointcuts(m_classMetaData, methodMetaData).get(0)).
                 setAdviceIndexTuples(advices);
     }
 

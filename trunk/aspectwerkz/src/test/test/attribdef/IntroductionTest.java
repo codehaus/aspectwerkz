@@ -8,13 +8,10 @@
 package test.attribdef;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
 import org.codehaus.aspectwerkz.Identifiable;
 import org.codehaus.aspectwerkz.SystemLoader;
 import test.attribdef.ToBeIntroduced;
 import test.attribdef.Introductions;
-
-import java.lang.reflect.Method;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>

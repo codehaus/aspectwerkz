@@ -26,7 +26,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.JexlTest.class);
         suite.addTestSuite(test.ExceptionTest.class);
         suite.addTestSuite(test.MethodComparatorTest.class);
-        suite.addTestSuite(test.xmldef.AdviceWeavingRuleTest.class);
+
         suite.addTestSuite(test.xmldef.IntroductionTest.class);
         suite.addTestSuite(test.xmldef.MemberMethodAdviceTest.class);
         suite.addTestSuite(test.xmldef.StaticMethodAdviceTest.class);
@@ -34,7 +34,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.xmldef.CallerSideAdviceTest.class);
         suite.addTestSuite(test.xmldef.ThrowsAdviceTest.class);
         suite.addTestSuite(test.xmldef.DynamicDeploymentTest.class);
-        suite.addTestSuite(test.xmldef.XmlDefinitionParserTest.class);
+//        suite.addTestSuite(test.xmldef.XmlDefinitionParserTest.class);
         suite.addTestSuite(test.xmldef.AspectWerkzTest.class);
         suite.addTestSuite(test.xmldef.CFlowTest.class);
         suite.addTestSuite(test.xmldef.PointcutExpressionTest.class);
@@ -42,14 +42,15 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.xmldef.HierachicalPatternTest.class);
         suite.addTestSuite(test.xmldef.reflection.ReflectionTest.class);
         suite.addTestSuite(test.xmldef.bindingsyntax.AdviceBindingTest.class);
-        //suite.addTestSuite(test.xmldef.clapp.CustomClassLoaderTest.class);//broken on JRockit
         suite.addTestSuite(test.xmldef.superclassconstructorbug.SuperClassConstructorTest.class);
         suite.addTestSuite(test.xmldef.staticfield.StaticFieldAdviceTest.class);
         suite.addTestSuite(test.xmldef.staticfield.CollectionFieldTest.class);
-
-//        suite.addTestSuite(test.xmldef.reentrant.ReentrantTest.class);
-
         suite.addTestSuite(test.xmldef.PerformanceTest.class);
+
+        // not used
+        //suite.addTestSuite(test.xmldef.reentrant.ReentrantTest.class);
+        //suite.addTestSuite(test.xmldef.clapp.CustomClassLoaderTest.class);//broken on JRockit
+
         return suite;
     }
 

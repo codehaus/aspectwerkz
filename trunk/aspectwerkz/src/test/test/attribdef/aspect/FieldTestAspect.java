@@ -31,6 +31,7 @@ public class FieldTestAspect extends Aspect {
     Pointcut pc4;
     /** @Set * test.attribdef.FieldAdviceTest.m_setFieldPrePostAdviced */
     Pointcut pc5;
+
     /** @Get * test.attribdef.FieldAdviceTest.m_getFieldPreAdvic* */
     Pointcut pc6;
     /** @Get * test.attribdef.FieldAdviceTest.m_getFieldPreAdvice* */
@@ -39,6 +40,7 @@ public class FieldTestAspect extends Aspect {
     Pointcut pc8;
     /** @Get * test.attribdef.FieldAdviceTest.m_getFieldPrePostAdviced */
     Pointcut pc9;
+
     /** @Set * test.attribdef.FieldAdviceTest.s_setStaticFieldPreAdvic* */
     Pointcut pc10;
     /** @Set * test.attribdef.FieldAdviceTest.s_setStaticFieldPreAdvice* */
@@ -47,6 +49,7 @@ public class FieldTestAspect extends Aspect {
     Pointcut pc12;
     /** @Set * test.attribdef.FieldAdviceTest.s_setStaticFieldPrePostAdviced */
     Pointcut pc13;
+
     /** @Get * test.attribdef.FieldAdviceTest.s_getStaticFieldPreAdvice* */
     Pointcut pc14;
     /** @Get * test.attribdef.FieldAdviceTest.s_getStaticFieldPreAdvic* */
@@ -59,28 +62,32 @@ public class FieldTestAspect extends Aspect {
     // ============ Advices ============
 
     /**
-     * @Before pc2 || pc5 || pc6 || pc9 || pc10 || pc13 || pc14 || pc17
+     * @Before pc2 || pc5 || pc10 || pc13
+     * @Before pc6 || pc9 || pc14 || pc17
      */
     public void preAdvice1(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("pre1 ");
     }
 
     /**
-     * @Before pc1 || pc5 || pc7 || pc11 || pc13 || pc15 || pc9 || pc17
+     * @Before pc1 || pc5 || pc11 || pc13
+     * @Before pc7 || pc9 || pc15 || pc17
      */
     public void preAdvice2(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("pre2 ");
     }
 
     /**
-     * @After pc4 || pc5 || pc8 || pc9 || pc12 || pc13 || pc16 || pc17
+     * @After pc4 || pc5 || pc12 || pc13
+     * @After pc8 || pc9 || pc16 || pc17
      */
     public void postAdvice1(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("post1 ");
     }
 
     /**
-     * @After pc3 || pc5 || pc8 || pc9 || pc12 || pc13 || pc16 || pc17
+     * @After pc3 || pc5 || pc12 || pc13
+     * @After pc8 || pc9 || pc16 || pc17
      */
     public void postAdvice2(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("post2 ");

@@ -14,9 +14,9 @@ import junit.framework.TestCase;
 
 import org.codehaus.aspectwerkz.xmldef.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.xmldef.definition.IntroductionWeavingRule;
 import org.codehaus.aspectwerkz.xmldef.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.xmldef.definition.AdviceWeavingRule;
+import org.codehaus.aspectwerkz.xmldef.definition.BindIntroductionRule;
+import org.codehaus.aspectwerkz.xmldef.definition.BindAdviceRule;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.XmlParser;
@@ -69,14 +69,14 @@ public class XmlDefinitionParserTest extends TestCase {
             AspectDefinition aspect = (AspectDefinition)it1.next();
             assertEquals("Logger", aspect.getName());
             assertEquals("Service", aspect.getExtends());
-            assertEquals("services.*", ((IntroductionWeavingRule)aspect.getIntroductionWeavingRules().get(0)).getClassPattern());
-            assertEquals("loggable", (String)((IntroductionWeavingRule)aspect.getIntroductionWeavingRules().get(0)).getIntroductionRefs().get(0));
-            assertEquals("services.*", ((IntroductionWeavingRule)aspect.getIntroductionWeavingRules().get(1)).getClassPattern());
-            assertEquals("loggable", (String)((IntroductionWeavingRule)aspect.getIntroductionWeavingRules().get(1)).getIntroductionRefs().get(0));
-            assertEquals("start && stop", ((AdviceWeavingRule)aspect.getAdviceWeavingRules().get(0)).getExpression());
-            assertEquals("logging", (String)((AdviceWeavingRule)aspect.getAdviceWeavingRules().get(0)).getAdviceRefs().get(0));
-            assertEquals("start || stop", ((AdviceWeavingRule)aspect.getAdviceWeavingRules().get(1)).getExpression());
-            assertEquals("logging", (String)((AdviceWeavingRule)aspect.getAdviceWeavingRules().get(1)).getAdviceRefs().get(0));
+            assertEquals("services.*", ((BindIntroductionRule)aspect.getBindIntroductionRules().get(0)).getExpression().getExpression());
+            assertEquals("loggable", (String)((BindIntroductionRule)aspect.getBindIntroductionRules().get(0)).getIntroductionRefs().get(0));
+            assertEquals("services.*", ((BindIntroductionRule)aspect.getBindIntroductionRules().get(1)).getExpression().getExpression());
+            assertEquals("loggable", (String)((BindIntroductionRule)aspect.getBindIntroductionRules().get(1)).getIntroductionRefs().get(0));
+            assertEquals("start && stop", ((BindAdviceRule)aspect.getBindAdviceRules().get(0)).getExpression().getExpression());
+            assertEquals("logging", (String)((BindAdviceRule)aspect.getBindAdviceRules().get(0)).getAdviceRefs().get(0));
+            assertEquals("start || stop", ((BindAdviceRule)aspect.getBindAdviceRules().get(1)).getExpression().getExpression());
+            assertEquals("logging", (String)((BindAdviceRule)aspect.getBindAdviceRules().get(1)).getAdviceRefs().get(0));
         }
         catch (Exception e) {
             System.out.println(e);
@@ -94,16 +94,14 @@ public class XmlDefinitionParserTest extends TestCase {
             PointcutDefinition pointcut2 = (PointcutDefinition)it.next();
             assertEquals("method", pointcut2.getType());
             assertEquals("stop", pointcut2.getName());
-            assertEquals("services.*", pointcut2.getClassPattern());
-            assertEquals("* stop(..)", pointcut2.getPattern());
+            assertEquals("* services.*.stop(..)", pointcut2.getExpression());
             // absract aspect pointcut are added thereafter
             // @todo review precedence
             it.next();//skip "callerSideTest"
             PointcutDefinition pointcut1 = (PointcutDefinition)it.next();
             assertEquals("setField", pointcut1.getType());
             assertEquals("setFieldTest", pointcut1.getName());
-            assertEquals("services.*", pointcut1.getClassPattern());
-            assertEquals("boolean m_isRunning", pointcut1.getPattern());
+            assertEquals("boolean services.*.m_isRunning", pointcut1.getExpression());
         }
         catch (Exception e) {
             System.out.println(e);
