@@ -13,6 +13,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
+ *
+ * TODO rewrite test.aopc.* with ASM or using an already builded jar with the small appp deployed
+ * several time in difft CL to test system defs and namespaces.
+ *
  * Note: does not work behing WeavingCL. Use a real online mode <p/>
  * java -Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib\aspectwerkz-core-1.0.jar ...
  * <p/>
