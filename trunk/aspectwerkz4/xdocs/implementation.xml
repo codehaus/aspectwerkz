@@ -201,7 +201,7 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                 <a href="attribute_definition.html">Annotation definition</a> section for more information.
             </p>
             <p>
-                The advice signature is thus depending on the pointcut signature, although the JoinPoint argument is mandatory.
+                The advice signature is thus depending on the pointcut signature and the use of JoinPoint, StaticJoinPoint, user defined JoinPoint or not use of it at all.
                 A sample could look like the following:
                 <source><![CDATA[
 // will match all method named "log" with a "java.lang.String" as sole parameter
@@ -214,7 +214,19 @@ public void myBeforeAdvice(JoinPoint joinPoint, String adviceArg) {...}
 // it is possible to have the JoinPoint at any index in the advice parameter list
 // though a best practice is to keep it at the first position
 @Around("myPointcut(adviceArg)")
-public Object myAroundAdvice(String adviceArg, JoinPoint joinPoint) {... joinPoint.proceed(); ...}
+public Object myAroundAdvice(String adviceArg, StaticJoinPoint joinPoint) {... joinPoint.proceed(); ...}
+
+// user defined JoinPoint (could extends StaticJoinPoint as well)
+static interface MyJoinPoint extends JoinPoint {
+   Object proceed(String adviceArgIdLikeToChange);
+}
+@Around("myPointcut(adviceArg)")
+public Object myAroundAdvice(MyJoinPoint myJoinPoint) {
+   ...
+   myJoinPoint.proceed("new value !!");
+   ...
+}
+
 
 @After("myPointcut(adviceArg)")
 public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
