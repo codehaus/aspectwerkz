@@ -214,8 +214,7 @@ public class AddImplementationTransformer implements Transformer {
             final CtClass cg,
             final ClassMetaData classMetaData,
             final SystemDefinition definition) {
-        if (cg.isInterface() ||
-            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
+        if (cg.isInterface()) {
             return true;
         }
         String className = cg.getName().replace('/', '.');

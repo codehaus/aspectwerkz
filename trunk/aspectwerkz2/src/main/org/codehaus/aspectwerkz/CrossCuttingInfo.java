@@ -11,21 +11,14 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.lang.reflect.Method;
-import java.lang.reflect.Constructor;
-import java.lang.*;
 
-import org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * Contains static and dynamic information for classes that has been defined as cross-cutting.
- * Should be accessed through the {@link org.codehaus.aspectwerkz.CrossCutting} interface that
- * is applied to all cross-cutting classes.
+ * Contains information about and for classes that has been defined as cross-cutting.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -47,14 +40,19 @@ public class CrossCuttingInfo implements Serializable {
     protected Class m_aspectClass;
 
     /**
+     * The cross-cuttable instance.
+     */
+    protected Object m_aspectInstance = null;
+
+    /**
+     * The container.
+     */
+    protected AspectContainer m_container = null;
+
+    /**
      * Holds the deployment model.
      */
     protected int m_deploymentModel;
-
-    /**
-     * The container strategy for this cross-cuttable class.
-     */
-    protected transient AspectContainer m_container;
 
     /**
      * Holds the parameters passed to the advice.
@@ -74,46 +72,65 @@ public class CrossCuttingInfo implements Serializable {
     /**
      * The aspect definition.
      */
-    private AspectDefinition m_aspectDef;
-
-    /**
-     * The target instance for this cross-cuttable class (is null if not deployed as perInstance)
-     */
-    private Object m_targetInstance = null;
-
-    /**
-     * The target class for this cross-cuttable class (is null if not deployed as perClass)
-     */
-    private Class m_targetClass = null;
-
-    /**
-     * The constructor for the aspect class.
-     */
-    private Constructor m_aspectConstructor = null;
+    private AspectDefinition m_aspectDefinition;
 
     /**
      * Creates a new cross-cutting info instance.
+     *
+     * @param uuid
+     * @param aspectInstance
+     * @param deploymentModel
+     * @param aspectDef
+     * @param parameters
      */
-    public CrossCuttingInfo() {
+    public CrossCuttingInfo(
+            final String uuid,
+            final Object aspectInstance,
+            final String name,
+            final int deploymentModel,
+            final AspectDefinition aspectDef,
+            final Map parameters) {
+        m_uuid = uuid;
+        m_aspectInstance = aspectInstance;
+        m_aspectClass = aspectInstance.getClass();
+        m_name = name;
+        m_deploymentModel = deploymentModel;
+        m_aspectDefinition = aspectDef;
+        m_parameters = parameters;
+    }
+
+    /**
+     * Returns the cross-cutting info for a specific cross-cutting class instance.
+     *
+     * @param systemId
+     * @param crossCuttingInstance
+     * @return the cross-cutting info
+     */
+    public static CrossCuttingInfo getInfo(final String systemId, final Object crossCuttingInstance) {
+        String name = crossCuttingInstance.getClass().getName();
+
+        System system = SystemLoader.getSystem(systemId);
+        system.initialize();
+
+        return system.getAspectManager().getAspectContainer(name).getCrossCuttingInfo();
     }
 
     /**
      * Copy constructor - creates a clone of the cross-cutting info.
+     * Creates a new instance of the cross-cutting class it holds.
      *
      * @return a clone of the cross-cutting info
      */
     public static CrossCuttingInfo newInstance(final CrossCuttingInfo prototype) {
         try {
-            CrossCuttingInfo clone = new CrossCuttingInfo();
-            clone.m_uuid = prototype.m_uuid;
-            clone.m_name = prototype.m_name;
-            clone.m_aspectClass = prototype.m_aspectClass;
-            clone.m_aspectConstructor = prototype.m_aspectConstructor;
-            clone.m_container = prototype.m_container;
-            clone.m_deploymentModel = prototype.m_deploymentModel;
-            clone.m_parameters = prototype.m_parameters;
-
-            return clone;
+            return new CrossCuttingInfo(
+                    prototype.m_uuid,
+                    prototype.m_aspectClass.newInstance(),
+                    prototype.m_name,
+                    prototype.m_deploymentModel,
+                    prototype.m_aspectDefinition,
+                    prototype.m_parameters
+            );
         }
         catch (Exception e) {
             throw new RuntimeException(
@@ -136,82 +153,12 @@ public class CrossCuttingInfo implements Serializable {
     }
 
     /**
-     * Invokes an introduced method with the index specified.
-     *
-     * @param methodIndex the method index
-     * @param joinPoint   the join point
-     * @return the result from the invocation
-     */
-    public Object invokeAdvice(final int methodIndex, final JoinPoint joinPoint) throws Throwable {
-        Object result = null;
-        switch (m_deploymentModel) {
-
-            case DeploymentModel.PER_JVM:
-                result = m_container.invokeAdvicePerJvm(methodIndex, joinPoint);
-                break;
-
-            case DeploymentModel.PER_CLASS:
-                result = m_container.invokeAdvicePerClass(methodIndex, joinPoint);
-                break;
-
-            case DeploymentModel.PER_INSTANCE:
-                result = m_container.invokeAdvicePerInstance(methodIndex, joinPoint);
-                break;
-
-            case DeploymentModel.PER_THREAD:
-                result = m_container.invokeAdvicePerThread(methodIndex, joinPoint);
-                break;
-
-            default:
-                throw new RuntimeException("invalid deployment model: " + m_deploymentModel);
-        }
-        return result;
-    }
-
-    /**
-     * Retrieves an advice method with the index specified.
-     *
-     * @param methodIndex the method index
-     * @return the advice method
-     */
-    public Method getAdvice(final int methodIndex) {
-        return m_container.getAdvice(methodIndex);
-    }
-
-    /**
-     * Retrieves all advice.
-     *
-     * @return the advice
-     */
-    public Method[] getAdvice() {
-        return m_container.getAdvice();
-    }
-
-    /**
-     * Sets the UUID for the system.
-     *
-     * @param uuid the UUID for the system
-     */
-    public void setUuid(final String uuid) {
-        m_uuid = uuid;
-    }
-
-    /**
      * Returns the UUID for the system.
      *
      * @return the UUID for the system
      */
     public String getUuid() {
         return m_uuid;
-    }
-
-    /**
-     * Sets the name of the aspect.
-     *
-     * @param name the name of the aspect
-     */
-    public void setName(final String name) {
-        m_name = name;
     }
 
     /**
@@ -224,15 +171,6 @@ public class CrossCuttingInfo implements Serializable {
     }
 
     /**
-     * Sets the deployment model.
-     *
-     * @param deploymentModel the deployment model
-     */
-    public void setDeploymentModel(final int deploymentModel) {
-        m_deploymentModel = deploymentModel;
-    }
-
-    /**
      * Returns the deployment model.
      *
      * @return the deployment model
@@ -241,13 +179,14 @@ public class CrossCuttingInfo implements Serializable {
         return m_deploymentModel;
     }
 
+
     /**
-     * Returns the cross-cuttable class' constructor.
+     * Returns the aspect instance.
      *
-     * @return the cross-cuttable class' constructor
+     * @return the aspect instance
      */
-    public Constructor getAspectConstructor() {
-        return m_aspectConstructor;
+    public Object getAspectInstance() {
+        return m_aspectInstance;
     }
 
     /**
@@ -257,21 +196,6 @@ public class CrossCuttingInfo implements Serializable {
      */
     public Class getAspectClass() {
         return m_aspectClass;
-    }
-
-    /**
-     * Sets the cross-cuttable class.
-     *
-     * @param klass the cross-cuttable class
-     */
-    public void setAspectClass(final Class klass) {
-        m_aspectClass = klass;
-        try {
-            m_aspectConstructor = m_aspectClass.getConstructor(new Class[]{CrossCuttingInfo.class});
-        }
-        catch (NoSuchMethodException e) {
-            throw new WrappedRuntimeException(e);
-        }
     }
 
     /**
@@ -298,53 +222,7 @@ public class CrossCuttingInfo implements Serializable {
      * @return the aspect definition
      */
     public AspectDefinition getAspectDefinition() {
-        return m_aspectDef;
-    }
-
-    /**
-     * Sets the aspect definition.
-     *
-     * @param aspectDef the aspect definition
-     */
-    public void setAspectDef(final AspectDefinition aspectDef) {
-        m_aspectDef = aspectDef;
-    }
-
-    /**
-     * Returns the target instance if aspect is deployed as 'perInstance' otherwise null.
-     *
-     * @return the target instance
-     */
-    public Object getTargetInstance() {
-        return m_targetInstance;
-    }
-
-    /**
-     * Sets the target instance.
-     *
-     * @param targetInstance the target instance
-     */
-    public void setTargetInstance(final Object targetInstance) {
-        m_targetInstance = targetInstance;
-        m_targetClass = targetInstance.getClass();
-    }
-
-    /**
-     * Returns the target class if aspect is deployed as 'perInstance' or 'perClass' otherwise null.
-     *
-     * @return the target class
-     */
-    public Class getTargetClass() {
-        return m_targetClass;
-    }
-
-    /**
-     * Sets the target class.
-     *
-     * @param targetClass the target class
-     */
-    public void setTargetClass(final Class targetClass) {
-        m_targetClass = targetClass;
+        return m_aspectDefinition;
     }
 
     /**
@@ -395,82 +273,6 @@ public class CrossCuttingInfo implements Serializable {
     }
 
     /**
-     * Creates a new per JVM aspect, if it does not already exist, then return it.
-     *
-     * @return the aspect
-     */
-    public CrossCutting createPerJvmAspect() {
-        return m_container.createPerJvmAspect();
-    }
-
-    /**
-     * Creates a new perClass aspect, if it does not already exist, then return it.
-     *
-     * @return the aspect
-     */
-    public CrossCutting createPerClassAspect(final Class callingClass) {
-        return m_container.createPerClassAspect(callingClass);
-    }
-
-    /**
-     * Creates a new perInstance aspect, if it does not already exist, then return it.
-     *
-     * @return the aspect
-     */
-    public CrossCutting createPerInstanceAspect(final Object callingInstance) {
-        return m_container.createPerInstanceAspect(callingInstance);
-    }
-
-    /**
-     * Creates a new perThread aspect, if it does not already exist, then return it.
-     *
-     * @param thread the thread for the aspect
-     * @return the aspect
-     */
-    public CrossCutting createPerThreadAspect(final Thread thread) {
-        return m_container.createPerThreadAspect(thread);
-    }
-
-    /**
-     * Returns the perJVM aspect.
-     *
-     * @return the perJVM aspect
-     */
-    public CrossCutting getPerJvmAspect() {
-        return m_container.getPerJvmAspect();
-    }
-
-    /**
-     * Returns the perClass aspect.
-     *
-     * @param callingClass the calling class
-     * @return the perClass aspect
-     */
-    public CrossCutting getPerClassAspect(final Class callingClass) {
-        return m_container.getPerClassAspect(callingClass);
-    }
-
-    /**
-     * Returns the perInstance aspect.
-     *
-     * @param callingInstance the calling instance
-     * @return the perInstance aspect
-     */
-    public CrossCutting getPerInstanceAspect(final Object callingInstance) {
-        return m_container.getPerInstanceAspect(callingInstance);
-    }
-
-    /**
-     * Returns the perThread aspect.
-     *
-     * @param thread the thread for the aspect
-     * @return the perThread aspect
-     */
-    public CrossCutting getPerThreadAspect(final Thread thread) {
-        return m_container.getPerThreadAspect(thread);
-    }
-
-    /**
      * Provides custom deserialization.
      *
      * @param stream the object input stream containing the serialized object
@@ -481,19 +283,12 @@ public class CrossCuttingInfo implements Serializable {
         m_uuid = (String)fields.get("m_uuid", null);
         m_name = (String)fields.get("m_name", null);
         m_aspectClass = (Class)fields.get("m_aspectClass", null);
-        m_targetInstance = fields.get("m_targetInstance", null);
-        m_targetClass = (Class)fields.get("m_targetClass", null);
+        m_aspectInstance = fields.get("m_aspectClass", null);
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
-        m_aspectDef = (AspectDefinition)fields.get("m_aspectDef", null);
+        m_aspectDefinition = (AspectDefinition)fields.get("m_aspectDefinition", null);
         m_parameters = (Map)fields.get("m_parameters", null);
-        m_container = new DefaultAspectContainerStrategy(this);
+        m_container = StartupManager.createAspectContainer(this);
         m_system = SystemLoader.getSystem(m_uuid);
         m_system.initialize();
-        try {
-            m_aspectConstructor = m_aspectClass.getConstructor(new Class[]{CrossCuttingInfo.class});
-        }
-        catch (NoSuchMethodException e) {
-            throw new WrappedRuntimeException(e);
-        }
     }
 }

@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.HashMap;
 
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.ContextClassLoader;
@@ -19,11 +20,11 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.Mixin;
-import org.codehaus.aspectwerkz.CrossCutting;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
-import org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy;
+import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
@@ -136,11 +137,11 @@ public final class AspectManager {
     /**
      * Registers a new aspect.
      *
-     * @param aspect         the aspect to register
+     * @param container         the containern for the aspect to register
      * @param aspectMetaData the aspect meta-data
      */
-    public void register(final CrossCutting aspect, final PointcutManager aspectMetaData) {
-        m_aspectRegistry.register(aspect, aspectMetaData);
+    public void register(final AspectContainer container, final PointcutManager aspectMetaData) {
+        m_aspectRegistry.register(container, aspectMetaData);
     }
 
     /**
@@ -167,7 +168,6 @@ public final class AspectManager {
             throw new IllegalArgumentException(deploymentModel + " is not a valid deployment model type");
         }
 
-        CrossCutting prototype = null;
         Class aspectClass = null;
         try {
             if (loader == null) {
@@ -188,8 +188,9 @@ public final class AspectManager {
             throw new RuntimeException(msg.toString());
         }
 
+        Object aspectInstance = null;
         try {
-            prototype = (CrossCutting)aspectClass.newInstance();
+            aspectInstance = aspectClass.newInstance();
         }
         catch (Exception e) {
             StringBuffer msg = new StringBuffer();
@@ -209,14 +210,19 @@ public final class AspectManager {
         m_attributeParser.parse(aspectClass, aspectDef, m_definition);
         m_definition.addAspect(aspectDef);
 
-        CrossCuttingInfo crossCuttingInfo = prototype.getCrossCuttingInfo();
-        crossCuttingInfo.setDeploymentModel(deploymentModel);
-        crossCuttingInfo.setName(name);
-        crossCuttingInfo.setAspectClass(aspectClass);
-        crossCuttingInfo.setContainer(new DefaultAspectContainerStrategy(crossCuttingInfo));
-        crossCuttingInfo.setAspectDef(aspectDef);
+        CrossCuttingInfo crossCuttingInfo = new CrossCuttingInfo(
+                null,
+                aspectInstance,
+                aspectDef.getName(),
+                deploymentModel,
+                aspectDef,
+                new HashMap()
+        );
 
-        m_aspectRegistry.register(prototype, new PointcutManager(m_uuid, name, deploymentModel));
+        AspectContainer container = StartupManager.createAspectContainer(crossCuttingInfo);
+        crossCuttingInfo.setContainer(container);
+
+        m_aspectRegistry.register(container, new PointcutManager(m_uuid, name, deploymentModel));
     }
 
    /**
@@ -229,23 +235,23 @@ public final class AspectManager {
     }
 
     /**
-     * Returns the aspect prototype by its index.
+     * Returns the aspect container by its index.
      *
      * @param index the index of the aspect
      * @return the aspect
      */
-    public CrossCutting getAspectPrototype(final int index) {
-        return m_aspectRegistry.getAspect(index);
+    public AspectContainer getAspectContainer(final int index) {
+        return m_aspectRegistry.getAspectContainer(index);
     }
 
     /**
-     * Returns the aspect prototype for a specific name.
+     * Returns the aspect container for a specific name.
      *
      * @param name the name of the aspect
      * @return the the aspect prototype
      */
-    public CrossCutting getAspectPrototype(final String name) {
-        return m_aspectRegistry.getAspectPrototype(name);
+    public AspectContainer getAspectContainer(final String name) {
+        return m_aspectRegistry.getAspectContainer(name);
     }
 
 
@@ -255,43 +261,11 @@ public final class AspectManager {
      * @param name the name of the aspect
      * @return the the aspect
      */
-    public CrossCutting getPerJvmAspect(final String name) {
-        return m_aspectRegistry.getPerJvmAspect(name);
+    public Object getCrossCuttingInfo(final String name) {
+        return m_aspectRegistry.getCrossCuttingInfo(name);
     }
 
-    /**
-     * Returns the aspect for a specific name, deployed as perClass.
-     *
-     * @param name the name of the aspect
-     * @param targetClass the target class
-     * @return the the aspect
-     */
-    public CrossCutting getPerClassAspect(final String name, final Class targetClass) {
-        return m_aspectRegistry.getPerClassAspect(name, targetClass);
-    }
-
-    /**
-     * Returns the aspect for a specific name, deployed as perInstance.
-     *
-     * @param name the name of the aspect
-     * @param targetInstance the target instance
-     * @return the the aspect
-     */
-    public CrossCutting getPerInstanceAspect(final String name, final Object targetInstance) {
-        return m_aspectRegistry.getPerInstanceAspect(name, targetInstance);
-    }
-
-    /**
-     * Returns the aspect for a specific name, deployed as perThread.
-     *
-     * @param name the name of the aspect
-     * @param thread the thread for the aspect
-     * @return the the aspect
-     */
-    public CrossCutting getPerThreadAspect(final String name, final Thread thread) {
-        return m_aspectRegistry.getPerThreadAspect(name, thread);
-    }
-    /**
+   /**
      * Retrieves a specific mixin based on its index.
      *
      * @param index the index of the introduction (aspect in this case)
@@ -355,8 +329,8 @@ public final class AspectManager {
      *
      * @return the aspects
      */
-    public CrossCutting[] getAspects() {
-        return m_aspectRegistry.getAspects();
+    public Object[] getAspects() {
+        return m_aspectRegistry.getAspectContainers();
     }
 
     /**

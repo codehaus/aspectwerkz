@@ -43,49 +43,62 @@
         </section>
 
         <section name="Aspects">
-            <p>
-                The <code>Aspect</code> class implements the aspect concept.
-                Aspects are <code>AspectWerkz</code>'s unit of modularity for crosscutting concerns.
-                They are defined in terms of pointcuts, advice and introductions.
-            </p>
 
             <p>
-                An aspect is a regular Java class that must satisfy one criteria:
-                <ul>
-                    <li>
-                        it has to extend
-                        <code>org.codehaus.aspectwerkz.aspect.Aspect</code> either
-                        directly or indirectly by extending another subclass.
-                    </li>
-                </ul>
-                The <code>Aspect</code> class provides some useful operations to access runtime information.
-                For example:
-                <ul>
-                    <li>
-                        <code>___AW_getTargetClass()</code> to access the target class
-                    </li>
-                </ul>
-                See JavaDoc of <code>Aspect</code> class for a complete list.
+                In <code>AspectWerkz</code> any Java class can be an aspect (or more conceptually correct, can
+                be defined to be <i>cross-cutting</i>). Which means that any class can be a unit of modularity
+                for crosscutting concerns.
             </p>
-
             <p>
-                The aspect can then be defined using XML or attributes, see the
-                <a href="xml_definition.html">XML definition</a> section or the
-                <a href="attribute_definition.html">Attribute definition</a> section for more information.
+                All classes defined as being cross-cuttable are given an interface,
+                <code>org.codehaus.aspectwerkz.Object</code>. Instances of this class and other instances
+                can use this interface to retrieve RTTI (Runtime Type Information) about the cross-cutting instance.
+                See the <a href="#The Object interface">Object interface</a> section for details.
             </p>
-
-            <subsection name="Abstract aspects - aspect inheritance">
-                <p>
-                    Since the Aspects are pure Java classes, you have the possibility of
-                    defining abstract aspects that you can reuse by implementing another aspect
-                    that inherits the abstract aspect.
-                </p>
-                <p>
-                    Aspect inheritance is exactly regular class inheritance. An abstract aspect
-                    is defined using the
-                    <code>abstract</code> keyword as a regular abstract class and is inherited
-                    using the <code>extends</code> keyword.
-                </p>
+<!---->
+<!--            <p>-->
+<!--                The <code>Aspect</code> class implements the aspect concept.-->
+<!--                Aspects are <code>AspectWerkz</code>'s unit of modularity for crosscutting concerns.-->
+<!--                They are defined in terms of pointcuts, advice and introductions.-->
+<!--            </p>-->
+<!---->
+<!--            <p>-->
+<!--                An aspect is a regular Java class that must satisfy one criteria:-->
+<!--                <ul>-->
+<!--                    <li>-->
+<!--                        it has to extend-->
+<!--                        <code>org.codehaus.aspectwerkz.aspect.Aspect</code> either-->
+<!--                        directly or indirectly by extending another subclass.-->
+<!--                    </li>-->
+<!--                </ul>-->
+<!--                The <code>Aspect</code> class provides some useful operations to access runtime information.-->
+<!--                For example:-->
+<!--                <ul>-->
+<!--                    <li>-->
+<!--                        <code>___AW_getTargetClass()</code> to access the target class-->
+<!--                    </li>-->
+<!--                </ul>-->
+<!--                See JavaDoc of <code>Aspect</code> class for a complete list.-->
+<!--            </p>-->
+<!---->
+<!--            <p>-->
+<!--                The aspect can then be defined using XML or attributes, see the-->
+<!--                <a href="xml_definition.html">XML definition</a> section or the-->
+<!--                <a href="attribute_definition.html">Attribute definition</a> section for more information.-->
+<!--            </p>-->
+<!---->
+<!--            <subsection name="Abstract aspects - aspect inheritance">-->
+<!--                <p>-->
+<!--                    Since the Aspects are pure Java classes, you have the possibility of-->
+<!--                    defining abstract aspects that you can reuse by implementing another aspect-->
+<!--                    that inherits the abstract aspect.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    Aspect inheritance is exactly regular class inheritance. An abstract aspect-->
+<!--                    is defined using the-->
+<!--                    <code>abstract</code> keyword as a regular abstract class and is inherited-->
+<!--                    using the <code>extends</code> keyword.-->
+<!--                </p>-->
             </subsection>
         </section>
 

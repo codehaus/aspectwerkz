@@ -115,7 +115,7 @@ public class HandlerTransformer implements Transformer {
                                 body.append(',');
                                 body.append(m_joinPointIndex);
                                 if (Modifier.isStatic(where.getModifiers())) {
-                                    body.append(", $1, (Object)null, \"");
+                                    body.append(", $1, null, \"");
                                 }
                                 else {
                                     body.append(", $1, this, \"");
@@ -152,8 +152,7 @@ public class HandlerTransformer implements Transformer {
             final SystemDefinition definition,
             final ClassMetaData classMetaData,
             final CtClass cg) {
-        if (cg.isInterface() ||
-            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
+        if (cg.isInterface()) {
             return true;
         }
         String className = cg.getName().replace('/', '.');

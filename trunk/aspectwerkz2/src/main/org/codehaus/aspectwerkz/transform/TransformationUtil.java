@@ -126,7 +126,6 @@ public final class TransformationUtil {
     public static final String IDENTIFIABLE_INTERFACE = "org.codehaus.aspectwerkz.Identifiable";
     public static final String META_DATA_INTERFACE = "org.codehaus.aspectwerkz.MetaDataEnhanceable";
     public static final String UUID_CLASS = "org.codehaus.aspectwerkz.util.UuidGenerator";
-    public static final String CROSS_CUTTING_CLASS = "org.codehaus.aspectwerkz.CrossCutting";
     public static final String CROSS_CUTTING_INFO_CLASS = "org.codehaus.aspectwerkz.CrossCuttingInfo";
 
     public static final String EMPTY_WRAPPER_ATTRIBUTE = ASPECTWERKZ_PREFIX + "empty";

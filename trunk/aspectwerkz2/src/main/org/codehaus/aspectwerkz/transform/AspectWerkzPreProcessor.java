@@ -12,9 +12,6 @@ import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.metadata.MetaDataMaker;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -102,11 +99,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     private boolean m_initialized = false;
 
     /**
-     * Prepares the aspect classes.
-     */
-    private final PrepareAspectClassTransformer m_aspectTransformer = new PrepareAspectClassTransformer();
-
-    /**
      * Initializes the transformer stack.
      *
      * @param params not used
@@ -116,7 +108,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
         // CAUTION: ORDER IS IMPORTANT!
         m_stack = new ArrayList();
-        m_stack.add(new PrepareAspectClassTransformer());
         m_stack.add(new PrepareAdvisedClassTransformer());
         m_stack.add(new MethodCallUnTransformer());
         m_stack.add(new FieldSetGetTransformer());
@@ -144,11 +135,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
         final String className = name.replace('/', '.'); // needed for JRockit (as well as all in all TFs)
 
-        if (filter(className)) {
+        if (filter(className) || !m_initialized) {
             return bytecode;
-        }
-        if (!m_initialized) {  // handle pre-initialization stuff
-            return preInitializationWeaving(className, bytecode, loader);
         }
         if (VERBOSE) {
             log(loader.toString() + ':' + className + '[' + Thread.currentThread().getName() + ']');
@@ -218,26 +206,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         dumpAfter(className, klass);
 
         return klass.getBytecode();
-    }
-
-    /**
-     * Handle pre-initialization weaving.
-     *
-     * @param className
-     * @param bytecode
-     * @param loader
-     * @return
-     */
-    private byte[] preInitializationWeaving(final String className, final byte[] bytecode, final ClassLoader loader) {
-        try {
-            Klass klass = new Klass(className, bytecode, loader);
-            m_aspectTransformer.transform(new Context(loader), klass);
-            dumpAfter(className, klass);
-            return klass.getBytecode();
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
     }
 
     /**

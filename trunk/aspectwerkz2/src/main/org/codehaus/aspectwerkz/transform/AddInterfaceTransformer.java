@@ -69,8 +69,7 @@ public final class AddInterfaceTransformer implements Transformer {
             final CtClass ctClass,
             final ClassMetaData classMetaData,
             final SystemDefinition definition) {
-        if (ctClass.isInterface() ||
-            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
+        if (ctClass.isInterface()) {
             return true;
         }
         String className = ctClass.getName().replace('/', '.');

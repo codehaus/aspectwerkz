@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.CrossCutting;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
@@ -70,9 +69,9 @@ public class AspectAttributeParser implements AttributeParser {
         if (klass == null) {
             return;
         }
-        if (klass.getName().equals(CrossCutting.class.getName())) {
-            return;
-        }
+//        if (klass.getName().equals(CrossCutting.class.getName())) {
+//            return;
+//        }
 
         Field[] fieldList = klass.getDeclaredFields();
         // parse the pointcuts

@@ -190,7 +190,7 @@
     <goal name="aspectwerkz:xmldef:test:perf">
         <attainGoal name="aspectwerkz:test:aspectc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line=" -Daspectwerkz.jit.off=true -cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllPerfTests"/>
+            <arg line="-Daspectwerkz.jit.off=true -cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllPerfTests"/>
         </exec>
     </goal>
 

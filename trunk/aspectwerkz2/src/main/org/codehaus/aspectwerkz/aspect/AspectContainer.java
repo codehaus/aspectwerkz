@@ -8,7 +8,8 @@
 package org.codehaus.aspectwerkz.aspect;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.CrossCutting;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.lang.reflect.Method;
 
@@ -26,34 +27,7 @@ public interface AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    Object invokeAdvicePerJvm(int methodIndex, JoinPoint joinPoint);
-
-    /**
-     * Invokes the advice method on a per class basis.
-     *
-     * @param methodIndex the method index
-     * @param joinPoint   the join point
-     * @return the result from the method invocation
-     */
-    Object invokeAdvicePerClass(int methodIndex, JoinPoint joinPoint);
-
-    /**
-     * Invokes the advice method on a per instance basis.
-     *
-     * @param methodIndex the method index
-     * @param joinPoint   the join point
-     * @return the result from the method invocation
-     */
-    Object invokeAdvicePerInstance(int methodIndex, JoinPoint joinPoint);
-
-    /**
-     * Invokes the advice method on a per thread basis.
-     *
-     * @param methodIndex the method index
-     * @param joinPoint   the join point
-     * @return the result from the method invocation
-     */
-    Object invokeAdvicePerThread(int methodIndex, JoinPoint joinPoint);
+    Object invokeAdvice(int methodIndex, JoinPoint joinPoint);
 
     /**
      * Returns a specific advice by index.
@@ -64,69 +38,42 @@ public interface AspectContainer {
     Method getAdvice(int index);
 
     /**
-     * Returns all advice.
+     * Creates a new perJVM cross-cutting instance, if it already exists then return it.
      *
-     * @return the method
+     * @return the cross-cutting instance
      */
-    Method[] getAdvice();
+    Object createPerJvmCrossCuttingInstance();
 
     /**
-     * Creates a new perJVM aspect, if it does not already exist, then return it.
+     * Creates a new perClass cross-cutting instance, if it already exists then return it.
      *
-     * @return the aspect
+     * @param callingClass
+     * @return the cross-cutting instance
      */
-    CrossCutting createPerJvmAspect();
+    Object createPerClassCrossCuttingInstance(Class callingClass);
 
     /**
-     * Creates a new perClass aspect, if it does not already exist, then return it.
+     * Creates a new perInstance cross-cutting instance, if it already exists then return it.
      *
-     * @return the aspect
+     * @param callingInstance
+     * @return the cross-cutting instance
      */
-    CrossCutting createPerClassAspect(Class callingClass);
+    Object createPerInstanceCrossCuttingInstance(Object callingInstance);
 
     /**
-     * Creates a new perInstance aspect, if it does not already exist, then return it.
-     *
-     * @return the aspect
-     */
-    CrossCutting createPerInstanceAspect(Object callingInstance);
-
-    /**
-     * Creates a new perThread aspect, if it does not already exist, then return it.
+     * Creates a new perThread cross-cutting instance, if it already exists then return it.
      *
      * @param thread the thread for the aspect
-     * @return the aspect
+     * @return the cross-cutting instance
      */
-    CrossCutting createPerThreadAspect(Thread thread);
+    Object createPerThreadCrossCuttingInstance(Thread thread);
 
     /**
-     * Returns the sole per JVM aspect.
+     * Returns the cross-cutting info.
      *
-     * @return the aspect
+     * @return the cross-cutting info
      */
-    CrossCutting getPerJvmAspect();
-
-    /**
-     * Returns the aspect for the current class
-     *
-     * @return the aspect
-     */
-    CrossCutting getPerClassAspect(Class callingClass);
-
-    /**
-     * Returns the aspect for the current instance.
-     *
-     * @return the aspect
-     */
-    CrossCutting getPerInstanceAspect(Object callingInstance);
-
-    /**
-     * Returns the aspect for the current thread.
-     *
-     * @param thread the thread for the aspect
-     * @return the aspect
-     */
-    CrossCutting getPerThreadAspect(Thread thread);
+    CrossCuttingInfo getCrossCuttingInfo();
 
     /**
      * Attach the introduction container to this aspect container to mirror the "aspect contains 0-n introduction"
