@@ -113,7 +113,7 @@
                 <p>
                     Pure interface introduction are added by adding a field to the aspect. The field type has to be the
                     interface that you want to introduce. The
-                    <code>@Introduce</code> metadata is then used to specify
+                    <code>@Mixin</code> metadata is then used to specify
                     the pattern matching the classes you want the introduction to be applied to.
                     See
                     <a href="#Introductions">Introductions section</a>.
@@ -187,7 +187,7 @@ public class MyAspect {
     }
 
     /**
-     * @Introduce com.mypackage.*
+     * @Mixin within(com.mypackage..*)
      */
     public static class MyIntroduction extends SuperMixin implements ContractualInterface {
         ... // introduced methods and fields
@@ -414,8 +414,8 @@ public class MyAspect {
                     <li>Public inner class of the aspect class.
                         <br/>
                         The inner class declares to implement the interface(s) to introduce and effectively implements it.
-                        The inner class is marked with metadata
-                        <code>@Introduce &lt;classPattern&gt;</code>.
+                        The inner class is marked with metadata.
+                        <code>@Mixin &lt;pointcut&gt;</code>, where pointcut is composed with within, hasField, hasMethod.
                     </li>
                 </ul>
             </p>
@@ -454,11 +454,11 @@ public class MyAspect {
             <subsection name="Implementation introductions">
                 <p>
                     The inner mixin class is marked with metadata
-                    <code>@Introduce &lt;classPattern&gt;</code>
+                    <code>@Mixin &lt;pointcut&gt;</code>
                     to specify to which classes the introduction applies.
                     <br/>
                     The
-                    <code>@Introduce</code> annotation accepts an optional
+                    <code>@Mixin</code> annotation accepts an optional
                     <code>deploymentModel=</code> parameter to specify the
                     introduction deployment model. If not specified the aspect deployment model applies.
                     See
@@ -470,7 +470,7 @@ public class MyAspect {
                 <p>
                     When using abstract aspects or aspect inheritance, the aspect's super class can define introductions without
                     specifying a
-                    <code>@Introduce &lt;classPattern&gt;</code> metadata.
+                    <code>@Mixin &lt;pointcut&gt;</code> metadata.
                     The concrete aspect should thus declare an inner class that extends the super class aspect one's and
                     specify through metadata to which classes the introduction applies.
                 </p>
@@ -479,7 +479,7 @@ public class MyAspect {
     /**
      * Anonymous pointcut.
      *
-     * @Introduce within(com.package.*)
+     * @Mixin within(com.package..*)
      */
     public static class MyIntroduction extends SuperIntroduction implements ToBeIntroduced {
         // introduced methods implementation
@@ -495,7 +495,7 @@ public class MyAspect {
      * Named pointcut(s) in expression.
      * Note: in this specific case we will not match a class named "pc1" but we will look for a named pointcut "pc1"
      *
-     * @Introduce pc1
+     * @Mixin pc1
      */
     public static class AnotherIntroduction implements AnotherToBeIntroduced {
         // introduced methods implementation
@@ -543,11 +543,11 @@ public class MyAspect {
                         <td></td>
                     </tr>
                     <tr>
-                        <td>@Introduce</td>
-                        <td>inner class, class level</td>
+                        <td>@Mixin</td>
+                        <td>inner class, class level [NOT IN 2.x]</td>
                         <td>Implementation Introduction</td>
-                        <td>&lt;class pattern&gt;</td>
-                        <td>deploymentModel=perJVM | perClass | perInstance | perThread [O: aspect'one]</td>
+                        <td>&lt;pointcut&gt;</td>
+                        <td>deploymentModel=[NO]perJVM | perClass | perInstance | [NO]perThread [??FIXMEO: aspect'one]</td>
                     </tr>
                     <tr>
                         <td>@Around</td>
