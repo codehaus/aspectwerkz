@@ -121,7 +121,7 @@
         </java>
         <!-- run the application thru AspectWerkz -->
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="true" >
-            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp 1 1 1"/>
+            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp"/>
         </exec>
     </goal>
 
@@ -347,25 +347,73 @@
         </exec>
     </goal>
 
+    <!-- =================================================== -->
+    <!--  creates a patch of your changes -->
+    <!-- =================================================== -->
+    <goal name="cvs:make-patch" description="Creates a patch of *your* changes">
+        <cvs command="-q diff -b -u -N" output="patch.txt"/>
+        <echo>
+            Please create a new issue in AspectWerkz's JIRA:
+            http://jira.codehaus.org/secure/BrowseProject.jspa?id=10105
+            Then attach the patch.txt file.
+            If your patch consists of entirely new files too, please zip them
+            up and attach them too.
+
+            If your patch includes JUnit tests and a decent description,
+            you increase the chance of having the patch applied by some
+            of the committers.
+        </echo>
+    </goal>
 
 
-<!--    <goal name="bugshow">-->
-<!--        <exec executable="java">-->
-<!--            <arg line="-cp C:/temp/bugshow;${lib.dir}/aspectwerkz-0.7.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/concurrent-1.3.1.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/jmangler-core.jar -Daspectwerkz.metadata.dir=c:/temp/bugshow/_metaData test.Test 100 c:/temp/bugshow/test3.xml"/>-->
-<!--        </exec>-->
-<!--    </goal>-->
-<!--    <goal name="aspectwerkz:metadata:bugshow">-->
-<!--        <attainGoal name="aspectwerkz:init"/>-->
-<!--        <exec executable="java">-->
-<!--            <arg line="-cp ${lib.dir}/aspectwerkz-0.7.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/jmangler-core.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler C:/temp/bugshow/aspectwerkz.xml C:/temp/bugshow C:/temp/bugshow/_metaData default"/>-->
-<!--        </exec>-->
-<!--    </goal>-->
-<!--    <goal name="aspectwerkz:transform:bugshow">-->
-<!--        <attainGoal name="aspectwerkz:metadata:bugshow"/>-->
-<!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
-<!--            <arg line="-offline C:/temp/bugshow C:/temp/bugshow/aspectwerkz.xml C:/temp/bugshow/_metaData"/>-->
-<!--        </exec>-->
-<!--    </goal>-->
+    <!--    <goal name="test-offline">-->
+    <!--        <attainGoal name="aspectwerkz:init"/>-->
+    <!--        <mkdir dir="${basedir}/target/bug"/>-->
+    <!---->
+    <!--        <javac destdir="${basedir}/target/bug" deprecation="true"-->
+    <!--            debug="true" optimize="false" excludes="**/samples.xml">-->
+    <!--            <src>-->
+    <!--                <pathelement location="src/bug"></pathelement>-->
+    <!--            </src>-->
+    <!--            <classpath>-->
+    <!--                <pathelement path="${main.classes}"/>-->
+    <!--                <fileset dir="${lib.dir}">-->
+    <!--                    <include name="*.jar"></include>-->
+    <!--                </fileset>-->
+    <!--            </classpath>-->
+    <!--        </javac>-->
+    <!--        <exec executable="java">-->
+    <!--            <arg line="-cp ${lib.dir}/aspectwerkz-0.7.2.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/jmangler-core.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/bug/bank.xml ${basedir}/src/bug ${basedir}/_metaData bug"/>-->
+    <!--        </exec>-->
+    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
+    <!--            <arg line="-offline ${basedir}/target/bug ${basedir}/src/bug/bank.xml ${basedir}/_metaData"/>-->
+    <!--        </exec>-->
+    <!--        <exec executable="java">-->
+    <!--            <arg line="-cp ${basedir}/target/bug${pathseparator}${lib.dir}/aspectwerkz-0.7.2.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/jmangler-core.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData project.Transfer"/>-->
+    <!--        </exec>-->
+    <!--    </goal>-->
+    <!---->
+    <!--    <goal name="test-online">-->
+    <!--        <attainGoal name="aspectwerkz:init"/>-->
+    <!--        <mkdir dir="${basedir}/target/bug"/>-->
+    <!---->
+    <!--        <javac destdir="${basedir}/target/bug" deprecation="true"-->
+    <!--            debug="true" optimize="false" excludes="**/samples.xml">-->
+    <!--            <src>-->
+    <!--                <pathelement location="src/bug"></pathelement>-->
+    <!--            </src>-->
+    <!--            <classpath>-->
+    <!--                <pathelement path="${main.classes}"/>-->
+    <!--                <fileset dir="${lib.dir}">-->
+    <!--                    <include name="*.jar"></include>-->
+    <!--                </fileset>-->
+    <!--            </classpath>-->
+    <!--        </javac>-->
+    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
+    <!--            <arg line="-cp ${basedir}/target/bug${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${basedir}/src/bug/bank.xml project.Transfer"/>-->
+    <!--        </exec>-->
+    <!--    </goal>-->
+
 </project>
 
 

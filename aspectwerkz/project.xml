@@ -35,7 +35,7 @@
     <repository>
         <connection>scm:cvs:pserver:anonymous@cvs.codehaus.org:/cvsroot/aspectwerkz:aspectwerkz</connection>
         <developerConnection>scm:cvs:ext:${maven.username}@cvs.codehaus.org:/cvsroot/aspectwerkz:aspectwerkz</developerConnection>
-        <url>http://aspectwerkz.cvs.codehaus.org/</url>
+        <url>http://aspectwerkz.cvs.codehaus.org/aspectwerkz</url>
     </repository>
 
     <versions>
@@ -81,41 +81,32 @@
                 <role>Developer</role>
             </roles>
         </developer>
-        <developer>
-            <name>Alexandre Vasseur</name>
-            <id>avasseur</id>
-            <email>alex AT gnilux DOT com</email>
-            <organization></organization>
-            <roles>
-                <role>Developper</role>
-            </roles>
-        </developer>
     </developers>
 
     <contributors>
         <contributor>
             <name>Tibor Varga</name>
-<!--            <id></id>-->
+            <!--            <id></id>-->
             <email>vta@medios.fi</email>
-<!--            <organization></organization>-->
+            <!--            <organization></organization>-->
             <roles>
                 <role>Developer</role>
             </roles>
         </contributor>
         <contributor>
             <name>Stefan Finkenzeller</name>
-<!--            <id></id>-->
+            <!--            <id></id>-->
             <email>stefan.finkenzeller@gmx.net</email>
-<!--            <organization></organization>-->
+            <!--            <organization></organization>-->
             <roles>
                 <role>Developer</role>
             </roles>
         </contributor>
         <contributor>
             <name>Carlos Villea</name>
-<!--            <id></id>-->
+            <!--            <id></id>-->
             <email>carlos@bluebox.com.br</email>
-<!--            <organization></organization>-->
+            <!--            <organization></organization>-->
             <roles>
                 <role>Developer</role>
             </roles>
@@ -195,13 +186,21 @@
     </build>
 
     <reports>
-        <report>maven-javadoc-plugin</report>
-        <report>maven-jxr-plugin</report>
-        <report>maven-tasklist-plugin</report>
+
+        <report>maven-license-plugin</report>
+        <report>maven-checkstyle-plugin</report>
         <report>maven-jdepend-plugin</report>
+        <report>maven-pmd-plugin</report>
+        <report>maven-changes-plugin</report>
+        <report>maven-jxr-plugin</report>
+        <report>maven-javadoc-plugin</report>
+        <report>maven-tasklist-plugin</report>
         <report>maven-changelog-plugin</report>
         <report>maven-file-activity-plugin</report>
         <report>maven-developer-activity-plugin</report>
+        <!--        <report>maven-simian-plugin</report>-->
+        <!--        <report>maven-statcvs-plugin</report>-->
+        <!--        <report>maven-faq-plugin</report>-->
         <!--        <report>maven-junit-report-plugin</report>-->
         <!--        <report>maven-clover-plugin</report>-->
         <!--        <report>maven-checkstyle-plugin</report>-->

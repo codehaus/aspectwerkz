@@ -14,14 +14,11 @@
             <subsection name="AspectWerkz supports the following features">
                 <ul>
                     <li>
-                        Runtime bytecode modification (using
-                        <a href="http://jakarta.apache.org/bcel">BCEL</a>). Hooks
-                        in and transforms classes loaded by <b>any</b> class loader
-                        except the bootstrap class loader (using
-                        <a href="http://javalab.cs.uni-bonn.de/research/jmangler">JMangler</a>
-                        ). Which basically means that you can easily transform any
-                        (legacy) application or external library apart from rt.jar
-                        both at runtime and compile time.
+                        Runtime bytecode modification.
+                        Hooks in and transforms classes loaded by <b>any</b> class loader
+                        except the bootstrap class loader. Which basically means that
+                        you can easily transform any (legacy) application or external
+                        library apart from rt.jar both at runtime and compile time.
                     </li><br/>
                     <li>
                         The join point model supports advising of static and
