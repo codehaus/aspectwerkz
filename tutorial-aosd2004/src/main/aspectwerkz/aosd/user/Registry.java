@@ -25,8 +25,8 @@ public class Registry {
         return new UserManagerImpl();
     }
 
-    public static AddressBookManager getAddressBookManager() {
-        return new AddressBookManagerImpl();
-    }
+//    public static AddressBookManager getAddressBookManager() {
+//        return new AddressBookManagerImpl();
+//    }
 
 }

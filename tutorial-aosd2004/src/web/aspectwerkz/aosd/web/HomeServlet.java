@@ -178,7 +178,7 @@ public class HomeServlet extends HttpServlet {
         String email = httpServletRequest.getParameter(KEY_EMAIL);
 
         // add to address book
-        Registry.getAddressBookManager().addContact(addressBook, firstName, lastName, email);
+        Registry.getUserManager().addContact(user, firstName, lastName, email);
 
         // feed the view
         httpServletRequest.setAttribute(VIEW_ADRESSBOOK, addressBook);
@@ -198,21 +198,11 @@ public class HomeServlet extends HttpServlet {
             Contact c = addressBook.findContact(ids[i]);
             contacts.add(c);
         }
-        Registry.getAddressBookManager().removeContacts(addressBook, contacts);
+        Registry.getUserManager().removeContacts(user, contacts);
 
         // feed the view
         httpServletRequest.setAttribute(VIEW_ADRESSBOOK, addressBook);
         viewList(httpServletRequest, httpServletResponse);
     }
-
-
-
-
-
-
-
-
-
-
 
 }
