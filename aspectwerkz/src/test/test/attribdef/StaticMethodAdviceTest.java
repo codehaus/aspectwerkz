@@ -82,7 +82,7 @@ public class StaticMethodAdviceTest extends TestCase {
         }
     }
 
-    public static void testReturnPrimitiveAndNullFromAdvice() {
+    public void testReturnPrimitiveAndNullFromAdvice() {
         try {
             assertEquals(0L, getPrimitiveAndNullFromAdvice());
         }
