@@ -101,7 +101,7 @@ public abstract class TransactionAttributeAwareTransactionProtocol {
         if (fieldGet.getFieldType().equals(TransactionManager.class)) {
             return getTransactionManager();
         } else if (fieldGet.getFieldType().equals(UserTransaction.class)) {
-            return getTransactionManager().getTransaction();
+            return getUserTransaction();
         } else {
             return sjp.proceed();
         }
@@ -264,11 +264,20 @@ public abstract class TransactionAttributeAwareTransactionProtocol {
     /**
      * Returns the transaction manager.
      * <p/>
-     * To be overridden by subclass if needed. F.e. to get the TX from JNDI etc.
+     * To be overridden by subclass. F.e. to get the TX from JNDI etc.
      *
      * @return the transaction manager
      */
     protected abstract TransactionManager getTransactionManager();
+
+    /**
+     * Returns the user transaction.
+     * <p/>
+     * To be overridden by subclass.
+     *
+     * @return the user transaction within the caller thread context
+     */
+    protected abstract UserTransaction getUserTransaction();
 
     /**
      * Checks if a transaction is an existing transaction.
