@@ -74,6 +74,36 @@
                 </p>
             </answer>
         </faq>
+        <faq id="general/dtd">
+            <question>
+                Is there any DTD or XML Schema I can use to write the AspectWerkz XML definition file ?
+            </question>
+            <answer>
+                <p>
+                    The DTD is provided since 0.8. Each distribution comes with a bundled DTD so that it is not looked
+                    for on the web at runtime.<br/>
+                    When you write your XML definition file, add the following at the bottom of your XML.
+                    <!-- faq.fml does not handle correctly &lt; chars in CDATA with maven (1b10) -->
+                    <source>
+&lt;!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 0.8.1//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd"&gt;
+                    </source>
+                    The 0.8 and 0.8.1 DTD are the same so you can also use
+                    <source>
+&lt;!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 0.8//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8.dtd"&gt;
+                    </source>
+                    The DTD for the latest release is also referenced with
+                    <source>
+&lt;!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd"&gt;
+                    </source>
+                </p>
+            </answer>
+        </faq>
     </part>
 
     <part id="0.8 migration">
@@ -127,5 +157,18 @@
         </faq>
     </part>
 
+    <part id="Other">
+        <title>Other</title>
+
+        <faq id="other/ibm">
+            <question>
+                Does AspectWerkz supports custom JRE like IBM ones ?
+            </question>
+            <answer>
+                AspectWerkz supports all java environment thru offline mode. With online mode, AspectWerkz hooks at the class loader level.
+                Since the IBM JRE bundles a specific <code>java.lang.ClassLoader</code>, a work is in progress to fully support it (planned for 0.9).
+            </answer>
+        </faq>
+    </part>
 
 </faqs>

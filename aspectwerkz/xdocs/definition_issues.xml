@@ -27,6 +27,9 @@
                         <a href="#Transformation scopes">Transformation scopes</a>
                     </li>
                     <li>
+                        <a href="#DTD for XML definition">DTD for XML definition</a>
+                    </li>
+                    <li>
                         <a href="#Example of an XML definition">Example of an XML definition</a>
                     </li>
                     <li>
@@ -480,6 +483,33 @@ String timeOut = getParameter("timeout");
 
 </aspectwerkz>
 ]]></source>
+            </p>
+        </section>
+
+        <section name="DTD for XML definition">
+            <p>
+                The DTD is provided since 0.8. Each distribution comes with a bundled DTD so that it is not looked
+                for on the web at runtime.<br/>
+                When you write your XML definition file, add the following at the bottom of your XML.
+                <source><![CDATA[
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 0.8.1//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd">
+                ]]></source>
+                The 0.8 and 0.8.1 DTD are the same so you can also use
+                <source><![CDATA[
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 0.8//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8.dtd">
+                ]]></source>
+            </p>
+            <p>
+                The DTD of the latest release is also referenced
+                <source><![CDATA[
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+            ]]></source>
             </p>
         </section>
 
