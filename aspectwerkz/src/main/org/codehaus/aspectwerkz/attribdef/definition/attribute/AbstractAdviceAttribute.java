@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 import java.io.Serializable;
 
 /**
- * Abstract aspect attribute class.
+ * Abstract advice attribute class.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
