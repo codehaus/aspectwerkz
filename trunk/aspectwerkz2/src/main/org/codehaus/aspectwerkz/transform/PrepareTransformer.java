@@ -208,7 +208,7 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
             final ClassMetaData classMetaData,
             final CtClass cg) throws NotFoundException {
         if (cg.isInterface() ||
-            TransformationUtil.extendsSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
             return true;
         }
         String className = cg.getName().replace('/', '.');

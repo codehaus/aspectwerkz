@@ -320,7 +320,7 @@ public class MethodExecutionTransformer implements Transformer {
             final CtClass cg,
             final boolean isActivatePhase) {
         if (cg.isInterface() ||
-            TransformationUtil.extendsSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
             return true;
         }
         String className = cg.getName().replace('/', '.');
