@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.CrossCuttable;
+import org.codehaus.aspectwerkz.CrossCutting;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
@@ -162,9 +162,9 @@ public class StartupManager {
                 throw new RuntimeException(aspectClassName + " could not be found on classpath: " + e.toString());
             }
 
-            CrossCuttable aspect;
+            CrossCutting aspect;
             try {
-                aspect = (CrossCuttable)aspectClass.newInstance();
+                aspect = (CrossCutting)aspectClass.newInstance();
             }
             catch (Exception e) {
                 throw new RuntimeException("could not create a new instance of aspect [" + aspectClassName + "]: " + e.toString());

@@ -17,7 +17,7 @@ import java.util.WeakHashMap;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.CrossCuttable;
+import org.codehaus.aspectwerkz.CrossCutting;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 /**
@@ -35,7 +35,7 @@ public class AspectContainer {
     /**
      * Holds a reference to the sole per JVM aspect.
      */
-    protected CrossCuttable m_perJvm;
+    protected CrossCutting m_perJvm;
 
     /**
      * Holds references to the per class introductions.
@@ -86,7 +86,7 @@ public class AspectContainer {
         Object result = null;
         try {
             if (m_perJvm == null) {
-                m_perJvm = (CrossCuttable)m_prototype.getAspectClass().newInstance();
+                m_perJvm = (CrossCutting)m_prototype.getAspectClass().newInstance();
                 m_perJvm.setCrossCuttingInfo(CrossCuttingInfo.newInstance(m_prototype));
             }
             Method method = m_adviceRepository[methodIndex];
@@ -114,7 +114,7 @@ public class AspectContainer {
         try {
             if (!m_perClass.containsKey(targetClass)) {
                 synchronized (m_perClass) {
-                    CrossCuttable aspect = (CrossCuttable)m_prototype.getAspectClass().newInstance();
+                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectClass().newInstance();
                     CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
                     info.setTargetClass(targetClass);
                     aspect.setCrossCuttingInfo(info);
@@ -153,7 +153,7 @@ public class AspectContainer {
         try {
             if (!m_perInstance.containsKey(targetInstance)) {
                 synchronized (m_perInstance) {
-                    CrossCuttable aspect = (CrossCuttable)m_prototype.getAspectClass().newInstance();
+                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectClass().newInstance();
                     CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
                     info.setTargetInstance(targetInstance);
                     aspect.setCrossCuttingInfo(info);
@@ -187,7 +187,7 @@ public class AspectContainer {
             final Thread currentThread = Thread.currentThread();
             if (!m_perThread.containsKey(currentThread)) {
                 synchronized (m_perThread) {
-                    CrossCuttable aspect = (CrossCuttable)m_prototype.getAspectClass().newInstance();
+                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectClass().newInstance();
                     aspect.setCrossCuttingInfo(CrossCuttingInfo.newInstance(m_prototype));
                     m_perThread.put(currentThread, aspect);
                 }
@@ -234,10 +234,10 @@ public class AspectContainer {
      *
      * @return the aspect
      */
-    public CrossCuttable getPerJvmAspect() {
+    public CrossCutting getPerJvmAspect() {
         if (m_perJvm == null) {
             try {
-                m_perJvm = (CrossCuttable)m_prototype.getAspectClass().newInstance();
+                m_perJvm = (CrossCutting)m_prototype.getAspectClass().newInstance();
                 m_perJvm.setCrossCuttingInfo(CrossCuttingInfo.newInstance(m_prototype));
             }
             catch (Exception e) {
@@ -252,11 +252,11 @@ public class AspectContainer {
      *
      * @return the aspect
      */
-    public CrossCuttable getPerClassAspect(final Class callingClass) {
+    public CrossCutting getPerClassAspect(final Class callingClass) {
         if (!m_perClass.containsKey(callingClass)) {
             synchronized (m_perClass) {
                 try {
-                    CrossCuttable aspect = (CrossCuttable)m_prototype.getAspectClass().newInstance();
+                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectClass().newInstance();
                     CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
                     info.setTargetClass(callingClass);
                     aspect.setCrossCuttingInfo(info);
@@ -267,7 +267,7 @@ public class AspectContainer {
                 }
             }
         }
-        return (CrossCuttable)m_perClass.get(callingClass);
+        return (CrossCutting)m_perClass.get(callingClass);
     }
 
     /**
@@ -275,14 +275,14 @@ public class AspectContainer {
      *
      * @return the aspect
      */
-    public CrossCuttable getPerInstanceAspect(final Object callingInstance) {
+    public CrossCutting getPerInstanceAspect(final Object callingInstance) {
         if (callingInstance == null) {
             return getPerClassAspect(callingInstance.getClass());
         }
         if (!m_perInstance.containsKey(callingInstance)) {
             synchronized (m_perInstance) {
                 try {
-                    CrossCuttable aspect = (CrossCuttable)m_prototype.getAspectClass().newInstance();
+                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectClass().newInstance();
                     CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
                     info.setTargetInstance(callingInstance);
                     aspect.setCrossCuttingInfo(info);
@@ -293,7 +293,7 @@ public class AspectContainer {
                 }
             }
         }
-        return (CrossCuttable)m_perInstance.get(callingInstance);
+        return (CrossCutting)m_perInstance.get(callingInstance);
     }
 
     /**
@@ -301,12 +301,12 @@ public class AspectContainer {
      *
      * @return the aspect
      */
-    public CrossCuttable getPerThreadAspect() {
+    public CrossCutting getPerThreadAspect() {
         final Thread currentThread = Thread.currentThread();
         if (!m_perThread.containsKey(currentThread)) {
             synchronized (m_perThread) {
                 try {
-                    CrossCuttable aspect = (CrossCuttable)m_prototype.getAspectClass().newInstance();
+                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectClass().newInstance();
                     aspect.setCrossCuttingInfo(CrossCuttingInfo.newInstance(m_prototype));
                     m_perThread.put(currentThread, aspect);
                 }
@@ -315,7 +315,7 @@ public class AspectContainer {
                 }
             }
         }
-        return (CrossCuttable)m_perThread.get(currentThread);
+        return (CrossCutting)m_perThread.get(currentThread);
     }
 
     /**

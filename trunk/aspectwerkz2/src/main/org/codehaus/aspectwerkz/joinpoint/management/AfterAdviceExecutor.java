@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.System;
-import org.codehaus.aspectwerkz.CrossCuttable;
+import org.codehaus.aspectwerkz.CrossCutting;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 
 /**

@@ -23,7 +23,7 @@ import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.Mixin;
-import org.codehaus.aspectwerkz.CrossCuttable;
+import org.codehaus.aspectwerkz.CrossCutting;
 import org.codehaus.aspectwerkz.aspect.IntroductionContainer;
 import org.codehaus.aspectwerkz.aspect.Introduction;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
@@ -85,7 +85,7 @@ public class AspectRegistry {
     /**
      * An array with all the the Aspect prototypes in the system.
      */
-    private CrossCuttable[] m_aspects = new CrossCuttable[0];
+    private CrossCutting[] m_aspects = new CrossCutting[0];
 
     /**
      * An array of all the mixins in the system, each nested class in aspect has its own index.
@@ -139,7 +139,7 @@ public class AspectRegistry {
      * @param aspect          the aspect to register
      * @param pointcutManager the pointcut manager
      */
-    public void register(final CrossCuttable aspect, final PointcutManager pointcutManager) {
+    public void register(final CrossCutting aspect, final PointcutManager pointcutManager) {
         if (aspect == null) {
             throw new IllegalArgumentException("aspect can not be null");
         }
@@ -158,12 +158,12 @@ public class AspectRegistry {
                                 final int indexAspect = m_aspects.length + 1;
                                 m_aspectIndexes.put(aspect.getCrossCuttingInfo().getName(), indexAspect);
 
-                                final CrossCuttable[] tmpAspects = new CrossCuttable[m_aspects.length + 1];
+                                final CrossCutting[] tmpAspects = new CrossCutting[m_aspects.length + 1];
                                 java.lang.System.arraycopy(m_aspects, 0, tmpAspects, 0, m_aspects.length);
 
                                 tmpAspects[m_aspects.length] = aspect;
 
-                                m_aspects = new CrossCuttable[m_aspects.length + 1];
+                                m_aspects = new CrossCutting[m_aspects.length + 1];
                                 java.lang.System.arraycopy(tmpAspects, 0, m_aspects, 0, tmpAspects.length);
 
                                 // retrieve a sorted advices list => matches the sorted method list in the container
@@ -217,8 +217,8 @@ public class AspectRegistry {
      * @param index the index of the aspect
      * @return the aspect
      */
-    public CrossCuttable getAspect(final int index) {
-        CrossCuttable aspect;
+    public CrossCutting getAspect(final int index) {
+        CrossCutting aspect;
         try {
             aspect = m_aspects[index - 1];
         }
@@ -240,8 +240,8 @@ public class AspectRegistry {
      * @param name the name of the aspect
      * @return the the aspect
      */
-    public CrossCuttable getAspect(final String name) {
-        CrossCuttable aspect;
+    public CrossCutting getAspect(final String name) {
+        CrossCutting aspect;
         try {
             aspect = m_aspects[m_aspectIndexes.get(name) - 1];
         }
@@ -380,7 +380,7 @@ public class AspectRegistry {
      *
      * @return the aspects
      */
-    public CrossCuttable[] getAspects() {
+    public CrossCutting[] getAspects() {
         initialize();
         return m_aspects;
     }

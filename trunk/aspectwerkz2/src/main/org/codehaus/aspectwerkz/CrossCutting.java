@@ -8,15 +8,15 @@
 package org.codehaus.aspectwerkz;
 
 /**
- * Interface that all classes that want to be "cross-cuttable" must implemented.
+ * Interface that all classes that want to be "cross-cutting" must implemented.
  * <p/>
  * This is normally handled transparently by the framework itself and the users only needs to use this
  * interface when retrieving cross-cutting information.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface CrossCuttable {
-    
+public interface CrossCutting {
+
     /**
      * Returns the cross-cutting info for the class.
      *
