@@ -7,8 +7,7 @@
  **************************************************************************************/
 package test.afterxxx;
 
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
+import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 import org.codehaus.aspectwerkz.Pointcut;
 
 /**
@@ -75,7 +74,7 @@ public class Aspect {
      * @Around all || aroundFinally || aroundFinallyReturning ||
      *         aroundFinallyReturningThrowing || aroundReturningThrowing || aroundReturning
      */
-    public Object logAround(JoinPoint joinPoint) throws Throwable {
+    public Object logAround(StaticJoinPoint joinPoint) throws Throwable {
         Test.log("logAround ");
         final Object result = joinPoint.proceed();
         return result;
@@ -86,7 +85,7 @@ public class Aspect {
      *                                    aroundReturningThrowing || finallyReturning || finallyReturningThrowing ||
      *                                    returningThrowing || aroundReturning || returning
      */
-    public void logAfterReturning(final JoinPoint joinPoint) throws Throwable {
+    public void logAfterReturning(final StaticJoinPoint joinPoint) throws Throwable {
         Test.log("logAfterReturning ");
     }
 
@@ -94,7 +93,7 @@ public class Aspect {
      * @After throwing(java.lang.RuntimeException) aroundFinallyReturningThrowing || aroundReturningThrowing ||
      *                                             finallyReturningThrowing || returningThrowing
      */
-    public void logAfterThrowing(final JoinPoint joinPoint) throws Throwable {
+    public void logAfterThrowing(final StaticJoinPoint joinPoint) throws Throwable {
         Test.log("logAfterThrowing ");
     }
 
@@ -102,7 +101,7 @@ public class Aspect {
      * @After finally aroundFinally || aroundFinallyReturning || aroundFinallyReturningThrowing ||
      *                _finally || finallyReturning || finallyReturningThrowing
      */
-    public void logAfterFinally(final JoinPoint joinPoint) throws Throwable {
+    public void logAfterFinally(final StaticJoinPoint joinPoint) throws Throwable {
         Test.log("logAfterFinally ");
     }
 }

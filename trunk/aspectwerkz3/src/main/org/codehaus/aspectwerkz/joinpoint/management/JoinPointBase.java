@@ -14,7 +14,6 @@ import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
@@ -24,7 +23,6 @@ import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -177,6 +175,42 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     }
 
     /**
+      * Returns the callee instance.
+      *
+      * @return the callee instance
+      */
+     public Object getCallee() {
+        throw new UnsupportedOperationException("method not supported in 1.0");
+    }
+
+     /**
+      * Returns the caller instance.
+      *
+      * @return the caller instance
+      */
+     public Object getCaller() {
+         throw new UnsupportedOperationException("method not supported in 1.0");
+     }
+
+     /**
+      * Returns the 'this' instance (the one currently executing).
+      *
+      * @return 'this'
+      */
+     public Object getThis() {
+         throw new UnsupportedOperationException("method not supported in 1.0");
+     }
+
+     /**
+      * Returns the caller class.
+      *
+      * @return the caller class
+      */
+     public Class getCallerClass() {
+         throw new UnsupportedOperationException("method not supported in 1.0");
+     }
+
+     /**
      * Invokes the original method - execution context.
      * 
      * @param joinPoint the join point instance
