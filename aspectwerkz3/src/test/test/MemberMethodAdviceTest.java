@@ -11,6 +11,7 @@ import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class MemberMethodAdviceTest extends TestCase implements Loggable {
     private String java = "a field that can make Javassist confused, AW-147 item2, fixed in AW 1.0-beta1";
@@ -121,6 +122,16 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
             exceptionThrower();
         } catch (Throwable e) {
             assertTrue(e instanceof UnsupportedOperationException);
+            return;
+        }
+        fail("this point should never be reached");
+    }
+
+    public void testThrowExceptionChecked() {
+        try {
+            exceptionThrowerChecked();
+        } catch (Throwable e) {
+            assertTrue(e instanceof CheckedException);
             return;
         }
         fail("this point should never be reached");
@@ -356,6 +367,10 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         throw new UnsupportedOperationException("this is a test");
     }
 
+    public void exceptionThrowerChecked() throws CheckedException {
+        throw new CheckedException();
+    }
+
     public String joinPointMetaData(String param) {
         return "result";
     }
@@ -506,5 +521,11 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
 
     public long getPrimitiveAndNullFromAdvice() throws RuntimeException {
         return 123456789L;
+    }
+
+    private static class CheckedException extends Exception {
+        public CheckedException() {
+            super();
+        }
     }
 }

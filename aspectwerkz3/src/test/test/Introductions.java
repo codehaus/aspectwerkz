@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public interface Introductions extends Serializable {
     void noArgs();
@@ -56,4 +57,14 @@ public interface Introductions extends Serializable {
     int variousArguments1(String str, int i, float f, Object o, long l) throws RuntimeException;
 
     int variousArguments2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException;
+
+    public void exceptionThrower() throws Throwable;
+
+    public void exceptionThrowerChecked() throws CheckedException;
+
+    public static class CheckedException extends Exception {
+        public CheckedException() {
+            super();
+        }
+    }
 }

@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class IntroductionTest extends TestCase {
     private ToBeIntroduced m_toBeIntroduced;
@@ -130,6 +131,26 @@ public class IntroductionTest extends TestCase {
     public void testVariousArguments2() {
         assertEquals((int)2.3F + 1 + "dummy".hashCode() + this.hashCode() + (int)34L + "test".hashCode(),
                      ((Introductions)m_toBeIntroduced).variousArguments2(2.3F, 1, "dummy", this, 34L, "test"));
+    }
+
+    public void testThrowException() {
+        try {
+            ((Introductions)m_toBeIntroduced).exceptionThrower();
+        } catch (Throwable e) {
+            assertTrue(e instanceof UnsupportedOperationException);
+            return;
+        }
+        fail("this point should never be reached");
+    }
+
+    public void testThrowExceptionChecked() {
+        try {
+            ((Introductions)m_toBeIntroduced).exceptionThrowerChecked();
+        } catch (Throwable e) {
+            assertTrue(e instanceof Introductions.CheckedException);
+            return;
+        }
+        fail("this point should never be reached");
     }
 
     public void testReplaceImplementation() {

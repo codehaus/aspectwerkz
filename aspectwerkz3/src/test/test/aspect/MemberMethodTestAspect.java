@@ -31,7 +31,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc2;
 
     /**
-     * @Expression execution(* test.MemberMethodAdviceTest.testThrowException(..))
+     * @Expression execution(* test.MemberMethodAdviceTest.exceptionThrower*(..))
      */
     Pointcut member_pc3;
 
