@@ -21,9 +21,9 @@ public class MyStaticMethodAdvice5 extends AroundAdvice {
 
     public Object execute(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
-        ((StaticMethodAdviceTest)jp.getTargetObject()).log("before ");
+        ((StaticMethodAdviceTest)jp.getTargetInstance()).log("before ");
         final Object result = joinPoint.proceedInNewThread();
-        ((StaticMethodAdviceTest)jp.getTargetObject()).log("after ");
+        ((StaticMethodAdviceTest)jp.getTargetInstance()).log("after ");
         return result;
     }
 }

@@ -21,9 +21,9 @@ public class MyMemberMethodAdvice2 extends AroundAdvice {
 
     public Object execute(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
-        ((Loggable)jp.getTargetObject()).log("before1 ");
+        ((Loggable)jp.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable)jp.getTargetObject()).log("after1 ");
+        ((Loggable)jp.getTargetInstance()).log("after1 ");
         return result;
     }
 }

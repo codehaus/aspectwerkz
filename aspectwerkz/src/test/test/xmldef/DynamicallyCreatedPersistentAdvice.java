@@ -23,7 +23,7 @@ public class DynamicallyCreatedPersistentAdvice extends AroundAdvice {
     public Object execute(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
         m_counter++;
-        ((Loggable)jp.getTargetObject()).log(new Integer(m_counter).toString());
+        ((Loggable)jp.getTargetInstance()).log(new Integer(m_counter).toString());
         return joinPoint.proceed();
     }
 }

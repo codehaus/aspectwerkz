@@ -22,9 +22,9 @@ public class CFlowLoggingAdvice extends AroundAdvice {
 
     public Object execute(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
-        ((Loggable)jp.getTargetObject()).log("advice-before ");
+        ((Loggable)jp.getTargetInstance()).log("advice-before ");
         final Object result = joinPoint.proceed();
-        ((Loggable)jp.getTargetObject()).log("advice-after ");
+        ((Loggable)jp.getTargetInstance()).log("advice-after ");
         return result;
     }
 }
