@@ -62,7 +62,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             final byte[] bytecode = context.getInitialBytecode();
             final ClassLoader loader = context.getLoader();
 
-            final ClassInfo classInfo = AsmClassInfo.getClassInfo(bytecode, loader);
+            ClassInfo classInfo = AsmClassInfo.getClassInfo(bytecode, loader);
 
             final Set definitions = context.getDefinitions();
             final ExpressionContext[] ctxs = new ExpressionContext[]{
@@ -117,35 +117,40 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             Set addedMethods = new HashSet();
             crLookahead.accept(new AlreadyAddedMethodAdapter(addedMethods), true);
 
-            final ClassWriter cw = AsmHelper.newClassWriter(true);
-            final ClassReader cr = new ClassReader(bytecode);
+            // -- Phase 1 --
+            final ClassWriter writerPhase1 = AsmHelper.newClassWriter(true);
+            final ClassReader readerPhase1 = new ClassReader(bytecode);
+            ClassVisitor reversedChainPhase1 = writerPhase1;
+            reversedChainPhase1 = new AddMixinMethodsVisitor(reversedChainPhase1, classInfo, context, addedMethods);
+            reversedChainPhase1 = new AddInterfaceVisitor(reversedChainPhase1, classInfo, context);
+            reversedChainPhase1 = new AddSerialVersionUidVisitor(reversedChainPhase1, classInfo, context);
+            readerPhase1.accept(reversedChainPhase1, Attributes.getDefaultAttributes(), false);
+            final byte[] bytesPhase1 = writerPhase1.toByteArray();
 
-            // chain the visitors by registering them from last to first
-            ClassVisitor reversedChain = cw;
-            reversedChain = new JoinPointInitVisitor(reversedChain, context);
+            // update the class info
+            classInfo = AsmClassInfo.newClassInfo(bytesPhase1, loader);
 
-            reversedChain = new MethodExecutionVisitor(reversedChain, classInfo, context, addedMethods);
-            reversedChain = new ConstructorBodyVisitor(reversedChain, classInfo, context, addedMethods);
-            // TODO fix handler impl
-            //visitor = new HandlerVisitor(first, loader, classInfo, context);
+            // -- Phase 2 --
+            final ClassWriter writerPhase2 = AsmHelper.newClassWriter(true);
+            final ClassReader readerPhase2 = new ClassReader(bytesPhase1);
+            ClassVisitor reversedChainPhase2 = writerPhase2;
+            reversedChainPhase2 = new JoinPointInitVisitor(reversedChainPhase2, context);
+            reversedChainPhase2 = new MethodExecutionVisitor(reversedChainPhase2, classInfo, context, addedMethods);
+            reversedChainPhase2 = new ConstructorBodyVisitor(reversedChainPhase2, classInfo, context, addedMethods);
+            //reversedChainPhase2 = new HandlerVisitor(reversedChainPhase2, loader, classInfo, context, addedMethods); // TODO fix handler impl
             if (!filterForCall) {
-                reversedChain = new MethodCallVisitor(reversedChain, loader, classInfo, context);
-                reversedChain = new ConstructorCallVisitor(
-                        reversedChain, loader, classInfo, context, newInvocationsByCallerMemberHash
+                reversedChainPhase2 = new MethodCallVisitor(reversedChainPhase2, loader, classInfo, context);
+                reversedChainPhase2 = new ConstructorCallVisitor(
+                        reversedChainPhase2, loader, classInfo, context, newInvocationsByCallerMemberHash
                 );
             }
             if (!filterForGetSet) {
-                reversedChain = new FieldSetFieldGetVisitor(reversedChain, loader, classInfo, context);
-                reversedChain = new FieldWrapperVisitor(reversedChain, classInfo, context, addedMethods);
+                reversedChainPhase2 = new FieldSetFieldGetVisitor(reversedChainPhase2, loader, classInfo, context);
+                reversedChainPhase2 = new FieldWrapperVisitor(reversedChainPhase2, classInfo, context, addedMethods);
             }
-            reversedChain = new MethodWrapperVisitor(reversedChain, classInfo, context, addedMethods);
-
-            // FIXME classinfo needs to be updated to be able to advise on introduced methods
-            reversedChain = new AddMixinMethodsVisitor(reversedChain, classInfo, context, addedMethods);
-            reversedChain = new AddInterfaceVisitor(reversedChain, classInfo, context);
-            reversedChain = new AddSerialVersionUidVisitor(reversedChain, classInfo, context);
-
-            cr.accept(reversedChain, Attributes.getDefaultAttributes(), false);
+            reversedChainPhase2 = new MethodWrapperVisitor(reversedChainPhase2, classInfo, context, addedMethods);
+            readerPhase2.accept(reversedChainPhase2, Attributes.getDefaultAttributes(), false);
+            final byte[] bytesPhase2 = writerPhase2.toByteArray();
 
             // TODO: INNER CLASS OR NOT?
             // loop over emitted jp and flag them as inner classes
@@ -158,8 +163,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
 //                        Constants.ACC_PUBLIC + Constants.ACC_STATIC);
 //            }
 
-
-            context.setCurrentBytecode(cw.toByteArray());
+            context.setCurrentBytecode(bytesPhase2);
 
             // NOTE: remove when in release time or in debugging trouble (;-) - Alex)
             // FAKE multiweaving - which is a requirement
