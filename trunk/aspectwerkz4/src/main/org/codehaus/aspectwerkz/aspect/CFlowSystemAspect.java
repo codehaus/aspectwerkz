@@ -44,7 +44,7 @@ public class CFlowSystemAspect {
     /**
      * The deployment model for the aspect.
      */
-    public static final String DEPLOYMENT_MODEL = SystemDefinition.PER_THREAD;
+    public static final String DEPLOYMENT_MODEL = null; // FIXME - broken, used to be PER_THREAD
 
     /**
      * The name of the pre advice method.

@@ -37,7 +37,6 @@ public class SystemDefinition {
     public static final String PER_JVM = "perJVM";
     public static final String PER_CLASS = "perClass";
     public static final String PER_INSTANCE = "perInstance";
-    public static final String PER_THREAD = "perThread";
 
     /**
      * Empty hash map.
@@ -52,7 +51,7 @@ public class SystemDefinition {
     /**
      * Maps the mixins to it's name.
      */
-    private final Map m_mixinMap = new HashMap();
+    private final Map m_mixinMap = new SequencedHashMap();
 
     /**
      * The UUID for this definition.
