@@ -25,12 +25,12 @@ public class CFlowSystemAspect extends Aspect {
     /**
      * A unique name for the aspect.
      */
-    public static final String NAME = "org$codehaus$aspectwerkz$aspect$CFlowSystemAspect";
+    public static final String NAME = "org$codehaus$aspectwerkz$attribdef$aspect$CFlowSystemAspect";
 
     /**
      * The class name for the aspect.
      */
-    public static final String CLASS_NAME = "org.codehaus.aspectwerkz.aspect.CFlowSystemAspect";
+    public static final String CLASS_NAME = "org.codehaus.aspectwerkz.attribdef.aspect.CFlowSystemAspect";
 
     /**
      * The deployment model for the aspect.
@@ -50,18 +50,18 @@ public class CFlowSystemAspect extends Aspect {
     /**
      * Index of the pre advice method.
      */
-    public static final int PRE_ADVICE_INDEX = 15;
+    public static final int PRE_ADVICE_INDEX = 21;
 
     /**
      * Index of the post advice method.
      */
-    public static final int POST_ADVICE_INDEX = 17;
+    public static final int POST_ADVICE_INDEX = 23;
+
 
     /**
      * Registers the join point as the start of a control flow (cflow) in the system.
      *
      * @param joinPoint the join point
-     * @return the result from the invocation
      * @throws Throwable the exception from the invocation
      */
     public void enterControlFlow(final JoinPoint joinPoint) throws Throwable {
@@ -72,7 +72,6 @@ public class CFlowSystemAspect extends Aspect {
      * Registers the join point as the end of a control flow (cflow) in the system.
      *
      * @param joinPoint the join point
-     * @return the result from the invocation
      * @throws Throwable the exception from the invocation
      */
     public void exitControlFlow(final JoinPoint joinPoint) throws Throwable {
