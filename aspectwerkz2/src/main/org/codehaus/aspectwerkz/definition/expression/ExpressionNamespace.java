@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.WeakHashMap;
 
 import org.codehaus.aspectwerkz.exception.ExpressionException;
@@ -17,6 +17,7 @@ import org.codehaus.aspectwerkz.exception.ExpressionException;
  * Expression Namespace. A namespace is usually defined by the Aspect name.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @TODO: ALEX enhance for multiple system and freeing
  */
 public class ExpressionNamespace {
@@ -32,13 +33,6 @@ public class ExpressionNamespace {
     private static Map s_namespaces = new WeakHashMap();
 
     /**
-     * Namespace.
-     *
-     * @TODO: ALEX never used?
-     */
-    private String m_namespace;
-
-    /**
      * Map with all the expression templates in the namespace
      * <p/>
      * name:expression pairs.
@@ -46,12 +40,17 @@ public class ExpressionNamespace {
     private Map m_expressions = new HashMap();
 
     /**
+     * The namespace.
+     */
+    private String m_namespace;
+
+    /**
      * Returns the expression namespace for a specific namespace.
      *
      * @param namespace
      * @return the expression namespace
      */
-    public static synchronized ExpressionNamespace getExpressionNamespace(Object namespace) {
+    public static synchronized ExpressionNamespace getExpressionNamespace(final Object namespace) {
         if (!s_namespaces.containsKey(namespace)) {
             s_namespaces.put(namespace, new ExpressionNamespace(namespace.toString()));
         }
@@ -67,12 +66,19 @@ public class ExpressionNamespace {
         return getExpressionNamespace(DEFAULT_NAMESPACE);
     }
 
+    /**
+     * Creates an new expression.
+     *
+     * @param expression
+     * @param type
+     * @return the expression
+     */
     public Expression createExpression(final String expression, final PointcutType type) {
         return createExpression(expression, "", "", type);
     }
 
     /**
-     * Creates and expression.
+     * Creates an new expression.
      *
      * @param expression
      * @return the expression
