@@ -15,7 +15,7 @@ import test.Loggable;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MemberMethodAdviceTest extends TestCase implements Loggable {
+public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
 
     private String m_logString = "";
 

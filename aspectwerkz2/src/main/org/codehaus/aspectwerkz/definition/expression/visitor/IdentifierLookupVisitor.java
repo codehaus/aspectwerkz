@@ -15,12 +15,11 @@ import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisito
 import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionScript;
 import org.codehaus.aspectwerkz.definition.expression.ast.FalseNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.Identifier;
-import org.codehaus.aspectwerkz.definition.expression.ast.InNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.NotInNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.CflowPattern;
 
 /**
  * Gather all literal (including part of an IN or NOT IN sub-expression) Build the list of literal in visit' data
@@ -45,17 +44,17 @@ public class IdentifierLookupVisitor implements ExpressionParserVisitor {
         return data;
     }
 
-    public Object visit(InNode node, Object data) {
-        node.jjtGetChild(0).jjtAccept(this, data);
-        node.jjtGetChild(1).jjtAccept(this, data);
-        return data;
-    }
-
-    public Object visit(NotInNode node, Object data) {
-        node.jjtGetChild(0).jjtAccept(this, data);
-        node.jjtGetChild(1).jjtAccept(this, data);
-        return data;
-    }
+//    public Object visit(InNode node, Object data) {
+//        node.jjtGetChild(0).jjtAccept(this, data);
+//        node.jjtGetChild(1).jjtAccept(this, data);
+//        return data;
+//    }
+//
+//    public Object visit(NotInNode node, Object data) {
+//        node.jjtGetChild(0).jjtAccept(this, data);
+//        node.jjtGetChild(1).jjtAccept(this, data);
+//        return data;
+//    }
 
     public Object visit(AndNode node, Object data) {
         node.jjtGetChild(0).jjtAccept(this, data);
@@ -84,4 +83,7 @@ public class IdentifierLookupVisitor implements ExpressionParserVisitor {
     public Object visit(FalseNode node, Object data) {
         return data;
     }
+
+    public Object visit(CflowPattern node, Object data) {return null;}//TODO
+
 }

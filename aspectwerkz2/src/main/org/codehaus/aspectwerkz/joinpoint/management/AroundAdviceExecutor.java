@@ -129,14 +129,14 @@ class AroundAdviceExecutor {
         return m_adviceIndexes.length != 0;
     }
 
-    /**
-     * Creates a deep copy of the advice executor.
-     *
-     * @return a deep copy of the intance
-     */
-    public AroundAdviceExecutor newInstance() {
-        return new AroundAdviceExecutor(m_adviceIndexes, m_cflowExpressions, m_system, m_joinPointType);
-    }
+//    /**
+//     * Creates a deep copy of the advice executor.
+//     *
+//     * @return a deep copy of the intance
+//     */
+//    public AroundAdviceExecutor newInstance() {
+//        return new AroundAdviceExecutor(m_adviceIndexes, m_cflowExpressions, m_system, m_joinPointType);
+//    }
 
     /**
      * Invoke the join point.

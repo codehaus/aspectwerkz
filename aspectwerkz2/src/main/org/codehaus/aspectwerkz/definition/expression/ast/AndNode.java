@@ -3,18 +3,17 @@
 package org.codehaus.aspectwerkz.definition.expression.ast;
 
 public class AndNode extends SimpleNode {
-    public AndNode(int id) {
-        super(id);
-    }
+  public AndNode(int id) {
+    super(id);
+  }
 
-    public AndNode(ExpressionParser p, int id) {
-        super(p, id);
-    }
+  public AndNode(ExpressionParser p, int id) {
+    super(p, id);
+  }
 
-    /**
-     * Accept the visitor. *
-     */
-    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
-        return visitor.visit(this, data);
-    }
+
+  /** Accept the visitor. **/
+  public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+    return visitor.visit(this, data);
+  }
 }

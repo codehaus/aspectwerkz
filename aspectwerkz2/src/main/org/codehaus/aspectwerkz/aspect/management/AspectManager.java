@@ -23,6 +23,7 @@ import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
@@ -480,74 +481,35 @@ public final class AspectManager {
     }
 
     /**
+     * Returns all Expression that match (no matter cflow) at join point related
+     * to given metadata and assumed type, and that contains 1+ cflow construct.
+     *
+     * The Expressions are inflated and evaluated to allow optimization
+     * (pc1 AND cflow => TRUE|FALSE AND cflow) depending on given MetaData
+     *
      * @param classMetaData
-     * @param methodMetaData
+     * @param memberMetaData
+     * @param callerClassMetaData can be null if not @CALL
+     * @param pointcutType assumed
      * @return
-     * @TODO - ALEX what needs to be done here Alex? You put in the TODO but no explanation
      */
     public List getCFlowExpressions(
             final ClassMetaData classMetaData,
-            final MethodMetaData methodMetaData) {
+            final MemberMetaData memberMetaData,
+            final ClassMetaData callerClassMetaData,
+            final PointcutType pointcutType) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
-        if (methodMetaData == null) {
-            throw new IllegalArgumentException("method meta-data can not be null");
+        if (memberMetaData == null) {
+            throw new IllegalArgumentException("member meta-data can not be null");
         }
 
         initialize();
-
-        Integer hashKey = Util.calculateHash(classMetaData.getName(), methodMetaData);
-
-        // if cached; return the cached list
-        if (m_cflowPointcutCache.containsKey(hashKey)) {
-            return (List)m_cflowPointcutCache.get(hashKey);
-        }
-
-        List pointcuts = m_aspectRegistry.getCflowPointcuts(classMetaData, methodMetaData);
-
-        synchronized (m_cflowPointcutCache) {
-            m_cflowPointcutCache.put(hashKey, pointcuts);
-        }
-
-        return pointcuts;
+        // Note: cache is done at JP level
+        return m_aspectRegistry.getCflowExpressions(classMetaData, memberMetaData,
+                                                    callerClassMetaData, pointcutType);
     }
-
-    /**
-     * @TODO: ALEX RM
-     * Returns a list with the cflow pointcuts that affects the join point with the
-     * class name and the method name specified.
-     *
-     * @param className the name of the class for the join point
-     * @param methodMetaData the meta-data for the method for the join point
-     * @return a list with the cflow pointcuts
-     */
-//    public List getCFlowPointcuts(final String className,
-//                                  final MethodMetaData methodMetaData) {
-//        if (className == null) throw new IllegalArgumentException("class name can not be null");
-//        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-//        initialize();
-//
-//        return null;
-//        Integer hashKey = Util.calculateHash(className, methodMetaData);
-//
-//        // if cached; return the cached list
-//        if (m_cflowPointcutCache.containsKey(hashKey)) {
-//            return (List)m_cflowPointcutCache.get(hashKey);
-//        }
-//
-//        List pointcuts = new ArrayList();
-//        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
-//            PointcutManager aspect = (PointcutManager)it.next();
-//            pointcuts.addAll(aspect.getCFlowPointcuts(className, methodMetaData));
-//        }
-//
-//        synchronized (m_cflowPointcutCache) {
-//            m_cflowPointcutCache.put(hashKey, pointcuts);
-//        }
-//
-//        return pointcuts;
-//    }
 
     /**
      * Checks if a specific class has an aspect defined.

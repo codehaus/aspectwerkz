@@ -244,6 +244,19 @@ public abstract class Expression implements Serializable {
     public abstract Map getCflowExpressions();
 
     /**
+     * Build a new expression with only cflow to be evaluated. All other elements are evaluated
+     * TODO: do we need to support cflow(a within b)
+     *
+     * @param classMetaData
+     * @param memberMetaData
+     * @param assumedType
+     * @return simplified expression
+     */
+    public abstract Expression extractCflowExpression(ClassMetaData classMetaData,
+                                                      MemberMetaData memberMetaData,
+                                                      PointcutType assumedType);
+
+    /**
      * Overridden toString.
      *
      * @return the string representation of the Expression instance

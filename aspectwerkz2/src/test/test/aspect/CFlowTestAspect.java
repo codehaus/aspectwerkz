@@ -32,7 +32,7 @@ public class CFlowTestAspect extends Aspect {
     // ============ Advices ============
 
     /**
-     * @Around pc2 IN pc1
+     * @Around pc2 AND pc1
      */
     public Object execute(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("advice-before ");

@@ -70,6 +70,7 @@ SimpleNode ExpressionScript() :
    	{ return jjtThis;}
 }
 
+
 /**
  * Expression
  * NOT > AND > OR priority
@@ -80,26 +81,12 @@ void Expression() #void :
 	AndExpression()
 	( <OR> AndExpression() #OrNode(2) )*
 }
-
-/**
- * And
- */
 void AndExpression() #void :
 {}
 {
 	UnaryExpression()
-	(
-		<IN> AndExpression() #InNode(2)
-		|
-		<NOT> <IN> AndExpression() #NotInNode(2)
-		|
-		(  LOOKAHEAD(2) <AND> AndExpression() #AndNode(2) )*
-	)
+	( LOOKAHEAD(2) <AND> AndExpression() #AndNode(2) )*
 }
-
-/**
- * NOT expression
- */
 void UnaryExpression() #void :
 {}
 {
@@ -107,20 +94,16 @@ void UnaryExpression() #void :
 	|
 	PrimaryExpression()
 }
-
-/**
- * Expression leafs are literal and identifier
- * Nested expression within parenthesis can be seen as anonymous identifier
- */
 void PrimaryExpression() #void :
 {}
 {
-  BooleanLiteral()
-|
-  Identifier()
-|
-  "(" Expression() ")"
+	BooleanLiteral()
+	|
+	Identifier()
+	|
+	"(" Expression() ")"
 }
+
 
 //---------------------------------------------------------------------
 /**
@@ -136,6 +119,22 @@ void Identifier() :
        jjtThis.name = t.image;
     }
 }
+
+/**
+ * CflowPattern
+ *
+void CflowPattern() :
+{
+   Token t;
+}
+{
+    t=<ENTITY> "(" <ENTITY_LIST> ")"
+    {
+       jjtThis.pattern = t.image;
+    }
+}
+**/
+
 
 /**
  * Boolean literal - only lower case is supported for now
@@ -170,10 +169,6 @@ TOKEN : {
 TOKEN : {
 	< NOT : "!"  | "not" | "NOT" >
 }
-TOKEN : {
-	< IN : "in" | "IN" >
-}
-
 
 //---------------------------------------------------------------------
 TOKEN : /* IDENTIFIERS */

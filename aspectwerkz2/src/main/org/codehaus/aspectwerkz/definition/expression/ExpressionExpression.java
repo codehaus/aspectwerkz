@@ -23,6 +23,8 @@ import org.codehaus.aspectwerkz.definition.expression.visitor.CflowIdentifierLoo
 import org.codehaus.aspectwerkz.definition.expression.visitor.EvaluateVisitor;
 import org.codehaus.aspectwerkz.definition.expression.visitor.IdentifierLookupVisitor;
 import org.codehaus.aspectwerkz.definition.expression.visitor.TypeVisitor;
+import org.codehaus.aspectwerkz.definition.expression.visitor.CflowIdentifierLookupVisitorContext;
+import org.codehaus.aspectwerkz.definition.expression.visitor.CflowExtractVisitor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
@@ -64,6 +66,8 @@ public class ExpressionExpression extends Expression {
      */
     private static ExpressionParserVisitor EVALUATE_VISITOR = new EvaluateVisitor();
 
+    private static ExpressionParserVisitor CFLOWEXTRACT_VISITOR = new CflowExtractVisitor();
+
     /**
      * AST root
      */
@@ -99,7 +103,8 @@ public class ExpressionExpression extends Expression {
         // support for polymorphic expression
         Set types = determineTypeFromAST();
         if (types.isEmpty()) {
-            throw new RuntimeException("unable to determine type from " + expression);
+            m_types.add(PointcutType.ANY);
+            //AVCF throw new RuntimeException("unable to determine type from " + expression);
         }
         m_types.addAll(types);
 
@@ -114,6 +119,25 @@ public class ExpressionExpression extends Expression {
      */
     private Set determineTypeFromAST() {
         return (Set)root.jjtAccept(TYPE_VISITOR, m_namespace);
+    }
+
+    /**
+     * Build a new expression with only cflow to be evaluated. All other elements are evaluated
+     * TODO: do we need to support cflow(a within b)
+     *
+     * @param classMetaData
+     * @param memberMetaData
+     * @param assumedType
+     * @return simplified expression
+     */
+    public Expression extractCflowExpression(ClassMetaData classMetaData, MemberMetaData memberMetaData, PointcutType assumedType) {
+        ExpressionContext ctx = new ExpressionContext(
+                assumedType, m_namespace, classMetaData, memberMetaData, null
+        );
+
+        StringBuffer extracted = (StringBuffer) root.jjtAccept(CFLOWEXTRACT_VISITOR, ctx);
+        Expression expression = m_namespace.createExpression(extracted.toString(), assumedType);
+        return expression;
     }
 
     /**
@@ -138,21 +162,17 @@ public class ExpressionExpression extends Expression {
      * Cflow identifier lookup
      */
     private void initializeCflowExpressionMapFromAST() {
-        //TODO ALEX do we really need name->expr mapping ?
-        // ..and not only name list
-        //TODO ALEX: NOTE: "false AND subNodeMap" NODES should be ignored
-        // ..but can be complex due to (NOT true) AND subNodeMap syntax style
+        CflowIdentifierLookupVisitorContext context = new CflowIdentifierLookupVisitorContext(m_namespace);
+        root.jjtAccept(CFLOWIDENTIFIER_VISITOR, context);
 
-        List cflowNames = new ArrayList();
-        root.jjtAccept(CFLOWIDENTIFIER_VISITOR, cflowNames);
         String cflowName = null;
-        for (Iterator i = cflowNames.iterator(); i.hasNext();) {
+        for (Iterator i = context.getNames().iterator(); i.hasNext();) {
             cflowName = (String)i.next();
             m_cflowExpressionRefs.put(cflowName, m_namespace.getExpression(cflowName));
         }
-        if (m_cflowExpressionRefs.size() > 1) {
-            throw new RuntimeException("complex cflow expression not supported yet");
-        }
+//        if (m_cflowExpressionRefs.size() > 1) {
+//            throw new RuntimeException("complex cflow expression not supported yet");
+//        }
     }
 
     /**
@@ -312,5 +332,9 @@ public class ExpressionExpression extends Expression {
      */
     public Map getCflowExpressions() {
         return m_cflowExpressionRefs;
+    }
+
+    public SimpleNode getRoot() {
+        return root;
     }
 }

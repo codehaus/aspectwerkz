@@ -225,6 +225,19 @@ public abstract class LeafExpression extends Expression {
     }
 
     /**
+     * Build a new expression with only cflow to be evaluated. All other elements are evaluated
+     * TODO: ALEX AVCF: should return TRUE | FALSE | this depending on match/nomatch and instanceof CFlowExpr
+     *
+     * @param classMetaData
+     * @param memberMetaData
+     * @param assumedType
+     * @return simplified expression
+     */
+    public Expression extractCflowExpression(ClassMetaData classMetaData, MemberMetaData memberMetaData, PointcutType assumedType) {
+        return this;
+    }
+
+    /**
      * Tries to finds a match at some superclass in the hierarchy. <p/>Only checks for a class match to allow early
      * filtering. <p/>Recursive.
      *

@@ -15,30 +15,34 @@ import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisito
 import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionScript;
 import org.codehaus.aspectwerkz.definition.expression.ast.FalseNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.Identifier;
-import org.codehaus.aspectwerkz.definition.expression.ast.InNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.NotInNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.CflowPattern;
+import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.definition.expression.LeafExpression;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 
 /**
- * Gather all literal part of an IN or NOT IN sub-expression Build the list of literal in visit' data
+ * Gather all literal part of a CFLOW typed sub-expression<br/>
+ * Build the list of literal in visit' CflowIdentifierLookupVisitorContext
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class CflowIdentifierLookupVisitor implements ExpressionParserVisitor {
 
-    private static ThreadLocal IN_INORNOTIN_EXPR = new ThreadLocal() {
-        public Object initialValue() {
-            return Boolean.FALSE;
-        }
-    };
+//    private static ThreadLocal IN_INORNOTIN_EXPR = new ThreadLocal() {
+//        public Object initialValue() {
+//            return Boolean.FALSE;
+//        }
+//    };
 
     public Object visit(SimpleNode node, Object data) {
-        IN_INORNOTIN_EXPR.set(Boolean.FALSE);
+//        IN_INORNOTIN_EXPR.set(Boolean.FALSE);
         node.jjtGetChild(0).jjtAccept(this, data);
-        IN_INORNOTIN_EXPR.set(null);
+//        IN_INORNOTIN_EXPR.set(null);
         return data;
     }
 
@@ -53,21 +57,21 @@ public class CflowIdentifierLookupVisitor implements ExpressionParserVisitor {
         return data;
     }
 
-    public Object visit(InNode node, Object data) {
-        node.jjtGetChild(0).jjtAccept(this, data);
-        IN_INORNOTIN_EXPR.set(Boolean.TRUE);
-        node.jjtGetChild(1).jjtAccept(this, data);
-        IN_INORNOTIN_EXPR.set(Boolean.FALSE);
-        return data;
-    }
-
-    public Object visit(NotInNode node, Object data) {
-        node.jjtGetChild(0).jjtAccept(this, data);
-        IN_INORNOTIN_EXPR.set(Boolean.TRUE);
-        node.jjtGetChild(1).jjtAccept(this, data);
-        IN_INORNOTIN_EXPR.set(Boolean.FALSE);
-        return data;
-    }
+//    public Object visit(InNode node, Object data) {
+//        node.jjtGetChild(0).jjtAccept(this, data);
+//        IN_INORNOTIN_EXPR.set(Boolean.TRUE);
+//        node.jjtGetChild(1).jjtAccept(this, data);
+//        IN_INORNOTIN_EXPR.set(Boolean.FALSE);
+//        return data;
+//    }
+//
+//    public Object visit(NotInNode node, Object data) {
+//        node.jjtGetChild(0).jjtAccept(this, data);
+//        IN_INORNOTIN_EXPR.set(Boolean.TRUE);
+//        node.jjtGetChild(1).jjtAccept(this, data);
+//        IN_INORNOTIN_EXPR.set(Boolean.FALSE);
+//        return data;
+//    }
 
     public Object visit(AndNode node, Object data) {
         node.jjtGetChild(0).jjtAccept(this, data);
@@ -81,9 +85,28 @@ public class CflowIdentifierLookupVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(Identifier node, Object data) {
-        Boolean isInInOrNotIn = (Boolean)IN_INORNOTIN_EXPR.get();
-        if (isInInOrNotIn.booleanValue()) {
-            ((List)data).add(node.name);
+//        Boolean isInInOrNotIn = (Boolean)IN_INORNOTIN_EXPR.get();
+//        if (isInInOrNotIn.booleanValue()) {
+//            ((List)data).add(node.name);
+//        }
+        CflowIdentifierLookupVisitorContext context = (CflowIdentifierLookupVisitorContext)data;
+        ExpressionNamespace space = context.getNamespace();
+        Expression expression = space.getExpression(node.name);
+        if (expression != null) {
+            //TODO nested expression support
+            if (! (expression instanceof LeafExpression)) {
+                //context.addNames(expression.getCflowExpressions().keySet());
+                //throw new RuntimeException("nested expr in Cflow Id visitor");
+                return data;//SKIP
+            } else {
+                LeafExpression leaf = (LeafExpression) expression;
+                // LeafExpression has a sole type
+                if (leaf.getTypes().contains(PointcutType.CFLOW)) {
+                    context.addName(node.name);
+                }
+            }
+        } else {
+            throw new RuntimeException("No such registered expression: " + node.name);
         }
         return data;
     }
@@ -99,4 +122,5 @@ public class CflowIdentifierLookupVisitor implements ExpressionParserVisitor {
     public Object visit(FalseNode node, Object data) {
         return data;
     }
+
 }

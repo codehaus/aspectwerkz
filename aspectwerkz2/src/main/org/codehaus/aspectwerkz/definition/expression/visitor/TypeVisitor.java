@@ -16,12 +16,11 @@ import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisito
 import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionScript;
 import org.codehaus.aspectwerkz.definition.expression.ast.FalseNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.Identifier;
-import org.codehaus.aspectwerkz.definition.expression.ast.InNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.NotInNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.CflowPattern;
 
 import java.util.Set;
 import java.util.Collections;
@@ -29,7 +28,7 @@ import java.util.Iterator;
 import java.util.HashSet;
 
 /**
- * Determine expression type and check IN and NOT IN type is CFLOW Pointcut<br/>
+ * Determine expression type<br/>
  * Visit' data is TypeVisitorContext
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -52,32 +51,42 @@ public class TypeVisitor implements ExpressionParserVisitor {
         return leftTypes;
     }
 
-    public Object visit(InNode node, Object data) {
-        // assert RHS is of CFLOW type
-        // note: anonymous type like "IN true" is assumed valid
-        Set rhs = getRightHS(node, data);
-        if ( ! rhs.contains(PointcutType.CFLOW)) {
-            throw new RuntimeException("IN type not valid");
-        }
-        // resulting type is unchanged
-        return getLeftHS(node, data);
-    }
-
-    public Object visit(NotInNode node, Object data) {
-        // assert RHS is of CFLOW type
-        // note: anonymous type like "IN true" is assumed valid
-        Set rhs = getRightHS(node, data);
-        if ( ! rhs.contains(PointcutType.CFLOW)) {
-            throw new RuntimeException("NOT IN type not valid");
-        }
-        // resulting type is unchanged
-        return getLeftHS(node, data);
-    }
+//    public Object visit(InNode node, Object data) {
+//        // assert RHS is of CFLOW type
+//        // note: anonymous type like "IN true" is assumed valid
+//        Set rhs = getRightHS(node, data);
+//        if ( ! rhs.contains(PointcutType.CFLOW)) {
+//            throw new RuntimeException("IN type not valid");
+//        }
+//        // resulting type is unchanged
+//        return getLeftHS(node, data);
+//    }
+//
+//    public Object visit(NotInNode node, Object data) {
+//        // assert RHS is of CFLOW type
+//        // note: anonymous type like "IN true" is assumed valid
+//        Set rhs = getRightHS(node, data);
+//        if ( ! rhs.contains(PointcutType.CFLOW)) {
+//            throw new RuntimeException("NOT IN type not valid");
+//        }
+//        // resulting type is unchanged
+//        return getLeftHS(node, data);
+//    }
 
     public Object visit(AndNode node, Object data) {
         Set leftTypes = (Set)getLeftHS(node, data);
         Set rightTypes = (Set)getRightHS(node, data);
-        // build the intersection
+
+        if (PointcutType.isCflowTypeOnly(rightTypes)) {
+            leftTypes.add(PointcutType.CFLOW);
+            return leftTypes;
+        } else if (PointcutType.isCflowTypeOnly(leftTypes)) {
+            rightTypes.add(PointcutType.CFLOW);
+            return rightTypes;
+        }
+
+        // build the intersection since there is TYPED_1 AND TYPED_2
+        // where nor TYPED_1 neither TYPED_2 are pure cflow expression
         Set intersect = new HashSet();
         for (Iterator types = rightTypes.iterator(); types.hasNext();) {
             Object type = types.next();
@@ -125,7 +134,6 @@ public class TypeVisitor implements ExpressionParserVisitor {
 
 
     //------------------------
-
 
 
     private Set getLeftHS(SimpleNode node, Object data) {
