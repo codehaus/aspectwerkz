@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.io.File;
 
 /**
  * The SystemDefintionContainer maintains all the definition and is aware of the classloader hierarchy. <p/>A
@@ -41,7 +42,7 @@ public class SystemDefinitionContainer {
     // supported
 
     /**
-     * Map of SystemDefinition location (as String[List]) per ClassLoader
+     * Map of SystemDefinition location (as URL[List]) per ClassLoader
      */
     public static final Map s_classLoaderDefinitionLocations = new WeakHashMap(); //note: null key is
 
@@ -104,28 +105,28 @@ public class SystemDefinitionContainer {
                 if ((loader == ClassLoader.getSystemClassLoader()) && !s_disableSystemWideDefinition) {
                     // -D..file=... sysdef
                     defs.addAll(DefinitionLoader.getDefaultDefinition(loader));
-                    defsLocation.add(URL_JVM_OPTION_SYSTEM);
+                    defsLocation.add(new File(URL_JVM_OPTION_SYSTEM).toURL());
                 }
                 if (loader.getResource(WEB_WEB_INF_XML_FILE) != null) {
                     Enumeration webres = loader.getResources(AOP_WEB_INF_XML_FILE);
                     while (webres.hasMoreElements()) {
                         URL def = (URL) webres.nextElement();
-                        if (isDefinedBy(loader.getParent(), def.toExternalForm())) {
+                        if (isDefinedBy(loader.getParent(), def)) {
                             ;
                         } else {
                             defs.addAll(XmlParser.parseNoCache(loader, def));
-                            defsLocation.add(def.toExternalForm());
+                            defsLocation.add(def);
                         }
                     }
                 }
                 Enumeration res = loader.getResources(AOP_META_INF_XML_FILE);
                 while (res.hasMoreElements()) {
                     URL def = (URL) res.nextElement();
-                    if (isDefinedBy(loader.getParent(), def.toExternalForm())) {
+                    if (isDefinedBy(loader.getParent(), def)) {
                         ;
                     } else {
                         defs.addAll(XmlParser.parseNoCache(loader, def));
-                        defsLocation.add(def.toExternalForm());
+                        defsLocation.add(def);
                     }
                 }
                 dump(loader);
@@ -147,16 +148,20 @@ public class SystemDefinitionContainer {
      * @TODO No need for the s_ map
      * @TODO KICK the def map and crawl up the CL parents and redo a getResources check instead
      */
-    public static boolean isDefinedBy(final ClassLoader loader, final String def) {
+    public static boolean isDefinedBy(final ClassLoader loader, final URL def) {
         if (loader == null) {
             return false;
         }
         ArrayList defLocation = (ArrayList) s_classLoaderDefinitionLocations.get(loader);
-        if ((defLocation != null) && defLocation.contains(def)) {
-            return true;
-        } else {
-            return isDefinedBy(loader.getParent(), def);
+        if (defLocation != null) {
+            for (Iterator it = defLocation.iterator(); it.hasNext();) {
+                URL definedDef = (URL) it.next();
+                if (definedDef.sameFile(def)) {
+                    return true;
+                }
+            }
         }
+        return isDefinedBy(loader.getParent(), def);
     }
 
     /**

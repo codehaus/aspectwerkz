@@ -92,7 +92,6 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
                 );
                 e.printStackTrace();
             }
-            AspectWerkzPreProcessor.dumpForce(context);
         }
     }
 
