@@ -25,9 +25,9 @@
     <!--    <siteDirectory>/www/aspectwerkz.codehaus.org/</siteDirectory>-->
     <!--    <distributionDirectory>/www/aspectwerkz.codehaus.org/downloads/</distributionDirectory>-->
     <repository>
-        <connection>scm:cvs:pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm:aspectwerkz3</connection>
-        <developerConnection>scm:cvs:ext:${maven.username}@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm:aspectwerkz3</developerConnection>
-        <url>http://cvs.aspectwerkz.codehaus.org/aspectwerkz2</url>
+        <connection>scm:cvs:pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm:aspectwerkz4</connection>
+        <developerConnection>scm:cvs:ext:${maven.username}@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm:aspectwerkz4</developerConnection>
+        <url>http://cvs.aspectwerkz.codehaus.org/aspectwerkz4</url>
     </repository>
     <versions>
         <version>
