@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParserTest.java,v 1.1 2003-06-17 15:21:02 jboner Exp $
+ * @version $Id: XmlDefinitionParserTest.java,v 1.2 2003-06-17 15:46:00 jboner Exp $
  */
 public class XmlDefinitionParserTest extends TestCase {
 
@@ -27,16 +27,16 @@ public class XmlDefinitionParserTest extends TestCase {
             AspectWerkzDefinition aspectwerkz =
                    XmlDefinitionParser.parse(m_input);
             Iterator it = aspectwerkz.getIntroductionDefinitions().iterator();
-            IntroductionDefinition introduction1 = (IntroductionDefinition)it.next();
-            assertEquals("loggable", introduction1.getName());
-            assertEquals("logging.Loggable", introduction1.getInterface());
-            assertEquals("loggable", introduction1.getAttribute());
             IntroductionDefinition introduction2 = (IntroductionDefinition)it.next();
             assertEquals("mixin", introduction2.getName());
             assertEquals("mixins.Mixin", introduction2.getInterface());
             assertEquals("mixins.MixinImpl", introduction2.getImplementation());
             assertEquals("perInstance", introduction2.getDeploymentModel());
             assertEquals("attribute", introduction2.getAttribute());
+            IntroductionDefinition introduction1 = (IntroductionDefinition)it.next();
+            assertEquals("loggable", introduction1.getName());
+            assertEquals("logging.Loggable", introduction1.getInterface());
+            assertEquals("loggable", introduction1.getAttribute());
         }
         catch (Exception e) {
             System.out.println("e = " + e);
