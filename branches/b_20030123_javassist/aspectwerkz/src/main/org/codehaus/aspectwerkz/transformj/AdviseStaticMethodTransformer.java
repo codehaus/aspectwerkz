@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.Collections;
 
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
@@ -29,10 +28,11 @@ import javassist.CtMethod;
 import javassist.Modifier;
 import javassist.CtField;
 import javassist.CannotCompileException;
-import javassist.CtNewMethod;
 
 /**
  * Transforms static methods to become "aspect-aware".
+ *
+ * TODO merge with memberMethodTF
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -614,11 +614,11 @@ public class AdviseStaticMethodTransformer implements Transformer, Activator {
                                 final ClassMetaData classMetaData,
                                 final CtClass cg, boolean isActivatePhase) throws NotFoundException {
         if (cg.isInterface() ||
-                cg.getSuperclass().getName().equals(org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice.class.getName()) ||
-                cg.getSuperclass().getName().equals(org.codehaus.aspectwerkz.xmldef.advice.PreAdvice.class.getName()) ||
-                cg.getSuperclass().getName().equals(org.codehaus.aspectwerkz.xmldef.advice.PostAdvice.class.getName())) {
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
             return true;
-            //TODO complex inheritance not supported
         }
         String className = cg.getName();
         if (definition.inExcludePackage(className)) {

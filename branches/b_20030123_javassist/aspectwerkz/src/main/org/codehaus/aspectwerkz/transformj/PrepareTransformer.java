@@ -34,6 +34,7 @@ import javassist.CtNewMethod;
 /**
  * Transforms class for preparation state
  * Class granularity
+ * TODO runtime weaving and class preparation to HotSwap
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */

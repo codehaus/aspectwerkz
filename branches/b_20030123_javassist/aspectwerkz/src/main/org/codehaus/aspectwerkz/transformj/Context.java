@@ -99,7 +99,7 @@ public class Context {
     /**
      * Sets the meta-data repository.
      *
-     * @param the meta-data repository
+     * @param repository the meta-data repository
      */
     public void setMetaDataRepository(final Map repository) {
         m_metaDataRepository = repository;
@@ -167,36 +167,4 @@ public class Context {
         m_metaData.put(key, value);
     }
 
-    /**
-     * Returns the JavaClass corresponding to the ClassGen.
-     * Set its repository based on the context class loader.
-     *
-     * @param cg the ClassGen
-     * @return JavaClass
-     */
-//    public JavaClass getJavaClass(final ClassGen cg) {
-//        final JavaClass jc = cg.getJavaClass();
-//        jc.setRepository(m_repository);
-//        return jc;
-//    }
-
-    /**
-     * Returns the super class a the JavaClass.
-     * Set its repository based on the context class loader.
-     *
-     * @param cg the ClassGen
-     * @return the super class of the JavaClass
-     */
-//    public JavaClass getSuperClass(final ClassGen cg) {
-//        JavaClass klass = getJavaClass(cg);
-//        try {
-//            final JavaClass superClass = klass.getSuperClass();
-//            if (superClass == null) return null;
-//            superClass.setRepository(m_repository);
-//            return superClass;
-//        }
-//        catch (ClassNotFoundException e) {
-//            throw new WrappedRuntimeException(e);
-//        }
-//    }
 }

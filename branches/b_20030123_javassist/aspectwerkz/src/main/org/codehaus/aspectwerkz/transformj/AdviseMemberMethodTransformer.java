@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.Collections;
 
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
@@ -34,8 +33,8 @@ import javassist.CtNewMethod;
 /**
  * Transforms member methods to become "aspect-aware".
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AdviseMemberMethodTransformer implements Transformer, Activator {
 
@@ -75,22 +74,13 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
 
             final CtMethod[] methods = cg.getDeclaredMethods();
 
-            // get the indexes for the <init> methods
-            //TODO
-            List initIndexes = new ArrayList();
-            for (int i = 0; i < methods.length; i++) {
-                if (methods[i].getName().equals("<init>")) {
-                    initIndexes.add(new Integer(i));
-                }
-            }
-
             // build and sort the method lookup list
             final List methodLookupList = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
                 //TODO remove for RT indexing
                 MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(methods[i]);
                 if (methodFilter(definition, classMetaData, methodMetaData, methods[i])) {
-                    java.lang.System.out.println("MMTF - TF - methodFiltered: " + methodMetaData.getName());
+                    //java.lang.System.out.println("MMTF - TF - methodFiltered: " + methodMetaData.getName());
                     continue;
                 }
                 if (methodInternal(methods[i])) {
@@ -100,17 +90,16 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
             }
 
             Collections.sort(methodLookupList, JavassistMethodComparator.getInstance());
-            int ix = 0;
-            for (Iterator i = methodLookupList.iterator(); i.hasNext(); ) {
-                System.out.println("MMTF - TF - handling: " + ix + "  " + ((CtMethod)i.next()).getName());
-                ix++;
-            }
+//            int ix = 0;
+//            for (Iterator i = methodLookupList.iterator(); i.hasNext(); ) {
+//                System.out.println("MMTF - TF - handling: " + ix + "  " + ((CtMethod)i.next()).getName());
+//                ix++;
+//            }
 
             final Map methodSequences = new HashMap();
             final List proxyMethods = new ArrayList();
             boolean isClassAdvised = false;
-            boolean firstProxy = true;
-            //for (int i = 0; i < methods.length; i++) {
+            boolean firstProxy = true;//RT model
             int methodIndex = -1;
             for (Iterator i = methodLookupList.iterator(); i.hasNext(); ) {
                 CtMethod method = (CtMethod) i.next();
@@ -159,15 +148,8 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
                         definition.getUuid(),
                         controllerClassName
                 ));
-//                proxyMethods.add(createProxyMethodWithContainer(
-//                        cg, method,
-//                        methodLookupId,
-//                        methodSequence,
-//                        definition.getUuid(),
-//                        controllerClassName
-//                ));
 
-                addPrefixToMethod(cg, method, methodLookupId, methodSequence, definition.getUuid());
+                addPrefixToMethod(cg, method, methodLookupId, methodSequence);
             }
 
             if (isClassAdvised) {
@@ -181,6 +163,12 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
         }
     }
 
+    /**
+     * Transform for runtime weaving
+     * @param context
+     * @param klass
+     * @throws Exception
+     */
     public void activate(final Context context, final Klass klass) throws Exception {
 
         // loop over all the definitions
@@ -282,9 +270,9 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
         }
     }
 
-
     /**
      * Add jp container field
+     * TODO : for Runtime weaving model
      */
     private void addJoinPointContainerField(final CtClass cg) throws NotFoundException, CannotCompileException {
         final String joinPointContainer = "_RT_mmjp";
@@ -307,7 +295,6 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
     /**
      * Adds a join point member field.
      *
-     * @param cp the ConstantPoolGen
      * @param cg the ClassGen
      * @param mg the MethodGen
      * @param methodSequence the methods sequence number
@@ -330,24 +317,22 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
                 joinPoint,
                 cg);
         field.setModifiers(Modifier.PRIVATE | Modifier.FINAL);
-        cg.addField(field, "new " + TransformationUtil.THREAD_LOCAL_CLASS+"()");//TODO jcache
+        cg.addField(field, "new " + TransformationUtil.THREAD_LOCAL_CLASS+"()");
     }
 
     /**
      * Adds a prefix to the original method.
      * To make it callable only from within the framework itself.
      *
-     * @param mg the MethodGen
-     * @param method the current method
+     * @param cg class gen
+     * @param mg the current method
+     * @param methodLookupId the methods index number
      * @param methodSequence the methods sequence number
-     * @param uuid the definition UUID
-     * @return the modified method
      */
     private void addPrefixToMethod(CtClass cg,
                                      final CtMethod mg,
                                      int methodLookupId,
-                                     final int methodSequence,
-                                     final String uuid) {
+                                     final int methodSequence) {
 
         // change the method access flags (should always be set to protected)
         int accessFlags = mg.getModifiers();
@@ -375,15 +360,10 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
      * catches the invocation for further processing by the framework
      * before redirecting to the original method.
      *
-     * @todo pass the 'class' as a Class instance not a String to the join point. Add the class field to the class using BCEL (see AdviseStaticMethodTransformer.java)
-     *
-     * @param cp the ConstantPoolGen
      * @param cg the ClassGen
      * @param originalMethod the current method
-     * @param factory the objectfactory
      * @param methodId the id of the current method in the lookup tabl
      * @param methodSequence the methods sequence number
-     * @param accessFlags the access flags of the original method
      * @param uuid the uuid for the weave model defining the pointcut
      * @param controllerClassName the class name of the controller class to use
      * @return the proxy method
@@ -393,7 +373,8 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
                                      final int methodId,
                                      final int methodSequence,
                                      final String uuid,
-                                     final String controllerClassName) throws NotFoundException, CannotCompileException {
+                                     final String controllerClassName)
+    throws NotFoundException, CannotCompileException {
 
         String joinPoint = getJoinPointName(originalMethod.getName(), methodSequence);
 
@@ -422,10 +403,10 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
             body.append("return ($r)mmjp.proceed();");
         }
         body.append("}");
-        //System.out.println(body);
+
         CtMethod method = CtNewMethod.make(
                 originalMethod.getReturnType(),
-                originalMethod.getName(),//TODO rename correctly handled by j ?
+                originalMethod.getName(),
                 originalMethod.getParameterTypes(),
                 originalMethod.getExceptionTypes(),
                 body.toString(),
@@ -435,6 +416,18 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
         return method;
     }
 
+    /**
+     * TODO for runtime weaving model
+     * @param cg
+     * @param originalMethod
+     * @param methodId
+     * @param methodSequence
+     * @param uuid
+     * @param controllerClassName
+     * @return
+     * @throws NotFoundException
+     * @throws CannotCompileException
+     */
     private CtMethod createProxyMethodWithContainer(final CtClass cg,
                                      final CtMethod originalMethod,
                                      final int methodId,
@@ -486,6 +479,17 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
         return method;
     }
 
+    /**
+     * TODO for runtime weaving model
+     * @param cg
+     * @param originalMethod
+     * @param methodId
+     * @param methodSequence
+     * @param uuid
+     * @param controllerClassName
+     * @throws NotFoundException
+     * @throws CannotCompileException
+     */
     private void activateMethod(final CtClass cg,
                                      final CtMethod originalMethod,
                                      final int methodId,
@@ -529,27 +533,6 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
     }
 
     /**
-     * Callback method. Is being called before each transformation.
-     */
-    public void sessionStart() {
-    }
-
-    /**
-     * Callback method. Is being called after each transformation.
-     */
-    public void sessionEnd() {
-    }
-
-    /**
-     * Callback method. Prints a log/status message at each transformation.
-     *
-     * @return a log string
-     */
-    public String verboseMessage() {
-        return this.getClass().getName();
-    }
-
-    /**
      * Filters the classes to be transformed.
      *
      * @param definition the definition
@@ -561,11 +544,11 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
                                 final ClassMetaData classMetaData,
                                 final CtClass cg, final boolean isActivatePhase) throws NotFoundException {
         if (cg.isInterface() ||
-                cg.getSuperclass().getName().equals(org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice.class.getName()) ||
-                cg.getSuperclass().getName().equals(org.codehaus.aspectwerkz.xmldef.advice.PreAdvice.class.getName()) ||
-                cg.getSuperclass().getName().equals(org.codehaus.aspectwerkz.xmldef.advice.PostAdvice.class.getName())) {
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
             return true;
-            //TODO: complex inheritance not supported
         }
         String className = cg.getName();
         if (definition.inExcludePackage(className)) {
@@ -621,8 +604,6 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
     /**
      * Filters the internal methods
      *
-     * @param definition the definition
-     * @param classMetaData the class meta-data
      * @param method the method to filter
      * @return boolean
      */
@@ -644,7 +625,7 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
     /**
      * Returns the name of the join point.
      *
-     * @param method the method
+     * @param methodName the method name
      * @param methodSequence the method sequence
      * @return the name of the join point
      */
@@ -671,8 +652,8 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
                                          final String className) {
         final StringBuffer methodName = new StringBuffer();
         methodName.append(TransformationUtil.ORIGINAL_METHOD_PREFIX);
-        /**/methodName.append(methodLookupId);
-        /**/methodName.append(TransformationUtil.DELIMITER);
+        methodName.append(methodLookupId);
+        methodName.append(TransformationUtil.DELIMITER);
         methodName.append(method.getName());
         methodName.append(TransformationUtil.DELIMITER);
         methodName.append(methodSequence);

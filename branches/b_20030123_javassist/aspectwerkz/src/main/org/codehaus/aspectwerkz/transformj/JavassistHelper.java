@@ -17,7 +17,7 @@ import javassist.*;
 public class JavassistHelper {
 
     /**
-     * Helper method for bogus CtMethod.make for static methods
+     * Helper method for bogus CtMethod.make in Javassist for static methods
      *
      * @param returnType
      * @param name
