@@ -93,12 +93,12 @@ public class JavassistClassInfo implements ClassInfo {
     /**
      * The class info repository.
      */
-    private final ClassInfoRepository m_classInfoRepository;
+    private ClassInfoRepository m_classInfoRepository;
 
     /**
      * The class loader that loaded the class.
      */
-    private final ClassLoader m_loader;
+    private transient final ClassLoader m_loader;
 
     /**
      * The attribute extractor.
@@ -120,20 +120,22 @@ public class JavassistClassInfo implements ClassInfo {
         }
         m_class = klass;
         m_loader = loader;
+        m_isInterface = klass.isInterface();
         m_attributeExtractor = Attributes.getAttributeExtractor(m_class, m_loader);
         m_classInfoRepository = ClassInfoRepository.getRepository(m_loader);
-        m_isInterface = klass.isInterface();
         if (klass.isPrimitive()) {
             m_name = klass.getName();
             m_isPrimitive = true;
-        } else if (klass.isArray()) {
+        }
+         else if (klass.isArray()) {
             m_name = klass.getName();
             m_isArray = true;
             m_methods = new MethodInfo[0];
             m_constructors = new ConstructorInfo[0];
             m_fields = new FieldInfo[0];
             m_interfaces = new ClassInfo[0];
-        } else {
+        }
+         else {
             m_name = klass.getName();
             CtMethod[] methods = m_class.getDeclaredMethods();
             m_methods = new MethodInfo[methods.length];

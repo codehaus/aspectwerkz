@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import java.lang.reflect.Method;
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -59,10 +60,11 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
      * @return the method info
      */
     public static JavaMethodInfo getMethodInfo(final Method method) {
-        JavaMethodInfo methodInfo = (JavaMethodInfo)s_cache.get(method);
+        WeakReference methodRef = new WeakReference(method);
+        JavaMethodInfo methodInfo = (JavaMethodInfo)s_cache.get(methodRef);
         if (methodInfo == null) { //  declaring class is not loaded yet; load it and retry
             new JavaClassInfo(method.getDeclaringClass());
-            methodInfo = (JavaMethodInfo)s_cache.get(method);
+            methodInfo = (JavaMethodInfo)s_cache.get(methodRef);
         }
         return methodInfo;
     }
@@ -74,7 +76,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
      * @param methodInfo the method info
      */
     public static void addMethodInfo(final Method method, final JavaMethodInfo methodInfo) {
-        s_cache.put(method, methodInfo);
+        s_cache.put(new WeakReference(method), methodInfo);
     }
 
     /**

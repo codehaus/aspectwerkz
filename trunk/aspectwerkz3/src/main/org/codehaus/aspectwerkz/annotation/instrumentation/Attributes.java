@@ -12,10 +12,8 @@ import org.codehaus.aspectwerkz.annotation.instrumentation.javassist.JavassistAt
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 import javassist.CtClass;
 
 /**
@@ -28,7 +26,7 @@ public class Attributes {
      * Hold a cache of AttributeExtractors so we don't have to load the class loaded repeatedly when accessing custom
      * attributes.
      */
-    private static final Map s_extractorCache = new HashMap();
+    private static final Map s_extractorCache = new WeakHashMap();
 
     /**
      * Return the list (possibly empty) of custom attributes associated with the class "klass".

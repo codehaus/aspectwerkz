@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import java.lang.reflect.Constructor;
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -53,10 +54,11 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
      * @return the constructor info
      */
     public static JavaConstructorInfo getConstructorInfo(final Constructor constructor) {
-        JavaConstructorInfo constructorInfo = (JavaConstructorInfo)s_cache.get(constructor);
+        WeakReference constructorRef = new WeakReference(constructor);
+        JavaConstructorInfo constructorInfo = (JavaConstructorInfo)s_cache.get(constructorRef);
         if (constructorInfo == null) {
             new JavaClassInfo(constructor.getDeclaringClass());
-            constructorInfo = (JavaConstructorInfo)s_cache.get(constructor);
+            constructorInfo = (JavaConstructorInfo)s_cache.get(constructorRef);
         }
         return constructorInfo;
     }
@@ -68,7 +70,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
      * @param methodInfo  the constructor info
      */
     public static void addConstructorInfo(final Constructor constructor, final JavaConstructorInfo methodInfo) {
-        s_cache.put(constructor, methodInfo);
+        s_cache.put(new WeakReference(constructor), methodInfo);
     }
 
     /**

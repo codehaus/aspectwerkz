@@ -7,10 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.lang.ref.WeakReference;
 
 /**
  * A repository for the class info hierarchy. Is class loader aware.
@@ -26,12 +26,12 @@ public class ClassInfoRepository {
     /**
      * Map with all the class info mapped to their class names.
      */
-    private final Map m_repository = new HashMap();
+    private final Map m_repository = new WeakHashMap();
 
     /**
      * Class loader for the class repository.
      */
-    private final ClassLoader m_loader;
+    private transient final ClassLoader m_loader;
 
     /**
      * Creates a new repository.
@@ -49,11 +49,12 @@ public class ClassInfoRepository {
      * @return
      */
     public static synchronized ClassInfoRepository getRepository(final ClassLoader loader) {
+        WeakReference loaderRef = new WeakReference(loader);
         if (s_repositories.containsKey(loader)) {
-            return (ClassInfoRepository)s_repositories.get(loader);
+            return (ClassInfoRepository)s_repositories.get(loaderRef);
         } else {
             final ClassInfoRepository repository = new ClassInfoRepository(loader);
-            s_repositories.put(loader, repository);
+            s_repositories.put(loaderRef, repository);
             return repository;
         }
     }

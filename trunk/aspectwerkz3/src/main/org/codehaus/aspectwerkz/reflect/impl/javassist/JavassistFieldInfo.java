@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.lang.ref.WeakReference;
+
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.NotFoundException;
@@ -57,10 +59,11 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      * @return the field info
      */
     public static JavassistFieldInfo getFieldInfo(final CtField field, final ClassLoader loader) {
-        JavassistFieldInfo fieldInfo = (JavassistFieldInfo)s_cache.get(field);
+        WeakReference fieldRef = new WeakReference(field);
+        JavassistFieldInfo fieldInfo = (JavassistFieldInfo)s_cache.get(fieldRef);
         if (fieldInfo == null) { //  declaring class is not loaded yet; load it and retry
             new JavassistClassInfo(field.getDeclaringClass(), loader);
-            fieldInfo = (JavassistFieldInfo)s_cache.get(field);
+            fieldInfo = (JavassistFieldInfo)s_cache.get(fieldRef);
         }
         return fieldInfo;
     }
@@ -72,7 +75,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      * @param fieldInfo the field info
      */
     public static void addFieldInfo(final CtField field, final JavassistFieldInfo fieldInfo) {
-        s_cache.put(field, fieldInfo);
+        s_cache.put(new WeakReference(field), fieldInfo);
     }
 
     /**
