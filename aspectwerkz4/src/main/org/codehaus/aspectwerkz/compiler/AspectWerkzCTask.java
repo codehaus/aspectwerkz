@@ -1,6 +1,6 @@
 /*
- * $Id: AspectWerkzCTask.java,v 1.6 2005-01-07 12:14:20 avasseur Exp $
- * $Date: 2005-01-07 12:14:20 $
+ * $Id: AspectWerkzCTask.java,v 1.7 2005-01-13 09:22:13 avasseur Exp $
+ * $Date: 2005-01-13 09:22:13 $
  */
 package org.codehaus.aspectwerkz.compiler;
 
@@ -22,6 +22,7 @@ import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
  * Use the following parameters to configure the task:
  * <ul>
  * <li>verbose: [optional] flag marking the weaver verbosity [true / false]</li>
+ * <li>details: [optional] flag marking the weaver verbosity on matching [true / false, requires verbose=true]</li>
  * <li>keepjp: [optional] flag marking the need to keep the generated jp classes [true / false]</li>
  * <li>taskverbose: [optional] flag marking the task verbose [true / false]</li>
  * <li>definition: [optional] path to aspect definition xml file (optional, can be found on the path as META-INF/aop.xml - even several)</li>
@@ -54,11 +55,15 @@ import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AspectWerkzCTask extends Task {
+
+    private final static String AW_TRANSFORM_DETAILS = "aspectwerkz.transform.details";
+
     private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
 
     private static final String AW_DEFINITION_FILE = "aspectwerkz.definition.file";
 
     private boolean m_verbose;
+    private boolean m_details;
     private boolean m_keepjp;
     private boolean m_taskVerbose = false;
     private String m_aspectModels;
@@ -84,6 +89,14 @@ public class AspectWerkzCTask extends Task {
      */
     public void setVerbose(boolean verbose) {
         m_verbose = verbose;
+    }
+
+    /**
+     * details=..
+     * @param details
+     */
+    public void setDetails(boolean details) {
+        m_details = details;
     }
 
     /**
@@ -201,6 +214,10 @@ public class AspectWerkzCTask extends Task {
 
             if (m_verbose) {
                 System.setProperty(AW_TRANSFORM_VERBOSE, m_verbose ? "true" : "false");
+            }
+
+            if (m_details) {
+                System.setProperty(AW_TRANSFORM_DETAILS, m_details ? "true" : "false");
             }
 
             if (m_aspectModels != null) {
