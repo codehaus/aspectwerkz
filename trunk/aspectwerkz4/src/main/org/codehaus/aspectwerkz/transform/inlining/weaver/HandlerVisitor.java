@@ -11,7 +11,6 @@ import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Attribute;
-import org.objectweb.asm.Constants;
 import org.objectweb.asm.CodeAdapter;
 import org.objectweb.asm.Label;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
@@ -29,7 +28,6 @@ import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 /**

@@ -39,11 +39,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     protected int m_constructionType = ASPECT_CONSTRUCTION_TYPE_UNKNOWN;
 
     /**
-     * Introduction container containing introduction declared by this aspect, keys by introduction names
-     */
-    protected final Map m_introductionContainers = new HashMap();
-
-    /**
      * The aspect context prototype.
      */
     protected final AspectContext m_aspectContext;
@@ -151,26 +146,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
             }
         }
         return m_perThread.get(thread);
-    }
-
-    /**
-     * Attach the introduction container to this aspect container to mirror the "aspect contains 0-n introduction"
-     *
-     * @param name           of the introduction
-     * @param introContainer introduction container
-     */
-    public void addIntroductionContainer(final String name, final IntroductionContainer introContainer) {
-        m_introductionContainers.put(name, introContainer);
-    }
-
-    /**
-     * Returns the introduction container of given name (introduction name) or null if not linked.
-     *
-     * @param name of the introduction
-     * @return introduction container
-     */
-    public IntroductionContainer getIntroductionContainer(final String name) {
-        return (IntroductionContainer) m_introductionContainers.get(name);
     }
 
     /**

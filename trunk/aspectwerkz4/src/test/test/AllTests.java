@@ -49,7 +49,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
         suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);
         suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
-        suite.addTestSuite(test.IntroductionTest.class);
+        suite.addTestSuite(test.mixin.IntroductionTest.class);
         suite.addTestSuite(test.implementsbug.ImplementsTest.class);
         suite.addTestSuite(test.inheritedmixinbug.Target.class);
         suite.addTestSuite(test.interfacesubtypebug.InterfaceSubtypeBug.class);

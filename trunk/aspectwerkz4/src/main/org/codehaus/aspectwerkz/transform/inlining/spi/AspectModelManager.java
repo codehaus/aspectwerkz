@@ -10,6 +10,8 @@ package org.codehaus.aspectwerkz.transform.inlining.spi;
 import java.util.StringTokenizer;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
@@ -19,16 +21,16 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  */
 public class AspectModelManager {
 
-    private static final String ASPECT_MODELS = "aspectwerkz.extension.aspectmodels";
+    private static final String ASPECT_MODELS_VM_OPTION = "aspectwerkz.extension.aspectmodels";
     private static final String DELIMITER = ":";
 
     /**
      * The aspects models that are registered
      */
-    private static AspectModel[] m_aspectModels = new AspectModel[]{};
+    private static AspectModel[] ASPECT_MODELS = new AspectModel[]{};
 
     static {
-        registerAspectModels(System.getProperty(ASPECT_MODELS, null));
+        registerAspectModels(System.getProperty(ASPECT_MODELS_VM_OPTION, null));
     }
 
     /**
@@ -37,7 +39,7 @@ public class AspectModelManager {
      * @return an array with the aspect models
      */
     public static AspectModel[] getModels() {
-        return m_aspectModels;
+        return ASPECT_MODELS;
     }
 
     /**
@@ -47,13 +49,28 @@ public class AspectModelManager {
      * @return the aspect model
      */
     public static AspectModel getModelFor(String type) {
-        for (int i = 0; i < m_aspectModels.length; i++) {
-            AspectModel aspectModel = m_aspectModels[i];
+        for (int i = 0; i < ASPECT_MODELS.length; i++) {
+            AspectModel aspectModel = ASPECT_MODELS[i];
             if (aspectModel.getAspectModelType().equals(type)) {
                 return aspectModel;
             }
         }
         return null;
+    }
+
+    /**
+     * Let all aspect models try to define the aspect (only one will succeed).
+     *
+     * @param aspectClassInfo
+     * @param aspectDef
+     * @param loader
+     */
+    public static void defineAspect(final ClassInfo aspectClassInfo,
+                                    final AspectDefinition aspectDef,
+                                    final ClassLoader loader) {
+        for (int i = 0; i < ASPECT_MODELS.length; i++) {
+            ASPECT_MODELS[i].defineAspect(aspectClassInfo, aspectDef, loader);
+        }
     }
 
     /**
@@ -64,12 +81,12 @@ public class AspectModelManager {
     private static void registerAspectModels(final String aspectModels) {
         if (aspectModels != null) {
             StringTokenizer tokenizer = new StringTokenizer(aspectModels, DELIMITER);
-            m_aspectModels = new AspectModel[tokenizer.countTokens()];
-            for (int i = 0; i < m_aspectModels.length; i++) {
+            ASPECT_MODELS = new AspectModel[tokenizer.countTokens()];
+            for (int i = 0; i < ASPECT_MODELS.length; i++) {
                 final String className = tokenizer.nextToken();
                 try {
                     final Class modelClass = ContextClassLoader.loadClass(className);
-                    m_aspectModels[i] = (AspectModel) modelClass.newInstance();
+                    ASPECT_MODELS[i] = (AspectModel) modelClass.newInstance();
                 } catch (ClassNotFoundException e) {
                     throw new DefinitionException(
                             "aspect model implementation class not found [" +

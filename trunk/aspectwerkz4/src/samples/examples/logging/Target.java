@@ -10,7 +10,6 @@ package examples.logging;
 import org.codehaus.aspectwerkz.transform.inlining.deployer.Deployer;
 import org.codehaus.aspectwerkz.transform.inlining.deployer.DeploymentHandle;
 import org.codehaus.aspectwerkz.definition.DeploymentScope;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 

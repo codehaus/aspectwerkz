@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.objectweb.asm.*;

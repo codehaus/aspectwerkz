@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
-import org.objectweb.asm.Constants;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Attribute;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
@@ -21,7 +20,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class AlreadyAddedMethodVisitor extends AsmAnnotationHelper.NullClassVisitor implements Constants, TransformationConstants {
+public class AlreadyAddedMethodVisitor extends AsmAnnotationHelper.NullClassVisitor implements TransformationConstants {
 
     /**
      * Set of "<methodName><methodDesc>" strings populated with wrapper methods, prefixed originals
@@ -61,7 +60,14 @@ public class AlreadyAddedMethodVisitor extends AsmAnnotationHelper.NullClassVisi
         return super.visitMethod(access, name, desc, exceptions, attrs);
     }
 
-    static String getMethodKey(String name, String desc) {
+    /**
+     * Returns the key of the method.
+     *
+     * @param name
+     * @param desc
+     * @return
+     */
+    static String getMethodKey(final String name, final String desc) {
         StringBuffer sb = new StringBuffer(name);
         return sb.append(desc).toString();
     }

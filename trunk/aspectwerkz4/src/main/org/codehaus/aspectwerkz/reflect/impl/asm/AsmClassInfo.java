@@ -144,7 +144,7 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * The annotations.
-     * Lasily populated.
+     * Lazily populated.
      */
     private List m_annotations = null;
 

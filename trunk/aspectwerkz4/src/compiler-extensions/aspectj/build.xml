@@ -41,6 +41,8 @@
         <property name="build.dir" value="${basedir}/target"/>
         <property name="build.core.dir" value="${build.dir}/classes"/>
         <property name="build.test.dir" value="${build.dir}/test-classes"/>
+        <property name="build.samples.dir" value="${build.dir}/samples-classes"/>
+        <property name="samples.src.dir" value="${basedir}/src/samples"/>
         <property name="lib.dir" value="${basedir}/lib"/>
         <property name="config.dir" value="${basedir}/config"/>
         <property name="javac.debug" value="on"/>
@@ -127,6 +129,26 @@
         </ajc>
     </target>
 
+    <!-- ============================================================== -->
+    <!-- compiles the samples -->
+    <!-- ============================================================== -->
+    <target name="compile:samples" depends="init, compile">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.samples.dir}"/>
+        <javac destdir="${build.samples.dir}" debug="on" excludes="**/*.aj">
+            <src path="${samples.src.dir}"/>
+            <classpath>
+                <pathelement path="${build.core.dir}"/>
+                <path refid="project.class.path"/>
+            </classpath>
+        </javac>
+        <ajc srcdir="${samples.src.dir}/samples/aspect" destdir="${build.samples.dir}">
+            <classpath>
+                <pathelement path="${build.samples.dir}"/>
+                <path refid="project.class.path"/>
+            </classpath>
+        </ajc>
+    </target>
 
     <!-- ============================================================== -->
     <!-- compiles all -->
@@ -154,6 +176,15 @@
     <target name="test" depends="compile:test">
         <exec executable="${aw.home}/bin/aspectwerkz${executableSuffix}">
             <arg line="-Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.aspectj.AspectJAspectModel -cp ${build.test.dir}${pathseparator}${build.core.dir}${pathseparator}${basedir}/lib/aspectjtools.jar${pathseparator}${basedir}/lib/aspectjrt.jar${pathseparator}${aw.home}/lib/junit-3.8.1.jar -Daspectwerkz.definition.file=${test.src.dir}/aop.xml -Daspectwerkz.transform.dump=* test.aj.Test"/>
+        </exec>
+    </target>
+
+    <!-- ============================================================== -->
+    <!-- run the redefinition sample -->
+    <!-- ============================================================== -->
+    <target name="samples:redef" depends="compile:samples">
+        <exec executable="${aw.home}/bin/aspectwerkz${executableSuffix}">
+            <arg line="-Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.aspectj.AspectJAspectModel -cp ${build.samples.dir}${pathseparator}${build.core.dir}${pathseparator}${basedir}/lib/aspectjtools.jar${pathseparator}${basedir}/lib/aspectjrt.jar${pathseparator}${aw.home}/lib/junit-3.8.1.jar -Daspectwerkz.definition.file=${samples.src.dir}/aop.xml -Daspectwerkz.transform.dump=* samples.Redef"/>
         </exec>
     </target>
 

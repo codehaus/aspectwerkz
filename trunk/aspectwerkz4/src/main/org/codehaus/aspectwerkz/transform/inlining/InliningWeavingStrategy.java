@@ -32,6 +32,8 @@ import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodCallVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodExecutionVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodWrapperVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.AlreadyAddedMethodVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.AddInterfaceVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.AddMixinMethodsVisitor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -130,6 +132,8 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             ClassVisitor chainedVisitor = cw;
 
             chainedVisitor = new JoinPointInitVisitor(chainedVisitor, context);
+            chainedVisitor = new AddInterfaceVisitor(chainedVisitor, classInfo, context);
+            chainedVisitor = new AddMixinMethodsVisitor(chainedVisitor, classInfo, context, addedMethods);
             chainedVisitor = new MethodWrapperVisitor(chainedVisitor, classInfo, context, addedMethods);
 
             if (!filterForGetSet) {
@@ -245,6 +249,12 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             return true;
         }
         if (definition.isAdvised(ctxs)) {
+            return false;
+        }
+        if (definition.hasMixin(ctxs)) {
+            return false;
+        }
+        if (definition.hasIntroducedInterface(ctxs)) {
             return false;
         }
         if (definition.inPreparePackage(className)) {

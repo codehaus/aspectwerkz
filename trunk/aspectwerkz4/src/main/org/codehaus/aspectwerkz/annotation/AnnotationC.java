@@ -50,6 +50,8 @@ public class AnnotationC {
     public static final String ANNOTATION_BEFORE = "Before";
     public static final String ANNOTATION_AFTER = "After";
     public static final String ANNOTATION_EXPRESSION = "Expression";
+
+    // TODO change implements to introduce
     public static final String ANNOTATION_IMPLEMENTS = "Implements";
     public static final String ANNOTATION_INTRODUCE = "Introduce";
 

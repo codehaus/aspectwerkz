@@ -14,7 +14,6 @@ import java.util.List;
 
 /**
  * Holds the meta-data for the interface introductions. <p/>This definition holds only pure interface introduction.
- * <p/>It is extended in IntroductionDefinition for interface+implementation introductions
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>

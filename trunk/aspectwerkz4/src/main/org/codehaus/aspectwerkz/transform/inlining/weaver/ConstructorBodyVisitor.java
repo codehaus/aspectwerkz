@@ -27,7 +27,6 @@ import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
 
-import java.util.List;
 import java.util.Iterator;
 import java.util.Set;
 

@@ -40,11 +40,11 @@ public class IntroductionDeploymentAspect {
         }
 
         public Object getTargetInstance() {
-            return m_info.getMixinTargetInstance(this.getClass().getName(), this);
+            return null;
         }
 
         public Class getTargetClass() {
-            return m_info.getMixinTargetClass(this.getClass().getName(), this);
+            return null;
         }
     }
 
@@ -71,12 +71,11 @@ public class IntroductionDeploymentAspect {
         }
 
         public Object getTargetInstance() {
-            // will return null
-            return m_info.getMixinTargetInstance(this.getClass().getName(), this);
+            return null;
         }
 
         public Class getTargetClass() {
-            return m_info.getMixinTargetClass(this.getClass().getName(), this);
+            return null;
         }
     }
 

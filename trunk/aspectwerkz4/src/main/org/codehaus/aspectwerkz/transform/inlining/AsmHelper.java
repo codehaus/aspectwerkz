@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
@@ -108,7 +109,9 @@ public class AsmHelper implements TransformationConstants {
         File dir = new File(dumpDir + File.separator + className.substring(0, className.lastIndexOf('/')));
         dir.mkdirs();
         String fileName = dumpDir + File.separator + className + ".class";
-        System.out.println("AW INFO: dumping class " + className + " to " + dumpDir);
+        if (AspectWerkzPreProcessor.VERBOSE) {
+            System.out.println("AW INFO: dumping class " + className + " to " + dumpDir);
+        }
         FileOutputStream os = new FileOutputStream(fileName);
         os.write(cw.toByteArray());
         os.close();
