@@ -9,7 +9,7 @@ package test.annotation;
 
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.annotation.Annotations;
-import org.codehaus.aspectwerkz.annotation.UntypedAnnotationProxy;
+import org.codehaus.aspectwerkz.annotation.UntypedAnnotation;
 
 import java.util.List;
 import java.lang.reflect.Method;
@@ -66,7 +66,7 @@ public class AnnotationCTest extends TestCase {
         assertEquals(3, beforeActions.size());
         all = new StringBuffer();
         for (int i = 0; i < beforeActions.size(); i++) {
-            all.append("[").append(((UntypedAnnotationProxy)beforeActions.get(i)).getValue()).append("]");
+            all.append("[").append(((UntypedAnnotation)beforeActions.get(i)).value()).append("]");
         }
         lookFor = new String[]{
             "[some untype that starts with Before]",

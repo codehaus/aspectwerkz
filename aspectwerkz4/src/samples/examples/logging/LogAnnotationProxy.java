@@ -7,8 +7,6 @@
  **************************************************************************************/
 package examples.logging;
 
-import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
-
 /**
  * The 'log' annotation proxy.
  *

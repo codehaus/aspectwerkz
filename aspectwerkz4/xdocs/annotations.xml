@@ -9,20 +9,16 @@
             <p>
                 <b>Annnotation driven development</b>
             </p>
-            <blockquote>
-                <p>
-                Disclaimer: Java 1.5 annotation support is
-                    <b>not</b> implemented in the
-                    <code>1.0</code> release.
-                </p>
-                <p>
-                What is implemented is an API that will make the migration minimal and will allow both
-                annotation schemes (JavaDoc-style and Java 1.5 annotations) to co-exist seamlessly.
-                    We also have support for typed and untyped annotations.
-                </p>
-            </blockquote>
+            <p>
+                AspectWerkz fully supports Java 5 annotations to define aspects or simply match on, and provides
+                a Java 1.3/1.4 annotation API and custom compiler that allows to use the same feature with a very
+                close user experience. Strongly typed Java 1.3/1.4 annotations facilities is thus provided.
+            </p>
             <p>
                 <ol>
+                    <li>
+                        <a href="#Annotations">Annotations</a>
+                    </li>
                     <li>
                         <a href="#Matching on Annotations">Matching on Annotations</a>
                     </li>
@@ -45,6 +41,58 @@
                         <a href="#Introducing Annotations">Introducing Annotations</a>
                     </li>
                 </ol>
+            </p>
+        </section>
+        <section name="Annotations">
+            <p>
+                <b>Java 5</b> Annotations are standardized thru the JSR-175. When you compile annotated source code
+                the <code>javac</code> compiler will embed the annotations in the compiled class, and this information
+                can then be read back using the reflection API.
+                <br/>
+                Annotations in Java 5 are first class citizen thru the <code>@interface</code> keyword.
+                <source><![CDATA[
+// A Java 5 Annotation
+public @interface Asynchronous {
+    int timeout() default 0;
+    String label();
+}
+
+// A Java 5 annotated method
+@Asynchronous(timeout=5, label="will run for a while")
+public Object someMethod() {
+    ...
+}
+                ]]></source>
+            </p>
+            <p>
+                AspectWerkz <b>Java 1.3/1.4</b> Annotations provide the same user experience. Annotations are defined
+                using a regular Java <code>interface</code> (hence providing strongly typed access to annotation values),
+                and annotated source code appears in the form of doclet in the JavaDoc part.
+                <br/>
+                The AspectWerkz AnnotationC compiler (available thru command line or as an Ant task) allows you to post-compile
+                your classes to embed the annotation information. This extra compilation step is made useless when using Java 5
+                Annotations.
+                <source><![CDATA[
+// A Java 1.3/1.4 Annotation with AspectWerkz
+public interface Asynchronous {
+    int timeout();
+    String label();
+}
+
+// A Java 1.3/1.4 annotated method
+// the resulting class will have to be post compiled with AspectWerkz "AnnotationC -src *.java. -target compiled/"
+/**
+ * @Asynchronous(timeout=5, label="will run for a while")
+ */
+public Object someMethod() {
+    ...
+}
+                ]]></source>
+            </p>
+            <p>
+                The AspectWerkz <code>org.codehaus.aspectwerkz.Annotations</code> API allows to retrieve reflectively
+                both Java 5 annotations and Java 1.3/1.4 annotations in a consistent way, allowing you to adopt annotation
+                driven development even without Java 5, while having a simple migration path.
             </p>
         </section>
         <section name="Matching on Annotations">
@@ -83,42 +131,43 @@ execution(@Asynchronous * *..*.*(..))
                 Read more about this in the
                 <a href="definition_issues.html#Join_point_selection_pattern_language">Join point selection pattern language section</a>
             </p>
+            <p>
+                Currently it is not possible to match on annotation element values.
+            </p>
         </section>
         <section name="Typed Annotations">
             <p>
-                To be make the migration phase from JavaDoc-style to Java 1.5 annotations as smooth
-                as possible
-                <code>AspectWerkz</code> is using the concept of
-                <i>Annotation Proxies</i>.
+                Java 5 annotations are typed. To provide the same user experience in Java 1.3/1.4 and reduce the migration
+                cost, AspectWerkz is using the concept of <i>Annotation interfaces</i>.
             </p>
             <p>
-                This proxy concept also makes it possible to achive strong typing even for JavaDoc-style
+                This concept makes it possible to achieve strong typing for JavaDoc-style
                 annotations. Errors are reported already in the compilation phase. Which has many benefits
                 compared to a the weakly typed, string based solution.
             </p>
             <p>
-                An annotation proxy is a proxy class with getter setter methods for each
-                <i>key:value</i> pair in the annotation.
+                An annotation interface for Java 1.3/1.4 is a regular interface with one no-argument method
+                per element in the annotation, whose returned value is of the wished type. The concept of
+                defaults value that exists in Java 5 is not supported, and the default value will thus be
+                null (or 0 / false for primitives).
             </p>
             <p>
                 For example if you have the JavaDoc annotation:
                 <source><![CDATA[
+// Java 1.3/1.4 Annotations
 /**
- * @Asynchronous(useThreadPool=true timeout=60)
- * @Verbosity (level=2, prepend="LOG")
- * @VerbosityOther level=2 prepend="LOG\""
+ * @Asynchronous(useThreadPool=true, timeout=60)
+ * @Verbosity(level=2, prepend="LOG")
+ * @VerbosityOther(level=2, prepend="LOG\"")
  */
  public Object someMethod() {
      ...
  }
                 ]]></source>
-                Note that you can have one or more <i>space</i> between the
-                annotation name and its initialization.<br/>
-                Note that annotation values can be separated by spaces or by comma within parenthesis,
-                or just spaces and no parenthesis at all.
             </p>
             <p>
                This can be written like this using Java 1.5 annotations
+               (mainly remove the JavaDoc comments and you are done)
                 <source><![CDATA[
 @Asynchronous(useThreadPool=true, timeout=60)
 @Verbosity(level=2, prepend="LOG")
@@ -129,68 +178,55 @@ public Object someMethod() {
                 ]]></source>
             </p>
             <p>
-                Then you can write an annotation proxy that works equally good with both of these schemes.
-                Here is an example:
+                When using Java 5, you have already written (or are using) the @Asynchronous annotation @interface component.
+                For Java 1.3/1.4, you need to write (adapt this component).
+                Here is an example with Java 5
                 <source><![CDATA[
-public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
-    private boolean m_useThreadPool;
-    private int m_timeout;
+// do not use a SOURCE retention policy if you plan to match on this annotation
+// refer to Java 5 documentation about retention policy
+public @interface Asynchronous {
 
-    // Note:
-    // the getter method can have the exact annotation value name (useThreadPool(), same case)
-    // or follow the javabean convention with setUseThreadPool()
-    public boolean useThreadPool() {
-        return m_useThreadPool;
-    }
+    // use the exact annotation element name for the mehod name
+    public boolean useThreadPool();
 
-    public int timeout() {
-        return m_timeout;
-    }
+    public int timeout();
+}
+                ]]></source>
+                And the same example using AspectWerkz Annotation interfaces (mainly remove the @ sign in <code>@interface</code>
+                and remove Java 5 specific annotations for @Retention and  @Target, and remove <code>defaults</code> directives):
+                <source><![CDATA[
+// retention policy will always be equivalent to Java 5 runtime retention policy
+public interface Asynchronous {
 
-    // Note:
-    // the setter method must follow the javabean convention though case can be ignored
-    // like setuseThreadPool(..) or setUseThreadPool(..)
-    public void setuseThreadPool(boolean flag) {
-        m_useThreadPool = flag;
-    }
+    // use the exact annotation element name for the mehod name
+    public boolean useThreadPool();
 
-    public void settimeout(int timeout) {
-        m_timeout = timeout;
-    }
+    public int timeout();
 }                ]]></source>
             </p>
             <p>
                 The key points in this example are:
                 <ul>
                     <li>
-                         The proxy extends the
-                        <code>org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy</code> class.
+                         The annotation interface for Java 1.3/1.4 is just an interface. For Java 5 it is a regular @interface.
                     </li>
                     <br/>
                     <li>
-                        There is a getter method with the exact same name as the name for the parameter
-                        (the name used in the annotation), or with a "get" prefix and following the javabean convention.
+                        There is one method per annotation element whose name match exactly the element name as to be used in
+                        the annotated source code.
                     </li>
                     <br/>
                     <li>
-                         There is a setter method which has the name prefixed with
-                        <code>set</code> and can follow the javabean convention.
-
+                        Java 1.3/1.4 annotation will appear in the javadoc part of annotated elements. The retention will be runtime,
+                        accessible thru AspectWerkz Annotations API, and annotated sources will have to be post-compiled using
+                        AspectWerkz AnnotationC
                     </li>
-                    <br/>
                 </ul>
-            </p>
-            <p>
-                The getter methods will be used by you to retrieve the data and the setter methods are used
-                by the framework to set the data in the proxy.
-            </p>
-            <p>
-                This proxy does now work equally good with JavaDoc style annotations and Java 1.5 style
-                annotations.
             </p>
             <subsection name="Parameter types supported">
                 <p>
                     All annotations are strongly typed. Both JavaDoc-style and Java 1.5 style annotations.
+                    Java 5 annotations implies some limitations, and the Java 1.3/1.4 annotations follow the same rules.
                 </p>
                 <p>
                 We currently support the following type of named parameters:
@@ -199,72 +235,110 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                         primitive values
                         -
                             <br/>
-                            <code>int=8366 dbl=86.2345D char='\n'</code>
+                            <code>@Annotation(integ=8366, dbl=86.2345D, achar='\n')</code>
                         </li>
                         <br/>
                         <li>
                         boolean values
                          -
                             <br/>
-                            <code>usecache=true failover=false</code>
-                            (
-                            <code>TRUE</code> and
-                            <code>FALSE</code> works a well)
+                            <code>@Annotation(usecache=true, failover=false)</code>
                         </li>
                         <br/>
                         <li>
                         strings (escape them as usual)
                          -
                             <br/>
-                            <code>name="blab\"labla"</code>
+                            <code>@Annotation(name="blab\"labla")</code>
                         </li>
                         <br/>
                         <li>
-                        arrays
+                        arrays (limited to one dimension as per current Java 5 specification)
                         -
                             <br/>
-                            <code>stringArr={"Hello", " ", "World", "!"}</code>
+                            <code>@Annotation(stringArr={"Hello", " ", "World", "!"})</code>
                             <br/>
-                            <code>floatArr={46.34F, 836.45F}</code>. Note that all elements of the array must be typed
-                            accordingly - if a flot is expected, the <i>F</i> suffix is mandatory.
+                            <code>@Annotation(floatArr={46.34F, 836.45F})</code>. Note that all elements of the array must be typed
+                            accordingly - if a float is expected, the <i>F</i> suffix is mandatory.
                         </li>
                         <br/>
                         <li>
                         references to the values of static fields
                         -
                             <br/>
-                            <code>name=org.foo.Bar.PUBLIC_CONSTANT</code>
+                            <code>@Annotation(name=org.foo.Bar.PUBLIC_CONSTANT)</code>
                         </li>
                         <br/>
                         <li>
                         types (ends with <i>.class</i>)
                          -
                             <br/>
-                            <code>type=java.lang.String.class</code>
+                            <code>@Annotation(type=java.lang.String.class)</code>
                             <br/>
-                            <code>primitives={long.class, int.class, short.class, ...}</code>
+                            <code>@Annotation(primitives={long.class, int.class, short.class, ...})</code>
                         </li>
                         <br/>
                         <li>
                         nested annotations -
                             <br/>
-                         Not supported
+                         Not tested for Java 1.3/1.4 in 2.0.RC1
                         </li>
                     </ul>
                 </p>
             </subsection>
-            <subsection name="Single anonymous typed value">
+            <subsection name="Anonymous typed value">
                 <p>
                 You can also define just one single anonymous value for the annotation. This value will then
-                be set by the framework through the method called
-                    <code>void setValue(&lt;type&gt; value)</code>.
-                So in order for this to work the parameter must be a
-                    supported type (see previous section). Add the method to the proxy class.
-                This maps to the Java 1.5
-                    <i>simple value</i> idea.
+                be accessible thru a method whose name is <code>value()</code>, exactly as Java 5 defines it.
                 </p>
                 <p>
-                    This behaviour is very similar to the untyped kind of annotations, but provides strong typing.
+                    When using such an annotation, it is thus optional to name the element "value" when annotating
+                    an application:
+                    <source><![CDATA[
+    // A Java 5 Annotation with an anonymous element
+    public @interface Asynchronous {
+        int value() default 0;
+        String label() default "";
+    }
+
+    // A Java 5 annotated method using the anonymous element
+    // Note: we could write @Asynchronous(value=5) but this is useless
+    // except when using label as in @Asynchronous(label="some text", value=5)
+    @Asynchronous(5)
+    public Object someMethod() {
+        ...
+    }
+                    ]]></source>
+                    And for Java 1.3/1.4 AspectWerkz annotation interface:
+                    <source><![CDATA[
+    // A Java 1.3/1.4 Annotation with an anonymous element
+    public interface Asynchronous {
+        int value();
+        String label();
+    }
+
+    // A Java 1.3/1.4 annotated method using the anonymous element
+    // Note: we could write @Asynchronous(value=5) but this is useless
+    // except when using label as in @Asynchronous(label="some text", value=5)
+    /**
+     * @Asynchronous(5)
+     */
+    public Object someMethod() {
+        ...
+    }
+                    ]]></source>
+                </p>
+                <p>
+                    In this last case, it is also possible to write it in a more JavaDoc oriented way, although it is a
+                    bad practice since it will make your code harder to migrate to Java 5.
+                    <source><![CDATA[
+    /**
+     * @Asynchronous 5
+     */
+    public Object someMethod() {
+        ...
+    }
+                    ]]></source>
                 </p>
             </subsection>
         </section>
@@ -275,11 +349,11 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                 JavaDoc annotations.
             </p>
             <p>
-                It treats everything after the annotation declaration as one single value. Which means that
+                It treats everything after the annotation declaration as one single value of type String. Which means that
                 if you write an annotation like this:
                 <source><![CDATA[
 /**
- * @UntypedAnnotation this (is
+ * @SampleUntypedAnnotation this (is
  *                    one single
  *                    value
  */
@@ -293,23 +367,17 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
             </p>
             <p>
                 All untyped annotations will be wrapped in an instance of
-                <code>org.codehaus.aspectwerkz.annotation.UntypedAnnotationProxy</code> which has
+                <code>org.codehaus.aspectwerkz.annotation.UntypedAnnotation</code> which has
                 to be used when retrieving the annotations at runtime. For example:
                 <source><![CDATA[
-UntypedAnnotationProxy proxy = ...
-String value = proxy.value();
+UntypedAnnotation annotation = ... // see next sections
+String value = annotation.value(); //"this (is one single value" - note that cariage returns are lost
+String name = annotation.name(); // "SampleUntypedAnnotation"
                  ]]></source>
             </p>
             <p>
                 The untyped annotations still needs to be compiled, since they need to be put into the
-                bytecode of the class that declares them.
-            </p>
-            <p>
-                You can also extend the
-                <code>UntypeAnnotationProxy</code> class to add additional behaviour, parsing
-                the full value (like handling named parameters etc.). Then you need to override the
-                <code>setValue()</code>
-                method and add your logic there.
+                bytecode of the annotated classes.
             </p>
         </section>
         <section name="Compiling Annotations">
@@ -336,13 +404,14 @@ java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC
     -src <path to src dir>
     -classes <path to classes dir>
     [-dest <path to destination dir>]
-    [-custom <property file for custom annotations>]
+    [-custom <property file(s) for custom annotations>]
                 ]]></source>
             </p>
             <p>
                 The last option
-                <code>-custom property_file_for_custom_annotations</code> points to
-                the a property file which defines the annotations by mapping the names to the proxy implementations.
+                <code>-custom property_file(s)_for_custom_annotations</code> points to
+                the (or several file seperated by ; or : depending on you OS) property file which defines the annotations by mapping the names to the fully
+                qualified names of the annotation interface.
             </p>
             <p>
                 Note that if you are using the <code>-dest</code> option, the anonymous inner classes will not be copied to
@@ -358,18 +427,19 @@ java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC
             <subsection name="Annotation definition file">
                 <p>
                     You need to tell the annotation compiler which annotations you are interested in
-                    and map the name of the annotations to the proxy implementation.
+                    and map the name of the annotations to the annotation interface implementation.
                 </p>
                 <p>
                     For untyped annotations you still need to define the name of the annotation but
-                    but you can leave out the mapping to a specific proxy. That is handled by the compiler.
+                    but you can leave out the mapping to a specific interface. That is handled by the compiler and will
+                    implicitly be <code>org.codehaus.aspectwerkz.annotation.UntypedAnnotation</code>.
                 </p>
                 <p>
                 Example of an annotation properties file.
                     <source><![CDATA[
 # Typed annotations
-Requires      = test.expression.RequiresAnnotationProxy
-Serializable  = test.expression.SerializableAnnotationProxy
+Requires      = test.expression.RequiresAnnotation
+Serializable  = test.expression.SerializableAnnotation
 
 # Untyped annotations
 loggable
@@ -379,17 +449,13 @@ readonly
                     <ul>
                         <li>
                             <code>Requires</code> is the typed
-                            <code>@Requries</code> annotation
+                            <code>@Requires</code> annotation
                         </li>
                         <li>
                             <code>loggable</code> is the untyped
                             <code>@loggable</code> annotation
                         </li>
                     </ul>
-                </p>
-                <p>
-                For Java 1.5 annotations you would have to specify the fully qualified name of the
-                annotation interface as the name.
                 </p>
             </subsection>
         </section>
@@ -477,7 +543,7 @@ readonly
             <p>
                 All these methods returns an instance of the type
                 <code>org.codehaus.aspectwerkz.annotation.Annotation</code>.
-                The proxies needs to be casted to the correct proxy implementation.
+                The instance needs to be casted to the correct annotation interface.
                 If there are more than one it returns the first one found. This method is
                 useful when working with Java 1.5 annotations in which there can be only one
                 instance per member or class.
@@ -506,7 +572,7 @@ List annotations = Annotations.getAnnotations("ReadOnly", field);
                         name of the annotation
                     </li>
                     <li>
-                        annotation proxy instance
+                        annotation instance (implements the annotation interface)
                     </li>
                 </ul>
                 <source><![CDATA[
@@ -519,7 +585,7 @@ List annotationInfos = Annotations.getAnnotationInfos(field);
         <section name="Introducing Annotations">
             <p>
                 TODO - not yet implemented (targetted for
-                <code>2.0</code>)
+                <code>2.0 final</code>)
             </p>
         </section>
     </body>
