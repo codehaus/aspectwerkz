@@ -86,7 +86,7 @@ public class MethodCallTransformer implements Transformer {
                         }
 
                         // get the callee method name, signature and class name
-                        String calleeMethodName = methodCall.getMethodName();
+                        CtMethod calleeMethod = methodCall.getMethod();
                         String calleeClassName = methodCall.getClassName();
 
                         // filter callee classes
@@ -94,7 +94,7 @@ public class MethodCallTransformer implements Transformer {
                             return;
                         }
                         // filter callee methods
-                        if (methodFilterCallee(calleeMethodName)) {
+                        if (methodFilterCallee(calleeMethod)) {
                             return;
                         }
 
@@ -256,17 +256,19 @@ public class MethodCallTransformer implements Transformer {
     /**
      * Filters the callee methods.
      *
-     * @param methodName the name of method to filter
+     * @TODO: create metadata instance and check with the system
+     *
+     * @param method the name of method to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean methodFilterCallee(final String methodName) {
-        if (methodName.equals("<init>") ||
-                methodName.equals("<clinit>") ||
-                methodName.startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
-                methodName.equals(TransformationUtil.GET_META_DATA_METHOD) ||
-                methodName.equals(TransformationUtil.SET_META_DATA_METHOD) ||
-                methodName.equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
-                methodName.equals(TransformationUtil.GET_UUID_METHOD)) {
+    private boolean methodFilterCallee(final CtMethod method) {
+        if (method.getName().equals("<init>") ||
+                method.getName().equals("<clinit>") ||
+                method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
+                method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
+                method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
+                method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
+                method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
         }
         else {

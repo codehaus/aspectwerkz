@@ -15,6 +15,7 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtField;
 import javassist.NotFoundException;
+import javassist.CtConstructor;
 
 /**
  * Convenience methods to construct <code>MetaData</code> instances from Javassist classes.
@@ -123,9 +124,9 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
     }
 
     /**
-     * Construct method meta-data from a Javassist <code>Method</code> object.
+     * Construct method meta-data from a Javassist <code>CtMethod</code> object.
      *
-     * @param method is the <code>Method</code> object to extract details from.
+     * @param method is the <code>CtMethod</code> object to extract details from.
      * @return a <code>MethodMetaData</code> instance.
      */
     public static MethodMetaData createMethodMetaData(final CtMethod method) {
@@ -165,38 +166,9 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
     }
 
     /**
-     * Construct method meta-data from a Java <code>InvokeInstruction</code> object.
+     * Construct field meta-data from a Javassist <code>CtField</code> object.
      *
-     * @param instruction is the method invocation object to extract details from.
-     * @param cpg is the constant pool generator.
-     * @return a <code>MethodMetaData</code> instance.
-     */
-//    public static MethodMetaData createMethodMetaData(final InvokeInstruction instruction,
-//                                                      final ConstantPoolGen cpg) {
-//        if (instruction == null) throw new IllegalArgumentException("instruction can not be null");
-//        if (cpg == null) throw new IllegalArgumentException("constant pool can not be null");
-//
-//        MethodMetaData methodMetaData = new MethodMetaData();
-//
-//        String signature = instruction.getSignature(cpg);
-//        methodMetaData.setName(instruction.getName(cpg));
-//
-//        Type[] parameterTypes = Type.getArgumentTypes(signature);
-//        String[] parameterTypeNames = new String[parameterTypes.length];
-//
-//        for (int j = 0; j < parameterTypes.length; j++) {
-//            parameterTypeNames[j] = parameterTypes[j].toString();
-//        }
-//        methodMetaData.setParameterTypes(parameterTypeNames);
-//        methodMetaData.setReturnType(Type.getReturnType(signature).toString());
-//
-//        return methodMetaData;
-//    }
-
-    /**
-     * Construct field meta-data from a Javassist <code>Field</code> object.
-     *
-     * @param field is the <code>Field</code> object to extract details from.
+     * @param field is the <code>CtField</code> object to extract details from.
      * @return a <code>FieldMetaData</code> instance.
      */
     public static FieldMetaData createFieldMetaData(final CtField field) {
@@ -215,21 +187,41 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
     }
 
     /**
-     * Creates a FieldMetaData instance out of the Javassist field access instruction.
+     * Construct method meta-data from a Javassist <code>CtConstructor</code> object.
      *
-     * @param instruction the field instruction
-     * @param cpg the constant pool
-     * @return the field meta-data
+     * @param method is the <code>CtConstructor</code> object to extract details from.
+     * @return a <code>ConstructorMetaData</code> instance.
      */
-//    public static FieldMetaData createFieldMetaData(final FieldInstruction instruction,
-//                                                    final ConstantPoolGen cpg) {
-//        if (instruction == null) throw new IllegalArgumentException("instruction can not be null");
-//        if (cpg == null) throw new IllegalArgumentException("constant pool can not be null");
-//
-//        FieldMetaData fieldMetaData = new FieldMetaData();
-//        fieldMetaData.setName(instruction.getFieldName(cpg));
-//        fieldMetaData.setType(instruction.getFieldType(cpg).toString());
-//        return fieldMetaData;
-//    }
+    public static ConstructorMetaData createConstructorMetaData(CtConstructor constructor) {
+        if (constructor == null) throw new IllegalArgumentException("constructor can not be null");
 
+        try {
+            ConstructorMetaData constructorMetaData = new ConstructorMetaData();
+            constructorMetaData.setName(constructor.getName());
+
+            // parameters
+            CtClass[] javaParameters = constructor.getParameterTypes();
+            String[] parameterTypes = new String[javaParameters.length];
+            for (int j = 0; j < javaParameters.length; j++) {
+                parameterTypes[j] = javaParameters[j].getName();
+            }
+            constructorMetaData.setParameterTypes(parameterTypes);
+
+            // exceptions
+            CtClass[] exceptionTables = constructor.getExceptionTypes();
+            String[] exceptions = new String[exceptionTables.length];
+            for (int k = 0; k < exceptionTables.length; k++) {
+                exceptions[k] = exceptionTables[k].getName();
+            }
+            constructorMetaData.setExceptionTypes(exceptions);
+
+            //Javassist modifier is the same as java modifier used in ReflectionMetaDataMaker
+            constructorMetaData.setModifiers(constructor.getModifiers());
+
+            return constructorMetaData;
+        }
+        catch (NotFoundException e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
 }

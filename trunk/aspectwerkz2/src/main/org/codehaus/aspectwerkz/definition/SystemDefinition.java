@@ -22,6 +22,7 @@ import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.ControllerDefinition;
@@ -696,6 +697,36 @@ public class SystemDefinition {
                     return true;
                 }
                 if (expression.matchInOrNotIn(classMetaData, methodMetaData)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a constructor is a defined as a caller side method.
+     * This constructor matches the callee class (when the hasCallerSideMethod matches the caller class)
+     *
+     * @param classMetaData the class meta-data
+     * @param constructorMetaData the name or the constructor
+     * @return boolean
+     */
+    public boolean isPickedOutByCallPointcut(final ClassMetaData classMetaData,
+                                             final ConstructorMetaData constructorMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+        if (constructorMetaData == null) throw new IllegalArgumentException("constructor meta-data can not be null");
+
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+                Expression expression = adviceDef.getExpression();
+                if (expression.getType().equals(PointcutType.CALL)
+                        && expression.match(classMetaData, constructorMetaData)) {
+                    return true;
+                }
+                if (expression.matchInOrNotIn(classMetaData, constructorMetaData)) {
                     return true;
                 }
             }
