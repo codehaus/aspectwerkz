@@ -12,7 +12,7 @@ import java.util.Iterator;
 import javassist.CtClass;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 
 /**
@@ -35,7 +35,7 @@ public final class AddInterfaceTransformer implements Transformer {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassMetaDataImpl classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
 
             if (classFilter(ctClass, classMetaData, definition)) {
                 return;
@@ -54,7 +54,7 @@ public final class AddInterfaceTransformer implements Transformer {
      */
     private boolean classFilter(
             final CtClass ctClass,
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final SystemDefinition definition) {
         if (ctClass.isInterface() ||
             TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {

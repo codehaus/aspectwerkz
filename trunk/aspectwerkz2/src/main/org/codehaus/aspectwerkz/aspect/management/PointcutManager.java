@@ -16,8 +16,8 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
-import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
-import org.codehaus.aspectwerkz.metadata.FieldMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
@@ -218,7 +218,7 @@ public class PointcutManager {
      * @param memberMetaData the meta-data for the member
      * @return the execution pointcuts that match
      */
-    public List getExecutionPointcuts(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData) {
+    public List getExecutionPointcuts(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         return getPointcuts(classMetaData, memberMetaData, PointcutType.EXECUTION);
     }
 
@@ -231,7 +231,7 @@ public class PointcutManager {
      * @return the pointcuts that match
      */
     private List getPointcuts(
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final MemberMetaData memberMetaData,
             final PointcutType pointcutType) {
         if (classMetaData == null) {
@@ -262,7 +262,7 @@ public class PointcutManager {
      * @param fieldMetaData the meta-data for the field
      * @return the pointcuts
      */
-    public List getGetPointcuts(final ClassMetaDataImpl classMetaData, final FieldMetaDataImpl fieldMetaData) {
+    public List getGetPointcuts(final ClassMetaData classMetaData, final FieldMetaData fieldMetaData) {
         return getPointcuts(classMetaData, fieldMetaData, PointcutType.GET);
     }
 
@@ -273,7 +273,7 @@ public class PointcutManager {
      * @param fieldMetaData the meta-data for the field
      * @return the pointcuts
      */
-    public List getSetPointcuts(final ClassMetaDataImpl classMetaData, final FieldMetaDataImpl fieldMetaData) {
+    public List getSetPointcuts(final ClassMetaData classMetaData, final FieldMetaData fieldMetaData) {
         return getPointcuts(classMetaData, fieldMetaData, PointcutType.SET);
     }
 
@@ -283,7 +283,7 @@ public class PointcutManager {
      * @param classMetaData the meta-data for the class
      * @return the pointcuts
      */
-    public List getHandlerPointcuts(final ClassMetaDataImpl classMetaData) {
+    public List getHandlerPointcuts(final ClassMetaData classMetaData) {
         return getPointcuts(classMetaData, null, PointcutType.HANDLER);
     }
 
@@ -294,7 +294,7 @@ public class PointcutManager {
      * @param memberMetaData the meta-data for the member
      * @return the pointcuts
      */
-    public List getCallPointcuts(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData) {
+    public List getCallPointcuts(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         return getPointcuts(classMetaData, memberMetaData, PointcutType.CALL);
     }
 
@@ -322,7 +322,7 @@ public class PointcutManager {
      * @return the pointcuts
      */
     public List getCFlowExpressions(
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final MemberMetaData memberMetaData,
             final ClassMetaData callerClassMetaData,
             final PointcutType pointcutType) {

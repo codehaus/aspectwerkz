@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.codehaus.aspectwerkz.ContainerType;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -198,16 +197,6 @@ public class AspectContainer {
         }
         return result;
     }
-
-    /**
-     * Returns the container type.
-     *
-     * @return the container type
-     */
-    public ContainerType getContainerType() {
-        return ContainerType.TRANSIENT;
-    }
-
 
     /**
      * Returns a specific advice by index.

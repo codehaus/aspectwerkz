@@ -24,7 +24,7 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.MethodMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
@@ -119,7 +119,7 @@ public class MethodCallUnTransformer implements Transformer {
 //                                }
 //
 //                                // create the class meta-data
-//                                ClassMetaDataImpl calleeSideClassMetaData;
+//                                ClassMetaData calleeSideClassMetaData;
 //                                try {
 //                                    calleeSideClassMetaData =
 //                                    JavassistMetaDataMaker.createClassMetaData(
@@ -131,7 +131,7 @@ public class MethodCallUnTransformer implements Transformer {
 //                                }
 //
 //                                // create the method meta-data
-//                                MethodMetaDataImpl calleeSideMethodMetaData = JavassistMetaDataMaker.createMethodMetaData(
+//                                MethodMetaData calleeSideMethodMetaData = JavassistMetaDataMaker.createMethodMetaData(
 //                                        methodCall.getMethod()
 //                                );
 //

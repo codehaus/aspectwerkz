@@ -26,7 +26,7 @@ import org.codehaus.aspectwerkz.joinpoint.CodeSignature;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
-import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
 /**
@@ -79,7 +79,7 @@ public class JoinPointManager {
     private final String m_uuid;
     private final Class m_targetClass;
     private final int m_classHash;
-    private final ClassMetaDataImpl m_targetClassMetaData;
+    private final ClassMetaData m_targetClassMetaData;
 
     private ThreadLocal[] m_joinPoints = new ThreadLocal[0];
 
@@ -520,7 +520,7 @@ public class JoinPointManager {
         ThreadLocal threadLocal = null;
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
 
-            ClassMetaDataImpl exceptionMetaData = ReflectionMetaDataMaker.createClassMetaData(
+            ClassMetaData exceptionMetaData = ReflectionMetaDataMaker.createClassMetaData(
                     exceptionInstance.getClass()
             );
             s_registry.registerJoinPoint(

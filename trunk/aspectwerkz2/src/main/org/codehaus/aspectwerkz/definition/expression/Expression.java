@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
-import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 
 /**
@@ -160,7 +160,7 @@ public abstract class Expression implements Serializable {
      * @param assumedType the expression type we match with (for orthogonal support)
      * @return boolean
      */
-    public abstract boolean match(final ClassMetaDataImpl classMetaData, final PointcutType assumedType);
+    public abstract boolean match(final ClassMetaData classMetaData, final PointcutType assumedType);
 
     /**
      * Checks if the expression matches a certain join point. <p/>Only checks for a class match to allow early
@@ -173,7 +173,7 @@ public abstract class Expression implements Serializable {
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public abstract boolean match(final ClassMetaDataImpl classMetaData);
+    public abstract boolean match(final ClassMetaData classMetaData);
 
     /**
      * Checks if the expression matches a certain join point as regards the IN and NOT IN parts if any. Each IN / NOT IN
@@ -185,7 +185,7 @@ public abstract class Expression implements Serializable {
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public abstract boolean matchInOrNotIn(final ClassMetaDataImpl classMetaData);
+    public abstract boolean matchInOrNotIn(final ClassMetaData classMetaData);
 
     /**
      * Checks if the expression matches a certain join point.
@@ -195,7 +195,7 @@ public abstract class Expression implements Serializable {
      * @param assumedType the expression type we match with (for orthogonal support)
      * @return boolean
      */
-    public abstract boolean match(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData, PointcutType assumedType);
+    public abstract boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData, PointcutType assumedType);
 
     /**
      * Checks if the expression matches a certain join point.
@@ -207,7 +207,7 @@ public abstract class Expression implements Serializable {
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    public abstract boolean match(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData);
+    public abstract boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData);
 
     /**
      * Checks if the expression matches a cflow stack.
@@ -230,7 +230,7 @@ public abstract class Expression implements Serializable {
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    public abstract boolean matchInOrNotIn(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData);
+    public abstract boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData);
 
     /**
      * Checks if the expression matches a certain join point. <p/>Special case in the API which tries to match exception
@@ -243,7 +243,7 @@ public abstract class Expression implements Serializable {
      * @return boolean
      */
     public abstract boolean match(
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final MemberMetaData memberMetaData,
             final String exceptionType,
             final PointcutType assumedType);
@@ -265,7 +265,7 @@ public abstract class Expression implements Serializable {
      * @param assumedType
      * @return simplified expression
      */
-    public abstract Expression extractCflowExpression(ClassMetaDataImpl classMetaData,
+    public abstract Expression extractCflowExpression(ClassMetaData classMetaData,
                                                       MemberMetaData memberMetaData,
                                                       PointcutType assumedType);
 

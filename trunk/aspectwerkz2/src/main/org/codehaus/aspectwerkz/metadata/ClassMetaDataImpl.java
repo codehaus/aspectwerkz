@@ -30,17 +30,17 @@ public class ClassMetaDataImpl implements ClassMetaData {
     private int m_modifiers;
 
     /**
-     * A list with the <code>ConstructorMetaDataImpl</code> instances.
+     * A list with the <code>ConstructorMetaData</code> instances.
      */
     private List m_constructors = new ArrayList();
 
     /**
-     * A list with the <code>MethodMetaDataImpl</code> instances.
+     * A list with the <code>MethodMetaData</code> instances.
      */
     private List m_methods = new ArrayList();
 
     /**
-     * A list with the <code>FieldMetaDataImpl</code> instances.
+     * A list with the <code>FieldMetaData</code> instances.
      */
     private List m_fields = new ArrayList();
 
@@ -123,9 +123,9 @@ public class ClassMetaDataImpl implements ClassMetaData {
     }
 
     /**
-     * Sets a list with <code>ConstructorMetaDataImpl</code> instances.
+     * Sets a list with <code>ConstructorMetaData</code> instances.
      *
-     * @param constructors a list with <code>ConstructorMetaDataImpl</code> instances
+     * @param constructors a list with <code>ConstructorMetaData</code> instances
      */
     public void setConstructors(final List constructors) {
         m_constructors = constructors;
@@ -150,9 +150,9 @@ public class ClassMetaDataImpl implements ClassMetaData {
     }
 
     /**
-     * Sets a list with <code>MethodMetaDataImpl</code> instances.
+     * Sets a list with <code>MethodMetaData</code> instances.
      *
-     * @param methods a list with <code>MethodMetaDataImpl</code> instances
+     * @param methods a list with <code>MethodMetaData</code> instances
      */
     public void setMethods(final List methods) {
         m_methods = methods;
@@ -168,9 +168,9 @@ public class ClassMetaDataImpl implements ClassMetaData {
     }
 
     /**
-     * Sets a list with <code>FieldMetaDataImpl</code> instances.
+     * Sets a list with <code>FieldMetaData</code> instances.
      *
-     * @param fields a list with <code>FieldMetaDataImpl</code> instances
+     * @param fields a list with <code>FieldMetaData</code> instances
      */
     public void setFields(final List fields) {
         m_fields = fields;

@@ -24,7 +24,7 @@ public class ClassNameMethodMetaDataTuple {
     /**
      * The class meta-data.
      */
-    private ClassMetaDataImpl m_classMetaData;
+    private ClassMetaData m_classMetaData;
 
     /**
      * The method meta-data.
@@ -45,7 +45,7 @@ public class ClassNameMethodMetaDataTuple {
     }
 
     public ClassNameMethodMetaDataTuple(
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final MethodMetaData metaData) {
         m_className = classMetaData.getName();
         m_classMetaData = classMetaData;
@@ -57,7 +57,7 @@ public class ClassNameMethodMetaDataTuple {
      *
      * @return the class meta-data
      */
-    public ClassMetaDataImpl getClassMetaData() {
+    public ClassMetaData getClassMetaData() {
         return m_classMetaData;
     }
 

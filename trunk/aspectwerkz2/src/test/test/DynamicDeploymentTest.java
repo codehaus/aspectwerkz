@@ -11,7 +11,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.metadata.MethodMetaDataImpl;
-import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.NameIndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
@@ -29,7 +29,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 
     private String m_logString = "";
 
-    private ClassMetaDataImpl m_classMetaData = ReflectionMetaDataMaker.createClassMetaData(DynamicDeploymentTest.class);
+    private ClassMetaData m_classMetaData = ReflectionMetaDataMaker.createClassMetaData(DynamicDeploymentTest.class);
 
     public void testReorderAdvicesAtRuntime1() {
         m_logString = "";

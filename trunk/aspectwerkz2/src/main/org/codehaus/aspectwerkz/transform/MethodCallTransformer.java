@@ -22,9 +22,9 @@ import javassist.expr.MethodCall;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.MethodMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
  * Advises method CALL join points.
@@ -64,7 +64,7 @@ public class MethodCallTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassMetaDataImpl classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
 
             // filter caller classes
             if (classFilter(definition, classMetaData, ctClass)) {
@@ -103,7 +103,7 @@ public class MethodCallTransformer implements Transformer {
                                 }
 
                                 // create the class meta-data
-                                ClassMetaDataImpl calleeSideClassMetaData;
+                                ClassMetaData calleeSideClassMetaData;
                                 try {
                                     calleeSideClassMetaData =
                                     JavassistMetaDataMaker.createClassMetaData(
@@ -115,7 +115,7 @@ public class MethodCallTransformer implements Transformer {
                                 }
 
                                 // create the method meta-data
-                                MethodMetaDataImpl calleeSideMethodMetaData = JavassistMetaDataMaker.createMethodMetaData(
+                                MethodMetaData calleeSideMethodMetaData = JavassistMetaDataMaker.createMethodMetaData(
                                         methodCall.getMethod()
                                 );
 
@@ -253,7 +253,7 @@ public class MethodCallTransformer implements Transformer {
      */
     private boolean classFilter(
             final SystemDefinition definition,
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final CtClass cg) {
         if (cg.isInterface() ||
             TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {

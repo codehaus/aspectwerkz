@@ -23,30 +23,30 @@ public class RootExpression /*extends Expression*/ {
 //     * @param memberMetaData the meta-data for the member
 //     * @return boolean
 //     */
-//    protected boolean matchPattern(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData) {
+//    protected boolean matchPattern(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
 //        // first match the class
 //        if (!match(classMetaData)) {
 //            return false;
 //        }
 //        // second match the member
 //        if (m_type.equals(PointcutType.EXECUTION)) {
-//            return ((MethodPattern)m_memberPattern).matches((MethodMetaDataImpl)memberMetaData);
+//            return ((MethodPattern)m_memberPattern).matches((MethodMetaData)memberMetaData);
 //        }
 //        else if (m_type.equals(PointcutType.CALL)) {
-//            return ((CallerSidePattern)m_memberPattern).matches((MethodMetaDataImpl)memberMetaData);
+//            return ((CallerSidePattern)m_memberPattern).matches((MethodMetaData)memberMetaData);
 //        }
 //        else if (m_type.equals(PointcutType.GET) || m_type.equals(PointcutType.SET)) {
-//            return ((FieldPattern)m_memberPattern).matches((FieldMetaDataImpl)memberMetaData);
+//            return ((FieldPattern)m_memberPattern).matches((FieldMetaData)memberMetaData);
 //        }
 //        else if (m_type.equals(PointcutType.CFLOW)) {
 //            throw new UnsupportedOperationException("cflow pointcuts are not implemented yet, go ahead and do it");
 //        }
 //        else if (m_type.equals(PointcutType.THROWS)) {
-//            return ((ThrowsPattern)m_memberPattern).matches((MethodMetaDataImpl)memberMetaData);
+//            return ((ThrowsPattern)m_memberPattern).matches((MethodMetaData)memberMetaData);
 //        }
 //        else if (m_type.equals(PointcutType.CLASS)) {
 //            // TODO: is it correct to match the membermetadata as well at this point for the class pointcut?
-//            return ((ClassPattern)m_memberPattern).matches(((ClassMetaDataImpl)memberMetaData).getName());
+//            return ((ClassPattern)m_memberPattern).matches(((ClassMetaData)memberMetaData).getName());
 //        }
 //        else {
 //            throw new ExpressionException("pointcut type not supported: " + m_type);
