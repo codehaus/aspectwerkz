@@ -28,7 +28,6 @@ public class DynamicallyCreatedAspect extends Aspect {
     // ============ Advices ============
 
     /**
-     * Around pc1
      * @Around pc1 name=newAdvice
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {

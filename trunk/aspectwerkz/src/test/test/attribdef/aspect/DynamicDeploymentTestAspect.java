@@ -49,9 +49,6 @@ public class DynamicDeploymentTestAspect extends Aspect {
     }
 
     /**
-     * Around pc1
-     * Around pc2
-     * Around pc4
      * @Around pc1 name=advice2
      * @Around pc2 name=advice2
      * @Around pc4 name=advice2
