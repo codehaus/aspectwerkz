@@ -9,12 +9,7 @@ package org.codehaus.aspectwerkz.definition;
 
 import java.net.URL;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /**
  * The SystemDefintionContainer maintains all the definition and is aware of the classloader hierarchy.
@@ -26,10 +21,9 @@ import java.util.WeakHashMap;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class SystemDefinitionContainer
-{
+public class SystemDefinitionContainer {
     /**
-     * Map of SystemDefintion[List] per ClassLoader
+     * Map of SystemDefinition[List] per ClassLoader
      */
     public static Map s_classLoaderSystemDefinitions = new WeakHashMap(); //note: null key is supported
 
@@ -46,8 +40,10 @@ public class SystemDefinitionContainer
     /**
      * Default location for default AspectWerkz definition file, JVM wide
      */
-    public static final String URL_JVM_OPTION_SYSTEM = System.getProperty("-Daspectwerkz.definition.file",
-            "no -Daspectwerkz.definition.file");
+    public static final String URL_JVM_OPTION_SYSTEM = System.getProperty(
+            "-Daspectwerkz.definition.file",
+            "no -Daspectwerkz.definition.file"
+    );
 
     /**
      * The AOP deployment descriptor for any deployed unit
@@ -65,31 +61,33 @@ public class SystemDefinitionContainer
     private static ThreadLocal s_aspectNamesContext = new ThreadLocal();
 
     /**
+     * An internal flag to disable registration of the -Daspectwerkz.definition.file definition in the System class
+     * loader. This is used only in offline mode, where these definitions are registered programmatically at the
+     * compilation class loader level.
+     */
+    private static boolean s_disableSystemWideDefinition = false;
+
+    /**
      * Register a new ClassLoader in the system and gather all its definition and parents definitions
      *
      * @param loader the class loader to register
      */
-    public static void registerClassLoader(ClassLoader loader)
-    {
-        if (s_classLoaderSystemDefinitions.containsKey(loader))
-        {
+    public static void registerClassLoader(ClassLoader loader) {
+        if (s_classLoaderSystemDefinitions.containsKey(loader)) {
             return;
         }
 
         // skip boot classloader
-        if (loader == null)
-        {
+        if (loader == null) {
             return;
         }
 
-        if (loader != null)
-        {
+        if (loader != null) {
             // register parents first
             registerClassLoader(loader.getParent());
 
             // then register -D.. if system classloader and then all META-INF/aop.xml
-            try
-            {
+            try {
                 List aspectNames = new ArrayList();
                 List defs = new ArrayList();
                 List defsLocation = new ArrayList();
@@ -100,26 +98,24 @@ public class SystemDefinitionContainer
                 s_classLoaderDefinitionLocations.put(loader, defsLocation);
 
                 // is this system classloader ?
-                if (loader == ClassLoader.getSystemClassLoader())
-                {
-                    aspectNames.addAll(DefinitionLoader
-                        .getDefaultDefinitionAspectNames());
+                if (loader == ClassLoader.getSystemClassLoader() && !s_disableSystemWideDefinition) {
+                    aspectNames.addAll(
+                            DefinitionLoader
+                            .getDefaultDefinitionAspectNames()
+                    );
                     defs.addAll(DefinitionLoader.getDefaultDefinition(loader)); // -D..file=... sysdef
                     defsLocation.add(URL_JVM_OPTION_SYSTEM);
                 }
 
                 Enumeration res = loader.getResources(AOP_XML_FILE);
 
-                while (res.hasMoreElements())
-                {
-                    URL def = (URL) res.nextElement();
+                while (res.hasMoreElements()) {
+                    URL def = (URL)res.nextElement();
 
-                    if (isDefinedBy(loader.getParent(), def.toExternalForm()))
-                    {
+                    if (isDefinedBy(loader.getParent(), def.toExternalForm())) {
                         ;
                     }
-                    else
-                    {
+                    else {
                         aspectNames.addAll(XmlParser.getAspectClassNames(def));
                         defs.addAll(XmlParser.parseNoCache(loader, def));
                         defsLocation.add(def.toExternalForm());
@@ -128,8 +124,7 @@ public class SystemDefinitionContainer
 
                 dump(loader);
             }
-            catch (Throwable t)
-            {
+            catch (Throwable t) {
                 t.printStackTrace();
             }
         }
@@ -147,22 +142,18 @@ public class SystemDefinitionContainer
      * @TODO No need for the s_ map
      * @TODO KICK the def map and crawl up the CL parents and redo a getResources check instead
      */
-    public static boolean isDefinedBy(ClassLoader loader, String def)
-    {
-        if (loader == null)
-        {
+    public static boolean isDefinedBy(ClassLoader loader, String def) {
+        if (loader == null) {
             return false;
         }
 
-        ArrayList defLocation = (ArrayList) s_classLoaderDefinitionLocations
-            .get(loader);
+        ArrayList defLocation = (ArrayList)s_classLoaderDefinitionLocations
+                .get(loader);
 
-        if ((defLocation != null) && defLocation.contains(def))
-        {
+        if ((defLocation != null) && defLocation.contains(def)) {
             return true;
         }
-        else
-        {
+        else {
             return isDefinedBy(loader.getParent(), def);
         }
     }
@@ -172,33 +163,32 @@ public class SystemDefinitionContainer
      *
      * @param loader
      */
-    public static void dump(ClassLoader loader)
-    {
-        StringBuffer dump = new StringBuffer(
-                "******************************************************************");
+    public static void dump(ClassLoader loader) {
+        StringBuffer dump = new StringBuffer("******************************************************************");
 
         dump.append("\n* ClassLoader = ").append(loader);
 
-        List defs = (List) s_classLoaderSystemDefinitions.get(loader);
+        List defs = (List)s_classLoaderSystemDefinitions.get(loader);
 
-        for (Iterator it = defs.iterator(); it.hasNext();)
-        {
-            SystemDefinition def = (SystemDefinition) it.next();
+        for (Iterator it = defs.iterator(); it.hasNext();) {
+            SystemDefinition def = (SystemDefinition)it.next();
 
             dump.append("\n* SystemID = ").append(def.getUuid());
         }
 
-        dump.append("\n* Aspect total count = ").append(((List) s_classLoaderAspectNames
-            .get(loader)).size());
+        dump.append("\n* Aspect total count = ").append(
+                (
+                    (List)s_classLoaderAspectNames
+                          .get(loader)
+                ).size()
+        );
 
-        for (Iterator it = ((List) s_classLoaderDefinitionLocations.get(loader))
-                .iterator(); it.hasNext();)
-        {
+        for (Iterator it = ((List)s_classLoaderDefinitionLocations.get(loader))
+                .iterator(); it.hasNext();) {
             dump.append("\n* ").append(it.next());
         }
 
-        dump.append(
-            "\n******************************************************************");
+        dump.append("\n******************************************************************");
         System.out.println(dump.toString());
     }
 
@@ -208,25 +198,22 @@ public class SystemDefinitionContainer
      * @param loader
      * @return List of Aspect class names
      */
-    public static List getHierarchicalAspectNames(ClassLoader loader)
-    {
+    public static List getHierarchicalAspectNames(ClassLoader loader) {
         // if runtime access before load time
-        if (!s_classLoaderSystemDefinitions.containsKey(loader))
-        {
+        if (!s_classLoaderSystemDefinitions.containsKey(loader)) {
             registerClassLoader(loader);
         }
 
         List aspectNames = new ArrayList();
 
-        if (loader == null)
-        {
+        if (loader == null) {
             return aspectNames;
         }
 
         ClassLoader parent = loader.getParent();
 
         aspectNames.addAll(getHierarchicalAspectNames(parent));
-        aspectNames.addAll((List) s_classLoaderAspectNames.get(loader));
+        aspectNames.addAll((List)s_classLoaderAspectNames.get(loader));
 
         return aspectNames;
     }
@@ -237,83 +224,130 @@ public class SystemDefinitionContainer
      * @param loader
      * @return List of SystemDefinition
      */
-    public static List getHierarchicalDefs(ClassLoader loader)
-    {
+    public static List getHierarchicalDefs(ClassLoader loader) {
         // if runtime access before load time
-        if (!s_classLoaderSystemDefinitions.containsKey(loader))
-        {
+        if (!s_classLoaderSystemDefinitions.containsKey(loader)) {
             registerClassLoader(loader);
         }
 
         List defs = new ArrayList();
 
-        if (loader == null)
-        {
+        if (loader == null) {
             return defs;
         }
 
         ClassLoader parent = loader.getParent();
 
         defs.addAll(getHierarchicalDefs(parent));
-        defs.addAll((List) s_classLoaderSystemDefinitions.get(loader));
+        defs.addAll((List)s_classLoaderSystemDefinitions.get(loader));
 
         return defs;
     }
 
-    //----  Get/Set the ThreadLocal context for SystemDefintions and Aspect FQN
-    public static void setDefinitionsContext(List defs)
-    {
+    /**
+     * Set a ThreadLocal context with given SystemDefinitions list
+     *
+     * @param defs SystemDefinition list
+     */
+    public static void setDefinitionsContext(List defs) {
         s_systemDefintionsContext.set(defs);
     }
 
-    public static List getDefinitionsContext()
-    {
-        return (List) s_systemDefintionsContext.get();
+    /**
+     * Get the current SystemDefinitions list for the context
+     *
+     * @return SystemDefinitions list
+     */
+    public static List getDefinitionsContext() {
+        return (List)s_systemDefintionsContext.get();
     }
 
-    public static void setAspectNamesContext(List defs)
-    {
+    /**
+     * Set a ThreadLocal context with given Aspect class names (FQN) list
+     *
+     * @param defs Aspect class names list
+     */
+    public static void setAspectNamesContext(List defs) {
         s_aspectNamesContext.set(defs);
     }
 
-    public static List getAspectNamesContext()
-    {
-        return (List) s_aspectNamesContext.get();
+    /**
+     * Get the current Aspect class names (FQN) list for the context
+     *
+     * @return Aspect class names list
+     */
+    public static List getAspectNamesContext() {
+        return (List)s_aspectNamesContext.get();
     }
 
-    public static void deploySystemDefinitions(ClassLoader loader,
-        List defintions)
-    {
+    /**
+     * Hotdeploy a list of SystemDefintions as defined at the level of the given ClassLoader TODO: sync StartupManager
+     *
+     * @param loader      ClassLoader
+     * @param definitions SystemDefinitions list
+     */
+    public static void deploySystemDefinitions(
+            final ClassLoader loader,
+            final List definitions) {
         registerClassLoader(loader);
 
-        List defs = (List) s_classLoaderSystemDefinitions.get(loader);
+        List defs = (List)s_classLoaderSystemDefinitions.get(loader);
 
-        defs.addAll(defintions);
+        defs.addAll(definitions);
     }
 
-    public static List getSystemDefinitions(ClassLoader loader)
-    {
+    /**
+     * Return the list of SystemDefinitions defined at the given ClassLoader level. Does not handles the ClassLoader
+     * hierarchy.
+     *
+     * @param loader
+     * @return SystemDefinitions list
+     */
+    public static List getSystemDefinitions(final ClassLoader loader) {
         registerClassLoader(loader);
 
-        return (List) s_classLoaderSystemDefinitions.get(loader);
+        return (List)s_classLoaderSystemDefinitions.get(loader);
     }
 
-    public static SystemDefinition getSystemDefinition(ClassLoader loader,
-        String uuid)
-    {
+    /**
+     * Lookup for a given SystemDefinition by uuid within a given ClassLoader The lookup does not go thru the
+     * ClassLoader hierarchy
+     *
+     * @param loader ClassLoader
+     * @param uuid   system uuid
+     * @return SystemDefinition or null if no such defined definition
+     */
+    public static SystemDefinition getSystemDefinition(
+            final ClassLoader loader,
+            final String uuid) {
         registerClassLoader(loader);
 
         for (Iterator defs = getSystemDefinitions(loader).iterator();
-            defs.hasNext();)
-        {
-            SystemDefinition def = (SystemDefinition) defs.next();
+             defs.hasNext();) {
+            SystemDefinition def = (SystemDefinition)defs.next();
 
-            if (def.getUuid().equals(uuid))
-            {
+            if (def.getUuid().equals(uuid)) {
                 return def;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Returns the list of all ClassLoaders registered so far Note: when a child ClassLoader is registered, all its
+     * parent hierarchy is registered
+     *
+     * @return ClassLoader Set
+     */
+    public static Set getAllRegisteredClassLoaders() {
+        return s_classLoaderSystemDefinitions.keySet();
+    }
+
+    /**
+     * Turns on the option to avoid -Daspectwerkz.definition.file handling.
+     */
+    public static void disableSystemWideDefinition() {
+        s_disableSystemWideDefinition = true;
     }
 }
