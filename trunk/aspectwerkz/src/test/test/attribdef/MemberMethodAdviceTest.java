@@ -207,6 +207,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public MemberMethodAdviceTest() {}
+
     public MemberMethodAdviceTest(String name) {
         super(name);
         SystemLoader.getSystem("tests").initialize();

@@ -129,9 +129,9 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
     public void testReplaceImplementation() {
         assertEquals("test.xmldef.IntroductionsImpl", ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionReplacement")).getImplementation());
-        ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).
-                getMixin("introductionReplacement")).
-                swapImplementation("test.xmldef.IntroductionsImplReplacement");
+        SystemLoader.getSystem("tests").
+                getMixin("introductionReplacement").
+                ___AW_swapImplementation("test.xmldef.IntroductionsImplReplacement");
         assertEquals("test.xmldef.IntroductionsImplReplacement", ((Introduction)((XmlDefSystem)SystemLoader.getSystem("tests")).getMixin("introductionReplacement")).getImplementation());
     }
 

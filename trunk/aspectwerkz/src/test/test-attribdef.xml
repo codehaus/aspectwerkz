@@ -6,6 +6,7 @@
         <package name="test.attribdef.aspect">
             <use-aspect class="MemberMethodTestAspect"/>
             <use-aspect class="StaticMethodTestAspect"/>
+            <use-aspect class="FieldTestAspect"/>
         </package>
     </system>
 </aspectwerkz>
