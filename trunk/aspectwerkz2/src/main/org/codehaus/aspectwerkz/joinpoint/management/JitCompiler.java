@@ -82,7 +82,7 @@ public class JitCompiler {
     private static final String GET_SYSTEM_METHOD_NAME_SIGNATURE = "(Ljava/lang/String;)Lorg/codehaus/aspectwerkz/System;";
     private static final String GET_ASPECT_MANAGER_METHOD_NAME = "getAspectManager";
     private static final String GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE = "()Lorg/codehaus/aspectwerkz/aspect/management/AspectManager;";
-    private static final String GET_ASPECT_METHOD_NAME = "getAspect";
+    private static final String GET_ASPECT_METHOD_NAME = "getAspectPrototype";
     private static final String GET_ASPECT_METHOD_SIGNATURE = "(I)Lorg/codehaus/aspectwerkz/CrossCutting;";
     private static final String GET_CROSS_CUTTING_INFO_METHOD_NAME = "getCrossCuttingInfo";
     private static final String GET_CROSS_CUTTING_INFO_METHOD_SIGNATURE = "()Lorg/codehaus/aspectwerkz/CrossCuttingInfo;";
@@ -110,9 +110,9 @@ public class JitCompiler {
     private static final String BYTE_CLASS_INIT_METHOD_SIGNATURE = "(B)V";
     private static final String BOOLEAN_CLASS_INIT_METHOD_SIGNATURE = "(Z)V";
     private static final String CHARACTER_CLASS_INIT_METHOD_SIGNATURE = "(C)V";
-    private static final String GET_PER_JVM_ASPECT_METHOD_NAME = "getPerJvmAspect";
+    private static final String GET_PER_JVM_ASPECT_METHOD_NAME = "createPerJvmAspect";
     private static final String GET_PER_JVM_ASPECT_METHOD_SIGNATURE = "()Lorg/codehaus/aspectwerkz/CrossCutting;";
-    private static final String GET_PER_CLASS_ASPECT_METHOD_NAME = "getPerClassAspect";
+    private static final String GET_PER_CLASS_ASPECT_METHOD_NAME = "createPerClassAspect";
     private static final String GET_PER_CLASS_ASPECT_METHOD_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/CrossCutting;";
     private static final String GET_SIGNATURE_METHOD_NAME = "getSignature";
     private static final String GET_SIGNATURE_METHOD_SIGNATURE = "()Lorg/codehaus/aspectwerkz/joinpoint/Signature;";
@@ -495,7 +495,7 @@ public class JitCompiler {
             final CodeVisitor cv,
             final String className) {
 
-        CrossCutting aspect = system.getAspectManager().getAspect(adviceTuple.getAspectIndex());
+        CrossCutting aspect = system.getAspectManager().getAspectPrototype(adviceTuple.getAspectIndex());
         String aspectClassName = aspect.getClass().getName().replace('.', '/');
 
         String aspectClassSignature = L + aspectClassName + SEMICOLON;
@@ -1392,7 +1392,7 @@ public class JitCompiler {
             // add invocations to the before advices
             for (int i = 0; i < beforeAdvices.length; i++) {
                 IndexTuple beforeAdvice = beforeAdvices[i];
-                CrossCutting aspect = system.getAspectManager().getAspect(beforeAdvice.getAspectIndex());
+                CrossCutting aspect = system.getAspectManager().getAspectPrototype(beforeAdvice.getAspectIndex());
                 Method adviceMethod = aspect.getCrossCuttingInfo().getAdvice(beforeAdvice.getMethodIndex());
                 String aspectClassName = aspect.getClass().getName().replace('.', '/');
 
@@ -1416,7 +1416,7 @@ public class JitCompiler {
             // add invocations to the after advices
             for (int i = afterAdvices.length - 1; i >= 0; i--) {
                 IndexTuple afterAdvice = afterAdvices[i];
-                CrossCutting aspect = system.getAspectManager().getAspect(afterAdvice.getAspectIndex());
+                CrossCutting aspect = system.getAspectManager().getAspectPrototype(afterAdvice.getAspectIndex());
                 Method adviceMethod = aspect.getCrossCuttingInfo().getAdvice(afterAdvice.getMethodIndex());
                 String aspectClassName = aspect.getClass().getName().replace('.', '/');
 
@@ -1467,7 +1467,7 @@ public class JitCompiler {
         }
         for (; i < aroundAdvices.length; i++, j++) {
             IndexTuple aroundAdvice = aroundAdvices[i];
-            CrossCutting aspect = system.getAspectManager().getAspect(aroundAdvice.getAspectIndex());
+            CrossCutting aspect = system.getAspectManager().getAspectPrototype(aroundAdvice.getAspectIndex());
             Method adviceMethod = aspect.getCrossCuttingInfo().getAdvice(aroundAdvice.getMethodIndex());
             String aspectClassName = aspect.getClass().getName().replace('.', '/');
 

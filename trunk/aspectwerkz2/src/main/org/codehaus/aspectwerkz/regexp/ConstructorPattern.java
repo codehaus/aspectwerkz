@@ -45,11 +45,11 @@ public class ConstructorPattern extends Pattern {
      * @param constructor the constructor
      * @return true if we have a matches
      */
-    public boolean matches(final ConstructorMetaData method) {
-        if (!matchConstructorName(method.getName())) {
+    public boolean matches(final ConstructorMetaData constructor) {
+        if (!matchConstructorName(constructor.getName())) {
             return false;
         }
-        if (!matchParameterTypes(method.getParameterTypes())) {
+        if (!matchParameterTypes(constructor.getParameterTypes())) {
             return false;
         }
         return true;

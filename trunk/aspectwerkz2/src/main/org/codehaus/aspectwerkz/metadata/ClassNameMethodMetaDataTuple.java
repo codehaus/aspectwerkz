@@ -8,8 +8,9 @@
 package org.codehaus.aspectwerkz.metadata;
 
 /**
- * Holds a tuple that consists of the class meta-data A the meta-data for a specific method. TODO: class should be
- * renamed (since cflow 0.9 fix)
+ * @TODO: RENAME to CflowMetaData\
+ *
+ * Holds a tuple that consists of the class meta-data A the meta-data for a specific method. 
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>

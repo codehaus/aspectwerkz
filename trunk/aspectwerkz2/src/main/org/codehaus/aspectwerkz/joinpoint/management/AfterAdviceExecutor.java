@@ -60,7 +60,7 @@ public class AfterAdviceExecutor {
             IndexTuple index = m_adviceIndexes[i];
             int aspectIndex = index.getAspectIndex();
             int methodIndex = index.getMethodIndex();
-            m_aspectManager.getAspect(aspectIndex).getCrossCuttingInfo().invokeAdvice(methodIndex, joinPoint);
+            m_aspectManager.getAspectPrototype(aspectIndex).getCrossCuttingInfo().invokeAdvice(methodIndex, joinPoint);
         }
         return null;
     }

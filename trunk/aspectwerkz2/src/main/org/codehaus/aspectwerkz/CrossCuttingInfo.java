@@ -394,6 +394,42 @@ public class CrossCuttingInfo implements Serializable {
     }
 
     /**
+     * Creates a new per JVM aspect, if it does not already exist, then return it.
+     *
+     * @return the aspect
+     */
+    public CrossCutting createPerJvmAspect() {
+        return m_container.createPerJvmAspect();
+    }
+
+    /**
+     * Creates a new perClass aspect, if it does not already exist, then return it.
+     *
+     * @return the aspect
+     */
+    public CrossCutting createPerClassAspect(final Class callingClass) {
+        return m_container.createPerClassAspect(callingClass);
+    }
+
+    /**
+     * Creates a new perInstance aspect, if it does not already exist, then return it.
+     *
+     * @return the aspect
+     */
+    public CrossCutting createPerInstanceAspect(final Object callingInstance) {
+        return m_container.createPerInstanceAspect(callingInstance);
+    }
+
+    /**
+     * Creates a new perThread aspect, if it does not already exist, then return it.
+     *
+     * @return the aspect
+     */
+    public CrossCutting createPerThreadAspect() {
+        return m_container.createPerThreadAspect();
+    }
+
+    /**
      * Returns the perJVM aspect.
      *
      * @return the perJVM aspect
