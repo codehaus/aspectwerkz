@@ -94,6 +94,7 @@ public class JoinPointManager {
     private final Class m_targetClass;
     private final int m_classHash;
     private final ClassMetaData m_targetClassMetaData;
+    private int m_hotswapCount = 0;
 
     private ThreadLocal[] m_joinPoints = new ThreadLocal[0];
 
@@ -652,7 +653,7 @@ public class JoinPointManager {
                 AdviceContainer[] adviceIndexes = (AdviceContainer[])advices.get(pointcutType);
                 joinPointInfo.joinPoint = JitCompiler.compileJoinPoint(
                         joinPointHash, joinPointType, pointcutType, adviceIndexes,
-                        declaringClass, targetClass, m_system, thisInstance, targetInstance
+                        declaringClass, targetClass, m_system, thisInstance, targetInstance, m_hotswapCount
                 );
                 joinPointInfo.isJitCompiled = true;
             }
@@ -943,6 +944,16 @@ public class JoinPointManager {
         m_classHash = m_targetClass.hashCode();
         m_metaDataMaker = MetaDataMaker.getReflectionMetaDataMaker(targetClass.getClassLoader());
         m_targetClassMetaData = m_metaDataMaker.createClassMetaData(m_targetClass);
+        m_hotswapCount = 0;
+    }
+
+    private JoinPointManager(final Class targetClass, int hotswapCount) {
+        m_system = SystemLoader.getSystem(targetClass.getClassLoader());
+        m_targetClass = targetClass;
+        m_classHash = m_targetClass.hashCode();
+        m_metaDataMaker = MetaDataMaker.getReflectionMetaDataMaker(targetClass.getClassLoader());
+        m_targetClassMetaData = m_metaDataMaker.createClassMetaData(m_targetClass);
+        m_hotswapCount = hotswapCount;
     }
 
     /**
@@ -963,7 +974,7 @@ public class JoinPointManager {
         // flush JP Registry
         s_registry.reset(klass.hashCode());
 
-        JoinPointManager joinPointManager = new JoinPointManager(klass, "N/A/runtime");
+        JoinPointManager joinPointManager = new JoinPointManager(klass, oldJoinPointManager.m_hotswapCount+1);
         System.out.println("joinPointManager = " + joinPointManager);
         oldJoinPointManager = joinPointManager;
         s_managers.put(klass, joinPointManager);
@@ -975,6 +986,8 @@ public class JoinPointManager {
             System.err.println("Unable to propagate JPManager");
             e.printStackTrace();
         }
+
+        joinPointManager.m_joinPoints = new ThreadLocal[0];
 
     }
 }
