@@ -11,6 +11,9 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
+import test.expression.ExpressionParserTest;
+import test.expression.AnnotationExpressionTest;
+import test.expression.AdvisedClassFilterExpressionTest;
 
 /**
  * This tests can be run without online / offline or other post compilation mode. Used to test
@@ -74,6 +77,9 @@ public class AllTests extends TestCase {
         suite.addTestSuite(CFlowTest.class);
         suite.addTestSuite(ComplexCFlowTest.class);
         suite.addTestSuite(CflowCompilerTest.class);
+        suite.addTestSuite(ExpressionParserTest.class);
+        suite.addTestSuite(AnnotationExpressionTest.class);
+        suite.addTestSuite(AdvisedClassFilterExpressionTest.class);
 
         suite.addTestSuite(test.ClassInfoTest.class);
         // AW-361, should not throw an NPE
