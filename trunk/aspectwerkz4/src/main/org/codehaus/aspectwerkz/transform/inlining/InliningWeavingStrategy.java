@@ -113,13 +113,20 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                     }
             );//FIXME - within make match all
 
-            final boolean filterForStaticinitialization = !classInfo.hasStaticInitializer()
+            // note: for staticinitialization we do an exact match right there
+            boolean filterForStaticinitialization = !classInfo.hasStaticInitializer()
             	||  classFilterFor(definitions, new ExpressionContext[] {
-    					new ExpressionContext(PointcutType.STATIC_INITIALIZATION, 
-    					                      classInfo.staticInitializer(), 
+    					new ExpressionContext(PointcutType.STATIC_INITIALIZATION,
+    					                      classInfo.staticInitializer(),
     					                      classInfo.staticInitializer())
     			  		}
             		);
+            if (!filterForStaticinitialization) {
+                filterForStaticinitialization = !hasPointcut(definitions, new ExpressionContext(PointcutType.STATIC_INITIALIZATION,
+                                                  classInfo.staticInitializer(),
+                                                  classInfo.staticInitializer())
+                            );
+            }
 
             // prepare ctor call jp
             final ClassReader crLookahead = new ClassReader(bytecode);
@@ -223,7 +230,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
 //                emittedJoinPoint.resolveLineNumber(context);
 //                System.out.println(emittedJoinPoint.toString());
 //            }
-            
+
             // NOTE: remove when in release time or in debugging trouble (;-) - Alex)
             // FAKE multiweaving - which is a requirement
             //            Object multi = context.getMetaData("FAKE");
@@ -332,4 +339,23 @@ public class InliningWeavingStrategy implements WeavingStrategy {
         return true;
     }
 
+    private static boolean hasPointcut(final Set definitions,
+                                       final ExpressionContext ctx) {
+        for (Iterator defs = definitions.iterator(); defs.hasNext();) {
+            if (hasPointcut((SystemDefinition) defs.next(), ctx)) {
+                return true;
+            } else {
+                continue;
+            }
+        }
+        return false;
+    }
+
+    private static boolean hasPointcut(final SystemDefinition definition,
+                                       final ExpressionContext ctx) {
+        if (definition.hasPointcut(ctx)) {
+            return true;
+        }
+        return false;
+    }
 }

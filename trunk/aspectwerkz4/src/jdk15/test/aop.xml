@@ -9,5 +9,6 @@
 
         <mixin class="test.MixinTest$CounterImpl"/>
         <aspect class="test.LineNumberTest$Aspect"/>
+        <aspect class="test.CustomProceedChangeTargetTest$Aspect"/>
     </system>
 </aspectwerkz>
