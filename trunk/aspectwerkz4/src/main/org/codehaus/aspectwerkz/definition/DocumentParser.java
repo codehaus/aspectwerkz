@@ -126,15 +126,15 @@ public class DocumentParser {
             specialAspectName = className;
         }
 
+        final ClassInfo classInfo = JavaClassInfo.getClassInfo(aspectClass);
+        final ClassLoader loader = aspectClass.getClassLoader();
+
         // create the aspect definition
-        final AspectDefinition aspectDef = new AspectDefinition(specialAspectName, className, systemDef);
+        final AspectDefinition aspectDef = new AspectDefinition(specialAspectName, classInfo, systemDef);
         aspectDef.setContainerClassName(containerClassName);
         aspectDef.setDeploymentModel(deploymentModel);
 
         parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut in Attributes AW-152
-
-        final ClassInfo classInfo = JavaClassInfo.getClassInfo(aspectClass);
-        final ClassLoader loader = aspectClass.getClassLoader();
 
         // load the different aspect model and let them define their aspects
         AspectModelManager.defineAspect(classInfo, aspectDef, loader);
@@ -322,7 +322,6 @@ public class DocumentParser {
             }
 
             // create the aspect definition
-            AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName, definition);
             ClassInfo aspectClassInfo;
             try {
                 aspectClassInfo = AsmClassInfo.getClassInfo(aspectClassName, loader);
@@ -340,6 +339,8 @@ public class DocumentParser {
                 e.printStackTrace();
                 continue;
             }
+
+            final AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassInfo, definition);
 
             // add the global pointcuts to the aspect
             for (Iterator it = globalPointcuts.iterator(); it.hasNext();) {
@@ -454,7 +455,8 @@ public class DocumentParser {
     private static void addVirtualAspect(final SystemDefinition definition) {
         final Class clazz = Virtual.class;
         final String aspectName = clazz.getName();
-        final AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectName, definition);
+        ClassInfo aspectClassInfo = JavaClassInfo.getClassInfo(clazz);
+        final AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassInfo, definition);
         try {
             MethodInfo methodInfo = JavaMethodInfo.getMethodInfo(clazz.getDeclaredMethod("virtual", new Class[]{}));
             aspectDef.addBeforeAdviceDefinition(

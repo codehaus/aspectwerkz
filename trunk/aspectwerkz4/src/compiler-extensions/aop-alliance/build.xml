@@ -31,7 +31,7 @@
     <!--  initializes parameters  -->
     <!-- =================================================== -->
     <target name="init">
-        <property name="name" value="aop-alliance-aspectwerkz-compiler-extension"/>
+        <property name="name" value="aw-ext-aopalliance"/>
         <property name="version" value="0.1"/>
         <property name="basedir" value="."/>
         <property name="src.dir" value="${basedir}/src"/>

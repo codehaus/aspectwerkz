@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
+
 /**
  * Holds the meta-data for the aspect.
  *
@@ -37,9 +39,9 @@ public class AspectDefinition {
     private String m_qualifiedName;
 
     /**
-     * The aspect class name.
+     * The aspect class info.
      */
-    private final String m_className;
+    private final ClassInfo m_classInfo;
 
     /**
      * The deployment model for the aspect.
@@ -95,17 +97,18 @@ public class AspectDefinition {
      * Creates a new aspect meta-data instance.
      *
      * @param name      the name of the aspect
-     * @param className the class name of the aspect
+     * @param classInfo the class info for the aspect
+     * @param systemDefinition
      */
-    public AspectDefinition(final String name, final String className, final SystemDefinition systemDefinition) {
+    public AspectDefinition(final String name, final ClassInfo classInfo, final SystemDefinition systemDefinition) {
         if (name == null) {
             throw new IllegalArgumentException("aspect name can not be null");
         }
-        if (className == null) {
-            throw new IllegalArgumentException("aspect class name can not be null");
+        if (classInfo == null) {
+            throw new IllegalArgumentException("aspect class info can not be null");
         }
         m_name = name;
-        m_className = className;
+        m_classInfo = classInfo;
         m_systemDefinition = systemDefinition;
         m_qualifiedName = systemDefinition.getUuid() + '/' + name;
     }
@@ -152,7 +155,16 @@ public class AspectDefinition {
      * @return the class name
      */
     public String getClassName() {
-        return m_className;
+        return m_classInfo.getName();
+    }
+
+    /**
+     * Returns the class info.
+     *
+     * @return the class info
+     */
+    public ClassInfo getClassInfo() {
+        return m_classInfo;
     }
 
     /**

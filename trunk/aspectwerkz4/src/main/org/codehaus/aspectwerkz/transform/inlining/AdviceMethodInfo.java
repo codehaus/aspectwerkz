@@ -19,14 +19,29 @@ public class AdviceMethodInfo {
     private final AspectInfo m_aspectInfo;
     private final AdviceInfo m_adviceInfo;
     private int m_specialArgumentIndex = -1;
+    private int m_joinPointIndex;
+    private String m_calleeClassSignature;
+    private String m_callerClassSignature;
+    private String m_joinPointClassName;
+    private String m_calleeMemberDesc;
 
     public AdviceMethodInfo(final AdviceInfo adviceInfo,
                             final String aspectFieldName,
                             final String aspectClassName,
-                            final String aspectClassSignature) {
+                            final String aspectClassSignature,
+                            final String callerClassSignature,
+                            final String calleeClassSignature,
+                            final String joinPointClassName,
+                            final String calleeMemberDesc) {
         m_adviceInfo = adviceInfo;
-        m_aspectInfo = new AspectInfo(adviceInfo.getAdviceDefinition().getAspectDefinition(),
-                                      aspectFieldName, aspectClassName, aspectClassSignature);
+        m_aspectInfo = new AspectInfo(
+                adviceInfo.getAdviceDefinition().getAspectDefinition(),
+                aspectFieldName, aspectClassName, aspectClassSignature
+        );
+        m_callerClassSignature = callerClassSignature;
+        m_calleeClassSignature = calleeClassSignature;
+        m_joinPointClassName = joinPointClassName;
+        m_calleeMemberDesc = calleeMemberDesc;
     }
 
     public AdviceInfo getAdviceInfo() {
@@ -49,12 +64,36 @@ public class AdviceMethodInfo {
         return m_adviceInfo.getSpecialArgumentTypeName();
     }
 
+    public int getJoinPointIndex() {
+        return m_joinPointIndex;
+    }
+
+    public void setJoinPointIndex(final int joinPointIndex) {
+        m_joinPointIndex = joinPointIndex;
+    }
+
     public int getSpecialArgumentIndex() {
         return m_specialArgumentIndex;
     }
 
     public void setSpecialArgumentIndex(final int index) {
         m_specialArgumentIndex = index;
+    }
+
+    public String getCalleeClassSignature() {
+        return m_calleeClassSignature;
+    }
+
+    public String getCallerClassSignature() {
+        return m_callerClassSignature;
+    }
+
+    public String getJoinPointClassName() {
+        return m_joinPointClassName;
+    }
+
+    public String getCalleeMemberDesc() {
+        return m_calleeMemberDesc;
     }
 
     /**

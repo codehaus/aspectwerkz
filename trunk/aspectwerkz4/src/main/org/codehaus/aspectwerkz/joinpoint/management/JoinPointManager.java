@@ -36,6 +36,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
+import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.objectweb.asm.Type;
 
 import java.util.List;
@@ -534,21 +535,21 @@ public class JoinPointManager {
                         );
                     }
                 } else {
-                    AspectModel aspectModel = AspectModelManager.getModelFor(aspectDef.getAspectModel());
-                    String closureTypeName = aspectModel.getAroundClosureClassInfo().getClassName();
+                    final AspectModel aspectModel = AspectModelManager.getModelFor(aspectDef.getAspectModel());
+                    final String superClassName = aspectModel.getAroundClosureClassInfo().getSuperClassName();
+                    final String[] interfaces = aspectModel.getAroundClosureClassInfo().getInterfaceNames();
+                    final String[] classNames = new String[interfaces.length + 1];
+                    classNames[0] = superClassName;
+                    for (int j = 1; j < interfaces.length + 1; j++) {
+                        classNames[j] = interfaces[j - 1];
+                    }
+
                     final Type argType = adviceArgTypes[i];
-                    if (isValidAroundClosureType(argType, closureTypeName)) {
+                    if (isValidAroundClosureType(argType, classNames)) {
                         adviceToTargetArgs[i] = AdviceInfo.VALID_NON_AW_AROUND_CLOSURE_TYPE;
                     } else if (isSpecialArgumentType(argType, adviceInfo)) {
                         adviceToTargetArgs[i] = AdviceInfo.SPECIAL_ARGUMENT;
-                    } else {
-                        throw new Error(
-                                "advice parameter type is not a valid type [" + closureTypeName + "] for advice [" +
-                                adviceInfo.getAdviceDefinition().getName() +
-                                "] in aspect [" +
-                                adviceInfo.getAspectClassName() + "]"
-                        );
-                    }
+                    } 
                 }
             }
         }
@@ -557,11 +558,18 @@ public class JoinPointManager {
     }
 
     private static boolean isSpecialArgumentType(final Type argType, final AdviceInfo adviceInfo) {
-        return adviceInfo.getSpecialArgumentTypeDesc().equals(argType.getDescriptor());
+        final String specialArgumentTypeDesc = adviceInfo.getSpecialArgumentTypeDesc();
+        return specialArgumentTypeDesc != null && specialArgumentTypeDesc.equals(argType.getDescriptor());
     }
 
-    private static boolean isValidAroundClosureType(final Type argType, final String closureTypeName) {
-        return closureTypeName.equals(argType.getInternalName());
+    private static boolean isValidAroundClosureType(final Type argType, final String[] closureTypeNames) {
+        for (int i = 0; i < closureTypeNames.length; i++) {
+            final String closureTypeName = closureTypeNames[i];
+            if (closureTypeName != null && closureTypeName.equals(argType.getInternalName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean isJoinPoint(final Type type) {

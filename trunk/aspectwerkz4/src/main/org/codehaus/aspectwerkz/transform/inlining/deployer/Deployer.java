@@ -25,6 +25,7 @@ import org.codehaus.aspectwerkz.joinpoint.management.AdviceInfoContainer;
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.MatchingJoinPointInfo;
@@ -192,9 +193,11 @@ public class Deployer {
 
         final DeploymentHandle deploymentHandle = new DeploymentHandle(aspectClass, deployLoader);
 
+        final ClassInfo aspectClassInfo = JavaClassInfo.getClassInfo(aspectClass);
+
         // create a new aspect def and fill it up with the annotation def from the aspect class
         final SystemDefinition systemDef = SystemDefinitionContainer.getVirtualDefinitionFor(deployLoader);
-        final AspectDefinition newAspectDef = new AspectDefinition(className, className, systemDef);
+        final AspectDefinition newAspectDef = new AspectDefinition(className, aspectClassInfo, systemDef);
         final Set newExpressions = getNewExpressionsForAspect(
                 aspectClass, newAspectDef, systemDef, deploymentScope, deploymentHandle
         );
