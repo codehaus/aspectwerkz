@@ -89,7 +89,7 @@ public class QDoxParser {
      *
      * @return a collections with all classes
      */
-    public String[] getAllClassesNames() {
+    public String[] getAllClassNames() {
         Collection classes = m_builder.getClassLibrary().all();
         String[] classNames = new String[classes.size()];
         int i = 0;

@@ -27,7 +27,7 @@ import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
 
 import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinitionImpl;
-import org.codehaus.aspectwerkz.xmldef.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.PointcutDefinitionImpl;
 import org.codehaus.aspectwerkz.xmldef.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.AttributeTag;
@@ -36,13 +36,14 @@ import org.codehaus.aspectwerkz.xmldef.definition.IntroductionWeavingRule;
 import org.codehaus.aspectwerkz.xmldef.definition.AdviceWeavingRule;
 import org.codehaus.aspectwerkz.xmldef.definition.ControllerDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.DefinitionValidator;
-import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
 import org.codehaus.aspectwerkz.xmldef.advice.CFlowPreAdvice;
 import org.codehaus.aspectwerkz.xmldef.advice.CFlowPostAdvice;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.util.UuidGenerator;
 import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
@@ -93,7 +94,7 @@ public class AttributeC {
         if (sourcePath == null) throw new IllegalArgumentException("source path can not be null");
         if (fileName == null) throw new IllegalArgumentException("file name can not be null");
 
-        AspectWerkzDefinition definition = getDefinition(definitionFileToMerge);
+        AspectWerkzDefinitionImpl definition = getDefinition(definitionFileToMerge);
 
         parseRuntimeAttributes(definition, sourcePath);
 
@@ -113,11 +114,11 @@ public class AttributeC {
      * @param definition the definition
      * @param sourcePath the path to the source dir
      */
-    public static void parseRuntimeAttributes(final AspectWerkzDefinition definition,
+    public static void parseRuntimeAttributes(final AspectWerkzDefinitionImpl definition,
                                               final String sourcePath) {
 
         QDoxParser qdoxParser = new QDoxParser(sourcePath);
-        String[] allClasses = qdoxParser.getAllClassesNames();
+        String[] allClasses = qdoxParser.getAllClassNames();
 
         // add the cflow advice to the system
         definition.addAdvice(CFlowPreAdvice.getDefinition());
@@ -156,7 +157,7 @@ public class AttributeC {
      * @param uuid the UUID for the definition
      * @return the DOM document
      */
-    public static Document createDocument(final AspectWerkzDefinition definition,
+    public static Document createDocument(final AspectWerkzDefinitionImpl definition,
                                           final String uuid) {
         if (definition == null) throw new IllegalArgumentException("definition can not be null");
 
@@ -168,11 +169,12 @@ public class AttributeC {
         );
 
         Element root = document.addElement("aspectwerkz");
-        root.addAttribute("id", uuid);
+        Element system = root.addElement("system");
+        system.addAttribute("id", uuid);
 
-        handleIntroductionDefinitions(root, definition);
-        handleAdviceDefinitions(root, definition);
-        handleAspectDefinitions(root, definition);
+        handleIntroductionDefinitions(system, definition);
+        handleAdviceDefinitions(system, definition);
+        handleAspectDefinitions(system, definition);
 
         return document;
     }
@@ -202,7 +204,7 @@ public class AttributeC {
      * @param definition the AspectWerkz definition
      */
     private static void handleIntroductionDefinitions(final Element root,
-                                                      final AspectWerkzDefinition definition) {
+                                                      final AspectWerkzDefinitionImpl definition) {
         for (Iterator it = definition.getIntroductionDefinitions().iterator(); it.hasNext();) {
             IntroductionDefinition def = (IntroductionDefinition)it.next();
             addIntroductionDefElement(root, def);
@@ -211,25 +213,35 @@ public class AttributeC {
 
     /**
      * Returns the definition.
+     * Grabs the first xmldef definition found.
      * If append is set to true then it loads the definition file from disk otherwise
      * it just creates a new blank one.
+     *
+     * @TODO: handle multiple xmldef definition within the same XML file
      *
      * @param fileName the name of the definition file
      * @param append the append flag
      * @return the aspectwerkz definition
      */
-    private static AspectWerkzDefinition getDefinition(final String fileName) {
-        AspectWerkzDefinition definition;
+    private static AspectWerkzDefinitionImpl getDefinition(final String fileName) {
+        AspectWerkzDefinitionImpl definition = null;
+
         if (fileName != null) {
             File definitionFile = new File(fileName);
+
             if (definitionFile.exists()) {
-                definition = AbstractAspectWerkzDefinition.loadDefinitionAsFile(fileName);
-            }
-            else {
-                definition = new AspectWerkzDefinitionImpl();
+                // grab the first xmldef definition
+                List definitions = DefinitionLoader.loadDefinitionsFromFile(fileName);
+                for (Iterator it = definitions.iterator(); it.hasNext();) {
+                    AspectWerkzDefinition def = (AspectWerkzDefinition)it.next();
+                    if (def.isXmlDef()) {
+                        definition = (AspectWerkzDefinitionImpl)def;
+                        break;
+                    }
+                }
             }
         }
-        else {
+        if (definition == null) {
             definition = new AspectWerkzDefinitionImpl();
         }
         return definition;
@@ -242,7 +254,7 @@ public class AttributeC {
      * @param definition the AspectWerkz definition
      */
     private static void handleAdviceDefinitions(final Element root,
-                                                final AspectWerkzDefinition definition) {
+                                                final AspectWerkzDefinitionImpl definition) {
         // create the cflow pre and post advice definitions
         addAdviceDefElement(root, CFlowPreAdvice.getDefinition());
         addAdviceDefElement(root, CFlowPostAdvice.getDefinition());
@@ -340,7 +352,7 @@ public class AttributeC {
      * @param definition the AspectWerkz definition
      */
     private static void handleAspectDefinitions(final Element root,
-                                                final AspectWerkzDefinition definition) {
+                                                final AspectWerkzDefinitionImpl definition) {
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
 
@@ -518,7 +530,7 @@ public class AttributeC {
      */
     private static void weaveIntroductionDefinitionAttributes(
             final QDoxParser qdoxParser,
-            final AspectWerkzDefinition definition) {
+            final AspectWerkzDefinitionImpl definition) {
 
         JavaClass javaClass = qdoxParser.getJavaClass();
         DocletTag[] introductionDefTags = javaClass.getTagsByName(AttributeTag.INTRODUCTION_DEF);
@@ -533,7 +545,6 @@ public class AttributeC {
             introDef.setInterface(javaClass.getFullyQualifiedName());
             introDef.setImplementation(introductionDefTags[i].getNamedParameter("implementation"));
             introDef.setDeploymentModel(introductionDefTags[i].getNamedParameter("deployment-model"));
-            introDef.setIsPersistent(introductionDefTags[i].getNamedParameter("persistent"));
             introDef.setAttribute(introductionDefTags[i].getNamedParameter("attribute"));
 
             definition.addIntroduction(introDef);
@@ -548,7 +559,7 @@ public class AttributeC {
      */
     private static void weaveAdviceDefinitionAttributes(
             final QDoxParser qdoxParser,
-            final AspectWerkzDefinition definition) {
+            final AspectWerkzDefinitionImpl definition) {
 
         JavaClass javaClass = qdoxParser.getJavaClass();
         DocletTag[] adviceDefTags = javaClass.getTagsByName(AttributeTag.ADVICE_DEF);
@@ -562,7 +573,6 @@ public class AttributeC {
             adviceDef.setName(adviceDefTags[i].getNamedParameter("name"));
             adviceDef.setAdviceClassName(javaClass.getFullyQualifiedName());
             adviceDef.setDeploymentModel(adviceDefTags[i].getNamedParameter("deployment-model"));
-            adviceDef.setIsPersistent(adviceDefTags[i].getNamedParameter("persistent"));
             adviceDef.setAttribute(adviceDefTags[i].getNamedParameter("attribute"));
 
             weaveAdviceParamAttributes(javaClass, adviceDef);
@@ -605,12 +615,12 @@ public class AttributeC {
      * @param qdoxParser the QDox parser
      */
     private static void parseIntroductionAttributes(
-            final AspectWerkzDefinition definition,
+            final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
 
         AspectDefinition aspectDefinition = definition.getAspectDefinition(
-                AbstractAspectWerkzDefinition.SYSTEM_ASPECT);
+                AspectWerkzDefinition.SYSTEM_ASPECT);
 
         JavaClass javaClass = qdoxParser.getJavaClass();
         DocletTag[] introductionTags = javaClass.getTagsByName(AttributeTag.INTRODUCTION);
@@ -643,7 +653,7 @@ public class AttributeC {
      * @param qdoxParser the QDox parser
      */
     private static void parseJoinPointControllerAttributes(
-            final AspectWerkzDefinition definition,
+            final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
         String pointcutName = CONTROLLER_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
@@ -665,12 +675,12 @@ public class AttributeC {
                     String expression = pointcutName + counter;
 
                     // create and add a new pointcut definition
-                    PointcutDefinition pointcutDef = new PointcutDefinition();
+                    PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
                     pointcutDef.setName(expression);
                     pointcutDef.setClassPattern(className);
                     pointcutDef.setPattern(createMethodPattern(javaMethods[i]));
                     pointcutDef.setType(PointcutDefinition.METHOD);
-                    definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                    definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                             addPointcutDef(pointcutDef);
 
                     // create a new controller definition
@@ -678,7 +688,7 @@ public class AttributeC {
                     controllerDef.setClassName(attribute);
                     controllerDef.setExpression(expression);
 
-                    definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                    definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                             addControllerDef(controllerDef);
 
                     // add the pointcut pattern
@@ -699,7 +709,7 @@ public class AttributeC {
      * @param qdoxParser the QDox parser
      */
     private static void parseMethodPointcutAttributes(
-            final AspectWerkzDefinition definition,
+            final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
         String pointcutName = METHOD_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
@@ -729,13 +739,13 @@ public class AttributeC {
                         String expression = pointcutName + counter;
 
                         // create and add a new pointcut def
-                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
                         pointcutDef.setName(expression);
                         pointcutDef.setClassPattern(className);
                         pointcutDef.setPattern(createMethodPattern(javaMethods[i]));
                         pointcutDef.setType(PointcutDefinition.METHOD);
                         pointcutDef.setNonReentrant(isNonReentrant);
-                        definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                 addPointcutDef(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
@@ -754,7 +764,7 @@ public class AttributeC {
                             weavingRule.setExpression(expression);
                             weavingRule.setCFlowExpression(cflowRef);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             // add the pointcut pattern
@@ -777,7 +787,7 @@ public class AttributeC {
      * @param qdoxParser the QDox parser
      */
     private static void parseSetFieldPointcutAttributes(
-            final AspectWerkzDefinition definition,
+            final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
         String pointcutName = SETFIELD_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
@@ -800,12 +810,12 @@ public class AttributeC {
                         String expression = pointcutName + counter;
 
                         // create and add a new pointcut def
-                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
                         pointcutDef.setName(expression);
                         pointcutDef.setClassPattern(className);
                         pointcutDef.setPattern(createFieldPattern(javaFields[i]));
                         pointcutDef.setType(PointcutDefinition.SET_FIELD);
-                        definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                 addPointcutDef(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
@@ -824,7 +834,7 @@ public class AttributeC {
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             // add the pointcut pattern
@@ -847,7 +857,7 @@ public class AttributeC {
      * @param qdoxParser the QDox parser
      */
     private static void parseGetFieldPointcutAttributes(
-            final AspectWerkzDefinition definition,
+            final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
         String pointcutName = GETFIELD_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
@@ -870,12 +880,12 @@ public class AttributeC {
                         String expression = pointcutName + counter;
 
                         // create and add a new pointcut def
-                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
                         pointcutDef.setName(expression);
                         pointcutDef.setClassPattern(className);
                         pointcutDef.setPattern(createFieldPattern(javaFields[i]));
                         pointcutDef.setType(PointcutDefinition.GET_FIELD);
-                        definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                 addPointcutDef(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
@@ -894,7 +904,7 @@ public class AttributeC {
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             // add the pointcut pattern
@@ -917,7 +927,7 @@ public class AttributeC {
      * @param qdoxParser the QDox parser
      */
     private static void parseThrowsPointcutAttributes(
-            final AspectWerkzDefinition definition,
+            final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
         String pointcutName = THROWS_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
@@ -948,13 +958,13 @@ public class AttributeC {
                         String expression = pointcutName + counter;
 
                         // create and add a new pointcut def
-                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
                         pointcutDef.setName(expression);
                         pointcutDef.setClassPattern(className);
                         pointcutDef.setPattern(createThrowsPattern(
                                 exceptionClassPattern, javaMethods[i]));
                         pointcutDef.setType(PointcutDefinition.THROWS);
-                        definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                 addPointcutDef(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
@@ -973,7 +983,7 @@ public class AttributeC {
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             // add the pointcut pattern
@@ -996,7 +1006,7 @@ public class AttributeC {
      * @param qdoxParser the QDox parser
      */
     private static void parseCallerSidePointcutAttributes(
-            final AspectWerkzDefinition definition,
+            final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
         String pointcutName = CALLERSIDE_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
@@ -1025,12 +1035,12 @@ public class AttributeC {
                         String expression = pointcutName + counter;
 
                         // create and add a new pointcut def
-                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
                         pointcutDef.setName(expression);
                         pointcutDef.setClassPattern(callerClassPattern);
                         pointcutDef.setPattern(createCallerSidePattern(className, javaMethods[i]));
                         pointcutDef.setType(PointcutDefinition.CALLER_SIDE);
-                        definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                 addPointcutDef(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
@@ -1050,7 +1060,7 @@ public class AttributeC {
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             // add the pointcut pattern
@@ -1073,7 +1083,7 @@ public class AttributeC {
      * @param qdoxParser the QDox parser
      */
     private static void parseCFlowPointcutAttributes(
-            final AspectWerkzDefinition definition,
+            final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
 
@@ -1094,14 +1104,14 @@ public class AttributeC {
                 String name = attributes[0];
 
                 // create and add a new pointcut def
-                PointcutDefinition pointcutDef = new PointcutDefinition();
+                PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
                 pointcutDef.setName(name);
                 pointcutDef.setClassPattern("*");
                 String callerSidePattern = createCallerSidePattern(className, javaMethods[i]);
                 pointcutDef.setPattern(callerSidePattern);
                 pointcutDef.setType(PointcutDefinition.CFLOW);
 
-                definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                         addPointcutDef(pointcutDef);
 
                 // create and add a new weaving rule def
@@ -1109,7 +1119,7 @@ public class AttributeC {
                 weavingRule.setExpression(name);
                 weavingRule.addAdviceRef(CFlowPreAdvice.NAME);
                 weavingRule.addAdviceRef(CFlowPostAdvice.NAME);
-                definition.getAspectDefinition(AbstractAspectWerkzDefinition.SYSTEM_ASPECT).
+                definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                         addAdviceWeavingRule(weavingRule);
 
                 // add the pointcut pattern (a method patterns since the cflow pointcut
@@ -1204,7 +1214,7 @@ public class AttributeC {
      *
      * @param definition the definition
      */
-    private static void validate(final AspectWerkzDefinition definition) {
+    private static void validate(final AspectWerkzDefinitionImpl definition) {
         if (System.getProperty("aspectwerkz.definition.validate", "false").equals("true")) {
             // validate the definition
             DefinitionValidator validator = new DefinitionValidator(definition);

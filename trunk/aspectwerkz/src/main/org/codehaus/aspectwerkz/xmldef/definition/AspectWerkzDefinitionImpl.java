@@ -23,14 +23,16 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.attribdef.definition.InterfaceIntroductionDefinition;
 
 /**
- * Implements the <code>AspectWerkz</code> definition.
+ * Implementation of the AspectWerkz interface for the xmldef definition model.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AspectWerkzDefinitionImpl extends AbstractAspectWerkzDefinition {
+public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
 
     /**
      * Holds the indexes for the introductions. The introduction indexes are needed here
@@ -88,6 +90,24 @@ public class AspectWerkzDefinitionImpl extends AbstractAspectWerkzDefinition {
         synchronized (m_aspectMap) {
             m_aspectMap.put(SYSTEM_ASPECT, systemAspect);
         }
+    }
+
+    /**
+     * Checks if the definition is of type attribute definition.
+     *
+     * @return returns false for this definition
+     */
+    public boolean isAttribDef() {
+        return false;
+    }
+
+    /**
+     * Checks if the definition is of type XML definition.
+     *
+     * @return returns true for this definition
+     */
+    public boolean isXmlDef() {
+        return true;
     }
 
     /**
@@ -248,6 +268,28 @@ public class AspectWerkzDefinitionImpl extends AbstractAspectWerkzDefinition {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the interface introductions for a certain class.
+     *
+     * @param classMetaData the class meta-data
+     * @return the names
+     */
+    public List getInterfaceIntroductions(final ClassMetaData classMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+
+        List introductionDefs = new ArrayList();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
+            for (Iterator it2 = introDef.getInterfaceIntroductions().iterator(); it2.hasNext();) {
+                InterfaceIntroductionDefinition intfIntroDef = (InterfaceIntroductionDefinition)it2.next();
+                if (intfIntroDef.getWeavingRule().matchClassPointcut(classMetaData)) {
+                    introductionDefs.add(intfIntroDef);
+                }
+            }
+        }
+        return introductionDefs;
     }
 
     /**
@@ -448,7 +490,7 @@ public class AspectWerkzDefinitionImpl extends AbstractAspectWerkzDefinition {
     }
 
     /**
-     * Checks if a class has an <tt>Aspect</tt>.
+     * Checks if a class has an <tt>AspectMetaData</tt>.
      *
      * @param className the name or the class
      * @return boolean
@@ -468,20 +510,20 @@ public class AspectWerkzDefinitionImpl extends AbstractAspectWerkzDefinition {
     }
 
     /**
-     * Checks if a class has an <tt>Introduction</tt>.
+     * Checks if a class has an <tt>Mixin</tt>.
      *
-     * @param className the name or the class
+     * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasIntroductions(final String className) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+    public boolean hasIntroductions(final ClassMetaData classMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         for (Iterator it1 = m_aspectMap.values().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
             List weavingRules = aspectDefinition.getIntroductionWeavingRules();
             for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
                 IntroductionWeavingRule weavingRule = (IntroductionWeavingRule)it2.next();
-                if (weavingRule.getRegexpClassPattern().matches(className)) {
+                if (weavingRule.getRegexpClassPattern().matches(classMetaData.getName())) {
                     return true;
                 }
             }
@@ -798,6 +840,15 @@ public class AspectWerkzDefinitionImpl extends AbstractAspectWerkzDefinition {
                 }
             }
         }
+    }
+
+    /**
+     * Loads the aspects.
+     *
+     * @param loader the class loader to use to load the aspects
+     */
+    public void loadAspects(final ClassLoader loader) {
+        // not needed for this definition implementation
     }
 }
 

@@ -16,7 +16,8 @@ import java.util.ArrayList;
 import java.util.WeakHashMap;
 import java.util.HashSet;
 
-import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
@@ -259,8 +260,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         Set repository = new HashSet();
         m_metaDataRepository.put(loader, repository); // add the loader here already to prevent recursive calls
 
-        AbstractAspectWerkzDefinition.getDefinitionForTransformation().
-                buildMixinMetaDataRepository(repository, loader);
+        List definitions = DefinitionLoader.getDefinitionsForTransformation();
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
+            AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
+            definition.buildMixinMetaDataRepository(repository, loader);
+        }
     }
 
     /**
@@ -277,7 +281,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         }
         m_definitionRepository.put(loader, null);
 
-        AbstractAspectWerkzDefinition.loadAndMergeDefinitions(loader);
+        DefinitionLoader.loadAndMergeDefinitions(loader);
     }
 
     /**

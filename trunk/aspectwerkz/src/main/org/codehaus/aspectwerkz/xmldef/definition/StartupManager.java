@@ -14,12 +14,16 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Field;
 
-import org.codehaus.aspectwerkz.xmldef.Aspect;
-import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
-import org.codehaus.aspectwerkz.xmldef.pointcut.MethodPointcut;
-import org.codehaus.aspectwerkz.xmldef.pointcut.FieldPointcut;
-import org.codehaus.aspectwerkz.xmldef.pointcut.ThrowsPointcut;
-import org.codehaus.aspectwerkz.xmldef.pointcut.CallerSidePointcut;
+import org.codehaus.aspectwerkz.AspectMetaData;
+import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.SystemType;
+import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
+import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
+import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
+import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
 import org.codehaus.aspectwerkz.xmldef.advice.PreAdvice;
 import org.codehaus.aspectwerkz.xmldef.advice.PostAdvice;
 import org.codehaus.aspectwerkz.xmldef.advice.AbstractAdvice;
@@ -28,10 +32,9 @@ import org.codehaus.aspectwerkz.xmldef.advice.CFlowPreAdvice;
 import org.codehaus.aspectwerkz.xmldef.advice.CFlowPostAdvice;
 import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
 import org.codehaus.aspectwerkz.xmldef.introduction.IntroductionContainer;
-import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
@@ -94,14 +97,16 @@ public class StartupManager {
      */
     public static final String INTRODUCTION_CONTAINER_IMPLEMENTATION_CLASS =
             System.getProperty("aspectwerkz.introduction.container.impl",
-                    DEFAULT_INTRODUCTION_CONTAINER);
+                    DEFAULT_INTRODUCTION_CONTAINER
+            );
 
     /**
      * The advice container class to use.
      */
     public static final String ADVICE_CONTAINER_IMPLEMENTATION_CLASS =
             System.getProperty("aspectwerkz.advice.container.impl",
-                    DEFAULT_ADVICE_CONTAINER);
+                    DEFAULT_ADVICE_CONTAINER
+            );
 
     /**
      * Marks the manager as initialized or not.
@@ -112,17 +117,21 @@ public class StartupManager {
      * Loads the system definition.
      *
      * @param uuid the UUID for the weave model to load
+     * @param definition the definition for the system
      */
-    public static void initializeSystem(final String uuid) {
+    public static void initializeSystem(final String uuid, final AspectWerkzDefinition definition) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
+        if (definition == null) throw new IllegalArgumentException("definition can not be null");
+
         if (s_initialized) return;
         s_initialized = true;
-        final AspectWerkzDefinition definition = AbstractAspectWerkzDefinition.getDefinition(uuid);
-        createAspects(uuid, definition);
-        registerIntroductions(uuid, definition);
-        registerAdvices(uuid, definition);
-        registerPointcuts(uuid, definition);
-        addIntroductionReferencesToAspects(uuid, definition);
+
+        AspectWerkzDefinitionImpl def = (AspectWerkzDefinitionImpl)definition;
+        createAspects(uuid, def);
+        registerIntroductions(uuid, def);
+        registerAdvices(uuid, def);
+        registerPointcuts(uuid, def);
+        addIntroductionReferencesToAspects(uuid, def);
     }
 
     /**
@@ -178,11 +187,12 @@ public class StartupManager {
      * @param definition the definition
      */
     private static void createAspects(final String uuid,
-                                      final AspectWerkzDefinition definition) {
+                                      final AspectWerkzDefinitionImpl definition) {
         try {
             for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
                 AspectDefinition aspectDefinition = (AspectDefinition)it.next();
-                AspectWerkz.getSystem(uuid).register(new Aspect(uuid, aspectDefinition.getName()));
+                ((XmlDefSystem)SystemLoader.getSystem(uuid)).
+                        register(new AspectMetaData(uuid, aspectDefinition.getName()));
             }
         }
         catch (NullPointerException e) {
@@ -202,7 +212,7 @@ public class StartupManager {
      */
     private static void registerIntroductions(
             final String uuid,
-            final AspectWerkzDefinition definition) {
+            final AspectWerkzDefinitionImpl definition) {
         // get all introduction definitions
         for (Iterator it1 = definition.getIntroductionDefinitions().iterator(); it1.hasNext();) {
             registerIntroduction(uuid, (IntroductionDefinition)it1.next());
@@ -245,7 +255,8 @@ public class StartupManager {
                 newIntroduction.setContainer(container);
             }
 
-            AspectWerkz.getSystem(uuid).register(introDef.getName(), newIntroduction);
+            ((XmlDefSystem)SystemLoader.getSystem(uuid)).
+                    register(introDef.getName(), newIntroduction);
         }
         catch (NullPointerException e) {
             throw new DefinitionException("introduction definitions not properly defined");
@@ -264,7 +275,7 @@ public class StartupManager {
      */
     private static void addIntroductionReferencesToAspects(
             final String uuid,
-            final AspectWerkzDefinition definition) {
+            final AspectWerkzDefinitionImpl definition) {
 
         try {
             // get all aspects definitions
@@ -280,8 +291,8 @@ public class StartupManager {
                                 definition.getIntroductionDefinition((String)it3.next());
 
                         // add the introdution
-                        AspectWerkz.getSystem(uuid).
-                                getAspect(aspectDef.getName()).
+                        SystemLoader.getSystem(uuid).
+                                getAspectMetaData(aspectDef.getName()).
                                 addIntroduction(def.getName());
                     }
                 }
@@ -304,7 +315,7 @@ public class StartupManager {
      */
     private static void registerAdvices(
             final String uuid,
-            final AspectWerkzDefinition definition) {
+            final AspectWerkzDefinitionImpl definition) {
         for (Iterator it = definition.getAdviceDefinitions().iterator(); it.hasNext();) {
             registerAdvice(uuid, (AdviceDefinition)it.next());
         }
@@ -335,7 +346,7 @@ public class StartupManager {
                 deploymentModel = DeploymentModel.getDeploymentModelAsInt(def.getDeploymentModel());
             }
 
-            // TODO: use custom security to protect the [AbstractAspect.m_uuid] field from getting modified by the user, setting the field opens up for changes in other AspectWerkz system running in the same JVM
+            // TODO: use custom security to protect the [Aspect.m_uuid] field from getting modified by the user, setting the field opens up for changes in other AspectWerkz system running in the same JVM
             Field field = AbstractAdvice.class.getDeclaredField("m_uuid");
             field.setAccessible(true);
             field.set(newAdvice, uuid);
@@ -352,7 +363,7 @@ public class StartupManager {
             // create and set the container for the advice
             newAdvice.setContainer(createAdviceContainer(newAdvice));
 
-            AspectWerkz.getSystem(uuid).register(name, newAdvice);
+            ((XmlDefSystem)SystemLoader.getSystem(uuid)).register(name, newAdvice);
         }
         catch (ClassNotFoundException e) {
             throw new DefinitionException(adviceClassName + " could not be found in classpath");
@@ -379,7 +390,7 @@ public class StartupManager {
      */
     private static void registerPointcuts(
             final String uuid,
-            final AspectWerkzDefinition definition) {
+            final AspectWerkzDefinitionImpl definition) {
         registerCFlowPointcuts(uuid, definition);
         registerMethodPointcuts(uuid, definition);
         registerSetFieldPointcuts(uuid, definition);
@@ -396,12 +407,13 @@ public class StartupManager {
      */
     private static void registerMethodPointcuts(
             final String uuid,
-            final AspectWerkzDefinition definition) {
+            final AspectWerkzDefinitionImpl definition) {
 
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
+            AspectMetaData aspect = SystemLoader.getSystem(uuid).
+                    getAspectMetaData(aspectDefinition.getName());
 
             try {
                 // get all advice weaving rules defined in this aspect
@@ -469,12 +481,13 @@ public class StartupManager {
      */
     private static void registerSetFieldPointcuts(
             final String uuid,
-            final AspectWerkzDefinition definition) {
+            final AspectWerkzDefinitionImpl definition) {
 
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
+            AspectMetaData aspect = SystemLoader.getSystem(uuid).
+                    getAspectMetaData(aspectDefinition.getName());
 
             try {
                 // get all advice weaving rules defined in this aspect
@@ -508,11 +521,11 @@ public class StartupManager {
                     List adviceRefs = weavingRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
                         String adviceRef = (String)it3.next();
-                        if (AspectWerkz.getSystem(uuid).
+                        if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                 getAdvice(adviceRef) instanceof PreAdvice) {
                             pointcut.addPreAdvice(adviceRef);
                         }
-                        else if (AspectWerkz.getSystem(uuid).
+                        else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                 getAdvice(adviceRef) instanceof PostAdvice) {
                             pointcut.addPostAdvice(adviceRef);
                         }
@@ -527,11 +540,11 @@ public class StartupManager {
                         adviceRefs = adviceStackDefinition.getAdviceRefs();
                         for (Iterator it4 = adviceRefs.iterator(); it4.hasNext();) {
                             String adviceRef = (String)it4.next();
-                            if (AspectWerkz.getSystem(uuid).
+                            if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                     getAdvice(adviceRef) instanceof PreAdvice) {
                                 pointcut.addPreAdvice(adviceRef);
                             }
-                            else if (AspectWerkz.getSystem(uuid).
+                            else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                     getAdvice(adviceRef) instanceof PostAdvice) {
                                 pointcut.addPostAdvice(adviceRef);
                             }
@@ -559,12 +572,13 @@ public class StartupManager {
      */
     private static void registerGetFieldPointcuts(
             final String uuid,
-            final AspectWerkzDefinition definition) {
+            final AspectWerkzDefinitionImpl definition) {
 
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
+            AspectMetaData aspect = SystemLoader.getSystem(uuid).
+                    getAspectMetaData(aspectDefinition.getName());
 
             try {
                 // get all advice weaving rules defined in this aspect
@@ -597,11 +611,11 @@ public class StartupManager {
                     List adviceRefs = weavingRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
                         String adviceRef = (String)it3.next();
-                        if (AspectWerkz.getSystem(uuid).
+                        if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                 getAdvice(adviceRef) instanceof PreAdvice) {
                             pointcut.addPreAdvice(adviceRef);
                         }
-                        else if (AspectWerkz.getSystem(uuid).
+                        else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                 getAdvice(adviceRef) instanceof PostAdvice) {
                             pointcut.addPostAdvice(adviceRef);
                         }
@@ -616,10 +630,12 @@ public class StartupManager {
                         adviceRefs = adviceStackDefinition.getAdviceRefs();
                         for (Iterator it4 = adviceRefs.iterator(); it4.hasNext();) {
                             String adviceRef = (String)it4.next();
-                            if (AspectWerkz.getSystem(uuid).getAdvice(adviceRef) instanceof PreAdvice) {
+                            if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
+                                    getAdvice(adviceRef) instanceof PreAdvice) {
                                 pointcut.addPreAdvice(adviceRef);
                             }
-                            else if (AspectWerkz.getSystem(uuid).getAdvice(adviceRef) instanceof PostAdvice) {
+                            else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
+                                    getAdvice(adviceRef) instanceof PostAdvice) {
                                 pointcut.addPostAdvice(adviceRef);
                             }
                         }
@@ -646,12 +662,13 @@ public class StartupManager {
      */
     private static void registerThrowsPointcuts(
             final String uuid,
-            final AspectWerkzDefinition definition) {
+            final AspectWerkzDefinitionImpl definition) {
 
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
+            AspectMetaData aspect = SystemLoader.getSystem(uuid).
+                    getAspectMetaData(aspectDefinition.getName());
 
             try {
                 // get all advice weaving rules defined in this aspect
@@ -720,12 +737,13 @@ public class StartupManager {
      */
     private static void registerCallerSidePointcuts(
             final String uuid,
-            final AspectWerkzDefinition definition) {
+            final AspectWerkzDefinitionImpl definition) {
 
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
+            AspectMetaData aspect = SystemLoader.getSystem(uuid).
+                    getAspectMetaData(aspectDefinition.getName());
 
             try {
                 // get all advice weaving rules defined in this aspect
@@ -759,11 +777,11 @@ public class StartupManager {
                     List adviceRefs = weavingRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
                         String adviceRef = (String)it3.next();
-                        if (AspectWerkz.getSystem(uuid).
+                        if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                 getAdvice(adviceRef) instanceof PreAdvice) {
                             pointcut.addPreAdvice(adviceRef);
                         }
-                        else if (AspectWerkz.getSystem(uuid).
+                        else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                 getAdvice(adviceRef) instanceof PostAdvice) {
                             pointcut.addPostAdvice(adviceRef);
                         }
@@ -778,10 +796,12 @@ public class StartupManager {
                         adviceRefs = adviceStackDefinition.getAdviceRefs();
                         for (Iterator it4 = adviceRefs.iterator(); it4.hasNext();) {
                             String adviceRef = (String)it4.next();
-                            if (AspectWerkz.getSystem(uuid).getAdvice(adviceRef) instanceof PreAdvice) {
+                            if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
+                                    getAdvice(adviceRef) instanceof PreAdvice) {
                                 pointcut.addPreAdvice(adviceRef);
                             }
-                            else if (AspectWerkz.getSystem(uuid).getAdvice(adviceRef) instanceof PostAdvice) {
+                            else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
+                                    getAdvice(adviceRef) instanceof PostAdvice) {
                                 pointcut.addPostAdvice(adviceRef);
                             }
                         }
@@ -807,12 +827,13 @@ public class StartupManager {
      */
     private static void registerCFlowPointcuts(
             final String uuid,
-            final AspectWerkzDefinition definition) {
+            final AspectWerkzDefinitionImpl definition) {
 
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
+            AspectMetaData aspect = SystemLoader.getSystem(uuid).
+                    getAspectMetaData(aspectDefinition.getName());
 
             try {
                 // get all advice weaving rules defined in this aspect
@@ -837,14 +858,16 @@ public class StartupManager {
                         continue;
                     }
                     // register the cflow advices in the system (if they does not already exist)
-                    if (!AspectWerkz.getSystem(uuid).hasAspect(CFlowPreAdvice.NAME)) {
+                    if (!SystemLoader.getSystem(uuid).
+                            hasAspect(CFlowPreAdvice.NAME)) {
                         AdviceDefinition adviceDef = CFlowPreAdvice.getDefinition();
                         // add the advice to the aspectwerkz definition
                         definition.addAdvice(adviceDef);
                         // add the advice to the aspectwerkz system
                         registerAdvice(uuid, adviceDef);
                     }
-                    if (!AspectWerkz.getSystem(uuid).hasAspect(CFlowPostAdvice.NAME)) {
+                    if (!SystemLoader.getSystem(uuid).
+                            hasAspect(CFlowPostAdvice.NAME)) {
                         AdviceDefinition adviceDef = CFlowPostAdvice.getDefinition();
                         // add the advice to the aspectwerkz definition
                         definition.addAdvice(adviceDef);

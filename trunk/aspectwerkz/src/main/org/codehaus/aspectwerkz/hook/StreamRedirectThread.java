@@ -27,7 +27,7 @@ class StreamRedirectThread extends Thread {
 
     public StreamRedirectThread(String name, InputStream is, OutputStream os) {
         super(name);
-        setPriority(Thread.MAX_PRIORITY-1);
+        setPriority(Thread.MAX_PRIORITY - 1);
         this.is = is;
         this.os = os;
     }
@@ -36,18 +36,23 @@ class StreamRedirectThread extends Thread {
         byte buf[] = new byte[BUFFER_SIZE];
         int i;
         try {
-            while((i = is.read(buf)) > 0) {
+            while ((i = is.read(buf)) > 0) {
                 os.write(buf, 0, i);
                 try {
                     Thread.sleep(SLEEP);
-                } catch(InterruptedException e) { ; }
-             }
-        } catch (Exception e) {
+                }
+                catch (InterruptedException e) {
+                    ;
+                }
+            }
+        }
+        catch (Exception e) {
             ;
-        } finally {
+        }
+        finally {
             ;//notify();
         }
-     }
+    }
 
 
 

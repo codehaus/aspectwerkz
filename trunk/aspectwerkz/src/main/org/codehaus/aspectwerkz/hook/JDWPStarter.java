@@ -36,14 +36,14 @@ public class JDWPStarter extends AbstractStarter {
         Map jdwpOpt = parseJdwp();
 
         if (jdwpOpt.containsKey("transport"))
-            this.transport = (String) jdwpOpt.get("transport");
+            this.transport = (String)jdwpOpt.get("transport");
         else {
             this.transport = transport;
             jdwpOpt.put("transport", this.transport);
         }
 
         if (jdwpOpt.containsKey("address"))
-            this.address = (String) jdwpOpt.get("address");
+            this.address = (String)jdwpOpt.get("address");
         else {
             this.address = address;
             jdwpOpt.put("address", this.address);
@@ -70,7 +70,7 @@ public class JDWPStarter extends AbstractStarter {
             opt = "-Xdebug " + opt;
 
         jdwpOpt.put("server", "y");
-        jdwpOpt.put("suspend","y");
+        jdwpOpt.put("suspend", "y");
         StringBuffer jdwp = new StringBuffer("-Xrunjdwp:");
 
         List keys = new ArrayList(jdwpOpt.keySet());
@@ -80,7 +80,7 @@ public class JDWPStarter extends AbstractStarter {
         keys = jdwpOptionSort(keys);
 
         for (Iterator i = keys.iterator(); i.hasNext();) {
-            String key = (String) i.next();
+            String key = (String)i.next();
             jdwp.append(key).append("=").append((String)jdwpOpt.get(key));
             if (i.hasNext()) jdwp.append(",");
         }
@@ -108,10 +108,10 @@ public class JDWPStarter extends AbstractStarter {
             return new HashMap();
 
         String jdwp = opt.substring(
-                opt.indexOf("-Xrunjdwp:")+"-Xrunjdwp:".length(),
+                opt.indexOf("-Xrunjdwp:") + "-Xrunjdwp:".length(),
                 Math.min(
                         opt.length(),
-                        opt.indexOf(' ',opt.indexOf("-Xrunjdwp:"))));
+                        opt.indexOf(' ', opt.indexOf("-Xrunjdwp:"))));
 
         HashMap jdwpOpt = new HashMap();
         StringTokenizer stz = new StringTokenizer(jdwp, ",");
@@ -123,7 +123,7 @@ public class JDWPStarter extends AbstractStarter {
             }
             jdwpOpt.put(
                     jdwpo.substring(0, jdwpo.indexOf('=')),
-                    jdwpo.substring(jdwpo.indexOf('=')+1));
+                    jdwpo.substring(jdwpo.indexOf('=') + 1));
         }
         return jdwpOpt;
     }
@@ -135,9 +135,9 @@ public class JDWPStarter extends AbstractStarter {
         Comparator c = new Comparator() {
             public int compare(Object o1, Object o2) {
                 if (o1 instanceof String && o2 instanceof String) {
-                    if ("transport".equals((String) o1))
+                    if ("transport".equals((String)o1))
                         return -1000;
-                    if ("transport".equals((String) o2))
+                    if ("transport".equals((String)o2))
                         return 1000;
                     return 0;
                 }

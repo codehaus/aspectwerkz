@@ -24,7 +24,7 @@ import com.thoughtworks.qdox.model.JavaClass;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
  */
-public class QDoxMetaDataMaker extends MetaDataMaker{
+public class QDoxMetaDataMaker extends MetaDataMaker {
 
     /**
      * Construct class meta-data from a BCEL <code>JavaClass</code> object.

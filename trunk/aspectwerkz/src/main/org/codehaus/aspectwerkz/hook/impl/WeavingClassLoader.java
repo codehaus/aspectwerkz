@@ -41,7 +41,7 @@ public class WeavingClassLoader extends URLClassLoader {
     }
 
     protected Class findClass(String name)
-    throws ClassNotFoundException {
+            throws ClassNotFoundException {
         String path = name.replace('.', '/').concat(".class");
         Resource res = new URLClassPath(getURLs()).getResource(path, false);
         if (res != null) {
@@ -50,10 +50,12 @@ public class WeavingClassLoader extends URLClassLoader {
                 byte[] b = res.getBytes();
                 byte[] transformed = ClassPreProcessorHelper.defineClass0Pre(this, name, b, 0, b.length, null);
                 return defineClass(name, transformed, 0, transformed.length);
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 throw new ClassNotFoundException(e.getMessage());
             }
-        } else {
+        }
+        else {
             throw new ClassNotFoundException(name);
         }
     }
@@ -75,7 +77,7 @@ public class WeavingClassLoader extends URLClassLoader {
         Thread.currentThread().setContextClassLoader(cl);
         String s = args[0];
         String args1[] = new String[args.length - 1];
-        if(args1.length > 0)
+        if (args1.length > 0)
             System.arraycopy(args, 1, args1, 0, args.length - 1);
         Class class1 = cl.loadClass(s);
         Method method = class1.getMethod("main", new Class[]{String[].class});

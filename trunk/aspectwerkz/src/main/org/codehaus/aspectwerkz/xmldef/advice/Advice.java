@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.xmldef.advice;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.ContainerType;
 
 /**
@@ -110,7 +110,7 @@ public interface Advice extends Serializable {
      * @param name the name of the parameter
      * @return the value of the parameter
      */
-     String getParameter(final String name);
+    String getParameter(final String name);
 
     /**
      * Sets the parameters for the advice.

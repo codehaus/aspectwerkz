@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.HashMap;
 
-import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.ContainerType;
 

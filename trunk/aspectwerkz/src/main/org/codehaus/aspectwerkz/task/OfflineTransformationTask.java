@@ -98,7 +98,7 @@ public class OfflineTransformationTask extends Task {
         command.append("bin");
         command.append(File.separator);
         command.append("aspectwerkz");
-        if (    System.getProperty("os.name").startsWith("Win") ||
+        if (System.getProperty("os.name").startsWith("Win") ||
                 System.getProperty("os.name").startsWith("win")) {
             command.append(".bat");
         }

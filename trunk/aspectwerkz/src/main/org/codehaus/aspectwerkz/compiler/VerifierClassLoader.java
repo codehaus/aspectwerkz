@@ -24,22 +24,23 @@ public class VerifierClassLoader extends URLClassLoader {
     }
 
     protected synchronized Class loadClass(String name, boolean resolve)
-	throws ClassNotFoundException {
+            throws ClassNotFoundException {
         // First, check if the class has already been loaded
         Class c = findLoadedClass(name);
-    	if (c == null) {
-	        try {
-                // try to load the class localy
+        if (c == null) {
+            try {
+// try to load the class localy
                 c = findClass(name);
-            } catch (ClassNotFoundException e) {
-                // delegate to parent
+            }
+            catch (ClassNotFoundException e) {
+// delegate to parent
                 c = getParent().loadClass(name);
             }
         }
         if (resolve) {
             resolveClass(c);
         }
-    	return c;
+        return c;
     }
 
 }

@@ -37,17 +37,19 @@ public class BootClasspathStarter extends AbstractStarter {
     private void patchBootclasspath() {
         // prepend dir in -Xbootclasspath/p:
         if (opt.indexOf("-Xbootclasspath/p:") < 0) {
-            opt = "-Xbootclasspath/p:"+bootDir+" "+opt;
-        } else {
+            opt = "-Xbootclasspath/p:" + bootDir + " " + opt;
+        }
+        else {
             StringBuffer newOptionsB = new StringBuffer();
             StringTokenizer parser = new StringTokenizer(opt, " ");
             while (parser.hasMoreTokens()) {
                 String elem = parser.nextToken();
                 if (elem.startsWith("-Xbootclasspath/p:")) {
                     newOptionsB.append("-Xbootclasspath/p:").append(bootDir);
-                    newOptionsB.append((System.getProperty("os.name","").toLowerCase().indexOf("windows")>=0)?";":":");
-                    newOptionsB.append(elem.substring("-Xbootclasspath/p:".length()+elem.indexOf("-Xbootclasspath/p:")));
-                } else {
+                    newOptionsB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) ? ";" : ":");
+                    newOptionsB.append(elem.substring("-Xbootclasspath/p:".length() + elem.indexOf("-Xbootclasspath/p:")));
+                }
+                else {
                     newOptionsB.append(elem);
                 }
                 newOptionsB.append(" ");

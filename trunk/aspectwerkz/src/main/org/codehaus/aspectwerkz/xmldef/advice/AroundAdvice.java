@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.xmldef.advice;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * Executes around or instead of the original method invocation.

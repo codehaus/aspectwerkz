@@ -21,7 +21,6 @@ public class AdviceDefinition implements Serializable {
     private String m_name;
     private String m_adviceClassName;
     private String m_deploymentModel;
-    private String m_isPersistent;
     private String m_attribute = "";
     private Map m_parameters = new HashMap();
 
@@ -80,24 +79,6 @@ public class AdviceDefinition implements Serializable {
     }
 
     /**
-     * Gets the persistent attribute.
-     *
-     * @return the persistent attribute
-     */
-    public String getIsPersistent() {
-        return m_isPersistent;
-    }
-
-    /**
-     * Sets the persistent attribute.
-     *
-     * @param isPersistent the persistent attribute
-     */
-    public void setIsPersistent(final String isPersistent) {
-        m_isPersistent = isPersistent;
-    }
-
-    /**
      * Returns the attribute.
      *
      * @return the attribute
@@ -113,22 +94,6 @@ public class AdviceDefinition implements Serializable {
      */
     public void setAttribute(final String attribute) {
         m_attribute = attribute;
-    }
-
-    /**
-     * Checks if the introduction is persistent.
-     *
-     * @return true if introduction is persistent
-     */
-    public boolean isPersistent() {
-        if (m_isPersistent != null &&
-                (m_isPersistent.equalsIgnoreCase("true") ||
-                m_isPersistent.equalsIgnoreCase("yes"))) {
-            return true;
-        }
-        else {
-            return false;
-        }
     }
 
     /**

@@ -220,40 +220,64 @@ public class RemoteProxyServer implements Runnable {
             // ignore, use defaults
         }
         String property = properties.getProperty("remote.server.hostname");
-        if (property == null) HOST_NAME = property;
-        else HOST_NAME = property;
+        if (property == null)
+            HOST_NAME = property;
+        else
+            HOST_NAME = property;
         property = properties.getProperty("remote.server.port");
-        if (property == null) PORT = 7777;
-        else PORT = Integer.parseInt(property);
+        if (property == null)
+            PORT = 7777;
+        else
+            PORT = Integer.parseInt(property);
         property = properties.getProperty("remote.server.listener.threads.backlog");
-        if (property == null) BACKLOG = 200;
-        else BACKLOG = Integer.parseInt(property);
+        if (property == null)
+            BACKLOG = 200;
+        else
+            BACKLOG = Integer.parseInt(property);
         property = properties.getProperty("remote.server.listener.threads.nr");
-        if (property == null) NUM_LISTENER_THREADS = 10;
-        else NUM_LISTENER_THREADS = Integer.parseInt(property);
+        if (property == null)
+            NUM_LISTENER_THREADS = 10;
+        else
+            NUM_LISTENER_THREADS = Integer.parseInt(property);
         property = properties.getProperty("remote.server.client.threads.timeout");
-        if (property == null) CLIENT_THREAD_TIMEOUT = 60000;
-        else CLIENT_THREAD_TIMEOUT = Integer.parseInt(property);
+        if (property == null)
+            CLIENT_THREAD_TIMEOUT = 60000;
+        else
+            CLIENT_THREAD_TIMEOUT = Integer.parseInt(property);
         property = properties.getProperty("remote.server.thread.pool.max.size");
-        if (property == null) THREAD_POOL_MAX_SIZE = 100;
-        else THREAD_POOL_MAX_SIZE = Integer.parseInt(property);
+        if (property == null)
+            THREAD_POOL_MAX_SIZE = 100;
+        else
+            THREAD_POOL_MAX_SIZE = Integer.parseInt(property);
         property = properties.getProperty("remote.server.thread.pool.min.size");
-        if (property == null) THREAD_POOL_MIN_SIZE = 10;
-        else THREAD_POOL_MIN_SIZE = Integer.parseInt(property);
+        if (property == null)
+            THREAD_POOL_MIN_SIZE = 10;
+        else
+            THREAD_POOL_MIN_SIZE = Integer.parseInt(property);
         property = properties.getProperty("remote.server.thread.pool.init.size");
-        if (property == null) THREAD_POOL_INIT_SIZE = 10;
-        else THREAD_POOL_INIT_SIZE = Integer.parseInt(property);
+        if (property == null)
+            THREAD_POOL_INIT_SIZE = 10;
+        else
+            THREAD_POOL_INIT_SIZE = Integer.parseInt(property);
         property = properties.getProperty("remote.server.thread.pool.keep.alive.time");
-        if (property == null) THREAD_POOL_KEEP_ALIVE_TIME = 300000;
-        else THREAD_POOL_KEEP_ALIVE_TIME = Integer.parseInt(property);
+        if (property == null)
+            THREAD_POOL_KEEP_ALIVE_TIME = 300000;
+        else
+            THREAD_POOL_KEEP_ALIVE_TIME = Integer.parseInt(property);
         property = properties.getProperty("remote.server.thread.pool.type");
-        if (property != null && property.equals("dynamic")) BOUNDED_THREAD_POOL = false;
-        else BOUNDED_THREAD_POOL = true;
+        if (property != null && property.equals("dynamic"))
+            BOUNDED_THREAD_POOL = false;
+        else
+            BOUNDED_THREAD_POOL = true;
         property = properties.getProperty("remote.server.listener.threads.run.as.daemon");
-        if (property != null && property.equals("true")) LISTENER_THREAD_RUN_AS_DAEMON = true;
-        else LISTENER_THREAD_RUN_AS_DAEMON = false;
+        if (property != null && property.equals("true"))
+            LISTENER_THREAD_RUN_AS_DAEMON = true;
+        else
+            LISTENER_THREAD_RUN_AS_DAEMON = false;
         property = properties.getProperty("remote.server.thread.pool.wait.when.blocked");
-        if (property != null && property.equals("true")) THREAD_POOL_WAIT_WHEN_BLOCKED = true;
-        else THREAD_POOL_WAIT_WHEN_BLOCKED = false;
+        if (property != null && property.equals("true"))
+            THREAD_POOL_WAIT_WHEN_BLOCKED = true;
+        else
+            THREAD_POOL_WAIT_WHEN_BLOCKED = false;
     }
- }
+}

@@ -30,10 +30,11 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.util.Strings;
-import org.codehaus.aspectwerkz.xmldef.pointcut.FieldPointcut;
-import org.codehaus.aspectwerkz.xmldef.pointcut.ThrowsPointcut;
-import org.codehaus.aspectwerkz.xmldef.pointcut.MethodPointcut;
-import org.codehaus.aspectwerkz.xmldef.pointcut.CallerSidePointcut;
+import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
+import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
+import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
 /**
  * Handles the advice weaving rule definition.
