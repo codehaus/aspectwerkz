@@ -70,7 +70,15 @@ public aspect MethodExecutionAspect {
 	
 	// around gets inlined if thisJoinPoint is not used and thus way faster.
 	Object around() :
-	execution(* awbench.method.Execution.aroundJp()) {
+	execution(* awbench.method.Execution.aroundJP()) {
+		s_count++;
+		Object o = thisJoinPoint.getSignature();
+	    return proceed();
+	}
+
+	// around gets inlined if thisJoinPoint is not used and thus way faster.
+	Object around() :
+	execution(* awbench.method.Execution.aroundSJP()) {
 		s_count++;
 		Object o = thisJoinPointStaticPart.getSignature();
 	    return proceed();
