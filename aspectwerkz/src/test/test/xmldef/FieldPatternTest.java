@@ -53,6 +53,7 @@ public class FieldPatternTest extends TestCase {
 
         assertFalse(fieldPattern.matchFieldName(""));
         assertTrue(fieldPattern.matchFieldName("m_field"));
+        assertTrue(fieldPattern.matchFieldName("m_ld"));
         assertFalse(fieldPattern.matchFieldName("m_"));
     }
 
@@ -130,6 +131,18 @@ public class FieldPatternTest extends TestCase {
         assertFalse(fieldPattern.matchFieldType("java.lang.String[]"));
         assertTrue(fieldPattern.matchFieldType("java.lang.String[][]"));
         assertFalse(fieldPattern.matchFieldType("java.lang.String[][][]"));
+    }
+
+    public void testMatchFieldType9() {
+        FieldPattern fieldPattern = Pattern.compileFieldPattern("String* m_field");
+
+        assertFalse(fieldPattern.matchFieldType(""));
+        // note: abbreviation not compatible with pattern matching
+        assertFalse(fieldPattern.matchFieldType("java.lang.StringBuffer"));
+        assertFalse(fieldPattern.matchFieldType("java.lang.String"));
+        assertTrue(fieldPattern.matchFieldType("String"));
+        assertTrue(fieldPattern.matchFieldType("StringBuffer"));
+
     }
 
     public static void main(String[] args) {

@@ -279,7 +279,7 @@ public class MethodPattern extends Pattern {
         String escapedString = Strings.replaceSubString(oldString, ".", "\\.");
         escapedString = Strings.replaceSubString(escapedString, "[", "\\[");
         escapedString = Strings.replaceSubString(escapedString, "]", "\\]");
-        escapedString = Strings.replaceSubString(escapedString, "*", "[a-zA-Z0-9_$]+");
+        escapedString = Strings.replaceSubString(escapedString, "*", "[a-zA-Z0-9_$]*");
         return escapedString;
     }
 
