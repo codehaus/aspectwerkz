@@ -14,17 +14,25 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.annotation.expression.AnnotationVisitor;
+import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 /**
  * Parses and retrieves annotations.
@@ -42,7 +50,7 @@ public class AnnotationManager {
     private final JavaDocBuilder m_parser = new JavaDocBuilder();
 
     /**
-     * Map with the registered annotations mapped to their proxy classes.
+     * Map with the registered annotations mapped to their interface implementation classes.
      */
     private final Map m_registeredAnnotations = new HashMap();
 
@@ -160,6 +168,7 @@ public class AnnotationManager {
         return (Annotation[]) annotations.toArray(new Annotation[]{});
     }
 
+
     /**
      * Instantiate the given annotation based on its name, and initialize it by passing the given value (may be parsed
      * or not, depends on type/untyped)
@@ -167,17 +176,30 @@ public class AnnotationManager {
      * @param rawAnnotation
      * @return
      */
-    private Annotation instantiateAnnotation(RawAnnotation rawAnnotation) {
-        Class proxyClass = (Class) m_registeredAnnotations.get(rawAnnotation.name);
-        Annotation annotation;
-        try {
-            annotation = (Annotation) proxyClass.newInstance();
-        } catch (Exception e) {
-            throw new WrappedRuntimeException(e);
+    private Annotation instantiateAnnotation(final RawAnnotation rawAnnotation) {
+        final Class proxyClass = (Class) m_registeredAnnotations.get(rawAnnotation.name);
+
+        // FIXME migrate those old styled as well
+        if (! proxyClass.isInterface()) {
+            try {
+                Annotation annotation = (Annotation) proxyClass.newInstance();
+                annotation.initialize(rawAnnotation.name, (rawAnnotation.value == null) ? "" : rawAnnotation.value);
+                return annotation;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        annotation.setName(rawAnnotation.name);
-        annotation.initialize(rawAnnotation.name, (rawAnnotation.value == null) ? "" : rawAnnotation.value);
-        return annotation;
+
+        try {
+            InvocationHandler handler = new Java14AnnotationInvocationHander(proxyClass, rawAnnotation.name, rawAnnotation.value);
+            Object annotationProxy = Proxy.newProxyInstance(
+                    proxyClass.getClassLoader(), new Class[]{Annotation.class, proxyClass}, handler
+            );
+            return (Annotation) annotationProxy;
+        } catch (Throwable e) {
+            throw new DefinitionException("Unable to parse annotation @" + rawAnnotation.name +
+                                          " " + rawAnnotation.value, e);
+        }
     }
 
     /**
@@ -192,6 +214,7 @@ public class AnnotationManager {
      */
     private RawAnnotation getRawAnnotation(String annotationName, DocletTag tag) {
         String tagName = tag.getName().trim();
+        boolean untypedStyle = false;
 
         // early filtering
         if (!tagName.startsWith(annotationName)) {
@@ -221,6 +244,7 @@ public class AnnotationManager {
         // character
         String rawValue = null;
         if (tagName.indexOf('(') > 0) {//@Void(), @Do(x = 3), @Do(x=3)
+            untypedStyle = false;
             rawValue = tagName.substring(tagName.indexOf('(') + 1).trim();//), x, x=3)
             tagName = tagName.substring(0, tagName.indexOf('(')).trim();//Void, Do
             if (rawValue.endsWith(")")) {
@@ -230,11 +254,17 @@ public class AnnotationManager {
                     rawValue = null;
                 }
             }
+        } else {
+            untypedStyle = true;
         }
         String rawEndValue = Strings.removeFormattingCharacters(tag.getValue().trim());
         if (rawEndValue.endsWith(")")) {
             if (rawEndValue.length() > 1) {
-                rawEndValue = rawEndValue.substring(0, rawEndValue.length() - 1);
+                if (!untypedStyle) {
+                    rawEndValue = rawEndValue.substring(0, rawEndValue.length() - 1);
+                } else {
+                    ;//rawEndValue unchanged
+                }
             } else {
                 rawEndValue = null;
             }
@@ -251,7 +281,12 @@ public class AnnotationManager {
         if (tagName.equals(annotationName) && m_registeredAnnotations.containsKey(tagName)) {
             RawAnnotation rawAnnotation = new RawAnnotation();
             rawAnnotation.name = annotationName;
-            rawAnnotation.value = raw.toString();
+            rawAnnotation.value = raw.toString().trim();
+            //remove " chars
+            if (rawAnnotation.value.startsWith("\"") && rawAnnotation.value.endsWith("\"")) {
+                rawAnnotation.value = rawAnnotation.value.substring(1, rawAnnotation.value.length()-1);
+            }
+
             return rawAnnotation;
         }
 
@@ -263,7 +298,7 @@ public class AnnotationManager {
      * Raw info about an annotation: Do(foo) ==> Do + foo [unless untyped then ==> Do(foo) + null Do foo  ==> Do + foo
      * etc
      */
-    private static class RawAnnotation {
+    private static class RawAnnotation implements Serializable {
         String name;
         String value;
     }

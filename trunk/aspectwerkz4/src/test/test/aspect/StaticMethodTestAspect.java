@@ -90,7 +90,7 @@ public class StaticMethodTestAspect {
     }
 
     /**
-     * @After finally static_pc1 || static_pc2 || static_pc5 || static_pc8 || static_pc12
+     * @AfterFinally static_pc1 || static_pc2 || static_pc5 || static_pc8 || static_pc12
      */
     public void afterFinally(final JoinPoint joinPoint) throws Throwable {
     }

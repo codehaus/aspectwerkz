@@ -114,7 +114,7 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
         } else {
             String wrapperName = TransformationUtil.getConstructorBodyMethodName(m_declaringTypeName);
             String wrapperDesc = TransformationUtil.getConstructorBodyMethodSignature(desc, m_declaringTypeName);
-            if (m_addedMethods.contains(AlreadyAddedMethodVisitor.getMethodKey(wrapperName, wrapperDesc))) {
+            if (m_addedMethods.contains(AlreadyAddedMethodAdapter.getMethodKey(wrapperName, wrapperDesc))) {
                 return cv.visitMethod(access, name, desc, exceptions, attrs);
             }
 

@@ -120,7 +120,8 @@
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${build.core.dir}"/>
         <javac destdir="${build.core.dir}" debug="on">
-            <src path="${src.dir}/main"/>
+	    <src path="${src.dir}/main"/>
+	    <src path="${src.dir}/jdk14"/>
             <classpath>
                 <path refid="project.class.path"/>
             </classpath>

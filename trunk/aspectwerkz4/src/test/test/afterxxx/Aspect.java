@@ -82,8 +82,7 @@ public class Aspect {
     }
 
     /**
-     * @After returning
-     * aroundFinallyReturning || aroundFinallyReturningThrowing ||
+     * @AfterReturning aroundFinallyReturning || aroundFinallyReturningThrowing ||
      * aroundReturningThrowing || finallyReturning || finallyReturningThrowing ||
      * returningThrowing || aroundReturning || returning
      */
@@ -92,37 +91,35 @@ public class Aspect {
     }
 
     /**
-     * @After returning(java.lang.String)
-     * aroundFinallyReturning || aroundFinallyReturningThrowing ||
+     * @AfterReturning(type="java.lang.String", expression="aroundFinallyReturning || aroundFinallyReturningThrowing ||
      * aroundReturningThrowing || finallyReturning || finallyReturningThrowing ||
-     * returningThrowing || aroundReturning || returning
+     * returningThrowing || aroundReturning || returning")
      */
     public void logAfterReturningString(final StaticJoinPoint joinPoint) throws Throwable {
         Test.log("logAfterReturningString ");
     }
 
     /**
-     * @After throwing(java.lang.RuntimeException)
-     * aroundFinallyReturningThrowing || aroundReturningThrowing ||
-     * finallyReturningThrowing || returningThrowing
+     * @AfterThrowing(type="java.lang.RuntimeException", expression="aroundFinallyReturningThrowing ||
+     * aroundReturningThrowing ||
+     * finallyReturningThrowing || returningThrowing")
      */
     public void logAfterThrowingRTE(final StaticJoinPoint joinPoint) throws Throwable {
         Test.log("logAfterThrowingRTE ");
     }
 
     /**
-     * @After throwing
+     * @AfterThrowing(type="java.lang.IllegalArgumentException", expression="
      * aroundFinallyReturningThrowing || aroundReturningThrowing ||
-     * finallyReturningThrowing || returningThrowing
+     * finallyReturningThrowing || returningThrowing")
      */
     public void logAfterThrowing(final StaticJoinPoint joinPoint) throws Throwable {
         Test.log("logAfterThrowing ");
     }
 
     /**
-     * @After finally
-     * aroundFinally || aroundFinallyReturning || aroundFinallyReturningThrowing ||
-     * _finally || finallyReturningThrowing
+     * @AfterFinally aroundFinally || aroundFinallyReturning || aroundFinallyReturningThrowing ||
+     * _finally || finallyReturning || finallyReturningThrowing
      */
     public void logAfterFinally(final StaticJoinPoint joinPoint) throws Throwable {
         Test.log("logAfterFinally ");

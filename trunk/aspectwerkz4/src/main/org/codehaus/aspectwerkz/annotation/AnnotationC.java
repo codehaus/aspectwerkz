@@ -14,7 +14,6 @@ import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAttributeEnhancer;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -49,6 +48,9 @@ public class AnnotationC {
     public static final String ANNOTATION_AROUND = "Around";
     public static final String ANNOTATION_BEFORE = "Before";
     public static final String ANNOTATION_AFTER = "After";
+    public static final String ANNOTATION_AFTER_FINALLY = "AfterFinally";
+    public static final String ANNOTATION_AFTER_RETURNING = "AfterReturning";
+    public static final String ANNOTATION_AFTER_THROWING = "AfterThrowing";
     public static final String ANNOTATION_EXPRESSION = "Expression";
 
     // TODO change implements to introduce
@@ -65,7 +67,8 @@ public class AnnotationC {
     private static final String COMMAND_LINE_OPTION_DEST = "-dest";
 
     static final String[] SYSTEM_ANNOTATIONS = new String[]{
-        ANNOTATION_ASPECT, ANNOTATION_AROUND, ANNOTATION_BEFORE, ANNOTATION_AFTER,
+        ANNOTATION_ASPECT, ANNOTATION_AROUND, ANNOTATION_BEFORE,
+        ANNOTATION_AFTER, ANNOTATION_AFTER_FINALLY, ANNOTATION_AFTER_RETURNING, ANNOTATION_AFTER_THROWING,
         ANNOTATION_EXPRESSION, ANNOTATION_IMPLEMENTS, ANNOTATION_INTRODUCE
     };
 
@@ -322,17 +325,21 @@ public class AnnotationC {
     private static void parseAspectAnnotations(final JavaClass clazz,
                                                final AnnotationManager manager,
                                                final AttributeEnhancer enhancer) {
-        final Annotation[] annotations = manager.getAnnotations(ANNOTATION_ASPECT, clazz);
+        Annotation[] annotations = manager.getAnnotations(ANNOTATION_ASPECT, clazz);
         for (int i = 0; i < annotations.length; i++) {
             Annotation annotation = annotations[i];
             if (annotation != null) {
-                AspectAnnotationProxy aspectProxy = (AspectAnnotationProxy) annotation;
-                if (aspectProxy.aspectName() == null) {
-                    aspectProxy.setAspectName(clazz.getFullyQualifiedName());
+                enhancer.insertClassAttribute(new AnnotationInfo(ANNOTATION_ASPECT, annotation));
+                String name = ((Aspect) annotation).name();
+                if (name == null) {
+                    name = clazz.getFullyQualifiedName();
                 }
-                enhancer.insertClassAttribute(new AnnotationInfo(ANNOTATION_ASPECT, aspectProxy));
-                logInfo("aspect [" + clazz.getFullyQualifiedName() + ']');
-                logInfo("    deployment model [" + aspectProxy.deploymentModel() + ']');
+                String deploymentModel = ((Aspect)annotation).deploymentModel();
+                if (((Aspect)annotation).value()!=null) {
+                    deploymentModel = ((Aspect)annotation).value();
+                }
+                logInfo("aspect [" + name + ']');
+                logInfo("    deployment model [" + deploymentModel + ']');
             }
         }
     }
@@ -398,60 +405,94 @@ public class AnnotationC {
         Annotation[] expressionAnnotations = manager.getAnnotations(ANNOTATION_EXPRESSION, method);
         for (int i = 0; i < expressionAnnotations.length; i++) {
             Annotation expressionAnnotation = expressionAnnotations[i];
-            if (expressionAnnotation != null) {
-                ExpressionAnnotationProxy expressionProxy = (ExpressionAnnotationProxy) expressionAnnotation;
-                AnnotationC.registerCallParameters(expressionProxy, method);
+            if (expressionAnnotation != null && expressionAnnotation instanceof Expression) {
                 enhancer.insertMethodAttribute(
-                        method, new AnnotationInfo(ANNOTATION_EXPRESSION, expressionProxy)
+                        method, new AnnotationInfo(
+                                ANNOTATION_EXPRESSION,
+                                expressionAnnotation
+                        )
                 );
                 logInfo(
                         "    pointcut [" + AnnotationC.getShortCallSignature(method) + " :: "
-                        + expressionProxy.expression() + ']'
+                        + ((Expression) expressionAnnotation).value() + ']'
                 );
             }
         }
         Annotation[] aroundAnnotations = manager.getAnnotations(ANNOTATION_AROUND, method);
         for (int i = 0; i < aroundAnnotations.length; i++) {
             Annotation aroundAnnotation = aroundAnnotations[i];
-            if (aroundAnnotation != null) {
-                AroundAnnotationProxy aroundProxy = (AroundAnnotationProxy) aroundAnnotation;
-                AnnotationC.registerCallParameters(aroundProxy, method);
+            if (aroundAnnotation != null && aroundAnnotation instanceof Around) {
                 enhancer.insertMethodAttribute(
-                        method, new AnnotationInfo(ANNOTATION_AROUND, aroundProxy)
+                        method, new AnnotationInfo(
+                                ANNOTATION_AROUND,
+                                aroundAnnotation
+                        )
                 );
                 logInfo(
                         "    around advice [" + AnnotationC.getShortCallSignature(method) + " :: "
-                        + aroundProxy.pointcut() + ']'
+                        + ((Around) aroundAnnotation).value() + ']'
                 );
             }
         }
         Annotation[] beforeAnnotations = manager.getAnnotations(ANNOTATION_BEFORE, method);
         for (int i = 0; i < beforeAnnotations.length; i++) {
             Annotation beforeAnnotation = beforeAnnotations[i];
-            if (beforeAnnotation != null) {
-                BeforeAnnotationProxy beforeProxy = (BeforeAnnotationProxy) beforeAnnotation;
-                AnnotationC.registerCallParameters(beforeProxy, method);
+            if (beforeAnnotation != null && beforeAnnotation instanceof Before) {
                 enhancer.insertMethodAttribute(
-                        method, new AnnotationInfo(ANNOTATION_BEFORE, beforeProxy)
+                        method, new AnnotationInfo(
+                                ANNOTATION_BEFORE,
+                                beforeAnnotation
+                        )
                 );
                 logInfo(
                         "    before [" + AnnotationC.getShortCallSignature(method) + " :: "
-                        + beforeProxy.pointcut() + ']'
+                        + ((Before) beforeAnnotation).value() + ']'
                 );
             }
         }
         Annotation[] afterAnnotations = manager.getAnnotations(ANNOTATION_AFTER, method);
         for (int i = 0; i < afterAnnotations.length; i++) {
             Annotation afterAnnotation = afterAnnotations[i];
-            if (afterAnnotation != null) {
-                AfterAnnotationProxy afterProxy = (AfterAnnotationProxy) afterAnnotation;
-                AnnotationC.registerCallParameters(afterProxy, method);
-                enhancer.insertMethodAttribute(
-                        method, new AnnotationInfo(ANNOTATION_AFTER, afterProxy)
-                );
+            if (afterAnnotation != null && afterAnnotation instanceof After) {
+                enhancer.insertMethodAttribute(method, new AnnotationInfo(ANNOTATION_AFTER, afterAnnotation));
                 logInfo(
                         "    after advice [" + AnnotationC.getShortCallSignature(method) + " :: "
-                        + afterProxy.pointcut() + ']'
+                        + ((After) afterAnnotation).value() + ']'
+                );
+            }
+        }
+        Annotation[] afterFinallyAnnotations = manager.getAnnotations(ANNOTATION_AFTER_FINALLY, method);
+        for (int i = 0; i < afterFinallyAnnotations.length; i++) {
+            Annotation afterAnnotation = afterFinallyAnnotations[i];
+            if (afterAnnotation != null && afterAnnotation instanceof AfterFinally) {
+                enhancer.insertMethodAttribute(method, new AnnotationInfo(ANNOTATION_AFTER_FINALLY, afterAnnotation));
+                logInfo(
+                        "    after finally advice [" + AnnotationC.getShortCallSignature(method) + " :: "
+                        + ((AfterFinally) afterAnnotation).value() + ']'
+                );
+            }
+        }
+        Annotation[] afterReturningAnnotations = manager.getAnnotations(ANNOTATION_AFTER_RETURNING, method);
+        for (int i = 0; i < afterReturningAnnotations.length; i++) {
+            Annotation afterAnnotation = afterReturningAnnotations[i];
+            if (afterAnnotation != null && afterAnnotation instanceof AfterReturning) {
+                enhancer.insertMethodAttribute(method, new AnnotationInfo(ANNOTATION_AFTER_RETURNING, afterAnnotation));
+                logInfo(
+                        "    after returning advice [" + AnnotationC.getShortCallSignature(method) + " :: "
+                        + ((AfterReturning) afterAnnotation).value()
+                        + " :: " + ((AfterReturning) afterAnnotation).type()+ ']'
+                );
+            }
+        }
+        Annotation[] afterThrowingAnnotations = manager.getAnnotations(ANNOTATION_AFTER_THROWING, method);
+        for (int i = 0; i < afterThrowingAnnotations.length; i++) {
+            Annotation afterAnnotation = afterThrowingAnnotations[i];
+            if (afterAnnotation != null && afterAnnotation instanceof AfterThrowing) {
+                enhancer.insertMethodAttribute(method, new AnnotationInfo(ANNOTATION_AFTER_THROWING, afterAnnotation));
+                logInfo(
+                        "    after throwing advice [" + AnnotationC.getShortCallSignature(method) + " :: "
+                        + ((AfterThrowing) afterAnnotation).value()
+                        + " :: " + ((AfterThrowing) afterAnnotation).type()+ ']'
                 );
             }
         }
@@ -484,43 +525,6 @@ public class AnnotationC {
     private static void handleConstructorAnnotations(final AnnotationManager manager,
                                                      final AttributeEnhancer enhancer,
                                                      final JavaMethod constructor) {
-
-        Annotation[] aroundAnnotations = manager.getAnnotations(ANNOTATION_AROUND, constructor);
-        for (int i = 0; i < aroundAnnotations.length; i++) {
-            Annotation aroundAnnotation = aroundAnnotations[i];
-            if (aroundAnnotation != null) {
-                AroundAnnotationProxy aroundProxy = (AroundAnnotationProxy) aroundAnnotation;
-                enhancer.insertConstructorAttribute(constructor, new AnnotationInfo(ANNOTATION_AROUND, aroundProxy));
-                logInfo(
-                        "    around advice [" + constructor.getName() + " :: "
-                        + aroundProxy.pointcut() + ']'
-                );
-            }
-        }
-        Annotation[] beforeAnnotations = manager.getAnnotations(ANNOTATION_BEFORE, constructor);
-        for (int i = 0; i < beforeAnnotations.length; i++) {
-            Annotation beforeAnnotation = beforeAnnotations[i];
-            if (beforeAnnotation != null) {
-                BeforeAnnotationProxy beforeProxy = (BeforeAnnotationProxy) beforeAnnotation;
-                enhancer.insertConstructorAttribute(constructor, new AnnotationInfo(ANNOTATION_BEFORE, beforeProxy));
-                logInfo(
-                        "    before [" + constructor.getName() + " :: " + beforeProxy.pointcut()
-                        + ']'
-                );
-            }
-        }
-        Annotation[] afterAnnotations = manager.getAnnotations(ANNOTATION_AFTER, constructor);
-        for (int i = 0; i < afterAnnotations.length; i++) {
-            Annotation afterAnnotation = afterAnnotations[i];
-            if (afterAnnotation != null) {
-                AfterAnnotationProxy afterProxy = (AfterAnnotationProxy) afterAnnotation;
-                enhancer.insertConstructorAttribute(constructor, new AnnotationInfo(ANNOTATION_AFTER, afterProxy));
-                logInfo(
-                        "    after advice [" + constructor.getName() + " :: "
-                        + afterProxy.pointcut() + ']'
-                );
-            }
-        }
         for (Iterator it = s_customAnnotations.keySet().iterator(); it.hasNext();) {
             String annotationName = (String) it.next();
             Annotation[] customAnnotations = manager.getAnnotations(annotationName, constructor);
@@ -555,16 +559,15 @@ public class AnnotationC {
         Annotation[] expressionAnnotations = manager.getAnnotations(ANNOTATION_EXPRESSION, field);
         for (int i = 0; i < expressionAnnotations.length; i++) {
             Annotation expressionAnnotation = expressionAnnotations[i];
-            if (expressionAnnotation != null) {
-                ExpressionAnnotationProxy expressionProxy = (ExpressionAnnotationProxy) expressionAnnotation;
+            if (expressionAnnotation != null && expressionAnnotation instanceof Expression) {
                 enhancer.insertFieldAttribute(
                         field, new AnnotationInfo(
                                 ANNOTATION_EXPRESSION,
-                                expressionProxy
+                                expressionAnnotation
                         )
                 );
                 logInfo(
-                        "    pointcut [" + field.getName() + " :: " + expressionProxy.expression()
+                        "    pointcut [" + field.getName() + " :: " + ((Expression) expressionAnnotation).value()
                         + ']'
                 );
             }
@@ -629,11 +632,15 @@ public class AnnotationC {
      * @param manager the annotations manager
      */
     private static void registerSystemAnnotations(final AnnotationManager manager) {
-        manager.registerAnnotationProxy(AspectAnnotationProxy.class, ANNOTATION_ASPECT);
-        manager.registerAnnotationProxy(AroundAnnotationProxy.class, ANNOTATION_AROUND);
-        manager.registerAnnotationProxy(BeforeAnnotationProxy.class, ANNOTATION_BEFORE);
-        manager.registerAnnotationProxy(AfterAnnotationProxy.class, ANNOTATION_AFTER);
-        manager.registerAnnotationProxy(ExpressionAnnotationProxy.class, ANNOTATION_EXPRESSION);
+        manager.registerAnnotationProxy(Aspect.class, ANNOTATION_ASPECT);
+        manager.registerAnnotationProxy(Around.class, ANNOTATION_AROUND);
+        manager.registerAnnotationProxy(Before.class, ANNOTATION_BEFORE);
+        manager.registerAnnotationProxy(After.class, ANNOTATION_AFTER);
+        manager.registerAnnotationProxy(AfterReturning.class, ANNOTATION_AFTER_RETURNING);
+        manager.registerAnnotationProxy(AfterThrowing.class, ANNOTATION_AFTER_THROWING);
+        manager.registerAnnotationProxy(AfterFinally.class, ANNOTATION_AFTER_FINALLY);
+        manager.registerAnnotationProxy(Expression.class, ANNOTATION_EXPRESSION);
+        //FIXME change those ones as well
         manager.registerAnnotationProxy(ImplementsAnnotationProxy.class, ANNOTATION_IMPLEMENTS);
         manager.registerAnnotationProxy(IntroduceAnnotationProxy.class, ANNOTATION_INTRODUCE);
     }
@@ -679,8 +686,8 @@ public class AnnotationC {
                     klass = s_loader.loadClass(className);
                 } catch (ClassNotFoundException e) {
                     String message = className
-                                     +
-                                     " could not be found on system classpath or class path provided as argument to the compiler";
+                            +
+                            " could not be found on system classpath or class path provided as argument to the compiler";
                     logError(message);
                     throw new DefinitionException(message);
                 }
@@ -780,6 +787,12 @@ public class AnnotationC {
         }
     }
 
+    /**
+     * Helper method to get a pretty printable method signature (no FQN class names)
+     *
+     * @param method
+     * @return
+     */
     private static String getShortCallSignature(final JavaMethod method) {
         StringBuffer buffer = new StringBuffer(method.getName());
         buffer.append("(");
@@ -800,13 +813,6 @@ public class AnnotationC {
         }
         buffer.append(")");
         return buffer.toString();
-    }
-
-    private static void registerCallParameters(final ParameterizedAnnotationProxy proxy, final JavaMethod method) {
-        for (int j = 0; j < method.getParameters().length; j++) {
-            JavaParameter javaParameter = method.getParameters()[j];
-            proxy.addArgument(javaParameter.getName(), javaParameter.getType().toString());
-        }
     }
 
     private static String[] split(String str, String sep) {

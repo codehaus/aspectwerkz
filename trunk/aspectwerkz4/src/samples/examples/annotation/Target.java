@@ -23,7 +23,7 @@ public class Target {
     }
 
     /**
-     * @examples.annotation.AnnotationA
+     * @examples.annotation.AnnotationA(some)
      * @examples.annotation.AnnotationB
      */
     public void targetAB() {

@@ -17,6 +17,9 @@ import java.io.Serializable;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class UntypedAnnotationProxy implements Annotation, Serializable {
+
+    public Class annotationType() {return null;}
+
     /**
      * The full value of the annotation.
      */

@@ -17,6 +17,8 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
+import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.aspect.AdviceType;
 
 import java.util.Iterator;
 import java.util.List;
@@ -66,21 +68,32 @@ public class AspectAnnotationParser {
             throw new IllegalArgumentException("class to parse can not be null");
         }
 
-        AspectAnnotationProxy aspectAnnotation = (AspectAnnotationProxy) AsmAnnotations.getAnnotation(
+        Aspect aspectAnnotation = (Aspect) AsmAnnotations.getAnnotation(
                 AnnotationC.ANNOTATION_ASPECT,
                 classInfo
         );
-        if (aspectAnnotation == null) {
-            // fall back on using the class name as aspect name and let the deployment model be
-            // perJVM
-            aspectAnnotation = new AspectAnnotationProxy();
-            aspectAnnotation.setAspectName(classInfo.getName());
+        //TODO review 1.5 annotation - depl model should be an ENUM or an int CONST (for 1.4 compat)
+        String aspectName = classInfo.getName();
+        String deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_JVM);;
+        if (aspectAnnotation != null) {
+            if (aspectAnnotation.value() != null) {
+                //@Aspect(perJVM)
+                deploymentModel = aspectAnnotation.value();
+            } else {
+                if (aspectAnnotation.name() != null) {
+                    //@Aspect(name=..)
+                    aspectName = aspectAnnotation.name();
+                }
+                if (aspectAnnotation.deploymentModel() != null) {
+                    //@Aspect(deploymentModel=..)
+                    deploymentModel = aspectAnnotation.deploymentModel();
+                }
+            }
         }
 
         // attribute settings override the xml settings
-        aspectDef.setDeploymentModel(aspectAnnotation.deploymentModel());
+        aspectDef.setDeploymentModel(deploymentModel);
         String className = classInfo.getName();
-        String aspectName = aspectAnnotation.aspectName();
         parseFieldAttributes(classInfo, aspectDef);
         parseMethodAttributes(classInfo, className, aspectName, aspectDef);
     }
@@ -111,13 +124,13 @@ public class AspectAnnotationParser {
                     if (field.getType().getName().equals(DeploymentScope.class.getName())) {
                         DefinitionParserHelper.createAndAddDeploymentScopeDef(
                                 field.getName(),
-                                ((ExpressionAnnotationProxy) annotationInfo.getAnnotation()).expression(),
+                                ((Expression) annotationInfo.getAnnotation()).value(),
                                 aspectDef.getSystemDefinition()
                         );
                     } else {
                         DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
                                 field.getName(),
-                                ((ExpressionAnnotationProxy) annotationInfo.getAnnotation()).expression(),
+                                ((Expression) annotationInfo.getAnnotation()).value(),
                                 aspectDef
                         );
                     }
@@ -194,12 +207,11 @@ public class AspectAnnotationParser {
             // Pointcut with signature
             List expressionAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_EXPRESSION, method);
             for (Iterator iterator = expressionAnnotations.iterator(); iterator.hasNext();) {
-                ExpressionAnnotationProxy annotation = (ExpressionAnnotationProxy) iterator.next();
+                Expression annotation = (Expression) iterator.next();
                 if (annotation != null) {
-
                     DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                            AspectAnnotationParser.getMethodPointcutCallSignature(method.getName(), annotation),
-                            annotation.expression(), aspectDef
+                            getAdviceNameAsInSource(method),
+                            annotation.value(), aspectDef
                     );
                 }
             }
@@ -220,16 +232,12 @@ public class AspectAnnotationParser {
                                        final AspectDefinition aspectDef) {
         List aroundAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_AROUND, method);
         for (Iterator iterator = aroundAnnotations.iterator(); iterator.hasNext();) {
-            AroundAnnotationProxy aroundAnnotation = (AroundAnnotationProxy) iterator.next();
+            Around aroundAnnotation = (Around) iterator.next();
             if (aroundAnnotation != null) {
-                final String expression = aroundAnnotation.pointcut();
-                final String adviceName = AspectAnnotationParser.getMethodPointcutCallSignature(
-                        method.getName(), aroundAnnotation
-                );
                 AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
-                        adviceName,
-                        aroundAnnotation.getType(),
-                        expression,
+                        getAdviceNameAsInSource(method),
+                        AdviceType.AROUND,
+                        aroundAnnotation.value(),
                         null,
                         aspectName,
                         aspectClassName,
@@ -255,16 +263,12 @@ public class AspectAnnotationParser {
                                        final AspectDefinition aspectDef) {
         List beforeAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_BEFORE, method);
         for (Iterator iterator = beforeAnnotations.iterator(); iterator.hasNext();) {
-            BeforeAnnotationProxy beforeAnnotation = (BeforeAnnotationProxy) iterator.next();
+            Before beforeAnnotation = (Before) iterator.next();
             if (beforeAnnotation != null) {
-                final String expression = beforeAnnotation.pointcut();
-                final String adviceName = AspectAnnotationParser.getMethodPointcutCallSignature(
-                        method.getName(), beforeAnnotation
-                );
                 AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
-                        adviceName,
-                        beforeAnnotation.getType(),
-                        expression,
+                        getAdviceNameAsInSource(method),
+                        AdviceType.BEFORE,
+                        beforeAnnotation.value(),
                         null,
                         aspectName,
                         aspectClassName,
@@ -290,17 +294,64 @@ public class AspectAnnotationParser {
                                       final AspectDefinition aspectDef) {
         List afterAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_AFTER, method);
         for (Iterator iterator = afterAnnotations.iterator(); iterator.hasNext();) {
-            AfterAnnotationProxy afterAnnotation = (AfterAnnotationProxy) iterator.next();
-            if (afterAnnotation != null) {
-                final String expression = afterAnnotation.pointcut();
-                final String adviceName = AspectAnnotationParser.getMethodPointcutCallSignature(
-                        method.getName(), afterAnnotation
-                );
+            After annotation = (After) iterator.next();
+            if (annotation != null) {
                 AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
-                        adviceName,
-                        afterAnnotation.getType(),
-                        expression,
-                        afterAnnotation.getSpecialArgumentType(),
+                        getAdviceNameAsInSource(method),
+                        AdviceType.AFTER,
+                        annotation.value(),
+                        null,
+                        aspectName,
+                        aspectClassName,
+                        method,
+                        aspectDef
+                );
+                aspectDef.addAfterAdviceDefinition(adviceDef);
+            }
+        }
+        afterAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_AFTER_RETURNING, method);
+        for (Iterator iterator = afterAnnotations.iterator(); iterator.hasNext();) {
+            AfterReturning annotation = (AfterReturning) iterator.next();
+            if (annotation != null) {
+                AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
+                        getAdviceNameAsInSource(method),
+                        AdviceType.AFTER_RETURNING,
+                        getAfterXXExpression(annotation.value(), annotation.expression(), annotation.type()),
+                        annotation.type(),
+                        aspectName,
+                        aspectClassName,
+                        method,
+                        aspectDef
+                );
+                aspectDef.addAfterAdviceDefinition(adviceDef);
+            }
+        }
+        afterAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_AFTER_THROWING, method);
+        for (Iterator iterator = afterAnnotations.iterator(); iterator.hasNext();) {
+            AfterThrowing annotation = (AfterThrowing) iterator.next();
+            if (annotation != null) {
+                AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
+                        getAdviceNameAsInSource(method),
+                        AdviceType.AFTER_THROWING,
+                        getAfterXXExpression(annotation.value(), annotation.expression(), annotation.type()),
+                        annotation.type(),
+                        aspectName,
+                        aspectClassName,
+                        method,
+                        aspectDef
+                );
+                aspectDef.addAfterAdviceDefinition(adviceDef);
+            }
+        }
+        afterAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_AFTER_FINALLY, method);
+        for (Iterator iterator = afterAnnotations.iterator(); iterator.hasNext();) {
+            AfterFinally annotation = (AfterFinally) iterator.next();
+            if (annotation != null) {
+                AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
+                        getAdviceNameAsInSource(method),
+                        AdviceType.AFTER_FINALLY,
+                        annotation.value(),
+                        null,
                         aspectName,
                         aspectClassName,
                         method,
@@ -315,24 +366,49 @@ public class AspectAnnotationParser {
      * Returns the call signature of a Pointcut or advice with signature methodName(paramType paramName, ...) [we ignore
      * the return type] If there is no parameters, the call signature is not "name()" but just "name"
      *
-     * @param methodName
-     * @return annotationProxy that contains the ordered map of call parameters
+     * @param methodInfo
+     * @return string representation (see javavadoc)
      */
-    private static String getMethodPointcutCallSignature(final String methodName,
-                                                         final ParameterizedAnnotationProxy annotationProxy) {
-        StringBuffer buffer = new StringBuffer(methodName);
-        if (annotationProxy.getArgumentNames().size() > 0) {
+    private static String getAdviceNameAsInSource(final MethodInfo methodInfo) {
+        StringBuffer buffer = new StringBuffer(methodInfo.getName());
+        if (methodInfo.getParameterNames() == null
+            || methodInfo.getParameterNames().length != methodInfo.getParameterTypes().length
+            || (methodInfo.getParameterNames().length > 0 && methodInfo.getParameterNames()[0] == null)) {
+            throw new DefinitionException("Could not access source information for method " + methodInfo.getDeclaringType().getName()+"."+methodInfo.getName()+methodInfo.getSignature() + ". Compile aspects with javac -g.");
+        }
+        if (methodInfo.getParameterNames().length > 0) {
             buffer.append('(');
-            for (Iterator it = annotationProxy.getArgumentNames().iterator(); it.hasNext();) {
-                String parameter = (String) it.next();
-                buffer.append(annotationProxy.getArgumentType(parameter));
-                buffer.append(' ').append(parameter);
-                if (it.hasNext()) {
+            for (int i = 0; i < methodInfo.getParameterNames().length; i++) {
+                if (i > 0) {
                     buffer.append(", ");
                 }
+                String parameterName = methodInfo.getParameterNames()[i];
+                buffer.append(methodInfo.getParameterTypes()[i].getName());
+                buffer.append(' ').append(parameterName);
             }
             buffer.append(')');
         }
         return buffer.toString();
+    }
+
+    /**
+     * Handles specific syntax for @AfterXXX annotation, where we can write it using the default "value" element
+     * or instead specify the pointcut using "expression", and optionally a "type" element.
+     *
+     * @param value
+     * @param expression
+     * @param type
+     * @return the one of value or expression which is not null. Both cannot be specified at the same time
+     */
+    private static String getAfterXXExpression(String value, String expression, String type) {
+        if (value != null && expression != null) {
+            throw new DefinitionException("Using @AfterXX with both value and expression elements");
+        } else {
+            if (value != null) {
+                return value;
+            } else {
+                return expression;
+            }
+        }
     }
 }

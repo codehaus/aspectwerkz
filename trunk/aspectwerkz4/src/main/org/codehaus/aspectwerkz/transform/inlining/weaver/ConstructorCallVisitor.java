@@ -403,7 +403,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
     }
 
     public static class LookaheadNewDupInvokeSpecialInstructionClassAdapter
-            extends AsmAnnotationHelper.NullClassVisitor {
+            extends AsmAnnotationHelper.NullClassAdapter {
 
         // list of new invocations by caller member hash
         public TLongObjectHashMap m_newInvocationsByCallerMemberHash;
@@ -430,7 +430,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
         }
     }
 
-    public static class LookaheadNewDupInvokeSpecialInstructionCodeAdapter extends AsmAnnotationHelper.NullCodeVisitor {
+    public static class LookaheadNewDupInvokeSpecialInstructionCodeAdapter extends AsmAnnotationHelper.NullCodeAdapter {
 
         private TIntObjectHashMap m_newInvocations;
 

@@ -131,7 +131,7 @@ public class FieldWrapperVisitor extends ClassAdapter implements TransformationC
         signature.append(')');
         signature.append('V');
 
-        if (m_addedMethods.contains(AlreadyAddedMethodVisitor.getMethodKey(wrapperName, signature.toString()))) {
+        if (m_addedMethods.contains(AlreadyAddedMethodAdapter.getMethodKey(wrapperName, signature.toString()))) {
             return;
         }
 
@@ -182,7 +182,7 @@ public class FieldWrapperVisitor extends ClassAdapter implements TransformationC
         signature.append(')');
         signature.append(desc);
 
-        if (m_addedMethods.contains(AlreadyAddedMethodVisitor.getMethodKey(wrapperName, signature.toString()))) {
+        if (m_addedMethods.contains(AlreadyAddedMethodAdapter.getMethodKey(wrapperName, signature.toString()))) {
             return;
         }
 

@@ -58,4 +58,5 @@ public class AspectAnnotationProxy extends UntypedAnnotationProxy {
             m_deploymentModel = tmp.trim();
         }
     }
+
 }
