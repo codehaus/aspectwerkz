@@ -63,8 +63,7 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * After returning(java.lang.String) methodsToLog
-     * @After returning(int[][]) methodsToLog
+     * @After returning(java.lang.String) methodsToLog
      */
     public void logAfterReturning(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
@@ -77,7 +76,7 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * After throwing(java.lang.RuntimeException) methodsToLog
+     * @After throwing(java.lang.RuntimeException) methodsToLog
      */
     public void logAfterThrowing(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
@@ -90,7 +89,7 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * After finally methodsToLog
+     * @After finally methodsToLog
      */
     public void logAfterFinally(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
