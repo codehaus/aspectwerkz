@@ -76,7 +76,10 @@ public class Target {
         run();
         try {
             // load the class in a brand new loader and try to deploy it
-            URLClassLoader loader = new URLClassLoader(new URL[]{new File("./build/").toURL()}, null);
+            URLClassLoader loader = new URLClassLoader(
+                    new URL[]{new File("./target/samples-classes/").toURL()},
+                    null
+            );
             Class clazz = loader.loadClass("examples.logging.LoggingAspect");
 
             for (int i = 0; i < 5; i++) {
