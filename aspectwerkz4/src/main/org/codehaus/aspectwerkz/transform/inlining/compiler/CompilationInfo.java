@@ -83,9 +83,9 @@ public final class CompilationInfo {
     }
 
     /**
-     * TODO document
+     * Represents the information needed to compile one joinpoint at a given time
      *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
     public final static class Model {
         private final String m_joinPointClassName;
@@ -129,6 +129,10 @@ public final class CompilationInfo {
             return m_adviceInfoContainer;
         }
 
+        /**
+         * JoinPoint target class class info (callee)
+         * @return
+         */
         public ClassInfo getThisClassInfo() {
             return m_thisClassInfo;
         }

@@ -1,6 +1,6 @@
 /*
- * $Id: AspectWerkzCTask.java,v 1.4 2004-11-05 10:08:36 avasseur Exp $
- * $Date: 2004-11-05 10:08:36 $
+ * $Id: AspectWerkzCTask.java,v 1.5 2005-01-07 12:09:09 avasseur Exp $
+ * $Date: 2005-01-07 12:09:09 $
  */
 package org.codehaus.aspectwerkz.compiler;
 
@@ -58,6 +58,7 @@ public class AspectWerkzCTask extends Task {
     private static final String AW_DEFINITION_FILE = "aspectwerkz.definition.file";
 
     private boolean m_verbose;
+    private boolean m_keepjp;
     private boolean m_taskVerbose = false;
     private String m_aspectModels;
     private File m_backupdir;
@@ -82,6 +83,14 @@ public class AspectWerkzCTask extends Task {
      */
     public void setVerbose(boolean verbose) {
         m_verbose = verbose;
+    }
+
+    /**
+     * keepjp=..
+     * @param keepjp
+     */
+    public void setKeepjp(boolean keepjp) {
+        m_keepjp = keepjp;
     }
 
     /**
@@ -182,6 +191,7 @@ public class AspectWerkzCTask extends Task {
 
             compiler.setHaltOnError(true);
             compiler.setVerbose(m_taskVerbose);
+            compiler.setKeepJp(m_keepjp);
             compiler.setVerify(false);
 
             if (m_definitionFile != null) {

@@ -115,204 +115,116 @@ public class JoinPointManager {
             return;
         }
 
-        ClassInfo calleeClassInfo = JavaClassInfo.getClassInfo(calleeClass);
-        ReflectionInfo reflectionInfo = null;
+        final CompiledJoinPoint compiledJoinPoint = compileJoinPoint(
+                joinPointType,
+                callerClass,
+                callerMethodName,
+                callerMethodDesc,
+                callerMethodModifiers,
+                calleeClassName,
+                calleeMemberName,
+                calleeMemberDesc,
+                calleeMemberModifiers,
+                joinPointHash,
+                joinPointClassName,
+                calleeClass
+        );
 
-        switch (joinPointType) {
-        	case JoinPointType.STATIC_INITIALIZATION_INT:
-        		reflectionInfo = calleeClassInfo.staticInitializer();
-        		doLoadJoinPoint(
-        				joinPointClassName,
-        				JoinPointType.STATIC_INITIALIZATION_INT,
-        				PointcutType.STATIC_INITIALIZATION,
-        				callerClass,
-        				callerMethodName,
-        				callerMethodDesc,
-        				callerMethodModifiers,
-        				calleeClass,
-        				calleeMemberName, // <clinit>
-        				calleeMemberDesc,
-        				calleeMemberModifiers,
-        				joinPointHash,
-        				reflectionInfo,
-        				calleeClassInfo
-        		);
-        		break;
-        		
-            case JoinPointType.METHOD_EXECUTION_INT:
-                reflectionInfo = calleeClassInfo.getMethod(joinPointHash);
-                doLoadJoinPoint(
-                        joinPointClassName,
-                        JoinPointType.METHOD_EXECUTION_INT,
-                        PointcutType.EXECUTION,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMethodModifiers,
-                        calleeClass,
-                        calleeMemberName,
-                        calleeMemberDesc,
-                        calleeMemberModifiers,
-                        joinPointHash,
-                        reflectionInfo,
-                        calleeClassInfo
-                );
-                break;
-
-            case JoinPointType.METHOD_CALL_INT:
-                reflectionInfo = calleeClassInfo.getMethod(joinPointHash);
-                doLoadJoinPoint(
-                        joinPointClassName,
-                        JoinPointType.METHOD_CALL_INT,
-                        PointcutType.CALL,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMethodModifiers,
-                        calleeClass,
-                        calleeMemberName,
-                        calleeMemberDesc,
-                        calleeMemberModifiers,
-                        joinPointHash,
-                        reflectionInfo,
-                        calleeClassInfo
-                );
-                break;
-            case JoinPointType.FIELD_GET_INT:
-                reflectionInfo = calleeClassInfo.getField(joinPointHash);
-                doLoadJoinPoint(
-                        joinPointClassName,
-                        JoinPointType.FIELD_GET_INT,
-                        PointcutType.GET,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMethodModifiers,
-                        calleeClass,
-                        calleeMemberName,
-                        calleeMemberDesc,
-                        calleeMemberModifiers,
-                        joinPointHash,
-                        reflectionInfo,
-                        calleeClassInfo
-                );
-                break;
-
-            case JoinPointType.FIELD_SET_INT:
-                reflectionInfo = calleeClassInfo.getField(joinPointHash);
-                doLoadJoinPoint(
-                        joinPointClassName,
-                        JoinPointType.FIELD_SET_INT,
-                        PointcutType.SET,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMethodModifiers,
-                        calleeClass,
-                        calleeMemberName,
-                        calleeMemberDesc,
-                        calleeMemberModifiers,
-                        joinPointHash,
-                        reflectionInfo,
-                        calleeClassInfo
-                );
-                break;
-
-            case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
-                reflectionInfo = calleeClassInfo.getConstructor(joinPointHash);
-                doLoadJoinPoint(
-                        joinPointClassName,
-                        JoinPointType.CONSTRUCTOR_EXECUTION_INT,
-                        PointcutType.EXECUTION,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMethodModifiers,
-                        calleeClass,
-                        calleeMemberName,
-                        calleeMemberDesc,
-                        calleeMemberModifiers,
-                        joinPointHash,
-                        reflectionInfo,
-                        calleeClassInfo
-                );
-                break;
-
-            case JoinPointType.CONSTRUCTOR_CALL_INT:
-                reflectionInfo = calleeClassInfo.getConstructor(joinPointHash);
-                doLoadJoinPoint(
-                        joinPointClassName,
-                        JoinPointType.CONSTRUCTOR_CALL_INT,
-                        PointcutType.CALL,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMethodModifiers,
-                        calleeClass,
-                        calleeMemberName,
-                        calleeMemberDesc,
-                        calleeMemberModifiers,
-                        joinPointHash,
-                        reflectionInfo,
-                        calleeClassInfo
-                );
-                break;
-
-            case JoinPointType.HANDLER_INT:
-                reflectionInfo = calleeClassInfo;
-                doLoadJoinPoint(
-                        joinPointClassName,
-                        JoinPointType.HANDLER_INT,
-                        PointcutType.HANDLER,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMethodModifiers,
-                        calleeClass,
-                        calleeMemberName,
-                        calleeMemberDesc,
-                        calleeMemberModifiers,
-                        joinPointHash,
-                        reflectionInfo,
-                        calleeClassInfo
-                );
-                break;
-        }
+        Class jpClass = JoinPointFactory.attachToClassLoader(
+                joinPointClassName, classLoader, compiledJoinPoint.bytecode
+        );
+        JoinPointFactory.addCompilationInfo(jpClass, compiledJoinPoint.compilationInfo);
     }
 
     /**
-     * Loads the join point.
+     * Compile a new joinpoint
      *
-     * @param joinPointClassName
      * @param joinPointType
-     * @param pointcutType
      * @param callerClass
      * @param callerMethodName
      * @param callerMethodDesc
      * @param callerMethodModifiers
-     * @param calleeClass
+     * @param calleeClassName
      * @param calleeMemberName
      * @param calleeMemberDesc
      * @param calleeMemberModifiers
      * @param joinPointHash
-     * @param reflectionInfo
-     * @param thisClassInfo
+     * @param joinPointClassName
+     * @param calleeClass
+     * @return
      */
-    private static void doLoadJoinPoint(final String joinPointClassName,
-                                        final int joinPointType,
-                                        final PointcutType pointcutType,
-                                        final Class callerClass,
-                                        final String callerMethodName,
-                                        final String callerMethodDesc,
-                                        final int callerMethodModifiers,
-                                        final Class calleeClass,
-                                        final String calleeMemberName,
-                                        final String calleeMemberDesc,
-                                        final int calleeMemberModifiers,
-                                        final int joinPointHash,
-                                        final ReflectionInfo reflectionInfo,
-                                        final ClassInfo thisClassInfo) {
+    public static CompiledJoinPoint compileJoinPoint(final int joinPointType,
+                                                      final Class callerClass,
+                                                      final String callerMethodName,
+                                                      final String callerMethodDesc,
+                                                      final int callerMethodModifiers,
+                                                      final String calleeClassName,
+                                                      final String calleeMemberName,
+                                                      final String calleeMemberDesc,
+                                                      final int calleeMemberModifiers,
+                                                      final int joinPointHash,
+                                                      final String joinPointClassName,
+                                                      final Class calleeClass) {
 
+        ClassInfo calleeClassInfo = JavaClassInfo.getClassInfo(calleeClass);
+
+        // create the callee info
+        final ReflectionInfo reflectionInfo;
+        final PointcutType pointcutType;
+        switch (joinPointType) {
+            case JoinPointType.STATIC_INITIALIZATION_INT:
+                reflectionInfo = calleeClassInfo.staticInitializer();
+                pointcutType = PointcutType.STATIC_INITIALIZATION;
+                break;
+            case JoinPointType.METHOD_EXECUTION_INT:
+                reflectionInfo = calleeClassInfo.getMethod(joinPointHash);
+                pointcutType = PointcutType.EXECUTION;
+                break;
+            case JoinPointType.METHOD_CALL_INT:
+                reflectionInfo = calleeClassInfo.getMethod(joinPointHash);
+                pointcutType = PointcutType.CALL;
+                break;
+            case JoinPointType.FIELD_GET_INT:
+                reflectionInfo = calleeClassInfo.getField(joinPointHash);
+                pointcutType = PointcutType.GET;
+                break;
+            case JoinPointType.FIELD_SET_INT:
+                reflectionInfo = calleeClassInfo.getField(joinPointHash);
+                pointcutType = PointcutType.SET;
+                break;
+            case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
+                reflectionInfo = calleeClassInfo.getConstructor(joinPointHash);
+                pointcutType = PointcutType.EXECUTION;
+                break;
+            case JoinPointType.CONSTRUCTOR_CALL_INT:
+                reflectionInfo = calleeClassInfo.getConstructor(joinPointHash);
+                pointcutType = PointcutType.CALL;
+                break;
+            case JoinPointType.HANDLER_INT:
+                reflectionInfo = calleeClassInfo;
+                pointcutType = PointcutType.HANDLER;
+                break;
+            default:
+                throw new RuntimeException("Joinpoint type not supported: " + joinPointType);
+        }
+
+        // create the caller info
+        final ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(callerClass);
+        final ReflectionInfo withinInfo;
+        if (TransformationConstants.CLINIT_METHOD_NAME.equals(callerMethodName)) {
+            withinInfo = callerClassInfo.staticInitializer();
+        } else if (TransformationConstants.INIT_METHOD_NAME.equals(callerMethodName)) {
+            withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(callerMethodDesc));
+        } else {
+            withinInfo =
+                    callerClassInfo.getMethod(AsmHelper.calculateMethodHash(callerMethodName, callerMethodDesc));
+        }
+
+        // get the compilation model
+        final ExpressionContext ctx = new ExpressionContext(pointcutType, reflectionInfo, withinInfo);
+        final AdviceInfoContainer adviceContainer = getAdviceInfoContainerForJoinPoint(
+                ctx, callerClass.getClassLoader()
+        );
         final EmittedJoinPoint emittedJoinPoint = new EmittedJoinPoint(
                 joinPointType,
                 callerClass.getName(),
@@ -327,49 +239,28 @@ public class JoinPointManager {
                 joinPointClassName,
                 EmittedJoinPoint.NO_LINE_NUMBER
         );
-
-        final ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(callerClass);
-        final ReflectionInfo withinInfo;// = null;
-
-        // FIXME: refactor getMethodInfo in INFO so that we can apply it on "<init>" and that it delegates to ctor
-        // instead of checking things here.
-//        switch (joinPointType) {
-//        	case JoinPointType.STATIC_INITIALIZATION_INT:
-//        	    withinInfo = callerClassInfo;
-//        	    break;
-//            case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
-//                withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(callerMethodDesc));
-//                break;
-//            default:
-            	if(TransformationConstants.CLINIT_METHOD_NAME.equals(callerMethodName)) {
-            		withinInfo = callerClassInfo.staticInitializer();
-            	} else if (TransformationConstants.INIT_METHOD_NAME.equals(callerMethodName)) {
-                    withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(callerMethodDesc));
-                } else {
-                    withinInfo =
-                    callerClassInfo.getMethod(AsmHelper.calculateMethodHash(callerMethodName, callerMethodDesc));
-                }
-//        }
-
-        final ExpressionContext ctx = new ExpressionContext(pointcutType, reflectionInfo, withinInfo);
-        final AdviceInfoContainer adviceContainer = getAdviceInfoContainerForJoinPoint(
-                ctx, callerClass.getClassLoader()
-        );
         final CompilationInfo.Model compilationModel = new CompilationInfo.Model(
-                emittedJoinPoint, adviceContainer, thisClassInfo
+                emittedJoinPoint, adviceContainer, calleeClassInfo
         );
 
-        final Class clazz = JoinPointFactory.compileJoinPointAndAttachToClassLoader(
-                compilationModel, calleeClass.getClassLoader()
-        );
+        return new CompiledJoinPoint(compilationModel);
+    }
 
-        JoinPointFactory.addCompilationInfo(clazz, new CompilationInfo(compilationModel));
+    /**
+     * A compiled joinpoint is tied to a compilation model at a given time
+     */
+    public static class CompiledJoinPoint {
+        public byte[] bytecode;
+        private CompilationInfo compilationInfo;
+
+        public CompiledJoinPoint(CompilationInfo.Model model) {
+            bytecode = JoinPointFactory.compileJoinPoint(model);
+            compilationInfo = new CompilationInfo(model);
+        }
     }
 
     /**
      * Retrieves the advice info wrapped up in a struct.
-     * <p/>
-     * FIXME XXX handle cflow
      *
      * @param expressionContext
      * @param loader
@@ -629,6 +520,6 @@ public class JoinPointManager {
     private static boolean isCustomJointPoint(final Type type, final ClassLoader loader) {
         ClassInfo classInfo = AsmClassInfo.getClassInfo(type.getClassName(), loader);
         return ClassInfoHelper.implementsInterface(classInfo, ExpressionInfo.JOINPOINT_CLASS_NAME) ||
-               ClassInfoHelper.implementsInterface(classInfo, ExpressionInfo.STATIC_JOINPOINT_CLASS_NAME);
+                ClassInfoHelper.implementsInterface(classInfo, ExpressionInfo.STATIC_JOINPOINT_CLASS_NAME);
     }
 }
