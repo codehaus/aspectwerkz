@@ -515,29 +515,29 @@ public class AnnotationC {
                     }
                 }
             }
-            try {
-                // TODO: we do not support parsing inner classes of inner classes
-                AttributeEnhancer innerClassEnhancer = new AsmAttributeEnhancer();
-                if (innerClassEnhancer.initialize(innerClass.getFullyQualifiedName(), classPath)) {
-                    handleClassAnnotations(manager, innerClassEnhancer, innerClass);
-                    JavaMethod[] methods = innerClass.getMethods();
-                    for (int k = 0; k < methods.length; k++) {
-                        handleMethodAnnotations(manager, innerClassEnhancer, methods[k]);
-                    }
-                    JavaField[] fields = innerClass.getFields();
-                    for (int k = 0; k < fields.length; k++) {
-                        handleFieldAnnotations(manager, innerClassEnhancer, fields[k]);
-                    }
-
-                    // write enhanced class to disk
-                    innerClassEnhancer.write(destDir);
-                }
-            } catch (Throwable e) {
-                logWarning("could not compile annotations for class ["
-                    + innerClassName
-                    + "] due to: "
-                    + e.toString());
-            }
+//            try {
+//                // TODO: we do not support parsing inner classes of inner classes
+//                AttributeEnhancer innerClassEnhancer = new AsmAttributeEnhancer();
+//                if (innerClassEnhancer.initialize(innerClass.getFullyQualifiedName(), classPath)) {
+//                    handleClassAnnotations(manager, innerClassEnhancer, innerClass);
+//                    JavaMethod[] methods = innerClass.getMethods();
+//                    for (int k = 0; k < methods.length; k++) {
+//                        handleMethodAnnotations(manager, innerClassEnhancer, methods[k]);
+//                    }
+//                    JavaField[] fields = innerClass.getFields();
+//                    for (int k = 0; k < fields.length; k++) {
+//                        handleFieldAnnotations(manager, innerClassEnhancer, fields[k]);
+//                    }
+//
+//                    // write enhanced class to disk
+//                    innerClassEnhancer.write(destDir);
+//                }
+//            } catch (Throwable e) {
+//                logWarning("could not compile annotations for class ["
+//                    + innerClassName
+//                    + "] due to: "
+//                    + e.toString());
+//            }
         }
     }
 

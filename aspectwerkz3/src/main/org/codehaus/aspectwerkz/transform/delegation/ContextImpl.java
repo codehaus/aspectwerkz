@@ -84,6 +84,29 @@ public class ContextImpl implements Context {
     }
 
     /**
+     * @return bytecode
+     */
+    public byte[] getInitialBytecode() {
+        return m_initialBytecode;
+    }
+
+    /**
+     * @return bytecode
+     */
+    public byte[] getCurrentBytecode() {
+        return m_classAbstraction.getBytecode();
+    }
+
+    /**
+     * Sets the current bytecode.
+     * 
+     * @param bytecode
+     */
+    public void setCurrentBytecode(final byte[] bytecode) {
+        // does nothing for this context impl, is handled by the class abstraction
+    }   
+    
+  /**
      * Returns the class abstraction.
      * 
      * @return clazz
@@ -187,20 +210,6 @@ public class ContextImpl implements Context {
             throw new IllegalStateException("context is read only");
         }
         m_metaData.put(key, value);
-    }
-
-    /**
-     * @return bytecode
-     */
-    public byte[] getInitialBytecode() {
-        return m_initialBytecode;
-    }
-
-    /**
-     * @return bytecode
-     */
-    public byte[] getCurrentBytecode() {
-        return m_classAbstraction.getBytecode();
     }
 
     /**
