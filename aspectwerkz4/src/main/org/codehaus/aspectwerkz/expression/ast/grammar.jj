@@ -1025,7 +1025,7 @@ void ClassPattern()               :
 {/*@bgen(jjtree) ClassPattern */
     try {
 /*@egen*/
-    (ClassAttribute())*
+    (LOOKAHEAD(2) ClassAttribute())*
     (ClassModifier())*
     (pattern=<CLASS_PATTERN> | pattern=<EAGER_WILDCARD>)/*@bgen(jjtree)*/
     {
@@ -1081,7 +1081,7 @@ void MethodPattern()                :
 {/*@bgen(jjtree) MethodPattern */
     try {
 /*@egen*/
-    (MethodAttribute())*
+    (LOOKAHEAD(2) MethodAttribute())*
     (MethodModifier())*
     (returnType=<METHOD_CLASS_PATTERN> | returnType=<METHOD_ARRAY_CLASS_PATTERN>)
     {
@@ -1132,7 +1132,7 @@ void ConstructorPattern()                     :
 {/*@bgen(jjtree) ConstructorPattern */
     try {
 /*@egen*/
-    (MethodAttribute())*
+    (LOOKAHEAD(2) MethodAttribute())*
     (ConstructorModifier())*
     name=<METHOD_CLASS_PATTERN>
     {
@@ -1182,7 +1182,7 @@ void FieldPattern()               :
 {/*@bgen(jjtree) FieldPattern */
     try {
 /*@egen*/
-    (FieldAttribute())*
+    (LOOKAHEAD(2) FieldAttribute())*
     (FieldModifier())*
     (type=<FIELD_CLASS_PATTERN> | type=<FIELD_ARRAY_CLASS_PATTERN>)
     {
@@ -1310,6 +1310,11 @@ void ClassAttribute()            :
 {/*@bgen(jjtree) Attribute */
     try {
 /*@egen*/
+    (<CLASS_NOT>
+        {
+            jjtn000.toggleNot();
+        }
+    )*
     annotation=<CLASS_ATTRIBUTE>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
@@ -1341,6 +1346,11 @@ void MethodAttribute()            :
 {/*@bgen(jjtree) Attribute */
     try {
 /*@egen*/
+    (<METHOD_NOT>
+        {
+            jjtn000.toggleNot();
+        }
+    )*
     annotation=<METHOD_ANNOTATION>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
@@ -1372,6 +1382,11 @@ void FieldAttribute()            :
 {/*@bgen(jjtree) Attribute */
     try {
 /*@egen*/
+    (<FIELD_NOT>
+        {
+            jjtn000.toggleNot();
+        }
+    )*
     annotation=<FIELD_ANNOTATION>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
@@ -1402,7 +1417,7 @@ void ClassModifier()           : {/*@bgen(jjtree) Modifier */
 /*@egen*/
     (<CLASS_NOT>
     {
-        jjtn000.setNot();
+        jjtn000.toggleNot();
     })*
     (
     <CLASS_PUBLIC>/*@bgen(jjtree)*/
@@ -1486,7 +1501,7 @@ void MethodModifier()           : {/*@bgen(jjtree) Modifier */
 /*@egen*/
     (<METHOD_NOT>
     {
-        jjtn000.setNot();
+        jjtn000.toggleNot();
     })*
     (
     <METHOD_PUBLIC>/*@bgen(jjtree)*/
@@ -1590,7 +1605,7 @@ void ConstructorModifier()           : {/*@bgen(jjtree) Modifier */
 /*@egen*/
     (<METHOD_NOT>
     {
-        jjtn000.setNot();
+        jjtn000.toggleNot();
     })*
     (
     <METHOD_PUBLIC>/*@bgen(jjtree)*/
@@ -1654,7 +1669,7 @@ void FieldModifier()           : {/*@bgen(jjtree) Modifier */
 /*@egen*/
     (<FIELD_NOT>
     {
-        jjtn000.setNot();
+        jjtn000.toggleNot();
     })*
     (
     <FIELD_PUBLIC>/*@bgen(jjtree)*/

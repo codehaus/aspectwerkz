@@ -8,8 +8,6 @@
 package org.codehaus.aspectwerkz.annotation;
 
 import org.codehaus.aspectwerkz.annotation.expression.AnnotationVisitor;
-import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
-import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -17,8 +15,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * A Java 1.3 / 1.4 strongly typed Annotation handler.

@@ -512,7 +512,7 @@ void ClassPattern() #ClassPattern :
     Token pattern;
 }
 {
-    (ClassAttribute())*
+    (LOOKAHEAD(2) ClassAttribute())*
     (ClassModifier())*
     (pattern=<CLASS_PATTERN> | pattern=<EAGER_WILDCARD>)
     {
@@ -537,7 +537,7 @@ void MethodPattern() #MethodPattern :
     Token returnType, name;
 }
 {
-    (MethodAttribute())*
+    (LOOKAHEAD(2) MethodAttribute())*
     (MethodModifier())*
     (returnType=<METHOD_CLASS_PATTERN> | returnType=<METHOD_ARRAY_CLASS_PATTERN>)
     {
@@ -562,7 +562,7 @@ void ConstructorPattern() #ConstructorPattern :
     Token name;
 }
 {
-    (MethodAttribute())*
+    (LOOKAHEAD(2) MethodAttribute())*
     (ConstructorModifier())*
     name=<METHOD_CLASS_PATTERN>
     {
@@ -586,7 +586,7 @@ void FieldPattern() #FieldPattern :
     Token type, name;
 }
 {
-    (FieldAttribute())*
+    (LOOKAHEAD(2) FieldAttribute())*
     (FieldModifier())*
     (type=<FIELD_CLASS_PATTERN> | type=<FIELD_ARRAY_CLASS_PATTERN>)
     {
@@ -649,6 +649,11 @@ void ClassAttribute() #Attribute :
     Token annotation;
 }
 {
+    (<CLASS_NOT>
+        {
+            jjtThis.toggleNot();
+        }
+    )*
     annotation=<CLASS_ATTRIBUTE>
     {
         jjtThis.setName(annotation.image);
@@ -663,6 +668,11 @@ void MethodAttribute() #Attribute :
     Token annotation;
 }
 {
+    (<METHOD_NOT>
+        {
+            jjtThis.toggleNot();
+        }
+    )*
     annotation=<METHOD_ANNOTATION>
     {
         jjtThis.setName(annotation.image);
@@ -677,6 +687,11 @@ void FieldAttribute() #Attribute :
     Token annotation;
 }
 {
+    (<FIELD_NOT>
+        {
+            jjtThis.toggleNot();
+        }
+    )*
     annotation=<FIELD_ANNOTATION>
     {
         jjtThis.setName(annotation.image);
@@ -690,7 +705,7 @@ void ClassModifier() #Modifier : {}
 {
     (<CLASS_NOT>
     {
-        jjtThis.setNot();
+        jjtThis.toggleNot();
     })*
     (
     <CLASS_PUBLIC>
@@ -732,7 +747,7 @@ void MethodModifier() #Modifier : {}
 {
     (<METHOD_NOT>
     {
-        jjtThis.setNot();
+        jjtThis.toggleNot();
     })*
     (
     <METHOD_PUBLIC>
@@ -784,7 +799,7 @@ void ConstructorModifier() #Modifier : {}
 {
     (<METHOD_NOT>
     {
-        jjtThis.setNot();
+        jjtThis.toggleNot();
     })*
     (
     <METHOD_PUBLIC>
@@ -816,7 +831,7 @@ void FieldModifier() #Modifier : {}
 {
     (<FIELD_NOT>
     {
-        jjtThis.setNot();
+        jjtThis.toggleNot();
     })*
     (
     <FIELD_PUBLIC>

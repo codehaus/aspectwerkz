@@ -314,18 +314,23 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
 
     public Object visit(ASTAttribute node, Object data) {
         // called for class level annotation matching f.e. in a within context
+        boolean matchAnnotation = false;
         List annotations = (List) data;
         for (Iterator it = annotations.iterator(); it.hasNext();) {
             AnnotationInfo annotation = (AnnotationInfo) it.next();
             if (annotation.getName().equals(node.getName())) {
-                return Boolean.TRUE;
+                matchAnnotation = true;
             }
         }
-        return Boolean.FALSE;
+        if (node.isNot()) {
+            return Util.booleanValueOf(!matchAnnotation);
+        } else {
+            return Util.booleanValueOf(matchAnnotation);
+        }
     }
 
     public Object visit(ASTModifier node, Object data) {
-        // ??
+        // TODO
         return null;
     }
 
