@@ -29,8 +29,8 @@
             <item name="General definition issues" href="/definition_issues.html"/>
             <item name="Attribute definition" href="/attribute_definition.html"/>
             <item name="XML definition" href="/xml_definition.html"/>
-            <item name="Startup and runtime issues" href="/startup_and_runtime_issues.html"/>
-            <item name="Online mode architecture" href="/online.html"/>
+            <item name="Startup &amp; Runtime issues" href="/startup_and_runtime_issues.html"/>
+            <item name="Online mode issues" href="/online.html"/>
             <item name="Examples" href="/examples_2.html"/>
             <item name="JavaDoc" href="/apidocs/index.html"/>
             <item name="FAQ" href="/faq.html"/>
@@ -38,8 +38,8 @@
 
         <menu name="Misc.">
 <!--            <item name="Testimonials" href="/testimonials.html"/>-->
-            <item name="Releases & Release notes" href="/releases.html"/>
-            <item name="Build & Install" href="/build.html"/>
+            <item name="Releases &amp; Release notes" href="/releases.html"/>
+            <item name="Build &amp; Install" href="/build.html"/>
             <item name="CVS Access" href="/cvs.html"/>
             <item name="Tasks" href="/tasks.html"/>
             <!--            <item name="Clover report" href="/clover/index.html"/>-->
