@@ -7,11 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
-import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
-import java.lang.ref.WeakReference;
+import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
+
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -21,10 +21,6 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
-    /**
-     * Caches the field infos.
-     */
-    private static final TIntObjectHashMap s_cache = new TIntObjectHashMap();
 
     /**
      * The field type.
@@ -39,7 +35,6 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
      */
     JavaFieldInfo(final Field field, final JavaClassInfo declaringType) {
         super(field, declaringType);
-        JavaFieldInfo.addFieldInfo(field, this);
     }
 
     /**
@@ -48,15 +43,24 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
      * @param field the field
      * @return the field info
      */
-    public static JavaFieldInfo getFieldInfo(final Field field) {
-        int hash = field.hashCode();
-        WeakReference fieldInfoRef = (WeakReference)s_cache.get(hash);
-        JavaFieldInfo fieldInfo = ((fieldInfoRef == null) ? null : (JavaFieldInfo)fieldInfoRef.get());
-        if ((fieldInfoRef == null) || (fieldInfo == null)) { //  declaring class is not loaded yet; load it and retry
-            new JavaClassInfo(field.getDeclaringClass());
-            fieldInfo = (JavaFieldInfo)((WeakReference)s_cache.get(hash)).get();
+    public static FieldInfo getFieldInfo(final Field field) {
+        Class declaringClass = field.getDeclaringClass();
+        ClassInfoRepository repository = ClassInfoRepository.getRepository(declaringClass.getClassLoader());
+        ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
+        if (classInfo == null) {
+            classInfo = JavaClassInfo.getClassInfo(declaringClass);
         }
-        return fieldInfo;
+        return classInfo.getField(calculateHash(field));
+    }
+
+    /**
+     * Calculates the field hash.
+     *
+     * @param field
+     * @return the hash
+     */
+    public static int calculateHash(final Field field) {
+        return field.getName().hashCode();
     }
 
     /**
@@ -72,16 +76,6 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
     }
 
     /**
-     * Adds the field info to the cache.
-     *
-     * @param field     the field
-     * @param fieldInfo the field info
-     */
-    public static void addFieldInfo(final Field field, final JavaFieldInfo fieldInfo) {
-        s_cache.put(field.hashCode(), new WeakReference(fieldInfo));
-    }
-
-    /**
      * Returns the type.
      *
      * @return the type
@@ -92,7 +86,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
             if (m_classInfoRepository.hasClassInfo(type.getName())) {
                 m_type = m_classInfoRepository.getClassInfo(type.getName());
             } else {
-                m_type = new JavaClassInfo(type);
+                m_type = JavaClassInfo.getClassInfo(type);
                 m_classInfoRepository.addClassInfo(m_type);
             }
         }

@@ -7,17 +7,20 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
-import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import java.lang.ref.WeakReference;
+import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.transform.JavassistHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import javassist.CtBehavior;
 
 /**
  * Implementation of the MethodInfo interface for Javassist.
@@ -25,10 +28,6 @@ import javassist.NotFoundException;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo {
-    /**
-     * Caches the method infos.
-     */
-    private static final TIntObjectHashMap s_cache = new TIntObjectHashMap();
 
     /**
      * The return type.
@@ -46,46 +45,52 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
     JavassistMethodInfo(final CtMethod method, final JavassistClassInfo declaringType, final ClassLoader loader,
                         final AttributeExtractor attributeExtractor) {
         super(method, declaringType, loader, attributeExtractor);
-        JavassistMethodInfo.addMethodInfo(method, this);
+        addAnnotations();
     }
 
     /**
      * Returns the method info for the method specified.
      *
      * @param method      the method
-     * @param classLoader the class loader
+     * @param loader the class loader
      * @return the method info
      */
-    public static JavassistMethodInfo getMethodInfo(final CtMethod method, final ClassLoader classLoader) {
-        int hash = method.hashCode();
-        WeakReference methodInfoRef = (WeakReference)s_cache.get(hash);
-        JavassistMethodInfo methodInfo = ((methodInfoRef == null) ? null : (JavassistMethodInfo)methodInfoRef.get());
-        if ((methodInfoRef == null) || (methodInfo == null)) {
-            new JavassistClassInfo(method.getDeclaringClass(), classLoader);
-            methodInfo = (JavassistMethodInfo)((WeakReference)s_cache.get(hash)).get();
+    public static MethodInfo getMethodInfo(final CtMethod method, final ClassLoader loader) {
+        CtClass declaringClass = method.getDeclaringClass();
+        ClassInfoRepository repository = ClassInfoRepository.getRepository(loader);
+        ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
+        if (classInfo == null) {
+            classInfo = JavassistClassInfo.getClassInfo(declaringClass, loader);
         }
-        return methodInfo;
+        return classInfo.getMethod(calculateHash(method));
     }
 
     /**
-     * Adds the method info to the cache.
+     * Calculates the method hash.
      *
-     * @param method     the method
-     * @param methodInfo the method info
+     * @param method
+     * @return the hash
      */
-    public static void addMethodInfo(final CtMethod method, final JavassistMethodInfo methodInfo) {
-        s_cache.put(method.hashCode(), new WeakReference(methodInfo));
+    public static int calculateHash(final CtMethod method) {
+        int hash = method.getName().hashCode();
+        try {
+            for (int i = 0; i < method.getParameterTypes().length; i++) {
+                String name = method.getParameterTypes()[i].getName();
+                name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(name);
+                hash = 17 * hash + name.hashCode();
+            }
+        } catch (NotFoundException e) {
+            throw new WrappedRuntimeException(e);
+        }
+        return hash;
     }
 
     /**
-     * Returns the attributes.
+     * Returns the annotations.
      *
-     * @return the attributes
+     * @return the annotations
      */
     public List getAnnotations() {
-        if (m_annotations == null) {
-            addAnnotations();
-        }
         return m_annotations;
     }
 
@@ -101,7 +106,7 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
                 if (m_classInfoRepository.hasClassInfo(returnTypeClass.getName())) {
                     m_returnType = m_classInfoRepository.getClassInfo(returnTypeClass.getName());
                 } else {
-                    m_returnType = new JavassistClassInfo(returnTypeClass, (ClassLoader)m_loaderRef.get());
+                    m_returnType = JavassistClassInfo.getClassInfo(returnTypeClass, (ClassLoader)m_loaderRef.get());
                     m_classInfoRepository.addClassInfo(m_returnType);
                 }
             } catch (NotFoundException e) {
@@ -157,21 +162,22 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
         if (m_attributeExtractor == null) {
             return;
         }
-        if (m_parameterTypes == null) {
-            getParameterTypes();
-        }
-        m_annotations = new ArrayList();
-        String[] parameterNames = new String[m_parameterTypes.length];
-        for (int i = 0; i < m_parameterTypes.length; i++) {
-            parameterNames[i] = m_parameterTypes[i].getName();
-        }
-        Object[] attributes = m_attributeExtractor.getMethodAttributes(getName(), parameterNames);
-        m_annotations = new ArrayList();
-        for (int i = 0; i < attributes.length; i++) {
-            Object attribute = attributes[i];
-            if (attribute instanceof AnnotationInfo) {
-                m_annotations.add(attribute);
+        try {
+            CtClass[] parameterTypes = ((CtBehavior)m_member).getParameterTypes();
+            String[] parameterNames = new String[parameterTypes.length];
+            for (int i = 0; i < parameterTypes.length; i++) {
+                parameterNames[i] = parameterTypes[i].getName();
             }
+            Object[] attributes = m_attributeExtractor.getMethodAttributes(getName(), parameterNames);
+            for (int i = 0; i < attributes.length; i++) {
+                Object attribute = attributes[i];
+                if (attribute instanceof AnnotationInfo) {
+                    m_annotations.add(attribute);
+                }
+            }
+
+        } catch (NotFoundException e) {
+            e.printStackTrace();
         }
     }
 }

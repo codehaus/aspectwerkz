@@ -16,14 +16,17 @@ import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the ClassInfo interface for Javassist.
@@ -59,17 +62,17 @@ public class JavassistClassInfo implements ClassInfo {
     /**
      * A list with the <code>ConstructorMetaData</code> instances.
      */
-    private ConstructorInfo[] m_constructors = null;
+    private final TIntObjectHashMap m_constructors = new TIntObjectHashMap();
 
     /**
      * A list with the <code>MethodInfo</code> instances.
      */
-    private MethodInfo[] m_methods = null;
+    private final TIntObjectHashMap m_methods = new TIntObjectHashMap();
 
     /**
      * A list with the <code>FieldMetaData</code> instances.
      */
-    private FieldInfo[] m_fields = null;
+    private final TIntObjectHashMap m_fields = new TIntObjectHashMap();
 
     /**
      * A list with the interfaces.
@@ -107,12 +110,26 @@ public class JavassistClassInfo implements ClassInfo {
     private AttributeExtractor m_attributeExtractor;
 
     /**
+     * Returns the class info for a specific ctClass.
+     *
+     * @return the class info
+     */
+    public static ClassInfo getClassInfo(final CtClass clazz, final ClassLoader loader) {
+        ClassInfoRepository repository = ClassInfoRepository.getRepository(loader);
+        ClassInfo classInfo = repository.getClassInfo(clazz.getName());
+        if (classInfo == null) {
+            classInfo = new JavassistClassInfo(clazz, loader);
+        }
+        return classInfo;
+    }
+
+    /**
      * Creates a new class meta data instance.
      *
      * @param klass
      * @param loader
      */
-    public JavassistClassInfo(final CtClass klass, final ClassLoader loader) {
+    JavassistClassInfo(final CtClass klass, final ClassLoader loader) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
@@ -130,31 +147,31 @@ public class JavassistClassInfo implements ClassInfo {
         } else if (klass.isArray()) {
             m_name = klass.getName();
             m_isArray = true;
-            m_methods = new MethodInfo[0];
-            m_constructors = new ConstructorInfo[0];
-            m_fields = new FieldInfo[0];
             m_interfaces = new ClassInfo[0];
         } else {
             m_name = klass.getName();
             CtMethod[] methods = m_class.getDeclaredMethods();
-            m_methods = new MethodInfo[methods.length];
             for (int i = 0; i < methods.length; i++) {
-                m_methods[i] = new JavassistMethodInfo(methods[i], this, loader, m_attributeExtractor);
+                m_methods.put(
+                        JavassistMethodInfo.calculateHash(methods[i]),
+                        new JavassistMethodInfo(methods[i], this, loader, m_attributeExtractor)
+                );
             }
             CtConstructor[] constructors = m_class.getDeclaredConstructors();
-            m_constructors = new ConstructorInfo[constructors.length];
             for (int i = 0; i < constructors.length; i++) {
-                m_constructors[i] = new JavassistConstructorInfo(constructors[i], this, loader, m_attributeExtractor);
+                CtConstructor constructor = constructors[i];
+                m_constructors.put(JavassistConstructorInfo.calculateHash(constructor), new JavassistConstructorInfo(constructor, this, loader, m_attributeExtractor));
             }
             CtField[] fields = m_class.getDeclaredFields();
-            m_fields = new FieldInfo[fields.length];
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
                     continue;
                 }
-                m_fields[i] = new JavassistFieldInfo(fields[i], this, loader, m_attributeExtractor);
+                CtField field = fields[i];
+                m_fields.put(JavassistFieldInfo.calculateHash(field), new JavassistFieldInfo(field, this, loader, m_attributeExtractor));
             }
         }
+        addAnnotations();
         m_classInfoRepository.addClassInfo(this);
     }
 
@@ -164,9 +181,6 @@ public class JavassistClassInfo implements ClassInfo {
      * @return the annotations
      */
     public List getAnnotations() {
-        if (m_annotations == null) {
-            addAnnotations();
-        }
         return m_annotations;
     }
 
@@ -189,12 +203,38 @@ public class JavassistClassInfo implements ClassInfo {
     }
 
     /**
+     * Returns a constructor info by its hash.
+     *
+     * @param hash
+     * @return
+     */
+    public ConstructorInfo getConstructor(final int hash) {
+        return (ConstructorInfo)m_constructors.get(hash);
+    }
+
+    /**
      * Returns a list with all the constructors info.
      *
      * @return the constructors info
      */
     public ConstructorInfo[] getConstructors() {
-        return m_constructors;
+        Object[] values = m_methods.getValues();
+        ConstructorInfo[] methodInfos = new ConstructorInfo[values.length];
+        for (int i = 0; i < values.length; i++) {
+            methodInfos[i] = (ConstructorInfo)values[i];
+
+        }
+        return methodInfos;
+    }
+
+    /**
+     * Returns a method info by its hash.
+     *
+     * @param hash
+     * @return
+     */
+    public MethodInfo getMethod(final int hash) {
+        return (MethodInfo)m_methods.get(hash);
     }
 
     /**
@@ -203,7 +243,23 @@ public class JavassistClassInfo implements ClassInfo {
      * @return the methods info
      */
     public MethodInfo[] getMethods() {
-        return m_methods;
+        Object[] values = m_methods.getValues();
+        MethodInfo[] methodInfos = new MethodInfo[values.length];
+        for (int i = 0; i < values.length; i++) {
+            methodInfos[i] = (MethodInfo)values[i];
+
+        }
+        return methodInfos;
+    }
+
+    /**
+     * Returns a field info by its hash.
+     *
+     * @param hash
+     * @return
+     */
+    public FieldInfo getField(final int hash) {
+        return (FieldInfo)m_fields.get(hash);
     }
 
     /**
@@ -212,7 +268,13 @@ public class JavassistClassInfo implements ClassInfo {
      * @return the field info
      */
     public FieldInfo[] getFields() {
-        return m_fields;
+        Object[] values = m_fields.getValues();
+        FieldInfo[] fieldInfos = new FieldInfo[values.length];
+        for (int i = 0; i < values.length; i++) {
+            fieldInfos[i] = (FieldInfo)values[i];
+
+        }
+        return fieldInfos;
     }
 
     /**
@@ -227,7 +289,7 @@ public class JavassistClassInfo implements ClassInfo {
                 m_interfaces = new ClassInfo[interfaces.length];
                 for (int i = 0; i < interfaces.length; i++) {
                     CtClass anInterface = interfaces[i];
-                    ClassInfo classInfo = new JavassistClassInfo(anInterface, (ClassLoader)m_loaderRef.get());
+                    ClassInfo classInfo = JavassistClassInfo.getClassInfo(anInterface, (ClassLoader)m_loaderRef.get());
                     m_interfaces[i] = classInfo;
                     if (!m_classInfoRepository.hasClassInfo(anInterface.getName())) {
                         m_classInfoRepository.addClassInfo(classInfo);
@@ -253,7 +315,7 @@ public class JavassistClassInfo implements ClassInfo {
                     if (m_classInfoRepository.hasClassInfo(superclass.getName())) {
                         m_superClass = m_classInfoRepository.getClassInfo(superclass.getName());
                     } else {
-                        m_superClass = new JavassistClassInfo(superclass, (ClassLoader)m_loaderRef.get());
+                        m_superClass = JavassistClassInfo.getClassInfo(superclass, (ClassLoader)m_loaderRef.get());
                         m_classInfoRepository.addClassInfo(m_superClass);
                     }
                 }

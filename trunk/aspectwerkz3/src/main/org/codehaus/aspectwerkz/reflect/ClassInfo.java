@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
+import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistMethodInfo;
 
 /**
  * Interface for the class info implementations.
@@ -15,6 +16,14 @@ package org.codehaus.aspectwerkz.reflect;
  */
 public interface ClassInfo extends ReflectionInfo {
     /**
+     * Returns a constructor info by its hash.
+     *
+     * @param hash
+     * @return
+     */
+    ConstructorInfo getConstructor(int hash);
+
+    /**
      * Returns the constructors info.
      *
      * @return the constructors info
@@ -22,11 +31,27 @@ public interface ClassInfo extends ReflectionInfo {
     ConstructorInfo[] getConstructors();
 
     /**
+     * Returns a method info by its hash.
+     *
+     * @param hash
+     * @return
+     */
+    MethodInfo getMethod(int hash);
+
+    /**
      * Returns the methods info.
      *
      * @return the methods info
      */
     MethodInfo[] getMethods();
+
+    /**
+     * Returns a field info by its hash.
+     *
+     * @param hash
+     * @return
+     */
+    FieldInfo getField(int hash);
 
     /**
      * Returns the fields info.

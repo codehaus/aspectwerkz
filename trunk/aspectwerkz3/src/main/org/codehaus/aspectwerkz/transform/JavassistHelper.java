@@ -84,7 +84,7 @@ public class JavassistHelper {
         } else if (type == CtClass.byteType) {
             return "(byte)0";
         } else if (type == CtClass.charType) {
-            return "''"; //TODO should be '\u0000'
+            return "'\\u0000'";
         } else if (type == CtClass.doubleType) {
             return "(double)0";
         } else {
@@ -159,6 +159,8 @@ public class JavassistHelper {
     /**
      * Swapp bodies of the two given methods of the same declaring class
      *
+     * @TODO: add support for annotations
+     *
      * @param methodA
      * @param methodB
      */
@@ -166,7 +168,6 @@ public class JavassistHelper {
         String nameA = methodA.getName();
         int modifiersA = methodA.getModifiers();
 
-        //TODO support for Attributes ?
         methodA.setName(methodB.getName());
         methodA.setModifiers(methodB.getModifiers());
         methodB.setName(nameA);
@@ -177,6 +178,8 @@ public class JavassistHelper {
      * Converts a Javassist type signature to a reflect type signature.
      * <p/>
      * Since <b>sucky</b> Javassist does not use the standard.
+     *
+     * @TODO does not support multi dimensional arrays, needs to be fixed
      *
      * @param typeName
      * @return

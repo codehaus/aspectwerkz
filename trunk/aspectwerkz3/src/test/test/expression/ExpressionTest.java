@@ -26,7 +26,7 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 public class ExpressionTest extends TestCase {
     private static final String NAMESPACE = "TESTING";
     private static ExpressionNamespace s_namespace = ExpressionNamespace.getNamespace(NAMESPACE);
-    private static JavaClassInfo s_declaringType = new JavaClassInfo(Target.class);
+    private static ClassInfo s_declaringType = JavaClassInfo.getClassInfo(Target.class);
     private static MethodInfo modifiers1;
     private static MethodInfo modifiers2;
     private static MethodInfo modifiers3;
@@ -903,7 +903,7 @@ public class ExpressionTest extends TestCase {
 
     // ============ advised class tests =============
     public void testAdvisedClassExpression() throws Exception {
-        ClassInfo otherType = new JavaClassInfo(String.class);
+        ClassInfo otherType = JavaClassInfo.getClassInfo(String.class);
         assertFalse(new ExpressionInfo("execution(void test.expression.Target.modifiers1())", NAMESPACE).getAdvisedClassFilterExpression()
                                                                                                         .match(new ExpressionContext(PointcutType.ANY,
                                                                                                                                      otherType,
@@ -951,7 +951,7 @@ public class ExpressionTest extends TestCase {
     }
 
     public void testAdvisedCflowClassExpression() throws Exception {
-        ClassInfo otherType = new JavaClassInfo(String.class);
+        ClassInfo otherType = JavaClassInfo.getClassInfo(String.class);
         s_namespace.addExpressionInfo("string", new ExpressionInfo("execution(void java.lang.String.*(..))", NAMESPACE));
         s_namespace.addExpressionInfo("target",
                                       new ExpressionInfo("execution(* test.expression.Target.*(..))", NAMESPACE));
@@ -1165,7 +1165,7 @@ public class ExpressionTest extends TestCase {
 
     // ============ within type tests =============
     public void testWithinType() throws Exception {
-        ClassInfo klass = new JavaClassInfo(Target.class);
+        ClassInfo klass = JavaClassInfo.getClassInfo(Target.class);
         MethodInfo method = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers1", new Class[] {  }));
         assertTrue(new ExpressionInfo("execution(void test.expression.Target.modifiers1()) AND within(test.expression.Target)",
                                       NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION,

@@ -58,7 +58,7 @@ abstract class JavassistCodeInfo extends JavassistMemberInfo {
                     if (m_classInfoRepository.hasClassInfo(parameterType.getName())) {
                         metaData = m_classInfoRepository.getClassInfo(parameterType.getName());
                     } else {
-                        metaData = new JavassistClassInfo(parameterType, (ClassLoader)m_loaderRef.get());
+                        metaData = JavassistClassInfo.getClassInfo(parameterType, (ClassLoader)m_loaderRef.get());
                         m_classInfoRepository.addClassInfo(metaData);
                     }
                     m_parameterTypes[i] = metaData;
@@ -86,7 +86,7 @@ abstract class JavassistCodeInfo extends JavassistMemberInfo {
                     if (m_classInfoRepository.hasClassInfo(exceptionType.getName())) {
                         metaData = m_classInfoRepository.getClassInfo(exceptionType.getName());
                     } else {
-                        metaData = new JavassistClassInfo(exceptionType, (ClassLoader)m_loaderRef.get());
+                        metaData = JavassistClassInfo.getClassInfo(exceptionType, (ClassLoader)m_loaderRef.get());
                         m_classInfoRepository.addClassInfo(metaData);
                     }
                     m_exceptionTypes[i] = metaData;

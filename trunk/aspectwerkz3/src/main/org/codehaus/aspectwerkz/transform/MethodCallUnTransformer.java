@@ -43,7 +43,7 @@ public class MethodCallUnTransformer implements Transformer {
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
             final CtClass ctClass = klass.getCtClass();
-            ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
+            ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
             if (classFilter(definition, new ExpressionContext(PointcutType.CALL, classInfo, classInfo), ctClass)) {
                 return;
             }

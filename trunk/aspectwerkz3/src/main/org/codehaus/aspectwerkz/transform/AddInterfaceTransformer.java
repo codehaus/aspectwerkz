@@ -40,7 +40,7 @@ public final class AddInterfaceTransformer implements Transformer {
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
             final CtClass ctClass = klass.getCtClass();
-            ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
+            ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
             ExpressionContext ctx = new ExpressionContext(PointcutType.ANY, classInfo, classInfo);
             if (classFilter(ctClass, ctx, definition)) {
                 continue;

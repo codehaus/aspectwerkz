@@ -34,7 +34,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
             final CtClass ctClass = klass.getCtClass();
-            ClassInfo classMetaData = new JavassistClassInfo(ctClass, context.getLoader());
+            ClassInfo classMetaData = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
             if (classFilter(definition, new ExpressionContext(PointcutType.ANY, classMetaData, null), ctClass)) {
                 continue;
             }

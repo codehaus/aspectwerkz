@@ -56,7 +56,7 @@ public class MethodExecutionTransformer implements Transformer {
 
         //m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); // TODO not thread safe
         final CtClass ctClass = klass.getCtClass();
-        ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
+        ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
         if (classFilter(definitions, new ExpressionContext(PointcutType.EXECUTION, classInfo, null), ctClass)) {
             return;
         }

@@ -1432,7 +1432,7 @@ public class JitCompiler {
                 tuple.rtti = new MethodRttiImpl(methodSignature, thisInstance, targetInstance);
 
                 methodInfo = JavaMethodInfo.getMethodInfo(methodTuple.getWrapperMethod());
-                ClassInfo withinInfo = new JavaClassInfo(targetClass);
+                ClassInfo withinInfo = JavaClassInfo.getClassInfo(targetClass);
                 ctx = new ExpressionContext(PointcutType.CALL, methodInfo, withinInfo);
                 for (int i = 0; i < aspectManagers.length; i++) {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
@@ -1475,7 +1475,7 @@ public class JitCompiler {
                 tuple.rtti = new ConstructorRttiImpl(constructorSignature, thisInstance, targetInstance);
 
                 constructorInfo = JavaConstructorInfo.getConstructorInfo(constructorTuple.getWrapperConstructor());
-                withinInfo = new JavaClassInfo(targetClass);
+                withinInfo = JavaClassInfo.getClassInfo(targetClass);
                 ctx = new ExpressionContext(PointcutType.CALL, constructorInfo, withinInfo);
                 for (int i = 0; i < aspectManagers.length; i++) {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
@@ -1534,8 +1534,8 @@ public class JitCompiler {
                 tuple.signature = catchClauseSignature;
                 tuple.rtti = new CatchClauseRttiImpl(catchClauseSignature, thisInstance, targetInstance);
 
-                ClassInfo exceptionClassInfo = new JavaClassInfo(declaringClass);
-                withinInfo = new JavaClassInfo(targetClass);
+                ClassInfo exceptionClassInfo = JavaClassInfo.getClassInfo(declaringClass);
+                withinInfo = JavaClassInfo.getClassInfo(targetClass);
                 ctx = new ExpressionContext(PointcutType.HANDLER, exceptionClassInfo, withinInfo);
                 for (int i = 0; i < aspectManagers.length; i++) {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
