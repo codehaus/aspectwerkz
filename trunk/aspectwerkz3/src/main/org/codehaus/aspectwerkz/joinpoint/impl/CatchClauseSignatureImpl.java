@@ -33,7 +33,6 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
                                     final String joinPointSignature) {
         m_declaringType = declaringClass;
         m_joinPointSignature = joinPointSignature;
-
         m_parameterType = exceptionClass;
         m_modifiers = exceptionClass.getModifiers();
         m_name = exceptionClass.getName();

@@ -17,7 +17,6 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 public class ExceptionTest extends TestCase {
     public void testWrappedRuntimeException() {
         DefinitionException exception = new DefinitionException("definition not found");
-
         try {
             try {
                 throw exception;

@@ -68,11 +68,9 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
         Constructor aspectConstructor = null;
         Class aspectClass = m_infoPrototype.getAspectClass();
         Constructor[] constructors = aspectClass.getDeclaredConstructors();
-
         for (int i = 0; i < constructors.length; i++) {
             Constructor constructor = constructors[i];
             Class[] parameterTypes = constructor.getParameterTypes();
-
             if (parameterTypes.length == 0) {
                 m_constructionType = ASPECT_CONSTRUCTION_TYPE_DEFAULT;
                 aspectConstructor = constructor;
@@ -82,12 +80,10 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
                 break;
             }
         }
-
         if (m_constructionType == ASPECT_CONSTRUCTION_TYPE_UNKNOWN) {
             throw new RuntimeException("aspect [" + aspectClass.getName()
                                        + "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)");
         }
-
         return aspectConstructor;
     }
 }

@@ -58,21 +58,16 @@ public final class JavassistMethodComparator implements Comparator {
             if (!m1.getName().equals(m2.getName())) {
                 return m1.getName().compareTo(m2.getName());
             }
-
             final CtClass[] args1 = m1.getParameterTypes();
             final CtClass[] args2 = m2.getParameterTypes();
-
             if (args1.length < args2.length) {
                 return -1;
             }
-
             if (args1.length > args2.length) {
                 return 1;
             }
-
             for (int i = 0; i < args1.length; i++) {
                 int result = args1[i].getName().compareTo(args2[i].getName());
-
                 if (result != 0) {
                     return result;
                 }
@@ -80,7 +75,6 @@ public final class JavassistMethodComparator implements Comparator {
         } catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
-
         throw new Error("classes can only be transformed once");
     }
 }

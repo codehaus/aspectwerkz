@@ -47,7 +47,6 @@ public class CrazyClassLoaderApp {
         int thread = 2;
         int count = 5;
         int mspause = 5;
-
         try {
             thread = Integer.parseInt(args[0]);
             count = Integer.parseInt(args[1]);
@@ -55,27 +54,20 @@ public class CrazyClassLoaderApp {
         } catch (Exception e) {
             ;
         }
-
         long start = System.currentTimeMillis();
-
         log("BEGIN:" + thread + ':' + count + ':' + mspause + ':' + DUMMYCLASS_LOCATION);
-
         Thread[] threads = new Thread[thread];
-
         for (int i = 0; i < thread; i++) {
             Worker w = new Worker(count, mspause);
-
             w.setPriority(Thread.MAX_PRIORITY - 1);
             w.start();
             log("started " + i);
             threads[i] = w;
         }
-
         for (int i = 0; i < thread; i++) {
             threads[i].join();
             log("joined " + i);
         }
-
         log("END");
         log("( " + ((int)(System.currentTimeMillis() - start) / 1000) + " s)");
         log("classes=" + (thread * count * 2));
@@ -91,7 +83,6 @@ public class CrazyClassLoaderApp {
         public Worker(int count, long mspause) {
             this.count = count;
             this.mspause = mspause;
-
             try {
                 this.url = new java.io.File(DUMMYCLASS_LOCATION).toURL();
             } catch (Exception e) {
@@ -101,19 +92,15 @@ public class CrazyClassLoaderApp {
 
         public void run() {
             int i = 0;
-
             while (i < count) {
                 try {
                     i++;
-
                     ClassLoader tmpLoader = new URLClassLoader(new URL[] { url }, null);
                     Class dummyClass = tmpLoader.loadClass("test.clapp.DummyClass");
                     Object dummyInstance = dummyClass.newInstance();
-
                     total++;
                     log(total + " " + this.getName() + ':' + i + ":DumyClass.hashcode="
                         + dummyInstance.getClass().hashCode());
-
                     synchronized (this) {
                         wait(mspause);
                     }

@@ -161,7 +161,6 @@ public class StaticMethodAdviceTest extends TestCase {
 
     public void testShortArrayArg() {
         short[] array = new short[] { 1, 2, 3 };
-
         assertTrue(shortArrayParam(array)[0] == array[0]);
         assertTrue(shortArrayParam(array)[1] == array[1]);
         assertTrue(shortArrayParam(array)[2] == array[2]);
@@ -169,14 +168,12 @@ public class StaticMethodAdviceTest extends TestCase {
 
     public void testBooleanArrayArg() {
         boolean[] array = new boolean[] { true, false };
-
         assertTrue(booleanArrayParam(array)[0] == array[0]);
         assertTrue(booleanArrayParam(array)[1] == array[1]);
     }
 
     public void testByteArrayArg() {
         byte[] array = new byte[] { 1, 2, 3 };
-
         assertTrue(byteArrayParam(array)[0] == array[0]);
         assertTrue(byteArrayParam(array)[1] == array[1]);
         assertTrue(byteArrayParam(array)[2] == array[2]);
@@ -184,7 +181,6 @@ public class StaticMethodAdviceTest extends TestCase {
 
     public void testCharArrayArg() {
         char[] array = new char[] { 'A', 'B', 'C' };
-
         assertTrue(charArrayParam(array)[0] == array[0]);
         assertTrue(charArrayParam(array)[1] == array[1]);
         assertTrue(charArrayParam(array)[2] == array[2]);
@@ -192,7 +188,6 @@ public class StaticMethodAdviceTest extends TestCase {
 
     public void testLongArrayArg() {
         long[] array = new long[] { 1L, 2L, 3L };
-
         assertTrue(longArrayParam(array)[0] == array[0]);
         assertTrue(longArrayParam(array)[1] == array[1]);
         assertTrue(longArrayParam(array)[2] == array[2]);
@@ -200,7 +195,6 @@ public class StaticMethodAdviceTest extends TestCase {
 
     public void testIntArrayArg() {
         int[] array = new int[] { 1, 2, 3 };
-
         assertTrue(intArrayParam(array)[0] == array[0]);
         assertTrue(intArrayParam(array)[1] == array[1]);
         assertTrue(intArrayParam(array)[2] == array[2]);
@@ -208,7 +202,6 @@ public class StaticMethodAdviceTest extends TestCase {
 
     public void testFloatArrayArg() {
         float[] array = new float[] { 1.1F, 2.1F, 3.1F };
-
         assertTrue(floatArrayParam(array)[0] == array[0]);
         assertTrue(floatArrayParam(array)[1] == array[1]);
         assertTrue(floatArrayParam(array)[2] == array[2]);

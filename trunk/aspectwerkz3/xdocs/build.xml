@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-
 <document>
     <properties>
         <title>Build</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <author email="vmassol@apache.org">Vincent Massol</author>
     </properties>
-
     <body>
-
         <section name="Building from sources">
             <p>
                 Check out the
@@ -76,5 +73,4 @@
             </p>
         </section>
     </body>
-
 </document>

@@ -45,7 +45,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testSetMemberFieldAroundAdviced() {
         s_logString = "";
-
         try {
             setFieldAroundAdviced();
             assertEquals("before after ", s_logString);
@@ -57,7 +56,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testSetMemberFieldAroundAdvicedWithNullAdvice() {
         s_logString = "";
-
         try {
             setFieldAroundAdvicedWithNullAdvice();
             assertEquals("before after ", s_logString);
@@ -72,7 +70,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testSetMemberFieldAroundAdvicedObjectWithNullAdvice() {
         s_logString = "";
-
         try {
             setFieldAroundAdvicedObjectWithNullAdvice();
             assertEquals("before after ", s_logString);
@@ -87,7 +84,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testSetMemberFieldAroundAdvicedObjectWithAPI() {
         s_logString = "";
-
         try {
             setFieldAroundAdvicedObjectWithAPI();
             assertEquals("before after ", s_logString);
@@ -101,7 +97,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testSetMemberFieldAroundAdvicedWithAPI() {
         s_logString = "";
-
         try {
             setFieldAroundAdvicedWithAPI();
             assertEquals("before after ", s_logString);
@@ -115,10 +110,8 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testGetMemberFieldAroundAdviced() {
         s_logString = "";
-
         try {
             int i = getFieldAroundAdviced(); // int default value
-
             assertEquals("before after ", s_logString);
             assertEquals(1, i);
         } catch (Exception e) {
@@ -128,10 +121,8 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testGetMemberFieldAroundAdvicedWithNullAdvice() {
         s_logString = "";
-
         try {
             int i = getFieldAroundAdvicedWithNullAdvice();
-
             assertEquals("before after ", s_logString);
             assertEquals(0, i);
         } catch (Exception e) {
@@ -141,7 +132,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testSetFieldPreAdviced() {
         s_logString = "";
-
         try {
             setFieldPreAdviced();
             assertEquals("pre1 pre2 ", s_logString);
@@ -152,7 +142,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testSetFieldPostAdviced() {
         s_logString = "";
-
         try {
             setFieldPostAdviced();
             assertEquals("post2 post1 ", s_logString);
@@ -163,7 +152,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testSetFieldPrePostAdviced() {
         s_logString = "";
-
         try {
             setFieldPrePostAdviced();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
@@ -174,7 +162,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testGetFieldPreAdviced() {
         s_logString = "";
-
         try {
             getFieldPreAdviced();
             assertEquals("pre1 pre2 ", s_logString);
@@ -186,7 +173,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testGetFieldPostAdviced() {
         s_logString = "";
-
         try {
             getFieldPostAdviced();
             assertEquals("post2 post1 ", s_logString);
@@ -197,7 +183,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testGetFieldPrePostAdviced() {
         s_logString = "";
-
         try {
             getFieldPrePostAdviced();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
@@ -208,7 +193,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testSetStaticFieldAroundAdviced() {
         s_logString = "";
-
         try {
             setStaticFieldAroundAdviced();
             assertEquals("before after ", s_logString);
@@ -220,10 +204,8 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testGetStaticFieldAroundAdviced() {
         s_logString = "";
-
         try {
             int i = getStaticFieldAroundAdviced();
-
             assertEquals("before after ", s_logString);
             assertEquals(1, i);
         } catch (Exception e) {
@@ -233,7 +215,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testSetStaticFieldPreAdviced() {
         s_logString = "";
-
         try {
             setStaticFieldPreAdviced();
             assertEquals("pre1 pre2 ", s_logString);
@@ -244,7 +225,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testSetStaticFieldPostAdviced() {
         s_logString = "";
-
         try {
             setStaticFieldPostAdviced();
             assertEquals("post2 post1 ", s_logString);
@@ -255,7 +235,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testSetStaticFieldPrePostAdviced() {
         s_logString = "";
-
         try {
             setStaticFieldPrePostAdviced();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
@@ -266,7 +245,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testGetStaticFieldPreAdviced() {
         s_logString = "";
-
         try {
             getStaticFieldPreAdviced();
             assertEquals("pre1 pre2 ", s_logString);
@@ -277,7 +255,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testGetStaticFieldPostAdviced() {
         s_logString = "";
-
         try {
             getStaticFieldPostAdviced();
             assertEquals("post2 post1 ", s_logString);
@@ -288,7 +265,6 @@ public class FieldAdviceTest extends WeavedTestCase {
 
     public void testStaticGetFieldPrePostAdviced() {
         s_logString = "";
-
         try {
             getStaticFieldPrePostAdviced();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);

@@ -29,7 +29,6 @@ public class Client {
      * <code>RemoteProxy proxy = RemoteProxy.createServerProxy(myInstance, "localhost", 7777);</code>)
      */
     private static void run() {
-
         // 1)
         // creates a new remote proxy for the TestImpl1 class which maps to an instance of this
         // class on the server

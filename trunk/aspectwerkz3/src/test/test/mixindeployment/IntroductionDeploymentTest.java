@@ -17,15 +17,11 @@ public class IntroductionDeploymentTest extends WeavedTestCase {
         TargetA a1 = new TargetA();
         TargetA a2 = new TargetA();
         TargetB b = new TargetB();
-
         Marker m1 = (Marker)a1;
         Object o1 = m1.getTargetInstance();
-
         assertEquals(a1, ((Marker)a1).getTargetInstance());
-
         assertNotSame(((Marker)a1).getTargetInstance(), ((Marker)a2).getTargetInstance());
         assertEquals(((Marker)a1).getTargetClass(), ((Marker)a2).getTargetClass());
-
         assertEquals(b, ((Marker)b).getTargetInstance());
         assertEquals(b.getClass(), ((Marker)b).getTargetClass());
     }
@@ -33,7 +29,6 @@ public class IntroductionDeploymentTest extends WeavedTestCase {
     public void testPerClassMixin() {
         TargetC c1 = new TargetC();
         TargetC c2 = new TargetC();
-
         assertNull(((Marker)c1).getTargetInstance());
         assertEquals(((Marker)c1).getTargetClass(), ((Marker)c2).getTargetClass());
     }

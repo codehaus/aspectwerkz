@@ -24,12 +24,10 @@ public class MetaDataInspector {
     public static boolean hasField(final ClassInfo classInfo, final String fieldName) {
         for (int i = 0; i < classInfo.getFields().length; i++) {
             FieldInfo fieldMetaData = classInfo.getFields()[i];
-
             if (fieldMetaData.getName().equals(fieldName)) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -43,12 +41,10 @@ public class MetaDataInspector {
     public static boolean hasInterface(final ClassInfo classInfo, final String interfaceName) {
         for (int i = 0; i < classInfo.getInterfaces().length; i++) {
             ClassInfo interfaceMetaData = classInfo.getInterfaces()[i];
-
             if (interfaceMetaData.getName().equals(interfaceName)) {
                 return true;
             }
         }
-
         return false;
     }
 }

@@ -28,14 +28,11 @@ public class PerformanceTest extends WeavedTestCase {
 
     public void testNonAdvisedMethodPerformance() {
         long startTime = System.currentTimeMillis();
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             nonAdvisedMethod();
         }
-
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocationNormalMethod = time / (double)m_numberOfInvocations;
-
         if (m_printInfo) {
             System.out.println("\nNon advised method: " + timePerInvocationNormalMethod);
         }
@@ -43,27 +40,19 @@ public class PerformanceTest extends WeavedTestCase {
 
     public void testAroundAdvicePerJVMPerformance() {
         methodAdvisedMethodPerJVM();
-
         long startTime = System.currentTimeMillis();
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             nonAdvisedMethod();
         }
-
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocationNormalMethod = time / (double)m_numberOfInvocations;
-
         startTime = System.currentTimeMillis();
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             methodAdvisedMethodPerJVM();
         }
-
         time = System.currentTimeMillis() - startTime;
-
         double timePerInvocation = time / (double)m_numberOfInvocations;
         double overhead = timePerInvocation - timePerInvocationNormalMethod;
-
         if (m_printInfo) {
             System.out.println("\nPER_JVM advice: " + overhead);
         }
@@ -71,27 +60,19 @@ public class PerformanceTest extends WeavedTestCase {
 
     public void testAroundAdvicePerClassPerformance() {
         methodAdvisedMethodPerClass();
-
         long startTime = System.currentTimeMillis();
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             nonAdvisedMethod();
         }
-
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocationNormalMethod = time / (double)m_numberOfInvocations;
-
         startTime = System.currentTimeMillis();
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             methodAdvisedMethodPerClass();
         }
-
         time = System.currentTimeMillis() - startTime;
-
         double timePerInvocation = time / (double)m_numberOfInvocations;
         double overhead = timePerInvocation - timePerInvocationNormalMethod;
-
         if (m_printInfo) {
             System.out.println("\nPER_CLASS advice: " + overhead);
         }
@@ -99,27 +80,19 @@ public class PerformanceTest extends WeavedTestCase {
 
     public void testAroundAdvicePerInstancePerformance() {
         methodAdvisedMethodPerInstance();
-
         long startTime = System.currentTimeMillis();
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             nonAdvisedMethod();
         }
-
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocationNormalMethod = time / (double)m_numberOfInvocations;
-
         startTime = System.currentTimeMillis();
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             methodAdvisedMethodPerInstance();
         }
-
         time = System.currentTimeMillis() - startTime;
-
         double timePerInvocation = time / (double)m_numberOfInvocations;
         double overhead = timePerInvocation - timePerInvocationNormalMethod;
-
         if (m_printInfo) {
             System.out.println("\nPER_INSTANCE advice: " + overhead);
         }
@@ -127,27 +100,19 @@ public class PerformanceTest extends WeavedTestCase {
 
     public void testAroundAdvicePerThreadPerformance() {
         methodAdvisedMethodPerThread();
-
         long startTime = System.currentTimeMillis();
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             nonAdvisedMethod();
         }
-
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocationNormalMethod = time / (double)m_numberOfInvocations;
-
         startTime = System.currentTimeMillis();
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             methodAdvisedMethodPerThread();
         }
-
         time = System.currentTimeMillis() - startTime;
-
         double timePerInvocation = time / (double)m_numberOfInvocations;
         double overhead = timePerInvocation - timePerInvocationNormalMethod;
-
         if (m_printInfo) {
             System.out.println("\nPER_THREAD advice: " + overhead);
         }
@@ -156,14 +121,11 @@ public class PerformanceTest extends WeavedTestCase {
     public void testIntroductionPerJVMPerformance() {
         long startTime = System.currentTimeMillis();
         PerJVM perJVM = (PerJVM)this;
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             perJVM.runPerJVM();
         }
-
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
-
         if (m_printInfo) {
             System.out.println("\nPER_JVM introduction: " + timePerInvocation);
         }
@@ -172,14 +134,11 @@ public class PerformanceTest extends WeavedTestCase {
     public void testIntroductionPerClassPerformance() {
         long startTime = System.currentTimeMillis();
         PerClass perClass = (PerClass)this;
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             perClass.runPerClass();
         }
-
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
-
         if (m_printInfo) {
             System.out.println("\nPER_CLASS introduction: " + timePerInvocation);
         }
@@ -188,14 +147,11 @@ public class PerformanceTest extends WeavedTestCase {
     public void testIntroductionPerInstancePerformance() {
         long startTime = System.currentTimeMillis();
         PerInstance perInstance = (PerInstance)this;
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             perInstance.runPerInstance();
         }
-
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
-
         if (m_printInfo) {
             System.out.println("\nPER_INSTANCE introduction: " + timePerInvocation);
         }
@@ -204,14 +160,11 @@ public class PerformanceTest extends WeavedTestCase {
     public void testIntroductionPerThreadPerformance() {
         long startTime = System.currentTimeMillis();
         PerThread perThread = (PerThread)this;
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             perThread.runPerThread();
         }
-
         long time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
-
         if (m_printInfo) {
             System.out.println("\nPER_THREAD introduction: " + timePerInvocation);
         }

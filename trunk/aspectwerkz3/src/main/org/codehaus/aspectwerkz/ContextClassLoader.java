@@ -26,13 +26,11 @@ public final class ContextClassLoader {
      */
     public static Class loadClass(final String name) throws ClassNotFoundException {
         Class cls = null;
-
         try {
             cls = Thread.currentThread().getContextClassLoader().loadClass(name);
         } catch (Exception e) {
             cls = Class.forName(name);
         }
-
         return cls;
     }
 
@@ -59,19 +57,15 @@ public final class ContextClassLoader {
     public static InputStream getResourceAsStream(final String name) {
         InputStream stream = null;
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-
         if (contextClassLoader != null) {
             stream = contextClassLoader.getResourceAsStream(name);
         }
-
         if (stream == null) {
             ClassLoader classLoader = ClassLoader.class.getClassLoader();
-
             if (classLoader != null) {
                 stream = classLoader.getResourceAsStream(name);
             }
         }
-
         return stream;
     }
 
@@ -82,11 +76,9 @@ public final class ContextClassLoader {
      */
     public static ClassLoader getLoader() {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
         if (loader == null) {
             loader = ClassLoader.class.getClassLoader();
         }
-
         return loader;
     }
 }

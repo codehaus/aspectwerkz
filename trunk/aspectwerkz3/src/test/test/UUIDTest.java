@@ -25,14 +25,11 @@ public class UUIDTest extends TestCase {
 
     public void testPerformance() {
         long startTime = System.currentTimeMillis();
-
         for (int i = 0; i < m_numberOfInvocations; i++) {
             String uuid = UuidGenerator.generate(this);
         }
-
         long time = System.currentTimeMillis() - startTime;
         double timePerUuidGenaration = time / (double)m_numberOfInvocations;
-
         System.out.println("timePerUuidGenaration = " + timePerUuidGenaration);
     }
 

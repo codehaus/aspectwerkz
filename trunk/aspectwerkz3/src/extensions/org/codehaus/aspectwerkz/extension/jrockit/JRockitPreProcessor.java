@@ -12,7 +12,6 @@ import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
 import com.bea.jvm.JVMFactory;
 import com.jrockit.management.rmp.RmpSocketListener;
 
-
 /**
  * JRockit (tested with 7SP4 and 8.1) preprocessor Adapter based on JMAPI
  * <p/>
@@ -47,7 +46,6 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
                 "aspectwerkz.classloader.preprocessor", "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor"
         );
         START_RMP_SERVER = System.getProperties().containsKey("management");
-
         try {
             // note: CLPP loaded by current thread classloader which is bootstrap classloader
             // caution: forcing loading thru Thread.setContextClassLoader() or ClassLoader.getSystemClassLoader()
@@ -56,8 +54,7 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
             s_preProcessor = ClassPreProcessorHelper.getClassPreProcessor();
             //(ClassPreProcessor)ClassLoader.getSystemClassLoader().loadClass(clpp).newInstance();
             //s_preProcessor.initialize(null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
     }
@@ -85,8 +82,7 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
 //        System.out.println(name + " [" + caller + "]");
         if (caller == null || caller.getParent() == null) {
             return bytecode;
-        }
-        else {
+        } else {
             return s_preProcessor.preProcess(name, bytecode, caller);
         }
     }
@@ -97,7 +93,6 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
     public static void main(String args[]) throws Throwable {
         // uncomment this lines to programmaticaly configure at runtime the CLPP
         JRockitPreProcessor pp = new JRockitPreProcessor();//self registration
-
         Class loadedCP = Class.forName("java.math.BigDecimal");
 
         //System.out.println(org.codehaus.aspectwerkz.Pointcut.class.getClassLoader());

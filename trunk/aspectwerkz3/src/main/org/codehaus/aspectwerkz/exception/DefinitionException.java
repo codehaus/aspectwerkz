@@ -56,7 +56,6 @@ public class DefinitionException extends RuntimeException {
      */
     public void printStackTrace(PrintStream ps) {
         super.printStackTrace(ps);
-
         if (this.originalException != null) {
             this.originalException.printStackTrace(ps);
         }
@@ -69,7 +68,6 @@ public class DefinitionException extends RuntimeException {
      */
     public void printStackTrace(PrintWriter pw) {
         super.printStackTrace(pw);
-
         if (this.originalException != null) {
             this.originalException.printStackTrace(pw);
         }

@@ -49,11 +49,9 @@ public class JavassistHelper {
                                throws CannotCompileException {
         try {
             CtMethod cm = new CtMethod(returnType, name, parameters, declaring);
-
             cm.setModifiers(cm.getModifiers() | Modifier.STATIC);
             cm.setExceptionTypes(exceptions);
             cm.setBody(body);
-
             return cm;
         } catch (NotFoundException e) {
             throw new CannotCompileException(e);
@@ -98,7 +96,6 @@ public class JavassistHelper {
     public static boolean hasMethod(CtClass klass, String methodName) {
         try {
             klass.getDeclaredMethod(methodName);
-
             return true;
         } catch (NotFoundException e) {
             return false;
@@ -115,7 +112,6 @@ public class JavassistHelper {
     public static boolean hasField(CtClass klass, String fieldName) {
         try {
             klass.getDeclaredField(fieldName);
-
             return true;
         } catch (NotFoundException e) {
             return false;
@@ -132,7 +128,6 @@ public class JavassistHelper {
     public static boolean hasMethod(CtClass klass, String methodName, CtClass[] args) {
         try {
             klass.getDeclaredMethod(methodName, args);
-
             return true;
         } catch (NotFoundException e) {
             return false;
@@ -166,10 +161,8 @@ public class JavassistHelper {
      */
     public static String convertJavassistTypeSignatureToReflectTypeSignature(String typeName) {
         int index = typeName.indexOf("[]");
-
         if (index >= 0) {
             typeName = typeName.substring(0, index);
-
             if (typeName.equals("short")) {
                 typeName = "[S";
             } else if (typeName.equals("int")) {
@@ -190,7 +183,6 @@ public class JavassistHelper {
                 typeName = "[L" + typeName + ';';
             }
         }
-
         return typeName;
     }
 
@@ -202,7 +194,6 @@ public class JavassistHelper {
      */
     public static boolean isAnnotatedEmpty(CtMethod method) {
         byte[] emptyBytes = method.getAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE);
-
         return ((emptyBytes != null) && (emptyBytes[0] == TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY));
     }
 
@@ -214,7 +205,6 @@ public class JavassistHelper {
      */
     public static boolean isAnnotatedNotEmpty(CtMethod method) {
         byte[] emptyBytes = method.getAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE);
-
         return ((emptyBytes == null) || (emptyBytes[0] == TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY));
     }
 
@@ -257,17 +247,14 @@ public class JavassistHelper {
 
         // determine the method access flags (should always be set to protected)
         int accessFlags = originalMethod.getModifiers();
-
         if ((accessFlags & Modifier.PROTECTED) == 0) {
             // set the protected flag
             accessFlags |= Modifier.PROTECTED;
         }
-
         if ((accessFlags & Modifier.PRIVATE) != 0) {
             // clear the private flag
             accessFlags &= ~Modifier.PRIVATE;
         }
-
         if ((accessFlags & Modifier.PUBLIC) != 0) {
             // clear the public flag
             accessFlags &= ~Modifier.PUBLIC;
@@ -275,7 +262,6 @@ public class JavassistHelper {
 
         // add an empty body
         StringBuffer body = new StringBuffer();
-
         if (originalMethod.getReturnType() == CtClass.voidType) {
             // special handling for void return type leads to cleaner bytecode generation with Javassist
             body.append("{}");
@@ -286,9 +272,7 @@ public class JavassistHelper {
             body.append(JavassistHelper.getDefaultPrimitiveValue(originalMethod.getReturnType()));
             body.append("; }");
         }
-
         CtMethod method = null;
-
         if (Modifier.isStatic(originalMethod.getModifiers())) {
             method = JavassistHelper.makeStatic(originalMethod.getReturnType(), wrapperMethodName,
                                                 originalMethod.getParameterTypes(), originalMethod.getExceptionTypes(),
@@ -302,7 +286,6 @@ public class JavassistHelper {
 
         // add a method level attribute so that we remember it is an empty method
         JavassistHelper.setAnnotatedEmpty(method);
-
         return method;
     }
 
@@ -332,7 +315,6 @@ public class JavassistHelper {
             for (int i = 0; i < interfaces.length; i++) {
                 interfaces[i] = javaName(interfaces[i]);
             }
-
             Arrays.sort(interfaces);
             for (int i = 0; i < interfaces.length; i++) {
                 out.writeUTF(interfaces[i]);
@@ -348,7 +330,6 @@ public class JavassistHelper {
                         return field1.getName().compareTo(field2.getName());
                     }
                 });
-
             for (int i = 0; i < fields.length; i++) {
                 CtField field = (CtField)fields[i];
                 int mods = field.getModifiers();
@@ -376,7 +357,6 @@ public class JavassistHelper {
                         return c1.getMethodInfo2().getDescriptor().compareTo(c2.getMethodInfo2().getDescriptor());
                     }
                 });
-
             for (int i = 0; i < constructors.length; i++) {
                 CtConstructor constructor = constructors[i];
                 int mods = constructor.getModifiers();
@@ -398,11 +378,9 @@ public class JavassistHelper {
                         if (value == 0) {
                             value = m1.getMethodInfo2().getDescriptor().compareTo(m2.getMethodInfo2().getDescriptor());
                         }
-
                         return value;
                     }
                 });
-
             for (int i = 0; i < methods.length; i++) {
                 CtMethod method = methods[i];
                 int mods = method.getModifiers();
@@ -421,7 +399,6 @@ public class JavassistHelper {
             for (int i = Math.min(digested.length, 8) - 1; i >= 0; i--) {
                 hash = (hash << 8) | (digested[i] & 0xFF);
             }
-
             return hash;
         } catch (IOException e) {
             throw new CannotCompileException(e);
@@ -465,7 +442,6 @@ public class JavassistHelper {
         if (!isSerializable(clazz)) {
             return false;
         }
-
         return true;
     }
 }

@@ -29,12 +29,10 @@ public class ConstructorTuple {
         if (originalConstructor == null) {
             originalConstructor = wrapperConstructor;
         }
-
         if (wrapperConstructor.getDeclaringClass() != originalConstructor.getDeclaringClass()) {
             throw new RuntimeException(wrapperConstructor.getName() + " and " + originalConstructor.getName()
                                        + " does not have the same declaring class");
         }
-
         m_declaringClass = wrapperConstructor.getDeclaringClass();
         m_wrapperConstructor = wrapperConstructor;
         m_wrapperConstructor.setAccessible(true);

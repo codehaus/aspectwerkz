@@ -1,13 +1,10 @@
 <?xml version="1.0"?>
-
 <document>
-
     <properties>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <author email="alex at gnilux dot com">alexandre vasseur</author>
         <title>Attribute definition</title>
     </properties>
-
     <body>
         <section name="Attribute definition - Self-defined Aspects">
             <p>
@@ -21,7 +18,6 @@
                 section for best practices.
             </p>
         </section>
-
         <section name="Table of Contents">
             <p>
                 <ol>
@@ -49,7 +45,6 @@
                 </ol>
             </p>
         </section>
-
         <section name="Aspects">
             <p>
                     Even if all definition is made using attribute (and nothing in XML) an tiny deployment descriptor in
@@ -58,7 +53,6 @@
                 <a href="#XML deployment descriptor">XML deployment descriptor</a> section for more
                     information on how to write such a deployment descriptor.
             </p>
-
             <p>
                     When defining an aspect using attributes, the deployment model is specified as metadata argument
                     of the metadata tag
@@ -97,9 +91,7 @@
                 <code>@Aspect</code> at all and define the deployment model in the
                     XML descriptor.
             </p>
-
             <subsection name="Define the pointcuts">
-
                 <p>
                     In the aspect class you put the pointcut definitions as fields of the type
                     <code>org.codehaus.aspectwerkz.Pointcut</code>
@@ -108,9 +100,7 @@
                     See
                     <a href="#Pointcuts">Pointcuts section</a>.
                 </p>
-
             </subsection>
-
             <subsection name="Define the introductions">
                 <p>
                     In the aspect class you specify the introduction to add as field for pure interface introduction
@@ -136,9 +126,7 @@
                     See
                     <a href="#Introductions">Introductions section</a>.
                 </p>
-
             </subsection>
-
             <subsection name="Define the advice">
                 <p>
                     Define the type of the advice using metadata for the method along with the
@@ -206,7 +194,6 @@ public class MyAspect {
                 </p>
             </subsection>
         </section>
-
         <section name="Pointcuts">
             <p>
                 The
@@ -236,11 +223,9 @@ public class MyAspect {
                     </li>
                 </ol>
             </p>
-
             <p>
                 The name of the pointcut is the field name.
             </p>
-
             <p>
                 <source><![CDATA[
     /**
@@ -254,9 +239,7 @@ public class MyAspect {
     Pointcut allConstantAccess;
                     ]]></source>
             </p>
-
         </section>
-
         <section name="Advice">
             <p>
                 The advice are implemented as regular methods in the Aspect class with the following requirements:
@@ -275,7 +258,6 @@ public class MyAspect {
                     <br/>
                 </ol>
             </p>
-
             <p>
                     The supported types of advice are the following.
                 <ul>
@@ -296,19 +278,16 @@ public class MyAspect {
                     <br/>
                 </ul>
             </p>
-
             <p>
                     Both anonymous pointcut expressions and expressions made out of named pointcuts are supported. See
                     example below.
             </p>
-
             <p>
                     Here is a simple example of an
                 <code>Around</code> advice.
                     (For more examples see the
                 <a href="examples_2.html">Examples section</a>.)
             </p>
-
             <p>
                 <source><![CDATA[
     /**
@@ -336,9 +315,7 @@ public class MyAspect {
     }
                     ]]></source>
             </p>
-
         </section>
-
         <section name="Introductions">
             <p>
                 The Introduction class implements the concept of Mixins or Open Classes.
@@ -395,9 +372,7 @@ public class MyAspect {
     public OtherMarkerInterface introduction2;
                     ]]></source>
                 </p>
-
             </subsection>
-
             <subsection name="Implementation introductions">
                 <p>
                     The inner mixin class is marked with metadata
@@ -450,10 +425,8 @@ public class MyAspect {
     }
                     ]]></source>
                 </p>
-
             </subsection>
         </section>
-
         <section name="Attribute reference">
             <p>
                 This section references all attributes used in the attribute definition.
@@ -529,7 +502,6 @@ public class MyAspect {
                 </table>
             </p>
         </section>
-
         <section name="Attribute compilation">
             <p>
                 Attribute defined aspects have to be post-compiled to incorporate the metadata into the class file bytecode.
@@ -576,20 +548,16 @@ public class MyAspect {
                     </li>
                 </ul>
             </p>
-
             <p>
                 <code>AspectC</code> can also be used to handle custom attributes as described
                 <a href="definition_issues.html#Custom attribute compilation and retrieval">here</a>.
             </p>
-
         </section>
-
         <section name="XML deployment descriptor">
             <p>
                 The deployment descriptor is needed for the runtime system to know which aspects it should load.
                 It always has to be specified even though all definition is made in attributes.
             </p>
-
             <p>
                Example:
             </p>
@@ -605,7 +573,5 @@ public class MyAspect {
 </aspectwerkz>
             ]]></source>
         </section>
-
     </body>
-
 </document>

@@ -33,11 +33,9 @@ class StreamRedirectThread extends Thread {
     public void run() {
         byte[] buf = new byte[BUFFER_SIZE];
         int i;
-
         try {
             while ((i = is.read(buf)) > 0) {
                 os.write(buf, 0, i);
-
                 try {
                     Thread.sleep(SLEEP);
                 } catch (InterruptedException e) {

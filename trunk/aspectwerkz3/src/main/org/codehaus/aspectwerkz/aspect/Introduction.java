@@ -95,9 +95,7 @@ public class Introduction implements Mixin {
         m_crossCuttingInfo = crossCuttingInfo;
         m_definition = definition;
         m_mixinImplClass = implClass;
-
         m_mixinConstructor = findConstructor();
-
         ARRAY_WITH_CROSS_CUTTING_INFO[0] = m_crossCuttingInfo;
 
         // handle deploymentModel dependancies
@@ -114,7 +112,6 @@ public class Introduction implements Mixin {
             m_deploymentModel = m_crossCuttingInfo.getDeploymentModel();
         } else {
             int model = DeploymentModel.getDeploymentModelAsInt(definition.getDeploymentModel());
-
             if (DeploymentModel.isMixinDeploymentModelCompatible(model, m_crossCuttingInfo.getDeploymentModel())) {
                 m_deploymentModel = model;
             } else {
@@ -124,7 +121,6 @@ public class Introduction implements Mixin {
                                                                                         .getDeploymentModel()));
             }
         }
-
         m_mixinImpl = createMixin();
 
         //        try {
@@ -240,7 +236,6 @@ public class Introduction implements Mixin {
     public Object invokeMixin(final int methodIndex, final Object[] parameters, final Object callingObject)
                        throws Throwable {
         Object result = null;
-
         switch (m_deploymentModel) {
             case DeploymentModel.PER_JVM:
                 result = m_container.invokeIntroductionPerJvm(methodIndex, parameters);
@@ -257,7 +252,6 @@ public class Introduction implements Mixin {
             default:
                 throw new RuntimeException("invalid deployment model: " + m_crossCuttingInfo.getDeploymentModel());
         }
-
         return result;
     }
 
@@ -288,10 +282,8 @@ public class Introduction implements Mixin {
         if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
-
         try {
             Class newImplClass = ContextClassLoader.loadClass(className); //todo pbly old impl.getClassLoader() would be safer
-
             m_container.swapImplementation(newImplClass);
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -318,27 +310,22 @@ public class Introduction implements Mixin {
     private Constructor findConstructor() {
         Constructor mixinConstructor = null;
         Constructor[] constructors = m_mixinImplClass.getDeclaredConstructors();
-
         for (int i = 0; i < constructors.length; i++) {
             Constructor constructor = constructors[i];
             Class[] parameterTypes = constructor.getParameterTypes();
-
             if (parameterTypes.length == 0) {
                 m_mixinConstructionType = MIXIN_CONSTRUCTION_TYPE_DEFAULT;
                 mixinConstructor = constructor;
             } else if ((parameterTypes.length == 1) && parameterTypes[0].equals(CrossCuttingInfo.class)) {
                 m_mixinConstructionType = MIXIN_CONSTRUCTION_TYPE_CROSS_CUTTING_INFO;
                 mixinConstructor = constructor;
-
                 break;
             }
         }
-
         if (m_mixinConstructionType == MIXIN_CONSTRUCTION_TYPE_UNKNOWN) {
             throw new RuntimeException("mixin [" + m_mixinImplClass.getName()
                                        + "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)");
         }
-
         return mixinConstructor;
     }
 

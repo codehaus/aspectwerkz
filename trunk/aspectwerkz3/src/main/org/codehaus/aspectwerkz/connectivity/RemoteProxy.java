@@ -118,19 +118,15 @@ public class RemoteProxy implements InvocationHandler, Serializable {
         if ((interfaces == null) || (interfaces.length == 0)) {
             throw new IllegalArgumentException("at least one interface must be specified");
         }
-
         if (impl == null) {
             throw new IllegalArgumentException("implementation class name can not be null");
         }
-
         if (address == null) {
             throw new IllegalArgumentException("address can not be null");
         }
-
         if (port < 0) {
             throw new IllegalArgumentException("port not valid");
         }
-
         m_targetInterfaceNames = interfaces;
         m_targetImplName = impl;
         m_address = address;
@@ -151,15 +147,12 @@ public class RemoteProxy implements InvocationHandler, Serializable {
         if (targetInstance == null) {
             throw new IllegalArgumentException("target instance can not be null");
         }
-
         if (address == null) {
             throw new IllegalArgumentException("address can not be null");
         }
-
         if (port < 0) {
             throw new IllegalArgumentException("port not valid");
         }
-
         m_targetInterfaces = targetInstance.getClass().getInterfaces();
         m_address = address;
         m_port = port;
@@ -249,7 +242,6 @@ public class RemoteProxy implements InvocationHandler, Serializable {
      */
     public Object getInstance(final ClassLoader loader) {
         m_loader = loader;
-
         return getInstance();
     }
 
@@ -262,11 +254,9 @@ public class RemoteProxy implements InvocationHandler, Serializable {
         if (m_proxy != null) {
             return m_proxy;
         }
-
         if (m_loader == null) {
             m_loader = Thread.currentThread().getContextClassLoader();
         }
-
         try {
             m_socket = new Socket(InetAddress.getByName(m_address), m_port);
             m_socket.setTcpNoDelay(true);
@@ -275,26 +265,21 @@ public class RemoteProxy implements InvocationHandler, Serializable {
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         if (m_handle == null) {
             // is a client side proxy
             if (m_targetInterfaceNames == null) {
                 throw new IllegalStateException("interface class name can not be null");
             }
-
             if (m_targetImplName == null) {
                 throw new IllegalStateException("implementation class name can not be null");
             }
-
             try {
                 // create a new instance on the server and get the handle to it in return
                 m_out.write(Command.CREATE);
                 m_out.writeObject(m_targetImplName);
                 m_out.flush();
                 m_handle = (String)m_in.readObject();
-
                 m_targetInterfaces = new Class[m_targetInterfaceNames.length];
-
                 for (int i = 0; i < m_targetInterfaceNames.length; i++) {
                     try {
                         m_targetInterfaces[i] = m_loader.loadClass(m_targetInterfaceNames[i]);
@@ -306,9 +291,7 @@ public class RemoteProxy implements InvocationHandler, Serializable {
                 throw new WrappedRuntimeException(e);
             }
         }
-
         m_proxy = Proxy.newProxyInstance(m_loader, m_targetInterfaces, this);
-
         return m_proxy;
     }
 
@@ -330,13 +313,10 @@ public class RemoteProxy implements InvocationHandler, Serializable {
             m_out.writeObject(method.getParameterTypes());
             m_out.writeObject(args);
             m_out.flush();
-
             final Object response = m_in.readObject();
-
             if (response instanceof Exception) {
                 throw (Exception)response;
             }
-
             return response;
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -376,9 +356,7 @@ public class RemoteProxy implements InvocationHandler, Serializable {
      */
     public static String wrapInstance(final Object instance) {
         final String handle = UuidGenerator.generate(instance);
-
         s_instances.put(handle, instance);
-
         return handle;
     }
 }

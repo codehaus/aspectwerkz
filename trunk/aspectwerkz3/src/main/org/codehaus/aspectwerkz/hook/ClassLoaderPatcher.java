@@ -39,11 +39,9 @@ public class ClassLoaderPatcher {
      */
     public static byte[] inputStreamToByteArray(InputStream is) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-
         for (int b = is.read(); b != -1; b = is.read()) {
             os.write(b);
         }
-
         return os.toByteArray();
     }
 
@@ -52,27 +50,22 @@ public class ClassLoaderPatcher {
      */
     static byte[] getPatchedClassLoader(String preProcessorName) {
         byte[] abyte = null;
-
         try {
             InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream("java/lang/ClassLoader.class");
-
             abyte = inputStreamToByteArray(is);
             is.close();
         } catch (IOException e) {
             throw new Error("failed to read java.lang.ClassLoader: " + e.toString());
         }
-
         if (preProcessorName != null) {
             try {
                 ClassLoaderPreProcessor clpi = (ClassLoaderPreProcessor)Class.forName(preProcessorName).newInstance();
-
                 abyte = clpi.preProcess(abyte);
             } catch (Exception e) {
                 System.err.println("failed to instrument java.lang.ClassLoader: preprocessor not found");
                 e.printStackTrace();
             }
         }
-
         return abyte;
     }
 
@@ -82,16 +75,12 @@ public class ClassLoaderPatcher {
     private static void writeClass(String className, byte[] bytes, String dir) {
         String filename = dir + File.separatorChar + className.replace('.', File.separatorChar) + ".class";
         int pos = filename.lastIndexOf(File.separatorChar);
-
         if (pos > 0) {
             String finalDir = filename.substring(0, pos);
-
             (new File(finalDir)).mkdirs();
         }
-
         try {
             DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)));
-
             out.write(bytes);
             out.close();
         } catch (IOException e) {
@@ -107,24 +96,17 @@ public class ClassLoaderPatcher {
         // determine if VM support class HotSwap with introspection
         try {
             Method canM = VirtualMachine.class.getMethod("canRedefineClasses", new Class[] {  });
-
             if (((Boolean)canM.invoke(vm, new Object[] {  })).equals(Boolean.FALSE)) {
                 throw new Error("target JVM cannot redefine classes, please force the use of -Xbootclasspath");
             }
-
             List classList = vm.classesByName(className);
-
             if (classList.size() == 0) {
                 throw new Error("Fatal error: Can't find class " + className);
             }
-
             ReferenceType rt = (ReferenceType)classList.get(0);
             Map map = new HashMap();
-
             map.put(rt, bytes);
-
             Method doM = VirtualMachine.class.getMethod("redefineClasses", new Class[] { Map.class });
-
             doM.invoke(vm, new Object[] { map });
         } catch (NoSuchMethodException e) {
             // java 1.3 or not HotSwap compatible JVM
@@ -147,7 +129,6 @@ public class ClassLoaderPatcher {
      */
     public static void patchClassLoader(String preProcessorName, String dir) {
         byte[] cl = getPatchedClassLoader(preProcessorName);
-
         writeClass("java.lang.ClassLoader", cl, dir);
     }
 
@@ -166,37 +147,28 @@ public class ClassLoaderPatcher {
     public static VirtualMachine hotswapClassLoader(String preProcessorName, String transport, String address,
                                                     int secondsToWait) {
         String name = null;
-
         if ("dt_socket".equals(transport)) {
             name = "com.sun.jdi.SocketAttach";
         } else if ("dt_shmem".equals(transport)) {
             name = "com.sun.jdi.SharedMemoryAttach";
         }
-
         AttachingConnector connector = null;
-
         for (Iterator i = Bootstrap.virtualMachineManager().attachingConnectors().iterator(); i.hasNext();) {
             AttachingConnector aConnector = (AttachingConnector)i.next();
-
             if (aConnector.name().equals(name)) {
                 connector = aConnector;
-
                 break;
             }
         }
-
         if (connector == null) {
             throw new Error("no AttachingConnector for transport: " + transport);
         }
-
         Map args = connector.defaultArguments();
-
         if ("dt_socket".equals(transport)) {
             ((Connector.Argument)args.get("port")).setValue(address);
         } else if ("dt_shmem".equals(transport)) {
             ((Connector.Argument)args.get("name")).setValue(address);
         }
-
         try {
             if (secondsToWait > 0) {
                 try {
@@ -210,15 +182,12 @@ public class ClassLoaderPatcher {
             // this avoid to specifically set -Daspectwerkz.classloader.wait
             VirtualMachine vm = null;
             ConnectException vmConnectionRefused = new ConnectException("should not appear as is");
-
             for (int retry = 0; retry < 10; retry++) {
                 try {
                     vm = connector.attach(args);
-
                     break;
                 } catch (ConnectException ce) {
                     vmConnectionRefused = ce;
-
                     try {
                         Thread.sleep(500);
                     } catch (Throwable t) {
@@ -226,27 +195,21 @@ public class ClassLoaderPatcher {
                     }
                 }
             }
-
             if (vm == null) {
                 throw vmConnectionRefused;
             }
-
             redefineClass(vm, "java.lang.ClassLoader", getPatchedClassLoader(preProcessorName));
-
             return vm;
         } catch (IllegalConnectorArgumentsException e) {
             System.err.println("failed to attach to VM (" + transport + ", " + address + "):");
             e.printStackTrace();
-
             for (Iterator i = e.argumentNames().iterator(); i.hasNext();) {
                 System.err.println("wrong or missing argument - " + i.next());
             }
-
             return null;
         } catch (IOException e) {
             System.err.println("failed to attach to VM (" + transport + ", " + address + "):");
             e.printStackTrace();
-
             return null;
         }
     }

@@ -46,42 +46,29 @@ public class ConstructorExecutionTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws Exception {
         List definitions = SystemDefinitionContainer.getDefinitionsContext();
-
         m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe and reentrant
-
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
-
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
-
             if (classFilter(definition, new ExpressionContext(PointcutType.EXECUTION, classInfo, null), ctClass)) {
                 continue;
             }
-
             final CtConstructor[] constructors = ctClass.getConstructors();
-
             for (int i = 0; i < constructors.length; i++) {
                 CtConstructor constructor = constructors[i];
                 ConstructorInfo constructorInfo = JavassistConstructorInfo.getConstructorInfo(constructor,
                                                                                               context.getLoader());
-
                 ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, constructorInfo, null);
-
                 if (constructorFilter(definition, ctx)) {
                     continue;
                 }
-
                 context.markAsAdvised();
-
                 addPrefixToConstructor(ctClass, constructor);
-
                 int constructorHash = TransformationUtil.calculateHash(constructor);
-
                 createWrapperConstructor(constructor, constructorHash);
             }
         }
-
         TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
 
@@ -96,17 +83,13 @@ public class ConstructorExecutionTransformer implements Transformer {
     private void createWrapperConstructor(final CtConstructor originalConstructor, final int constructorHash)
                                    throws CannotCompileException, NotFoundException {
         StringBuffer body = new StringBuffer();
-
         body.append('{');
-
         if (originalConstructor.getParameterTypes().length > 0) {
             body.append("Object[] args = $args; ");
         } else {
             body.append("Object[] args = null; ");
         }
-
         body.append("Object nullObject = null;");
-
         body.append("return ($r)");
         body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
         body.append('.');
@@ -119,9 +102,7 @@ public class ConstructorExecutionTransformer implements Transformer {
         body.append("args, this,");
         body.append(TransformationUtil.JOIN_POINT_TYPE_CONSTRUCTOR_EXECUTION);
         body.append("); }");
-
         m_joinPointIndex++;
-
         originalConstructor.setBody(body.toString());
     }
 
@@ -165,28 +146,20 @@ public class ConstructorExecutionTransformer implements Transformer {
     private void addPrefixToConstructor(final CtClass ctClass, final CtConstructor constructor)
                                  throws NotFoundException, CannotCompileException {
         int accessFlags = constructor.getModifiers();
-
         CtClass[] parameterTypes = constructor.getParameterTypes();
         CtClass[] newParameterTypes = new CtClass[parameterTypes.length + 1];
-
         for (int i = 0; i < parameterTypes.length; i++) {
             newParameterTypes[i] = parameterTypes[i];
         }
-
         newParameterTypes[parameterTypes.length] = ClassPool.getDefault().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
-
         CtConstructor newConstructor = CtNewConstructor.make(newParameterTypes, constructor.getExceptionTypes(),
                                                              CtNewConstructor.PASS_NONE, null,
                                                              CtMethod.ConstParameter.string(constructor.getSignature()),
                                                              ctClass);
-
         newConstructor.setBody(constructor, null);
         newConstructor.setModifiers(accessFlags);
-
         CodeAttribute codeAttribute = newConstructor.getMethodInfo().getCodeAttribute();
-
         codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
-
         ctClass.addConstructor(newConstructor);
     }
 
@@ -202,21 +175,16 @@ public class ConstructorExecutionTransformer implements Transformer {
         if (ctClass.isInterface()) {
             return true;
         }
-
         String className = ctClass.getName().replace('/', '.');
-
         if (definition.inExcludePackage(className)) {
             return true;
         }
-
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-
         if (definition.isAdvised(ctx)) {
             return false;
         }
-
         return true;
     }
 

@@ -142,7 +142,6 @@ public class Context {
         if (m_readOnly) {
             throw new IllegalStateException("context is read only");
         }
-
         m_metaData.put(key, value);
     }
 }

@@ -60,22 +60,16 @@ public class Utility {
      */
     public void deleteDir(File dir) {
         Delete task = new Delete();
-
         task.setProject(project);
         task.setTaskName("delete");
-
         FilenameSelector fns = new FilenameSelector();
-
         fns.setName("**/*");
-
         FileSet fs = new FileSet();
-
         fs.setDir(dir);
         fs.addFilename(fns);
         task.addFileset(fs);
         task.setIncludeEmptyDirs(true);
         task.perform();
-
         dir.delete();
     }
 
@@ -84,7 +78,6 @@ public class Utility {
      */
     public void backupFile(File source, File dest) {
         Copy task = new Copy();
-
         task.setProject(project);
         task.setTaskName("backup");
         task.setVerbose(verbose);
@@ -93,11 +86,8 @@ public class Utility {
         //copyTask.setFailOnError(haltOnError);
         if (source.isDirectory()) {
             FilenameSelector fns = new FilenameSelector();
-
             fns.setName("**/*");
-
             FileSet fs = new FileSet();
-
             fs.setDir(source);
             fs.addFilename(fns);
             task.addFileset(fs);
@@ -107,10 +97,8 @@ public class Utility {
             task.setFile(source);
             task.setTofile(dest);
         }
-
         task.setOverwrite(true);
         task.setPreserveLastModified(true);
-
         task.execute();
     }
 

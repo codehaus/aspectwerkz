@@ -48,11 +48,8 @@ public class DynamicDeploymentTestAspect {
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
-
         final Object result = joinPoint.proceed();
-
         ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
-
         return result;
     }
 
@@ -61,11 +58,8 @@ public class DynamicDeploymentTestAspect {
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before2 ");
-
         final Object result = joinPoint.proceed();
-
         ((Loggable)joinPoint.getTargetInstance()).log("after2 ");
-
         return result;
     }
 }

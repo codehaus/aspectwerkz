@@ -31,12 +31,10 @@ abstract class AbstractStarter {
      */
     public String getCommandLine() {
         StringBuffer command = new StringBuffer();
-
         command.append(System.getProperty("java.home"));
         command.append(File.separatorChar).append("bin").append(File.separatorChar).append("java");
         command.append(" ").append(opt);
         command.append(" ").append(main);
-
         return command.toString();
     }
 
@@ -45,7 +43,6 @@ abstract class AbstractStarter {
      */
     public Process launchVM() throws IOException {
         System.out.println(getCommandLine());
-
         return Runtime.getRuntime().exec(getCommandLine());
     }
 }

@@ -92,7 +92,6 @@ class JoinPointRegistry {
         joinPointMetaDataMap.put(PointcutType.STATIC_INITIALIZATION, EMTPY_ARRAY_LIST);
         joinPointMetaDataMap.put(PointcutType.ATTRIBUTE, EMTPY_ARRAY_LIST);
         ((TLongObjectHashMap)m_joinPointMetaDataMap.get(classHash)).put(joinPointHash, joinPointMetaDataMap);
-
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
                 Method wrapperMethod = AspectRegistry.getMethodTuple(declaringClass, joinPointHash).getWrapperMethod();
@@ -161,9 +160,10 @@ class JoinPointRegistry {
 
     /**
      * Resets the registry.
-     * @TODO do better RW/RuW/JPredef eWorld brute force reset Needed since JoinPointRegistry is somehow a singleton (static in JoinPointManager)
      *
      * @param classHash
+     * @TODO do better RW/RuW/JPredef eWorld brute force reset Needed since JoinPointRegistry is somehow a singleton
+     * (static in JoinPointManager)
      */
     public void reset(final int classHash) {
         m_joinPointMetaDataMap.remove(classHash);
@@ -199,9 +199,7 @@ class JoinPointRegistry {
         List adviceIndexInfoList = new ArrayList();
         List cflowExpressionList = new ArrayList();
         Pointcut cflowPointcut = null;
-
         ExpressionContext ctx = new ExpressionContext(type, reflectInfo, withinInfo);
-
         AspectManager[] aspectManagers = system.getAspectManagers();
         for (int i = 0; i < aspectManagers.length; i++) {
             AspectManager aspectManager = aspectManagers[i];
@@ -240,12 +238,10 @@ class JoinPointRegistry {
         for (Iterator iterator = cflowExpressionList.iterator(); iterator.hasNext(); j++) {
             cflowExpressions[j] = (CflowExpressionVisitor)iterator.next();
         }
-
         JoinPointMetaData metaData = new JoinPointMetaData();
         metaData.adviceIndexes = adviceIndexInfo;
         metaData.cflowExpressions = cflowExpressions;
         metaData.cflowPointcut = cflowPointcut;
-
         joinPointMetaDataMap.put(type, metaData);
     }
 }

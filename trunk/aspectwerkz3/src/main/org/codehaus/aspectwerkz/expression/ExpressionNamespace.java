@@ -51,7 +51,6 @@ public class ExpressionNamespace {
         if (!s_namespaces.containsKey(namespace)) {
             s_namespaces.put(namespace, new ExpressionNamespace(namespace));
         }
-
         return (ExpressionNamespace)s_namespaces.get(namespace);
     }
 
@@ -76,11 +75,11 @@ public class ExpressionNamespace {
     }
 
     /**
-    * Returns the expression with a specific name.
-    *
-    * @param name the name of the expression
-    * @return the expression
-    */
+     * Returns the expression with a specific name.
+     *
+     * @param name the name of the expression
+     * @return the expression
+     */
     public ExpressionVisitor getExpression(final String name) {
         return ((ExpressionInfo)m_expressions.get(name)).getExpression();
     }

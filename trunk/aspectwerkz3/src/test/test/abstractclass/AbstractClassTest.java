@@ -20,7 +20,6 @@ public class AbstractClassTest extends TestCase {
     public void testInstrumentedAbstractMemberMethodInvocation() {
         try {
             AbstractTarget target = new AbstractTargetImpl();
-
             assertEquals("method1", target.method1());
         } catch (Exception e) {
             fail();
@@ -30,7 +29,6 @@ public class AbstractClassTest extends TestCase {
     public void testInstrumentedAbstractStaticMethodInvocation() {
         try {
             AbstractTarget target = new AbstractTargetImpl();
-
             assertEquals("method2", target.method2());
         } catch (Exception e) {
             fail();

@@ -37,7 +37,8 @@ import java.util.WeakHashMap;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it should remove a certain advice from the pointcut - notification of the JoinPoinManager.
+ * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it should remove a
+ * certain advice from the pointcut - notification of the JoinPoinManager.
  */
 public final class AspectManager {
     /**
@@ -128,7 +129,6 @@ public final class AspectManager {
         if ((deploymentModel < 0) || (deploymentModel > 3)) {
             throw new IllegalArgumentException(deploymentModel + " is not a valid deployment model type");
         }
-
         Class aspectClass = null;
         try {
             if (loader == null) {
@@ -154,10 +154,8 @@ public final class AspectManager {
         // parse the class attributes and create a definition
         m_attributeParser.parse(aspectClass, aspectDef, m_definition);
         m_definition.addAspect(aspectDef);
-
         CrossCuttingInfo crossCuttingInfo = new CrossCuttingInfo(null, aspectClass, aspectDef.getName(),
                                                                  deploymentModel, aspectDef, new HashMap());
-
         AspectContainer container = StartupManager.createAspectContainer(crossCuttingInfo);
         crossCuttingInfo.setContainer(container);
         m_aspectRegistry.register(container, new PointcutManager(name, deploymentModel));
@@ -219,13 +217,10 @@ public final class AspectManager {
     public CrossCuttingInfo[] getCrossCuttingInfos() {
         AspectContainer[] aspectContainers = m_aspectRegistry.getAspectContainers();
         CrossCuttingInfo[] infos = new CrossCuttingInfo[aspectContainers.length];
-
         for (int i = 0; i < aspectContainers.length; i++) {
             AspectContainer aspectContainer = aspectContainers[i];
-
             infos[i] = aspectContainer.getCrossCuttingInfo();
         }
-
         return infos;
     }
 
@@ -314,7 +309,6 @@ public final class AspectManager {
                 m_pointcutCache.put(ctx, pointcuts);
             }
         }
-
         return pointcuts;
     }
 
@@ -344,7 +338,6 @@ public final class AspectManager {
                 m_cflowPointcutCache.put(ctx, pointcuts);
             }
         }
-
         return pointcuts;
     }
 

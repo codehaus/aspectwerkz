@@ -25,8 +25,7 @@ public class AsynchAspect {
                         try {
                             // proceed in a new thread
                             joinPoint.proceed();
-                        }
-                        catch (Throwable e) {
+                        } catch (Throwable e) {
                             throw new WrappedRuntimeException(e);
                         }
                     }

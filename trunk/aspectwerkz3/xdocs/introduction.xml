@@ -1,11 +1,9 @@
 <?xml version="1.0"?>
 <document>
-
     <properties>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <title>Introduction</title>
     </properties>
-
     <body>
         <section name="Introduction">
             <p>
@@ -21,6 +19,5 @@
             </p>
         </section>
     </body>
-
 </document>
 

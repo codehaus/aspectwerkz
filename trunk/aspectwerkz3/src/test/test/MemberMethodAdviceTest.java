@@ -25,13 +25,11 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
 
     public void testBeforeAroundAroundAfterAdvice() {
         m_logString = "";
-
         try {
             beforeAroundAfterAdvicedMethod();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         assertEquals("pre before1 before2 invocation after2 after1 post ", m_logString);
     }
 
@@ -123,10 +121,8 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
             exceptionThrower();
         } catch (Throwable e) {
             assertTrue(e instanceof UnsupportedOperationException);
-
             return;
         }
-
         fail("this point should never be reached");
     }
 
@@ -216,7 +212,6 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
 
     public void testObjectArrayArg() {
         String[] array = new String[] { "one", "two", "three" };
-
         assertTrue(arrayParam(array)[0].equals(array[0]));
         assertTrue(arrayParam(array)[1].equals(array[1]));
         assertTrue(arrayParam(array)[2].equals(array[2]));
@@ -224,7 +219,6 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
 
     public void testCharArrayArg() {
         char[] array = new char[] { 'A', 'B', 'C' };
-
         assertTrue(charArrayParam(array)[0] == array[0]);
         assertTrue(charArrayParam(array)[1] == array[1]);
         assertTrue(charArrayParam(array)[2] == array[2]);
@@ -232,7 +226,6 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
 
     public void testLongArrayArg() {
         long[] array = new long[] { 1L, 2L, 3L };
-
         assertTrue(longArrayParam(array)[0] == array[0]);
         assertTrue(longArrayParam(array)[1] == array[1]);
         assertTrue(longArrayParam(array)[2] == array[2]);
@@ -240,7 +233,6 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
 
     public void testIntArrayArg() {
         int[] array = new int[] { 1, 2, 3 };
-
         assertTrue(intArrayParam(array)[0] == array[0]);
         assertTrue(intArrayParam(array)[1] == array[1]);
         assertTrue(intArrayParam(array)[2] == array[2]);
@@ -248,7 +240,6 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
 
     public void testShortArrayArg() {
         short[] array = new short[] { 1, 2, 3 };
-
         assertTrue(shortArrayParam(array)[0] == array[0]);
         assertTrue(shortArrayParam(array)[1] == array[1]);
         assertTrue(shortArrayParam(array)[2] == array[2]);
@@ -256,14 +247,12 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
 
     public void testBooleanArrayArg() {
         boolean[] array = new boolean[] { true, false };
-
         assertTrue(booleanArrayParam(array)[0] == array[0]);
         assertTrue(booleanArrayParam(array)[1] == array[1]);
     }
 
     public void testByteArrayArg() {
         byte[] array = new byte[] { 1, 2, 3 };
-
         assertTrue(byteArrayParam(array)[0] == array[0]);
         assertTrue(byteArrayParam(array)[1] == array[1]);
         assertTrue(byteArrayParam(array)[2] == array[2]);
@@ -271,7 +260,6 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
 
     public void testFloatArrayArg() {
         float[] array = new float[] { 1.1F, 2.1F, 3.1F };
-
         assertTrue(floatArrayParam(array)[0] == array[0]);
         assertTrue(floatArrayParam(array)[1] == array[1]);
         assertTrue(floatArrayParam(array)[2] == array[2]);

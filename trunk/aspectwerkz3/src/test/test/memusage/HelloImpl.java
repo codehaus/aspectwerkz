@@ -25,7 +25,6 @@ public class HelloImpl implements Hello {
         BCELifier bc = new BCELifier((new ClassLoaderRepository(HelloImpl.class.getClassLoader())).loadClass(HelloImpl.class
                                                                                                              .getName()),
                                      System.out);
-
         bc.start();
     }
 }

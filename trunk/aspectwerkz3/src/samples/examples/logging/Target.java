@@ -23,14 +23,23 @@ public class Target {
         m_counter2 = m_counter2 + 1;
     }
 
+    /**
+     * @@log
+     */
     public static void toLog1() {
         new Target().toLog2("parameter");
     }
 
+    /**
+     * @@log
+     */
     private void toLog2(java.lang.String arg) {
         new Target().toLog3();
     }
 
+    /**
+     * @@log
+     */
     private String toLog3() {
         return "result";
     }

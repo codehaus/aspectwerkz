@@ -81,11 +81,9 @@ public class JavaLoggingAspect {
         final String aspectName = "examples.logging.JavaLoggingAspect";
         SystemDefinition sysDef = DefinitionLoader.getDefinition(HotSwapTarget.class.getClassLoader(), "hotdeployed");
         AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
-
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(aspectDef.getName());
         ExpressionInfo expressionInfo = new ExpressionInfo(pointcut, aspectDef.getName());
         namespace.addExpressionInfo(pointcutName, expressionInfo);
-
         AdviceDefinition newDef = null;
         for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
             AdviceDefinition around = (AdviceDefinition)arounds.next();
@@ -100,7 +98,6 @@ public class JavaLoggingAspect {
 
         //TODO: experimental API
         StartupManager.reinitializeSystem(HotSwapTarget.class.getClassLoader(), sysDef);
-
         System.out.println("sysDef = " + sysDef.getClass().getClassLoader());
 
         /*
@@ -123,18 +120,15 @@ public class JavaLoggingAspect {
         //if (true) return;
 
         final String aspectName = "examples.logging.JavaLoggingAspect";
-
         SystemDefinition sysDef = DefinitionLoader.getDefinition(HotSwapTarget.class.getClassLoader(), "hotdeployed");
         AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
-
         List removedAdviceDefs = new ArrayList();
         for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
             AdviceDefinition around = (AdviceDefinition)arounds.next();
             if (pointcutName.equals(around.getExpressionInfo().getExpressionAsString())) {
                 System.out.println("<removing> " + around.getName() + " at " + pointcutName);
                 removedAdviceDefs.add(around);
-            }
-            else {
+            } else {
                 //System.out.println("around = " + around.getExpression().getName());
             }
         }

@@ -28,14 +28,10 @@ public class CustomClassLoaderTest extends TestCase {
         try {
             VerifierClassLoader cl = new VerifierClassLoader(new URL[] { new URL(targetPath) },
                                                              ClassLoader.getSystemClassLoader());
-
             Class target = cl.loadClass("test.clapp.Target");
-
             assertEquals(target.getClassLoader().hashCode(), cl.hashCode());
-
             Method m = target.getMethod("callme", new Class[] {  });
             String res = (String)m.invoke(target.newInstance(), new Object[] {  });
-
             assertEquals("before call after", res);
         } catch (Throwable t) {
             t.printStackTrace();
@@ -65,7 +61,6 @@ public class CustomClassLoaderTest extends TestCase {
     }*/
     public static void main(String[] a) {
         CustomClassLoaderTest me = new CustomClassLoaderTest();
-
         me.testCustomClassLoaderWeaving();
 
         // uncomment this to run test outside of online mode

@@ -128,11 +128,8 @@ public class MemberMethodTestAspect {
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
-
         final Object result = joinPoint.proceed();
-
         ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
-
         return result;
     }
 
@@ -141,11 +138,8 @@ public class MemberMethodTestAspect {
      */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before2 ");
-
         final Object result = joinPoint.proceed();
-
         ((Loggable)joinPoint.getTargetInstance()).log("after2 ");
-
         return result;
     }
 
@@ -159,7 +153,6 @@ public class MemberMethodTestAspect {
                           + joinPoint.getTargetInstance().hashCode() + rtti.getParameterValues()[0]
                           + rtti.getParameterTypes()[0].getName() + rtti.getReturnType().getName()
                           + rtti.getReturnValue();
-
         return metadata;
     }
 
@@ -168,11 +161,8 @@ public class MemberMethodTestAspect {
      */
     public Object advice5(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before ");
-
         final Object result = joinPoint.proceed();
-
         ((Loggable)joinPoint.getTargetInstance()).log("after ");
-
         return result;
     }
 

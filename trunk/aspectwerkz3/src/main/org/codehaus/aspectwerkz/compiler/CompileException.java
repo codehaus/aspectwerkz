@@ -29,7 +29,6 @@ public class CompileException extends Exception {
 
     public void printStackTrace(PrintWriter writer) {
         super.printStackTrace(writer);
-
         if (nested != null) {
             writer.println("nested:");
             nested.printStackTrace(writer);
@@ -38,7 +37,6 @@ public class CompileException extends Exception {
 
     public void printStackTrace(PrintStream out) {
         super.printStackTrace(out);
-
         if (nested != null) {
             out.println("nested:");
             nested.printStackTrace(out);

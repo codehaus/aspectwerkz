@@ -43,58 +43,42 @@ public class DocumentParser {
      */
     public static List parseAspectClassNames(final Document document) {
         final List aspectClassNames = new ArrayList();
-
         for (Iterator it1 = document.getRootElement().elementIterator("system"); it1.hasNext();) {
             Element system = (Element)it1.next();
-
             final String packageName = getBasePackage(system);
-
             for (Iterator it11 = system.elementIterator("aspect"); it11.hasNext();) {
                 String className = null;
                 Element aspect = (Element)it11.next();
-
                 for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
                     Attribute attribute = (Attribute)it2.next();
-
                     final String name = attribute.getName().trim();
                     final String value = attribute.getValue().trim();
-
                     if (name.equalsIgnoreCase("class")) {
                         className = value;
                     }
                 }
-
                 String aspectClassName = packageName + className;
-
                 aspectClassNames.add(aspectClassName);
             }
-
             for (Iterator it11 = system.elementIterator("package"); it11.hasNext();) {
                 final Element packageElement = ((Element)it11.next());
                 final String packageName1 = getPackage(packageElement);
-
                 for (Iterator it12 = packageElement.elementIterator("aspect"); it12.hasNext();) {
                     String className = null;
                     Element aspect = (Element)it12.next();
-
                     for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
                         Attribute attribute = (Attribute)it2.next();
-
                         final String name = attribute.getName().trim();
                         final String value = attribute.getValue().trim();
-
                         if (name.equalsIgnoreCase("class")) {
                             className = value;
                         }
                     }
-
                     String aspectClassName = packageName1 + className;
-
                     aspectClassNames.add(aspectClassName);
                 }
             }
         }
-
         return aspectClassNames;
     }
 
@@ -123,20 +107,16 @@ public class DocumentParser {
     public static SystemDefinition parseSystemElement(final ClassLoader loader, final Element systemElement,
                                                       final String basePackage) {
         final SystemDefinition definition = new SystemDefinition();
-
         String uuid = systemElement.attributeValue("id");
-
         if ((uuid == null) || uuid.equals("")) {
             throw new DefinitionException("system UUID must be specified");
         }
-
         definition.setUuid(uuid);
 
         // parse the include, exclude and prepare elements
         parseIncludePackageElements(systemElement, definition, basePackage);
         parseExcludePackageElements(systemElement, definition, basePackage);
         parsePrepareElements(systemElement, definition, basePackage);
-
         boolean hasDef = false;
 
         // parse without package elements
@@ -148,7 +128,6 @@ public class DocumentParser {
         if (parsePackageElements(loader, systemElement, definition, basePackage)) {
             hasDef = true;
         }
-
         return definition;
 
         // TODO: AVAOPC ALEX is this 'hasDef' really needed?
@@ -172,16 +151,13 @@ public class DocumentParser {
     private static boolean parsePackageElements(final ClassLoader loader, final Element systemElement,
                                                 final SystemDefinition definition, final String basePackage) {
         boolean hasDef = false;
-
         for (Iterator it1 = systemElement.elementIterator("package"); it1.hasNext();) {
             final Element packageElement = ((Element)it1.next());
             final String packageName = basePackage + getPackage(packageElement);
-
             if (parseAspectElements(loader, packageElement, definition, packageName)) {
                 hasDef = true;
             }
         }
-
         return hasDef;
     }
 
@@ -198,13 +174,11 @@ public class DocumentParser {
     private static boolean parseAspectElements(final ClassLoader loader, final Element systemElement,
                                                final SystemDefinition definition, final String packageName) {
         boolean hasDef = false;
-
         for (Iterator it1 = systemElement.elementIterator("aspect"); it1.hasNext();) {
             String aspectName = null;
             String className = null;
             String deploymentModel = null;
             String containerClassName = null;
-
             Element aspect = (Element)it1.next();
             for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute)it2.next();
@@ -220,7 +194,6 @@ public class DocumentParser {
                     containerClassName = value;
                 }
             }
-
             String aspectClassName = packageName + className;
             if (aspectName == null) {
                 aspectName = aspectClassName;
@@ -235,7 +208,6 @@ public class DocumentParser {
                 System.err.println("<AspectWerkz> <WARN> could not load " + aspectClassName + " from " + loader);
                 continue;
             }
-
             parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut in Attributes AW-152
             s_attributeParser.parse(aspectClass, aspectDef, definition);
 
@@ -293,7 +265,6 @@ public class DocumentParser {
                                                final AspectDefinition aspectDef) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element parameterElement = (Element)it2.next();
-
             if (parameterElement.getName().trim().equals("param")) {
                 def.addParameter(aspectDef.getName(), parameterElement.attributeValue("name"),
                                  parameterElement.attributeValue("value"));
@@ -310,11 +281,9 @@ public class DocumentParser {
     private static void parsePointcutElements(final Element aspectElement, final AspectDefinition aspectDef) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element pointcutElement = (Element)it2.next();
-
             if (pointcutElement.getName().trim().equals("pointcut")) {
                 String name = pointcutElement.attributeValue("name");
                 String expression = pointcutElement.attributeValue("expression");
-
                 DefinitionParserHelper.createAndAddPointcutDefToAspectDef(name, expression, aspectDef);
             }
         }
@@ -331,34 +300,25 @@ public class DocumentParser {
     private static void parseAdviceElements(final ClassLoader loader, final Element aspectElement,
                                             final AspectDefinition aspectDef, final Class aspectClass) {
         List methodList = TransformationUtil.createSortedMethodList(aspectClass);
-
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element adviceElement = (Element)it2.next();
-
             if (adviceElement.getName().trim().equals("advice")) {
                 String name = adviceElement.attributeValue("name");
                 String type = adviceElement.attributeValue("type");
                 String bindTo = adviceElement.attributeValue("bind-to");
-
                 String adviceName = aspectClass.getName() + '.' + name;
-
                 int methodIndex = 0;
                 Method method = null;
-
                 for (Iterator it3 = methodList.iterator(); it3.hasNext(); methodIndex++) {
                     method = (Method)it3.next();
-
                     if (method.getName().equals(name)) {
                         break;
                     }
                 }
-
                 createAndAddAdviceDefsToAspectDef(type, bindTo, adviceName, method, methodIndex, aspectDef);
-
                 for (Iterator it1 = adviceElement.elementIterator("bind-to"); it1.hasNext();) {
                     Element bindToElement = (Element)it1.next();
                     String pointcut = bindToElement.attributeValue("pointcut");
-
                     createAndAddAdviceDefsToAspectDef(type, pointcut, adviceName, method, methodIndex, aspectDef);
                 }
             }
@@ -379,7 +339,6 @@ public class DocumentParser {
                                                   final String packageName) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element introduceElement = (Element)it2.next();
-
             if (introduceElement.getName().trim().equals("introduce")) {
                 String klass = introduceElement.attributeValue("class");
                 String name = introduceElement.attributeValue("name");
@@ -398,7 +357,6 @@ public class DocumentParser {
 
                 // load the mixin to determine if it is a pure interface introduction
                 Class mixin = null;
-
                 try {
                     mixin = aspectClass.getClassLoader().loadClass(packageName + klass);
                 } catch (ClassNotFoundException e) {
@@ -416,7 +374,6 @@ public class DocumentParser {
                     for (Iterator it1 = introduceElement.elementIterator("bind-to"); it1.hasNext();) {
                         Element bindToElement = (Element)it1.next();
                         String pointcut = bindToElement.attributeValue("pointcut");
-
                         DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(pointcut, name,
                                                                                                packageName + klass,
                                                                                                aspectDef);
@@ -425,13 +382,10 @@ public class DocumentParser {
                     // mixin introduction
                     Class[] introduced = mixin.getInterfaces();
                     String[] introducedInterfaceNames = new String[introduced.length];
-
                     for (int i = 0; i < introduced.length; i++) {
                         introducedInterfaceNames[i] = introduced[i].getName();
                     }
-
                     Method[] methods = (Method[])TransformationUtil.createSortedMethodList(mixin).toArray(new Method[] {  });
-
                     DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(bindTo, name,
                                                                                   introducedInterfaceNames, methods,
                                                                                   deploymentModel, aspectDef);
@@ -440,7 +394,6 @@ public class DocumentParser {
                     for (Iterator it1 = introduceElement.elementIterator("bind-to"); it1.hasNext();) {
                         Element bindToElement = (Element)it1.next();
                         String pointcut = bindToElement.attributeValue("pointcut");
-
                         DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(pointcut, name,
                                                                                       introducedInterfaceNames,
                                                                                       methods, deploymentModel,
@@ -524,10 +477,8 @@ public class DocumentParser {
         for (Iterator it1 = root.elementIterator("include"); it1.hasNext();) {
             String includePackage = "";
             Element includeElement = (Element)it1.next();
-
             for (Iterator it2 = includeElement.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute)it2.next();
-
                 if (attribute.getName().trim().equalsIgnoreCase("package")) {
                     // handle base package
                     if (packageName.endsWith(".*")) {
@@ -538,19 +489,16 @@ public class DocumentParser {
 
                     // handle exclude package
                     includePackage = packageName + attribute.getValue().trim();
-
                     if (includePackage.endsWith(".*")) {
                         includePackage = includePackage.substring(0, includePackage.length() - 2);
                     } else if (includePackage.endsWith(".")) {
                         includePackage = includePackage.substring(0, includePackage.length() - 1);
                     }
-
                     break;
                 } else {
                     continue;
                 }
             }
-
             if (includePackage.length() != 0) {
                 definition.addIncludePackage(includePackage);
             }
@@ -569,10 +517,8 @@ public class DocumentParser {
         for (Iterator it1 = root.elementIterator("exclude"); it1.hasNext();) {
             String excludePackage = "";
             Element excludeElement = (Element)it1.next();
-
             for (Iterator it2 = excludeElement.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute)it2.next();
-
                 if (attribute.getName().trim().equalsIgnoreCase("package")) {
                     // handle base package
                     if (packageName.endsWith(".*")) {
@@ -611,10 +557,8 @@ public class DocumentParser {
         for (Iterator it1 = root.elementIterator("prepare"); it1.hasNext();) {
             String preparePackage = "";
             Element prepareElement = (Element)it1.next();
-
             for (Iterator it2 = prepareElement.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute)it2.next();
-
                 if (attribute.getName().trim().equals("package")) {
                     // handle base package
                     if (packageName.endsWith(".*")) {
@@ -625,19 +569,16 @@ public class DocumentParser {
 
                     // handle prepare package
                     preparePackage = packageName + attribute.getValue().trim();
-
                     if (preparePackage.endsWith(".*")) {
                         preparePackage = preparePackage.substring(0, preparePackage.length() - 2);
                     } else if (preparePackage.endsWith(".")) {
                         preparePackage = preparePackage.substring(0, preparePackage.length() - 1);
                     }
-
                     break;
                 } else {
                     continue;
                 }
             }
-
             if (preparePackage.length() != 0) {
                 definition.addPreparePackage(preparePackage);
             }
@@ -652,16 +593,13 @@ public class DocumentParser {
      */
     private static List parseSystemElements(final ClassLoader loader, final Element root) {
         final List systemDefs = new ArrayList();
-
         for (Iterator it1 = root.elementIterator("system"); it1.hasNext();) {
             Element system = (Element)it1.next();
             SystemDefinition definition = parseSystemElement(loader, system, getBasePackage(system));
-
             if (definition != null) {
                 systemDefs.add(definition);
             }
         }
-
         return systemDefs;
     }
 

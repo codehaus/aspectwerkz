@@ -60,22 +60,17 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         m_logString = "";
         addAdviceTestMethod();
         assertEquals("before1 invocation after1 ", m_logString);
-
         MethodInfo methodMetaData = null;
-
         try {
             methodMetaData = JavaMethodInfo.getMethodInfo(getClass().getMethod("addAdviceTestMethod", new Class[] {  }));
         } catch (NoSuchMethodException e) {
             e.printStackTrace(); //To change body of catch statement use File | Settings | File Templates.
         }
-
         Pointcut methodPointcut = (Pointcut)SystemLoader.getSystem(this.getClass()).getAspectManager("tests")
                                                         .getPointcutManager(ASPECT_NAME)
                                                         .getPointcuts(new ExpressionContext(PointcutType.EXECUTION,
                                                                                             methodMetaData, null)).get(0);
-
         methodPointcut.addAroundAdvice("test.aspect.DynamicDeploymentTestAspect.advice2");
-
         m_logString = "";
         addAdviceTestMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
@@ -88,27 +83,20 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         m_logString = "";
         removeAdviceTestMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
-
         MethodInfo methodMetaData = null;
-
         try {
             methodMetaData = JavaMethodInfo.getMethodInfo(getClass().getMethod("removeAdviceTestMethod",
                                                                                new Class[] {  }));
         } catch (NoSuchMethodException e) {
             e.printStackTrace(); //To change body of catch statement use File | Settings | File Templates.
         }
-
         Pointcut methodPointcut = (Pointcut)SystemLoader.getSystem(this).getAspectManager("tests")
                                                         .getPointcutManager(ASPECT_NAME)
                                                         .getPointcuts(new ExpressionContext(PointcutType.EXECUTION,
                                                                                             methodMetaData, null)).get(0);
-
         List advices = methodPointcut.getAroundAdviceIndexTuples();
-
         NameIndexTuple adviceTuple = (NameIndexTuple)advices.remove(0);
-
         methodPointcut.setAroundAdviceIndexTuples(advices);
-
         m_logString = "";
         removeAdviceTestMethod();
         assertEquals("before2 invocation after2 ", m_logString);
@@ -131,17 +119,13 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 
             // test the some stuff for the aspect
             assertNotNull(SystemLoader.getSystem(this).getAspectManager("tests").getPointcutManager(NEW_ASPECT_NAME));
-
             assertEquals(DeploymentModel.PER_INSTANCE,
                          SystemLoader.getSystem(this).getAspectManager("tests").getPointcutManager(NEW_ASPECT_NAME)
                                      .getDeploymentModel());
-
             assertEquals(NEW_ASPECT_NAME,
                          SystemLoader.getSystem(this).getAspectManager("tests").getPointcutManager(NEW_ASPECT_NAME)
                                      .getName());
-
             MethodInfo methodMetaData = null;
-
             try {
                 methodMetaData = JavaMethodInfo.getMethodInfo(getClass().getMethod("createAspectTestMethod",
                                                                                    new Class[] {  }));

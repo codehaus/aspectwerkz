@@ -53,12 +53,10 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
      */
     public static JavaConstructorInfo getConstructorInfo(final Constructor constructor) {
         JavaConstructorInfo constructorInfo = (JavaConstructorInfo)s_cache.get(constructor);
-
         if (constructorInfo == null) {
             new JavaClassInfo(constructor.getDeclaringClass());
             constructorInfo = (JavaConstructorInfo)s_cache.get(constructor);
         }
-
         return constructorInfo;
     }
 
@@ -80,24 +78,19 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
     public ClassInfo[] getParameterTypes() {
         if (m_parameterTypes == null) {
             Class[] parameterTypes = ((Constructor)m_member).getParameterTypes();
-
             m_parameterTypes = new ClassInfo[parameterTypes.length];
-
             for (int i = 0; i < parameterTypes.length; i++) {
                 Class parameterType = parameterTypes[i];
                 ClassInfo metaData;
-
                 if (m_classInfoRepository.hasClassInfo(parameterType.getName())) {
                     metaData = m_classInfoRepository.getClassInfo(parameterType.getName());
                 } else {
                     metaData = new JavaClassInfo(parameterType);
                     m_classInfoRepository.addClassInfo(metaData);
                 }
-
                 m_parameterTypes[i] = metaData;
             }
         }
-
         return m_parameterTypes;
     }
 
@@ -109,24 +102,19 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
     public ClassInfo[] getExceptionTypes() {
         if (m_exceptionTypes == null) {
             Class[] exceptionTypes = ((Constructor)m_member).getExceptionTypes();
-
             m_exceptionTypes = new ClassInfo[exceptionTypes.length];
-
             for (int i = 0; i < exceptionTypes.length; i++) {
                 Class exceptionType = exceptionTypes[i];
                 ClassInfo metaData;
-
                 if (m_classInfoRepository.hasClassInfo(exceptionType.getName())) {
                     metaData = m_classInfoRepository.getClassInfo(exceptionType.getName());
                 } else {
                     metaData = new JavaClassInfo(exceptionType);
                     m_classInfoRepository.addClassInfo(metaData);
                 }
-
                 m_exceptionTypes[i] = metaData;
             }
         }
-
         return m_exceptionTypes;
     }
 

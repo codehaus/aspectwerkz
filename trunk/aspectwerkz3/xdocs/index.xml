@@ -1,16 +1,11 @@
 <?xml version="1.0"?>
-
 <document>
-
     <properties>
         <title>Overview</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
     </properties>
-
     <body>
-
         <section name="AspectWerkz">
-
             <subsection name="Simple, dynamic, lightweight and powerful AOP for Java">
                 <p>
                     <code>AspectWerkz</code> is a dynamic, lightweight and
@@ -50,11 +45,8 @@
                     <a href="http://www.bea.com">BEA Systems</a>
                     <img src="bea.bmp" alt="BEA Systems"/>
                 </p>
-
             </subsection>
-
         </section>
-
     </body>
 </document>
 

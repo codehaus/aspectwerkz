@@ -46,11 +46,9 @@ public class ExpressionContext {
         if (reflectionInfo == null) {
             throw new IllegalArgumentException("reflection info can not be null");
         }
-
         m_pointcutType = pointcutType;
         m_matchingReflectionInfo = reflectionInfo;
         m_withinReflectionInfo = withinReflectionInfo;
-
         if (reflectionInfo instanceof MethodInfo) {
             m_reflectionInfoType = METHOD_INFO;
         } else if (reflectionInfo instanceof ConstructorInfo) {

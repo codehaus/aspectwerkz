@@ -1,19 +1,15 @@
 <!DOCTYPE aspectwerkz PUBLIC
     "-//AspectWerkz//DTD 0.10//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_10.dtd">
-
 <aspectwerkz>
     <system id="samples-new">
         <package name="examples">
-
             <aspect class="caching.CachingAspect" deployment-model="perInstance">
                 <param name="timeout" value="10"/>
-
                 <pointcut name="callee"
                     expression="int examples.caching.Pi.getPiDecimal(int)"/>
                 <pointcut name="caller"
                     expression="examples.caching.*->int examples.caching.Pi.getPiDecimal(int)"/>
-
                 <advice name="invocationCounter" type="before" bind-to="caller"/>
                 <advice name="cache" type="around" bind-to="callee"/>
 

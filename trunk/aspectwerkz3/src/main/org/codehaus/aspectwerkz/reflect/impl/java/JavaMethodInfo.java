@@ -58,12 +58,10 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
      */
     public static JavaMethodInfo getMethodInfo(final Method method) {
         JavaMethodInfo methodInfo = (JavaMethodInfo)s_cache.get(method);
-
         if (methodInfo == null) { //  declaring class is not loaded yet; load it and retry
             new JavaClassInfo(method.getDeclaringClass());
             methodInfo = (JavaMethodInfo)s_cache.get(method);
         }
-
         return methodInfo;
     }
 
@@ -85,7 +83,6 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     public ClassInfo getReturnType() {
         if (m_returnType == null) {
             Class returnTypeClass = ((Method)m_member).getReturnType();
-
             if (m_classInfoRepository.hasClassInfo(returnTypeClass.getName())) {
                 m_returnType = m_classInfoRepository.getClassInfo(returnTypeClass.getName());
             } else {
@@ -93,7 +90,6 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
                 m_classInfoRepository.addClassInfo(m_returnType);
             }
         }
-
         return m_returnType;
     }
 
@@ -105,24 +101,19 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     public ClassInfo[] getParameterTypes() {
         if (m_parameterTypes == null) {
             Class[] parameterTypes = ((Method)m_member).getParameterTypes();
-
             m_parameterTypes = new ClassInfo[parameterTypes.length];
-
             for (int i = 0; i < parameterTypes.length; i++) {
                 Class parameterType = parameterTypes[i];
                 ClassInfo metaData;
-
                 if (m_classInfoRepository.hasClassInfo(parameterType.getName())) {
                     metaData = m_classInfoRepository.getClassInfo(parameterType.getName());
                 } else {
                     metaData = new JavaClassInfo(parameterType);
                     m_classInfoRepository.addClassInfo(metaData);
                 }
-
                 m_parameterTypes[i] = metaData;
             }
         }
-
         return m_parameterTypes;
     }
 
@@ -134,24 +125,19 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     public ClassInfo[] getExceptionTypes() {
         if (m_exceptionTypes == null) {
             Class[] exceptionTypes = ((Method)m_member).getExceptionTypes();
-
             m_exceptionTypes = new ClassInfo[exceptionTypes.length];
-
             for (int i = 0; i < exceptionTypes.length; i++) {
                 Class exceptionType = exceptionTypes[i];
                 ClassInfo metaData;
-
                 if (m_classInfoRepository.hasClassInfo(exceptionType.getName())) {
                     metaData = m_classInfoRepository.getClassInfo(exceptionType.getName());
                 } else {
                     metaData = new JavaClassInfo(exceptionType);
                     m_classInfoRepository.addClassInfo(metaData);
                 }
-
                 m_exceptionTypes[i] = metaData;
             }
         }
-
         return m_exceptionTypes;
     }
 

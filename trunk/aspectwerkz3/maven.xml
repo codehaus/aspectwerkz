@@ -5,13 +5,11 @@
     <!-- =================================================== -->
     <property name="pathseparator" value=""/>
     <property name="executableSuffix" value=""/>
-
     <property name="target.dir" value="${basedir}/target"/>
     <property name="lib.dir" value="${basedir}/lib"/>
     <property name="bin.dir" value="${basedir}/bin"/>
     <property name="dist.dir" value="${basedir}/dist"/>
     <property name="src.dir" value="${basedir}/src"/>
-
     <property name="main.classes" value="${target.dir}/classes"/>
     <property name="test.classes" value="${target.dir}/test-classes"/>
     <property name="samples.classes" value="${target.dir}/samples-classes"/>
@@ -83,7 +81,7 @@
     <!--  offline transformation of the samples -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:transform">
-	<attainGoal name="aspectwerkz:samples:aspectc"/>
+        <attainGoal name="aspectwerkz:samples:aspectc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-offline ${basedir}/src/samples/samples-attribdef.xml -verbose -verify -cp ${extensions.classes} ${samples.classes}"/>
         </exec>
@@ -173,14 +171,12 @@
             <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
         </exec>
     </goal>
-
     <goal name="aspectwerkz:test:nojit">
         <attainGoal name="aspectwerkz:test:aspectc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-Daspectwerkz.jit.off=true -cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
         </exec>
     </goal>
-
     <goal name="aspectwerkz:test:bootcl">
         <attainGoal name="aspectwerkz:test:aspectc"/>
         <exec executable="java">
@@ -414,7 +410,6 @@
     <preGoal name="xdoc:jelly-transform">
         <attainGoal name="faq"/>
     </preGoal>
-
 </project>
 
 

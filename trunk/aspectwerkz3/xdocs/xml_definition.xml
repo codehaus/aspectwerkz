@@ -1,13 +1,10 @@
 <?xml version="1.0"?>
-
 <document>
-
     <properties>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <author email="alex at gnilux dot com">alexandre vasseur</author>
         <title>XML definition</title>
     </properties>
-
     <body>
         <section name="XML definition">
             <p>
@@ -21,7 +18,6 @@
                 section for best practices.
             </p>
         </section>
-
         <section name="Table of Contents">
             <p>
                 <ol>
@@ -46,7 +42,6 @@
                 </ol>
             </p>
         </section>
-
         <section name="Aspects">
             <p>
                 An aspect is defined in XML using the
@@ -81,14 +76,12 @@
                 <code>aspect</code> elements you then define the poincuts, advice and introductions.
             </p>
         </section>
-
         <section name="Pointcuts">
             <p>
                 The pointcut is the construct that picks out join points, i.e. selects sets of well-defined points in the program flow.
                 In the XML defintion pointcuts are defined using the
                 <code>pointcut</code> element.
             </p>
-
             <p>
                 When defining a
                 <code>pointcut</code> there are two attributes that needs to be specified:
@@ -123,7 +116,6 @@
                     <br/>
                 </ul>
             </p>
-
             <p>
                 Example of some
                 <code>pointcut</code> definitions:
@@ -139,15 +131,12 @@
 </aspect>
                 ]]></source>
             </p>
-
         </section>
-
         <section name="Advice">
             <p>
                 In the XML defintion advice are defined using the
                 <code>advice</code> element.
             </p>
-
             <p>
                 When defining the
                 <code>advice</code> there are three attributes that
@@ -182,7 +171,6 @@
                     <br/>
                 </ul>
             </p>
-
             <p>
                 Example:
                 <source><![CDATA[
@@ -195,11 +183,8 @@
         bind-to="execution(int examples.caching.Pi.getPiDecimal(int))"/>
                  ]]></source>
             </p>
-
         </section>
-
         <section name="Introductions">
-
             <p>
                 When defining the mixin there are two attributes that needs to be specified:
                 <ul>
@@ -214,7 +199,6 @@
                     <br/>
                 </ul>
             </p>
-
             <p>
                 <b>XML definition</b>
             </p>
@@ -228,8 +212,6 @@
                 ]]></source>
             </p>
         </section>
-
-
         <section name="Passing parameters to aspects">
             <p>
                 You also have the option of passing parameters to your aspects.
@@ -253,7 +235,6 @@
                 the parameter value as a String.
             </p>
         </section>
-
         <section name="Example of an XML definition">
             <p>
                 Here is an example where all the definitions are put together into a single
@@ -289,7 +270,5 @@
 </aspectwerkz>
             ]]></source>
         </section>
-
     </body>
-
 </document>

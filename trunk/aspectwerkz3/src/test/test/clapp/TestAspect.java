@@ -25,7 +25,6 @@ public class TestAspect {
      */
     public Object execute(final JoinPoint joinPoint) throws Throwable {
         Integer result = (Integer)joinPoint.proceed();
-
         return new Integer(-1 * result.intValue());
     }
 }

@@ -26,11 +26,8 @@ public final class Util {
 
     static {
         byte b = 0;
-
         BYTE_DEFAULT_VALUE = new Byte(b);
-
         short s = 0;
-
         SHORT_DEFAULT_VALUE = new Short(s);
     }
 
@@ -45,18 +42,13 @@ public final class Util {
         if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
-
         if (info == null) {
             throw new IllegalArgumentException("info can not be null");
         }
-
         int hash = 17;
-
         hash = (37 * hash) + className.hashCode();
         hash = (37 * hash) + info.hashCode();
-
         Integer hashKey = new Integer(hash);
-
         return hashKey;
     }
 
@@ -72,7 +64,6 @@ public final class Util {
         if (exception == null) {
             throw new IllegalArgumentException("exception can not be null");
         }
-
         if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
         }

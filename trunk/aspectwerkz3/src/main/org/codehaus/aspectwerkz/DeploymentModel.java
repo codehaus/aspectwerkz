@@ -49,7 +49,6 @@ public final class DeploymentModel {
      */
     public static String getDeploymentModelAsString(final int type) {
         final String deploymentModel;
-
         switch (type) {
             case PER_JVM:
                 deploymentModel = SystemDefinition.PER_JVM;
@@ -66,14 +65,12 @@ public final class DeploymentModel {
             default:
                 throw new IllegalArgumentException("no such deployment model type");
         }
-
         return deploymentModel;
     }
 
     /**
      * Check mixin deployment model is compatible with aspect' ones Supported models are: Mixin            Aspect perJVM
-     *            perJVM perClass            perJVM,perClass perInstance        perJVM,perClass,perInstance perThread
-     * perThread
+     * perJVM perClass            perJVM,perClass perInstance        perJVM,perClass,perInstance perThread perThread
      *
      * @param mixinModel
      * @param aspectModel

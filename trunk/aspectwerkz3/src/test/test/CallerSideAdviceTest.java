@@ -21,10 +21,8 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
     public void testAroundAdvicedMemberMethod() {
         s_logString = "";
-
         try {
             CallerSideTestHelper helper = new CallerSideTestHelper();
-
             helper.invokeMemberMethodAround("a", "b");
             assertEquals("before after ", s_logString);
         } catch (Exception e) {
@@ -46,10 +44,8 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
     public void testAroundAdvicedStaticMethod() {
         s_logString = "";
-
         try {
             CallerSideTestHelper helper = new CallerSideTestHelper();
-
             helper.invokeStaticMethodAround();
             assertEquals("before after ", s_logString);
         } catch (Exception e) {
@@ -59,11 +55,9 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
     public void testAroundAdvicedStaticMethodPrimitiveType() {
         s_logString = "";
-
         try {
             CallerSideTestHelper helper = new CallerSideTestHelper();
             int res = helper.invokeStaticMethodAroundPrimitiveType();
-
             assertEquals("before after ", s_logString);
             assertEquals(res, 3);
         } catch (Exception e) {
@@ -73,11 +67,9 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
     public void testAroundAdvicedMemberMethodPrimitiveType() {
         s_logString = "";
-
         try {
             CallerSideTestHelper helper = new CallerSideTestHelper();
             int res = helper.invokeMemberMethodAroundPrimitiveType();
-
             assertEquals("before after ", s_logString);
             assertEquals(res, 2);
         } catch (Exception e) {
@@ -87,10 +79,8 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
     public void testAroundAdvicedMemberMethodVoidType() {
         s_logString = "";
-
         try {
             CallerSideTestHelper helper = new CallerSideTestHelper();
-
             helper.invokeMemberMethodAroundVoidType();
             assertEquals("before after ", s_logString);
         } catch (Exception e) {
@@ -100,10 +90,8 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
     public void testPreAdvicedMemberMethod() {
         s_logString = "";
-
         try {
             CallerSideTestHelper helper = new CallerSideTestHelper();
-
             helper.invokeMemberMethodPre();
             assertEquals("pre1 pre2 ", s_logString);
         } catch (Exception e) {
@@ -113,10 +101,8 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
     public void testPostAdvicedMemberMethod() {
         s_logString = "";
-
         try {
             CallerSideTestHelper helper = new CallerSideTestHelper();
-
             helper.invokeMemberMethodPost();
             assertEquals("post2 post1 ", s_logString);
         } catch (Exception e) {
@@ -126,10 +112,8 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
     public void testPrePostAdvicedMemberMethod() {
         s_logString = "";
-
         try {
             CallerSideTestHelper helper = new CallerSideTestHelper();
-
             helper.invokeMemberMethodPrePost();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
         } catch (Exception e) {
@@ -139,7 +123,6 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
     public void testPreAdvicedStaticMethod() {
         s_logString = "";
-
         try {
             CallerSideTestHelper.invokeStaticMethodPre();
             assertEquals("pre1 pre2 ", s_logString);
@@ -150,7 +133,6 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
     public void testPostAdvicedStaticMethod() {
         s_logString = "";
-
         try {
             CallerSideTestHelper.invokeStaticMethodPost();
             assertEquals("post2 post1 ", s_logString);
@@ -161,7 +143,6 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
     public void testPrePostAdvicedStaticMethod() {
         s_logString = "";
-
         try {
             CallerSideTestHelper.invokeStaticMethodPrePost();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);

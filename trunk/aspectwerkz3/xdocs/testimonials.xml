@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-
 <document>
-
     <properties>
         <title>Testimonials</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
     </properties>
-
     <body>
         <section name="Testimonials">
-
             <subsection name="Multimedia Caf&#233;: commercial usage">
                 <p>
                     "Multimedia Caf&#233; (www.mmcafe.com.br) is a web development company
@@ -45,7 +41,6 @@
                     mmPublish, Bluebox Technologies
                 </p>
             </subsection>
-
             <subsection name="AspectWerkz: aspects done right">
                 <p>
                     "I believe a new evolutionary step in the history of
@@ -67,7 +62,6 @@
                     <a href="http://www.freeroller.net/page/cbeust/20030409#aspectwerks_aspects_done_right">C&#233;dric Beust</a>
                 </p>
             </subsection>
-
             <subsection name="And The Winner of the AOP Wars is..">
                 <p>
                     So drum roll please, the winner in the AOP wars is none other than...AspectWerkz!
@@ -82,7 +76,6 @@
                     <a href="http://www.freeroller.net/page/ceperez/20030620#and_the_winner_of_the">Carlos E. Perez</a>
                 </p>
             </subsection>
-
             <subsection name="Aspects are now usable">
                 <p>
                     "A new software package Aspectwerkz looks like it might really
@@ -102,7 +95,6 @@
                     <a href="http://homepage.mac.com/spullara/rants/C1464297901/E1986247138/index.html">Sam Pullara</a>
                 </p>
             </subsection>
-
             <subsection name="AspectWerkz is impressive">
                 <p>
                     "AspectWerks is the new kid on the java AOP block. The brain
@@ -117,9 +109,7 @@
                     <a href="http://www.rocketred.com.au/blogs/kevin/archives/2003_04_07.html#000157">Kevin O'Neill</a>
                 </p>
             </subsection>
-
         </section>
     </body>
-
 </document>
 

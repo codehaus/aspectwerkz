@@ -95,11 +95,8 @@ public class TestAspect {
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
-
         final Object result = joinPoint.proceed();
-
         PointcutExpressionTest.log("after1 ");
-
         return result;
     }
 
@@ -108,11 +105,8 @@ public class TestAspect {
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
-
         final Object result = joinPoint.proceed();
-
         PointcutExpressionTest.log("after1 ");
-
         return result;
     }
 
@@ -121,11 +115,8 @@ public class TestAspect {
      */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
-
         final Object result = joinPoint.proceed();
-
         PointcutExpressionTest.log("after1 ");
-
         return result;
     }
 
@@ -134,11 +125,8 @@ public class TestAspect {
      */
     public Object advice4(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
-
         final Object result = joinPoint.proceed();
-
         PointcutExpressionTest.log("after1 ");
-
         return result;
     }
 
@@ -147,11 +135,8 @@ public class TestAspect {
      */
     public Object advice5(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
-
         final Object result = joinPoint.proceed();
-
         PointcutExpressionTest.log("after1 ");
-
         return result;
     }
 
@@ -160,11 +145,8 @@ public class TestAspect {
      */
     public Object advice6(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
-
         final Object result = joinPoint.proceed();
-
         PointcutExpressionTest.log("after1 ");
-
         return result;
     }
 }

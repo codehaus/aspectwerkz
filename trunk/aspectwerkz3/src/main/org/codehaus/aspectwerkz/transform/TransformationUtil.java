@@ -128,12 +128,9 @@ public final class TransformationUtil {
 
         // get all public methods including the inherited methods
         java.lang.reflect.Method[] methods = klass.getMethods();
-
         List methodList = new ArrayList(methods.length);
-
         for (int i = 0; i < methods.length; i++) {
             java.lang.reflect.Method method = methods[i];
-
             if (!method.getName().equals("equals") && !method.getName().equals("hashCode")
                 && !method.getName().equals("getClass") && !method.getName().equals("toString")
                 && !method.getName().equals("wait") && !method.getName().equals("notify")
@@ -145,9 +142,7 @@ public final class TransformationUtil {
                 methodList.add(method);
             }
         }
-
         Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
-
         return methodList;
     }
 
@@ -164,12 +159,9 @@ public final class TransformationUtil {
 
         // get all public methods including the inherited methods
         CtMethod[] methods = klass.getMethods();
-
         List methodList = new ArrayList(methods.length);
-
         for (int i = 0; i < methods.length; i++) {
             CtMethod method = methods[i];
-
             if (!method.getName().equals("equals") && !method.getName().equals("hashCode")
                 && !method.getName().equals("getClass") && !method.getName().equals("toString")
                 && !method.getName().equals("wait") && !method.getName().equals("notify")
@@ -181,9 +173,7 @@ public final class TransformationUtil {
                 methodList.add(method);
             }
         }
-
         Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
-
         return methodList;
     }
 
@@ -220,15 +210,12 @@ public final class TransformationUtil {
             return true;
         } else {
             ClassInfo[] interfaces = classInfo.getInterfaces();
-
             for (int i = 0; i < interfaces.length; i++) {
                 ClassInfo anInterface = interfaces[i];
-
                 if (TransformationUtil.implementsInterface(anInterface, interfaceName)) {
                     return true;
                 }
             }
-
             return TransformationUtil.implementsInterface(classInfo.getSuperClass(), interfaceName);
         }
     }
@@ -241,7 +228,6 @@ public final class TransformationUtil {
      */
     public static int getModifiersAsInt(final String[] modifiers) {
         int accessFlags = 0;
-
         for (int i = 0; i < modifiers.length; i++) {
             if (modifiers[i].equals("abstract")) {
                 accessFlags |= Modifier.ABSTRACT;
@@ -269,7 +255,6 @@ public final class TransformationUtil {
                 accessFlags |= Modifier.VOLATILE;
             }
         }
-
         return accessFlags;
     }
 
@@ -282,23 +267,17 @@ public final class TransformationUtil {
     public static int calculateHash(final Class klass) {
         int hash = 17;
         Method[] methods = klass.getDeclaredMethods();
-
         for (int i = 0; i < methods.length; i++) {
             hash = (37 * hash) + calculateHash(methods[i]);
         }
-
         Constructor[] constructors = klass.getDeclaredConstructors();
-
         for (int i = 0; i < constructors.length; i++) {
             hash = (37 * hash) + calculateHash(constructors[i]);
         }
-
         Field[] fields = klass.getDeclaredFields();
-
         for (int i = 0; i < fields.length; i++) {
             hash = (37 * hash) + calculateHash(fields[i]);
         }
-
         return hash;
     }
 
@@ -311,23 +290,17 @@ public final class TransformationUtil {
     public static int calculateHash(final CtClass ctClass) throws NotFoundException {
         int hash = 17;
         CtMethod[] methods = ctClass.getDeclaredMethods();
-
         for (int i = 0; i < methods.length; i++) {
             hash = (37 * hash) + calculateHash(methods[i]);
         }
-
         CtConstructor[] constructors = ctClass.getDeclaredConstructors();
-
         for (int i = 0; i < constructors.length; i++) {
             hash = (37 * hash) + calculateHash(constructors[i]);
         }
-
         CtField[] fields = ctClass.getDeclaredFields();
-
         for (int i = 0; i < fields.length; i++) {
             hash = (37 * hash) + calculateHash(fields[i]);
         }
-
         return hash;
     }
 
@@ -339,15 +312,11 @@ public final class TransformationUtil {
      */
     public static int calculateHash(final java.lang.reflect.Method method) {
         int hash = 17;
-
         hash = (37 * hash) + method.getName().hashCode();
-
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             Class type = method.getParameterTypes()[i];
-
             hash = (37 * hash) + type.getName().hashCode();
         }
-
         return hash;
     }
 
@@ -359,17 +328,13 @@ public final class TransformationUtil {
      */
     public static int calculateHash(final CtMethod method) throws NotFoundException {
         int hash = 17;
-
         hash = (37 * hash) + method.getName().hashCode();
-
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             CtClass type = method.getParameterTypes()[i];
             String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(type.getName().replace('/',
                                                                                                                      '.'));
-
             hash = (37 * hash) + name.hashCode();
         }
-
         return hash;
     }
 
@@ -381,15 +346,11 @@ public final class TransformationUtil {
      */
     public static int calculateHash(final Constructor constructor) {
         int hash = 17;
-
         hash = (37 * hash) + constructor.getName().hashCode();
-
         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
             Class type = constructor.getParameterTypes()[i];
-
             hash = (37 * hash) + type.getName().replace('/', '.').hashCode();
         }
-
         return hash;
     }
 
@@ -401,17 +362,13 @@ public final class TransformationUtil {
      */
     public static int calculateHash(final CtConstructor constructor) throws NotFoundException {
         int hash = 17;
-
         hash = (37 * hash) + constructor.getName().hashCode();
-
         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
             CtClass type = constructor.getParameterTypes()[i];
             String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(type.getName().replace('/',
                                                                                                                      '.'));
-
             hash = (37 * hash) + name.hashCode();
         }
-
         return hash;
     }
 
@@ -423,13 +380,9 @@ public final class TransformationUtil {
      */
     public static int calculateHash(final Field field) {
         int hash = 17;
-
         hash = (37 * hash) + field.getName().hashCode();
-
         Class type = field.getType();
-
         hash = (37 * hash) + type.getName().hashCode();
-
         return hash;
     }
 
@@ -441,14 +394,10 @@ public final class TransformationUtil {
      */
     public static int calculateHash(final CtField field) throws NotFoundException {
         int hash = 17;
-
         hash = (37 * hash) + field.getName().hashCode();
-
         String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(field.getType().getName()
                                                                                                .replace('/', '.'));
-
         hash = (37 * hash) + name.hashCode();
-
         return hash;
     }
 
@@ -462,14 +411,12 @@ public final class TransformationUtil {
      */
     public static String getPrefixedMethodName(final String methodName, final int methodSequence, final String className) {
         final StringBuffer buf = new StringBuffer();
-
         buf.append(ORIGINAL_METHOD_PREFIX);
         buf.append(methodName);
         buf.append(DELIMITER);
         buf.append(methodSequence);
         buf.append(DELIMITER);
         buf.append(className.replace('.', '_'));
-
         return buf.toString();
     }
 
@@ -481,13 +428,10 @@ public final class TransformationUtil {
      */
     public static int getJoinPointIndex(final CtClass klass) {
         byte[] attribute = klass.getAttribute(JOIN_POINT_INDEX_ATTRIBUTE);
-
         if (attribute == null) {
             klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE, new byte[] { new Integer(0).byteValue() });
-
             return 0;
         }
-
         return new Integer(attribute[0]).intValue();
     }
 
@@ -509,7 +453,6 @@ public final class TransformationUtil {
      */
     public static boolean isMethodStatic(final MethodInfo methodInfo) {
         int modifiers = methodInfo.getModifiers();
-
         if ((modifiers & javassist.Modifier.STATIC) != 0) {
             return true;
         } else {
@@ -527,11 +470,8 @@ public final class TransformationUtil {
                                              final Context context) throws NotFoundException, CannotCompileException {
         if (!JavassistHelper.hasField(ctClass, ASPECT_MANAGER_FIELD)) {
             CtField field = new CtField(ctClass.getClassPool().get(ASPECT_MANAGER_CLASS), ASPECT_MANAGER_FIELD, ctClass);
-
             field.setModifiers(javassist.Modifier.STATIC | javassist.Modifier.PRIVATE | javassist.Modifier.FINAL);
-
             StringBuffer body = new StringBuffer();
-
             body.append(SYSTEM_LOADER_CLASS);
             body.append("#getSystem(");
             body.append(STATIC_CLASS_FIELD);
@@ -565,7 +505,6 @@ public final class TransformationUtil {
                                     throws NotFoundException, CannotCompileException {
         if (!JavassistHelper.hasField(ctClass, STATIC_CLASS_FIELD)) {
             CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"), STATIC_CLASS_FIELD, ctClass);
-
             field.setModifiers(javassist.Modifier.STATIC | javassist.Modifier.PRIVATE | javassist.Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class#forName(\"" + ctClass.getName().replace('/', '.') + "\")");
             context.markAsAdvised();
@@ -583,11 +522,8 @@ public final class TransformationUtil {
         if (!JavassistHelper.hasField(ctClass, JOIN_POINT_MANAGER_FIELD)) {
             CtField field = new CtField(ctClass.getClassPool().get(JOIN_POINT_MANAGER_CLASS), JOIN_POINT_MANAGER_FIELD,
                                         ctClass);
-
             field.setModifiers(javassist.Modifier.STATIC | javassist.Modifier.PRIVATE);
-
             StringBuffer body = new StringBuffer();
-
             body.append(JOIN_POINT_MANAGER_CLASS);
             body.append('#');
             body.append(GET_JOIN_POINT_MANAGER);

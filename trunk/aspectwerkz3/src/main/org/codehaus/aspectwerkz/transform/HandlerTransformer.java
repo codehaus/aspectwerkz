@@ -47,41 +47,31 @@ public class HandlerTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = SystemDefinitionContainer.getDefinitionsContext();
-
         m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe reentrant
-
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
-
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
-
             if (classFilter(definition, new ExpressionContext(PointcutType.HANDLER, classInfo, classInfo), ctClass)) {
                 return;
             }
-
             ctClass.instrument(new ExprEditor() {
                     public void edit(Handler handlerExpr) throws CannotCompileException {
                         try {
                             CtClass exceptionClass = null;
-
                             try {
                                 exceptionClass = handlerExpr.getType();
                             } catch (NullPointerException e) {
                                 return;
                             }
-
                             CtBehavior where = null;
-
                             try {
                                 where = handlerExpr.where();
                             } catch (RuntimeException e) {
                                 // <clinit> access leads to a bug in Javassist
                                 where = ctClass.getClassInitializer();
                             }
-
                             MemberInfo withinMethodInfo = null;
-
                             if (where instanceof CtMethod) {
                                 withinMethodInfo = JavassistMethodInfo.getMethodInfo((CtMethod)where,
                                                                                      context.getLoader());
@@ -89,16 +79,12 @@ public class HandlerTransformer implements Transformer {
                                 withinMethodInfo = JavassistConstructorInfo.getConstructorInfo((CtConstructor)where,
                                                                                                context.getLoader());
                             }
-
                             ClassInfo exceptionClassInfo = new JavassistClassInfo(exceptionClass, context.getLoader());
-
                             ExpressionContext ctx = new ExpressionContext(PointcutType.HANDLER, exceptionClassInfo,
                                                                           withinMethodInfo);
-
                             if (definition.hasPointcut(ctx)) {
                                 // call the wrapper method instead of the callee method
                                 StringBuffer body = new StringBuffer();
-
                                 body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
                                 body.append('.');
                                 body.append(TransformationUtil.PROCEED_WITH_HANDLER_JOIN_POINT_METHOD);
@@ -108,7 +94,6 @@ public class HandlerTransformer implements Transformer {
                                 body.append(TransformationUtil.calculateHash(exceptionClass));
                                 body.append(',');
                                 body.append(m_joinPointIndex);
-
                                 if (Modifier.isStatic(where.getModifiers())) {
                                     body.append(", $1, (Object)null, \"");
                                 } else {
@@ -118,10 +103,8 @@ public class HandlerTransformer implements Transformer {
                                 // TODO: use a better signature (or remove)
                                 body.append(exceptionClass.getName().replace('/', '.'));
                                 body.append("\");");
-
                                 handlerExpr.insertBefore(body.toString());
                                 context.markAsAdvised();
-
                                 m_joinPointIndex++;
                             }
                         } catch (NotFoundException nfe) {
@@ -130,7 +113,6 @@ public class HandlerTransformer implements Transformer {
                     }
                 });
         }
-
         TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
 
@@ -146,21 +128,16 @@ public class HandlerTransformer implements Transformer {
         if (cg.isInterface()) {
             return true;
         }
-
         String className = cg.getName().replace('/', '.');
-
         if (definition.inExcludePackage(className)) {
             return true;
         }
-
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-
         if (definition.isAdvised(ctx)) {
             return false;
         }
-
         return true;
     }
 }

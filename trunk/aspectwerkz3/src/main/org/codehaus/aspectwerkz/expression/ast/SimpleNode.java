@@ -35,11 +35,9 @@ public class SimpleNode implements Node {
             children = new Node[i + 1];
         } else if (i >= children.length) {
             Node[] c = new Node[i + 1];
-
             System.arraycopy(children, 0, c, 0, children.length);
             children = c;
         }
-
         children[i] = n;
     }
 
@@ -67,7 +65,6 @@ public class SimpleNode implements Node {
                 children[i].jjtAccept(visitor, data);
             }
         }
-
         return data;
     }
 
@@ -88,11 +85,9 @@ public class SimpleNode implements Node {
        out its children. */
     public void dump(String prefix) {
         System.out.println(toString(prefix));
-
         if (children != null) {
             for (int i = 0; i < children.length; ++i) {
                 SimpleNode n = (SimpleNode)children[i];
-
                 if (n != null) {
                     n.dump(prefix + " ");
                 }

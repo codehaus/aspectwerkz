@@ -30,23 +30,19 @@ public class JDWPStarter extends AbstractStarter {
 
     public JDWPStarter(String opt, String main, String transport, String address) {
         super(opt, main);
-
         Map jdwpOpt = parseJdwp();
-
         if (jdwpOpt.containsKey("transport")) {
             this.transport = (String)jdwpOpt.get("transport");
         } else {
             this.transport = transport;
             jdwpOpt.put("transport", this.transport);
         }
-
         if (jdwpOpt.containsKey("address")) {
             this.address = (String)jdwpOpt.get("address");
         } else {
             this.address = address;
             jdwpOpt.put("address", this.address);
         }
-
         patchOptions(jdwpOpt);
     }
 
@@ -66,46 +62,35 @@ public class JDWPStarter extends AbstractStarter {
         if (opt.indexOf("-Xdebug") < 0) {
             opt = "-Xdebug " + opt;
         }
-
         jdwpOpt.put("server", "y");
         jdwpOpt.put("suspend", "y");
-
         StringBuffer jdwp = new StringBuffer("-Xrunjdwp:");
-
         List keys = new ArrayList(jdwpOpt.keySet());
 
         // JDWP options should start with transport=..,address=..
         // or it fails strangely
         //Collections.reverse(keys);
         keys = jdwpOptionSort(keys);
-
         for (Iterator i = keys.iterator(); i.hasNext();) {
             String key = (String)i.next();
-
             jdwp.append(key).append("=").append((String)jdwpOpt.get(key));
-
             if (i.hasNext()) {
                 jdwp.append(",");
             }
         }
-
         if (opt.indexOf("-Xrunjdwp:") < 0) {
             opt = jdwp + " " + opt;
         } else {
             int from = opt.indexOf("-Xrunjdwp:");
             int to = Math.min(opt.length(), opt.indexOf(' ', from));
             StringBuffer newOpt = new StringBuffer("");
-
             if (from > 0) {
                 newOpt.append(opt.substring(0, from));
             }
-
             newOpt.append(" ").append(jdwp);
-
             if (to < opt.length()) {
                 newOpt.append(" ").append(opt.substring(to, opt.length()));
             }
-
             opt = newOpt.toString();
         }
     }
@@ -117,25 +102,18 @@ public class JDWPStarter extends AbstractStarter {
         if (opt.indexOf("-Xrunjdwp:") < 0) {
             return new HashMap();
         }
-
         String jdwp = opt.substring(opt.indexOf("-Xrunjdwp:") + "-Xrunjdwp:".length(),
                                     Math.min(opt.length(), opt.indexOf(' ', opt.indexOf("-Xrunjdwp:"))));
-
         HashMap jdwpOpt = new HashMap();
         StringTokenizer stz = new StringTokenizer(jdwp, ",");
-
         while (stz.hasMoreTokens()) {
             String jdwpo = stz.nextToken();
-
             if (jdwpo.indexOf('=') < 0) {
                 System.err.println("WARN - unrecognized JDWP option: " + jdwpo);
-
                 continue;
             }
-
             jdwpOpt.put(jdwpo.substring(0, jdwpo.indexOf('=')), jdwpo.substring(jdwpo.indexOf('=') + 1));
         }
-
         return jdwpOpt;
     }
 
@@ -149,20 +127,15 @@ public class JDWPStarter extends AbstractStarter {
                     if ("transport".equals((String)o1)) {
                         return -1000;
                     }
-
                     if ("transport".equals((String)o2)) {
                         return 1000;
                     }
-
                     return 0;
                 }
-
                 return 0;
             }
         };
-
         Collections.sort(opt, c);
-
         return opt;
     }
 }

@@ -151,7 +151,6 @@ public class HotSwapTarget {
         System.exit(0);
     }
 
-
     public static void benchHotSwap() {
         if (true) {
             return;
@@ -162,7 +161,6 @@ public class HotSwapTarget {
             HotSwapClient.hotswap(HotSwapTarget.class);
         }
         System.out.println("perSwap without def change = " + (System.currentTimeMillis() - ts) / loop);
-
         ts = System.currentTimeMillis();
         for (int i = 0; i < loop; i++) {
             JavaLoggingAspect.addPointcutForLoggingAdvice(
@@ -172,8 +170,6 @@ public class HotSwapTarget {
             JavaLoggingAspect.removePointcutForLoggingAdvice("", "runtimePCToLog1");
         }
         System.out.println("perSwap with def change = " + (System.currentTimeMillis() - ts) / loop);
-
     }
-
 
 }

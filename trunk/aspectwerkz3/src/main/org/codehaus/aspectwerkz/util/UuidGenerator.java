@@ -48,14 +48,11 @@ public class UuidGenerator {
         if (!s_initialized) {
             initialize(obj);
         }
-
         long timeNow = System.currentTimeMillis();
 
         // get int value as unsigned
         int timeLow = (int)timeNow & 0xFFFFFFFF;
-
         int node = s_seeder.nextInt();
-
         return (hexFormat(timeLow, 8) + s_midValue + hexFormat(node, 8));
     }
 
@@ -69,16 +66,13 @@ public class UuidGenerator {
             InetAddress inet = InetAddress.getLocalHost();
             byte[] bytes = inet.getAddress();
             String hexInetAddress = hexFormat(getInt(bytes), 8);
-
             String thisHashCode = hexFormat(System.identityHashCode(obj), 8);
-
             s_midValue = hexInetAddress + thisHashCode;
             s_seeder = new SecureRandom();
             s_seeder.nextInt();
         } catch (java.net.UnknownHostException e) {
             throw new Error("can not initialize the UuidGenerator generator");
         }
-
         s_initialized = true;
     }
 
@@ -91,14 +85,11 @@ public class UuidGenerator {
     private static int getInt(final byte[] abyte) {
         int i = 0;
         int j = 24;
-
         for (int k = 0; j >= 0; k++) {
             int l = abyte[k] & 0xff;
-
             i += (l << j);
             j -= 8;
         }
-
         return i;
     }
 
@@ -111,7 +102,6 @@ public class UuidGenerator {
      */
     private static String hexFormat(final int i, final int j) {
         String s = Integer.toHexString(i);
-
         return padHex(s, j) + s;
     }
 
@@ -124,13 +114,11 @@ public class UuidGenerator {
      */
     private static String padHex(final String str, final int i) {
         StringBuffer buf = new StringBuffer();
-
         if (str.length() < i) {
             for (int j = 0; j < (i - str.length()); j++) {
                 buf.append('0');
             }
         }
-
         return buf.toString();
     }
 }

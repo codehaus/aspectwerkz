@@ -158,7 +158,6 @@ public class StartupManager {
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(aspectClassName + " could not be found on classpath: " + e.toString());
             }
-
             int deploymentModel;
             if ((aspectDef.getDeploymentModel() == null) || aspectDef.getDeploymentModel().equals("")) {
                 deploymentModel = DeploymentModel.PER_JVM;
@@ -173,7 +172,6 @@ public class StartupManager {
                                                                                     parameters);
             final AspectContainer container = createAspectContainer(crossCuttingInfoPrototype);
             crossCuttingInfoPrototype.setContainer(container);
-
             PointcutManager pointcutManager = new PointcutManager(aspectDef.getName(), deploymentModel);
             aspectManager.register(container, pointcutManager);
         } catch (Exception e) {
@@ -194,7 +192,6 @@ public class StartupManager {
                 continue;
             }
             PointcutManager pointcutManager = aspectManager.getPointcutManager(aspectDef.getName());
-
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().getExpressionAsString());
@@ -204,7 +201,6 @@ public class StartupManager {
                 }
                 pointcut.addAroundAdvice(aspectDef.getName() + '/' + adviceDef.getName());
             }
-
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().getExpressionAsString());
@@ -214,7 +210,6 @@ public class StartupManager {
                 }
                 pointcut.addBeforeAdvice(aspectDef.getName() + '/' + adviceDef.getName());
             }
-
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().getExpressionAsString());
@@ -238,7 +233,6 @@ public class StartupManager {
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it1.next();
             PointcutManager pointcutManager = aspectManager.getPointcutManager(aspectDef.getName());
-
             List cflowPointcuts = pointcutManager.getCflowPointcuts();
             for (Iterator it2 = cflowPointcuts.iterator(); it2.hasNext();) {
                 Pointcut cflowPointcut = (Pointcut)it2.next();
@@ -249,12 +243,9 @@ public class StartupManager {
                 if (!aspectManager.hasAspect(CFlowSystemAspect.NAME)) {
                     AspectDefinition cflowAspectDef = new AspectDefinition(CFlowSystemAspect.NAME,
                                                                            CFlowSystemAspect.CLASS_NAME);
-
                     PointcutDefinition pointcutDef = new PointcutDefinition(expressionInfo.getExpressionAsString());
-
                     cflowAspectDef.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
                     cflowAspectDef.addPointcut(pointcutDef);
-
                     try {
                         AdviceDefinition beforeAdviceDefinition = new AdviceDefinition(CFlowSystemAspect.PRE_ADVICE,
                                                                                        AdviceDefinition.BEFORE_ADVICE,
@@ -269,7 +260,6 @@ public class StartupManager {
                                                                                        CFlowSystemAspect.PRE_ADVICE_INDEX,
                                                                                        cflowAspectDef);
                         cflowAspectDef.addBeforeAdvice(beforeAdviceDefinition);
-
                         AdviceDefinition afterAdviceDefinition = new AdviceDefinition(CFlowSystemAspect.POST_ADVICE,
                                                                                       AdviceDefinition.AFTER_ADVICE,
                                                                                       cflowAspectDef.getName(),
@@ -286,7 +276,6 @@ public class StartupManager {
                     } catch (NoSuchMethodException e) {
                         ; // TODO: why ignore exception? ALEX??
                     }
-
                     definition.addAspect(cflowAspectDef);
                     registerAspect(aspectManager, cflowAspectDef, new HashMap());
                 }

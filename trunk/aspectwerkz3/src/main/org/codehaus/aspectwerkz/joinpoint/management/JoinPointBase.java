@@ -112,7 +112,6 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         Method targetMethod = signature.getMethodTuple().getOriginalMethod();
         Object[] parameterValues = rtti.getParameterValues();
         Object targetInstance = joinPoint.getTargetInstance();
-
         try {
             return targetMethod.invoke(targetInstance, parameterValues);
         } catch (InvocationTargetException e) {
@@ -133,7 +132,6 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         Method targetMethod = signature.getMethodTuple().getWrapperMethod();
         Object[] parameterValues = rtti.getParameterValues();
         Object targetInstance = joinPoint.getTargetInstance();
-
         try {
             return targetMethod.invoke(targetInstance, parameterValues);
         } catch (InvocationTargetException e) {
@@ -155,10 +153,8 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         Object[] parameterValues = rtti.getParameterValues();
         int length = parameterValues.length;
         Object[] fakeParameterValues = new Object[length + 1];
-
         java.lang.System.arraycopy(parameterValues, 0, fakeParameterValues, 0, length);
         fakeParameterValues[length] = null;
-
         try {
             return targetConstructor.newInstance(fakeParameterValues);
         } catch (InvocationTargetException e) {
@@ -181,7 +177,6 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         Object[] parameterValues = rtti.getParameterValues();
         Constructor wrapperConstructor = signature.getConstructorTuple().getWrapperConstructor();
         Constructor originalConstructor = signature.getConstructorTuple().getOriginalConstructor();
-
         if (originalConstructor.equals(wrapperConstructor)) {
             try {
                 return wrapperConstructor.newInstance(parameterValues);
@@ -214,7 +209,6 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         Field targetField = signature.getField();
         Object fieldValue = rtti.getFieldValue();
         Object targetInstance = joinPoint.getTargetInstance();
-
         targetField.set(targetInstance, fieldValue);
     }
 
@@ -229,7 +223,6 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         FieldSignature signature = (FieldSignature)joinPoint.getSignature();
         Field targetField = signature.getField();
         Object targetInstance = joinPoint.getTargetInstance();
-
         return targetField.get(targetInstance);
     }
 
@@ -298,7 +291,6 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      */
     public static Object invokeJoinPoint(final JoinPoint joinPoint, final int joinPointType) throws Throwable {
         Object result = null;
-
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
                 result = invokeTargetMethodExecution(joinPoint);
@@ -319,7 +311,6 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
                 result = getTargetField(joinPoint);
                 break;
         }
-
         return result;
     }
 
@@ -405,7 +396,6 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         m_beforeAdviceExecutor = (BeforeAdviceExecutor)fields.get("m_beforeAdviceExecutor", null);
         m_afterAdviceExecutor = (AfterAdviceExecutor)fields.get("m_afterAdviceExecutor", null);
         m_metaData = (Map)fields.get("m_metaData", new HashMap());
-
         m_system = SystemLoader.getSystem(m_targetClass.getClassLoader());
         m_system.initialize();
     }

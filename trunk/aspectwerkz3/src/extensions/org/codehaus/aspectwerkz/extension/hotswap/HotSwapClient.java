@@ -80,9 +80,7 @@ public class HotSwapClient {
             //JoinPointManager joinPointManager = JoinPointManager.getJoinPointManager(klazz, "N/A/notneeded");
             //joinPointManager.reset();
             JoinPointManager.reset(klazz);
-
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             throw new WrappedRuntimeException(t);
         }
     }

@@ -1,11 +1,9 @@
 <?xml version="1.0"?>
 <document>
-
     <properties>
         <author email="alex at gnilux dot com">Alexandre Vasseur</author>
         <title>Online mode architecture</title>
     </properties>
-
     <body>
         <!-- TODO add a section to OFFLINE weaving, or a link -->
         <section name="Table of Contents">
@@ -50,7 +48,6 @@
                 </ol>
             </p>
         </section>
-
         <section name="Introduction">
             <p>
                 This document explains the different options provided to enable
@@ -81,7 +78,6 @@
                 <a href="http://aspectwerkz.codehaus.org/downloads/">official slides</a>.
             </p>
         </section>
-
         <section name="Note on previous releases">
             <p>
                 The releases prior to 0.8 where using
@@ -104,7 +100,6 @@
                 <code>AspectWerkz</code> online mode in the most seamless way.
             </p>
         </section>
-
         <section name="Overview">
             <p>
                 This part describes the main concept of each option. For a detailled understanding, refer to the option section.
@@ -198,7 +193,6 @@
                 </ul>
             </p>
         </section>
-
         <section name="How to choose the right option">
             <subsection name="Comparison matrix">
                 <p>
@@ -335,7 +329,6 @@
                 </p>
             </subsection>
         </section>
-
         <section name="General rules">
             <p>
                 No matter the option used to enable online mode, some general rules must be respected.
@@ -408,7 +401,6 @@
                 </p>
             </subsection>
         </section>
-
         <section name="BEA JRockit">
             <subsection name="Description">
                 <p>
@@ -426,7 +418,6 @@
                     </ul>
                 </p>
             </subsection>
-
             <subsection name="Usage">
                 <p>
                 You first need to have the
@@ -470,7 +461,6 @@ java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPrePro
                     </source>
                 </p>
             </subsection>
-
             <subsection name="Key advantages">
                 <p>
                 Key advantages using this mode are:
@@ -485,9 +475,7 @@ java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPrePro
                     </ul>
                 </p>
             </subsection>
-
         </section>
-
         <section name="HotSwap">
             <subsection name="Description">
                 <p>
@@ -630,7 +618,6 @@ java ... org.codehaus.aspectwerkz.hook.ProcessStarter -Daspectwerkz.transform.ve
                 </p>
             </subsection>
         </section>
-
         <section name="Transparent bootclasspath">
             <subsection name="Description">
                 <p>
@@ -679,7 +666,6 @@ java -Daspectwerkz.classloader.clbootclasspath=/temp/_boot ... org.codehaus.aspe
                 </p>
             </subsection>
         </section>
-
         <section name="Native HotSwap">
             <subsection name="Description">
                 <p>
@@ -746,7 +732,6 @@ java -Xdebug -Xrunaspectwerkz -Xbootclasspath/a:$BOOT_PATH ..
                 </p>
             </subsection>
         </section>
-
         <section name="Remote HotSwap">
             <subsection name="Description">
                 <p>
@@ -822,7 +807,6 @@ java -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y -Xboo
                 Note that the JAVA_HOME used to call
                     <i>Plug</i> must be the same as the one used to startup
                 the application JVM to ensure correct construction of the enhanced class loader.
-
                     <source>
 set CLASSPATH=aspectwerkz-core.jar:javassist-*.jar:JAVA_HOME/lib/tools.jar
 java -cp $CLASSPATH org.codehaus.aspectwerkz.hook.Plug -hotswap transport=dt_socket,address=8000
@@ -850,7 +834,6 @@ java -cp $CLASSPATH org.codehaus.aspectwerkz.hook.Plug -hotswap transport=dt_soc
                 </p>
             </subsection>
         </section>
-
         <section name="Prepared bootclasspath">
             <subsection name="Description">
                 <p>
@@ -916,15 +899,12 @@ java -Xbootclasspath/p:/path/to/enhanced.jar -Xbootclasspath/a:$BOOT_PATH ..
                 </p>
             </subsection>
         </section>
-
-
         <section name="Released native HotSwap modules">
             <p>
             The releases native HotSwap modules can be founded
                 <a href="http://aspectwerkz.codehaus.org/downloads/">here</a>.
             </p>
         </section>
-
     </body>
 </document>
 

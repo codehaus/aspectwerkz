@@ -20,12 +20,10 @@ import junit.framework.TestCase;
 public class ReflectionTest extends TestCase {
     public void testSinglePointcutOnSuperClassWithOverridedMethodNonDelegating() {
         OtherChild2 c = new OtherChild2();
-
         assertEquals(2, c.incr(1));
 
         // advice non applied since method is overrided and poincut is NOT hierarchical
         Super2 s = new Super2();
-
         assertEquals(-2, s.incr(1));
 
         // advice bounded
@@ -42,7 +40,6 @@ public class ReflectionTest extends TestCase {
 
     public void testSinglePointcutOnSuperClassWithOverridedMethodDelegating() {
         Child2 c = new Child2();
-
         assertEquals(-3, c.incr(1));
     }
 
@@ -52,7 +49,6 @@ public class ReflectionTest extends TestCase {
 
     public void testDualPointcutWithOverridedMethodNonDelegating() {
         OtherChild c = new OtherChild();
-
         assertEquals(-2, c.incr(1));
     }
 
@@ -62,7 +58,6 @@ public class ReflectionTest extends TestCase {
 
     public void testDualPointcutWithOverridedMethodDelegating() {
         Child c = new Child();
-
         assertEquals(+3, c.incr(1));
     }
 
@@ -72,13 +67,11 @@ public class ReflectionTest extends TestCase {
 
     public void testDollar() {
         Child c = new Child();
-
         assertEquals(-1, c.do$2(1));
     }
 
     public void testReflectionCall() {
         Child c = new Child();
-
         assertEquals(+3, c.reflectionCallIncr(1));
     }
 }

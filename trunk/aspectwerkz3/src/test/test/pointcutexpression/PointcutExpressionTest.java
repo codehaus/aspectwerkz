@@ -23,7 +23,6 @@ public class PointcutExpressionTest extends WeavedTestCase {
         s_logString = "";
         B();
         assertEquals("before1 B after1 ", s_logString);
-
         s_logString = "";
         C();
         assertEquals("before1 C after1 ", s_logString);
@@ -33,7 +32,6 @@ public class PointcutExpressionTest extends WeavedTestCase {
         s_logString = "";
         D();
         assertEquals("before1 D after1 ", s_logString);
-
         s_logString = "";
         E();
         assertEquals("E ", s_logString);
@@ -43,7 +41,6 @@ public class PointcutExpressionTest extends WeavedTestCase {
         s_logString = "";
         F();
         assertEquals("F ", s_logString);
-
         s_logString = "";
         G();
         assertEquals("G ", s_logString);
@@ -53,7 +50,6 @@ public class PointcutExpressionTest extends WeavedTestCase {
         s_logString = "";
         I();
         assertEquals("before1 I after1 ", s_logString);
-
         s_logString = "";
         J();
         assertEquals("before1 J after1 ", s_logString);
@@ -63,15 +59,12 @@ public class PointcutExpressionTest extends WeavedTestCase {
         s_logString = "";
         K();
         assertEquals("K ", s_logString);
-
         s_logString = "";
         L();
         assertEquals("L ", s_logString);
-
         s_logString = "";
         M();
         assertEquals("M ", s_logString);
-
         s_logString = "";
         N();
         assertEquals("before1 N after1 ", s_logString);

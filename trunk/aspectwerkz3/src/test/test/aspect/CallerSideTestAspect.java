@@ -95,11 +95,8 @@ public class CallerSideTestAspect {
      */
     public Object around(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("before ");
-
         Object result = joinPoint.proceed();
-
         CallerSideAdviceTest.log("after ");
-
         return result;
     }
 }

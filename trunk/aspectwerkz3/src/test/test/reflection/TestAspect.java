@@ -50,7 +50,6 @@ public class TestAspect {
      */
     public Object execute1(final JoinPoint jp) throws Throwable {
         Integer result = (Integer)jp.proceed();
-
         return new Integer(-1 * result.intValue());
     }
 
@@ -59,7 +58,6 @@ public class TestAspect {
      */
     public Object execute2(final JoinPoint jp) throws Throwable {
         Integer result = (Integer)jp.proceed();
-
         return new Integer(-1 * result.intValue());
     }
 
@@ -68,7 +66,6 @@ public class TestAspect {
      */
     public Object execute3(final JoinPoint jp) throws Throwable {
         Integer result = (Integer)jp.proceed();
-
         return new Integer(-1 * result.intValue());
     }
 
@@ -77,7 +74,6 @@ public class TestAspect {
      */
     public Object execute4(final JoinPoint jp) throws Throwable {
         Integer result = (Integer)jp.proceed();
-
         return new Integer(-1 * result.intValue());
     }
 
@@ -86,7 +82,6 @@ public class TestAspect {
      */
     public Object execute5(final JoinPoint jp) throws Throwable {
         Integer result = (Integer)jp.proceed();
-
         return new Integer(-1 * result.intValue());
     }
 }

@@ -82,13 +82,11 @@ public class CollectionFieldTest extends TestCase {
 
     public void getFieldOutsideStaticContext() {
         Collection ref = m_field;
-
         m_field = new ArrayList();
     }
 
     public static void getFieldInsideStaticContext(CollectionFieldTest myself) {
         Collection ref = myself.m_field;
-
         myself.m_field = new ArrayList();
     }
 
@@ -103,20 +101,17 @@ public class CollectionFieldTest extends TestCase {
 
     public void getStaticFieldOutsideStaticContext() {
         Collection ref = s_field;
-
         s_field = new ArrayList();
     }
 
     public static void getStaticFieldInsideStaticContext() {
         Collection ref = s_field;
-
         s_field = new ArrayList();
     }
 
     //-- check the bytecode created FYI. That's fun here. --//
     public void showComplexUsage() {
         int local = 0;
-
         while (m_field.remove(null)) {
             local++;
         }

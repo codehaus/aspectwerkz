@@ -50,24 +50,18 @@ public class ConstructorCallTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = SystemDefinitionContainer.getDefinitionsContext();
-
         m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO is not thread safe / reentrant
-
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
-
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
-
             if (classFilter(definition, new ExpressionContext(PointcutType.CALL, classInfo, classInfo), ctClass)) {
                 continue;
             }
-
             ctClass.instrument(new ExprEditor() {
                     public void edit(NewExpr newExpr) throws CannotCompileException {
                         try {
                             CtBehavior where = null;
-
                             try {
                                 where = newExpr.where();
                             } catch (RuntimeException e) {
@@ -79,7 +73,6 @@ public class ConstructorCallTransformer implements Transformer {
                             if (methodFilterCaller(where)) {
                                 return;
                             }
-
                             CtConstructor ctConstructor = newExpr.getConstructor();
                             String calleeClassName = newExpr.getClassName();
 
@@ -96,7 +89,6 @@ public class ConstructorCallTransformer implements Transformer {
                             // create the caller method info
                             // @TODO: pass in caller method to the JP
                             MemberInfo withinMethodInfo = null;
-
                             if (where instanceof CtMethod) {
                                 withinMethodInfo = JavassistMethodInfo.getMethodInfo((CtMethod)where,
                                                                                      context.getLoader());
@@ -110,7 +102,6 @@ public class ConstructorCallTransformer implements Transformer {
                             ConstructorInfo calleeSideConstructorInfo = JavassistConstructorInfo.getConstructorInfo(constructor,
                                                                                                                     context
                                                                                                                     .getLoader());
-
                             ExpressionContext ctx = new ExpressionContext(PointcutType.CALL, calleeSideConstructorInfo,
                                                                           withinMethodInfo);
 
@@ -119,9 +110,7 @@ public class ConstructorCallTransformer implements Transformer {
                                 // check the callee class is not the same as target class, if that is the case
                                 // then we have have class loaded and set in the ___AW_clazz already
                                 String declaringClassMethodName = TransformationUtil.STATIC_CLASS_FIELD;
-
                                 CtClass declaringClass = ctConstructor.getDeclaringClass();
-
                                 if (!declaringClass.getName().replace('/', '.').equals(where.getDeclaringClass()
                                                                                             .getName().replace('/', '.'))) {
                                     declaringClassMethodName = addCalleeMethodDeclaringClassField(ctClass, ctConstructor);
@@ -129,23 +118,18 @@ public class ConstructorCallTransformer implements Transformer {
 
                                 // call the wrapper method instead of the callee method
                                 StringBuffer body = new StringBuffer();
-
                                 body.append('{');
-
                                 if (ctConstructor.getParameterTypes().length > 0) {
                                     body.append("Object[] args = $args; ");
                                 } else {
                                     body.append("Object[] args = null; ");
                                 }
-
                                 body.append("Class declaringClass = ");
                                 body.append(declaringClassMethodName);
                                 body.append("; ");
-
                                 if (Modifier.isStatic(where.getModifiers())) {
                                     body.append("Object nullObject = null;");
                                 }
-
                                 body.append("$_ = ($r)");
                                 body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
                                 body.append('.');
@@ -156,20 +140,16 @@ public class ConstructorCallTransformer implements Transformer {
                                 body.append(m_joinPointIndex);
                                 body.append(", args, ");
                                 body.append(TransformationUtil.STATIC_CLASS_FIELD);
-
                                 if (Modifier.isStatic(where.getModifiers())) {
                                     body.append(", nullObject, ");
                                 } else {
                                     body.append(", this, ");
                                 }
-
                                 body.append("declaringClass, $0, ");
                                 body.append(TransformationUtil.JOIN_POINT_TYPE_CONSTRUCTOR_CALL);
                                 body.append("); }");
-
                                 newExpr.replace(body.toString());
                                 context.markAsAdvised();
-
                                 m_joinPointIndex++;
                             }
                         } catch (NotFoundException nfe) {
@@ -180,7 +160,6 @@ public class ConstructorCallTransformer implements Transformer {
                     }
                 });
         }
-
         TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
 
@@ -196,29 +175,22 @@ public class ConstructorCallTransformer implements Transformer {
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD + TransformationUtil.DELIMITER + "init"
                            + TransformationUtil.DELIMITER
                            + ctConstructor.getDeclaringClass().getName().replace('.', '_');
-
         boolean hasField = false;
         CtField[] fields = ctClass.getDeclaredFields();
-
         for (int i = 0; i < fields.length; i++) {
             CtField field = fields[i];
-
             if (field.getName().equals(fieldName)) {
                 hasField = true;
-
                 break;
             }
         }
-
         if (!hasField) {
             CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"), fieldName, ctClass);
-
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field,
                              "java.lang.Class#forName(\""
                              + ctConstructor.getDeclaringClass().getName().replace('/', '.') + "\")");
         }
-
         return fieldName;
     }
 
@@ -234,21 +206,16 @@ public class ConstructorCallTransformer implements Transformer {
         if (cg.isInterface()) {
             return true;
         }
-
         String className = cg.getName().replace('/', '.');
-
         if (definition.inExcludePackage(className)) {
             return true;
         }
-
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-
         if (definition.isAdvised(ctx)) {
             return false;
         }
-
         return true;
     }
 

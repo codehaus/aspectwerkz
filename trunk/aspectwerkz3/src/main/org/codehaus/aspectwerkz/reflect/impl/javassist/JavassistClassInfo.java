@@ -114,7 +114,6 @@ public class JavassistClassInfo implements ClassInfo {
         m_loader = loader;
         m_classInfoRepository = ClassInfoRepository.getRepository(m_loader);
         m_isInterface = klass.isInterface();
-
         if (klass.isPrimitive()) {
             m_name = klass.getName();
             m_isPrimitive = true;
@@ -127,32 +126,22 @@ public class JavassistClassInfo implements ClassInfo {
             m_interfaces = new ClassInfo[0];
         } else {
             m_name = klass.getName();
-
             CtMethod[] methods = m_class.getDeclaredMethods();
-
             m_methods = new MethodInfo[methods.length];
-
             for (int i = 0; i < methods.length; i++) {
                 m_methods[i] = new JavassistMethodInfo(methods[i], this, m_loader);
             }
-
             CtConstructor[] constructors = m_class.getDeclaredConstructors();
-
             m_constructors = new ConstructorInfo[constructors.length];
-
             for (int i = 0; i < constructors.length; i++) {
                 m_constructors[i] = new JavassistConstructorInfo(constructors[i], this, m_loader);
             }
-
             CtField[] fields = m_class.getDeclaredFields();
-
             m_fields = new FieldInfo[fields.length];
-
             for (int i = 0; i < fields.length; i++) {
                 m_fields[i] = new JavassistFieldInfo(fields[i], this, m_loader);
             }
         }
-
         m_classInfoRepository.addClassInfo(this);
     }
 
@@ -228,15 +217,11 @@ public class JavassistClassInfo implements ClassInfo {
         if (m_interfaces == null) {
             try {
                 CtClass[] interfaces = m_class.getInterfaces();
-
                 m_interfaces = new ClassInfo[interfaces.length];
-
                 for (int i = 0; i < interfaces.length; i++) {
                     CtClass anInterface = interfaces[i];
                     ClassInfo classInfo = new JavassistClassInfo(anInterface, m_loader);
-
                     m_interfaces[i] = classInfo;
-
                     if (!m_classInfoRepository.hasClassInfo(anInterface.getName())) {
                         m_classInfoRepository.addClassInfo(classInfo);
                     }
@@ -245,7 +230,6 @@ public class JavassistClassInfo implements ClassInfo {
                 e.printStackTrace();
             }
         }
-
         return m_interfaces;
     }
 
@@ -258,7 +242,6 @@ public class JavassistClassInfo implements ClassInfo {
         if (m_superClass == null) {
             try {
                 CtClass superclass = m_class.getSuperclass();
-
                 if (superclass != null) {
                     if (m_classInfoRepository.hasClassInfo(superclass.getName())) {
                         m_superClass = m_classInfoRepository.getClassInfo(superclass.getName());
@@ -271,7 +254,6 @@ public class JavassistClassInfo implements ClassInfo {
                 e.printStackTrace();
             }
         }
-
         return m_superClass;
     }
 
@@ -292,7 +274,6 @@ public class JavassistClassInfo implements ClassInfo {
             //                m_classInfoRepository.addClassInfo(m_componentType);
             //            }
         }
-
         return m_componentType;
     }
 
@@ -327,79 +308,61 @@ public class JavassistClassInfo implements ClassInfo {
         if (this == o) {
             return true;
         }
-
         if (!(o instanceof JavassistClassInfo)) {
             return false;
         }
-
         final JavassistClassInfo javassistClassInfo = (JavassistClassInfo)o;
-
         if (m_isArray != javassistClassInfo.m_isArray) {
             return false;
         }
-
         if (m_isPrimitive != javassistClassInfo.m_isPrimitive) {
             return false;
         }
-
         if (m_isInterface != javassistClassInfo.m_isInterface) {
             return false;
         }
-
         if ((m_attributes != null) ? (!m_attributes.equals(javassistClassInfo.m_attributes))
                                    : (javassistClassInfo.m_attributes != null)) {
             return false;
         }
-
         if ((m_class != null) ? (!m_class.equals(javassistClassInfo.m_class)) : (javassistClassInfo.m_class != null)) {
             return false;
         }
-
         if ((m_classInfoRepository != null) ? (!m_classInfoRepository.equals(javassistClassInfo.m_classInfoRepository))
                                             : (javassistClassInfo.m_classInfoRepository != null)) {
             return false;
         }
-
         if ((m_componentType != null) ? (!m_componentType.equals(javassistClassInfo.m_componentType))
                                       : (javassistClassInfo.m_componentType != null)) {
             return false;
         }
-
         if (!Arrays.equals(m_constructors, javassistClassInfo.m_constructors)) {
             return false;
         }
-
         if (!Arrays.equals(m_fields, javassistClassInfo.m_fields)) {
             return false;
         }
-
         if (!Arrays.equals(m_interfaces, javassistClassInfo.m_interfaces)) {
             return false;
         }
-
         if ((m_loader != null) ? (!m_loader.equals(javassistClassInfo.m_loader)) : (javassistClassInfo.m_loader != null)) {
             return false;
         }
-
         if (!Arrays.equals(m_methods, javassistClassInfo.m_methods)) {
             return false;
         }
-
         if ((m_name != null) ? (!m_name.equals(javassistClassInfo.m_name)) : (javassistClassInfo.m_name != null)) {
             return false;
         }
-
         if ((m_superClass != null) ? (!m_superClass.equals(javassistClassInfo.m_superClass))
                                    : (javassistClassInfo.m_superClass != null)) {
             return false;
         }
-
         return true;
     }
 
     public int hashCode() {
         int result;
-
         result = ((m_class != null) ? m_class.hashCode() : 0);
         result = (29 * result) + ((m_name != null) ? m_name.hashCode() : 0);
         result = (29 * result) + (m_isPrimitive ? 1 : 0);
@@ -410,7 +373,6 @@ public class JavassistClassInfo implements ClassInfo {
         result = (29 * result) + ((m_componentType != null) ? m_componentType.hashCode() : 0);
         result = (29 * result) + ((m_classInfoRepository != null) ? m_classInfoRepository.hashCode() : 0);
         result = (29 * result) + ((m_loader != null) ? m_loader.hashCode() : 0);
-
         return result;
     }
 }

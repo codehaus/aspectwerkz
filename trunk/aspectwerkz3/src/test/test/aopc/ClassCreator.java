@@ -34,7 +34,6 @@ public class ClassCreator {
     static {
         try {
             Object b = Array.newInstance(byte.class, 1);
-
             CLASSLOADER_DEFINECLASS_METHOD = ClassLoader.class.getDeclaredMethod("defineClass",
                                                                                  new Class[] {
                                                                                      String.class, b.getClass(),
@@ -57,24 +56,17 @@ public class ClassCreator {
     public static Class createClass(String name, ClassLoader loader) {
         try {
             ClassPool cp = new ClassPool(null);
-
             cp.appendClassPath(new LoaderClassPath(loader));
-
             CtClass prototype = cp.get(CallablePrototype.class.getName());
-
             prototype.setName(name);
-
             if (true) {
                 return define(prototype.toBytecode(), name, loader);
             }
-
             CtClass klass = cp.makeClass(name);
-
             klass.setSuperclass(cp.get(BaseCallable.class.getName()));
 
             // public void methodAround();
             CtMethod m = new CtMethod(CtClass.voidType, "methodAround", new CtClass[] {  }, klass);
-
             m.setModifiers(m.getModifiers() | Modifier.PUBLIC);
 
             //m.setBody("{java.lang.System.out.println(\"... "+name+ " @ \" + this.getClass().getClassLoader());}");
@@ -96,9 +88,7 @@ public class ClassCreator {
             //m.setBody("{java.lang.System.out.println(\"... "+name+ " @ \" + this.getClass().getClassLoader());}");
             m.setBody("{ m_logString = \"methodPost \"; }");
             klass.addMethod(m);
-
             klass.addInterface(cp.get(Callable.class.getName()));
-
             return define(klass.toBytecode(), name, loader);
         } catch (Throwable throwable) {
             throw new WrappedRuntimeException(throwable);
@@ -107,20 +97,15 @@ public class ClassCreator {
 
     public static void main(String[] a) throws Throwable {
         System.out.println("ClassCreator.main");
-
         ClassLoader myCL = new URLClassLoader(new URL[] { getPathFor(Callable.class.getResource("META-INF/aop.xml")) },
                                               ClassLoader.getSystemClassLoader());
-
         ClassLoader mySubCLA = new URLClassLoader(new URL[] { getPathFor(Callable.class.getResource("a/META-INF/aop.xml")) },
                                                   myCL);
         Callable ca = (Callable)(createClass("test.aopc.a.Callee", mySubCLA)).newInstance();
-
         ca.methodAround();
         ca.debug();
-
         ClassLoader mySubCLB = new URLClassLoader(new URL[] {  }, myCL);
         Callable cb = (Callable)(createClass("test.aopc.b.Callee", mySubCLB)).newInstance();
-
         cb.methodAround();
         cb.debug();
     }
@@ -128,18 +113,14 @@ public class ClassCreator {
     public static URL getPathFor(URL definition) {
         try {
             File f = new File(definition.getFile());
-
             if (!f.exists()) {
                 System.err.println("<WARN> could not find " + f);
             }
-
             String path = new File(f.getParent()).getParent();
             File testExists = new File(path);
-
             if (!testExists.isDirectory()) {
                 System.err.println("<WARN> could not find " + path);
             }
-
             return new File(path).toURL();
         } catch (MalformedURLException e) {
             throw new WrappedRuntimeException(e);
@@ -158,7 +139,6 @@ public class ClassCreator {
     public static Class define(byte[] b, String name, ClassLoader loader) throws Throwable {
         Object k = CLASSLOADER_DEFINECLASS_METHOD.invoke(loader,
                                                          new Object[] { name, b, new Integer(0), new Integer(b.length) });
-
         return (Class)k;
     }
 }

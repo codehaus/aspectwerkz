@@ -33,7 +33,6 @@ public class SerializableThreadLocal extends java.lang.ThreadLocal implements Se
      */
     public Object get() {
         Object ref = super.get();
-
         if (ref == null) {
             return ref;
         } else {

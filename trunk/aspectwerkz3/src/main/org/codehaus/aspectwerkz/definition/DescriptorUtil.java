@@ -71,7 +71,6 @@ public class DescriptorUtil {
 
         //todo
         _paramTypeMap.put("array reference", "[");
-
         _returnTypeMap.put("void", "V");
     }
 
@@ -89,22 +88,17 @@ public class DescriptorUtil {
         String javadocSigTrim = javadocSig.substring(1, javadocSig.length() - 1);
         StringTokenizer st = new StringTokenizer(javadocSigTrim, ",");
         StringBuffer jvmBuff = new StringBuffer("(");
-
         while (st.hasMoreTokens()) {
             //remove the leading space character.
             String sigElement = st.nextToken().trim();
-
             if (_paramTypeMap.containsKey(sigElement)) {
                 jvmBuff.append(_paramTypeMap.get(sigElement));
             }
         }
-
         jvmBuff.append(")");
-
         if (_returnTypeMap.containsKey(javadocReturnType)) {
             jvmBuff.append(_returnTypeMap.get(javadocReturnType));
         }
-
         return jvmBuff.toString();
     }
 
@@ -117,26 +111,20 @@ public class DescriptorUtil {
      */
     public static String[] convertToJavaFormat(String bcelSignature) {
         int i = 0;
-
         if (bcelSignature.charAt(i) != '(') {
             return null;
         }
-
         int j = 0;
         StringBuffer stringbuffer = new StringBuffer();
-
         for (i++; i < bcelSignature.length();) {
             if (bcelSignature.charAt(i) == ')') {
                 i++;
-
                 break; //we are at the end of the signature.
             }
-
             if (i > 1) {
                 //put in spaces to later tokenize on.
                 stringbuffer.append(" ");
             }
-
             i = jvmFormatToJavaFormat(bcelSignature, i, stringbuffer);
 
             //count number of elements parsed.
@@ -146,14 +134,11 @@ public class DescriptorUtil {
         //convert to string array.
         String convertedString = stringbuffer.toString();
         String[] as = new String[j];
-
         int k = 0;
         StringTokenizer st = new StringTokenizer(convertedString);
-
         while (st.hasMoreTokens()) {
             as[k++] = st.nextToken();
         }
-
         return as;
     }
 
@@ -173,7 +158,6 @@ public class DescriptorUtil {
         for (; jvmFormat.charAt(i) == '['; i++) {
             s1 = s1 + "[]";
         }
-
 startover: 
         switch (jvmFormat.charAt(i)) {
             case 66: // 'B'
@@ -224,9 +208,7 @@ startover:
             default:
                 return jvmFormat.length();
         }
-
         stringbuffer = stringbuffer.append(s1);
-
         return ++i;
     }
 }

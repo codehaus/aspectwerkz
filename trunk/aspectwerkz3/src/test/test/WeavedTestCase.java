@@ -72,11 +72,9 @@ public class WeavedTestCase extends TestCase {
                 String path = System.getProperty("java.class.path");
                 ArrayList paths = new ArrayList();
                 StringTokenizer st = new StringTokenizer(path, File.pathSeparator);
-
                 while (st.hasMoreTokens()) {
                     paths.add((new File(st.nextToken())).getCanonicalFile().toURL());
                 }
-
                 cl = new WeavingClassLoader((URL[])paths.toArray(new URL[] {  }),
                                             ClassLoader.getSystemClassLoader().getParent());
             } catch (IOException e) {
@@ -100,28 +98,22 @@ public class WeavedTestCase extends TestCase {
             } else {
                 Thread.currentThread().setContextClassLoader(cl); // needed for Aspect loading
             }
-
             Class testClass = Class.forName(testClassName, true, Thread.currentThread().getContextClassLoader());
 
             //)cl.loadClass(testClassName);
             Constructor ctor = null;
             Object testInstance = null;
-
             try {
                 // new junit style
                 ctor = testClass.getConstructor(new Class[] {  });
                 testInstance = ctor.newInstance(new Object[] {  });
-
                 Method setNameMethod = testClass.getMethod("setName", new Class[] { String.class });
-
                 setNameMethod.invoke(testInstance, new Object[] { testMethodName });
             } catch (NoSuchMethodException e) {
                 ctor = testClass.getConstructor(new Class[] { String.class });
                 testInstance = ctor.newInstance(new Object[] { testMethodName });
             }
-
             Method runAfterWeavingMethod = testClass.getMethod("runBareAfterWeaving", new Class[] {  });
-
             runAfterWeavingMethod.invoke(testInstance, new Object[] {  });
         }
     }

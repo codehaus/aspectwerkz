@@ -93,29 +93,22 @@ public final class MethodComparator implements java.util.Comparator {
             if (m1.equals(m2)) {
                 return 0;
             }
-
             final String m1Name = m1.getName();
             final String m2Name = m2.getName();
-
             if (!m1Name.equals(m2Name)) {
                 return m1Name.compareTo(m2Name);
             }
-
             final Class[] args1 = m1.getParameterTypes();
             final Class[] args2 = m2.getParameterTypes();
-
             if (args1.length < args2.length) {
                 return -1;
             }
-
             if (args1.length > args2.length) {
                 return 1;
             }
-
             for (int i = 0; i < args1.length; i++) {
                 //handles array types - AW-104
                 int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
-
                 if (result != 0) {
                     return result;
                 }
@@ -123,7 +116,6 @@ public final class MethodComparator implements java.util.Comparator {
         } catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
-
         java.lang.System.err.println(m1.getName());
         java.lang.System.err.println(m2.getName());
         throw new Error("should be unreachable");
@@ -145,29 +137,22 @@ public final class MethodComparator implements java.util.Comparator {
             // compare only the original method names, i.e. remove the prefix and suffix
             final String[] m1Tokens = Strings.splitString(m1.getName(), TransformationUtil.DELIMITER);
             final String[] m2Tokens = Strings.splitString(m2.getName(), TransformationUtil.DELIMITER);
-
             final String m1Name = m1Tokens[1];
             final String m2Name = m2Tokens[1];
-
             if (!m1Name.equals(m2Name)) {
                 return m1Name.compareTo(m2Name);
             }
-
             final Class[] args1 = m1.getParameterTypes();
             final Class[] args2 = m2.getParameterTypes();
-
             if (args1.length < args2.length) {
                 return -1;
             }
-
             if (args1.length > args2.length) {
                 return 1;
             }
-
             for (int i = 0; i < args1.length; i++) {
                 //handles array types - AW-104
                 int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
-
                 if (result != 0) {
                     return result;
                 }
@@ -175,7 +160,6 @@ public final class MethodComparator implements java.util.Comparator {
         } catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
-
         java.lang.System.err.println(m1.getName());
         java.lang.System.err.println(m2.getName());
         throw new Error("should be unreachable");
@@ -193,25 +177,19 @@ public final class MethodComparator implements java.util.Comparator {
             if (m1.equals(m2)) {
                 return 0;
             }
-
             final String m1Name = m1.getName();
             final String m2Name = m2.getName();
-
             if (!m1Name.equals(m2Name)) {
                 return m1Name.compareTo(m2Name);
             }
-
             final ClassInfo[] args1 = m1.getParameterTypes();
             final ClassInfo[] args2 = m2.getParameterTypes();
-
             if (args1.length < args2.length) {
                 return -1;
             }
-
             if (args1.length > args2.length) {
                 return 1;
             }
-
             for (int i = 0; i < args1.length; i++) {
                 if (args1[i].getName().equals(args2[i].getName())) {
                     return 0;
@@ -220,7 +198,6 @@ public final class MethodComparator implements java.util.Comparator {
         } catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
-
         java.lang.System.err.println(m1.getName());
         java.lang.System.err.println(m2.getName());
         throw new Error("should be unreachable");

@@ -39,7 +39,6 @@ public class PrepareTransformer implements Transformer {
         // loop over all the definitions
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
-
             final CtClass ctClass = klass.getCtClass();
 
             //            ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
@@ -47,54 +46,43 @@ public class PrepareTransformer implements Transformer {
             if (classFilter(definition, ctClass)) {
                 continue;
             }
-
             System.out.println("preparing: " + ctClass.getName());
 
             // mark as prepared immediately
             // to trigger bytecode cache even if class has already some pointcuts
             context.markAsPrepared();
-
             final CtMethod[] methods = ctClass.getDeclaredMethods();
 
             // build the method lookup list
             final List methodLookupList = new ArrayList();
-
             for (int i = 0; i < methods.length; i++) {
                 if (methodFilter(methods[i])) {
                     continue;
                 }
-
                 methodLookupList.add(methods[i]);
             }
-
             final Map methodSequences = new HashMap();
             final List wrapperMethods = new ArrayList();
             boolean isClassAdvised = false;
-
             for (Iterator i = methodLookupList.iterator(); i.hasNext();) {
                 CtMethod method = (CtMethod)i.next();
 
                 // take care of identification of overloaded methods by inserting a sequence number
                 if (methodSequences.containsKey(method.getName())) {
                     int sequence = ((Integer)methodSequences.get(method.getName())).intValue();
-
                     methodSequences.remove(method.getName());
                     sequence++;
                     methodSequences.put(method.getName(), new Integer(sequence));
                 } else {
                     methodSequences.put(method.getName(), new Integer(1));
                 }
-
                 final int methodSequence = ((Integer)methodSequences.get(method.getName())).intValue();
-
                 CtMethod wrapperMethod = createEmptyWrapperMethod(ctClass, method, methodSequence);
-
                 if (wrapperMethod != null) {
                     isClassAdvised = true;
                     wrapperMethods.add(wrapperMethod);
                 }
             }
-
             if (isClassAdvised) {
                 context.markAsAdvised();
 
@@ -127,17 +115,14 @@ public class PrepareTransformer implements Transformer {
 
         // determine the method access flags (should always be set to protected)
         int accessFlags = originalMethod.getModifiers();
-
         if ((accessFlags & Modifier.PROTECTED) == 0) {
             // set the protected flag
             accessFlags |= Modifier.PROTECTED;
         }
-
         if ((accessFlags & Modifier.PRIVATE) != 0) {
             // clear the private flag
             accessFlags &= ~Modifier.PRIVATE;
         }
-
         if ((accessFlags & Modifier.PUBLIC) != 0) {
             // clear the public flag
             accessFlags &= ~Modifier.PUBLIC;
@@ -145,7 +130,6 @@ public class PrepareTransformer implements Transformer {
 
         // add an empty body
         StringBuffer body = new StringBuffer();
-
         if (originalMethod.getReturnType() == CtClass.voidType) {
             // special handling for void return type leads to cleaner bytecode generation with Javassist
             body.append("{}");
@@ -156,9 +140,7 @@ public class PrepareTransformer implements Transformer {
             body.append(JavassistHelper.getDefaultPrimitiveValue(originalMethod.getReturnType()));
             body.append("; }");
         }
-
         CtMethod method = null;
-
         if (Modifier.isStatic(originalMethod.getModifiers())) {
             method = JavassistHelper.makeStatic(originalMethod.getReturnType(), wrapperMethodName,
                                                 originalMethod.getParameterTypes(), originalMethod.getExceptionTypes(),
@@ -172,7 +154,6 @@ public class PrepareTransformer implements Transformer {
 
         // add a method level attribute so that we remember it is an empty method
         JavassistHelper.setAnnotatedEmpty(method);
-
         return method;
     }
 
@@ -187,21 +168,16 @@ public class PrepareTransformer implements Transformer {
         if (cg.isInterface()) {
             return true;
         }
-
         String className = cg.getName().replace('/', '.');
-
         if (definition.inExcludePackage(className)) {
             return true;
         }
-
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-
         if (definition.inPreparePackage(className)) {
             return false;
         }
-
         return true;
     }
 
@@ -221,7 +197,6 @@ public class PrepareTransformer implements Transformer {
             || method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
         }
-
         return false;
     }
 }

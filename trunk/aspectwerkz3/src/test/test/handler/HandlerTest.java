@@ -20,13 +20,11 @@ public class HandlerTest extends TestCase {
 
     public void testBeforeAdvice() {
         s_log = "";
-
         try {
             throw new HandlerTestBeforeException();
         } catch (HandlerTestBeforeException e) {
             log("before ");
         }
-
         assertEquals("pre before ", s_log);
     }
 

@@ -53,11 +53,9 @@ public class XmlParser {
         if (definitionFile == null) {
             throw new IllegalArgumentException("definition file can not be null");
         }
-
         if (!definitionFile.exists()) {
             throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
         }
-
         try {
             return getAspectClassNames(definitionFile.toURL());
         } catch (MalformedURLException e) {
@@ -69,10 +67,8 @@ public class XmlParser {
         if (definitionURL == null) {
             throw new IllegalArgumentException("definition file can not be null");
         }
-
         try {
             Document document = createDocument(definitionURL);
-
             return DocumentParser.parseAspectClassNames(document);
         } catch (DocumentException e) {
             throw new DefinitionException("XML definition file <" + definitionURL + "> has errors: " + e.toString());
@@ -86,7 +82,6 @@ public class XmlParser {
     public static List getAspectClassNames(final InputStream stream) {
         try {
             Document document = createDocument(stream);
-
             return DocumentParser.parseAspectClassNames(document);
         } catch (DocumentException e) {
             throw new DefinitionException("XML definition file on classpath has errors: " + e.toString());
@@ -105,7 +100,6 @@ public class XmlParser {
         if (definitionFile == null) {
             throw new IllegalArgumentException("definition file can not be null");
         }
-
         if (!definitionFile.exists()) {
             throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
         }
@@ -113,19 +107,15 @@ public class XmlParser {
         // if definition is not updated; don't parse but return it right away
         if (isNotUpdated(definitionFile)) {
             isDirty = false;
-
             return s_definitions;
         }
 
         // updated definition, ready to be parsed
         try {
             Document document = createDocument(definitionFile.toURL());
-
             s_definitions = DocumentParser.parse(loader, document);
-
             setParsingTimestamp();
             isDirty = true;
-
             return s_definitions;
         } catch (MalformedURLException e) {
             throw new DefinitionException(definitionFile + " does not exist");
@@ -144,9 +134,7 @@ public class XmlParser {
     public static List parse(final ClassLoader loader, final InputStream stream) {
         try {
             Document document = createDocument(stream);
-
             s_definitions = DocumentParser.parse(loader, document);
-
             return s_definitions;
         } catch (DocumentException e) {
             throw new DefinitionException("XML definition file on classpath has errors: " + e.getMessage());
@@ -163,9 +151,7 @@ public class XmlParser {
     public static List parseNoCache(final ClassLoader loader, final URL url) {
         try {
             Document document = createDocument(url);
-
             s_definitions = DocumentParser.parse(loader, document);
-
             return s_definitions;
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -183,29 +169,23 @@ public class XmlParser {
         if ((document2 == null) && (document1 != null)) {
             return document1;
         }
-
         if ((document1 == null) && (document2 != null)) {
             return document2;
         }
-
         if ((document1 == null) && (document2 == null)) {
             return null;
         }
-
         try {
             Element root1 = document1.getRootElement();
             Element root2 = document2.getRootElement();
-
             for (Iterator it1 = root2.elementIterator(); it1.hasNext();) {
                 Element element = (Element)it1.next();
-
                 element.setParent(null);
                 root1.add(element);
             }
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         return document1;
     }
 
@@ -219,9 +199,7 @@ public class XmlParser {
      */
     public static Document createDocument(final URL url) throws DocumentException {
         SAXReader reader = new SAXReader();
-
         setEntityResolver(reader);
-
         return reader.read(url);
     }
 
@@ -235,9 +213,7 @@ public class XmlParser {
      */
     public static Document createDocument(final InputStream stream) throws DocumentException {
         SAXReader reader = new SAXReader();
-
         setEntityResolver(reader);
-
         return reader.read(stream);
     }
 
@@ -251,10 +227,8 @@ public class XmlParser {
             public InputSource resolveEntity(String publicId, String systemId) {
                 if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
                     InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
-
                     if (in == null) {
                         System.err.println("AspectWerkz - WARN - could not open DTD");
-
                         return new InputSource();
                     } else {
                         return new InputSource(in);
@@ -262,12 +236,10 @@ public class XmlParser {
                 } else {
                     System.err.println("AspectWerkz - WARN - deprecated DTD " + publicId + " - consider upgrading to "
                                        + DTD_PUBLIC_ID);
-
                     return new InputSource(); // avoid null pointer exception
                 }
             }
         };
-
         reader.setEntityResolver(resolver);
     }
 
@@ -286,7 +258,6 @@ public class XmlParser {
      */
     private static void setParsingTimestamp() {
         final long newModifiedTime = System.currentTimeMillis();
-
         s_timestamp.setLastModified(newModifiedTime);
     }
 
@@ -297,7 +268,6 @@ public class XmlParser {
      */
     private static long getParsingTimestamp() {
         final long modifiedTime = s_timestamp.lastModified();
-
         if (modifiedTime == 0L) {
             // no timestamp, create a new one
             try {
@@ -306,7 +276,6 @@ public class XmlParser {
                 throw new RuntimeException("could not create timestamp file: " + s_timestamp.getAbsolutePath());
             }
         }
-
         return modifiedTime;
     }
 }

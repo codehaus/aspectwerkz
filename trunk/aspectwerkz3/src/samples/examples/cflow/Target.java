@@ -23,11 +23,9 @@ public class Target {
 
     public static void main(String[] args) {
         Target target = new Target();
-
         System.out.println("\n--------------------------");
         System.out.println("step2 is called in the cflow of step1 => should trigger the advice");
         target.step1();
-
         System.out.println("\n--------------------------");
         System.out.println("step2 is called directly (not in cflow of step1) => should NOT trigger the advice");
         target.step2();

@@ -29,14 +29,11 @@ public class AspectSystemTest extends TestCase {
                                                       ClassCreator.getPathFor(Callable.class.getResource("a/META-INF/aop.xml"))
                                                   }, myCL);
         Callable ca = (Callable)ClassCreator.createInstance("test.aopc.a.Callee", mySubCLA);
-
         ca.methodAround();
         ca.debug();
         assertEquals("beforeAround beforeAround methodAround afterAround afterAround ", ca.getLogString());
-
         ClassLoader mySubCLB = new URLClassLoader(new URL[] {  }, myCL);
         Callable cb = (Callable)ClassCreator.createInstance("test.aopc.b.Callee", mySubCLB);
-
         cb.methodAround();
         cb.debug();
         assertEquals("beforeAround methodAround afterAround ", cb.getLogString());

@@ -57,10 +57,8 @@ public class CachingAspect {
      */
     public Object cache(final JoinPoint joinPoint) throws Throwable {
         MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
-
         final Long hash = new Long(calculateHash(rtti));
         final Object cachedResult = m_cache.get(hash);
-
         if (cachedResult != null) {
             System.out.println("using cache");
             CacheStatistics.addCacheInvocation(rtti.getName(), rtti.getParameterTypes());
@@ -68,7 +66,6 @@ public class CachingAspect {
             return cachedResult;
         }
         final Object result = joinPoint.proceed();
-
         m_cache.put(hash, result);
         return result;
     }

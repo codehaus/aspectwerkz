@@ -1,13 +1,10 @@
 <?xml version="1.0"?>
-
 <document>
-
     <properties>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <author email="alex at gnilux dot com">alexandre vasseur</author>
         <title>General definition issues</title>
     </properties>
-
     <body>
         <section name="Table of Contents">
             <p>
@@ -47,15 +44,12 @@
                     </li>
                 </ol>
             </p>
-
         </section>
-
         <section name="Join point selection pattern language">
             <p>
                 <code>AspectWerkz</code> support a fine-grained pattern
                 language for picking out join points.
             </p>
-
             <p>
                 You can utilize two types of wildcards when constructing your
                 patterns:
@@ -87,7 +81,6 @@
                 <code>foo.bar..</code>. The same thing holds for method
                  parameters.
             </p>
-
             <subsection name="Combining the patterns">
                 <p>
                     The patterns normally consists of a combination of a class and a method
@@ -104,7 +97,6 @@
                     <code>&lt;field_type_pattern&gt; &lt;package_and_class_pattern&gt;.&lt;field_name_pattern&gt;</code>
                 </p>
             </subsection>
-
             <subsection name="Class selections">
                 <p>
                     For the class selections specify the full package name of
@@ -151,7 +143,6 @@
                     </ul>
                 </p>
             </subsection>
-
             <subsection name="Method selections">
                 <p>
                     The methods are selected by specifying a pattern that
@@ -261,7 +252,6 @@
                     </ul>
                 </p>
             </subsection>
-
             <subsection name="Constructor selections">
                 <p>
                     The constructors are selected by specifying a pattern that consists of:
@@ -307,7 +297,6 @@
                     </ul>
                 </p>
             </subsection>
-
             <subsection name="Field selections">
                 <p>
                     The fields are selected by specifying a pattern that
@@ -378,9 +367,7 @@
                         </li>
                     </ul>
                 </p>
-
             </subsection>
-
             <subsection name="Subtype patterns">
                 <p>
                     It is possible to pick out all subtypes of a type with the "+" wildcard.
@@ -401,7 +388,6 @@
                     Foo (including Foo itself) is constructed.
                 </p>
             </subsection>
-
             <subsection name="Array type patterns">
                 <p>
                     A type name pattern or subtype pattern can be followed by one or more sets of
@@ -409,7 +395,6 @@
                     pattern, and so is foo.bar.*[][].
                 </p>
             </subsection>
-
             <subsection name="Abbreviations">
                 <p>
                     When picking out the return and parameter types it is
@@ -451,14 +436,11 @@
                     wildcards).
                 </p>
             </subsection>
-
         </section>
-
         <section name="Pointcut definition">
             <p>
                  The pointcut is a construct that picks out join points, i.e. selects well-defined points in the program flow.
             </p>
-
             <p>
                 The following types of pointcuts are currently supported:
                 <ul>
@@ -522,7 +504,6 @@
                     </li>
                 </ul>
             </p>
-
             <p>
                 Pointcuts can either defined:
                 <ul>
@@ -541,9 +522,7 @@
                     </li>
                 </ul>
             </p>
-
         </section>
-
         <section name="Pointcut composition">
             <p>
                 <code>AspectWerkz</code> supports pointcut composition, which means that poincuts can be composed.
@@ -570,12 +549,10 @@
                 </ul>
                 In the XML definition the operator AND is more convenient (else &amp; has to be escaped).
             </p>
-
             <p>
                 Using these operators together with parenthesis you can form any kind of algebraic expression.
                 The model is highly orthogonal since all it allows you to mix any type of pointcut when composing new pointcuts.
             </p>
-
             <p>
                 Examples:
                 <source><![CDATA[
@@ -587,7 +564,6 @@ handler(java.lang.Exception+) && !cflow(* foo.bar.Buzz.(..))
                 ]]></source>
             </p>
         </section>
-
         <section name="AOP system">
             <p>
                 Deployed aspects belongs to an aspect
@@ -610,7 +586,6 @@ handler(java.lang.Exception+) && !cflow(* foo.bar.Buzz.(..))
 </aspectwerkz>
                 ]]></source>
             </p>
-
             <p>
                 Sample to access a system at runtime
                 <source><![CDATA[
@@ -618,7 +593,6 @@ SystemLoader.getSystem("system name")
                 ]]></source>
             </p>
         </section>
-
         <section name="Passing parameters to aspects">
             <p>
                 You also have the option of passing parameters to your aspects.
@@ -646,7 +620,6 @@ SystemLoader.getSystem("system name")
                 to retrieve the parameter value as a String.
             </p>
         </section>
-
         <section name="Deployment models">
             <p>
                 <code>AspectWerkz</code> supports four different deployment models,
@@ -702,7 +675,6 @@ SystemLoader.getSystem("system name")
                 </table>
             </p>
         </section>
-
         <section name="Transformation scopes">
             <p>
                 Using transformation scopes you can choose to perform the transformation within
@@ -723,7 +695,6 @@ SystemLoader.getSystem("system name")
                 <code>package</code> attribute supports only
                 <code>.*</code> as an ending pattern (package and all sub package).
             </p>
-
             <p>
                 During the transformation process (online or offline), a class might be transformed (depending on the pointcuts) if
                 <ol>
@@ -757,7 +728,6 @@ SystemLoader.getSystem("system name")
                 ]]></source>
             </p>
         </section>
-
         <section name="Package namespaces">
             <p>
                 Package namespaces provide a way to simplify the edition of the XML definition file so that it is not necessary
@@ -803,7 +773,6 @@ SystemLoader.getSystem("system name")
                 ]]></source>
             </p>
         </section>
-
         <section name="DTD for XML definition">
             <p>
                 Each distribution comes with a bundled DTD so that it is not looked
@@ -827,7 +796,6 @@ SystemLoader.getSystem("system name")
                 ]]></source>
             </p>
         </section>
-
         <section name="Custom attribute compilation and retrieval">
             <p>
                 Custom attributes starts with
@@ -892,7 +860,5 @@ for (int i = 0; i < attributes.length; i++) {
                 ]]></source>
             </p>
         </section>
-
     </body>
-
 </document>

@@ -43,15 +43,12 @@ public class AddImplementationTransformer implements Transformer {
         // loop over all the definitions
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
-
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
             ExpressionContext ctx = new ExpressionContext(PointcutType.ANY, classInfo, classInfo);
-
             if (classFilter(ctClass, ctx, definition)) {
                 continue;
             }
-
             addMethodIntroductions(definition, context, ctx, ctClass, this);
         }
     }
@@ -70,23 +67,18 @@ public class AddImplementationTransformer implements Transformer {
                                         final AddImplementationTransformer transformer) {
         List introductionDefs = definition.getIntroductionDefinitions(ctx);
         boolean isClassAdvised = false;
-
         for (Iterator it = introductionDefs.iterator(); it.hasNext();) {
             IntroductionDefinition introDef = (IntroductionDefinition)it.next();
-
             int methodIndex = 0;
             List methodsToIntroduce = introDef.getMethodsToIntroduce();
-
             for (Iterator mit = methodsToIntroduce.iterator(); mit.hasNext(); methodIndex++) {
                 MethodInfo methodToIntroduce = (MethodInfo)mit.next();
-
                 transformer.createProxyMethod(ctClass, methodToIntroduce,
                                               definition.getMixinIndexByName(introDef.getName()), methodIndex,
                                               definition, context);
                 isClassAdvised = true;
             }
         }
-
         if (isClassAdvised) {
             context.markAsAdvised();
         }
@@ -109,59 +101,45 @@ public class AddImplementationTransformer implements Transformer {
             ClassInfo[] parameters = methodInfo.getParameterTypes();
             ClassInfo returnType = methodInfo.getReturnType();
             ClassInfo[] exceptionTypes = methodInfo.getExceptionTypes();
-
             final String[] parameterNames = new String[parameters.length];
             final CtClass[] bcelParameterTypes = new CtClass[parameters.length];
             final CtClass[] bcelExceptionTypes = new CtClass[exceptionTypes.length];
             final CtClass javassistReturnType = ctClass.getClassPool().get(returnType.getName());
-
             if (javassistReturnType == null) {
                 return; // we have a constructor => skip
             }
-
             for (int i = 0; i < parameters.length; i++) {
                 bcelParameterTypes[i] = ctClass.getClassPool().get(parameters[i].getName());
                 parameterNames[i] = "arg" + i;
             }
-
             for (int i = 0; i < exceptionTypes.length; i++) {
                 bcelExceptionTypes[i] = ctClass.getClassPool().get(exceptionTypes[i].getName());
             }
-
             if (TransformationUtil.isMethodStatic(methodInfo)) {
                 return; // introductions can't be static (not for the moment at least)
             }
-
             if (JavassistHelper.hasMethod(ctClass, methodName, bcelParameterTypes)) {
                 return;
             }
-
             TransformationUtil.addStaticClassField(ctClass, context);
             TransformationUtil.addAspectManagerField(ctClass, definition, context);
-
             StringBuffer body = new StringBuffer("{");
-
             if (parameters.length > 0) {
                 body.append("Object[] aobj = $args;");
             }
-
             body.append("return ($r)");
             body.append(TransformationUtil.ASPECT_MANAGER_FIELD);
             body.append(".").append(TransformationUtil.GET_MIXIN_METHOD);
             body.append("(").append(mixinIndex).append(")");
             body.append(".").append(TransformationUtil.INVOKE_MIXIN_METHOD);
             body.append("(").append(methodIndex).append(",");
-
             if (parameters.length > 0) {
                 body.append("aobj").append(",");
             }
-
             body.append("this").append(");");
             body.append("}");
-
             CtMethod method = CtNewMethod.make(javassistReturnType, methodName, bcelParameterTypes, bcelExceptionTypes,
                                                body.toString(), ctClass);
-
             method.setModifiers(Modifier.PUBLIC);
             ctClass.addMethod(method);
         } catch (Exception e) {
@@ -181,17 +159,13 @@ public class AddImplementationTransformer implements Transformer {
         if (cg.isInterface()) {
             return true;
         }
-
         String className = cg.getName().replace('/', '.');
-
         if (definition.inExcludePackage(className)) {
             return true;
         }
-
         if (definition.inIncludePackage(className) && definition.isIntroduced(ctx)) {
             return false;
         }
-
         return true;
     }
 

@@ -33,16 +33,13 @@ public class Foo {
         System.out.println("start");
         HotSwapClient client = new HotSwapClient();
         System.out.println("created hotswap client");
-
         Foo aFoo = new Foo();
         aFoo.sayHello();
-
         ClassPool cp = ClassPool.getDefault();
         CtClass newFoo = cp.get("org.codehaus.aspectwerkz.extension.hotswap.Foo");
         CtMethod m = newFoo.getDeclaredMethod("sayHello");
         m.insertBefore("{System.out.println(\"\thotswapped talks:\");}");
         byte[] newFooB = cp.write("org.codehaus.aspectwerkz.extension.hotswap.Foo");
-
         client.hotswap(Foo.class, newFooB);
 
         // same instance is hotswapped
@@ -51,17 +48,14 @@ public class Foo {
         // other instance is hotswapped
         Foo bFoo = new Foo();
         bFoo.sayHello();
-
         ClassPool cp2 = new ClassPool(null);
         cp2.appendClassPath(new LoaderClassPath(Foo.class.getClassLoader()));
-
         try {
             // swap java.lang.ClassLoader with itself
             cp2.writeFile("java.lang.ClassLoader", "_dump");
             //byte[] bytecode = ClassLoaderPatcher.getPatchedClassLoader("org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl");
             client.hotswap(ClassLoader.class, cp2.get("java.lang.ClassLoader").toBytecode());
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
 

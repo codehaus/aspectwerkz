@@ -62,13 +62,10 @@ public class QDoxParser {
      */
     public boolean parse(final String className) {
         m_class = m_builder.getClassByName(className);
-
         if (m_class == null) {
             return false;
         }
-
         m_className = m_class.getFullyQualifiedName();
-
         return true;
     }
 
@@ -81,12 +78,10 @@ public class QDoxParser {
         if ((m_class == null) && (m_className == null)) {
             throw new DefinitionException("no class has been parsed, call parse(..) first");
         }
-
         if (m_class == null) {
             throw new DefinitionException("could not find source file for " + m_className
                                           + " (have you specified the correct srcDir)");
         }
-
         return m_class;
     }
 
@@ -99,17 +94,13 @@ public class QDoxParser {
         Collection classes = m_builder.getClassLibrary().all();
         Collection classNames = new ArrayList();
         String className = null;
-
         for (Iterator it = classes.iterator(); it.hasNext();) {
             className = (String)it.next();
-
             if ("java.lang.Object".equals(className)) {
                 continue;
             }
-
             classNames.add(className);
         }
-
         return (String[])classNames.toArray(new String[] {  });
     }
 
@@ -122,12 +113,10 @@ public class QDoxParser {
         if ((m_class == null) && (m_className == null)) {
             throw new DefinitionException("no class has been parsed, call parse(..) first");
         }
-
         if (m_class == null) {
             throw new DefinitionException("could not find source file for " + m_className
                                           + " (have you specified the correct srcDir)");
         }
-
         return m_class.getMethods();
     }
 
@@ -140,12 +129,10 @@ public class QDoxParser {
         if ((m_class == null) && (m_className == null)) {
             throw new DefinitionException("no class has been parsed, call parse(..) first");
         }
-
         if (m_class == null) {
             throw new DefinitionException("could not find source file for " + m_className
                                           + " (have you specified the correct srcDir)");
         }
-
         return m_class.getFields();
     }
 }

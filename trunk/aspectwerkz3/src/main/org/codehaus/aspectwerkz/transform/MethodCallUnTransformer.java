@@ -41,22 +41,17 @@ public class MethodCallUnTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = SystemDefinitionContainer.getDefinitionsContext();
-
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
-
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
-
             if (classFilter(definition, new ExpressionContext(PointcutType.CALL, classInfo, classInfo), ctClass)) {
                 return;
             }
-
             ctClass.instrument(new ExprEditor() {
                     public void edit(MethodCall methodCall) throws CannotCompileException {
                         try {
                             CtBehavior where = null;
-
                             try {
                                 where = methodCall.where();
                             } catch (RuntimeException e) {
@@ -72,22 +67,17 @@ public class MethodCallUnTransformer implements Transformer {
                             // get the callee method name, signature and class name
                             CtMethod calleeMethod = methodCall.getMethod();
                             String calleeClassName = methodCall.getClassName();
-
                             if (!(calleeMethod.getName().equals("proceedWithCallJoinPoint")
                                 && calleeClassName.equals("org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager"))) {
                                 return;
                             }
-
                             System.out.println("found smtg to REMOVE");
                             System.out.println("calleeMethod = " + calleeMethod.getName());
                             System.out.println("calleeClassName = " + calleeClassName);
                             System.out.println("methodCall = " + methodCall.indexOfBytecode());
-
                             methodCall.replace("{java.lang.System.out.println($args[0]); $_=null;}");
-
                             try {
                                 CodeIterator it = where.getMethodInfo().getCodeAttribute().iterator();
-
                                 it.move(methodCall.indexOfBytecode() - 5);
                                 System.out.println("it.get() = " + it.get());
                                 it.next();
@@ -100,7 +90,6 @@ public class MethodCallUnTransformer implements Transformer {
                             } catch (Throwable t) {
                                 t.printStackTrace();
                             }
-
                             return;
 
                             //
@@ -224,29 +213,22 @@ public class MethodCallUnTransformer implements Transformer {
                                                throws NotFoundException, CannotCompileException {
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD + TransformationUtil.DELIMITER + "method"
                            + TransformationUtil.DELIMITER + ctMethod.getDeclaringClass().getName().replace('.', '_');
-
         boolean hasField = false;
         CtField[] fields = ctClass.getDeclaredFields();
-
         for (int i = 0; i < fields.length; i++) {
             CtField field = fields[i];
-
             if (field.getName().equals(fieldName)) {
                 hasField = true;
-
                 break;
             }
         }
-
         if (!hasField) {
             CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"), fieldName, ctClass);
-
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field,
                              "java.lang.Class#forName(\"" + ctMethod.getDeclaringClass().getName().replace('/', '.')
                              + "\")");
         }
-
         return fieldName;
     }
 
@@ -262,21 +244,16 @@ public class MethodCallUnTransformer implements Transformer {
         if (cg.isInterface()) {
             return true;
         }
-
         String className = cg.getName().replace('/', '.');
-
         if (definition.inExcludePackage(className)) {
             return true;
         }
-
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-
         if (definition.isAdvised(ctx)) {
             return false;
         }
-
         return true;
     }
 

@@ -165,7 +165,6 @@ public class AspectWerkzC {
     public void setPreprocessor(String preprocessor) throws CompileException {
         try {
             Class pp = Class.forName(preprocessor);
-
             this.preprocessor = (ClassPreProcessor)pp.newInstance();
             this.preprocessor.initialize(new Hashtable());
         } catch (Exception e) {
@@ -179,7 +178,6 @@ public class AspectWerkzC {
     public void backup(File source, int index) {
         // backup source in BACKUP/index dir
         File dest = new File(BACKUP_DIR + File.separator + index + File.separator + source.getName());
-
         utility.backupFile(source, dest);
 
         // add to backupMap in case of rollback
@@ -192,10 +190,8 @@ public class AspectWerkzC {
     public void restoreBackup() {
         for (Iterator i = backupMap.keySet().iterator(); i.hasNext();) {
             File source = (File)i.next();
-
             if (!successMap.containsKey(source)) {
                 File dest = (File)backupMap.get(source);
-
                 utility.backupFile(dest, source);
             }
         }
@@ -206,18 +202,13 @@ public class AspectWerkzC {
      */
     public void postCompile(String message) {
         restoreBackup();
-
         utility.log("   [backup] removing backup");
         utility.deleteDir(new File(BACKUP_DIR));
-
         long ms = Math.max(System.currentTimeMillis() - timer, 1 * 1000);
-
         System.out.println("( " + (int)(ms / 1000) + " s ) " + message);
-
         if (!haltOnError) {
             for (Iterator i = backupMap.keySet().iterator(); i.hasNext();) {
                 File source = (File)i.next();
-
                 if (successMap.containsKey(source)) {
                     System.out.println("SUCCESS: " + source);
                 } else {
@@ -235,12 +226,10 @@ public class AspectWerkzC {
     public void doCompile(File sourceFile, String prefixPackage) throws CompileException {
         if (sourceFile.isDirectory()) {
             File[] classes = sourceFile.listFiles();
-
             for (int i = 0; i < classes.length; i++) {
                 if (classes[i].isDirectory() && !(BACKUP_DIR.equals(classes[i].getName()))) {
                     String packaging = (prefixPackage != null) ? (prefixPackage + "." + classes[i].getName())
                                                                : classes[i].getName();
-
                     doCompile(classes[i], packaging);
                 } else if (classes[i].getName().toLowerCase().endsWith(".class")) {
                     compileClass(classes[i], prefixPackage);
@@ -262,37 +251,29 @@ public class AspectWerkzC {
     public void compileClass(File file, String packaging) throws CompileException {
         InputStream in = null;
         FileOutputStream fos = null;
-
         try {
             utility.log("   [compile] " + file.getCanonicalPath());
 
             // dump bytecode in byte[]
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
             in = new FileInputStream(file);
-
             byte[] buffer = new byte[1024];
-
             while (in.available() > 0) {
                 int length = in.read(buffer);
-
                 if (length == -1) {
                     break;
                 }
-
                 bos.write(buffer, 0, length);
             }
 
             // rebuild className
             String className = file.getName().substring(0, file.getName().length() - 6);
-
             if (packaging != null) {
                 className = packaging + '.' + className;
             }
 
             // transform
             byte[] transformed = null;
-
             try {
                 transformed = preprocessor.preProcess(className, bos.toByteArray(), compilationLoader);
             } catch (Throwable t) {
@@ -308,7 +289,6 @@ public class AspectWerkzC {
             if (verify) {
                 URLClassLoader verifier = new VerifierClassLoader(compilationLoader.getURLs(),
                                                                   ClassLoader.getSystemClassLoader());
-
                 try {
                     utility.log("   [verify] " + className);
                     Class.forName(className, false, verifier);
@@ -325,7 +305,6 @@ public class AspectWerkzC {
             } catch (Throwable e) {
                 ;
             }
-
             try {
                 fos.close();
             } catch (Throwable e) {
@@ -345,18 +324,14 @@ public class AspectWerkzC {
 
         // create an empty jar target.jar.aspectwerkzc
         File workingFile = new File(file.getAbsolutePath() + ".aspectwerkzc");
-
         if (workingFile.exists()) {
             workingFile.delete();
         }
-
         ZipFile zip = null;
         ZipOutputStream zos = null;
-
         try {
             zip = new ZipFile(file);
             zos = new ZipOutputStream(new FileOutputStream(workingFile));
-
             for (Enumeration e = zip.entries(); e.hasMoreElements();) {
                 ZipEntry ze = (ZipEntry)e.nextElement();
 
@@ -364,27 +339,20 @@ public class AspectWerkzC {
                 InputStream in = zip.getInputStream(ze);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
-
                 while (in.available() > 0) {
                     int length = in.read(buffer);
-
                     if (length == -1) {
                         break;
                     }
-
                     bos.write(buffer, 0, length);
                 }
-
                 in.close();
 
                 // transform only .class file
                 byte[] transformed = null;
-
                 if (ze.getName().toLowerCase().endsWith(".class")) {
                     utility.log("   [compilejar] compile " + file.getName() + ":" + ze.getName());
-
                     String className = ze.getName().substring(0, ze.getName().length() - 6);
-
                     try {
                         transformed = preprocessor.preProcess(className, bos.toByteArray(), compilationLoader);
                     } catch (Throwable t) {
@@ -399,7 +367,6 @@ public class AspectWerkzC {
                     try {
                         Manifest mf = new Manifest(new ByteArrayInputStream(transformed));
                         Attributes at = mf.getMainAttributes();
-
                         at.putValue(MF_CUSTOM_DATE, DF.format(new Date()));
                         at.putValue(MF_CUSTOM_PP, preprocessor.getClass().getName());
                         at.putValue(MF_CUSTOM_COMMENT, MF_CUSTOM_COMMENT_VALUE);
@@ -415,26 +382,20 @@ public class AspectWerkzC {
 
                 // update target.jar.aspectwerkzc working file
                 ZipEntry transformedZe = new ZipEntry(ze.getName());
-
                 transformedZe.setSize(transformed.length);
-
                 CRC32 crc = new CRC32();
-
                 crc.update(transformed);
                 transformedZe.setCrc(crc.getValue());
                 transformedZe.setMethod(ze.getMethod());
                 zos.putNextEntry(transformedZe);
                 zos.write(transformed, 0, transformed.length);
             }
-
             zip.close();
             zos.close();
 
             // replace file by workingFile
             File swap = new File(file.getAbsolutePath() + ".swap.aspectwerkzc");
-
             utility.backupFile(file, swap);
-
             try {
                 utility.backupFile(workingFile, new File(file.getAbsolutePath()));
                 workingFile.delete();
@@ -453,7 +414,6 @@ public class AspectWerkzC {
             } catch (Throwable e) {
                 ;
             }
-
             try {
                 zip.close();
             } catch (Throwable e) {
@@ -470,19 +430,16 @@ public class AspectWerkzC {
     public boolean compile(File source) {
         sourceIndex++;
         backup(source, sourceIndex);
-
         try {
             doCompile(source, null);
         } catch (CompileException e) {
             utility.log("   [aspectwerkzc] compilation encountered an error");
             e.printStackTrace();
-
             return (!haltOnError);
         }
 
         // compile sucessfull
         successMap.put(source, Boolean.TRUE);
-
         return true;
     }
 
@@ -494,7 +451,6 @@ public class AspectWerkzC {
     public void setCompilationPath(File[] targets) {
         URL[] urls = new URL[targets.length];
         int j = 0;
-
         for (int i = 0; i < targets.length; i++) {
             try {
                 urls[j] = targets[i].getCanonicalFile().toURL();
@@ -503,7 +459,6 @@ public class AspectWerkzC {
                 System.err.println("bad target " + targets[i]);
             }
         }
-
         compilationLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
     }
 
@@ -528,20 +483,16 @@ public class AspectWerkzC {
     public static void main(String[] args) {
         if (args.length <= 0) {
             doHelp();
-
             return; //stop here
         }
-
         AspectWerkzC compiler = new AspectWerkzC();
 
         // prepare backup directory
         try {
             File temp = new File(BACKUP_DIR);
-
             if (temp.exists()) {
                 compiler.getUtility().deleteDir(temp);
             }
-
             temp.mkdir();
             (new File(temp, "" + System.currentTimeMillis() + ".timestamp")).createNewFile();
         } catch (Exception e) {
@@ -568,21 +519,17 @@ public class AspectWerkzC {
                 if (i == (args.length - 1)) {
                     ; //ignore ending -cp with no entry
                 }
-
                 StringTokenizer pathSeparator = new StringTokenizer(args[++i],
                                                                     (System.getProperty("os.name", "").toLowerCase()
                                                                            .indexOf("windows") >= 0) ? ";" : ":");
-
                 while (pathSeparator.hasMoreTokens()) {
                     File path = new File(pathSeparator.nextToken());
-
                     paths.add(path);
                 }
             } else if (args[i].startsWith("-")) {
                 ;
             } else {
                 File file = (new File(args[i]));
-
                 if (file.exists()) {
                     files.add(file);
                 } else {
@@ -622,7 +569,6 @@ public class AspectWerkzC {
                 System.exit(-1);
             }
         }
-
         compiler.postCompile("");
         System.exit(0);
     }
