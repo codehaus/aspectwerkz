@@ -128,6 +128,8 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
             }
             sb.append(")");
             returned = sb.toString();
+        } else if ("annotationType".equals(methodName)) {
+            return Class.forName(m_annotationClassName, false, proxy.getClass().getClassLoader());
         } else if (m_isUntyped) {
             if ("value".equals(methodName)) {
                 returned = m_rawAnnotationValue;

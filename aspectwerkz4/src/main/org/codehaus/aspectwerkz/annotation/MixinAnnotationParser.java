@@ -62,7 +62,7 @@ public class MixinAnnotationParser {
             throw new IllegalArgumentException("class can not be null");
         }
         final SystemDefinition systemDef = mixinDef.getSystemDefinition();
-        final List annotations = AsmAnnotations.getAnnotations(AOPAnnotationConstants.ANNOTATION_MIXIN(), classInfo);
+        final List annotations = AsmAnnotations.getAnnotations(AnnotationConstants.MIXIN, classInfo);
         for (Iterator iterator = annotations.iterator(); iterator.hasNext();) {
             Mixin annotation = (Mixin) iterator.next();
             if (annotation != null) {

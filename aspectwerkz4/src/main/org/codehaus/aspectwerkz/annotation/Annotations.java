@@ -34,6 +34,7 @@ import java.util.Iterator;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class Annotations {
+
     /**
      * Return the annotation with a specific name for a specific class.
      *
@@ -44,6 +45,17 @@ public final class Annotations {
     public static Annotation getAnnotation(final String annotationName, final Class klass) {
         ClassInfo classInfo = AsmClassInfo.getClassInfo(klass.getName(), klass.getClassLoader());
         return AsmAnnotations.getAnnotation(annotationName, classInfo);
+    }
+
+    /**
+     * Return the annotation with a specific name for a specific class.
+     *
+     * @param annotation     the annotation class
+     * @param klass          the java.lang.Class object to find the annotation on.
+     * @return the annotation or null
+     */
+    public static Annotation getAnnotation(final Class annotation, final Class klass) {
+        return getAnnotation(getAnnnotationName(annotation), klass);
     }
 
     /**
@@ -61,6 +73,17 @@ public final class Annotations {
     }
 
     /**
+     * Return the annotation with a specific name for a specific method.
+     *
+     * @param annotation     the annotation class
+     * @param method         the java.lang.refect.Method object to find the annotation on.
+     * @return the annotation or null
+     */
+    public static Annotation getAnnotation(final Class annotation, final Method method) {
+        return getAnnotation(getAnnnotationName(annotation), method);
+    }
+
+    /**
      * Return the annotation with a specific name for a specific constructor.
      *
      * @param annotationName the annotation name
@@ -72,6 +95,17 @@ public final class Annotations {
         ClassInfo classInfo = AsmClassInfo.getClassInfo(constructor.getDeclaringClass().getName(), loader);
         ConstructorInfo constructorInfo = classInfo.getConstructor(ReflectHelper.calculateHash(constructor));
         return AsmAnnotations.getAnnotation(annotationName, constructorInfo);
+    }
+
+    /**
+     * Return the annotation with a specific name for a specific constructor.
+     *
+     * @param annotation     the annotation class
+     * @param constructor    the java.lang.refect.Constructor object to find the annotation on.
+     * @return the annotation or null
+     */
+    public static Annotation getAnnotation(final Class annotation, final Constructor constructor) {
+        return getAnnotation(getAnnnotationName(annotation), constructor);
     }
 
     /**
@@ -89,6 +123,17 @@ public final class Annotations {
     }
 
     /**
+     * Return the annotation with a specific name for a specific field.
+     *
+     * @param annotation     the annotation class
+     * @param field          the java.lang.reflect.Field object to find the annotation on.
+     * @return the annotation or null
+     */
+    public static Annotation getAnnotation(final Class annotation, final Field field) {
+        return getAnnotation(getAnnnotationName(annotation), field);
+    }
+
+    /**
      * Return a list with the annotations with a specific name for a specific class.
      *
      * @param annotationName the annotation name
@@ -98,6 +143,17 @@ public final class Annotations {
     public static List getAnnotations(final String annotationName, final Class klass) {
         ClassInfo classInfo = AsmClassInfo.getClassInfo(klass.getName(), klass.getClassLoader());
         return AsmAnnotations.getAnnotations(annotationName, classInfo);
+    }
+
+    /**
+     * Return a list with the annotations with a specific name for a specific class.
+     *
+     * @param annotation     the annotation class
+     * @param klass          the java.lang.Class object to find the annotation on.
+     * @return the annotations in a list (can be empty)
+     */
+    public static List getAnnotations(final Class annotation, final Class klass) {
+        return getAnnotations(getAnnnotationName(annotation), klass);
     }
 
     /**
@@ -115,6 +171,17 @@ public final class Annotations {
     }
 
     /**
+     * Return a list with the annotations with a specific name for a specific method.
+     *
+     * @param annotation     the annotation class
+     * @param method         the java.lang.refect.Method object to find the annotation on.
+     * @return the annotations in a list (can be empty)
+     */
+    public static List getAnnotations(final Class annotation, final Method method) {
+        return getAnnotations(getAnnnotationName(annotation), method);
+    }
+
+    /**
      * Return a list with the annotations with a specific name for a specific constructor.
      *
      * @param annotationName the annotation name
@@ -129,6 +196,17 @@ public final class Annotations {
     }
 
     /**
+     * Return a list with the annotations with a specific name for a specific constructor.
+     *
+     * @param annotation     the annotation class
+     * @param constructor    the java.lang.refect.Constructor object to find the annotation on.
+     * @return the annotations in a list (can be empty)
+     */
+    public static List getAnnotations(final Class annotation, final Constructor constructor) {
+        return getAnnotations(getAnnnotationName(annotation), constructor);
+    }
+
+    /**
      * Return a list with the annotations with a specific name for a specific field.
      *
      * @param annotationName the annotation name
@@ -140,6 +218,17 @@ public final class Annotations {
         ClassInfo classInfo = AsmClassInfo.getClassInfo(field.getDeclaringClass().getName(), loader);
         FieldInfo fieldInfo = classInfo.getField(ReflectHelper.calculateHash(field));
         return AsmAnnotations.getAnnotations(annotationName, fieldInfo);
+    }
+
+    /**
+     * Return a list with the annotations with a specific name for a specific field.
+     *
+     * @param annotation     the annotation class
+     * @param field          the java.lang.reflect.Field object to find the annotation on.
+     * @return the annotations in a list (can be empty)
+     */
+    public static List getAnnotations(final Class annotation, final Field field) {
+        return getAnnotations(getAnnnotationName(annotation), field);
     }
 
     /**
@@ -192,32 +281,36 @@ public final class Annotations {
         return classInfo.getField(ReflectHelper.calculateHash(field)).getAnnotations();
     }
 
-    /**
-     * Returns the annotation proxy class for a specific annotation loaded in a specific loader.
-     *
-     * @param annotationName
-     * @param loader
-     * @return
-     */
-    public static Class getProxyClass(final String annotationName, final ClassLoader loader) {
-        Class proxyClass;
-        AsmClassInfoRepository classInfoRepository = AsmClassInfoRepository.getRepository(loader);
-        String proxyClassName = (String) classInfoRepository.getAnnotationProperties().get(annotationName);
-        if (proxyClassName == null) {
-            return null;
-        }
-        if (proxyClassName.equals("")) {
-            throw new DefinitionException("untyped annotations can not be used with Java5 annotations");
-        } else {
-            try {
-                proxyClass = loader.loadClass(proxyClassName);
-            } catch (ClassNotFoundException e) {
-                String message = proxyClassName
-                                 +
-                                 " could not be found on system classpath or class path provided as argument to the compiler";
-                throw new DefinitionException(message);
-            }
-        }
-        return proxyClass;
+//    /**
+//     * Returns the annotation proxy class for a specific annotation loaded in a specific loader.
+//     *
+//     * @param annotationName
+//     * @param loader
+//     * @return
+//     */
+//    public static Class getProxyClass(final String annotationName, final ClassLoader loader) {
+//        Class proxyClass;
+//        AsmClassInfoRepository classInfoRepository = AsmClassInfoRepository.getRepository(loader);
+//        String proxyClassName = (String) classInfoRepository.getAnnotationProperties().get(annotationName);
+//        if (proxyClassName == null) {
+//            return null;
+//        }
+//        if (proxyClassName.equals("")) {
+//            throw new DefinitionException("untyped annotations can not be used with Java5 annotations");
+//        } else {
+//            try {
+//                proxyClass = loader.loadClass(proxyClassName);
+//            } catch (ClassNotFoundException e) {
+//                String message = proxyClassName
+//                                 +
+//                                 " could not be found on system classpath or class path provided as argument to the compiler";
+//                throw new DefinitionException(message);
+//            }
+//        }
+//        return proxyClass;
+//    }
+
+    private static String getAnnnotationName(Class annotation) {
+        return annotation.getName().replace('/', '.');
     }
 }
