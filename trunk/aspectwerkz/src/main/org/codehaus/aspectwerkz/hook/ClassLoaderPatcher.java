@@ -131,8 +131,16 @@ public class ClassLoaderPatcher {
 
     /**
      * Patch java.lang.ClassLoader with preProcessorName instance and hotswap in target VM using a JDWP attaching connector
+     * Don't wait before connecting
      */
     public static VirtualMachine hotswapClassLoader(String preProcessorName, String transport, String address) {
+        return hotswapClassLoader(preProcessorName, transport, address, 0);
+    }
+
+    /**
+     * Patch java.lang.ClassLoader with preProcessorName instance and hotswap in target VM using a JDWP attaching connector
+     */
+    public static VirtualMachine hotswapClassLoader(String preProcessorName, String transport, String address, int secondsToWait) {
         String name = null;
         if ("dt_socket".equals(transport))
             name = "com.sun.jdi.SocketAttach";
@@ -158,6 +166,9 @@ public class ClassLoaderPatcher {
         }
 
         try {
+            if (secondsToWait > 0) {
+                try { Thread.sleep(1000*secondsToWait); } catch (Exception e) { ; }
+            }
             VirtualMachine vm = connector.attach(args);
             redefineClass(vm, "java.lang.ClassLoader", getPatchedClassLoader(preProcessorName));
             return vm;

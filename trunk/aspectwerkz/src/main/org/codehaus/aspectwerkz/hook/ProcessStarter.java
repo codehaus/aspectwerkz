@@ -56,7 +56,8 @@ import java.util.StringTokenizer;
  * in [jvm option]. Specify the FQN of your implementation of hook.ClassLoaderPreProcessor.
  * See {@link org.codehaus.aspectwerkz.hook.ClassLoaderPreProcessor}
  * If not given, the default AspectWerkz layer 1 BCEL implementation hook.impl.* is used, which is equivalent to
- * <code>-Daspectwerkz.classloader.clpreprocessor=org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl</code>
+ * <code>-Daspectwerkz.classloader.clpreprocessor=org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl</code><br/>
+ * Use -Daspectwerkz.classloader.wait=2 in [jvm option] to force a pause of 2 seconds between process fork and JPDA connection for HotSwap. Defaults to no wait.
  * </p>
  *
  * <p><h2>Disabling HotSwap</h2>
@@ -89,6 +90,8 @@ public class ProcessStarter {
     private final static String CL_BOOTCLASSPATH_FORCE_DEFAULT = "."+File.separatorChar+"boot";
     /** option for target dir when -Xbootclasspath is forced or used (java 1.3) */
     private final static String CL_BOOTCLASSPATH_FORCE_PROPERTY = "aspectwerkz.classloader.clbootclasspath";
+    /** option for seconds to wait before connecting */
+    private final static String CONNECTION_WAIT_PROPERTY = "aspectwerkz.classloader.wait";
 
     /** target process */
     private Process process = null;
@@ -165,6 +168,10 @@ public class ProcessStarter {
                 e.printStackTrace();
                 return -1;
             }
+
+            // attach stdout VM streams to this streams
+            // this is needed early to support -verbose:class like options
+            redirectStdoutStreams();
         } else {
             // lauch VM in suspend mode
             JDWPStarter starter = new JDWPStarter(opt, main, "dt_socket", "9300");
@@ -176,8 +183,18 @@ public class ProcessStarter {
                 return -1;
             }
 
+            // attach stdout VM streams to this streams
+            // this is needed early to support -verbose:class like options
+            redirectStdoutStreams();
+
             // override class loader in VM thru an attaching connector
-            VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(clp, starter.getTransport(), starter.getAddress());
+            int secondsToWait = 0;
+            try {
+                secondsToWait = Integer.parseInt(System.getProperty(CONNECTION_WAIT_PROPERTY, "0"));
+            } catch (NumberFormatException nfe) {
+                ;
+            }
+            VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(clp, starter.getTransport(), starter.getAddress(), secondsToWait);
             if (vm == null) {
                 process.destroy();
             } else {
@@ -186,8 +203,8 @@ public class ProcessStarter {
 			}
         }
 
-        // attach VM streams to this streams
-        redirectStreams();
+        // attach VM other streams to this streams
+        redirectOtherStreams();
 
         // add a shutdown hook to "this" to shutdown VM
         Thread shutdownHook = new Thread() {
@@ -223,21 +240,22 @@ public class ProcessStarter {
     }
 
     /**
-     * Set up stream redirection in target VM
+     * Set up stream redirection in target VM for stdout
      */
-    private void redirectStreams() {
-        /*System.in = process.getInputStream();
-        System.out = new java.io.PrintStream(process.getOutputStream(), true);
-        System.err = new java.io.PrintStream(process.getErrorStream(), true);
-        */
+    private void redirectStdoutStreams() {
+        outThread = new StreamRedirectThread("out.redirect", process.getInputStream(), System.out);
+        outThread.start();
+    }
 
+    /**
+     * Set up stream redirection in target VM for stderr and stdin
+     */
+    private void redirectOtherStreams() {
         inThread = new StreamRedirectThread("in.redirect", System.in, process.getOutputStream());
         inThread.setDaemon(true);
-        outThread = new StreamRedirectThread("out.redirect", process.getInputStream(), System.out);
         errThread = new StreamRedirectThread("err.redirect", process.getErrorStream(),  System.err);
 
         inThread.start();
-        outThread.start();
         errThread.start();
     }
 
