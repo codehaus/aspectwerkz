@@ -111,7 +111,7 @@ public interface AspectModel {
      *
      * @return
      */
-    boolean requiresRttiInfo();
+    boolean requiresReflectiveInfo();
 
     /**
      * Info about the around closure class or interface for this specific aspect model.

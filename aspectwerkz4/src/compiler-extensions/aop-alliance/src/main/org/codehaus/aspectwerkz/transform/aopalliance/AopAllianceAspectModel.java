@@ -84,7 +84,7 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
      *
      * @return true
      */
-    public boolean requiresRttiInfo() {
+    public boolean requiresReflectiveInfo() {
         return true;
     }
 

@@ -30,7 +30,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.MatchingJoinPointInfo;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.JoinPointFactory;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
-import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModelManager;
+import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
 import org.objectweb.asm.ClassReader;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
