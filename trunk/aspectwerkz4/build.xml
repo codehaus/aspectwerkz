@@ -116,7 +116,7 @@
     <!-- ============================================================== -->
     <!-- compiles the distribution  -->
     <!-- ============================================================== -->
-    <target name="compile" depends="init, compile:jdk14">
+    <target name="compile" depends="init, compile:jdk14, compile:jdk15:bootstrap">
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${build.core.dir}"/>
         <javac destdir="${build.core.dir}" debug="on">
@@ -156,6 +156,22 @@
         <javac destdir="${main.classes}" deprecation="true" debug="true" optimize="false" >
             <src>
                 <pathelement location="src/jdk14"/>
+            </src>
+            <classpath>
+                <pathelement path="${main.classes}"/>
+                <path refid="project.class.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- ============================================================== -->
+    <!-- compiles the Java5 CORE stuff -->
+    <!-- ============================================================== -->
+    <target name="compile:jdk15:bootstrap" depends="init" if="jdk15">
+        <echo message="** Found jdk15 specific compilation..."/>
+        <javac destdir="${main.classes}" deprecation="true" debug="true" optimize="false" excludes="**/aspectwerkz/hook/**/*.java">
+            <src>
+                <pathelement location="src/jdk15/main"/>
             </src>
             <classpath>
                 <pathelement path="${main.classes}"/>
