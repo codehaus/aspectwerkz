@@ -1,0 +1,8 @@
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+<aspectwerkz>
+    <system id="aj">
+        <aspect class="test.aj.aspect.TestAspect"/>
+    </system>
+</aspectwerkz>
