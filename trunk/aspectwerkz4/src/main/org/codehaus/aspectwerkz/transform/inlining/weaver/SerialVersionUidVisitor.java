@@ -17,6 +17,8 @@ import org.objectweb.asm.ClassWriter;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
@@ -435,20 +437,23 @@ public class SerialVersionUidVisitor extends ClassAdapter implements Constants {
     public static class Add extends ClassAdapter {
 
         private ContextImpl m_ctx;
+        private ClassInfo m_classInfo;
 
-        public Add(ClassVisitor classVisitor, Context ctx) {
+        public Add(ClassVisitor classVisitor, Context ctx, ClassInfo classInfo) {
             super(classVisitor);
             m_ctx = (ContextImpl) ctx;
+            m_classInfo = classInfo;
         }
 
         public void visitEnd() {
-            //TODO do it only for serializable classes
-            ClassReader cr = new ClassReader(m_ctx.getInitialBytecode());
-            ClassWriter cw = AsmHelper.newClassWriter(true);
-            SerialVersionUidVisitor sv = new SerialVersionUidVisitor(cw);
-            cr.accept(sv, true);
-            if (sv.m_computeSVUID && !sv.m_hadSVUID) {
-                cv.visitField(ACC_FINAL + ACC_STATIC, SVUID_NAME, "J", new Long(sv.m_SVUID), null);
+            if (ClassInfoHelper.implementsInterface(m_classInfo, "java.io.Serializable")) {
+                ClassReader cr = new ClassReader(m_ctx.getInitialBytecode());
+                ClassWriter cw = AsmHelper.newClassWriter(true);
+                SerialVersionUidVisitor sv = new SerialVersionUidVisitor(cw);
+                cr.accept(sv, true);
+                if (sv.m_computeSVUID && !sv.m_hadSVUID) {
+                    cv.visitField(ACC_FINAL + ACC_STATIC, SVUID_NAME, "J", new Long(sv.m_SVUID), null);
+                }
             }
             super.visitEnd();
         }
