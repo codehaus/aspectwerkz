@@ -68,7 +68,7 @@ public class AdviseCallerSideMethodTransformer implements Transformer {
         m_definition.loadAspects(context.getLoader());
 
         final CtClass cg = klass.getClassGen();
-        ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(cg);
+        final ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(cg);
 
         // filter caller classes
         if (classFilter(classMetaData, cg)) {
@@ -178,7 +178,14 @@ public class AdviseCallerSideMethodTransformer implements Transformer {
                     // skip the creation of the join point if we already have one
                     if (!callerSideJoinPoints.contains(joinPoint.toString())) {
                         callerSideJoinPoints.add(joinPoint.toString());
-                        addStaticJoinPointField(cg, joinPoint.toString());
+                        addStaticJoinPointField(cg, joinPoint.toString(),
+                                 callerMethodName,
+                                callerMethodSignature,
+                                calleeClassName+"#"+calleeMethodName,
+                                calleeMethodSignature, m_definition.getUuid()
+
+
+                                );
                         //system
                         //caller
                         //callee
@@ -212,9 +219,12 @@ public class AdviseCallerSideMethodTransformer implements Transformer {
 //                            m,
 //                            joinPointType
 //                    );
+                    } else {
+                        System.out.println("skipped " + classMetaData.getName() + " -> " + calleeClassName + "." + calleeMethodName+calleeMethodSignature);
+                        boolean test = m_definition.isPickedOutByCallPointcut(calleeSideClassMetaData, calleeSideMethodMetaData);
                     }
                 } catch (NotFoundException nfe) {
-                    ;
+                    nfe.printStackTrace();
                 }
             }
         };
@@ -942,7 +952,14 @@ public class AdviseCallerSideMethodTransformer implements Transformer {
     }
 
     private void addStaticJoinPointField(final CtClass cg,
-                                             final String joinPoint)
+                                             final String joinPoint,
+                                         String callerMethodName,
+                                         String callerMethodSignature,
+                                         String fullCalleeMethodName,
+                                         String calleeMethodSignature,
+                                         String uuid
+
+                                         )
         throws NotFoundException, CannotCompileException {
 
             try {
@@ -957,9 +974,18 @@ public class AdviseCallerSideMethodTransformer implements Transformer {
                     joinPoint,
                     cg);
             field.setModifiers(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC);
-            cg.addField(field, "new org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint(" +
-                    "\"tests\", ___AW_clazz, \"testPrePostAdvicedStaticMethod\", \"()V\", \"test.attribdef.CallerSideTestHelper#invokeStaticMethodPrePost\", \"()Ljava/lang/String;\");");
-        }
+        StringBuffer code = new StringBuffer("");
+        code.append("new org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint(");
+        code.append("\"").append(uuid).append("\"");
+        code.append(", ___AW_clazz");
+        code.append(", \"").append(callerMethodName).append("\"");
+        code.append(", \"").append(callerMethodSignature).append("\"");
+        code.append(", \"").append(fullCalleeMethodName).append("\"");
+        code.append(", \"").append(calleeMethodSignature).append("\"");
+        code.append(");");
+
+        cg.addField(field, code.toString());
+    }
 
 
 }
