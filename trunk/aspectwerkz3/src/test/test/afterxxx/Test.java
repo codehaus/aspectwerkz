@@ -112,7 +112,7 @@ public class Test extends TestCase {
     void aroundFinally() {
     }
 
-    Object aroundFinallyReturning() {
+    static Object aroundFinallyReturning() {
         return null;
     }
 
@@ -120,7 +120,7 @@ public class Test extends TestCase {
         return "aroundReturning";
     }
 
-    Object aroundFinallyReturningThrowing() {
+    static Object aroundFinallyReturningThrowing() {
         throw new UnsupportedOperationException();
     }
 
@@ -131,11 +131,11 @@ public class Test extends TestCase {
     void _finally() {
     }
 
-    Object finallyReturning() {
+    static Object finallyReturning() {
         return "finallyReturning";
     }
 
-    Object finallyReturningThrowing() {
+    static Object finallyReturningThrowing() {
         throw new UnsupportedOperationException();
     }
 

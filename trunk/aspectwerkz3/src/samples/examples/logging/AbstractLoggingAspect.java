@@ -50,7 +50,7 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * @Before methodsToLog
+     * Before methodsToLog
      */
     public void logBefore(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
@@ -63,7 +63,7 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * @After returning(java.lang.String) methodsToLog
+     * After returning(java.lang.String) methodsToLog
      */
     public void logAfterReturning(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
@@ -78,10 +78,10 @@ public abstract class AbstractLoggingAspect {
     /**
      * @After throwing(java.lang.RuntimeException) methodsToLog
      */
-    public void logAfterThrowing(final JoinPoint joinPoint) throws Throwable {
+    public void logAfterThrowingRE(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
-                "AFTER THROWING: "
+                "AFTER THROWING RE: "
                 + joinPoint.getTargetClass().getName()
                 + "::"
                 + signature.getName()
@@ -89,7 +89,20 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * @After finally methodsToLog
+     * @After throwing(java.lang.IllegalArgumentException) methodsToLog
+     */
+    public void logAfterThrowingIAE(final JoinPoint joinPoint) throws Throwable {
+        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
+        System.out.println(
+                "AFTER THROWING IAE: "
+                + joinPoint.getTargetClass().getName()
+                + "::"
+                + signature.getName()
+        );
+    }
+
+    /**
+     * After finally methodsToLog
      */
     public void logAfterFinally(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();

@@ -28,7 +28,7 @@ public class LoggingAspect extends AbstractLoggingAspect {
     /**
      * Expression execution(@log * examples.logging.*.*(..))
      *
-     * @Expression execution(* examples.logging.Target.*(..))
+     * @Expression execution(* examples.logging.Target.toLog1(..))
      */
     Pointcut methodsToLog;
 

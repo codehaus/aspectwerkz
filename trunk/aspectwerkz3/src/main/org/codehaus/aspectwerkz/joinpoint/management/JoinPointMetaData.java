@@ -78,7 +78,8 @@ public class JoinPointMetaData {
             }
 
             // get all matching pointcuts from all managers
-            for (Iterator it = aspectManager.getPointcuts(ctx).iterator(); it.hasNext();) {
+            final List pointcuts = aspectManager.getPointcuts(ctx);
+            for (Iterator it = pointcuts.iterator(); it.hasNext();) {
                 Pointcut pointcut = (Pointcut) it.next();
 
                 AdviceInfo[] aroundAdviceIndexes = pointcut.getAroundAdviceIndexes();
@@ -181,7 +182,7 @@ public class JoinPointMetaData {
 
     /**
      * Sets the method argument indexes.
-     * 
+     *
      * @param adviceName
      * @param pointcut
      * @param ctx

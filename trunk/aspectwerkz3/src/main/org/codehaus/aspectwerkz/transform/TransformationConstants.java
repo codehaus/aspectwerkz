@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * Interface with common constants used in the transformation process.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface TransformationConstants {
@@ -20,7 +20,8 @@ public interface TransformationConstants {
 
     // prefixes
     public static final String ASPECTWERKZ_PREFIX = "___AW_";
-    public static final String WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX  + "access$";//CAUTION: keep AW prefix or fix the AspectRegistry etc
+    // FIMXE for 2.0 have only "access$" as prefix
+    public static final String WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "access$";//CAUTION: keep AW prefix or fix the AspectRegistry etc
     public static final String DELIMITER = "$_AW_$";
     public static final String STATIC_CLASS_FIELD = ASPECTWERKZ_PREFIX + "clazz";
     public static final String JOIN_POINT_PREFIX = ASPECTWERKZ_PREFIX + "jp";
@@ -30,6 +31,7 @@ public interface TransformationConstants {
     public static final String GETFIELD_WRAPPER_METHOD_PREFIX = "GETFIELD" + DELIMITER;
     public static final String JOIN_POINT_BASE_CLASS_SUFFIX = ASPECTWERKZ_PREFIX + "JoinPointBase";
     public static final String JOIN_POINT_CLASS_SUFFIX = ASPECTWERKZ_PREFIX + "JoinPoint";
+    public static final String ASPECTWERKZ_PACKAGE_NAME = "org/codehaus/aspectwerkz";
 
     // internal fields
     public static final String CROSS_CUTTING_INFO_CLASS_FIELD = ASPECTWERKZ_PREFIX + "crossCuttingInfo";
@@ -45,7 +47,7 @@ public interface TransformationConstants {
     public static final String INIT_JOIN_POINTS_METHOD_NAME = WRAPPER_METHOD_PREFIX + DELIMITER + "initJoinPoints";
     public static final String JOIN_POINT_INDEX_ATTRIBUTE = ASPECTWERKZ_PREFIX + "JoinPointIndex";
     public static final String INLINED_JOIN_POINT_MANAGER_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/management/InlinedJoinPointManager";
- 
+
     // method and class names
     public static final String INIT_METHOD_NAME = "<init>";
     public static final String CLINIT_METHOD_NAME = "<clinit>";

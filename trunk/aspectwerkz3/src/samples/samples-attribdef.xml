@@ -3,27 +3,18 @@
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
 <aspectwerkz>
     <system id="samples">
-        <prepare package="examples.logging."/>
+        <!--        <prepare package="examples.logging."/>-->
         <package name="examples">
             <aspect class="caching.Fibonacci$FibonacciCacheAspect" deployment-model="perInstance"/>
             <aspect class="caching.CachingAspect">
                 <param name="timeout" value="10"/>
-            </aspect>
-            <aspect class="logging.LoggingAspect">
-<!--                <advice bind-to="execution(* examples.logging.Target*.to*(..))" type="before" name="logEntry"/>-->
-<!--                <advice bind-to="execution(* examples.logging.Target*.to*(..))" type="after" name="logExit"/>-->
-
-<!--                 TODO: how to support args() binding when using unamed pointcut - like args(String s), and String in sign of advice ? -->
-<!--                 <advice bind-to="execution(* examples.logging.Target*.toLogWithArgs(..)) && args(String s)" type="before" name="logEntryWithArgs"/>-->
-<!--                <pointcut name="pcWithArgs(java.lang.String s)" expression="execution(* examples.logging.Target*.toLogWithArgs(..)) AND args(s, int)"/>-->
-<!--                <advice bind-to="pcWithArgs(s)" type="before" name="logEntryWithArgs(java.lang.String s)"/>-->
             </aspect>
             <aspect class="logging.LoggingAspect"/>
             <aspect class="introduction.IntroductionAspect" deployment-model="perClass"/>
             <aspect class="cflow.CFlowAspect"/>
             <aspect class="exception.ExceptionHandlingAspect"/>
 
-            <aspect class="logging.ArgAspect"/>
+            <!--            <aspect class="logging.ArgAspect"/>-->
 
             <aspect class="annotation.Target$AnnotationMatchAspect"/>
         </package>

@@ -20,7 +20,7 @@ public class StaticMethodTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression execution(* test.StaticMethodAdviceTest.get*(..))
+     * @Expression call(* test.StaticMethodAdviceTest.get*(..))
      */
     Pointcut static_pc1;
 
@@ -30,7 +30,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc2;
 
     /**
-     * @Expression execution(void test.StaticMethodAdviceTest.methodAdvicedMethod(..))
+     * @Expression call(void test.StaticMethodAdviceTest.methodAdvicedMethod(..))
      */
     Pointcut static_pc4;
 
@@ -40,9 +40,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc5;
 
     /**
-     * m
-     * 
-     * @Expression execution(* test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..))
+     * @Expression call(* test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..))
      */
     Pointcut static_pc6;
 
@@ -52,7 +50,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc7;
 
     /**
-     * @Expression execution(* test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..))
+     * @Expression call(* test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..))
      */
     Pointcut static_pc8;
 
@@ -62,7 +60,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc9;
 
     /**
-     * @Expression execution(void test.StaticMethodAdviceTest.multiplePointcutsMethod(..))
+     * @Expression call(void test.StaticMethodAdviceTest.multiplePointcutsMethod(..))
      */
     Pointcut static_pc10;
 
@@ -72,7 +70,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc11;
 
     /**
-     * @Expression execution(* test.StaticMethodAdviceTest.takesArrayAsArgument(String[]))
+     * @Expression call(* test.StaticMethodAdviceTest.takesArrayAsArgument(String[]))
      */
     Pointcut static_pc12;
 
@@ -82,6 +80,18 @@ public class StaticMethodTestAspect {
     Pointcut static_pc13;
 
     // ============ Advices ============
+
+    /**
+     * @Before static_pc1 || static_pc2 || static_pc5 || static_pc8 || static_pc12
+     */
+    public void before(final JoinPoint joinPoint) throws Throwable {
+    }
+
+    /**
+     * @After finally static_pc1 || static_pc2 || static_pc5 || static_pc8 || static_pc12
+     */
+    public void afterFinally(final JoinPoint joinPoint) throws Throwable {
+    }
 
     /**
      * @Around static_pc1 || static_pc2 || static_pc5 || static_pc8 || static_pc12
@@ -117,11 +127,11 @@ public class StaticMethodTestAspect {
         final Object result = joinPoint.proceed();
         MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
         String metadata = joinPoint.getTargetClass().getName()
-            + rtti.getMethod().getName()
-            + rtti.getParameterValues()[0]
-            + rtti.getParameterTypes()[0].getName()
-            + rtti.getReturnType().getName()
-            + rtti.getReturnValue();
+                          + rtti.getMethod().getName()
+                          + rtti.getParameterValues()[0]
+                          + rtti.getParameterTypes()[0].getName()
+                          + rtti.getReturnType().getName()
+                          + rtti.getReturnValue();
         return metadata;
     }
 
