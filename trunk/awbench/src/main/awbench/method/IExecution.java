@@ -19,11 +19,11 @@ public interface IExecution extends Measurement {
 
     void beforeJP();
 
-    void withPrimitiveArgs(int i);
+    void beforeWithPrimitiveArgs(int i);
 
-    void withWrappedArgs(Integer i);
+    void beforeWithWrappedArgs(Integer i);
 
-    void withArgsAndTarget(int i);
+    void beforeWithArgsAndTarget(int i);
 
     void beforeAfter();
 

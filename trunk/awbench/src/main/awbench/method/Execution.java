@@ -28,15 +28,15 @@ public class Execution implements IExecution {
         m_count++;
     }
 
-    public void withPrimitiveArgs(int i) {
+    public void beforeWithPrimitiveArgs(int i) {
         m_count++;
     }
 
-    public void withWrappedArgs(Integer i) {
+    public void beforeWithWrappedArgs(Integer i) {
         m_count++;
     }
 
-    public void withArgsAndTarget(int i) {
+    public void beforeWithArgsAndTarget(int i) {
         m_count++;
     }
 
@@ -73,9 +73,9 @@ public class Execution implements IExecution {
             before();
             beforeSJP();
             beforeJP();
-            withPrimitiveArgs(Constants.CONST_0);
-            withWrappedArgs(Constants.WRAPPED_0);
-            withArgsAndTarget(Constants.CONST_0);
+            beforeWithPrimitiveArgs(Constants.CONST_0);
+            beforeWithWrappedArgs(Constants.WRAPPED_0);
+            beforeWithArgsAndTarget(Constants.CONST_0);
             beforeAfter();
             afterReturningString();
             try { afterThrowingRTE(); } catch (Throwable t) {;}

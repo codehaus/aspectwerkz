@@ -75,19 +75,19 @@ public class MethodExecutionRun {
 
         run = new Run("method execution, before advice, args() access for primitive");
         for (int i = 0; i < Run.ITERATIONS; i++) {
-            test.withPrimitiveArgs(Constants.CONST_0);
+            test.beforeWithPrimitiveArgs(Constants.CONST_0);
         }
         run.end();
 
         run = new Run("method execution, before advice, args() access for objects");
         for (int i = 0; i < Run.ITERATIONS; i++) {
-            test.withWrappedArgs(Constants.WRAPPED_0);
+            test.beforeWithWrappedArgs(Constants.WRAPPED_0);
         }
         run.end();
 
         run = new Run("method execution, before advice, args() and target() access");
         for (int i = 0; i < Run.ITERATIONS; i++) {
-            test.withArgsAndTarget(Constants.CONST_0);
+            test.beforeWithArgsAndTarget(Constants.CONST_0);
         }
         run.end();
 

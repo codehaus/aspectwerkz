@@ -166,9 +166,12 @@ public class MethodExecutionRun {
 
         enhancer = new Enhancer();
         enhancer.setSuperclass(Execution.class);
-        //FIXME - this does NOT work - only ones is executed        
         enhancer.setCallback(new MethodExecutionGetTargetAndArgsAroundAdvice());
-        enhancer.setCallback(new MethodExecutionGetTargetAndArgsAroundAdvice());
+        // FIXME - how to chain advice in CGlib ???
+//        Class advisedOnce = enhancer.create().getClass();
+//        enhancer = new Enhancer();
+//        enhancer.setSuperclass(advisedOnce);
+//        enhancer.setCallback(new MethodExecutionGetTargetAndArgsAroundAdvice2());
         test = (IExecution) enhancer.create();
         //FIXME test.warmup();
         run = new Run("method execution, around advice x 2, args() and target() access");

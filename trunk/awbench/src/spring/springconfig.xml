@@ -15,6 +15,7 @@
             <list>
                 <value>theMethodExecutionAroundAdvisor</value>
                 <value>theMethodExecutionBeforeAdvisor</value>
+                <value>theMethodExecutionBeforeWithPrimitiveArgsAdvisor</value>
                 <value>theMethodExecutionAfterAdvisor</value>
                 <value>theMethodExecutionAfterReturningAdvisor</value>
                 <value>theMethodExecutionAfterThrowingAdvisor</value>
@@ -33,7 +34,8 @@
         </property>
         <property name="patterns">
             <list>
-                <value>.*around.*</value>
+                <value>.*aroundSJP</value>
+                <value>.*aroundJP</value>
             </list>
         </property>
     </bean>
@@ -45,9 +47,20 @@
         </property>
         <property name="patterns">
             <list>
-                <value>.*before.*</value>
-                <value>.*with.*</value>
+                <value>.*before</value>
+                <value>.*beforeSJP</value>
+                <value>.*beforeJP</value>
             </list>
+        </property>
+    </bean>
+
+    <bean id="theMethodExecutionBeforeWithPrimitiveArgsAdvisor"
+        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+            <ref local="theMethodExecutionBeforeWithPrimitiveArgsAdvice"/>
+        </property>
+        <property name="pattern">
+            <value>.*beforeWithPrimitiveArgs</value>
         </property>
     </bean>
 
@@ -103,6 +116,7 @@
 
     <bean id="theMethodExecutionAroundAdvice" class="awbench.spring.MethodExecutionAroundAdvice"/>
     <bean id="theMethodExecutionBeforeAdvice" class="awbench.spring.MethodExecutionBeforeAdvice"/>
+    <bean id="theMethodExecutionBeforeWithPrimitiveArgsAdvice" class="awbench.spring.MethodExecutionBeforeWithPrimitiveArgsAdvice"/>
     <bean id="theMethodExecutionAfterAdvice" class="awbench.spring.MethodExecutionAfterAdvice"/>
     <bean id="theMethodExecutionAfterReturningAdvice" class="awbench.spring.MethodExecutionAfterReturningAdvice"/>
     <bean id="theMethodExecutionAfterThrowingAdvice" class="awbench.spring.MethodExecutionAfterThrowingAdvice"/>
