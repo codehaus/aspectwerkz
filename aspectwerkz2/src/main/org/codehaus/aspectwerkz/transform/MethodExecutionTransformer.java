@@ -12,6 +12,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Arrays;
 
 import javassist.CannotCompileException;
 import javassist.CtClass;
@@ -24,6 +28,8 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.MethodComparator;
+import gnu.trove.TObjectIntHashMap;
 
 /**
  * Advises method EXECUTION join points.
@@ -69,35 +75,54 @@ public class MethodExecutionTransformer implements Transformer {
 
             final CtMethod[] methods = ctClass.getDeclaredMethods();
 
-            // build and sort the method lookup list
+            // Compute the method sequence number no matter the method is advised to support multi weaving.
+            // Javassist.getDeclaredMethods() does not always return methods in the same order so we have
+            // to sort the method list before computation.
+            // TODO: filter init/clinit/prefixed methods
+            final List sortedMethods = Arrays.asList(methods);
+            Collections.sort(sortedMethods, JavassistMethodComparator.getInstance());
+
+            // In the same step, build the method lookup list (advised methods)
+            final TObjectIntHashMap methodSequences = new TObjectIntHashMap();
             final List methodLookupList = new ArrayList();
-            for (int i = 0; i < methods.length; i++) {
-                MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(methods[i]);
-                if (methodFilter(definition, classMetaData, methodMetaData, methods[i])) {
+            for (Iterator methodsIt = sortedMethods.iterator(); methodsIt.hasNext();) {
+                CtMethod method = (CtMethod)methodsIt.next();
+                MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(method);
+
+                int sequence = 1;
+                if (methodSequences.containsKey(method.getName())) {
+                    sequence = methodSequences.get(method.getName());
+                    methodSequences.remove(method.getName());
+                    sequence++;
+                }
+                methodSequences.put(method.getName(), sequence);
+
+                if (methodFilter(definition, classMetaData, methodMetaData, method)) {
                     continue;
                 }
-                methodLookupList.add(methods[i]);
+                methodLookupList.add(new MethodSequenceTuple(method, sequence));
             }
 
-            final Map methodSequences = new HashMap();
             final List wrapperMethods = new ArrayList();
             boolean isClassAdvised = false;
             for (Iterator i = methodLookupList.iterator(); i.hasNext();) {
-                CtMethod method = (CtMethod)i.next();
-                isClassAdvised = true;
+                MethodSequenceTuple tuple = (MethodSequenceTuple)i.next();
+                CtMethod method = tuple.getMethod();
 
-                // take care of identification of overloaded methods by inserting a sequence number
-                if (methodSequences.containsKey(method.getName())) {
-                    int sequence = ((Integer)methodSequences.get(method.getName())).intValue();
-                    methodSequences.remove(method.getName());
-                    sequence++;
-                    methodSequences.put(method.getName(), new Integer(sequence));
-                }
-                else {
-                    methodSequences.put(method.getName(), new Integer(1));
-                }
+                isClassAdvised = true;//TODO refine
 
-                final int methodSequence = ((Integer)methodSequences.get(method.getName())).intValue();
+//                // take care of identification of overloaded methods by inserting a sequence number
+//                if (methodSequences.containsKey(method.getName())) {
+//                    int sequence = ((Integer)methodSequences.get(method.getName())).intValue();
+//                    methodSequences.remove(method.getName());
+//                    sequence++;
+//                    methodSequences.put(method.getName(), new Integer(sequence));
+//                }
+//                else {
+//                    methodSequences.put(method.getName(), new Integer(1));
+//                }
+//
+                final int methodSequence = tuple.getSequence();//((Integer)methodSequences.get(method.getName())).intValue();
                 final int methodHash = TransformationUtil.calculateHash(method);
 
                 // there was no empty method already
@@ -135,6 +160,26 @@ public class MethodExecutionTransformer implements Transformer {
                     ctClass.addMethod((CtMethod)it2.next());
                 }
             }
+
+            // handles pointcut unweaving
+            //TODO optimize algorithm
+            final List unweavableMethodList = new ArrayList();
+            for (int i = 0; i < methods.length; i++) {
+                MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(methods[i]);
+                if (methodHasNoPointcut(definition, classMetaData, methodMetaData, methods[i])) {
+                    //System.out.println("FOUND NOPC " + methodMetaData.getName());
+                    // do we have a wrapper method that is NOT marked empty with attribute ?
+                    // better to crawl for proceedWithxxx caller side ?
+                    // then "where" is the original method
+                    // and given we can compute the methodSequence again (is bogus for RW i think)
+                    // thus have the wrapper method name
+                    // and swap bodies
+                    // and push empty body in wrapper method
+
+                    //unweavableMethodList.add(methods[i]);
+                }
+            }
+
         }
         TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
@@ -311,5 +356,53 @@ public class MethodExecutionTransformer implements Transformer {
         else {
             return true;
         }
+    }
+
+    /**
+     * Filters the methods that have no more execution pointcut
+     * and that could have some
+     *
+     * @param definition    the definition
+     * @param classMetaData the class meta-data
+     * @param method        the method to filter
+     * @return boolean
+     */
+    private boolean methodHasNoPointcut(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final MethodMetaData methodMetaData,
+            final CtMethod method) {
+        if (Modifier.isAbstract(method.getModifiers()) ||
+            Modifier.isNative(method.getModifiers()) ||
+            method.getName().equals("<init>") ||
+            method.getName().equals("<clinit>") ||
+            method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
+            method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
+            method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
+            method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
+            method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            return false;
+        }
+        else if (definition.hasExecutionPointcut(classMetaData, methodMetaData)) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+}
+
+class MethodSequenceTuple {
+    private CtMethod m_method;
+    private int m_sequence;
+    public MethodSequenceTuple(CtMethod method, int sequence) {
+        m_method = method;
+        m_sequence = sequence;
+    }
+    public CtMethod getMethod() {
+        return m_method;
+    }
+    public int getSequence() {
+        return m_sequence;
     }
 }
