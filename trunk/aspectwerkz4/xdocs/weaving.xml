@@ -429,7 +429,7 @@
                             <code>JAVA_HOME/lib/tools.jar</code> must be in the bootclasspath of the JVM.
                         </li>
                         <li>
-                            <code>aspectwerkz-*.jar</code> and all dependencies must be in regular classpath
+                            <code>aspectwerkz-*.jar</code> and all dependencies must be in regular classpath (choose aspectwerkz-jdk14 or aspectwerkz-jdk5 depending on the environment you run)
                         </li>
                     </ul>
                 </p>
@@ -534,6 +534,11 @@
 # set AspectWerkz version and libs dependancies
 set VERSION=2.0.RC1
 set DEPS=... // AspectWerkz dependancies - see bin/setEnv for the complete list
+
+# for Java 1.3 or 1.4
+set DEPS=$DEPS:aspectwerkz-jdk14-$VERSION.jar
+# for Java 5
+# set DEPS=$DEPS:aspectwerkz-jdk5-$VERSION.jar
 
 # all AspectWerzk jar and dependancies
 set AW_PATH=aspectwerkz-extensions-$VERSION.jar:aspectwerkz-core-$VERSION.jar:aspectwerkz-$VERSION.jar:$DEPS
@@ -696,6 +701,7 @@ $ASPECTWERKZ_HOME/bin/aspectwerkz -cp myJar.jar -Daspectwerkz.definition.file=..
                         </li>
                         <li>add
                             <code>aspectwerkz-*.jar</code> and dependencies in the second VM classpath
+                            (including aspectwerkz-jdk14-*.jar)
                         </li>
                     </ul>
                     <source>
@@ -713,6 +719,9 @@ set BOOT_PATH=aspectwerkz-core-$VERSION.jar:$JAVA_HOME/lib/tools.jar
 # set CLASSPATH as needed for your application
 set CLASSPATH=...:$CLASSPATH
 set CLASSPATH=aspectwerkz-$VERSION.jar:$DEPS:$CLASSPATH
+
+# For Java 1.4, add aspectwerkz-jdk14 to the classpath
+# Else for Java 5, add aspectwerkz-jdk5 [but you would have then better using JVMTI option]
 
 # set OPTIONS as needed for your application VM
 set OPTIONS=...

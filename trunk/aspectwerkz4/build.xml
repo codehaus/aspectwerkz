@@ -85,6 +85,7 @@
         <property name="comp.ext.dir" value="${src.dir}/compiler-extensions"/>
         <property name="main.classes" value="${build.dir}/classes"/>
         <property name="jdk15.classes" value="${build.dir}/jdk15"/>
+        <property name="jdk14.classes" value="${build.dir}/jdk14"/>
         <property name="test.classes" value="${build.dir}/test-classes"/>
         <property name="samples.classes" value="${build.dir}/samples-classes"/>
         <property name="extensions.classes" value="${build.dir}/extensions-classes"/>
@@ -101,6 +102,7 @@
     <target name="clean" depends="init">
         <delete dir="${main.classes}"/>
         <delete dir="${jdk15.classes}"/>
+        <delete dir="${jdk14.classes}"/>
         <delete dir="${test.classes}"/>
         <delete dir="${samples.classes}"/>
         <delete dir="${extensions.classes}"/>
@@ -108,6 +110,7 @@
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${main.classes}"/>
         <mkdir dir="${jdk15.classes}"/>
+        <mkdir dir="${jdk14.classes}"/>
         <mkdir dir="${test.classes}"/>
         <mkdir dir="${samples.classes}"/>
         <mkdir dir="${extensions.classes}"/>
@@ -119,10 +122,16 @@
     <target name="compile" depends="init">
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${main.classes}"/>
-        <javac destdir="${main.classes}" debug="on" source="1.3" target="1.3">
-            <src path="${src.dir}/main"/>
+        <javac destdir="${jdk14.classes}" debug="on" source="1.3" target="1.3">
             <src path="${src.dir}/jdk14"/>
             <classpath>
+                <path refid="project.class.path"/>
+            </classpath>
+        </javac>
+        <javac destdir="${main.classes}" debug="on" source="1.3" target="1.3">
+            <src path="${src.dir}/main"/>
+            <classpath>
+                <path path="${jdk14.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
         </javac>
@@ -252,6 +261,12 @@
         </jarjar>
         <copy tofile="${lib.dir}/aspectwerkz-${version}.jar" file="${build.dir}/aspectwerkz-${version}.jar" overwrite="true"/>
 
+        <!-- JDK 1.4 annotations only -->
+        <jar destfile="${build.dir}/aspectwerkz-jdk14-${version}.jar">
+            <fileset dir="${jdk14.classes}"/>
+        </jar>
+        <copy tofile="${lib.dir}/aspectwerkz-jdk14-${version}.jar" file="${build.dir}/aspectwerkz-jdk14-${version}.jar" overwrite="true"/>
+
         <!-- core contains the hook part -->
         <!-- we embed jarjar version of ASM in it as well so that it will be in the bootclasspath for the asm hook -->
         <jarjar destfile="${build.dir}/aspectwerkz-core-${version}.jar">
@@ -291,7 +306,7 @@
     </target>
 
     <target name="test:weave" depends="init, dist, test:annotationc">
-        <property name="weave.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
+        <property name="weave.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-jdk14-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
         <echo>${weave.classpath}</echo>
 
         <java classname="org.codehaus.aspectwerkz.compiler.AspectWerkzC" fork="true" classpath="${weave.classpath}">
@@ -312,7 +327,7 @@
     <!--  tests that have been weaved offline -->
     <!-- =================================================== -->
     <target name="test:offline" depends="init, dist, test:annotationc, test:weave">
-        <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
+        <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-jdk14-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
         <java
             classname="test.AllTests"
             classpath="${offline.classpath}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar"
@@ -530,7 +545,7 @@
             </classpath>
         </java>
         <!--		<exec executable="java">-->
-        <!--			<arg line="-cp ${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${samples.classes} examples.connectivity.Client" />-->
+        <!--			<arg line="-cp ${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-jdk14-${version}.jar${pathseparator}${samples.classes} examples.connectivity.Client" />-->
         <!--		</exec>-->
     </target>
 
