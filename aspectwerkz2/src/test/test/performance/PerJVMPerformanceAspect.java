@@ -23,7 +23,7 @@ public class PerJVMPerformanceAspect extends Aspect {
     Pointcut mixin;
 
     /**
-     * @Execution void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()
+     * @Call void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()
      */
     Pointcut pc;
 

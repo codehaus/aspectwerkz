@@ -62,11 +62,6 @@ public class SystemDefinition {
     private final TObjectIntHashMap m_introductionIndexes = new TObjectIntHashMap();
 
     /**
-     * Set with the aspect class names.
-     */
-    private Set m_deployedAspectsClassNames = new HashSet();
-
-    /**
      * Maps the aspects to it's name.
      */
     private final Map m_aspectMap = new SequencedHashMap();
@@ -307,15 +302,6 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns a set with the aspects to use.
-     *
-     * @return the aspects to use
-     */
-    public Set getDeployedAspectsClassNames() {
-        return m_deployedAspectsClassNames;
-    }
-
-    /**
      * Adds a new aspect definition.
      *
      * @param aspectDef the aspect definition
@@ -369,17 +355,6 @@ public class SystemDefinition {
         }
         synchronized (m_interfaceIntroductionMap) {
             m_interfaceIntroductionMap.put(introDef.getName(), introDef);
-        }
-    }
-
-    /**
-     * Adds a new aspect to use.
-     *
-     * @param className the class name of the aspect
-     */
-    public void addDeployedAspectClassName(final String className) {
-        synchronized (m_deployedAspectsClassNames) {
-            m_deployedAspectsClassNames.add(className);
         }
     }
 

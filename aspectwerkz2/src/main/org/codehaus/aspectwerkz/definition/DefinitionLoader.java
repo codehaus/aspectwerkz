@@ -10,12 +10,12 @@ package org.codehaus.aspectwerkz.definition;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.dom4j.Document;
 
@@ -45,12 +45,12 @@ public class DefinitionLoader {
     /**
      * The aspectwerkz definition lists mapped to its UUID.
      */
-    private static Map s_definitions = new HashMap();
+    private static Map s_definitions = new SequencedHashMap();
 
     /**
      * Caches the definitions per class loader. TODO: synchronization needed??
      */
-    private static Map s_classLoaderToDefinitionsMap = new HashMap();
+//    private static Map s_classLoaderToDefinitionsMap = new HashMap();
 
     /**
      * Creates, caches and returns new definition. Loads the definition in the file specified.
@@ -76,11 +76,9 @@ public class DefinitionLoader {
      * <p/>
      * Used in the transformation process only.
      *
-     * @param loader the current class loader
      * @return the aspectwerkz definition
      */
     public static List getDefinitions() {
-//    public static List getDefinitions(final ClassLoader loader) {
 
         final List definitions;
         if (DEFINITION_FILE == null) {
