@@ -846,11 +846,15 @@ public void someMetod() {}
                 of a regular class or an inner class in your aspect class.
             </p>
             <p>
-                Two different
+                Three different
                 <code>deployment models</code> are supported,
+                <code>perJVM</code>,
                 <code>perClass</code> and
                 <code>perInstance</code>.
                 <ul>
+                    <li>
+                        <code>perJVM</code> - means that there will be only one mixin instance - like a singleton.
+                    </li>
                     <li>
                         <code>perClass</code> - means that there will be one mixin instance per
                         target class.
@@ -878,6 +882,7 @@ public void someMetod() {}
                         <code>perInstance</code> deployment model.
                     </li>
                 </ul>
+                The no argument constructor is mandatory for <code>perJVM</code> deployment model.
             </p>
 
             <subsection name="Annotation definition">
@@ -897,6 +902,7 @@ public void someMetod() {}
                         </li>
                         <li>
                             <code>deploymentModel</code> (optional) - has to me one of
+                            <code>perJVM</code>,
                             <code>perClass</code> or
                             <code>perInstance</code>. If not specified then
                             <code>perInstance</code> is used.
@@ -973,7 +979,8 @@ public class MyOtherMixin { ... }
                         </li>
                         <li>
                             <code>deployment-model</code> (optional) - defines the deployment model. Can be one of
-                            <code>perClass</code> of
+                            <code>perJVM</code>,
+                            <code>perClass</code> or
                             <code>perInstance</code>.
                         </li>
                         <li>

@@ -416,7 +416,8 @@
                         </li>
                         <li>
                             <code>deployment-model</code> (optional) - defines the deployment model. Can be one of
-                            <code>perClass</code> of <code>perInstance</code> (defaults).
+                            <code>perJVM</code>,
+                            <code>perClass</code> or <code>perInstance</code> (defaults).
                         </li>
                         <li>
                             <code>transient</code> (optional) - defines the mixin as <code>transient</code> or not.

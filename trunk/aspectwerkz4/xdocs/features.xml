@@ -176,7 +176,7 @@
 
                         Support several different <b>deployment models</b> (scope) for aspects (perJVM(singleton), perClass, perInstance)
 
-                        and for mixin (perInstance, perClass).
+                        and for mixin (perInstance, perClass, perJVM(singleton)).
 
                     </li>
 

@@ -594,7 +594,7 @@ public class MyAspect {
                         <td>class or inner class</td>
                         <td>Mixin</td>
                         <td>&lt;within/hasxxx pointcut&gt;</td>
-                        <td>deploymentModel=(perClass | perInstance [O:perInstance])</td>
+                        <td>deploymentModel=(perJVM | perClass | perInstance [O:perInstance]), isTransient=(true | false [O:false])</td>
                     </tr>
                     <tr>
                         <td>@Around</td>
