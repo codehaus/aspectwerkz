@@ -142,18 +142,21 @@ public abstract class AspectAttributeParser {
      * @param introductionName
      * @param introducedInterfaceNames
      * @param introducedMethods
+     * @param deploymentModel
      * @param aspectDef
      */
     protected void createAndAddIntroductionDefToAspectDef(final String expression,
                                                           final String introductionName,
                                                           final String[] introducedInterfaceNames,
                                                           final Method[] introducedMethods,
+                                                          final String deploymentModel,
                                                           final AspectDefinition aspectDef) {
         IntroductionDefinition introDef = createIntroductionDefinition(
                 introductionName,
                 expression,
                 introducedInterfaceNames,
                 introducedMethods,
+                deploymentModel,
                 aspectDef);
         aspectDef.addIntroduction(introDef);
     }
@@ -213,6 +216,7 @@ public abstract class AspectAttributeParser {
      * @param expression
      * @param introducedInterfaceNames
      * @param introducedMethods
+     * @param deploymentModel
      * @param aspectDef
      * @return
      */
@@ -220,12 +224,13 @@ public abstract class AspectAttributeParser {
                                                                   final String expression,
                                                                   final String[] introducedInterfaceNames,
                                                                   final Method[] introducedMethods,
+                                                                  final String deploymentModel,
                                                                   final AspectDefinition aspectDef) {
         Expression expr = Expression.createRootExpression(
                 aspectDef.getName(), expression, PointcutType.CLASS
         );
         final IntroductionDefinition introDef = new IntroductionDefinition(
-                introductionName, expr, introducedInterfaceNames, introducedMethods
+                introductionName, expr, introducedInterfaceNames, introducedMethods, deploymentModel
         );
         return introDef;
     }

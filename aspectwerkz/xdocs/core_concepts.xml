@@ -1117,6 +1117,9 @@ public MyAspect extends Aspect {
                     The inner class implements the interface(s) to introduce on the target class.<br/>
                     The inner class is marked with metadata <code>@Introduce &lt;classPattern&gt;</code> to specify to which
                     classes the introduction applies.<br/>
+                    The <code>@Introduce</code> attribute accepts an optional <code>deploymentModel=</code> parameter to specify the
+                    introduction deployment model. If not specified the aspect deployment model applies.
+                    See <a href="definition_issues.html#Deployment models">deployment model section</a>.<br/>
                     The name of the introduction is the fully qualified inner class name e.g.
                     <code>&lt;aspectClassName&gt;$&lt;innerClassName&gt;</code>.
                 </p>
@@ -1212,7 +1215,7 @@ SystemLoader.getSystem("systemId").getMixin("test.attribdef.aspect.IntroductionT
                         <td>inner class, class level</td>
                         <td>Implementation Introduction</td>
                         <td>&lt;classPattern&gt;</td>
-                        <td></td>
+                        <td>deploymentModel=perJVM | perClass | perInstance | perThread [O: aspect'one]</td>
                     </tr>
                     <tr>
                         <td>@Class</td>
@@ -1285,7 +1288,7 @@ SystemLoader.getSystem("systemId").getMixin("test.attribdef.aspect.IntroductionT
                         <td>name [0:&lt;aspectClassName&gt;.&lt;methodName&gt;</td>
                     </tr>
                     <tr>
-                        <td>@Custom</td>
+                        <td>@Attribute.&lt;name&gt;</td>
                         <td>any</td>
                         <td>custom runtime accessible attribute</td>
                         <td></td>

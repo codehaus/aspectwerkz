@@ -28,6 +28,18 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  */
 public class DefaultAspectContainerStrategy implements AspectContainer {
 
+    // AV mixin container by names
+    private Map m_mixins = new HashMap();
+
+    public void attachMixin(String name, IntroductionContainer ic) {
+        m_mixins.put(name, ic);
+    }
+    public IntroductionContainer getIC(String name) {
+        return (IntroductionContainer) m_mixins.get(name);
+    }
+
+
+
     /**
      * Holds a reference to the sole per JVM introduction.
      */

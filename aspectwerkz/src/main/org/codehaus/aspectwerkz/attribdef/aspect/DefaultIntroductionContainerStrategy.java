@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.attribdef.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
@@ -26,6 +27,18 @@ import java.util.Iterator;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class DefaultIntroductionContainerStrategy implements IntroductionContainer {
+
+//    //AV
+//    public Object findInstance(Object mixin) {
+//        for (Iterator i = m_perInstance.entrySet().iterator(); i.hasNext();) {
+//            Map.Entry entry = (Map.Entry)i.next();
+//            Object mixinImpl = ((Introduction)entry.getValue()).___AW_getImplementation();
+//            if (mixinImpl.equals(mixin)) {
+//                return entry.getKey();
+//            }
+//        }
+//        return null;
+//    }
 
     /**
      * Holds a reference to the sole per JVM introduction.
@@ -81,7 +94,8 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
         Object result = null;
         try {
             if (m_perJvm == null) {
-                Aspect perJVMAspect = m_prototype.getAspect().___AW_getContainer().getPerJvmAspect();
+                // only compatible aspect deployment is perJVM
+                Aspect perJVMAspect = getRelatedAspect(null);
                 m_perJvm = Introduction.newInstance(m_prototype, perJVMAspect);
             }
             result = m_methodRepository[methodIndex].invoke(m_perJvm.___AW_getImplementation(), parameters);
@@ -111,10 +125,10 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
         try {
             if (!m_perClass.containsKey(targetClass)) {
                 synchronized (m_perClass) {
-                    Aspect perClassAspect = m_prototype.getAspect().
-                            ___AW_getContainer().getPerClassAspect(targetClass);
+                    // only compatible aspect deployments are perJVM and perClass
+                    Aspect relatedAspect = getRelatedAspect(targetClass);
                     Introduction perClassIntroduction = Introduction.newInstance(
-                            m_prototype, perClassAspect
+                            m_prototype, relatedAspect
                     );
                     m_perClass.put(targetClass, perClassIntroduction);
                 }
@@ -148,11 +162,12 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
         try {
             if (!m_perInstance.containsKey(targetInstance)) {
                 synchronized (m_perInstance) {
-                    Aspect perInstanceAspect = m_prototype.getAspect().
-                            ___AW_getContainer().getPerInstanceAspect(targetInstance);
+                    // only compatible aspect deployments are perJVM and perClass
+                    Aspect relatedAspect = getRelatedAspect(targetInstance);
                     Introduction perInstanceIntroduction = Introduction.newInstance(
-                            m_prototype, perInstanceAspect
+                            m_prototype, relatedAspect
                     );
+                    System.out.println(perInstanceIntroduction);//AV
                     m_perInstance.put(targetInstance, perInstanceIntroduction);
                 }
             }
@@ -183,7 +198,8 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             final Thread currentThread = Thread.currentThread();
             if (!m_perThread.containsKey(currentThread)) {
                 synchronized (m_perThread) {
-                    Aspect perThread = m_prototype.getAspect().___AW_getContainer().getPerThreadAspect();
+                    // only compatible aspect deployments is perThread
+                    Aspect perThread = getRelatedAspect(currentThread);
                     m_perThread.put(currentThread, Introduction.newInstance(m_prototype, perThread));
                 }
             }
@@ -199,6 +215,43 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             throw new WrappedRuntimeException(e);
         }
         return result;
+    }
+
+    /**
+     * Retrieve the related aspect instance from the aspect container
+     * The mixin deployment model is tight to the aspect deployement model as follows:
+     * Mixin			Aspect possible models
+     * perJVM			perJVM
+     * perClass		    perJVM,perClass
+     * perInstance		perJVM,perClass,perInstance
+     * perThread        perThread
+     *
+     * @param referent (null, targetClass, targetInstance or currentThread depending of mixin deployment model)
+     * @return related aspect
+     */
+    private Aspect getRelatedAspect(Object referent) {
+        Aspect aspect = m_prototype.getAspect();
+        switch (m_prototype.___AW_getDeploymentModel()) {
+            case (DeploymentModel.PER_JVM) :
+                return aspect.___AW_getContainer().getPerJvmAspect();
+            case (DeploymentModel.PER_CLASS) :
+                if (aspect.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
+                    return aspect.___AW_getContainer().getPerClassAspect((Class)referent);
+                } else {//PER_JVM
+                    return aspect.___AW_getContainer().getPerJvmAspect();
+                }
+            case (DeploymentModel.PER_INSTANCE) :
+                if (aspect.___AW_getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
+                    return aspect.___AW_getContainer().getPerInstanceAspect(referent);
+                } else if (aspect.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
+                    return aspect.___AW_getContainer().getPerClassAspect((Class)referent.getClass());
+                } else {//PER_JVM
+                    return aspect.___AW_getContainer().getPerJvmAspect();
+                }
+            case (DeploymentModel.PER_THREAD) :
+                return aspect.___AW_getContainer().getPerThreadAspect();
+        }
+        throw new RuntimeException("should not get here");
     }
 
     /**

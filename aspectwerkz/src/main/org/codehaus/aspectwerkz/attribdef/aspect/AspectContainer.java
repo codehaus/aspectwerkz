@@ -19,6 +19,9 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  */
 public interface AspectContainer {
 
+    public void attachMixin(String name, IntroductionContainer ic);
+    public IntroductionContainer getIC(String name);
+
     /**
      * Invokes the advice method on a per JVM basis.
      *

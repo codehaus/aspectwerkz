@@ -73,4 +73,26 @@ public final class DeploymentModel {
         }
         return deploymentModel;
     }
+
+    /**
+     * Check mixin deployment model is compatible with aspect' ones
+     * Supported models are:
+     * Mixin			Aspect
+     * perJVM			perJVM
+     * perClass		    perJVM,perClass
+     * perInstance		perJVM,perClass,perInstance
+     * perThread        perThread
+     *
+     * @param mixinModel
+     * @param aspectModel
+     * @return true if compatible
+     */
+    public static boolean isMixinDeploymentModelCompatible(int mixinModel, int aspectModel) {
+        //note: implementation depends on constant values
+        if (mixinModel == PER_THREAD) {
+            return (aspectModel==PER_THREAD);
+        } else {
+            return (mixinModel >= aspectModel);
+        }
+    }
 }
