@@ -15,6 +15,8 @@ import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
+import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldRttiImpl;
@@ -94,6 +96,18 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         this(type, targetClass, joinPointMetaData, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
     }
 
+    /**
+     * Creates a new join point base instance.
+     *
+     * @param uuid
+     * @param type
+     * @param targetClass
+     * @param cflow
+     * @param ctx
+     * @param aroundAdviceExecutor
+     * @param beforeAdviceExecutor
+     * @param afterAdviceExecutor
+     */
     public JoinPointBase(final String uuid, final int type, final Class targetClass, final List cflow,
                          ExpressionContext ctx, final AroundAdviceExecutor aroundAdviceExecutor,
                          final BeforeAdviceExecutor beforeAdviceExecutor, final AfterAdviceExecutor afterAdviceExecutor) {
