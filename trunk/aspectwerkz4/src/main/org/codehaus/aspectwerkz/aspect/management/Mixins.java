@@ -135,7 +135,7 @@ public class Mixins {
             }
         }
         if (mixinDefinition == null) {
-            throw new RuntimeException("could not find definition for mixin: " + mixinClass.getName());
+            throw new DefinitionException("could not find definition for mixin: " + mixinClass.getName());
         }
 
         String factoryClassName = mixinDefinition.getFactoryClassName();
