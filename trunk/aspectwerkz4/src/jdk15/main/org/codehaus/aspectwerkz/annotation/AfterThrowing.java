@@ -23,7 +23,7 @@ public @interface AfterThrowing {
     /**
      * The pointcut expression to bind, when no type is specified for the throwned value
      */
-    String value();
+    String value() default "";
 
     /**
      * The pointcut expression to bind, when a type is specified for the throwned value
