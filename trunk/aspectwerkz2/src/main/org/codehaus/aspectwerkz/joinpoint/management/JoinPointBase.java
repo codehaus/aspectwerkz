@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.RuntimeSystem;
+import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
@@ -36,7 +36,7 @@ public abstract class JoinPointBase implements JoinPoint {
     protected final Class m_targetClass;
     protected final int m_type;
     protected final String m_typeAsString;
-    protected final RuntimeSystem m_system;
+    protected final System m_system;
     protected final List m_cflowExpressions;
     protected final boolean m_checkCflow;
 

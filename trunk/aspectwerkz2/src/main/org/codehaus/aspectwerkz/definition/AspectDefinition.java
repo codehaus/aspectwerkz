@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.aspectwerkz.*;
-import org.codehaus.aspectwerkz.RuntimeSystem;
+import org.codehaus.aspectwerkz.System;
 
 /**
  * Holds the meta-data for the aspect.

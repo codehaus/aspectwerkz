@@ -99,7 +99,7 @@
                     </li>
                     <br/>
                     <li>
-                        <code>pattern</code> - specifies the pattern for the pointcut. This is the
+                        <code>expression</code> - specifies the expression for the pointcut. This is the
                         pattern that picks out the join points that should be included in the pointcut.
                         <p>
                             See the
@@ -185,66 +185,32 @@
 
         <section name="Introductions">
 
-            <p> TODO </p>
+             <p>
+                When defining the mixin there are two attributes that needs to be specified:
+                <ul>
+                    <li>
+                        <code>class</code> - the class name of the mixin
+                    </li>
+                    <br/>
+                    <li>
+                        <code>bind-to</code> - binds the mixin to a class using the <code>class(...)</code> pointcut
+                    </li>
+                    <br/>
+                </ul>
+            </p>
 
-            <!---->
-<!--            <p>-->
-<!--                When defining the introductions there are four attributes-->
-<!--                that needs to be specified:-->
-<!--            </p>-->
-<!--            <p>-->
-<!--                <ul>-->
-<!--                    <li>-->
-<!--                        <code>name</code> - -->
-<!--                        each introduction needs to have a unique name that will work-->
-<!--                        as a handle to the advice to be used when referencing the-->
-<!--                        introduction in the system.-->
-<!--                    </li>-->
-<!--                    <br/>-->
-<!--                    <li>-->
-<!--                        <code>interface</code> - -->
-<!--                        this attribute specifies the full name of the interface class-->
-<!--                        to use.-->
-<!--                    </li>-->
-<!--                    <br/>-->
-<!--                    <li>-->
-<!--                        <code>implementation</code> - -->
-<!--                        this attribute specifies the full name of the implementation-->
-<!--                        class to use. (Is skipped when we are defining an interface-->
-<!--                        introduction).-->
-<!--                    </li>-->
-<!--                    <br/>-->
-<!--                    <li>-->
-<!--                        <code>deployment-model</code> - -->
-<!--                        is an optional attribute specifying the deployment model-->
-<!--                        to use. If no deployment model is defined the default perJVM-->
-<!--                        (singleton) will be used. (For more information about-->
-<!--                        the deployment model types available see the-->
-<!--                        <a href="definition_issues.html#Deployment models">Deployment models section</a>).-->
-<!--                    </li>-->
-<!--                </ul>-->
-<!--            </p>-->
-<!---->
-<!--            <p>-->
-<!--                <b>XML definition</b>-->
-<!--            </p>-->
-<!--            <p>-->
-<!--                    <source><![CDATA[-->
-<!--<introduction-def name="java/io/Serializable"-->
-<!--                  interface="java.io.Serializable"/>-->
-<!---->
-<!--<introduction-def name="mixins/Mixin"-->
-<!--                  interface="mixins.Mixin"-->
-<!--                  implementation="mixins.MixinImpl"-->
-<!--                  deployment-model="perThread"/>-->
-<!--                    ]]></source>-->
-<!--            </p>-->
-<!--            <p>-->
-<!--                (These examples only shows how to define the-->
-<!--                <code>Introduction</code>, for examples how to add them see-->
-<!--                the-->
-<!--                <a href="#Aspects">Aspects section</a>.)-->
-<!--            </p>-->
+            <p>
+                <b>XML definition</b>
+            </p>
+            <p>
+                <source><![CDATA[
+<aspect ...>
+    ...
+    <introduce class="IntroductionTestAspect$MyImpl" bind-to="class(test.ToBeIntroduced)"/>
+    ...
+</aspect>
+                ]]></source>
+            </p>
         </section>
 
 
@@ -282,6 +248,9 @@
 
             <aspect class="caching.CachingAspect" deployment-model="perInstance">
                 <param name="timeout" value="10"/>
+
+                <introduce class="IntroductionTestAspect$MyImpl"
+                           bind-to="class(test.ToBeIntroduced)"/>
 
                 <pointcut name="callee"
                           expression="execution(int examples.caching.Pi.getPiDecimal(int))"/>

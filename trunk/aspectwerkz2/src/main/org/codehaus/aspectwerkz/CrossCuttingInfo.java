@@ -72,7 +72,7 @@ public final class CrossCuttingInfo implements Serializable {
     /**
      * A reference to the AspectWerkz system housing this cross-cuttable class.
      */
-    private RuntimeSystem m_system;
+    private System m_system;
 
     /**
      * The aspect definition.
@@ -114,7 +114,7 @@ public final class CrossCuttingInfo implements Serializable {
      */
     public static CrossCuttingInfo getInfo(final String systemId, final Object crossCuttingInstance) {
         String name = crossCuttingInstance.getClass().getName();
-        RuntimeSystem system = SystemLoader.getSystem(systemId);
+        System system = SystemLoader.getSystem(systemId);
         system.initialize();
         return system.getAspectManager().getAspectContainer(name).getCrossCuttingInfo();
     }
@@ -128,7 +128,7 @@ public final class CrossCuttingInfo implements Serializable {
      * @return the cross-cutting info
      */
     public static CrossCuttingInfo getInfo(final String systemId, final String name) {
-        RuntimeSystem system = SystemLoader.getSystem(systemId);
+        System system = SystemLoader.getSystem(systemId);
         system.initialize();
         return system.getAspectManager().getAspectContainer(name).getCrossCuttingInfo();
     }
@@ -162,7 +162,7 @@ public final class CrossCuttingInfo implements Serializable {
      *
      * @return the system
      */
-    public RuntimeSystem getSystem() {
+    public System getSystem() {
         if (m_system == null) {
             m_system = SystemLoader.getSystem(m_uuid);
             m_system.initialize();
@@ -195,6 +195,16 @@ public final class CrossCuttingInfo implements Serializable {
      */
     public int getDeploymentModel() {
         return m_deploymentModel;
+    }
+
+
+    /**
+     * Changes the deployment model.
+     *
+     * @param deploymentModel the new deployment model
+     */
+    public void setDeploymentModel(final int deploymentModel) {
+        m_deploymentModel = deploymentModel;
     }
 
 

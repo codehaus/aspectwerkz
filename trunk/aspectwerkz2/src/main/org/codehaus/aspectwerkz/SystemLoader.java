@@ -36,17 +36,17 @@ public class SystemLoader {
      * @return the system for the UUID specified
      * @TODO: is this caching a bottleneck, since it req. the method to be synchronized? Is there a better impl.?
      */
-    public synchronized static RuntimeSystem getSystem(final String uuid) {
+    public synchronized static System getSystem(final String uuid) {
         if (uuid == null) {
             throw new IllegalArgumentException("uuid can not be null");
         }
         try {
-            RuntimeSystem system = (RuntimeSystem)s_systems.get(uuid);
+            System system = (System)s_systems.get(uuid);
             if (system == null) {
                 final SystemDefinition definition = DefinitionLoader.getDefinition(
                         ContextClassLoader.getLoader(), uuid
                 );
-                system = new RuntimeSystem(uuid, definition);
+                system = new System(uuid, definition);
                 s_systems.put(uuid, system);
             }
             return system;

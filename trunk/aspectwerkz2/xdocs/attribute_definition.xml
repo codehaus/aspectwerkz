@@ -46,6 +46,9 @@
                         <a href="#Passing parameters to aspects">Passing parameters to aspects</a>
                     </li>
                     <li>
+                        <a href="#Using the CrossCuttingInfo class">Using the CrossCuttingInfo class</a>
+                    </li>
+                    <li>
                         <a href="#XML deployment descriptor">XML deployment descriptor</a>
                     </li>
                 </ol>
@@ -68,10 +71,6 @@
                 <p>
                     <code>@Aspect</code> class level metadata has an optional anonymous parameter which specifies the
                     deployment model. The default is <code>perJVM</code> if not specified.
-<!--                        <li>an optional-->
-<!--                            <code>name=</code> named parameter which specify the name of the aspect.-->
-<!--                            The default is the aspect class name if not specified.-->
-<!--                        </li>-->
                     <ul>
                         <li>
                             <code>@Aspect perJVM</code> - deploys the aspect as perJVM. This is the default if only
@@ -88,6 +87,11 @@
                         <br/>
                         <li>
                             <code>@Aspect perThread</code> - deploys the aspect as perThread.
+                        </li>
+                        <br/>
+                        <li>an optional
+                             <code>name=</code> named parameter which specify the name of the aspect.
+                             The default is the aspect class name if not specified.
                         </li>
                         <br/>
                     </ul>
@@ -156,7 +160,7 @@
 /**
  * @Aspect perInstance
  */
-public class MyAspect extends Aspect {
+public class MyAspect {
 
     /**
      * @Implements com.mypackage.*
@@ -584,8 +588,60 @@ public class MyAspect extends Aspect {
                 ]]></source>
             </p>
             <p>
-                From within an <code>Aspect</code> subclass use the method <code>___AW_getParameter("timeout")</code> to retrieve
-                the parameter value as a String.
+                To retrieve the parameter (from within an aspect) use
+                <code>CrossCuttingInfo.getInfo("systemId", this).getParameter("timeout")</code>
+                to retrieve the parameter value as a String.
+            </p>
+            <p>
+                To set a new (or override) a parameter (from within an aspect) use
+                <code>CrossCuttingInfo.getInfo("systemId", this).setParameter("timeout", "10")</code>
+                to retrieve the parameter value as a String.
+            </p>
+        </section>
+
+        <section name="Using the CrossCuttingInfo class">
+            <p>
+                The <code>CrossCuttingInfo</code> class provides methods for getting handles to various parts
+                of the system, that can be used for introspection as well as redefinitions of the runtime system.
+            </p>
+            <p>
+                To retrieve the <code>CrossCuttingInfo</code> for a specific aspect (from within the aspect) use
+                one of the <code>getInfo</code> methods:
+            </p>
+             <p>
+                 If your aspect does <b>not</b> have a specific name specified you should invoke:
+            <source><![CDATA[
+CrossCuttingInfo info = CrossCuttingInfo.getInfo("systemID", this);
+            ]]></source>
+            </p>
+             <p>
+                If you have specified a specific name for the aspect, then invoke:
+            <source><![CDATA[
+CrossCuttingInfo info = CrossCuttingInfo.getInfo("systemID", "aspectName");
+            ]]></source>
+            </p>
+
+            <p>
+                This class has many useful methods. For example:
+            <source><![CDATA[
+...
+RuntimeSystem getSystem()
+AspectContainer getContainer()
+
+void setParameter(String name, String value)
+String getParameter(String name)
+
+void setMetaData(Object key, Object value)
+Object getMetaData(Object key)
+
+int getDeploymentModel()
+void setDeploymentModel(int deploymentModel)
+
+Object getMixinTargetInstance(String mixinName, Object mixinImpl)
+Class getMixinTargetClass(String mixinName, Object mixinImpl)
+...
+            ]]></source>
+
             </p>
         </section>
 

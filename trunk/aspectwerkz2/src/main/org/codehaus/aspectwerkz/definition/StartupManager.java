@@ -338,7 +338,7 @@ public class StartupManager {
 
                         // register the cflow advices in the system and create the cflow system aspect
                         // (if it does not already exist)
-                        org.codehaus.aspectwerkz.RuntimeSystem system = SystemLoader.getSystem(uuid);
+                        org.codehaus.aspectwerkz.System system = SystemLoader.getSystem(uuid);
                         if (!system.getAspectManager().hasAspect(CFlowSystemAspect.NAME)) {
                             AspectDefinition cflowAspect = new AspectDefinition(
                                     CFlowSystemAspect.NAME,
