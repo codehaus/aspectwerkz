@@ -407,6 +407,8 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             declaringType = ((MemberInfo) info).getDeclaringType();
         } else if (info instanceof ClassInfo) {
             declaringType = (ClassInfo) info;
+        } else {
+            return Boolean.FALSE;
         }
 
         String boundedTypeName = node.getBoundedType(m_expressionInfo);

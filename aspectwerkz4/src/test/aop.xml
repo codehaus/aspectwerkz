@@ -80,8 +80,8 @@
 
         <aspect class="test.enclosingsjp.EnclosingStaticJoinPointAspect"/>
 
-        <aspect class="test.staticinitialization.StaticInitializationAspect" deployment-model="perClass" />
-        <aspect class="test.withincode.WithincodeStaticinitializationAspect" deployment-model="perClass" />
+        <aspect class="test.staticinitialization.StaticInitializationAspect"/>
+        <aspect class="test.withincode.WithincodeStaticinitializationAspect"/>
 
         <aspect class="test.args.ArgsAspect">
             <pointcut name="xml_matchAll"

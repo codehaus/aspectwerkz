@@ -32,6 +32,7 @@ public class AllJdk5Tests extends TestCase {
         suite.addTestSuite(InterfaceDefinedMethodTestCase.class);
         suite.addTestSuite(CtorExecution.class);
         suite.addTestSuite(MixinTest.class);
+        suite.addTestSuite(CustomProceedChangeTargetTest.class);
 
         return suite;
     }

@@ -19,11 +19,11 @@ import is.Async;
 
 public class AsyncAspect {
 
-    @Before("staticinitialization(@is.Service)")
-    public void before(JoinPoint jp) {
-        System.out.println(jp.toString());
-        System.out.println(jp.getSignature().toString());
-    }
+//    @Before("staticinitialization(@is.Service)")
+//    public void before(JoinPoint jp) {
+//        System.out.println(jp.toString());
+//        System.out.println(jp.getSignature().toString());
+//    }
 
     private Executor m_threadPool = Executors.newCachedThreadPool();
 

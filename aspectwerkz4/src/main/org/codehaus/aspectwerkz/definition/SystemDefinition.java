@@ -469,8 +469,7 @@ public class SystemDefinition {
                     if (expressionInfo == null) {
                         continue;
                     }
-                    if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) /*||
-                        expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx) ALEX XXX CFLOW*/) {
+                    if (expressionInfo.getAdvisedClassFilterExpression().match(ctx)) {
                         if (AspectWerkzPreProcessor.DETAILS) {
                             System.out.println(
                                     "[TRACE - earlymatch: " + expressionInfo + " @ "

@@ -415,28 +415,25 @@ public class JoinPointManager {
                 // It can be StaticJP / JP / This binding / Target binding
                 final Type type = adviceInfo.getMethodParameterTypes()[k];
                 if (isJoinPoint(type)) {
-                    //TODO adapt for custom JoinPoint with custom proceed(..)
                     adviceToTargetArgs[k] = AdviceInfo.JOINPOINT_ARG;
+                } else if (isStaticJoinPoint(type)) {
+                    adviceToTargetArgs[k] = AdviceInfo.STATIC_JOINPOINT_ARG;
+                } else if (isTarget(adviceArgName, ctx)) {
+                    adviceToTargetArgs[k] = AdviceInfo.TARGET_ARG;
+                } else if (isThis(adviceArgName, ctx)) {
+                    adviceToTargetArgs[k] = AdviceInfo.THIS_ARG;
+                } else if (isSpecialArgument(adviceArgName, expressionInfo)) {
+                    adviceToTargetArgs[k] = AdviceInfo.SPECIAL_ARGUMENT;
+                } else if (isCustomJointPoint(type, loader)) {
+                    adviceToTargetArgs[k] = AdviceInfo.CUSTOM_JOIN_POINT_ARG;
                 } else {
-                    if (isStaticJoinPoint(type)) {
-                        adviceToTargetArgs[k] = AdviceInfo.STATIC_JOINPOINT_ARG;
-                    } else if (isTarget(adviceArgName, ctx)) {
-                        adviceToTargetArgs[k] = AdviceInfo.TARGET_ARG;
-                    } else if (isThis(adviceArgName, ctx)) {
-                        adviceToTargetArgs[k] = AdviceInfo.THIS_ARG;
-                    } else if (isSpecialArgument(adviceArgName, expressionInfo)) {
-                        adviceToTargetArgs[k] = AdviceInfo.SPECIAL_ARGUMENT;
-                    } else if (isCustomJointPoint(type, loader)) {
-                        adviceToTargetArgs[k] = AdviceInfo.CUSTOM_JOIN_POINT_ARG;
-                    } else {
-                        throw new Error(
-                                "Unbound advice parameter at index " + k +
-                                " in " + adviceInfo.getMethodName() +
-                                adviceInfo.getMethodSignature() +
-                                " named " +
-                                adviceArgName
-                        );
-                    }
+                    throw new Error(
+                            "Unbound advice parameter at index " + k +
+                            " in " + adviceInfo.getMethodName() +
+                            adviceInfo.getMethodSignature() +
+                            " named " +
+                            adviceArgName
+                    );
                 }
             }
         }

@@ -88,7 +88,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
     protected AdviceMethodInfo[] m_afterFinallyAdviceMethodInfos;
     protected AdviceMethodInfo[] m_afterReturningAdviceMethodInfos;
     protected AdviceMethodInfo[] m_afterThrowingAdviceMethodInfos;
-    protected final List m_customProceedMethods = new ArrayList();
+    protected final List m_customProceedMethodStructs = new ArrayList();
 
     protected boolean m_hasAroundAdvices = false;
     protected boolean m_requiresThisOrTarget = false;
@@ -226,6 +226,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         final Type[] paramTypes = adviceInfo.getMethodParameterTypes();
         if (paramTypes.length != 0) {
             Type firstParam = paramTypes[0];
+            //TODO should we support JP at other positions or lock the other advice models then so that JP..
+            // ..is not there or first only ?
             // check if first param is an object but not a JP or SJP
             if (firstParam.getSort() == Type.OBJECT &&
                 !firstParam.getClassName().equals(JOIN_POINT_JAVA_CLASS_NAME) &&
@@ -238,7 +240,14 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
                     for (int j = 0; j < methods.length; j++) {
                         MethodInfo method = methods[j];
                         if (method.getName().equals(PROCEED_METHOD_NAME)) {
-                            m_customProceedMethods.add(method);
+                            // we inherit the binding from the advice that actually use us
+                            // for now the first advice sets the rule
+                            // it is up to the user to ensure consistency if the custom proceed
+                            // is used more than once in different advices.
+                            m_customProceedMethodStructs.add(new CustomProceedMethodStruct(
+                                    method,
+                                    adviceInfo.getMethodToArgIndexes()
+                            ));
                         }
                     }
                 }
@@ -612,8 +621,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         }
 
         // get the custom join point interfaces
-        for (Iterator it = m_customProceedMethods.iterator(); it.hasNext();) {
-            MethodInfo methodInfo = (MethodInfo) it.next();
+        for (Iterator it = m_customProceedMethodStructs.iterator(); it.hasNext();) {
+            MethodInfo methodInfo = ((CustomProceedMethodStruct) it.next()).customProceed;
             interfaces.add(methodInfo.getDeclaringType().getName().replace('.', '/'));
         }
 
@@ -648,8 +657,9 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      */
     private void createCustomProceedMethods() {
         Set addedMethodSignatures = new HashSet();
-        for (Iterator it = m_customProceedMethods.iterator(); it.hasNext();) {
-            MethodInfo methodInfo = (MethodInfo) it.next();
+        for (Iterator it = m_customProceedMethodStructs.iterator(); it.hasNext();) {
+            CustomProceedMethodStruct customProceedStruct = (CustomProceedMethodStruct) it.next();
+            MethodInfo methodInfo = customProceedStruct.customProceed;
             final String desc = methodInfo.getSignature();
 
             if (addedMethodSignatures.contains(desc)) {
@@ -667,25 +677,57 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
                     null
             );
 
-            // update the argument fields in the join point instance
-            int argStackIndex = 1; // first arg is at index 1
-            for (int i = 0; i < m_fieldNames.length; i++) {
-                String fieldName = m_fieldNames[i];
-                cv.visitVarInsn(ALOAD, 0);
-                Type type = m_argumentTypes[i];
-                argStackIndex = AsmHelper.loadType(cv, argStackIndex, type);
-                cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, fieldName, type.getDescriptor());
+            // update the joinpoint instance with the given values
+            // starts at 1 since first arg is the custom join point by convention
+            //TODO see JoinPointManage for this custom jp is first convention
+            int argStackIndex = 1;
+            for (int i = 1; i < customProceedStruct.adviceToTargetArgs.length; i++) {
+                int targetArg = customProceedStruct.adviceToTargetArgs[i];
+                if (targetArg >= 0) {
+                    // regular arg
+                    String fieldName = m_fieldNames[targetArg];
+                    cv.visitVarInsn(ALOAD, 0);
+                    Type type = m_argumentTypes[targetArg];
+                    argStackIndex = AsmHelper.loadType(cv, argStackIndex, type);
+                    cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, fieldName, type.getDescriptor());
+                } else if (targetArg == AdviceInfo.TARGET_ARG) {
+                    cv.visitVarInsn(ALOAD, 0);
+                    argStackIndex = AsmHelper.loadType(cv, argStackIndex, Type.getType(m_calleeClassSignature));
+                    cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature);
+                } else if (targetArg == AdviceInfo.THIS_ARG) {
+                    cv.visitVarInsn(ALOAD, 0);
+                    argStackIndex = AsmHelper.loadType(cv, argStackIndex, Type.getType(m_callerClassSignature));
+                    cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, CALLER_INSTANCE_FIELD_NAME, m_callerClassSignature);
+                } else {
+                    ;//skip it
+                }
             }
 
-            cv.visitVarInsn(ALOAD, 0);
-            cv.visitMethodInsn(
-                    INVOKESPECIAL,
-                    m_joinPointClassName,
-                    PROCEED_METHOD_NAME,
-                    PROCEED_METHOD_SIGNATURE
-            );
-
-            cv.visitInsn(ARETURN);
+            // call proceed()
+            // and handles unwrapping for returning primitive
+            Type returnType = Type.getType(customProceedStruct.customProceed.getReturnType().getSignature());
+            if (AsmHelper.isPrimitive(returnType)) {
+                cv.visitVarInsn(ALOAD, 0);
+                cv.visitMethodInsn(
+                        INVOKESPECIAL,
+                        m_joinPointClassName,
+                        PROCEED_METHOD_NAME,
+                        PROCEED_METHOD_SIGNATURE
+                );
+                AsmHelper.unwrapType(cv, returnType);
+            } else {
+                cv.visitVarInsn(ALOAD, 0);
+                cv.visitMethodInsn(
+                        INVOKESPECIAL,
+                        m_joinPointClassName,
+                        PROCEED_METHOD_NAME,
+                        PROCEED_METHOD_SIGNATURE
+                );
+                if (!returnType.getClassName().equals(OBJECT_CLASS_SIGNATURE)) {
+                    cv.visitTypeInsn(CHECKCAST, returnType.getInternalName());
+                }
+            }
+            AsmHelper.addReturnStatement(cv, returnType);
             cv.visitMaxs(0, 0);
         }
     }
@@ -2960,5 +3002,15 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      */
     protected boolean requiresProceedMethod() {
         return m_hasAroundAdvices || m_isTargetAdvisable;
+    }
+
+    private static class CustomProceedMethodStruct {
+        MethodInfo customProceed;
+        int[] adviceToTargetArgs;
+
+        public CustomProceedMethodStruct(MethodInfo customProceed, int[] adviceToTargetArgs) {
+            this.customProceed = customProceed;
+            this.adviceToTargetArgs = adviceToTargetArgs;
+        }
     }
 }
