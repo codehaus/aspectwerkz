@@ -22,109 +22,109 @@ public class MemberMethodTestAspect {
     /**
      * @Expression execution(* test.MemberMethodAdviceTest.get*(..))
      */
-    Pointcut pc1;
+    Pointcut member_pc1;
 
     /**
      * @Expression execution(* test.MemberMethodAdviceTest.*Param**(..))
      */
-    Pointcut pc2;
+    Pointcut member_pc2;
 
     /**
      * @Expression execution(* test.MemberMethodAdviceTest.testThrowException(..))
      */
-    Pointcut pc3;
+    Pointcut member_pc3;
 
     /**
      * @Expression execution(* test.MemberMethodAdviceTest.methodAdvicedMethod())
      */
-    Pointcut pc4;
+    Pointcut member_pc4;
 
     /**
      * @Expression execution(* test.MemberMethodAdviceTest.meth*AdvicedMethod())
      */
-    Pointcut pc5;
+    Pointcut member_pc5;
 
     /**
      * @Expression execution(* test.MemberMethodAdviceTest.method*icedMethodNewThread(..))
      */
-    Pointcut pc6;
+    Pointcut member_pc6;
 
     /**
      * @Expression execution(* test.MemberMethodAdviceTest.method*dvicedMethodNewThread(..))
      */
-    Pointcut pc7;
+    Pointcut member_pc7;
 
     /**
      * @Expression execution(* test.MemberMethodAdviceTest.multipleMethodAdvicedMethod(..))
      */
-    Pointcut pc8;
+    Pointcut member_pc8;
 
     /**
      * @Expression execution(* test.MemberMethodAdviceTest.multipleChainedMethodAdvicedMethod(..))
      */
-    Pointcut pc9;
+    Pointcut member_pc9;
 
     /**
      * @Expression execution(* test.MemberMethodAdviceTest.joinPointMetaData(..))
      */
-    Pointcut pc10;
+    Pointcut member_pc10;
 
     /**
      * @Expression execution(void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..))
      */
-    Pointcut pc11;
+    Pointcut member_pc11;
 
     /**
      * @Expression execution(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..))
      */
-    Pointcut pc12;
+    Pointcut member_pc12;
 
     /**
      * @Expression execution(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..))
      */
-    Pointcut pc13;
+    Pointcut member_pc13;
 
     /**
      * @Expression execution(* test.MemberMethodAdviceTest.takesArrayAsArgument(String[]))
      */
-    Pointcut pc14;
+    Pointcut member_pc14;
 
     /**
      * @Expression execution(long test.MemberMethodAdviceTest.getPrimitiveAndNullFromAdvice())
      */
-    Pointcut pc15;
+    Pointcut member_pc15;
 
     /**
      * @Expression execution(void test.MemberMethodAdviceTest.beforeAdvicedMethod())
      */
-    Pointcut pc16;
+    Pointcut member_pc16;
 
     /**
      * @Expression execution(void test.MemberMethodAdviceTest.afterAdvicedMethod())
      */
-    Pointcut pc17;
+    Pointcut member_pc17;
 
     /**
      * @Expression execution(void test.MemberMethodAdviceTest.beforeAfterAdvicedMethod())
      */
-    Pointcut pc18;
+    Pointcut member_pc18;
 
     /**
      * @Expression execution(void test.MemberMethodAdviceTest.beforeAroundAfterAdvicedMethod())
      */
-    Pointcut pc19;
+    Pointcut member_pc19;
 
     // ============ Advices ============
 
     /**
-     * @Around pc1 || pc2 || pc3 || pc4 || pc14 || pc9
+     * @Around member_pc1 || member_pc2 || member_pc3 || member_pc4 || member_pc14 || member_pc9
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
-     * @Around pc5 || pc8 || pc9 || pc12 || pc19
+     * @Around member_pc5 || member_pc8 || member_pc9 || member_pc12 || member_pc19
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
@@ -134,7 +134,7 @@ public class MemberMethodTestAspect {
     }
 
     /**
-     * @Around pc8 || pc9 || pc13 || pc19
+     * @Around member_pc8 || member_pc9 || member_pc13 || member_pc19
      */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before2 ");
@@ -144,7 +144,7 @@ public class MemberMethodTestAspect {
     }
 
     /**
-     * @Around pc10
+     * @Around member_pc10
      */
     public Object advice4(final JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
@@ -157,7 +157,7 @@ public class MemberMethodTestAspect {
     }
 
     /**
-     * @Around pc6 || pc7
+     * @Around member_pc6 || member_pc7
      */
     public Object advice5(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before ");
@@ -167,21 +167,21 @@ public class MemberMethodTestAspect {
     }
 
     /**
-     * @Around pc15
+     * @Around member_pc15
      */
     public Object advice6(final JoinPoint joinPoint) throws Throwable {
         return null;
     }
 
     /**
-     * @Before pc16 || pc18 || pc19
+     * @Before member_pc16 || member_pc18 || member_pc19
      */
     public void before(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("pre ");
     }
 
     /**
-     * @After pc17 || pc18 || pc19
+     * @After member_pc17 || member_pc18 || member_pc19
      */
     public void after(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("post ");

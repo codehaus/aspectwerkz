@@ -22,74 +22,74 @@ public class StaticMethodTestAspect {
     /**
      * @Expression execution(* test.StaticMethodAdviceTest.get*(..))
      */
-    Pointcut pc1;
+    Pointcut static_pc1;
 
     /**
      * @Expression execution(* test.StaticMethodAdviceTest.*Param*(..))
      */
-    Pointcut pc2;
+    Pointcut static_pc2;
 
     /**
      * @Expression execution(void test.StaticMethodAdviceTest.methodAdvicedMethod(..))
      */
-    Pointcut pc4;
+    Pointcut static_pc4;
 
     /**
      * @Expression execution(* test.StaticMethodAdviceTest.methodAdvicedMethod(..))
      */
-    Pointcut pc5;
+    Pointcut static_pc5;
 
-    /**
+    /**m
      * @Expression execution(* test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..))
      */
-    Pointcut pc6;
+    Pointcut static_pc6;
 
     /**
      * @Expression execution(* test.StaticMethodAdviceTest.multipleMethodAdvicedMethod(..))
      */
-    Pointcut pc7;
+    Pointcut static_pc7;
 
     /**
      * @Expression execution(* test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..))
      */
-    Pointcut pc8;
+    Pointcut static_pc8;
 
     /**
      * @Expression execution(* test.StaticMethodAdviceTest.joinPointMetaData(..))
      */
-    Pointcut pc9;
+    Pointcut static_pc9;
 
     /**
      * @Expression execution(void test.StaticMethodAdviceTest.multiplePointcutsMethod(..))
      */
-    Pointcut pc10;
+    Pointcut static_pc10;
 
     /**
      * @Expression execution(void test.StaticMethodAdviceTest.multiplePointcutsMethod(..))
      */
-    Pointcut pc11;
+    Pointcut static_pc11;
 
     /**
      * @Expression execution(* test.StaticMethodAdviceTest.takesArrayAsArgument(String[]))
      */
-    Pointcut pc12;
+    Pointcut static_pc12;
 
     /**
      * @Expression execution(long test.StaticMethodAdviceTest.getPrimitiveAndNullFromAdvice())
      */
-    Pointcut pc13;
+    Pointcut static_pc13;
 
     // ============ Advices ============
 
     /**
-     * @Around pc1 || pc2 || pc5 || pc8 || pc12
+     * @Around static_pc1 || static_pc2 || static_pc5 || static_pc8 || static_pc12
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
-     * @Around pc4 || pc7 || pc8 || pc10
+     * @Around static_pc4 || static_pc7 || static_pc8 || static_pc10
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         StaticMethodAdviceTest.log("before1 ");
@@ -99,7 +99,7 @@ public class StaticMethodTestAspect {
     }
 
     /**
-     * @Around pc7 || pc8 || pc11
+     * @Around static_pc7 || static_pc8 || static_pc11
      */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
         StaticMethodAdviceTest.log("before2 ");
@@ -109,7 +109,7 @@ public class StaticMethodTestAspect {
     }
 
     /**
-     * @Around pc9
+     * @Around static_pc9
      */
     public Object advice4(final JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
@@ -121,7 +121,7 @@ public class StaticMethodTestAspect {
     }
 
     /**
-     * @Around pc6
+     * @Around static_pc6
      */
     public Object advice5(final JoinPoint joinPoint) throws Throwable {
         StaticMethodAdviceTest.log("before ");
@@ -131,7 +131,7 @@ public class StaticMethodTestAspect {
     }
 
     /**
-     * @Around pc13
+     * @Around static_pc13
      */
     public Object advice7(final JoinPoint joinPoint) throws Throwable {
         return null;
