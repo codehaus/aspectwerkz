@@ -9,11 +9,15 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 1.0
+                    The latest official release is 1.1
                 </p>
                 <p>
                     Download:
                     <ul>
+                        <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.1.zip?download">1.1</a>
+                        </li>
+                        <br/>
                         <li>
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0.zip?download">1.0</a>
                         </li>
@@ -37,6 +41,12 @@
                 </p>
             </subsection>
             <section name="Release notes">
+                <subsection name="New features and changes in release 1.0">
+                    <p>
+                        Maintenance release (fixed an NPE in AnnotationC Ant task, fixed an NPE when accessing annotations
+                        on rt.jar classes)
+                    </p>
+                </subsection>
                 <subsection name="New features and changes in release 1.0">
                     <p>
                         <ul>

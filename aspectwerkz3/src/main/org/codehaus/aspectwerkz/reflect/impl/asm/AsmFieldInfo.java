@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.transform.AsmHelper;
 import org.codehaus.aspectwerkz.transform.AsmHelper;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 
 import org.objectweb.asm.Type;
 import org.objectweb.asm.ClassReader;
@@ -92,7 +93,12 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
     public List getAnnotations() {
         if (m_annotations == null) {
             try {
-                ClassReader cr = new ClassReader(((ClassLoader)m_loaderRef.get()).getResourceAsStream(m_declaringTypeName.replace('.','/')+".class"));
+                ClassReader cr = new ClassReader(
+                        ContextClassLoader.getResourceAsStream(
+                                m_declaringTypeName.replace('.','/')+".class",
+                                (ClassLoader)m_loaderRef.get()
+                        )
+                );
                 List annotations = new ArrayList();
                 cr.accept(
                         new AsmAnnotationHelper.FieldAnnotationExtractor(annotations, m_member.name, (ClassLoader)m_loaderRef.get()),

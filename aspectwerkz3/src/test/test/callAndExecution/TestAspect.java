@@ -22,9 +22,9 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 public class TestAspect {
 
     public TestAspect(CrossCuttingInfo info) {
-        System.out.println(((AspectAnnotationProxy)Annotations.getAnnotation("Aspect", getClass())).getName());
-        System.out.println(info.getDeploymentModel() == DeploymentModel.PER_THREAD);
-        System.out.println(info.getDeploymentModel() == DeploymentModel.PER_JVM);
+        System.out.println("TEST say: " + ((AspectAnnotationProxy)Annotations.getAnnotation("Aspect", getClass())).getName());
+        System.out.println("TEST say: " + (info.getDeploymentModel() == DeploymentModel.PER_THREAD));
+        System.out.println("TEST say: " + (info.getDeploymentModel() == DeploymentModel.PER_JVM));
     }
 
     // ============ Pointcuts ============

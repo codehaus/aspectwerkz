@@ -69,6 +69,22 @@ public final class ContextClassLoader {
     }
 
     /**
+     * Loads a resource from the given class loader as stream
+     *
+     * @param name is the name of the resource to load.
+     * @param loader
+     * @return a <code>InputStream</code> object.
+     */
+    public static InputStream getResourceAsStream(final String name, final ClassLoader loader) {
+        InputStream stream = null;
+        if (loader != null) {
+            return loader.getResourceAsStream(name);
+        } else {
+            return ClassLoader.getSystemClassLoader().getResourceAsStream(name);
+        }
+    }
+
+    /**
      * Returns the context class loader.
      * 
      * @return the context class loader
