@@ -3,7 +3,7 @@
     <pomVersion>3</pomVersion>
     <name>AspectWerkz - Plain Java AOP</name>
     <id>aspectwerkz</id>
-    <currentVersion>2.0.RC2-snapshot</currentVersion>
+    <currentVersion>2.0.RC2</currentVersion>
     <organization>
         <name>Jonas Bon&#233;r, Alexandre Vasseur</name>
     </organization>
@@ -31,9 +31,9 @@
     </repository>
     <versions>
         <version>
-            <id>2.0.RC2-snapshot</id>
-            <name>2.0.RC2-snapshot</name>
-            <tag>rel_2_0_RC1</tag>
+            <id>2.0.RC2</id>
+            <name>2.0.RC2</name>
+            <tag>rel_2_0_RC2</tag>
             <branch>HEAD</branch>
         </version>
     </versions>

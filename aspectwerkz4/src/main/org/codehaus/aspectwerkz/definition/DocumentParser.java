@@ -1108,7 +1108,6 @@ public class DocumentParser {
         boolean hasCallPointcut = false;
         boolean hasSetPointcut = false;
         boolean hasGetPointcut = false;
-        boolean hasHandlerPointcut = false;
         if (pointcutTypes == null ||
             pointcutTypes.equals("") ||
             pointcutTypes.equalsIgnoreCase("all")) {
@@ -1136,6 +1135,7 @@ public class DocumentParser {
         if (hasAllPointcuts || hasExecutionPointcut) {
             DefinitionParserHelper.createAndAddAdvisableDef(
                     // TODO add ctor to expression - BUT: problem with mixin and ctor, ordering issue, Jp.invoke() calls field instance that has not been init yet in ctor (since body not invoked)
+                    //"(( execution(!static * *.*(..)) || execution(*.new(..)) ) && " + withinPointcut + ')',
                     "(execution(!static * *.*(..)) && " + withinPointcut + ')',
                     definition
             );
@@ -1145,6 +1145,7 @@ public class DocumentParser {
                     withinPointcut.indexOf('(') + 1, withinPointcut.length() - 1
             );
             DefinitionParserHelper.createAndAddAdvisableDef(
+                    // TODO add ctor to expression - BUT: problem with mixin and ctor, ordering issue, Jp.invoke() calls field instance that has not been init yet in ctor (since body not invoked)                    //"(call(!static * " + typePattern + ".*(..)) || call(" + typePattern + ".new(..)))",
                     "call(!static * " + typePattern + ".*(..))",
                     definition
             );
@@ -1152,26 +1153,14 @@ public class DocumentParser {
         if (hasAllPointcuts || hasSetPointcut) {
             DefinitionParserHelper.createAndAddAdvisableDef(
                     "(set(!static * *.*) && " + withinPointcut + ')',
-// TODO might cause problem with fields in ctor, but grammar has bug so can't filter out ctors
-//                    "(set(!static * *.*) && !withincode(*.new(..)) && " + pointcut + ')',
                     definition
             );
         }
         if (hasAllPointcuts || hasGetPointcut) {
             DefinitionParserHelper.createAndAddAdvisableDef(
                     "(get(!static * *.*) && " + withinPointcut + ')',
-// TODO might cause problem with fields in ctor, but grammar has bug so can't filter out ctors
-//                    "((get(!static * *.*) && !withincode(*.new(..))) && " + withinPointcut + ')',
                     definition
             );
         }
-//        if (hasAllPointcuts || hasHandlerPointcut) {
-//            DefinitionParserHelper.createAndAddAdvisableDef(
-//                    "(handler(java.lang.IllegalArgumentException) && " + withinPointcut + ')',
-////                    "(handler(*..*) && " + withinPointcut + ')',
-////                    "(handler(*..*) && !withincode(static * *.*(..)) && " + withinPointcut + ')',
-//                    definition
-//            );
-//        }
     }
 }

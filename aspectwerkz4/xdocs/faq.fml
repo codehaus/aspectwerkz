@@ -14,8 +14,8 @@
                             Build and develop for Java 5 -
                             <br/>
                             To build on Java 5 you will have to put the
-                            <code>./lib/aspectwerkz-jdk5-2.0.RC2-snapshot.jar</code>
-                            <b>first</b> on the classpath. Same if you want to run it inside an IDE, or use an Ant script.
+                            <code>./lib/aspectwerkz-jdk5-2.0.RC2.jar</code>
+                            on the classpath <b>instead of</b> <code>./lib/aspectwerkz-jdk14-2.0.RC2.jar</code>. Same if you want to run it inside an IDE, or use an Ant script.
                             This jar contains the Java 5 implementations of the AspectWerkz annotations.
                         </li>
                         <br/>
@@ -36,20 +36,6 @@
                             <code>perJVM</code> deployment model for mixins -
                             <br/>
                             This will most likely be added for the 2.0 final release.
-                        </li>
-                        <br/>
-                        <li>
-                            Currently no support for
-                            <code>cflow</code> pointcuts -
-                            <br/>
-                            This will be added as soon as possible, along with
-                            <code>cflowbelow</code>.
-                        </li>
-                        <br/>
-                        <li>
-                            Currently not compiling on JDK 1.3 (but 1.4 and 1.5) -
-                            <br/>
-                            This will be fixed in the next release.
                         </li>
                         <br/>
                         <li>
@@ -91,7 +77,7 @@
                         <br/>
                         <li>
                             Dynamic AOP requires AspectWerkz native library in
-                            <code>PATH</code> -
+                            <code>PATH</code> - unless using Java 5.
                             <br/>
                             To make use of the dynamic features, such as runtime deployment and undeployment, you
                             need to have the AspectWerkz native library (*.dll, *.so or *.jnilib) in your

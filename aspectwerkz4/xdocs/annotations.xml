@@ -282,7 +282,9 @@ public interface Asynchronous {
                         <li>
                         nested annotations -
                             <br/>
-                         Not tested for Java 1.3/1.4 in 2.0.RC1
+                            <code>
+                                @ComplexNested(nesteds={@Simple(val="foo"), @Simple(val="bar")})
+                            </code>
                         </li>
                     </ul>
                 </p>

@@ -599,7 +599,6 @@
                     <code>get(&lt;field pattern&gt;)</code> - picks out join points defining field access.
                 </p>
             </subsection>
-            <!-- uncomment when impl.
             <subsection name="handler() pointcut">
                 <p>
                 <code>handler(&lt;exception type pattern&gt;)</code> - picks out join points
@@ -609,7 +608,6 @@
                 <code>before</code>.
                 </p>
             </subsection>
-            -->
             <subsection name="within() pointcut">
                 <p>
                 <code>within(&lt;type pattern&gt;)</code> - picks out a type set.
@@ -733,15 +731,13 @@ void before(Bar myBar) {
                 ]]></source>
                 </p>
             </subsection>
-            <!-- uncomment when impl.
             <subsection name="cflow() pointcut">
                 <p>
                     <code>cflow(&lt;pointcut expression&gt;)</code> - picks out join points defining a control flow (cflow).
-                    Note: the nested pointcut expression must not expose parameters. args(), this() and target() can be used
-                    with typed expression only. Nested cflow() should not be used.
+                    Note: the nested pointcut expression must not bind parameters. args(), this() and target() can be used
+                    with typed expression only (ie statefull cflow is not yet supported). Nested cflow() can be used.
                 </p>
             </subsection>
-            -->
             <subsection name="hasmethod() pointcut">
                 <p>
                     <code>hasmethod(&lt;method or constructor pattern&gt;)</code> - picks out a class that

@@ -17,10 +17,6 @@ public class Target {
     }
 
     public static void main(String[] args) {
-        //FIXME
-        System.out.println("2.0.RC2-snapshot does not support handler() pointcut");
-        if (true) return;
-
         Target target = new Target();
         try {
             target.method();
