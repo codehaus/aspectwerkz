@@ -42,7 +42,8 @@ public class CachingAspect {
     }
 
     /**
-     * @Before call(int examples.caching.Pi.getPiDecimal(int)) && within(examples.caching.*)
+     * @Before call(int examples.caching.Pi.getPiDecimal(int)) &&
+     *         withincode(int examples.caching.main(String[]))
      */
     public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();

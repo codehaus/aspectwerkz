@@ -98,14 +98,13 @@ public class MethodCallTransformer implements Transformer {
                                                                              context.getLoader());
                             }
 
-                            // create the caller method info
-                            // @TODO: pass in caller method to the JP
-                            MemberInfo withinMethodInfo = null;
+                            // create the caller method info, used for 'within' and 'withincode'
+                            MemberInfo withinMemberInfo = null;
                             if (where instanceof CtMethod) {
-                                withinMethodInfo = JavassistMethodInfo.getMethodInfo((CtMethod)where,
+                                withinMemberInfo = JavassistMethodInfo.getMethodInfo((CtMethod)where,
                                                                                      context.getLoader());
                             } else if (where instanceof CtConstructor) {
-                                withinMethodInfo = JavassistConstructorInfo.getConstructorInfo((CtConstructor)where,
+                                withinMemberInfo = JavassistConstructorInfo.getConstructorInfo((CtConstructor)where,
                                                                                                context.getLoader());
                             }
 
@@ -113,7 +112,7 @@ public class MethodCallTransformer implements Transformer {
                             MethodInfo calleeSideMethodInfo = JavassistMethodInfo.getMethodInfo(methodCall.getMethod(),
                                                                                                 context.getLoader());
                             ExpressionContext ctx = new ExpressionContext(PointcutType.CALL, calleeSideMethodInfo,
-                                                                          withinMethodInfo);
+                                                                          withinMemberInfo);
                             if (definition.hasPointcut(ctx) || definition.hasCflowPointcut(ctx)) {
                                 // check the callee class is not the same as target class, if that is the case
                                 // then we have have class loaded and set in the ___AW_clazz already
@@ -142,7 +141,11 @@ public class MethodCallTransformer implements Transformer {
                                 } else {
                                     callBody.append(", this, ");
                                 }
-                                callBody.append("declaringClass, $0, ");
+                                callBody.append("declaringClass, $0, \"");
+                                callBody.append(where.getName());
+                                callBody.append("\",\"");
+                                callBody.append(where.getSignature());
+                                callBody.append("\",");
                                 callBody.append(TransformationUtil.JOIN_POINT_TYPE_METHOD_CALL);
                                 callBody.append(");");
                                 body.append('{');

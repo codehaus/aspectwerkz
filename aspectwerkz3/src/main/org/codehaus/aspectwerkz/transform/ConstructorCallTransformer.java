@@ -87,14 +87,15 @@ public class ConstructorCallTransformer implements Transformer {
                             }
 
                             // create the caller method info
-                            // @TODO: pass in caller method to the JP
                             MemberInfo withinMethodInfo = null;
+                            boolean isWithinInfoAMethod = true;
                             if (where instanceof CtMethod) {
                                 withinMethodInfo = JavassistMethodInfo.getMethodInfo((CtMethod)where,
                                                                                      context.getLoader());
                             } else if (where instanceof CtConstructor) {
                                 withinMethodInfo = JavassistConstructorInfo.getConstructorInfo((CtConstructor)where,
                                                                                                context.getLoader());
+                                isWithinInfoAMethod = false;
                             }
 
                             // create the constructor info
@@ -145,7 +146,11 @@ public class ConstructorCallTransformer implements Transformer {
                                 } else {
                                     body.append(", this, ");
                                 }
-                                body.append("declaringClass, $0, ");
+                                body.append("declaringClass, $0, \"");
+                                body.append(where.getName());
+                                body.append("\",\"");
+                                body.append(where.getSignature());
+                                body.append("\",");
                                 body.append(TransformationUtil.JOIN_POINT_TYPE_CONSTRUCTOR_CALL);
                                 body.append("); }");
                                 newExpr.replace(body.toString());
