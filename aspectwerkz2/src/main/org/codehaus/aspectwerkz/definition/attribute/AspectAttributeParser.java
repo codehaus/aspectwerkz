@@ -13,11 +13,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.aspect.Aspect;
+import org.codehaus.aspectwerkz.CrossCuttable;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -71,7 +70,7 @@ public class AspectAttributeParser implements AttributeParser {
         if (klass == null) {
             return;
         }
-        if (klass.getName().equals(Aspect.class.getName())) {
+        if (klass.getName().equals(CrossCuttable.class.getName())) {
             return;
         }
 

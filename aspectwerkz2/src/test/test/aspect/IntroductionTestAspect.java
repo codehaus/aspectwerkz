@@ -9,8 +9,8 @@ package test.aspect;
 
 import java.io.Serializable;
 
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.CrossCuttable;
 import test.Introductions;
 
 /**
@@ -18,7 +18,7 @@ import test.Introductions;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @Aspect perJVM
  */
-public class IntroductionTestAspect extends Aspect {
+public class IntroductionTestAspect {
 
     // ============ Introductions ============
 
@@ -49,7 +49,7 @@ public class IntroductionTestAspect extends Aspect {
         };
 
         public void noArgs() throws RuntimeException {
-            ___AW_getTargetInstance();
+            ((CrossCuttable)IntroductionTestAspect.this).getCrossCuttingInfo().getTargetInstance();
         }
 
         public long longArg(long arg) {
@@ -232,5 +232,4 @@ public class IntroductionTestAspect extends Aspect {
             return true;
         }
     }
-
 }

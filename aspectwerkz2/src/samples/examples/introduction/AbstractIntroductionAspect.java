@@ -7,13 +7,13 @@
  **************************************************************************************/
 package examples.introduction;
 
-import org.codehaus.aspectwerkz.aspect.Aspect;
+import org.codehaus.aspectwerkz.CrossCuttable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect
  */
-public abstract class AbstractIntroductionAspect extends Aspect {
+public abstract class AbstractIntroductionAspect {
 
     /**
      * The Introduce doclet is not necessary here. This aspect provides a half completed mixin impl (abstract one)
@@ -22,7 +22,7 @@ public abstract class AbstractIntroductionAspect extends Aspect {
      */
     public abstract class MyImpl implements Mixin {
         public String sayHello1() {
-            System.out.println("aspect target class: " + ___AW_getTargetClass());
+            System.out.println("aspect target class: " + ((CrossCuttable)this).getCrossCuttingInfo().getTargetClass());
             return "Hello World!";
         }
     }

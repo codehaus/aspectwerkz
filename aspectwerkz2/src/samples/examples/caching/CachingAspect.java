@@ -10,15 +10,15 @@ package examples.caching;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
+import org.codehaus.aspectwerkz.CrossCuttable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perInstance
  */
-public class CachingAspect extends Aspect {
+public class CachingAspect {
 
     /**
      * @Before call(examples.caching.*->int examples.caching.Pi.getPiDecimal(int))
@@ -43,7 +43,7 @@ public class CachingAspect extends Aspect {
         if (cachedResult != null) {
             System.out.println("using cache");
             CacheStatistics.addCacheInvocation(signature.getName(), signature.getParameterTypes());
-            System.out.println("parameter: timeout = " + ___AW_getParameter("timeout"));
+            System.out.println("parameter: timeout = " + ((CrossCuttable)this).getCrossCuttingInfo().getParameter("timeout"));
             return cachedResult;
         }
         final Object result = joinPoint.proceed();

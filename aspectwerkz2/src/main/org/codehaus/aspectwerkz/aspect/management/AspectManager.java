@@ -19,7 +19,8 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.Mixin;
-import org.codehaus.aspectwerkz.aspect.Aspect;
+import org.codehaus.aspectwerkz.CrossCuttable;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
@@ -137,7 +138,7 @@ public final class AspectManager {
      * @param aspect         the aspect to register
      * @param aspectMetaData the aspect meta-data
      */
-    public void register(final Aspect aspect, final PointcutManager aspectMetaData) {
+    public void register(final CrossCuttable aspect, final PointcutManager aspectMetaData) {
         m_aspectRegistry.register(aspect, aspectMetaData);
     }
 
@@ -165,7 +166,7 @@ public final class AspectManager {
             throw new IllegalArgumentException(deploymentModel + " is not a valid deployment model type");
         }
 
-        Aspect prototype = null;
+        CrossCuttable prototype = null;
         Class aspectClass = null;
         try {
             if (loader == null) {
@@ -187,13 +188,13 @@ public final class AspectManager {
         }
 
         try {
-            prototype = (Aspect)aspectClass.newInstance();
+            prototype = (CrossCuttable)aspectClass.newInstance();
         }
         catch (Exception e) {
             StringBuffer msg = new StringBuffer();
             msg.append("could not create a new instance of aspect [");
             msg.append(aspectClassName);
-            msg.append("], does the class inherit the [org.codehaus.aspectwerkz.aspect.Aspect] class?: ");
+            msg.append("]: ");
             msg.append(e.toString());
             throw new RuntimeException(msg.toString());
         }
@@ -209,11 +210,12 @@ public final class AspectManager {
         m_attributeParser.parse(aspectClass, aspectDef, m_definition);
         m_definition.addAspect(aspectDef);
 
-        prototype.___AW_setDeploymentModel(deploymentModel);
-        prototype.___AW_setName(name);
-        prototype.___AW_setAspectClass(prototype.getClass());
-        prototype.___AW_setContainer(new AspectContainer(prototype));
-        prototype.___AW_setAspectDef(aspectDef);
+        CrossCuttingInfo crossCuttingInfo = prototype.getCrossCuttingInfo();
+        crossCuttingInfo.setDeploymentModel(deploymentModel);
+        crossCuttingInfo.setName(name);
+        crossCuttingInfo.setAspectClass(aspectClass);
+        crossCuttingInfo.setContainer(new AspectContainer(crossCuttingInfo));
+        crossCuttingInfo.setAspectDef(aspectDef);
 
         m_aspectRegistry.register(prototype, new PointcutManager(m_uuid, name, deploymentModel));
     }
@@ -224,7 +226,7 @@ public final class AspectManager {
      * @param index the index of the aspect
      * @return the aspect
      */
-    public Aspect getAspect(final int index) {
+    public CrossCuttable getAspect(final int index) {
         return m_aspectRegistry.getAspect(index);
     }
 
@@ -234,7 +236,7 @@ public final class AspectManager {
      * @param name the name of the aspect
      * @return the the aspect
      */
-    public Aspect getAspect(final String name) {
+    public CrossCuttable getAspect(final String name) {
         return m_aspectRegistry.getAspect(name);
     }
 
@@ -302,7 +304,7 @@ public final class AspectManager {
      *
      * @return the aspects
      */
-    public Aspect[] getAspects() {
+    public CrossCuttable[] getAspects() {
         return m_aspectRegistry.getAspects();
     }
 

@@ -8,7 +8,6 @@
 package test.aspect;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import test.Loggable;
 
@@ -19,7 +18,7 @@ import test.Loggable;
  * refer to it when modifying the advices at runtime. this the handle is the pointcut expression bound to the advice and
  * this handle then need to be simplified (one single name that can be reused).
  */
-public class DynamicDeploymentTestAspect extends Aspect {
+public class DynamicDeploymentTestAspect {
 
     // ============ Pointcuts ============
 

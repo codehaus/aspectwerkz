@@ -8,14 +8,13 @@
 package examples.asynch;
 
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AsynchAspect extends Aspect {
+public class AsynchAspect {
 
     private PooledExecutor m_threadPool = new PooledExecutor();
 

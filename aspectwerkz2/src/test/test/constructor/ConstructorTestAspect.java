@@ -8,7 +8,6 @@
 package test.constructor;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
 
@@ -16,7 +15,7 @@ import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class ConstructorTestAspect extends Aspect {
+public class ConstructorTestAspect {
 
     // ============ Pointcuts ============
 

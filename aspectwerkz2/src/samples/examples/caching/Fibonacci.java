@@ -10,7 +10,6 @@ package examples.caching;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
@@ -42,7 +41,7 @@ public class Fibonacci {
     /**
      * Caches redundant fibonacci calculations.
      */
-    public static class FibonacciCacheAspect extends Aspect {
+    public static class FibonacciCacheAspect {
 
         private Map m_cache = new HashMap();
 

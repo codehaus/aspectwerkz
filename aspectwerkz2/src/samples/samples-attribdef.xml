@@ -10,6 +10,11 @@
             <aspect class="caching.CachingAspect" deployment-model="perInstance">
                 <param name="timeout" value="10"/>
             </aspect>
+<!--            <aspect class="logging.LoggingAspect">-->
+<!--                <pointcut name="log" expression="execution(* examples.logging.Target.toLog1(..))"/>-->
+<!--                <advice name="logMethod" type="around" bind-to="log"/>-->
+<!--            </aspect>-->
+
             <aspect class="logging.LoggingAspect"/>
             <aspect class="introduction.IntroductionAspect" deployment-model="perClass"/>
             <aspect class="cflow.CFlowAspect" deployment-model="perInstance"/>

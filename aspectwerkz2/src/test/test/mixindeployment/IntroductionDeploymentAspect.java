@@ -7,8 +7,8 @@
  **************************************************************************************/
 package test.mixindeployment;
 
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.CrossCuttable;
 
 /**
  * The aspect mixin is deployed as perInstance
@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.Pointcut;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @Aspect perJVM
  */
-public class IntroductionDeploymentAspect extends Aspect {
+public class IntroductionDeploymentAspect {
 
     /**
      * @Expression class(test.mixindeployment.IntroductionDeploymentTest$TargetA)
@@ -28,6 +28,7 @@ public class IntroductionDeploymentAspect extends Aspect {
      */
     Pointcut b;
 
+
     /**
      * Set to match
      *
@@ -36,11 +37,15 @@ public class IntroductionDeploymentAspect extends Aspect {
     public class MarkerImpl implements Marker {
 
         public Object getTargetInstance() {
-            return ___AW_getMixinTargetInstance(this.getClass().getName(), this);
+            return ((CrossCuttable)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetInstance(
+                    this.getClass().getName(), this
+            );
         }
 
         public Class getTargetClass() {
-            return ___AW_getMixinTargetClass(this.getClass().getName(), this);
+            return ((CrossCuttable)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetClass(
+                    this.getClass().getName(), this
+            );
         }
     }
 
@@ -54,12 +59,15 @@ public class IntroductionDeploymentAspect extends Aspect {
 
         public Object getTargetInstance() {
             // will return null
-            return ___AW_getMixinTargetInstance(this.getClass().getName(), this);
+            return ((CrossCuttable)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetInstance(
+                    this.getClass().getName(), this
+            );
         }
 
         public Class getTargetClass() {
-            return ___AW_getMixinTargetClass(this.getClass().getName(), this);
+            return ((CrossCuttable)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetClass(
+                    this.getClass().getName(), this
+            );
         }
     }
-
 }

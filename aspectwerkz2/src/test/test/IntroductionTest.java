@@ -7,11 +7,9 @@
  **************************************************************************************/
 package test;
 
-import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.Identifiable;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.WeavedTestCase;
-import test.Introductions;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -144,7 +142,7 @@ public class IntroductionTest extends WeavedTestCase implements Identifiable {
                 SystemLoader.getSystem("tests").
                 getAspectManager().
                 getMixin("test.aspect.IntroductionTestAspect$MyImpl").
-                ___AW_getImplementationClassName()
+                getImplementationClassName()
         );
 
         assertEquals(1, ((Introductions)m_toBeIntroduced).intArg(1));
@@ -153,7 +151,7 @@ public class IntroductionTest extends WeavedTestCase implements Identifiable {
         SystemLoader.getSystem("tests").
                 getAspectManager().
                 getMixin("test.aspect.IntroductionTestAspect$MyImpl").
-                ___AW_swapImplementation("test.aspect.IntroductionTestAspect$MyOtherImpl");
+                swapImplementation("test.aspect.IntroductionTestAspect$MyOtherImpl");
 
         assertEquals(-1, ((Introductions)m_toBeIntroduced).intArg(1));
 
@@ -162,7 +160,7 @@ public class IntroductionTest extends WeavedTestCase implements Identifiable {
                 SystemLoader.getSystem("tests").
                 getAspectManager().
                 getMixin("test.aspect.IntroductionTestAspect$MyImpl").
-                ___AW_getImplementationClassName()
+                getImplementationClassName()
         );
     }
 
@@ -172,7 +170,7 @@ public class IntroductionTest extends WeavedTestCase implements Identifiable {
                 SystemLoader.getSystem("tests").
                 getAspectManager().
                 getMixin("test.aspect.IntroductionTestAspect$MyImpl").
-                ___AW_getImplementationClassName()
+                getImplementationClassName()
         );
 
         assertEquals(-1, ((Introductions)m_toBeIntroduced).intArg(1));
@@ -181,7 +179,7 @@ public class IntroductionTest extends WeavedTestCase implements Identifiable {
         SystemLoader.getSystem("tests").
                 getAspectManager().
                 getMixin("test.aspect.IntroductionTestAspect$MyImpl").
-                ___AW_swapImplementation("test.aspect.IntroductionTestAspectMyImplReplacement");
+                swapImplementation("test.aspect.IntroductionTestAspectMyImplReplacement");
 
         assertEquals(-2, ((Introductions)m_toBeIntroduced).intArg(1));
 
@@ -190,7 +188,7 @@ public class IntroductionTest extends WeavedTestCase implements Identifiable {
                 SystemLoader.getSystem("tests").
                 getAspectManager().
                 getMixin("test.aspect.IntroductionTestAspect$MyImpl").
-                ___AW_getImplementationClassName()
+                getImplementationClassName()
         );
     }
 

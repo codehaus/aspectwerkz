@@ -5,39 +5,29 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package test.performance;
-
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.Pointcut;
+package org.codehaus.aspectwerkz;
 
 /**
+ * Interface that all classes that want to be "cross-cuttable" must implemented.
+ * <p/>
+ * This is normally handled transparently by the framework itself and the users only needs to use this
+ * interface when retrieving cross-cutting information.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @Aspect perClass
  */
-public class PerClassPerformanceAspect {
+public interface CrossCuttable {
+    
+    /**
+     * Returns the cross-cutting info for the class.
+     *
+     * @return the cross-cutting info
+     */
+    CrossCuttingInfo getCrossCuttingInfo();
 
     /**
-     * @Expression class(test.performance.PerformanceTest)
+     * Sets the cross-cutting info for the class.
+     *
+     * @param info the cross-cutting info
      */
-    Pointcut mixin;
-
-    /**
-     * @Expression call(void test.performance.PerformanceTest.methodAdvisedMethodPerClass())
-     */
-    Pointcut pc;
-
-    /**
-     * @Around pc
-     */
-    public Object advice(final JoinPoint joinPoint) throws Throwable {
-        return joinPoint.proceed();
-    }
-
-    /**
-     * @Introduce mixin
-     */
-    public class PerClassImpl implements PerClass {
-        public void runPerClass() {
-        }
-    }
+    void setCrossCuttingInfo(CrossCuttingInfo info);
 }

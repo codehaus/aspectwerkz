@@ -11,14 +11,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
-import org.codehaus.aspectwerkz.definition.attribute.IntroduceAttribute;
-import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -41,6 +42,61 @@ public class DocumentParser {
      * @TODO: should use factory, to be able to support othere implementations, f.e. JSR-175
      */
     private static final AttributeParser s_attributeParser = new AspectAttributeParser();
+
+    /**
+     * Parses aspect class names.
+     *
+     * @param document the defintion as a document
+     * @return the aspect class names
+     */
+    public static List parseAspectClassNames(final Document document) {
+        final List aspectClassNames = new ArrayList();
+
+        for (Iterator it1 = document.getRootElement().elementIterator("system"); it1.hasNext();) {
+            Element system = (Element)it1.next();
+
+            final String packageName = getBasePackage(system);
+            for (Iterator it11 = system.elementIterator("aspect"); it11.hasNext();) {
+
+                String className = null;
+                Element aspect = (Element)it11.next();
+                for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
+                    Attribute attribute = (Attribute)it2.next();
+
+                    final String name = attribute.getName().trim();
+                    final String value = attribute.getValue().trim();
+                    if (name.equalsIgnoreCase("class")) {
+                        className = value;
+                    }
+                }
+                String aspectClassName = packageName + className;
+                aspectClassNames.add(aspectClassName);
+            }
+
+            for (Iterator it11 = system.elementIterator("package"); it11.hasNext();) {
+                final Element packageElement = ((Element)it11.next());
+                final String packageName1 = getPackage(packageElement);
+
+                for (Iterator it12 = packageElement.elementIterator("aspect"); it12.hasNext();) {
+
+                    String className = null;
+                    Element aspect = (Element)it12.next();
+                    for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
+                        Attribute attribute = (Attribute)it2.next();
+
+                        final String name = attribute.getName().trim();
+                        final String value = attribute.getValue().trim();
+                        if (name.equalsIgnoreCase("class")) {
+                            className = value;
+                        }
+                    }
+                    String aspectClassName = packageName1 + className;
+                    aspectClassNames.add(aspectClassName);
+                }
+            }
+        }
+        return aspectClassNames;
+    }
 
     /**
      * Parses the definition DOM document.
@@ -176,15 +232,7 @@ public class DocumentParser {
             // create the aspect definition
             AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName, deploymentModel);
 
-            Class aspectClass = null;
-            try {
-                // TODO: use passed loader or context CL?
-                aspectClass = ContextClassLoader.loadClass(aspectClassName);
-//                aspectClass = loader.loadClass(aspectClassName);
-            }
-            catch (ClassNotFoundException e) {
-                throw new WrappedRuntimeException(e);
-            }
+            Class aspectClass = loadAspectClass(loader, aspectClassName);
 
             s_attributeParser.parse(aspectClass, aspectDef, definition);
             definition.addAspect(aspectDef);
@@ -205,6 +253,32 @@ public class DocumentParser {
             hasDef = true;
         }
         return hasDef;
+    }
+
+    /**
+     * Loads the aspect class.
+     *
+     * @param loader          the class loader
+     * @param aspectClassName the name of the class implementing the aspect
+     * @return the class
+     */
+    private static Class loadAspectClass(final ClassLoader loader, final String aspectClassName) {
+        Class aspectClass;
+        try {
+//            ClassLoader cl = new URLClassLoader(
+//                    new URL[]{
+//                        new File("c:/src/aspectwerkz2/target/samples-classes").toURL(),
+//                        new File("c:/src/aspectwerkz2/target/classes").toURL()
+//                    },
+//                    null
+//            );
+//            aspectClass = cl.loadClass(aspectClassName);
+            aspectClass = ContextClassLoader.loadClass(aspectClassName);
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+        return aspectClass;
     }
 
     /**
@@ -334,8 +408,10 @@ public class DocumentParser {
                     mixin = aspectClass.getClassLoader().loadClass(packageName + klass);
                 }
                 catch (ClassNotFoundException e) {
-                    throw new DefinitionException("could not find mixin implementation: "
-                            + packageName + klass + " " + e.getMessage());
+                    throw new DefinitionException(
+                            "could not find mixin implementation: "
+                            + packageName + klass + " " + e.getMessage()
+                    );
                 }
 
                 // pure interface introduction
@@ -356,10 +432,12 @@ public class DocumentParser {
                     // mixin introduction
                     Class[] introduced = mixin.getInterfaces();
                     String[] introducedInterfaceNames = new String[introduced.length];
-                    for (int i=0; i < introduced.length; i++) {
+                    for (int i = 0; i < introduced.length; i++) {
                         introducedInterfaceNames[i] = introduced[i].getName();
                     }
-                    Method[] methods = (Method[])TransformationUtil.createSortedMethodList(mixin).toArray(new Method[]{});
+                    Method[] methods = (Method[])TransformationUtil.createSortedMethodList(mixin).toArray(
+                            new Method[]{}
+                    );
                     DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
                             bindTo, name, introducedInterfaceNames, methods, deploymentModel, aspectDef
                     );

@@ -7,15 +7,16 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.lang.reflect.Field;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.aspect.Aspect;
+import org.codehaus.aspectwerkz.CrossCuttable;
+import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
@@ -102,9 +103,10 @@ public class StartupManager {
      * @param definition the definition for the system
      */
     public static void reinitializeSystem(final String uuid, final SystemDefinition definition) {
-        if (! s_initialized) {
+        if (!s_initialized) {
             initializeSystem(uuid, definition);
-        } else {
+        }
+        else {
             if (uuid == null) {
                 throw new IllegalArgumentException("uuid can not be null");
             }
@@ -160,17 +162,12 @@ public class StartupManager {
                 throw new RuntimeException(aspectClassName + " could not be found on classpath: " + e.toString());
             }
 
-            // create an instance of the aspect class
-            final Aspect aspect;
+            CrossCuttable aspect;
             try {
-                aspect = (Aspect)aspectClass.newInstance();
+                aspect = (CrossCuttable)aspectClass.newInstance();
             }
             catch (Exception e) {
-                throw new RuntimeException(
-                        "could not create a new instance of aspect [" + aspectClassName +
-                        "], does the class inherit the [org.codehaus.aspectwerkz.aspect.Aspect] class?: " +
-                        e.toString()
-                );
+                throw new RuntimeException("could not create a new instance of aspect [" + aspectClassName + "]: " + e.toString());
             }
 
             int deploymentModel;
@@ -181,22 +178,18 @@ public class StartupManager {
                 deploymentModel = DeploymentModel.getDeploymentModelAsInt(aspectDef.getDeploymentModel());
             }
 
-            // set the parameters
-            Field field = Aspect.class.getDeclaredField("m_uuid");
-            field.setAccessible(true);
-            field.set(aspect, uuid);
-
-            aspect.___AW_setName(aspectDef.getName());
-            aspect.___AW_setAspectClass(aspectClass);
-            aspect.___AW_setDeploymentModel(deploymentModel);
-            aspect.___AW_setAspectDef(aspectDef);
+            CrossCuttingInfo crossCuttingInfo = new CrossCuttingInfo();
+            crossCuttingInfo.setUuid(uuid);
+            crossCuttingInfo.setName(aspectDef.getName());
+            crossCuttingInfo.setAspectClass(aspectClass);
+            crossCuttingInfo.setDeploymentModel(deploymentModel);
+            crossCuttingInfo.setAspectDef(aspectDef);
+            crossCuttingInfo.setContainer(new AspectContainer(crossCuttingInfo));
             for (Iterator it = parameters.entrySet().iterator(); it.hasNext();) {
                 Map.Entry entry = (Map.Entry)it.next();
-                aspect.___AW_setParameter((String)entry.getKey(), (String)entry.getValue());
+                crossCuttingInfo.setParameter((String)entry.getKey(), (String)entry.getValue());
             }
-
-            // create and set the container for the aspect
-            aspect.___AW_setContainer(new AspectContainer(aspect));
+            aspect.setCrossCuttingInfo(crossCuttingInfo);
 
             PointcutManager pointcutManager = new PointcutManager(uuid, aspectDef.getName(), deploymentModel);
 
@@ -223,9 +216,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                Pointcut pointcut = pointcutManager.getPointcut(
-                        adviceDef.getExpression().getExpression()
-                );
+                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpression().getExpression());
                 if (pointcut == null) {
                     pointcut = new Pointcut(uuid, adviceDef.getExpression());
                     pointcutManager.addPointcut(pointcut);
@@ -235,9 +226,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                Pointcut pointcut = pointcutManager.getPointcut(
-                        adviceDef.getExpression().getExpression()
-                );
+                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpression().getExpression());
                 if (pointcut == null) {
                     pointcut = new Pointcut(uuid, adviceDef.getExpression());
                     pointcutManager.addPointcut(pointcut);
@@ -249,9 +238,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                Pointcut pointcut = pointcutManager.getPointcut(
-                        adviceDef.getExpression().getExpression()
-                );
+                Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpression().getExpression());
                 if (pointcut == null) {
                     pointcut = new Pointcut(uuid, adviceDef.getExpression());
                     pointcutManager.addPointcut(pointcut);

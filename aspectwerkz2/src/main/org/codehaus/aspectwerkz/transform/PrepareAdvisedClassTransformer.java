@@ -57,11 +57,11 @@ public class PrepareAdvisedClassTransformer implements Transformer {
                 return;
             }
 
-            if ( ! MetaDataInspector.hasField(classMetaData, TransformationUtil.STATIC_CLASS_FIELD)) {
+            if (!MetaDataInspector.hasField(classMetaData, TransformationUtil.STATIC_CLASS_FIELD)) {
                 addStaticClassField(ctClass);
                 context.markAsAdvised();
             }
-            if ( ! MetaDataInspector.hasField(classMetaData, TransformationUtil.JOIN_POINT_MANAGER_FIELD)) {
+            if (!MetaDataInspector.hasField(classMetaData, TransformationUtil.JOIN_POINT_MANAGER_FIELD)) {
                 addJoinPointManagerField(ctClass, definition);
                 context.markAsAdvised();
             }
@@ -76,11 +76,11 @@ public class PrepareAdvisedClassTransformer implements Transformer {
     private void addStaticClassField(final CtClass ctClass) throws NotFoundException, CannotCompileException {
         CtField field = new CtField(
                 ctClass.getClassPool().get("java.lang.Class"),
-                TransformationUtil.STATIC_CLASS_FIELD,
+                       TransformationUtil.STATIC_CLASS_FIELD,
                 ctClass
         );
         field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
-        ctClass.addField(field, "java.lang.Class.forName(\"" + ctClass.getName() + "\")");
+        ctClass.addField(field, "java.lang.Class.forName(\"" + ctClass.getName().replace('/', '.') + "\")");
     }
 
     /**

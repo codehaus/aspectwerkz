@@ -38,6 +38,7 @@ public final class TransformationUtil {
     public static final String STATIC_CLASS_FIELD = ASPECTWERKZ_PREFIX + "clazz";
     public static final String JOIN_POINT_PREFIX = ASPECTWERKZ_PREFIX + "jp";
     public static final String ORIGINAL_METHOD_PREFIX = ASPECTWERKZ_PREFIX + DELIMITER;
+    public static final String CROSS_CUTTING_INFO_CLASS_FIELD = ASPECTWERKZ_PREFIX + "crossCuttingInfo";
 
     public static final String WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "wrapper";
     public static final String JOIN_POINT_MANAGER_FIELD = ASPECTWERKZ_PREFIX + "joinPointManager";
@@ -46,7 +47,7 @@ public final class TransformationUtil {
     public static final String GET_ASPECT_MANAGER_METHOD = "getAspectManager";
     public static final String GET_SYSTEM_METHOD = "getSystem";
     public static final String GET_MIXIN_METHOD = "getMixin";
-    public static final String INVOKE_MIXIN_METHOD = "___AW_invokeMixin";
+    public static final String INVOKE_MIXIN_METHOD = "invokeMixin";
     public static final String SERIAL_VERSION_UID_FIELD = "serialVersionUID";
 
     public static final String PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD = "proceedWithExecutionJoinPoint";
@@ -93,6 +94,8 @@ public final class TransformationUtil {
     public static final String GET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "getMetaData";
     public static final String SET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "addMetaData";
     public static final String CLASS_LOOKUP_METHOD = "class$";
+    public static final String GET_CROSS_CUTTING_INFO_METHOD = "getCrossCuttingInfo";
+    public static final String SET_CROSS_CUTTING_INFO_METHOD = "setCrossCuttingInfo";
 
     public static final String ASPECT_MANAGER_CLASS = "org.codehaus.aspectwerkz.aspect.management.AspectManager";
     public static final String JOIN_POINT_MANAGER_CLASS = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager";
@@ -121,6 +124,8 @@ public final class TransformationUtil {
     public static final String IDENTIFIABLE_INTERFACE = "org.codehaus.aspectwerkz.Identifiable";
     public static final String META_DATA_INTERFACE = "org.codehaus.aspectwerkz.MetaDataEnhanceable";
     public static final String UUID_CLASS = "org.codehaus.aspectwerkz.util.UuidGenerator";
+    public static final String CROSS_CUTTABLE_CLASS = "org.codehaus.aspectwerkz.CrossCuttable";
+    public static final String CROSS_CUTTING_INFO_CLASS = "org.codehaus.aspectwerkz.CrossCuttingInfo";
 
     public static final String EMPTY_WRAPPER_ATTRIBUTE = ASPECTWERKZ_PREFIX + "empty";
     public static final byte EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY = Byte.MIN_VALUE;

@@ -7,7 +7,6 @@
  **************************************************************************************/
 package test.pointcutexpression;
 
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.Pointcut;
 import test.Loggable;
@@ -16,7 +15,7 @@ import test.Loggable;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect
  */
-public class TestAspect extends Aspect {
+public class TestAspect {
 
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.*())

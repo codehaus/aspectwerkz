@@ -19,14 +19,14 @@ public interface Mixin {
      *
      * @return the name
      */
-    String ___AW_getName();
+    String getName();
 
     /**
      * Returns the deployment model.
      *
      * @return the deployment model
      */
-    int ___AW_getDeploymentModel();
+    int getDeploymentModel();
 
     /**
      * Invokes the method with the index specified. Invoked by methods without any parameters (slight performance gain
@@ -36,7 +36,7 @@ public interface Mixin {
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
-    Object ___AW_invokeMixin(int methodIndex, Object callingObject);
+    Object invokeMixin(int methodIndex, Object callingObject);
 
     /**
      * Invokes an introduced method with the index specified.
@@ -47,19 +47,19 @@ public interface Mixin {
      * @return the result from the invocation
      */
 
-    Object ___AW_invokeMixin(int methodIndex, Object[] parameters, Object callingObject);
+    Object invokeMixin(int methodIndex, Object[] parameters, Object callingObject);
 
     /**
      * Returns the implementation class name for the mixin.
      *
      * @return the implementation class name for the mixin
      */
-    String ___AW_getImplementationClassName();
+    String getImplementationClassName();
 
     /**
      * Swaps the current introduction implementation.
      *
      * @param className the class name of the new implementation
      */
-    void ___AW_swapImplementation(String className);
+    void swapImplementation(String className);
 }

@@ -9,14 +9,13 @@
 package test.handler;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class HandlerTestAspect extends Aspect {
+public class HandlerTestAspect {
 
     // ============ Pointcuts ============
 
