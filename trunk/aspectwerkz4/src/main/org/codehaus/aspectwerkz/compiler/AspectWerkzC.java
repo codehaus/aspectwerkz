@@ -46,7 +46,7 @@ import java.util.zip.ZipOutputStream;
  * <p/>
  * <pre>
  *     java [-Daspectwerkz.classloader.preprocessor={ClassPreProcessorImpl}] -cp [...]
- *     org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify] [-cp {additional cp i}]*  {target
+ *     org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify] [-keepjp] [-details] [-cp {additional cp i}]*  {target
  *     1} .. {target n}
  *       {ClassPreProcessorImpl} : full qualified name of the ClassPreProcessor implementation (must be in classpath)
  *          defaults to org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor
@@ -83,6 +83,7 @@ public class AspectWerkzC {
     // COMMAND LINE OPTIONS
     private static final String COMMAND_LINE_OPTION_DASH = "-";
     private static final String COMMAND_LINE_OPTION_VERBOSE = "-verbose";
+    private static final String COMMAND_LINE_OPTION_DETAILS = "-details";
     private static final String COMMAND_LINE_OPTION_KEEPJP = "-keepjp";
     private static final String COMMAND_LINE_OPTION_HALT = "-haltOnError";
     private static final String COMMAND_LINE_OPTION_VERIFY = "-verify";
@@ -93,6 +94,8 @@ public class AspectWerkzC {
      * option used to defined the class preprocessor
      */
     private static final String PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.preprocessor";
+
+    private final static String AW_TRANSFORM_DETAILS = "aspectwerkz.transform.details";
 
     /**
      * default class preprocessor
@@ -180,6 +183,12 @@ public class AspectWerkzC {
 
     public void setVerify(boolean verify) {
         this.verify = verify;
+    }
+
+    public void setDetails(boolean details) {
+        if (details) {
+            System.setProperty(AW_TRANSFORM_DETAILS, "true");
+        }
     }
 
     public void setBackupDir(String backup) {
@@ -580,6 +589,8 @@ public class AspectWerkzC {
                 compiler.setVerify(Boolean.TRUE.equals(param.getValue()));
             } else if (COMMAND_LINE_OPTION_KEEPJP.equals(param.getKey())) {
                 compiler.setKeepJp(Boolean.TRUE.equals(param.getValue()));
+            } else if (COMMAND_LINE_OPTION_DETAILS.equals(param.getKey())) {
+                compiler.setDetails(Boolean.TRUE.equals(param.getValue()));
             }
         }
 
@@ -692,6 +703,8 @@ public class AspectWerkzC {
                 options.put(COMMAND_LINE_OPTION_VERBOSE, Boolean.TRUE);
             } else if (COMMAND_LINE_OPTION_KEEPJP.equals(args[i])) {
                 options.put(COMMAND_LINE_OPTION_KEEPJP, Boolean.TRUE);
+            } else if (COMMAND_LINE_OPTION_DETAILS.equals(args[i])) {
+                options.put(COMMAND_LINE_OPTION_DETAILS, Boolean.TRUE);
             } else if (COMMAND_LINE_OPTION_HALT.equals(args[i])) {
                 options.put(COMMAND_LINE_OPTION_HALT, Boolean.TRUE);
             } else if (COMMAND_LINE_OPTION_VERIFY.equals(args[i])) {
