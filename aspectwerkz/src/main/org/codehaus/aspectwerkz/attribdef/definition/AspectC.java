@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the BSD style license *
@@ -604,7 +604,7 @@ public class AspectC {
      */
     public static void main(String[] args) {
         if (args.length < 2) {
-            System.out.println("AspectWerkz (c) 2002-2003 The AspectWerkz Team");
+            System.out.println("AspectWerkz (c) 2002-2003 Jonas Bonér, Alexandre Vasseur");
             System.out.println("usage: java [options...] org.codehaus.aspectwerkz.attribdef.definition.AspectC [-verbose] <path to src dir> <path to classes dir> [<path to destination dir>]");
             System.out.println("       <path to destination dir> is optional, if omitted the compiled classes will be written to the initial directory");
             System.out.println("       use -verbose to activate verbose logging");

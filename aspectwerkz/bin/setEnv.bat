@@ -1,6 +1,6 @@
 
 @REM ----------------------------------------------------------------------------------
-@REM Copyright (c) The AspectWerkz Team. All rights reserved.
+@REM Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.
 @REM http://aspectwerkz.codehaus.org
 @REM ----------------------------------------------------------------------------------
 @REM The software in this package is published under the terms of the BSD style license
