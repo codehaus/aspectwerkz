@@ -8,16 +8,14 @@ package test;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSideTestHelper.java,v 1.3 2003-06-27 09:26:10 jboner Exp $
+ * @version $Id: CallerSideTestHelper.java,v 1.4 2003-06-27 09:37:14 jboner Exp $
  */
 public class CallerSideTestHelper {
 
     public CallerSideTestHelper() {
-        System.out.println("CallerSideTestHelper.CallerSideTestHelper1");
     }
 
     public CallerSideTestHelper(int i) {
-        System.out.println("CallerSideTestHelper.CallerSideTestHelper2");
     }
 
     public void passingParameterToAdviceMethod() {

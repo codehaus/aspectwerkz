@@ -285,8 +285,8 @@
         <pointcut-def name="pc5" type="callerSide" pattern="test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPost()"/>
         <pointcut-def name="pc6" type="callerSide" pattern="test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPrePost()"/>
         <pointcut-def name="pc7" type="callerSide" pattern="test.CallerSideAdviceTest->void test.CallerSideTestHelper.passingParameterToAdviceMethod()"/>
-        <pointcut-def name="pc8" type="callerSide" pattern="test.CallerSideAdviceTest->test.CallerSideTestHelper.new(int)"/>
-        <pointcut-def name="pc8" type="callerSide" pattern="test.CallerSideAdviceTest->test.CallerSideTestHelper.new()"/>
+<!--        <pointcut-def name="pc8" type="callerSide" pattern="test.CallerSideAdviceTest->test.CallerSideTestHelper.new(int)"/>-->
+<!--        <pointcut-def name="pc8" type="callerSide" pattern="test.CallerSideAdviceTest->test.CallerSideTestHelper.new()"/>-->
         <advice pointcut="pc1">
             <advice-ref name="preAdvice6"/>
             <advice-ref name="preAdvice7"/>
