@@ -156,7 +156,7 @@ public class Main {
     }
 
     private static void printTxStatus() {
-        switch (TransactionAttribyteTypeAwareTransactionProtocol.getTransactionStatus()) {
+        switch (TransactionAttributeAwareTransactionProtocol.getTransactionStatus()) {
             case Status.STATUS_COMMITTED:
                 logInfo("TX status: STATUS_COMMITTED");
                 break;
