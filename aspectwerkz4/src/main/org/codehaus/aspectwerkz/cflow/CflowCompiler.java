@@ -28,6 +28,7 @@ public class CflowCompiler implements Constants, TransformationConstants {
     private final static String[] EMPTY_STRING_ARRAY = new String[0];
     public static final String IN_CFLOW_METOD_NAME = "inCflow";
     public static final String IN_CFLOW_METOD_SIGNATURE = "()Z";
+    public static final String CFLOW_ASPECTOF_METHOD_NAME = "aspectOf";
 
     /**
      * Checks if a class name (ASM style) is a cflow name
@@ -122,7 +123,7 @@ public class CflowCompiler implements Constants, TransformationConstants {
         // static aspectOf()
         CodeVisitor aspectOf = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC,
-                "aspectOf",
+                CFLOW_ASPECTOF_METHOD_NAME,
                 "()"+m_classSignature,
                 EMPTY_STRING_ARRAY,
                 null
@@ -196,7 +197,7 @@ public class CflowCompiler implements Constants, TransformationConstants {
 
     /**
      * Information about a compiled Cflow Aspect
-     */ 
+     */
     public static class CompiledCflowAspect {
         public byte[] bytecode;
         public String className;// ASM style
