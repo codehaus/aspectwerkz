@@ -124,6 +124,7 @@ public final class TransformationUtil {
 
     public static final String EMPTY_WRAPPER_ATTRIBUTE = ASPECTWERKZ_PREFIX + "empty";
     public static final byte[] EMPTY_WRAPPER_ATTRIBUTE_VALUE = new byte[]{Byte.MIN_VALUE};
+    public static final String JOIN_POINT_INDEX_ATTRIBUTE = ASPECTWERKZ_PREFIX + "JoinPointIndex";
 
 
     /**
@@ -459,5 +460,30 @@ public final class TransformationUtil {
         methodName.append(DELIMITER);
         methodName.append(className.replace('.', '_'));
         return methodName.toString();
+    }
+
+    /**
+     * Returrns the join point index for the class.
+     *
+     * @param klass
+     * @return the index
+     */
+    public static int getJoinPointIndex(final CtClass klass) {
+        byte[] attribute = klass.getAttribute(JOIN_POINT_INDEX_ATTRIBUTE);
+        if (attribute == null) {
+         klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE, new byte[]{new Integer(0).byteValue()});
+            return 0;
+        }
+        return new Integer(attribute[0]).intValue();
+    }
+
+    /**
+     * Sets the join point index for the class.
+     *
+     * @param klass
+     * @param index
+     */
+    public static void setJoinPointIndex(final CtClass klass, final int index) {
+        klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE, new byte[]{new Integer(index).byteValue()});
     }
 }

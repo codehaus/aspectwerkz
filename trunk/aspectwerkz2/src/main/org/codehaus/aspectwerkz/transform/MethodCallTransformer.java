@@ -40,6 +40,11 @@ public class MethodCallTransformer implements Transformer {
     private List m_definitions;
 
     /**
+     * The join point index.
+     */
+    private int m_joinPointIndex;
+
+    /**
      * Creates a new instance of the transformer.
      */
     public MethodCallTransformer() {
@@ -53,8 +58,8 @@ public class MethodCallTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
+        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());
 
-        // loop over all the definitions
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
@@ -142,6 +147,8 @@ public class MethodCallTransformer implements Transformer {
                                     callBody.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
                                     callBody.append('(');
                                     callBody.append(TransformationUtil.calculateHash(methodCall.getMethod()));
+                                    callBody.append(',');
+                                    callBody.append(m_joinPointIndex);
                                     callBody.append(", $args, $0, (Class)");
                                     callBody.append(declaringClassMethodName);
                                     callBody.append(',');
@@ -175,6 +182,8 @@ public class MethodCallTransformer implements Transformer {
 
                                     methodCall.replace(body.toString());
                                     context.markAsAdvised();
+
+                                    m_joinPointIndex++;
                                 }
                             }
                             catch (NotFoundException nfe) {
@@ -185,6 +194,7 @@ public class MethodCallTransformer implements Transformer {
                     }
             );
         }
+        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
 
     /**

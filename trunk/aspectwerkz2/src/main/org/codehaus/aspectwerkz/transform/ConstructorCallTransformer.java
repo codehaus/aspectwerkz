@@ -40,6 +40,11 @@ public class ConstructorCallTransformer implements Transformer {
     private List m_definitions;
 
     /**
+     * The join point index.
+     */
+    private int m_joinPointIndex;
+
+    /**
      * Creates a new instance of the transformer.
      */
     public ConstructorCallTransformer() {
@@ -53,6 +58,7 @@ public class ConstructorCallTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
+        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
@@ -129,6 +135,8 @@ public class ConstructorCallTransformer implements Transformer {
                                     body.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
                                     body.append('(');
                                     body.append(TransformationUtil.calculateHash(ctConstructor));
+                                    body.append(',');
+                                    body.append(m_joinPointIndex);
                                     if (Modifier.isStatic(where.getModifiers())) {
                                         body.append(", $args, (Object)null, (Class)");
                                     }
@@ -144,6 +152,8 @@ public class ConstructorCallTransformer implements Transformer {
 
                                     newExpr.replace(body.toString());
                                     context.markAsAdvised();
+
+                                    m_joinPointIndex++;
                                 }
                             }
                             catch (NotFoundException nfe) {
@@ -154,6 +164,7 @@ public class ConstructorCallTransformer implements Transformer {
                     }
             );
         }
+        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
 
     /**

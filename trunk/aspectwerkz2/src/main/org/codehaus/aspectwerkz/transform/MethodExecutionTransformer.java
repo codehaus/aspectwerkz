@@ -39,6 +39,11 @@ public class MethodExecutionTransformer implements Transformer {
     private List m_definitions;
 
     /**
+     * The join point index.
+     */
+    private int m_joinPointIndex;
+
+    /**
      * Creates a new instance of the transformer.
      */
     public MethodExecutionTransformer() {
@@ -52,8 +57,8 @@ public class MethodExecutionTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws Exception {
+        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
@@ -96,7 +101,9 @@ public class MethodExecutionTransformer implements Transformer {
                 final int methodHash = TransformationUtil.calculateHash(method);
 
                 // there was no empty method already
-                final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(method, methodSequence, ctClass.getName());
+                final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
+                        method, methodSequence, ctClass.getName()
+                );
                 if (JavassistHelper.hasMethod(ctClass, prefixedMethodName)) {
                     CtMethod wrapperMethod = ctClass.getDeclaredMethod(prefixedMethodName);
                     if (wrapperMethod.getAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE) != null) {
@@ -104,11 +111,13 @@ public class MethodExecutionTransformer implements Transformer {
                         wrapperMethod.setBody(nonEmptyWrapper, null);
                         // swap wrapper and original bodies
                         JavassistHelper.swapBodies(wrapperMethod, method);
-                    } else {
+                    }
+                    else {
                         // multi weaving
                         continue;
                     }
-                } else {
+                }
+                else {
                     // new execution pointcut
 
                     CtMethod wrapperMethod = createWrapperMethod(ctClass, method, methodHash);
@@ -127,6 +136,7 @@ public class MethodExecutionTransformer implements Transformer {
                 }
             }
         }
+        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
 
     /**
@@ -161,8 +171,8 @@ public class MethodExecutionTransformer implements Transformer {
         callBody.append('(');
         callBody.append(methodHash);
         callBody.append(", ");
-        callBody.append("$args");
-        callBody.append(", ");
+        callBody.append(m_joinPointIndex);
+        callBody.append(", $args, ");
         if (Modifier.isStatic(originalMethod.getModifiers())) {
             callBody.append("(Object)null");
         }
@@ -218,6 +228,8 @@ public class MethodExecutionTransformer implements Transformer {
             method.setModifiers(originalMethod.getModifiers());
         }
 
+        m_joinPointIndex++;
+
         return method;
     }
 
@@ -231,19 +243,6 @@ public class MethodExecutionTransformer implements Transformer {
     private void addPrefixToMethod(final CtClass cg, final CtMethod ctMethod, final int methodSequence) {
         // change the method access flags (should always be set to protected)
         int accessFlags = ctMethod.getModifiers();
-//        if ((accessFlags & Modifier.PROTECTED) == 0) {
-//            // set the protected flag
-//            accessFlags |= Modifier.PROTECTED;
-//        }
-//        if ((accessFlags & Modifier.PRIVATE) != 0) {
-//            // clear the private flag
-//            accessFlags &= ~Modifier.PRIVATE;
-//        }
-//        if ((accessFlags & Modifier.PUBLIC) != 0) {
-//            // clear the public flag
-//            accessFlags &= ~Modifier.PUBLIC;
-//        }
-
         String prefixedMethodName = TransformationUtil.getPrefixedMethodName(ctMethod, methodSequence, cg.getName());
         ctMethod.setName(prefixedMethodName);
         ctMethod.setModifiers(accessFlags);

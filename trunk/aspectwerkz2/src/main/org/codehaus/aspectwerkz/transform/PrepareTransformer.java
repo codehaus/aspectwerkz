@@ -26,23 +26,17 @@ import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
- * Prepare class for further hotswap for execution pointcut
- * TODO support for constructor pointcuts
+ * Prepare class for further hotswap for execution pointcut TODO support for constructor pointcuts
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class PrepareTransformer /*extends MethodExecutionTransformer*/ implements Transformer {
 
     /**
-     * List with the definitions.
-     */
-    private List m_definitions;
-
-    /**
      * Creates a new instance of the transformer.
      */
     public PrepareTransformer() {
-        m_definitions = DefinitionLoader.getDefinitions();
+        DefinitionLoader.getDefinitions();
     }
 
     /**
@@ -129,7 +123,9 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
             final int methodSequence)
             throws NotFoundException, CannotCompileException {
 
-        String wrapperMethodName = TransformationUtil.getPrefixedMethodName(originalMethod, methodSequence, ctClass.getName());
+        String wrapperMethodName = TransformationUtil.getPrefixedMethodName(
+                originalMethod, methodSequence, ctClass.getName()
+        );
 
         // check if methods does not already exists
         if (JavassistHelper.hasMethod(ctClass, wrapperMethodName)) {
@@ -190,15 +186,16 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
         }
 
         // add a method level attribute so that we remember it is an empty method
-        method.setAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE,
-                TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE);
+        method.setAttribute(
+                TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE,
+                TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE
+        );
 
         return method;
     }
 
     /**
-     * Filters the classes to be transformed.
-     * Takes only "prepare" declarations into account
+     * Filters the classes to be transformed. Takes only "prepare" declarations into account
      *
      * @param definition    the definition
      * @param classMetaData the meta-data for the class
@@ -210,7 +207,7 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
             final ClassMetaData classMetaData,
             final CtClass cg) throws NotFoundException {
         if (cg.isInterface() ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = cg.getName();
@@ -227,8 +224,7 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
     }
 
     /**
-     * Filters the methods to be transformed.
-     * Does not check execution pointcuts
+     * Filters the methods to be transformed. Does not check execution pointcuts
      *
      * @param definition     the definition
      * @param classMetaData  the class meta-data

@@ -36,6 +36,11 @@ public class HandlerTransformer implements Transformer {
      */
     private List m_definitions;
 
+     /**
+     * The join point index.
+     */
+    private int m_joinPointIndex;
+
     /**
      * Creates a new instance of the transformer.
      */
@@ -50,6 +55,7 @@ public class HandlerTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
+        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
@@ -104,12 +110,13 @@ public class HandlerTransformer implements Transformer {
 
                                 // TODO: unique hash is needed, based on: executing class, executing method, catch clause (and sequence number?)
                                 body.append(TransformationUtil.calculateHash(exceptionClass));
-                                body.append(", $1, ");
+                                body.append(',');
+                                body.append(m_joinPointIndex);
                                 if (Modifier.isStatic(where.getModifiers())) {
-                                    body.append("(Object)null, \"");
+                                    body.append(", $1, (Object)null, \"");
                                 }
                                 else {
-                                    body.append("this, \"");
+                                    body.append(", $1, this, \"");
                                 }
 
                                 // TODO: use a better signature (or remove)
@@ -118,6 +125,8 @@ public class HandlerTransformer implements Transformer {
 
                                 handlerExpr.insertBefore(body.toString());
                                 context.markAsAdvised();
+
+                                m_joinPointIndex++;
                             }
                             catch (NotFoundException nfe) {
                                 nfe.printStackTrace();
@@ -126,6 +135,7 @@ public class HandlerTransformer implements Transformer {
                     }
             );
         }
+        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
 
     /**

@@ -26,6 +26,7 @@ public class CallerSideAdviceTest extends WeavedTestCase {
             assertEquals("before after ", s_logString);
         }
         catch (Exception e) {
+            e.printStackTrace();
             fail();
         }
     }
