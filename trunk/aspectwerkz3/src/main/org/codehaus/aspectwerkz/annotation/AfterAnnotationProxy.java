@@ -7,8 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import java.io.Serializable;
-
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 
@@ -23,7 +21,7 @@ public class AfterAnnotationProxy extends AdviceAnnotationProxyBase {
     public static final String THROWING_PREFIX = "throwing(";
     public static final String FINALLY_PREFIX = "finally ";
 
-    private String m_argumentType;
+    private String m_specialArgumentType;
 
     public AfterAnnotationProxy() {
         m_type = AdviceType.AFTER;
@@ -34,13 +32,13 @@ public class AfterAnnotationProxy extends AdviceAnnotationProxyBase {
             m_type = AdviceType.AFTER_RETURNING;
             int start = value.indexOf('(');
             int end = value.indexOf(')');
-            m_argumentType = value.substring(start + 1, end).trim();
+            m_specialArgumentType = value.substring(start + 1, end).trim();
             m_pointcut = value.substring(end + 1, value.length()).trim();
         } else if (value.startsWith(THROWING_PREFIX)) {
             m_type = AdviceType.AFTER_THROWING;
             int start = value.indexOf('(');
             int end = value.indexOf(')');
-            m_argumentType = value.substring(start + 1, end).trim();
+            m_specialArgumentType = value.substring(start + 1, end).trim();
             m_pointcut = value.substring(end + 1, value.length()).trim();
         } else if (value.startsWith(FINALLY_PREFIX)) {
             m_type = AdviceType.AFTER_FINALLY;
@@ -48,7 +46,7 @@ public class AfterAnnotationProxy extends AdviceAnnotationProxyBase {
         } else {
             m_pointcut = value;
         }
-        if (m_argumentType.indexOf(' ') > 0) {
+        if (m_specialArgumentType != null && m_specialArgumentType.indexOf(' ') > 0) {
             throw new DefinitionException(
                     "argument to after (returning/throwing) can only be a type (parameter name binding should be done using args(..))"
             );
@@ -56,11 +54,11 @@ public class AfterAnnotationProxy extends AdviceAnnotationProxyBase {
     }
 
     /**
-     * Returns the argument type.
+     * Returns the special argument type.
      *
      * @return
      */
-    public String getArgumentType() {
-        return m_argumentType;
+    public String getSpecialArgumentType() {
+        return m_specialArgumentType;
     }
 }

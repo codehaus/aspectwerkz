@@ -27,17 +27,17 @@ public class LoggingAspect extends AbstractLoggingAspect {
     // AW-152: see XML - TODO move in a TestCase
     // AV - eW - temp restored
     /**
-     * @Expression execution(@log * examples.logging.*.*(..))
+     * @Expression execution(@log * CRAP.examples.logging.*.*(..))
      */
     Pointcut methodsToLog;
 
     /**
-     * @Expression get(@log * examples.logging.*.*)
+     * @Expression get(@log * CRAP.examples.logging.*.*)
      */
     Pointcut logGet;
 
     /**
-     * @Expression set(@log * examples.logging.*.*)
+     * @Expression set(@log * CRAP.examples.logging.*.*)
      */
     Pointcut logSet;
 }
