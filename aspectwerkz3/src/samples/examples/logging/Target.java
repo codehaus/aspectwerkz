@@ -34,12 +34,12 @@ public class Target {
      * @log level=0
      *      sconstant=org.codehaus.aspectwerkz.transform.TransformationUtil.ASPECTWERKZ_PREFIX
      */
-    public static int toLog1(int i) {
+    public static int toLog1() {
         System.out.println("Target.toLog1()");
         new Target().toLog2(new String[] {
             "parameter"
         });
-        return i;
+        return 1;
     }
 
     /**
@@ -60,7 +60,7 @@ public class Target {
 
     public static void main(String[] args) {
         System.out.println("Target.main");
-        Target.toLog1(2);
+        Target.toLog1();
         Target target = new Target();
         target.increment();
         target.getCounter();

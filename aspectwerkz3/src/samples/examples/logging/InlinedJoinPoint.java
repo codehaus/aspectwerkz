@@ -57,15 +57,15 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {
     //                getAspectContainer(4).createPerClassAspect(TARGET_CLASS);
     //    }
 
-    public static final int invoke(int i, Target targetInstance) throws Throwable {
-        InlinedJoinPoint joinPoint = new InlinedJoinPoint();
-        joinPoint.m_target = targetInstance;
-        joinPoint.m_i = i;
-        return joinPoint.proceed();
-    }
+//    public static final int invoke(int i, Target targetInstance) throws Throwable {
+//        InlinedJoinPoint joinPoint = new InlinedJoinPoint();
+//        joinPoint.m_target = targetInstance;
+//        joinPoint.m_i = i;
+//        return joinPoint.proceed();
+//    }
 
     public final int proceed() throws Throwable {
-        return m_target.toLog1(m_i);
+        return m_target.toLog1();
     }
 
 
@@ -75,7 +75,7 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {
     }
 
     private void test() {
-        InlinedJoinPoint.invoke(1, this);
+        InlinedJoinPoint.invoke(1, null);
     }
 
     public static final void invoke(int i, InlinedJoinPoint point) {
