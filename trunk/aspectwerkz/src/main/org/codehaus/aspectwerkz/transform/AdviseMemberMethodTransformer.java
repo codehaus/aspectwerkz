@@ -32,6 +32,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
+import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.JavaClass;
@@ -301,27 +302,16 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
         final InstructionList il = mg.getInstructionList();
         final InstructionHandle[] ihs = il.getInstructionHandles();
 
-        // grab the handle to the the call to this(..) or super(..) (if is one),
-        // otherwise grab the handle to the beginning of the constructor
+        // grab the handle to the the return instruction of the constructor
         InstructionHandle ih = ihs[0];
         for (int i = 0; i < ihs.length; i++) {
             Instruction instruction = ihs[i].getInstruction();
-            if (instruction instanceof InvokeInstruction) {
-                InvokeInstruction invokeInstruction = (InvokeInstruction)instruction;
-
-// TODO: causes bug, insert after the ReturnInstruction instead
-
-                String methodName = invokeInstruction.getMethodName(cp);
-                if (methodName.equals("<init>")) {
-                    i++; // step over the call to be able to insert *after* the call
-                    ih = ihs[i]; // set the instruction handle to the super/this call
-                    break;
-                }
+            if (instruction instanceof ReturnInstruction) {
+                ih = ihs[i]; // set the instruction handle to the return instruction
+                break;
             }
         }
 
-        // insert the join point initializations after the call to this(..) or super(..)
-        // or in the beginning of the constructor
         final StringBuffer joinPoint = getJoinPointName(method, methodSequence);
 
         final InstructionHandle ihPost;

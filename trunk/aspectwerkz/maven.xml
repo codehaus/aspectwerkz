@@ -220,7 +220,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${src.dir}/samples${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.dump=examples examples.logging.Target"/>
+            <arg line="-cp ${src.dir}/samples${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* examples.logging.Target"/>
         </exec>
     </goal>
 
@@ -304,7 +304,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml -Daspectwerkz.transform.dump=examples examples.connectivity.Client"/>
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Client"/>
         </exec>
     </goal>
 
@@ -316,7 +316,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml -Daspectwerkz.transform.dump=examples examples.connectivity.Server"/>
+            <arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Server"/>
         </exec>
     </goal>
 
@@ -380,6 +380,25 @@
         <attainGoal name="faq"/>
     </preGoal>
 
+    <!-- =================================================== -->
+    <!--  compile the attributes into the aspect codebase -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:compile:attributes">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <attrib4jCompiler sourcepath="${src.dir}"
+            sourceclasspath="${target.dir}/samples-classes"
+            destdir="${target.dir}/samples-classes"
+            attributepackages="org.codehaus.aspectwerkz.definition.attribute"
+            attributeclasspath="${lib.dir}/aspectwerkz-${pom.currentVersion}.jar">
+            <fileset dir="${src.dir}"/>
+        </attrib4jCompiler>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  goals below only for testing -->
+    <!-- =================================================== -->
+
     <!--    <goal name="test-offline">-->
     <!--        <attainGoal name="aspectwerkz:init"/>-->
     <!--        <mkdir dir="${basedir}/target/bug"/>-->
@@ -426,19 +445,6 @@
     <!--                <arg line="-cp ${basedir}/target/bug${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${basedir}/src/bug/bank.xml project.Transfer1"/>-->
     <!--            </exec>-->
     <!--        </goal>-->
-
-    <!-- compile the attributes into the codebase -->
-    <goal name="aspectwerkz:compile:attributes">
-        <attainGoal name="aspectwerkz:init"/>
-        <attainGoal name="aspectwerkz:compile"/>
-        <attrib4jCompiler sourcepath="${src.dir}"
-            sourceclasspath="${target.dir}/samples-classes"
-            destdir="${target.dir}/samples-classes"
-            attributepackages="org.codehaus.aspectwerkz.definition.attribute"
-            attributeclasspath="${lib.dir}/aspectwerkz-${pom.currentVersion}.jar">
-            <fileset dir="${src.dir}"/>
-        </attrib4jCompiler>
-    </goal>
 
     <goal name="non-reentrancy-bug">
         <attainGoal name="aspectwerkz:init"/>
