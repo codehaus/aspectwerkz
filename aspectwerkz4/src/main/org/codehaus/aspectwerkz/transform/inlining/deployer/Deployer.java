@@ -25,10 +25,12 @@ import org.codehaus.aspectwerkz.joinpoint.management.AdviceInfoContainer;
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.MatchingJoinPointInfo;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.JoinPointFactory;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
+import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModelManager;
 import org.objectweb.asm.ClassReader;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -49,13 +51,29 @@ public class Deployer {
      * <p/>
      * <b>CAUTION</b>: use a to own risk, the aspect might have a wider scope than your set of instrumented join points,
      * then the aspect will not be applied to all intended points, to play safe -
-     * use <code>deploy(final Class aspect, final DeploymentScope preparedPointcut)</code>
+     * use <code>deploy(final Class aspect, final DeploymentScope deploymentScope)</code>
      *
      * @param aspect the aspect class
      * @return a unique deployment handle for this deployment
      */
     public static DeploymentHandle deploy(final Class aspect) {
         return deploy(aspect, DeploymentScope.MATCH_ALL);
+    }
+
+    /**
+     * Deploys an annotation defined aspect.
+     * <p/>
+     * Deploys the aspect in all systems in the class loader that has loaded the aspect class.
+     * <p/>
+     * <b>CAUTION</b>: use a to own risk, the aspect might have a wider scope than your set of instrumented join points,
+     * then the aspect will not be applied to all intended points, to play safe -
+     * use <code>deploy(final Class aspect, final DeploymentScope preparedPointcut)</code>
+     *
+     * @param aspectClassName the aspect class name
+     * @return a unique deployment handle for this deployment
+     */
+    public static DeploymentHandle deploy(final String aspectClassName) {
+        return deploy(aspectClassName, DeploymentScope.MATCH_ALL);
     }
 
     /**
@@ -76,6 +94,23 @@ public class Deployer {
     }
 
     /**
+     * Deploys an annotation defined aspect.
+     * <p/>
+     * Deploys the aspect in all systems in the class loader that is specified.
+     * <p/>
+     * <b>CAUTION</b>: use a to own risk, the aspect might have a wider scope than your set of instrumented join points,
+     * then the aspect will not be applied to all intended points, to play safe -
+     * use <code>deploy(final Class aspect, final DeploymentScope preparedPointcut)</code>
+     *
+     * @param aspectClassName the aspect class name
+     * @param deployLoader
+     * @return a unique deployment handle for this deployment
+     */
+    public static DeploymentHandle deploy(final String aspectClassName, final ClassLoader deployLoader) {
+        return deploy(aspectClassName, DeploymentScope.MATCH_ALL, deployLoader);
+    }
+
+    /**
      * Deploys an annotation defined aspect in the scope defined by the prepared pointcut.
      * <p/>
      * Deploys the aspect in all systems in the class loader that has loaded the aspect class.
@@ -89,6 +124,19 @@ public class Deployer {
     }
 
     /**
+     * Deploys an annotation defined aspect in the scope defined by the prepared pointcut.
+     * <p/>
+     * Deploys the aspect in all systems in the class loader that has loaded the aspect class.
+     *
+     * @param aspectClassName the aspect class name
+     * @param deploymentScope
+     * @return a unique deployment handle for this deployment
+     */
+    public static DeploymentHandle deploy(final String aspectClassName, final DeploymentScope deploymentScope) {
+        return deploy(aspectClassName, deploymentScope, Thread.currentThread().getContextClassLoader());
+    }
+
+    /**
      * TODO allow deployment in other systems than virtual system?
      * <p/>
      * Deploys an annotation defined aspect in the scope defined by the prepared pointcut.
@@ -96,8 +144,8 @@ public class Deployer {
      * Deploys the aspect in the class loader that is specified.
      *
      * @param aspect          the aspect class
-     * @param deploymentScope the prepared pointcut
      * @param deployLoader    the loader to deploy the aspect in
+     * @param deploymentScope the prepared pointcut
      * @return a unique deployment handle for this deployment
      */
     public static DeploymentHandle deploy(final Class aspect,
@@ -114,15 +162,41 @@ public class Deployer {
         }
 
         final String className = aspect.getName();
+        return deploy(className, deploymentScope, deployLoader);
+
+    }
+
+    /**
+     * Deploys an annotation defined aspect in the scope defined by the prepared pointcut.
+     * <p/>
+     * Deploys the aspect in the class loader that is specified.
+     *
+     * @param className
+     * @param deploymentScope
+     * @param deployLoader
+     * @return
+     */
+    public synchronized static DeploymentHandle deploy(final String className,
+                                                       final DeploymentScope deploymentScope,
+                                                       final ClassLoader deployLoader) {
         logDeployment(className, deployLoader);
 
-        final DeploymentHandle deploymentHandle = new DeploymentHandle(aspect, deployLoader);
+        Class aspectClass = null;
+        try {
+            aspectClass = deployLoader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(
+                    "could not load class [" + className + "] in class loader [" + deployLoader + "]"
+            );
+        }
+
+        final DeploymentHandle deploymentHandle = new DeploymentHandle(aspectClass, deployLoader);
 
         // create a new aspect def and fill it up with the annotation def from the aspect class
         final SystemDefinition systemDef = SystemDefinitionContainer.getVirtualDefinitionFor(deployLoader);
         final AspectDefinition newAspectDef = new AspectDefinition(className, className, systemDef);
         final Set newExpressions = getNewExpressionsForAspect(
-                aspect, newAspectDef, systemDef, deploymentScope, deploymentHandle
+                aspectClass, newAspectDef, systemDef, deploymentScope, deploymentHandle
         );
 
         redefine(newExpressions);
@@ -197,10 +271,10 @@ public class Deployer {
      * @param deployLoader
      * @return
      */
-    public static DeploymentHandle deploy(final Class aspect,
-                                          final String xmlDef,
-                                          final DeploymentScope deploymentScope,
-                                          final ClassLoader deployLoader) {
+    public synchronized static DeploymentHandle deploy(final Class aspect,
+                                                       final String xmlDef,
+                                                       final DeploymentScope deploymentScope,
+                                                       final ClassLoader deployLoader) {
         if (aspect == null) {
             throw new IllegalArgumentException("aspect to deploy can not be null");
         }
@@ -255,8 +329,16 @@ public class Deployer {
         if (loader == null) {
             throw new IllegalArgumentException("loader to undeploy aspect from can not be null");
         }
+        undeploy(aspect.getName(), loader);
+    }
 
-        final String className = aspect.getName();
+    /**
+     * Undeploys an aspect from a specific class loader.
+     *
+     * @param className the aspect class name
+     * @param loader    the loader that you want to undeploy the aspect from
+     */
+    public static void undeploy(final String className, final ClassLoader loader) {
         logUndeployment(className, loader);
 
         Set systemDefs = SystemDefinitionContainer.getRegularAndVirtualDefinitionsFor(loader);
@@ -305,7 +387,7 @@ public class Deployer {
      *
      * @param expressions the expressions that will pick out the join points that are affected
      */
-    private synchronized static void redefine(final Set expressions) {
+    private static void redefine(final Set expressions) {
         final Set allMatchingJoinPoints = new HashSet();
         for (Iterator itExpr = expressions.iterator(); itExpr.hasNext();) {
             ExpressionInfo expression = (ExpressionInfo) itExpr.next();
@@ -390,8 +472,12 @@ public class Deployer {
         final ClassLoader aspectLoader = aspectClass.getClassLoader();
         final String aspectName = aspectClass.getName();
 
+        final ClassInfo classInfo = AsmClassInfo.getClassInfo(aspectName, aspectLoader);
+
+        AspectModelManager.defineAspect(classInfo, newAspectDef, aspectLoader);
+
         AspectAnnotationParser.parse(
-                AsmClassInfo.getClassInfo(aspectName, aspectLoader),
+                classInfo,
                 newAspectDef,
                 aspectLoader
         );
@@ -443,7 +529,11 @@ public class Deployer {
                     stream = fromLoader.getResourceAsStream(className.replace('.', '/') + ".class");
                     bytes = new ClassReader(stream).b;
                 } finally {
-                    try { stream.close();} catch(Exception e) {;}
+                    try {
+                        stream.close();
+                    } catch (Exception e) {
+                        ;
+                    }
                 }
                 Class klass = toLoader.loadClass("java.lang.ClassLoader");
                 Method method = klass.getDeclaredMethod(

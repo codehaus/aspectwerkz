@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.objectweb.asm.*;
@@ -33,7 +32,7 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class MethodWrapperVisitor extends ClassAdapter implements Constants, TransformationConstants {
+public class MethodWrapperVisitor extends ClassAdapter implements TransformationConstants {
 
     private final ContextImpl m_ctx;
     private String m_declaringTypeName;
@@ -48,8 +47,10 @@ public class MethodWrapperVisitor extends ClassAdapter implements Constants, Tra
      * @param ctx
      * @param addedMethods
      */
-    public MethodWrapperVisitor(final ClassVisitor cv, final ClassInfo classInfo,
-                                final Context ctx, final Set addedMethods) {
+    public MethodWrapperVisitor(final ClassVisitor cv,
+                                final ClassInfo classInfo,
+                                final Context ctx,
+                                final Set addedMethods) {
         super(cv);
         m_classInfo = classInfo;
         m_ctx = (ContextImpl) ctx;

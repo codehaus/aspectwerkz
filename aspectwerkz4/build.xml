@@ -224,7 +224,7 @@
     <!-- ============================================================== -->
     <!-- create distribution -->
     <!-- ============================================================== -->
-    <target name="dist" depends="compile, compile:jdk15">
+    <target name="dist" depends="compile:all">
         <copy file="${src.dir}/main/aspectwerkz.dtd" todir="${build.core.dir}"/>
 
         <!-- we embed jarjar version of ASM in it as well in case the aspectwerkz-core jar is not used -->
@@ -250,14 +250,6 @@
         </jarjar>
         <copy tofile="${lib.dir}/aspectwerkz-core-${version}.jar" file="${build.dir}/aspectwerkz-core-${version}.jar" overwrite="true"/>
 
-    </target>
-
-    <!-- ============================================================== -->
-    <!-- create all jars -->
-    <!-- ============================================================== -->
-    <target name="jars" depends="compile:all">
-        <antcall target="dist"/>
-
         <jarjar jarfile="${target.dir}/aspectwerkz-extensions-${version}.jar" basedir="${extensions.classes}">
             <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
         </jarjar>
@@ -274,7 +266,7 @@
         <javacc target="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast/grammar.jj" outputdirectory="${src.dir}/main/org/codehaus/aspectwerkz/annotation/expression/ast" javacchome="${env.JAVACC_HOME}"/>
     </target>
 
-    <target name="test:weave" depends="init, jars, test:annotationc">
+    <target name="test:weave" depends="init, dist, test:annotationc">
         <property name="weave.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
         <echo>${weave.classpath}</echo>
 
@@ -293,7 +285,7 @@
     </target>
 
 
-    <target name="test:offline" depends="init, jars, test:annotationc, test:weave">
+    <target name="test:offline" depends="init, dist, test:annotationc, test:weave">
         <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
         <java
             classname="test.AllTestsInlined"
@@ -342,7 +334,7 @@
     <!-- =================================================== -->
     <!--  all tests -->
     <!-- =================================================== -->
-    <target name="test" depends="clean, jars, test:annotationc">
+    <target name="test" depends="clean, dist, test:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${basedir}/lib/aspectwerkz-extensions-${version}.jar${pathseparator}${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTestsInlined"/>
         </exec>
@@ -351,7 +343,7 @@
     <!-- =================================================== -->
     <!--  runs perf tests -->
     <!-- =================================================== -->
-    <target name="test:perf" depends="clean, jars, test:annotationc">
+    <target name="test:perf" depends="clean, dist, test:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.xmldef.AllPerfTests"/>
         </exec>
@@ -362,7 +354,7 @@
     <!--  thread number and loops can be passed as argument -->
     <!--  refer to test.xmldef.clapp javadoc -->
     <!-- =================================================== -->
-    <target name="test:clapp" depends="clean, jars, test:annotationc">
+    <target name="test:clapp" depends="clean, dist, test:annotationc">
         <!-- run the application in regular mode -->
         <java classname="test.clapp.CrazyClassLoaderApp" fork="true">
             <classpath>
@@ -379,7 +371,7 @@
     <!-- =================================================== -->
     <!--  runs the aspectj compiler extension tests -->
     <!-- =================================================== -->
-    <target name="comp:ext:aspectj:test" depends="jars">
+    <target name="comp:ext:aspectj:test" depends="dist">
         <subant antfile="build.xml" failonerror="true" inheritall="false" inheritrefs="false"
             buildpath="${comp.ext.dir}/aspectj" target="test">
         </subant>
@@ -388,7 +380,7 @@
     <!-- =================================================== -->
     <!--  runs the aop alliance compiler extension tests -->
     <!-- =================================================== -->
-    <target name="comp:ext:aopalliance:test" depends="jars">
+    <target name="comp:ext:aopalliance:test" depends="dist">
         <subant antfile="build.xml" failonerror="true" inheritall="false" inheritrefs="false"
             buildpath="${comp.ext.dir}/aop-alliance" target="test">
         </subant>
@@ -402,7 +394,7 @@
     <!-- =================================================== -->
     <!--  JDWP interactive Plug -->
     <!-- =================================================== -->
-    <target name="samples:plug" depends="clean, jars">
+    <target name="samples:plug" depends="clean, dist">
         <input message="Input args ? (-info .., -resume .., -hotswap .., -target file.jar)" addproperty="input.args"/>
         <java classname="org.codehaus.aspectwerkz.hook.Plug" fork="true">
             <classpath>
@@ -417,7 +409,7 @@
     <!-- =================================================== -->
     <!--  runs the logging sample -->
     <!-- =================================================== -->
-    <target name="samples:logging" depends="clean, jars, samples:annotationc">
+    <target name="samples:logging" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes}${pathseparator}${extensions.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.logging.Target"/>
         </exec>
@@ -426,7 +418,7 @@
     <!-- =================================================== -->
     <!--  runs the annotation sample -->
     <!-- =================================================== -->
-    <target name="samples:annotation" depends="clean, jars, samples:annotationc">
+    <target name="samples:annotation" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.verbose=true examples.annotation.Target"/>
         </exec>
@@ -435,7 +427,7 @@
     <!-- =================================================== -->
     <!--  runs the caching sample -->
     <!-- =================================================== -->
-    <target name="samples:caching" depends="clean, jars, samples:annotationc">
+    <target name="samples:caching" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.caching.CacheTest"/>
         </exec>
@@ -444,7 +436,7 @@
     <!-- =================================================== -->
     <!--  runs the cflow sample -->
     <!-- =================================================== -->
-    <target name="samples:cflow" depends="clean, jars, samples:annotationc">
+    <target name="samples:cflow" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
         </exec>
@@ -453,7 +445,7 @@
     <!-- =================================================== -->
     <!--  runs the introduction sample -->
     <!-- =================================================== -->
-    <target name="samples:introduction" depends="clean, jars, samples:annotationc">
+    <target name="samples:introduction" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
         </exec>
@@ -462,7 +454,7 @@
     <!-- =================================================== -->
     <!--  runs the exception handling sample -->
     <!-- =================================================== -->
-    <target name="samples:exception" depends="clean, jars, samples:annotationc">
+    <target name="samples:exception" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
         </exec>
@@ -471,7 +463,7 @@
     <!-- =================================================== -->
     <!--  runs the remote sample - client side -->
     <!-- =================================================== -->
-    <target name="samples:remote:client" depends="clean, jars, samples:annotationc">
+    <target name="samples:remote:client" depends="clean, dist, samples:annotationc">
         <java fork="true" classname="examples.connectivity.Client">
             <classpath>
                 <path refid="project.class.path"/>
@@ -486,7 +478,7 @@
     <!-- =================================================== -->
     <!--  runs the remote sample - server side -->
     <!-- =================================================== -->
-    <target name="samples:remote:server" depends="clean, jars, samples:annotationc">
+    <target name="samples:remote:server" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${basedir}${pathseparator}${lib.dir}/aspectwerkz-extensions-${version}.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.remote.server.run=true -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Server"/>
         </exec>
@@ -495,7 +487,7 @@
     <!-- =================================================== -->
     <!--  runs the logging sample in offline mode -->
     <!-- =================================================== -->
-    <target name="samples:offline:logging" depends="clean, jars, offline:samples">
+    <target name="samples:offline:logging" depends="clean, dist, offline:samples">
         <java classname="examples.logging.Target" fork="true">
             <classpath>
                 <pathelement path="${samples.classes}"/>
@@ -510,7 +502,7 @@
     <!-- =================================================== -->
     <!--  runs the annotation sample in offline mode -->
     <!-- =================================================== -->
-    <target name="samples:offline:annotation" depends="clean, jars, offline:samples">
+    <target name="samples:offline:annotation" depends="clean, dist, offline:samples">
         <java classname="examples.annotation.Target" fork="true">
             <classpath>
                 <pathelement path="${samples.classes}"/>
@@ -525,7 +517,7 @@
     <!-- =================================================== -->
     <!--  runs the introduction sample in offline mode -->
     <!-- =================================================== -->
-    <target name="samples:offline:introduction" depends="clean, jars, offline:samples">
+    <target name="samples:offline:introduction" depends="clean, dist, offline:samples">
         <java classname="examples.introduction.Target" fork="true">
             <classpath>
                 <pathelement path="${samples.classes}"/>

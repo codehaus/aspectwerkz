@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.DeploymentScope;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
@@ -19,8 +20,6 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
-import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
-import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModelManager;
 
 import java.util.Iterator;
 import java.util.List;
@@ -37,12 +36,12 @@ import java.util.List;
 public class AspectAnnotationParser {
 
     /**
-     * Singleton is enough.
+     * The sole instance.
      */
     private final static AspectAnnotationParser INSTANCE = new AspectAnnotationParser();
 
     /**
-     * Private constructor to enforce singleton
+     * Private constructor to prevent subclassing.
      */
     private AspectAnnotationParser() {
     }
@@ -87,7 +86,6 @@ public class AspectAnnotationParser {
         String aspectName = aspectAnnotation.aspectName();
         parseFieldAttributes(classInfo, aspectDef);
         parseMethodAttributes(classInfo, className, aspectName, aspectDef);
-        parseClassAttributes(classInfo, aspectDef, loader);
     }
 
     /**
@@ -313,40 +311,6 @@ public class AspectAnnotationParser {
                         aspectDef
                 );
                 aspectDef.addAfterAdviceDefinition(adviceDef);
-            }
-        }
-    }
-
-    /**
-     * Looks for "@Introduce IntroduceAttribute" defined at aspect inner class level
-     *
-     * @param classInfo of aspect
-     * @param aspectDef
-     * @param loader
-     */
-    private void parseClassAttributes(final ClassInfo classInfo,
-                                      final AspectDefinition aspectDef,
-                                      final ClassLoader loader) {
-        if (classInfo == null) {
-            throw new IllegalArgumentException("class can not be null");
-        }
-        List annotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_INTRODUCE, classInfo);
-        for (Iterator iterator = annotations.iterator(); iterator.hasNext();) {
-            IntroduceAnnotationProxy annotation = (IntroduceAnnotationProxy) iterator.next();
-            if (annotation != null) {
-                ClassInfo mixin;
-                try {
-                    mixin = AsmClassInfo.getClassInfo(annotation.innerClassName(), loader);
-                } catch (Exception e) {
-                    // TODO - we actually have a runtime exception already there.
-                    throw new WrappedRuntimeException(e);
-                }
-                DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
-                        mixin,
-                        annotation.expression(),
-                        annotation.deploymentModel(),
-                        aspectDef
-                );
             }
         }
     }

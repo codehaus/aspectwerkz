@@ -18,6 +18,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
+import org.codehaus.aspectwerkz.annotation.MixinAnnotationParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
@@ -137,20 +138,17 @@ public class DocumentParser {
         final ClassLoader loader = aspectClass.getClassLoader();
 
         // load the different aspect model and let them define their aspects
-        defineAspectInAspectModels(classInfo, aspectDef, loader);
+        AspectModelManager.defineAspect(classInfo, aspectDef, loader);
 
         // parse the aspect info
         parseParameterElements(aspect, systemDef, aspectDef);
         parsePointcutElements(aspect, aspectDef); //reparse pc for XML override (AW-152)
         parseAdviceElements(aspect, aspectDef, JavaClassInfo.getClassInfo(aspectClass));
-        parseIntroductionElements(aspect, aspectDef, "", aspectClass.getClassLoader());
+        parseIntroduceElements(aspect, aspectDef, "", aspectClass.getClassLoader());
 
         // register introduction of aspect into the system
         for (Iterator mixins = aspectDef.getInterfaceIntroductionDefinitions().iterator(); mixins.hasNext();) {
             systemDef.addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition) mixins.next());
-        }
-        for (Iterator mixins = aspectDef.getIntroductionDefinitions().iterator(); mixins.hasNext();) {
-            systemDef.addIntroductionDefinition((IntroductionDefinition) mixins.next());
         }
 
         systemDef.addAspect(aspectDef);
@@ -220,6 +218,9 @@ public class DocumentParser {
         // parse without package elements
         parseAspectElements(loader, systemElement, definition, basePackage, globalPointcuts);
 
+        // parse without package elements
+        parseMixinElements(loader, systemElement, definition, basePackage);
+
         // parse with package elements
         parsePackageElements(loader, systemElement, definition, basePackage, globalPointcuts);
 
@@ -277,6 +278,7 @@ public class DocumentParser {
             final Element packageElement = ((Element) it1.next());
             final String packageName = basePackage + getPackage(packageElement);
             parseAspectElements(loader, packageElement, definition, packageName, globalPointcuts);
+            parseMixinElements(loader, systemElement, definition, basePackage);
         }
     }
 
@@ -352,7 +354,7 @@ public class DocumentParser {
             parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut in Attributes AW-152
 
             // load the different aspect model and let them define their aspects
-            defineAspectInAspectModels(aspectClassInfo, aspectDef, loader);
+            AspectModelManager.defineAspect(aspectClassInfo, aspectDef, loader);
 
             // parse the class bytecode annotations
             AspectAnnotationParser.parse(aspectClassInfo, aspectDef, loader);
@@ -366,32 +368,82 @@ public class DocumentParser {
             parseParameterElements(aspect, definition, aspectDef);
             parsePointcutElements(aspect, aspectDef); //reparse pc for XML override (AW-152)
             parseAdviceElements(aspect, aspectDef, aspectClassInfo);
-            parseIntroductionElements(aspect, aspectDef, packageName, loader);
+            parseIntroduceElements(aspect, aspectDef, packageName, loader);
 
-            // register introduction of aspect into the system
+            // register interface introduction of aspect into the system
             for (Iterator mixins = aspectDef.getInterfaceIntroductionDefinitions().iterator(); mixins.hasNext();) {
                 definition.addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition) mixins.next());
-            }
-            for (Iterator mixins = aspectDef.getIntroductionDefinitions().iterator(); mixins.hasNext();) {
-                definition.addIntroductionDefinition((IntroductionDefinition) mixins.next());
             }
             definition.addAspect(aspectDef);
         }
     }
 
     /**
-     * Let all aspect models try to define the aspect (only one will succeed).
+     * Parses the <tt>mixin</tt> elements.
      *
-     * @param aspectClassInfo
-     * @param aspectDef
-     * @param loader
+     * @param loader           the current class loader
+     * @param systemElement    the system element
+     * @param systemDefinition the system definition
+     * @param packageName      the package name
      */
-    private static void defineAspectInAspectModels(final ClassInfo aspectClassInfo,
-                                                   final AspectDefinition aspectDef,
-                                                   final ClassLoader loader) {
-        final AspectModel[] aspectModels = AspectModelManager.getModels();
-        for (int i = 0; i < aspectModels.length; i++) {
-            aspectModels[i].defineAspect(aspectClassInfo, aspectDef, loader);
+    private static void parseMixinElements(final ClassLoader loader,
+                                           final Element systemElement,
+                                           final SystemDefinition systemDefinition,
+                                           final String packageName) {
+
+        for (Iterator it1 = systemElement.elementIterator("mixin"); it1.hasNext();) {
+            String className = null;
+            String deploymentModel = null;
+            String factoryClassName = null;
+            String expression = null;
+            Element aspect = (Element) it1.next();
+            for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
+                Attribute attribute = (Attribute) it2.next();
+                final String name = attribute.getName().trim();
+                final String value = attribute.getValue().trim();
+                if (name.equalsIgnoreCase("class")) {
+                    className = value;
+                } else if (name.equalsIgnoreCase("deployment-model")) {
+                    deploymentModel = value;
+                } else if (name.equalsIgnoreCase("factory")) {
+                    factoryClassName = value;
+                } else if (name.equalsIgnoreCase("bind-to")) {
+                    expression = value;
+                }
+            }
+            String mixinClassName = packageName + className;
+
+            // create the mixin definition
+            ClassInfo mixinClassInfo;
+            try {
+                mixinClassInfo = AsmClassInfo.getClassInfo(mixinClassName, loader);
+            } catch (Exception e) {
+                System.err.println(
+                        "Warning: could not load mixin "
+                        + mixinClassName
+                        + " from "
+                        + loader
+                        + "due to: "
+                        + e.toString()
+                );
+                e.printStackTrace();
+                continue;
+            }
+
+            final MixinDefinition mixinDefinition =
+                    DefinitionParserHelper.createAndAddMixinDefToSystemDef(
+                            mixinClassInfo,
+                            expression,
+                            deploymentModel,
+                            systemDefinition
+                    );
+            // parse the class bytecode annotations
+            MixinAnnotationParser.parse(mixinClassInfo, mixinDefinition);
+
+
+            // XML definition settings always overrides attribute definition settings
+            mixinDefinition.setDeploymentModel(deploymentModel);
+            mixinDefinition.setFactoryClassName(factoryClassName);
         }
     }
 
@@ -532,29 +584,23 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the introduction.
+     * Parses the interface introductions.
      *
      * @param aspectElement the aspect element
      * @param aspectDef     the system definition
      * @param packageName
      * @param loader
      */
-    private static void parseIntroductionElements(final Element aspectElement,
-                                                  final AspectDefinition aspectDef,
-                                                  final String packageName,
-                                                  final ClassLoader loader) {
+    private static void parseIntroduceElements(final Element aspectElement,
+                                               final AspectDefinition aspectDef,
+                                               final String packageName,
+                                               final ClassLoader loader) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element introduceElement = (Element) it2.next();
             if (introduceElement.getName().trim().equals("introduce")) {
                 String klass = introduceElement.attributeValue("class");
                 String name = introduceElement.attributeValue("name");
                 String bindTo = introduceElement.attributeValue("bind-to");
-                String deploymentModel = introduceElement.attributeValue("deployment-model");
-
-                // deployment-model defaults to perJVM
-                if ((deploymentModel == null) || (deploymentModel.length() <= 0)) {
-                    deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_JVM);
-                }
 
                 // default name = FQN
                 final String fullClassName = packageName + klass;
@@ -562,13 +608,13 @@ public class DocumentParser {
                     name = fullClassName;
                 }
 
-                // load the mixinClassInfo to determine if it is a pure interface introduction
-                ClassInfo mixinClassInfo;
+                // load the class info to determine if it is a pure interface introduction
+                ClassInfo introductionClassInfo;
                 try {
-                    mixinClassInfo = AsmClassInfo.getClassInfo(fullClassName, loader);
+                    introductionClassInfo = AsmClassInfo.getClassInfo(fullClassName, loader);
                 } catch (Exception e) {
                     throw new DefinitionException(
-                            "could not find mixinClassInfo implementation: "
+                            "could not find interface introduction: "
                             + packageName
                             + klass
                             + " "
@@ -577,7 +623,7 @@ public class DocumentParser {
                 }
 
                 // pure interface introduction
-                if (mixinClassInfo.isInterface()) {
+                if (introductionClassInfo.isInterface()) {
                     DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
                             bindTo,
                             name,
@@ -593,31 +639,6 @@ public class DocumentParser {
                                 pointcut,
                                 name,
                                 fullClassName,
-                                aspectDef
-                        );
-                    }
-                } else {
-                    // mixinClassInfo introduction
-                    ClassInfo[] introduced = mixinClassInfo.getInterfaces();//TODO use names directly for optim.
-                    String[] introducedInterfaceNames = new String[introduced.length];
-                    for (int i = 0; i < introduced.length; i++) {
-                        introducedInterfaceNames[i] = introduced[i].getName();
-                    }
-                    DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
-                            mixinClassInfo,
-                            bindTo,
-                            deploymentModel,
-                            aspectDef
-                    );
-
-                    // handles nested "bind-to" elements
-                    for (Iterator it1 = introduceElement.elementIterator("bind-to"); it1.hasNext();) {
-                        Element bindToElement = (Element) it1.next();
-                        String pointcut = bindToElement.attributeValue("pointcut");
-                        DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
-                                mixinClassInfo,
-                                pointcut,
-                                deploymentModel,
                                 aspectDef
                         );
                     }

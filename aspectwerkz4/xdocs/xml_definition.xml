@@ -264,7 +264,7 @@
                 <source><![CDATA[
 <aspect ...>
     ...
-    <introduce class="IntroductionTestAspect$MyImpl" bind-to="within(test.ToBeIntroduced)"/>
+    <introduce class="IntroductionTestAspect$MyImpl" bind-to="within(test.mixin.ToBeIntroduced)"/>
     ...
 </aspect>
                 ]]></source>
@@ -436,7 +436,7 @@
                 <param name="timeout" value="10"/>
 
                 <introduce class="IntroductionTestAspect$MyImpl"
-                           bind-to="within(test.ToBeIntroduced)"/>
+                           bind-to="within(test.mixin.ToBeIntroduced)"/>
 
                 <pointcut name="callee"
                           expression="execution(int examples.caching.Pi.getPiDecimal(int))"/>

@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.management.Aspects;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -223,52 +222,6 @@ public final class AspectContext implements Serializable {
      */
     public Object getMetaData(final Object key) {
         return m_metaData.get(key);
-    }
-
-    /**
-     * Returns the target instance for the mixin of given name which is defined from within this aspect (mixin can have
-     * different deployment model from aspect)
-     *
-     * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
-     * @return the target instance or null if not compliant deployment model
-     */
-    public Object getMixinTargetInstance(final Object mixinImpl) {
-        return getMixinTargetInstance(mixinImpl.getClass().getName(), mixinImpl);
-    }
-
-    /**
-     * Returns the target class for the mixin of given name which is defined from within this aspect (mixin can have
-     * different deployment model from aspect)
-     *
-     * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
-     * @return the target class or null if not compliant deployment model
-     */
-    public Class getMixinTargetClass(final Object mixinImpl) {
-        return getMixinTargetClass(mixinImpl.getClass().getName(), mixinImpl);
-    }
-
-    /**
-     * Returns the target instance for the mixin of given name which is defined from within this aspect (mixin can have
-     * different deployment model from aspect)
-     *
-     * @param mixinName of the mixin
-     * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
-     * @return the target instance or null if not compliant deployment model
-     */
-    public Object getMixinTargetInstance(final String mixinName, final Object mixinImpl) {
-        return m_container.getIntroductionContainer(mixinName).getTargetInstance(mixinImpl);
-    }
-
-    /**
-     * Returns the target class for the mixin of given name which is defined from within this aspect (mixin can have
-     * different deployment model from aspect)
-     *
-     * @param mixinName of the mixin
-     * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
-     * @return the target class or null if not compliant deployment model
-     */
-    public Class getMixinTargetClass(final String mixinName, final Object mixinImpl) {
-        return m_container.getIntroductionContainer(mixinName).getTargetClass(mixinImpl);
     }
 
     /**

@@ -21,10 +21,20 @@ import org.codehaus.aspectwerkz.transform.inlining.compiler.MatchingJoinPointInf
 public final class ChangeSet {
     private final Set m_set = new HashSet();
 
+    /**
+     * Adds a change set element.
+     *
+     * @param element
+     */
     public void addElement(final Element element) {
         m_set.add(element);
     }
 
+    /**
+     * Returns all elements in the change set.
+     *
+     * @return all elements in the change set
+     */
     public Set getElements() {
         return m_set;
     }

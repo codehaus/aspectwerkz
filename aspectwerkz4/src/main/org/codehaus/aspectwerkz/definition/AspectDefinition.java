@@ -67,11 +67,6 @@ public class AspectDefinition {
     private final List m_interfaceIntroductionDefinitions = new ArrayList();
 
     /**
-     * The pointcuts definitions. The implementation introductions
-     */
-    private final List m_introductionDefinitions = new ArrayList();
-
-    /**
      * The pointcuts.
      */
     private final List m_pointcutDefinitions = new ArrayList();
@@ -269,30 +264,12 @@ public class AspectDefinition {
     }
 
     /**
-     * Adds a new implementation introduction.
-     *
-     * @param introductionDef the introduction
-     */
-    public void addIntroductionDefinition(final IntroductionDefinition introductionDef) {
-        m_introductionDefinitions.add(introductionDef);
-    }
-
-    /**
      * Returns the interface introductions.
      *
      * @return the introductions
      */
     public List getInterfaceIntroductionDefinitions() {
         return m_interfaceIntroductionDefinitions;
-    }
-
-    /**
-     * Returns the implementation introductions.
-     *
-     * @return the introductions
-     */
-    public List getIntroductionDefinitions() {
-        return m_introductionDefinitions;
     }
 
     /**

@@ -121,37 +121,39 @@ public class DefinitionParserHelper {
     }
 
     /**
-     * Creates and add introduction definition to aspect definition.
+     * Creates and add mixin definition to system definition.
      *
      * @param mixinClassInfo
      * @param expression
      * @param deploymentModel
-     * @param aspectDef
+     * @param systemDef
+     * @return the mixin definition
      */
-    public static void createAndAddIntroductionDefToAspectDef(final ClassInfo mixinClassInfo,
-                                                              final String expression,
-                                                              final String deploymentModel,
-                                                              final AspectDefinition aspectDef) {
-        IntroductionDefinition introDef = createIntroductionDefinition(
+    public static MixinDefinition createAndAddMixinDefToSystemDef(final ClassInfo mixinClassInfo,
+                                                                  final String expression,
+                                                                  final String deploymentModel,
+                                                                  final SystemDefinition systemDef) {
+        final MixinDefinition mixinDef = createMixinDefinition(
                 mixinClassInfo,
                 expression,
                 deploymentModel,
-                aspectDef
+                systemDef
         );
 
         // check doublons - TODO change ArrayList to HashMap since NAME is a key
-        IntroductionDefinition doublon = null;
-        for (Iterator intros = aspectDef.getIntroductionDefinitions().iterator(); intros.hasNext();) {
-            IntroductionDefinition intro = (IntroductionDefinition) intros.next();
-            if (intro.getName().equals(introDef.getName())) {
+        MixinDefinition doublon = null;
+        for (Iterator intros = systemDef.getMixinDefinitions().iterator(); intros.hasNext();) {
+            MixinDefinition intro = (MixinDefinition) intros.next();
+            if (intro.getClassName().equals(mixinDef.getClassName())) {
                 doublon = intro;
-                intro.addExpressionInfos(introDef.getExpressionInfos());
+                intro.addExpressionInfos(mixinDef.getExpressionInfos());
                 break;
             }
         }
         if (doublon == null) {
-            aspectDef.addIntroductionDefinition(introDef);
+            systemDef.addMixinDefinition(mixinDef);
         }
+        return mixinDef;
     }
 
     /**
@@ -255,23 +257,21 @@ public class DefinitionParserHelper {
      * @param mixinClassInfo
      * @param expression
      * @param deploymentModel
-     * @param aspectDef
+     * @param systemDef
      * @return
      */
-    public static IntroductionDefinition createIntroductionDefinition(final ClassInfo mixinClassInfo,
-                                                                      final String expression,
-                                                                      final String deploymentModel,
-                                                                      final AspectDefinition aspectDef) {
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getQualifiedName());
+    public static MixinDefinition createMixinDefinition(final ClassInfo mixinClassInfo,
+                                                        final String expression,
+                                                        final String deploymentModel,
+                                                        final SystemDefinition systemDef) {
+        ExpressionInfo expressionInfo = new ExpressionInfo(expression, systemDef.getUuid());
 
         // auto-name the pointcut which is anonymous for introduction
-        ExpressionNamespace.getNamespace(aspectDef.getQualifiedName()).addExpressionInfo(
+        ExpressionNamespace.getNamespace(systemDef.getUuid()).addExpressionInfo(
                 EXPR_PREFIX + expression.hashCode(),
                 expressionInfo
         );
-        final IntroductionDefinition introDef = new IntroductionDefinition(
-                mixinClassInfo, expressionInfo, deploymentModel
-        );
+        final MixinDefinition introDef = new MixinDefinition(mixinClassInfo, expressionInfo, deploymentModel);
         return introDef;
     }
 

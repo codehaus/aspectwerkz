@@ -7,13 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import gnu.trove.TObjectIntHashMap;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 
 import java.util.ArrayList;
@@ -26,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * TODO clean up - remove methods not used, refactor etc.
+ *
  * Abstraction of the system definition, defines the aspect system.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -51,7 +51,7 @@ public class SystemDefinition {
     /**
      * Maps the mixins to it's name.
      */
-    private final Map m_introductionMap = new HashMap();
+    private final Map m_mixinMap = new HashMap();
 
     /**
      * Maps the interface mixins to it's name.
@@ -180,13 +180,13 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns a collection with the introduction definitions registered.
+     * Returns a collection with the mixin definitions registered.
      *
-     * @return the introduction definitions
+     * @return the mixin definitions
      */
-    public Collection getIntroductionDefinitions() {
-        Collection clone = new ArrayList(m_introductionMap.size());
-        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
+    public Collection getMixinDefinitions() {
+        Collection clone = new ArrayList(m_mixinMap.size());
+        for (Iterator it = m_mixinMap.values().iterator(); it.hasNext();) {
             clone.add(it.next());
         }
         return clone;
@@ -219,15 +219,15 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns the introduction definitions for a specific class.
+     * Returns the mixin definitions matching a specfic expression.
      *
      * @param ctx the expression context
-     * @return a list with the introduction definitions
+     * @return a list with the mixin definitions
      */
-    public List getIntroductionDefinitions(final ExpressionContext ctx) {
+    public List getMixinDefinitions(final ExpressionContext ctx) {
         final List introDefs = new ArrayList();
-        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
-            IntroductionDefinition introDef = (IntroductionDefinition) it.next();
+        for (Iterator it = m_mixinMap.values().iterator(); it.hasNext();) {
+            MixinDefinition introDef = (MixinDefinition) it.next();
             for (int i = 0; i < introDef.getExpressionInfos().length; i++) {
                 if (introDef.getExpressionInfos()[i].getExpression().match(ctx)) {
                     introDefs.add(introDef);
@@ -299,17 +299,17 @@ public class SystemDefinition {
      *
      * @param introDef the mixin definition
      */
-    public void addIntroductionDefinition(final IntroductionDefinition introDef) {
+    public void addMixinDefinition(final MixinDefinition introDef) {
         if (introDef == null) {
-            throw new IllegalArgumentException("introduction definition can not be null");
+            throw new IllegalArgumentException("mixin definition can not be null");
         }
-        synchronized (m_introductionMap) {
-            if (m_introductionMap.containsKey(introDef.getName())) {
-                IntroductionDefinition def = (IntroductionDefinition) m_introductionMap.get(introDef.getName());
+        synchronized (m_mixinMap) {
+            if (m_mixinMap.containsKey(introDef.getClassName())) {
+                MixinDefinition def = (MixinDefinition) m_mixinMap.get(introDef.getClassName());
                 def.addExpressionInfos(introDef.getExpressionInfos());
                 return;
             }
-            m_introductionMap.put(introDef.getName(), introDef);
+            m_mixinMap.put(introDef.getClassName(), introDef);
         }
     }
 
@@ -369,33 +369,6 @@ public class SystemDefinition {
         return m_preparePackages;
     }
 
-//    /**
-//     * Checks if there exists an advice with the name specified.
-//     *
-//     * @param name the name of the advice
-//     * @return boolean
-//     */
-//    public boolean hasAdvice(final String name) {
-//        Collection adviceDefs = getAdviceDefinitions();
-//        for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
-//            AdviceDefinition adviceDef = (AdviceDefinition) it.next();
-//            if (adviceDef.getName().equals(name)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
-    /**
-     * Checks if there exists an introduction with the name specified.
-     *
-     * @param name the name of the introduction
-     * @return boolean
-     */
-    public boolean hasIntroduction(final String name) {
-        return m_introductionMap.containsKey(name);
-    }
-
     /**
      * Checks if a class should be included.
      *
@@ -451,30 +424,6 @@ public class SystemDefinition {
             String packageName = (String) it.next();
             if (className.startsWith(packageName)) {
                 return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks if a class has an introduction.
-     *
-     * @param ctx the expression context
-     * @return boolean
-     */
-    public boolean hasIntroduction(final ExpressionContext ctx) {
-        if (ctx == null) {
-            throw new IllegalArgumentException("context can not be null");
-        }
-        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
-            IntroductionDefinition introDef = (IntroductionDefinition) it.next();
-            ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
-            for (int i = 0; i < expressionInfos.length; i++) {
-                ExpressionInfo expressionInfo = expressionInfos[i];
-                ExpressionVisitor expression = expressionInfo.getExpression();
-                if (expression.match(ctx)) {
-                    return true;
-                }
             }
         }
         return false;
@@ -614,22 +563,22 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class has an introduction.
+     * Checks if a class has an mixin.
      *
      * @param ctxs an array with the expression contexts
      * @return boolean
      */
-    public boolean isIntroduced(final ExpressionContext[] ctxs) {
+    public boolean hasMixin(final ExpressionContext[] ctxs) {
         if (ctxs == null) {
             throw new IllegalArgumentException("context array can not be null");
         }
-        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
-            IntroductionDefinition introDef = (IntroductionDefinition) it.next();
+        for (Iterator it = m_mixinMap.values().iterator(); it.hasNext();) {
+            MixinDefinition introDef = (MixinDefinition) it.next();
             ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
             for (int i = 0; i < expressionInfos.length; i++) {
                 ExpressionInfo expressionInfo = expressionInfos[i];
                 for (int j = 0; j < ctxs.length; j++) {
-                    if (expressionInfo.getAdvisedClassFilterExpression().match(ctxs[j])) {
+                    if (expressionInfo.getExpression().match(ctxs[j])) {
                         return true;
                     }
                 }
@@ -639,22 +588,47 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class has an introduction.
+     * Checks if a class has an mixin.
      *
      * @param ctx the expression context
      * @return boolean
      */
-    public boolean isIntroduced(final ExpressionContext ctx) {
+    public boolean hasMixin(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
-        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
-            IntroductionDefinition introDef = (IntroductionDefinition) it.next();
+        for (Iterator it = m_mixinMap.values().iterator(); it.hasNext();) {
+            MixinDefinition introDef = (MixinDefinition) it.next();
             ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
             for (int i = 0; i < expressionInfos.length; i++) {
                 ExpressionInfo expressionInfo = expressionInfos[i];
-                if (expressionInfo.getAdvisedClassFilterExpression().match(ctx)) {
+                if (expressionInfo.getExpression().match(ctx)) {
                     return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a class is advised with an interface introduction.
+     *
+     * @param ctxs the expression contexts
+     * @return boolean
+     */
+    public boolean hasIntroducedInterface(final ExpressionContext[] ctxs) {
+        if (ctxs == null) {
+            throw new IllegalArgumentException("context array can not be null");
+        }
+        for (Iterator it = m_interfaceIntroductionMap.values().iterator(); it.hasNext();) {
+            InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition) it.next();
+            ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
+            for (int i = 0; i < expressionInfos.length; i++) {
+                ExpressionInfo expressionInfo = expressionInfos[i];
+                for (int j = 0; j < ctxs.length; j++) {
+                    if (expressionInfo.getExpression().match(ctxs[i])) {
+                        return true;
+                    }
                 }
             }
         }
@@ -667,7 +641,7 @@ public class SystemDefinition {
      * @param ctx the expression context
      * @return boolean
      */
-    public boolean isInterfaceIntroduced(final ExpressionContext ctx) {
+    public boolean hasIntroducedInterface(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
@@ -676,7 +650,7 @@ public class SystemDefinition {
             ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
             for (int i = 0; i < expressionInfos.length; i++) {
                 ExpressionInfo expressionInfo = expressionInfos[i];
-                if (expressionInfo.getAdvisedClassFilterExpression().match(ctx)) {
+                if (expressionInfo.getExpression().match(ctx)) {
                     return true;
                 }
             }

@@ -38,8 +38,6 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
         }
 
         public String sayHello2() {
-            System.out.println("mixin target class: " + m_info.getMixinTargetClass(this));
-            System.out.println("mixin target instance: " + m_info.getMixinTargetInstance(this));
             return "Hello World! Hello World!";
         }
     }
