@@ -34,11 +34,11 @@ public class MemberMethodTestAspect extends Aspect {
      */
     Pointcut pc3;
     /**
-     * @Execution * test.MemberMethodAdviceTest.methodAdvicedMethod(..)
+     * @Execution * test.MemberMethodAdviceTest.methodAdvicedMethod()
      */
     Pointcut pc4;
     /**
-     * @Execution * test.MemberMethodAdviceTest.meth*AdvicedMethod(..)
+     * @Execution * test.MemberMethodAdviceTest.meth*AdvicedMethod()
      */
     Pointcut pc5;
     /**

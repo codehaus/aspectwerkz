@@ -40,12 +40,12 @@ public abstract class AbstractLoggingAspect extends Aspect {
     public Object logMethod2(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature)joinPoint.getSignature();
         indent();
-        System.out.println("--> " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
+        System.out.println("----> " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
         m_level++;
         final Object result = joinPoint.proceed();
         m_level--;
         indent();
-        System.out.println("<-- " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
+        System.out.println("<---- " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
         return result;
     }
 

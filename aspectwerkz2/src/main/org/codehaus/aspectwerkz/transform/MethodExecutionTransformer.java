@@ -162,11 +162,12 @@ public class MethodExecutionTransformer implements Transformer {
             // thus that have not been changed in the previous transformation steps
             for (Iterator i = sorteMethodTuples.iterator(); i.hasNext();) {
                 MethodSequenceTuple tuple = (MethodSequenceTuple)i.next();
+                //System.out.println(" tuple " + tuple.getMethod().getName() + " : " + tuple.getStatus());
                 if (tuple.getStatus() != STATUS_HASNOPOINTCUT) {
                     continue;
                 }
                 CtMethod method = tuple.getMethod();
-
+                //System.out.println("FOUND NO PC = " + method.getName());
                 final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
                         method, tuple.getSequence(), ctClass.getName()
                 );
@@ -302,6 +303,11 @@ public class MethodExecutionTransformer implements Transformer {
 
     /**
      * Filters the classes to be transformed.
+     *
+     * TODO: when a class had execution pointcut that were removed
+     * it must be unweaved, thus not filtered out
+     * How to handle that ? cache lookup ? or custom class level attribute ?
+     *
      *
      * @param definition    the definition
      * @param classMetaData the meta-data for the class

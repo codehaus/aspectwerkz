@@ -48,6 +48,12 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
         assertEquals("before1 invocation after1 ", m_logString);
     }
 
+    public void testAroundAdvice2() {
+        m_logString = "";
+        methodAdvicedMethod(0);
+        assertEquals("invocation ", m_logString);
+    }
+
     public void testAroundAdviceNewThread() {
         m_logString = "";
         methodAdvicedMethodNewThread();
@@ -302,6 +308,10 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
     }
 
     private void methodAdvicedMethod() {
+        log("invocation ");
+    }
+
+    private void methodAdvicedMethod(int o) {
         log("invocation ");
     }
 
