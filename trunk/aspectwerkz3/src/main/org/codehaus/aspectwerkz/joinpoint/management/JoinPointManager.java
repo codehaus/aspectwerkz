@@ -65,7 +65,6 @@ public class JoinPointManager {
      * @param calleeMemberName
      * @param calleeMemberDesc
      * @param calleeMemberModifiers
-     * @param joinPointSequence
      * @param joinPointHash
      * @param joinPointClassName
      */
@@ -78,7 +77,6 @@ public class JoinPointManager {
                                      final String calleeMemberName,
                                      final String calleeMemberDesc,
                                      final int calleeMemberModifiers,
-                                     final int joinPointSequence,
                                      final int joinPointHash,
                                      final String joinPointClassName) {
 
@@ -129,7 +127,6 @@ public class JoinPointManager {
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
                         calleeClassInfo
@@ -150,7 +147,6 @@ public class JoinPointManager {
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
                         calleeClassInfo
@@ -170,7 +166,6 @@ public class JoinPointManager {
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
                         calleeClassInfo
@@ -191,7 +186,6 @@ public class JoinPointManager {
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
                         calleeClassInfo
@@ -212,7 +206,6 @@ public class JoinPointManager {
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
                         calleeClassInfo
@@ -233,7 +226,6 @@ public class JoinPointManager {
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
                         calleeClassInfo
@@ -255,7 +247,6 @@ public class JoinPointManager {
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        joinPointSequence,
                         joinPointHash,
                         reflectionInfo,
                         calleeClassInfo
@@ -283,7 +274,6 @@ public class JoinPointManager {
      * @param calleeMemberName
      * @param calleeMemberDesc
      * @param calleeMemberModifiers
-     * @param joinPointSequence
      * @param joinPointHash
      * @param reflectionInfo
      * @param thisClassInfo
@@ -299,7 +289,6 @@ public class JoinPointManager {
                                         final String calleeMemberName,
                                         final String calleeMemberDesc,
                                         final int calleeMemberModifiers,
-                                        final int joinPointSequence,
                                         final int joinPointHash,
                                         final ReflectionInfo reflectionInfo,
                                         final ClassInfo thisClassInfo) {
@@ -314,7 +303,6 @@ public class JoinPointManager {
                 calleeMemberName,
                 calleeMemberDesc,
                 calleeMemberModifiers,
-                joinPointSequence,
                 joinPointHash,
                 joinPointClassName
         );
