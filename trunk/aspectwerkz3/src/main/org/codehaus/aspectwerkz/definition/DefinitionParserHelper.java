@@ -298,8 +298,8 @@ public class DefinitionParserHelper {
 
         // support for pointcut signature
         String adviceCallSignature = null;
-        if (adviceName.indexOf("(") > 0) {
-            adviceCallSignature = adviceName.substring(adviceName.indexOf("(") + 1, adviceName.lastIndexOf(")"));
+        if (adviceName.indexOf('(') > 0) {
+            adviceCallSignature = adviceName.substring(adviceName.indexOf('(') + 1, adviceName.lastIndexOf(')'));
             String[] parameters = Strings.splitString(adviceCallSignature, ",");
             for (int i = 0; i < parameters.length; i++) {
                 String[] parameterInfo = Strings.splitString(

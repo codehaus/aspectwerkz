@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.AdviceIndex;
 
 /**
  * Contains the around, before and after advices.
@@ -15,29 +15,29 @@ import org.codehaus.aspectwerkz.IndexTuple;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AdviceIndexInfo {
-    private final IndexTuple[] m_aroundAdvices;
+    private final AdviceIndex[] m_aroundAdvices;
 
-    private final IndexTuple[] m_beforeAdvices;
+    private final AdviceIndex[] m_beforeAdvices;
 
-    private final IndexTuple[] m_afterAdvices;
+    private final AdviceIndex[] m_afterAdvices;
 
-    public AdviceIndexInfo(final IndexTuple[] aroundAdvices,
-                           final IndexTuple[] beforeAdvices,
-                           final IndexTuple[] afterAdvices) {
+    public AdviceIndexInfo(final AdviceIndex[] aroundAdvices,
+                           final AdviceIndex[] beforeAdvices,
+                           final AdviceIndex[] afterAdvices) {
         m_aroundAdvices = aroundAdvices;
         m_beforeAdvices = beforeAdvices;
         m_afterAdvices = afterAdvices;
     }
 
-    public IndexTuple[] getAroundAdvices() {
+    public AdviceIndex[] getAroundAdvices() {
         return m_aroundAdvices;
     }
 
-    public IndexTuple[] getBeforeAdvices() {
+    public AdviceIndex[] getBeforeAdvices() {
         return m_beforeAdvices;
     }
 
-    public IndexTuple[] getAfterAdvices() {
+    public AdviceIndex[] getAfterAdvices() {
         return m_afterAdvices;
     }
 }

@@ -9,18 +9,19 @@ package examples.logging;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ArgLoggingTarget {
 
     /**
      * @Annotation
      */
-    public static int toLog_1(int typeMatch, String[] s, int i) {
+    public int toLog_1(int typeMatch, String s, int i) {
         System.out.println("== toLog_1 " + typeMatch + ", " + s + ", " + i);
         return 0;
     }
 
-    public java.lang.String[] toLog_2(int typeMatch, String[] s, int i) {
+    public java.lang.String[] toLog_2(int typeMatch, String s, int i) {
         System.out.println("== toLog_2 " + typeMatch + ", " + s + ", " + i);
         return null;
     }
@@ -31,8 +32,8 @@ public class ArgLoggingTarget {
 
     public static void main(String args[]) throws Throwable {
         ArgLoggingTarget me = new ArgLoggingTarget();
-        ArgLoggingTarget.toLog_1(0, new String[] {"a"}, 1);
-        me.toLog_2(0, new String[] {"b"}, 2);
+        me.toLog_1(0, "a", 1);
+        me.toLog_2(0, "b", 2);
         me.toLog_3(0, new String[] {"c"});
     }
 

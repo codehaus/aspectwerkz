@@ -16,7 +16,7 @@ public final class NameIndexTuple {
     /**
      * The index.
      */
-    private final IndexTuple m_index;
+    private final AdviceIndex m_index;
 
     /**
      * The name.
@@ -29,7 +29,7 @@ public final class NameIndexTuple {
      * @param name the name
      * @param index the index
      */
-    public NameIndexTuple(final String name, final IndexTuple index) {
+    public NameIndexTuple(final String name, final AdviceIndex index) {
         m_name = name;
         m_index = index;
     }
@@ -48,7 +48,7 @@ public final class NameIndexTuple {
      * 
      * @return the index
      */
-    public IndexTuple getIndex() {
+    public AdviceIndex getIndex() {
         return m_index;
     }
 }

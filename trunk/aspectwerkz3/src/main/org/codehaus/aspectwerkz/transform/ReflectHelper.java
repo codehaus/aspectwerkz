@@ -87,7 +87,7 @@ public class ReflectHelper {
      * @param method
      * @return
      */
-    private static boolean isUserDefinedMethod(Method method) {
+    private static boolean isUserDefinedMethod(final Method method) {
         if (!method.getName().equals("equals")
             && !method.getName().equals("hashCode")
             && !method.getName().equals("getClass")

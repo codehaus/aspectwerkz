@@ -189,6 +189,16 @@ public class JavassistClassInfo implements ClassInfo {
         }
         return classInfo;
     }
+    
+    /**
+     * Marks the class as dirty (since it has been modified and needs to be rebuild).
+     *  
+     * @param clazz
+     * @param loader
+     */
+    public static void markDirty(final CtClass clazz, final ClassLoader loader) {
+        JavassistClassInfoRepository.getRepository(loader).removeClassInfo(clazz);
+    }
 
     /**
      * Returns the annotations.

@@ -85,6 +85,9 @@ public final class AddInterfaceTransformer implements Transformer {
         }
         if (isClassAdvised) {
             context.markAsAdvised();
+
+            // weaved class might use the added interface to match pointcuts so mark the class info as dirty
+            JavassistClassInfo.markDirty(cg, context.getLoader());
         }
     }
 
@@ -157,26 +160,5 @@ public final class AddInterfaceTransformer implements Transformer {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Callback method. Is being called before each transformation.
-     */
-    public void sessionStart() {
-    }
-
-    /**
-     * Callback method. Is being called after each transformation.
-     */
-    public void sessionEnd() {
-    }
-
-    /**
-     * Callback method. Prints a log/status message at each transformation.
-     * 
-     * @return a log string
-     */
-    public String verboseMessage() {
-        return this.getClass().getName();
     }
 }

@@ -13,5 +13,7 @@ package test.adviseonintroducedinterface;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class Target {
-
+    public void m1() {
+        Test.log("m1 ");
+    }
 }

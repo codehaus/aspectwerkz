@@ -1,4 +1,4 @@
-/**************************************************************************************
+     /**************************************************************************************
  * Copyright (c) Jonas Bon?r, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
@@ -7,23 +7,21 @@
  **************************************************************************************/
 package examples.logging;
 
-import java.lang.reflect.Method;
-
 import org.codehaus.aspectwerkz.annotation.Annotation;
-import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ArgAspect {
 
     /**
      * @Before pc1(ai, as)
      */
-    public void before1(final JoinPoint joinPoint, int ai, String[] as) throws Throwable {
+    public void before1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
         MethodSignature sig = (MethodSignature)joinPoint.getSignature();
         Annotation a = sig.getAnnotation("Annotation");
         System.out.println("== ==> ArgAspect.before " + joinPoint + ", " + ai + ", " + as);
@@ -32,33 +30,33 @@ public class ArgAspect {
     /**
      * @After pc1(ai, as)
      */
-    public void after1(final JoinPoint joinPoint, int ai, String[] as) throws Throwable {
+    public void after1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
         System.out.println("== ==> ArgAspect.after " + joinPoint + ", " + ai + ", " + as);
     }
 
     /**
-     * Before pc1(ai, as)
+     * @Before pc1(ai, as)
      */
-    public void before2(final JoinPoint joinPoint, String[] as, int ai) throws Throwable {
+    public void before2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
         System.out.println("== ==> ArgAspect.before2 " + joinPoint + ", " + as + ", " + ai);
     }
 
     /**
-     * After pc1(ai, as)
+     * @After pc1(ai, as)
      */
-    public void after2(final JoinPoint joinPoint, String[] as, int ai) throws Throwable {
+    public void after2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
         System.out.println("== ==> ArgAspect.after2 " + joinPoint + ", " + as + ", " + ai);
     }
 
     /**
-     * Before pc2(sarr)
+     * @Before pc2(sarr)
      */
     public void before3(final JoinPoint joinPoint, String[] sarr) throws Throwable {
         System.out.println("== ==> ArgAspect.before3 " + joinPoint + ", " + sarr);
     }
 
     /**
-     * After pc2(sarr)
+     * @After pc2(sarr)
      */
     public void after3(final JoinPoint joinPoint, String[] sarr) throws Throwable {
         System.out.println("== ==> ArgAspect.after3 " + joinPoint + ", " + sarr);
@@ -67,17 +65,23 @@ public class ArgAspect {
     /**
      * @Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(int, s, i)
      */
-    Pointcut pc1(int i, String[] s) {
+    Pointcut pc1(int i, String s) {
         return null;
     }
 
     /**
-     * Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(int, sarr)
+     * @Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(sarr)
      */
-    Pointcut pc2(int i, String[] sarr) {
+    Pointcut pc2(String[] sarr) {
         return null;
     }
+    
+    // FIXME - Validate: 
+    // 1. Use of PC (@Before pc1(..)) has the correct param list to the PC (match the signature)
+    // 2. All param names in the PC signature are defined in an args(..) construct
 
+    
+    
     //TODO if not abstract, then must be "void"
     //TODO: decide - should we ignore abstract marked pc annotation ??
     //FOR NOW: grab em all, ignore return type, and abstract or not.

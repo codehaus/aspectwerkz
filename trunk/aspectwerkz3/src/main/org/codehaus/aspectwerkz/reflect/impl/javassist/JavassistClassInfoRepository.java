@@ -14,6 +14,8 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import javassist.CtClass;
+
 /**
  * A repository for the class info hierarchy. Is class loader aware. <p/>TODO refactor some with JavaClassInfoRepository
  * but keep em separate for system runtime sake in AOPC (WLS)
@@ -144,5 +146,14 @@ public class JavassistClassInfoRepository {
                 return checkParentClassRepository(className, parent);
             }
         }
+    }
+
+    /**
+     * Removes the class from the repository (since it has been modified and needs to be rebuild).
+     * 
+     * @param clazz
+     */
+    public void removeClassInfo(final CtClass clazz) {
+        m_repository.remove(clazz.getName());
     }
 }

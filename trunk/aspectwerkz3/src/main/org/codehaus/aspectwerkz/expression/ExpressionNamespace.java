@@ -62,23 +62,6 @@ public final class ExpressionNamespace {
      * @param expressionInfo the expression info to add
      */
     public void addExpressionInfo(final String name, final ExpressionInfo expressionInfo) {
-        //                System.out.println("name map to in " + name + " = " +
-        //         expressionInfo.getExpressionAsString() + " : " +
-        //         m_namespace );
-        //        if (name == expressionInfo.getExpressionAsString()) {
-        //            if (m_expressions.get(name)!=null) {
-        //                System.out.println("skip " + m_expressions.get(name));
-        //            } else {
-        //                System.out.println("damned!");
-        //            }
-        //
-        //
-        //            ;//skip it since we would override the actual expression
-        //            // do a lookup first to avoid infinite recursion when:
-        //            // <pointcut name="pc" ...> [will be registered as pc]
-        //            // <advice bind-to="pc" ...> [will be registered as pc and should not override previous
-        // one !]
-        //        }
         m_expressions.put(name, expressionInfo);
     }
 
@@ -119,6 +102,12 @@ public final class ExpressionNamespace {
         return getExpressionInfo(name).getCflowExpression();
     }
 
+    /**
+     * Returns the runtime cflow expression with a specific name.
+     * 
+     * @param name the name of the expression
+     * @return the expression
+     */
     public CflowExpressionVisitorRuntime getCflowExpressionRuntime(final String name) {
         return getExpressionInfo(name).getCflowExpressionRuntime();
     }

@@ -15,20 +15,27 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 public class Aspect {
     
     /**
-     * @Before execution(void test.adviseonintroducedinterface.Intf+.method())
+     * @Before 
+     *      execution(void test.adviseonintroducedinterface.Intf1+.m1()) 
+     *      ||
+     *      execution(void test.adviseonintroducedinterface.Intf2+.m2())
      */
     public void before(JoinPoint jp) {
-        System.out.println("Aspect.before()");
         Test.log("before ");
     }
+    
+    
+    /**
+     * @Implements within(test.adviseonintroducedinterface.Target)
+     */
+    Intf1 marker;
     
     /**
      * @Introduce within(test.adviseonintroducedinterface.Target)
      */
-    public static class Impl implements Intf {
-        public void method() {
-            System.out.println("Impl.method()");
-            Test.log("method ");
+    public static class Mixin implements Intf2 {
+        public void m2() {
+            Test.log("m2 ");
         }
     }
 }
