@@ -299,36 +299,72 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTArgs node, Object data) {
+        ExpressionContext ctx = (ExpressionContext)data;
         if (node.jjtGetNumChildren()<=0) {
-            //FIXME match only if "no args" (limited use case)
-            return Boolean.TRUE;
+            // args(EMPTY)
+            return (ExpressionVisitor.getParametersCount(ctx) == 0)?Boolean.TRUE:Boolean.FALSE;
         } else {
             // check for ".." as first node
+            int expressionParameterCount = node.jjtGetNumChildren();// the number of node minus eager one.
+            //TODO support several eager nodes
             boolean isFirstArgEager = ((ASTArgParameter)node.jjtGetChild(0)).getTypePattern().isEagerWildCard();
-            boolean isLastArgEager = ((ASTArgParameter)node.jjtGetChild(node.jjtGetNumChildren())).getTypePattern().isEagerWildCard();
-            if (isFirstArgEager) {
-                //FIXME impl
-                // do a match from last to first
-                //...
+            boolean isLastArgEager = ((ASTArgParameter)node.jjtGetChild(node.jjtGetNumChildren()-1)).getTypePattern().isEagerWildCard();
+            // args(..)
+            if (isFirstArgEager && expressionParameterCount==1) {
+                return Boolean.TRUE;
             }
-            else if (isLastArgEager && node.jjtGetNumChildren()>1) {
-                //FIXME impl
-                // do a match from first to last
-                //...
-            } else {
-                //TODO early check on num args
-                for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-                    //FIXME enhance data with "i" or change the data ?
-                    ExpressionContext ctx = (ExpressionContext)data;
-                    ctx.setArgsIndex(i);
-                    if (Boolean.TRUE.equals((Boolean)node.jjtGetChild(i).jjtAccept(this, ctx))) {
-                        ;//go on with next arg
-                    } else {
-                        return Boolean.FALSE;
+            int contextParametersCount = ExpressionVisitor.getParametersCount(ctx);
+            if (isFirstArgEager) {
+                expressionParameterCount--;
+                if (contextParametersCount >= expressionParameterCount) {
+                    // do a match from last to first, break when args() nodes are exhausted
+                    for (int i = 0; (i < contextParametersCount) && (expressionParameterCount-i>=0); i++) {
+                        ctx.setArgsIndex(contextParametersCount-1-i);
+                        if (Boolean.TRUE.equals((Boolean)node.jjtGetChild(expressionParameterCount-i).jjtAccept(this, ctx))) {
+                            ;//go on with "next" arg
+                        } else {
+                            return Boolean.FALSE;
+                        }
                     }
+                    return Boolean.TRUE;
+                } else {
+                    //args() as more args than context we try to match
+                    return Boolean.FALSE;
+                }
+            } else if (isLastArgEager) {
+                expressionParameterCount--;
+                if (contextParametersCount >= expressionParameterCount) {
+                    // do a match from first to last, break when args() nodes are exhausted
+                    for (int i = 0; (i < contextParametersCount) && (i<expressionParameterCount); i++) {
+                        ctx.setArgsIndex(i);
+                        if (Boolean.TRUE.equals((Boolean)node.jjtGetChild(i).jjtAccept(this, ctx))) {
+                            ;//go on with next arg
+                        } else {
+                            return Boolean.FALSE;
+                        }
+                    }
+                    return Boolean.TRUE;
+                } else {
+                    return Boolean.FALSE;
+                }
+            } else {
+                // no eager wildcard in args()
+                // check that args length are equals
+                if (expressionParameterCount == contextParametersCount) {
+                    for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+                        //FIXME enhance data with "i" or change the data ?
+                        ctx.setArgsIndex(i);
+                        if (Boolean.TRUE.equals((Boolean)node.jjtGetChild(i).jjtAccept(this, ctx))) {
+                            ;//go on with next arg
+                        } else {
+                            return Boolean.FALSE;
+                        }
+                    }
+                    return Boolean.TRUE;
+                } else {
+                    return Boolean.FALSE;
                 }
             }
-            return Boolean.TRUE;
         }
     }
 
@@ -338,7 +374,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         TypePattern realPattern = typePattern;
         // grab parameter from context
         ExpressionContext ctx = (ExpressionContext)data;
-        //TODO enhance
         ClassInfo argInfo = null;
         try {
             if (ctx.getReflectionInfo() instanceof MethodInfo) {
@@ -578,5 +613,16 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
      */
     public String toString() {
         return m_expression;
+    }
+
+    private static int getParametersCount(ExpressionContext ctx) {
+        ReflectionInfo reflectionInfo = ctx.getReflectionInfo();
+        if (reflectionInfo instanceof MethodInfo) {
+            return ((MethodInfo)reflectionInfo).getParameterTypes().length;
+        } else if (reflectionInfo instanceof ConstructorInfo) {
+            return ((ConstructorInfo)reflectionInfo).getParameterTypes().length;
+        } else {
+            return -1;
+        }
     }
 }

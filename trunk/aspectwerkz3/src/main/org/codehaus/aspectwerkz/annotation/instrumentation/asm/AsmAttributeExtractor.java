@@ -124,9 +124,6 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                             try {
                                 methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(
                                     bytes)).readObject());
-
-                                System.out.println(" got one " + name + " " + desc);
-
                             } catch (Exception e) {
                                 throw new WrappedRuntimeException(e);
                             }

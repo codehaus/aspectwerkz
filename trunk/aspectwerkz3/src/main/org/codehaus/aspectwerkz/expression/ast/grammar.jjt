@@ -434,7 +434,10 @@ void CflowBelow() #CflowBelow : {}
  */
 void Args() #Args : {}
 {
-   <ARGS> ArgsParameters() <ARGS_END>
+    LOOKAHEAD(2)
+    <ARGS> <ARGS_END>
+    |
+    <ARGS> ArgsParameters() <ARGS_END>
 }
 
 //------------------ Patterns ------------------
