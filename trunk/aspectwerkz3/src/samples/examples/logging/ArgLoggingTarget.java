@@ -18,11 +18,14 @@ public class ArgLoggingTarget {
     private int m_counter2;
 
     public int getCounter() {
+        System.out.println("getCounter before");
         return m_counter1;
     }
 
     public void increment() {
+        System.out.println("increment before = " + m_counter2);
         m_counter2 = m_counter2 + 1;
+        System.out.println("increment after = " + m_counter2);
     }
 
     /**
@@ -58,7 +61,8 @@ class Runner {
     }
     public void doRun(ArgLoggingTarget target) {
         target.toLog_1(0, "a", 1);
-        target.getCounter();
+        int counter1 = target.getCounter();
+        System.out.println("getCounter after = " + counter1);
         target.increment();
     }
 }
