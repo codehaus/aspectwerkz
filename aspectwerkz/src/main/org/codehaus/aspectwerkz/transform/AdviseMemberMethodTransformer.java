@@ -39,7 +39,6 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.FieldGen;
 import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.Instruction;
@@ -58,7 +57,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.14 2003-07-09 05:21:28 jboner Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.15 2003-07-09 11:33:00 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -306,8 +305,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
         else {
             // create an new join point
             ihPost = il.insert(ih, factory.createLoad(Type.OBJECT, 0));
-            il.insert(ih, factory.createNew(
-                    TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS));
+            il.insert(ih, factory.createNew(TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS));
 
             // load the parameters (uuid, this, method id)
             il.insert(ih, InstructionConstants.DUP);
