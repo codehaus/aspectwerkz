@@ -23,13 +23,22 @@ import java.io.FileInputStream;
 
 import gnu.trove.TObjectIntHashMap;
 
+import org.codehaus.aspectwerkz.Mixin;
+import org.codehaus.aspectwerkz.System;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.AspectMetaData;
+import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.attribdef.aspect.Aspect;
 import org.codehaus.aspectwerkz.attribdef.definition.StartupManager;
 import org.codehaus.aspectwerkz.attribdef.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.MethodIntroductionDefinition;
+import org.codehaus.aspectwerkz.attribdef.definition.AspectWerkzDefinitionImpl;
+import org.codehaus.aspectwerkz.attribdef.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.attribdef.definition.attribute.DefaultAspectAttributeParser;
+import org.codehaus.aspectwerkz.attribdef.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
@@ -42,11 +51,6 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.util.Util;
-import org.codehaus.aspectwerkz.MethodComparator;
-import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.Mixin;
-import org.codehaus.aspectwerkz.System;
-import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.connectivity.Invoker;
 import org.codehaus.aspectwerkz.connectivity.RemoteProxyServer;
 import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
@@ -147,7 +151,7 @@ public final class AttribDefSystem implements System {
     /**
      * The definition.
      */
-    private AspectWerkzDefinition m_definition;
+    private AspectWerkzDefinitionImpl m_definition;
 
     /**
      * Holds a list of the cflow join points passed by the control flow of the current thread.
@@ -160,6 +164,11 @@ public final class AttribDefSystem implements System {
     private RemoteProxyServer m_remoteProxyServer = null;
 
     /**
+     * The attribute parser to parse the definitions for the aspects loaded at runtime.
+     */
+    private AspectAttributeParser m_attributeParser;
+
+    /**
      * Creates a new AspectWerkz system instance.
      * Sets the UUID for the system.
      * Is set to private since the instance should be retrieved using the getSystem(..) method.
@@ -167,12 +176,15 @@ public final class AttribDefSystem implements System {
      * @param uuid the UUID for the system
      * @param definition the definition for the system
      */
-    public AttribDefSystem(final String uuid, final AspectWerkzDefinition definition) {
+    private AttribDefSystem(final String uuid, final AspectWerkzDefinition definition) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (definition == null) throw new IllegalArgumentException("definition can not be null");
 
         m_uuid = uuid;
-        m_definition = definition;
+        m_definition = (AspectWerkzDefinitionImpl)definition;
+
+        // TODO: allow custom attribute parser, f.e. to support JSR-175
+        m_attributeParser = new DefaultAspectAttributeParser();
 
         if (START_REMOTE_PROXY_SERVER) {
             startRemoteProxyServer();
@@ -265,6 +277,57 @@ public final class AttribDefSystem implements System {
                 }
             }
         }
+    }
+
+    /**
+     * Creates and registers new aspect at runtime.
+     *
+     * @param name the name of the aspect
+     * @param className the class name of the aspect
+     * @param deploymentModel the deployment model for the aspect
+     * @param loader an optional class loader (if null it uses the context classloader)
+     */
+    public void createAspect(final String name,
+                             final String className,
+                             final String deploymentModel,
+                             final ClassLoader loader) {
+        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (deploymentModel == null) throw new IllegalArgumentException("deployment model can not be null");
+
+        Aspect prototype = null;
+        Class aspectClass = null;
+        try {
+            if (loader == null) {
+                aspectClass = ContextClassLoader.loadClass(className);
+            }
+            else {
+                aspectClass = loader.loadClass(className);
+            }
+        }
+        catch (Exception e) {
+            throw new RuntimeException("could not load aspect class [" + className + "] with name " +  name);
+        }
+
+        try {
+            prototype = (Aspect)aspectClass.newInstance();
+        }
+        catch (Exception e) {
+            throw new RuntimeException("could not create a new instance of aspect [" + className + "], does the class inherit the [org.codehaus.aspectwerkz.attribdef.aspect.Aspect] class?");
+        }
+
+        // parse the class attributes and create a definition
+        AspectDefinition aspectDef = m_attributeParser.parse(aspectClass);
+        m_definition.addAspect(aspectDef);
+
+        prototype.___AW_setDeploymentModel(DeploymentModel.getDeploymentModelAsInt(deploymentModel));
+        prototype.___AW_setName(name);
+        prototype.___AW_setAspectClass(prototype.getClass());
+        prototype.___AW_setContainer(StartupManager.createAspectContainer(prototype));
+        prototype.___AW_setAspectDef(aspectDef);
+
+        // register the aspect
+        register(prototype, new AspectMetaData(m_uuid, name));
     }
 
     /**
@@ -392,6 +455,31 @@ public final class AttribDefSystem implements System {
             }
         }
         return aspect;
+    }
+
+    /**
+     * Returns the introduction for a specific name.
+     *
+     * @param name the name of the introduction
+     * @return the the introduction
+     */
+    public Mixin getMixin(final String name) {
+        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
+
+        Mixin introduction;
+        try {
+            introduction = m_aspects[m_definition.getAspectIndexByName(name) - 1];
+        }
+        catch (Throwable e1) {
+            initialize();
+            try {
+                introduction = m_aspects[m_definition.getAspectIndexByName(name) - 1];
+            }
+            catch (ArrayIndexOutOfBoundsException e2) {
+                throw new DefinitionException("no introduction with name " + name);
+            }
+        }
+        return introduction;
     }
 
     /**

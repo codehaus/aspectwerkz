@@ -160,6 +160,14 @@ public interface System {
      */
     Mixin getMixin(int index);
 
+   /**
+     * Returns the introduction for a specific name.
+     *
+     * @param name the name of the introduction
+     * @return the the introduction
+     */
+    Mixin getMixin(String name);
+
     /**
      * Checks if a specific class has an aspect defined.
      *

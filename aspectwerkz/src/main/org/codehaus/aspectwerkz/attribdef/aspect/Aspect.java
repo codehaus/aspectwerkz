@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 
 /**
  * Abstract base class that all Aspect implementations must extend.
@@ -448,6 +449,33 @@ public abstract class Aspect implements Serializable, Mixin {
      */
     public void ___AW_setTargetClass(final Object targetClass) {
         m_targetClass = targetClass;
+    }
+
+    /**
+     * Swaps the current introduction implementation.
+     *
+     * @param className the class name of the new implementation
+     */
+    public void ___AW_swapImplementation(final String className) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        synchronized (m_aspectClass) {
+            try {
+                m_aspectClass = ContextClassLoader.loadClass(className);
+//                Class[] interfaces = m_aspectClass.getInterfaces();
+//                boolean implementsInterface = false;
+//                for (int i = 0; i < interfaces.length; i++) {
+//                    if (interfaces[i].getName().equals(m_interface)) {
+//                        implementsInterface = true;
+//                    }
+//                }
+//                if (!implementsInterface) throw new DefinitionException("introduced implementation " + m_aspectClass.getName() + " has to implement introduced interface " + m_interface);
+            }
+            catch (Exception e) {
+                throw new WrappedRuntimeException(e);
+            }
+        }
+
+        m_container.swapImplementation(m_aspectClass);
     }
 
     /**

@@ -166,7 +166,7 @@ public class Introduction implements Serializable, Mixin {
      *
      * @param className the class name of the new implementation
      */
-    public void swapImplementation(final String className) {
+    public void ___AW_swapImplementation(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         synchronized (m_implClass) {
             try {

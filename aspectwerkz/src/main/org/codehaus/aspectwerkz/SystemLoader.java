@@ -118,21 +118,20 @@ public class SystemLoader {
             if (system == null) {
                 if (definition.isXmlDef()) {
                     synchronized (s_systems) {
-                        // TODO: reflection makes the clapp test fail, why?
-                        system = new org.codehaus.aspectwerkz.xmldef.XmlDefSystem(uuid, definition);
-//                        system = (System)XML_DEF_SYSTEM_CONSTRUCTOR.newInstance(
-//                                new Object[]{uuid, definition}
-//                        );
-
+// TODO: makes the clapp test fail, why?
+                        system = (System)XML_DEF_SYSTEM_CONSTRUCTOR.newInstance(
+                                new Object[]{uuid, definition}
+                        );
+//                        system = new org.codehaus.aspectwerkz.xmldef.XmlDefSystem(uuid, definition);
                         s_systems.put(uuid, system);
                     }
                 }
                 else if (definition.isAttribDef()) {
                     synchronized (s_systems) {
-                        system = new org.codehaus.aspectwerkz.attribdef.AttribDefSystem(uuid, definition);
-//                        system = (System)ATTRIB_DEF_SYSTEM_CONSTRUCTOR.newInstance(
-//                                new Object[]{uuid, definition}
-//                        );
+                        system = (System)ATTRIB_DEF_SYSTEM_CONSTRUCTOR.newInstance(
+                                new Object[]{uuid, definition}
+                        );
+//                        system = new org.codehaus.aspectwerkz.attribdef.AttribDefSystem(uuid, definition);
                         s_systems.put(uuid, system);
                     }
                 }
