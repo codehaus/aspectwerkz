@@ -213,7 +213,7 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
     public void createAspectReferenceField(final ClassWriter cw,
                                            final AspectInfo aspectInfo,
                                            final String joinPointClassName) {
-        AbstractJoinPointCompiler.createAspectReferenceField(cw, aspectInfo, joinPointClassName);
+        AbstractJoinPointCompiler.createAspectReferenceField(cw, aspectInfo);
     }
 
     /**

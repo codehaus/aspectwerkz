@@ -143,12 +143,14 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
 
         collectAdviceInfo(advices);
         collectCustomProceedMethods(model, advices);
-        setupReferencedAspectModels();
 
         // compute the optimization we can use
         m_hasAroundAdvices = m_aroundAdviceMethodInfos.length > 0;
         m_requiresThisOrTarget = requiresThisOrTarget();
         m_requiresJoinPoint = requiresJoinPoint();
+
+        // setup models at the end so that they can ovveride m_requiresJoinPoint
+        setupReferencedAspectModels();
 
         m_cw = AsmHelper.newClassWriter(true);
     }

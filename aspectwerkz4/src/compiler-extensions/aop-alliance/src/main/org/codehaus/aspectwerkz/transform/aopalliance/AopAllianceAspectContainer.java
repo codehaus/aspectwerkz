@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz.transform.aopalliance;
 
 import org.codehaus.aspectwerkz.aspect.AbstractAspectContainer;
 import org.codehaus.aspectwerkz.AspectContext;
-import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
 
 /**
  * Default aspect container for the AOP Alliance compliant aspects, can only handle aspects/interceptors

@@ -80,12 +80,12 @@
                     <ul>
                         <li>strongly typed proceed to change invocation arguments from within an around advice - <a href="new_features_in_2_0.html#Strongly_typed_proceed">read more</a></li>
                         <li>per object instance programmatic interception - <a href="new_features_in_2_0.html#Per_instance_interception">read more</a></li>
-                        <li>AWProxy, applying aspects <b>transparently</b> to CGLIB or AspectWerkz proxies - <a href="new_features_in_2_0.html#AWProxy: proxy awareness of aspects">read more</a></li>
+                        <li>AWProxy, applying aspects <b>transparently</b> to CGLIB or AspectWerkz proxies - <a href="new_features_in_2_0.html#AWProxy:_proxy_awareness_of_aspects">read more</a></li>
                     </ul>
                     <br/>
                     Bug fix:
                     <ul>
-                        <li>Aspect raising class not found <i>the aspect class</i> in application servers</li>
+                        <li>Class not found raised for <i>the aspect classes</i> in application servers</li>
                         <li>Mixin throwing NPE when using <code>Mixins.mixinOf</code></li>
                         <li>issue to match on array types like <code>String[]</code></li>
                         <li>some bugs with joinpoints occuring within a constructor</li>
