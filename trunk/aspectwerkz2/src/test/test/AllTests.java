@@ -32,6 +32,8 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.MethodComparatorTest.class);
         suite.addTestSuite(test.StringsTest.class);
         suite.addTestSuite(test.ExpressionTest.class);
+        suite.addTestSuite(test.ExpressionGrammarTest.class);
+
 
         // transformer and engine tests
         suite.addTestSuite(test.MemberMethodAdviceTest.class);
