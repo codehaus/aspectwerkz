@@ -420,7 +420,7 @@ public class JoinPointManager {
                         } else if (AdviceType.AFTER_THROWING.equals(adviceDefinition.getType())) {
                             afterThrowingAdvices.add(adviceInfo);
                         } else if (AdviceType.AFTER.equals(adviceDefinition.getType())) {
-                            afterReturningAdvices.add(adviceInfo);//special case for "after only"
+                            afterFinallyAdvices.add(adviceInfo);//special case for "after only"
                         }
                     }
                 }
