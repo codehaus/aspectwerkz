@@ -148,8 +148,11 @@
                         <code>JSR-163 JVMTI</code> (
                         <a href="http://www.jcp.org/en/jsr/detail?id=163">read JSR</a>)
                         allows to integrate AspectWerkz with just a single
-                        <code>-javaagent:org.codehaus.aspectwerkz.hook.Agent</code>
+                        <code>-javaagent:lib/aspectwerrkz-core-XXX.jar</code>
                         JVM option. This is supported since release 1.0.
+                        <br/>
+                        <i>Note: due to JSR-163 updates, this option might not be supported in J2SE 5 beta2. Instead, you may have to use
+                        <code>-javaagent:org.codehaus.aspectwerkz.hook.Agent</code></i>
                         <br/>
                     </li>
                     <li>
@@ -556,7 +559,7 @@ java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPrePro
                 On your own applications make sure of the following:
                     <ul>
                         <li>The JVM is started with
-                            <code>-javaagent:org.codehaus.aspectwerkz.hook.Agent</code> VM option
+                            <code>-javaagent:lib/aspectwerkz-core-XXX.jar</code> VM option
                         </li>
                         <li>All
                             <code>AspectWerkz</code> jars and dependancies are in the JVM regular classpath using
@@ -570,10 +573,11 @@ set VERSION=1.0-beta2
 set DEPS=...
 
 # all AspectWerzk jar, and dependancies
-set AW_PATH=javassist-*.jar:aspectwerkz-core-$VERSION.jar:aspectwwerkz-$VERSION.jar:$DEPS
+set AW_PATH=javassist-*.jar:aspectwerkz-core-$VERSION.jar:aspectwerkz-$VERSION.jar:$DEPS
 
 # -javaagent option
-java -javaagent:org.codehaus.aspectwerkz.hook.Agent -cp $AW_PATH... ..
+# adapth the path to aspectwerkz-core-$VERSION.jar as required
+java -javaagent:aspectwerkz-core-$VERSION.jar -cp $AW_PATH... ..
      .. -Daspectwerkz.definition.file=... my.MyApp
                     </source>
                 </p>

@@ -228,8 +228,9 @@
 			</fileset>
 		</jar>
 		<copy tofile="${lib.dir}/aspectwerkz-${version}.jar" file="${build.dir}/aspectwerkz-${version}.jar" overwrite="true" />
-		
-		<jar destfile="${build.dir}/aspectwerkz-core-${version}.jar">
+
+        <!-- core contains the hook part, including JVMTT agent if J2SE 5 build -->
+		<jar destfile="${build.dir}/aspectwerkz-core-${version}.jar" manifest="${lib.dir}/manifest-core.mf">
 			<fileset dir="${build.core.dir}">
 				<include name="**/aspectwerkz/hook/**/*" />
 			</fileset>
@@ -251,8 +252,9 @@
 			</fileset>
 		</jar>
 		<copy tofile="${lib.dir}/aspectwerkz-${version}.jar" file="${build.dir}/aspectwerkz-${version}.jar" overwrite="true" />
-		
-		<jar destfile="${build.dir}/aspectwerkz-core-${version}.jar">
+
+        <!-- core contains the hook part, including JVMTT agent if J2SE 5 build -->
+		<jar destfile="${build.dir}/aspectwerkz-core-${version}.jar" manifest="${lib.dir}/manifest-core.mf">
 			<fileset dir="${build.core.dir}">
 				<include name="**/aspectwerkz/hook/**/*" />
 			</fileset>
