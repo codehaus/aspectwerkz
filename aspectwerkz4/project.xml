@@ -27,7 +27,7 @@
     <repository>
         <connection>scm:cvs:pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm:aspectwerkz4</connection>
         <developerConnection>scm:cvs:ext:${maven.username}@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm:aspectwerkz4</developerConnection>
-        <url>http://cvs.aspectwerkz.codehaus.org/aspectwerkz4</url>
+        <url>http://cvs.aspectwerkz.codehaus.org/</url>
     </repository>
     <versions>
         <version>
