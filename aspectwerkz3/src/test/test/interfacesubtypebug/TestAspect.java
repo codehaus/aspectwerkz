@@ -21,11 +21,6 @@ public class TestAspect {
      */
     Pointcut interfacePC;
 
-    /**
-     * @Expression execution(* test.interfacesubtypebug.Target.*())
-     */
-    Pointcut targetPC;
-
     // ============ Advices ============
 
     /**
@@ -35,16 +30,6 @@ public class TestAspect {
         InterfaceSubtypeBug.LOG += "interface ";
         Object result = joinPoint.proceed();
         InterfaceSubtypeBug.LOG += "interface ";
-        return result;
-    }
-
-    /**
-     * @Around targetPC
-     */
-    public Object advice2(final JoinPoint joinPoint) throws Throwable {
-        InterfaceSubtypeBug.LOG += "target ";
-        Object result = joinPoint.proceed();
-        InterfaceSubtypeBug.LOG += "target ";
         return result;
     }
 }

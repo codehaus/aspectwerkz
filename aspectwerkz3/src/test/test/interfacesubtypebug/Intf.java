@@ -7,6 +7,7 @@
  **************************************************************************************/
 package test.interfacesubtypebug;
 
+
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
