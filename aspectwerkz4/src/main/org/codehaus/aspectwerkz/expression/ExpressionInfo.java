@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
+import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 
 import java.util.Map;
 import java.util.Set;
@@ -356,13 +357,12 @@ public class ExpressionInfo {
             if (className.startsWith("java.")) {
                 return false;
             }
-            Class clazz = loader.loadClass(className);
-            ClassInfo classInfo = JavaClassInfo.getClassInfo(clazz);
+            ClassInfo classInfo = AsmClassInfo.getClassInfo(className, loader);
             if (ClassInfoHelper.implementsInterface(classInfo, JOINPOINT_CLASS_NAME) ||
                 ClassInfoHelper.implementsInterface(classInfo, STATIC_JOINPOINT_CLASS_NAME)) {
                 return true;
             }
-        } catch (ClassNotFoundException e) {
+        } catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
         return false;
