@@ -68,7 +68,8 @@ public class UuidGenerator {
             s_midValue = hexInetAddress + thisHashCode;
             s_seeder = new SecureRandom();
             s_seeder.nextInt();
-        } catch (java.net.UnknownHostException e) {
+        }
+        catch (java.net.UnknownHostException e) {
             throw new Error("can not initialize the UuidGenerator generator");
         }
         s_initialized = true;
