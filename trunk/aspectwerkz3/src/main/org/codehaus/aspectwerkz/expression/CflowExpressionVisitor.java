@@ -114,7 +114,7 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
             context.setCflowEvaluation(result.booleanValue());
         context.setHasBeenVisitingCflow(true);
         context.setInCflowSubAST(false);
-        return Boolean.valueOf(context.getCflowEvaluation());
+        return new Boolean(context.getCflowEvaluation());
     }
 
     public Object visit(ASTCflowBelow node, Object data) {
@@ -125,14 +125,14 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
             context.setCflowEvaluation(result.booleanValue());
         context.setHasBeenVisitingCflow(true);
         context.setInCflowSubAST(false);
-        return Boolean.valueOf(context.getCflowEvaluation());
+        return new Boolean(context.getCflowEvaluation());
     }
 
     // ============ Pointcut reference  =============
     public Object visit(ASTPointcutReference node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
-        return Boolean.valueOf(namespace.getCflowExpression(node.getName()).match(context));
+        return new Boolean(namespace.getCflowExpression(node.getName()).match(context));
     }
 
     /**

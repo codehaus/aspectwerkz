@@ -78,7 +78,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
     public Object visit(ASTPointcutReference node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
-        return Boolean.valueOf(namespace.getAdvisedCflowClassExpression(node.getName()).match(context));
+        return new Boolean(namespace.getAdvisedCflowClassExpression(node.getName()).match(context));
     }
 
     public Object visit(ASTExecution node, Object data) {

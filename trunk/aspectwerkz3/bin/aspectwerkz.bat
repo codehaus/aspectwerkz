@@ -28,7 +28,8 @@ IF "%1"=="-offline" set OFFLINE="true"
 IF "%OFFLINE%"==""false"" (
     @REM -Daspectwerkz.transform.verbose=yes to turn on verbose mode
     @REM -Daspectwerkz.transform.dump=package.foo.* to turn on dump in ./_dump of package.foo.* class
-    @REM    -Daspectwerkz.classloader.wait=10 to delay connection (launching VM)
+    @REM -Daspectwerkz.classloader.wait=10 to delay connection (launching VM)
+    @REM -Djavax.xml.parsers.SAXParserFactory=com.bluecast.xml.JAXPSAXParserFactory for java 1.3 [see FAQ, after ProcessStarter]
 
     @REM -- Use for Sun HotSpot and IBM JRE --
     "%JAVA_COMMAND%" -cp "%JAVA_HOME%\lib\tools.jar;%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar" org.codehaus.aspectwerkz.hook.ProcessStarter -Xbootclasspath/p:"\"%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar\"" -cp "\"%CP%\"" -cp "\"%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%\"" -Daspectwerkz.home="\"%ASPECTWERKZ_HOME%\"" %*

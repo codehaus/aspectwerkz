@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--*****************************************************************************************************************************
-	AspectWerkz DTD 0.10
+	AspectWerkz DTD 1.0
 
 This DTD is provided as is. Some elements might have been deprecated since 0.7.4  (see comments)
 
@@ -14,8 +14,8 @@ The "unspecified" order of the aspectwerkz childs might change to the one simila
 
 To use this DTD, start your defintion file with
 	<!DOCTYPE aspectwerkz PUBLIC
-	    "-//AspectWerkz//DTD 0.10//EN"
-	    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_10.dtd">
+	    "-//AspectWerkz//DTD 1.0//EN"
+	    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_1_0.dtd">
 
 You can also use the "aliasing DTD" that matchs always the latest release of AspectWerkz
 <!DOCTYPE aspectwerkz PUBLIC
@@ -43,6 +43,10 @@ Change from 0.8.1 to 0.9
 
 Change from 0.9 to 0.10
     DTD refactored for Aspect as java class model
+
+Change from 0.10 to 1.0
+    fixed the system global pointcut element
+    added the aspect element container attribute for custom container
 ******************************************************************************************************************************-->
 
 
@@ -132,6 +136,7 @@ Declares aspect.
 Attributes:
     name: unique name of the aspect in the system. Defaults to FQN (see class)
     class: FQN of Aspect (can have metdata or not)
+    container: FQN of AspectContainer, defaults to regular org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy
     deployment-model: aspect life cycle, defaults to perJVM
 ******************************************************************************************************************************-->
 <!ELEMENT aspect (
@@ -143,6 +148,7 @@ Attributes:
 <!ATTLIST aspect
 name CDATA #IMPLIED
 class CDATA #REQUIRED
+container CDATA #IMPLIED
 deployment-model (perJVM | perClass | perInstance | perThread) #IMPLIED
 >
 <!--*****************************************************************************************************************************

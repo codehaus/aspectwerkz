@@ -110,7 +110,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         ExpressionContext context = (ExpressionContext)data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         ExpressionVisitor expression = namespace.getExpression(node.getName());
-        return Boolean.valueOf(expression.match(context));
+        return new Boolean(expression.match(context));
     }
 
     public Object visit(ASTExecution node, Object data) {

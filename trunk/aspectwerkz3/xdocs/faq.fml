@@ -224,7 +224,7 @@
             </question>
             <answer>
                 AspectWerkz supports all java environment thru offline mode. With online mode, AspectWerkz hooks at the class loader level.
-                AspectWerkz provides a transparent mechanim that support the IBM JRE which bundles a specific
+                AspectWerkz provides a transparent mechanism that support the IBM JRE which bundles a specific
                 <code>java.lang.ClassLoader</code>.
             </answer>
         </faq>
@@ -246,6 +246,12 @@
                     First add the
                 <code>piccolo-1.03.jar</code> file in your
                 <code>JAVA_HOME/jre/lib/ext/</code>.
+                <br/>
+                    You will need to add xerces.jar as well at this location.
+                <br/>
+                    Since 1.0-x releases, you need a specific JAM jar that has been compiled for java 1.3.
+                    Take one from <code>ASPECTWERKZ_HOME/lib/jam-v2-yyyymmdd-SNAPSHOT-java13.jar</code> and copy it to your
+                    <code>JAVA_HOME/jre/lib/ext/</code>.
                 <br/>
                     Second, start your VM with the extra option
                 <code>-Djavax.xml.parsers.SAXParserFactory=com.bluecast.xml.JAXPSAXParserFactory</code>.

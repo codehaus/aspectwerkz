@@ -32,7 +32,7 @@ public class XmlParser {
     /**
      * The current DTD public id. The matching dtd will be searched as a resource.
      */
-    private final static String DTD_PUBLIC_ID = "-//AspectWerkz//DTD 0.10//EN";
+    private final static String DTD_PUBLIC_ID = "-//AspectWerkz//DTD 1.0//EN";
     private final static String DTD_PUBLIC_ID_ALIAS = "-//AspectWerkz//DTD//EN";
 
     /**
